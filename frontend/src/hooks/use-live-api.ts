@@ -54,6 +54,9 @@ export function useLiveAPI(options: LiveClientOptions): UseLiveAPIResults {
           })
           .then(() => {
             // Successfully added worklet
+          })
+          .catch((error) => {
+            console.warn("VU meter worklet failed to load, continuing without volume monitoring:", error);
           });
       });
     }
@@ -61,27 +64,32 @@ export function useLiveAPI(options: LiveClientOptions): UseLiveAPIResults {
 
   useEffect(() => {
     const onOpen = () => {
+      console.log("[Gemini API] ✅ Connected successfully");
       setConnected(true);
     };
 
     const onClose = () => {
+      console.log("[Gemini API] Connection closed");
       setConnected(false);
     };
 
     const onError = (error: ErrorEvent) => {
-      console.error("error", error);
+      console.error("[Gemini API] ❌ Error:", error);
     };
 
     const stopAudioStreamer = () => audioStreamerRef.current?.stop();
 
-    const onAudio = (data: ArrayBuffer) =>
+    const onAudio = (data: ArrayBuffer) => {
+      console.log(`[Gemini API] 🔊 Received audio: ${data.byteLength} bytes`);
       audioStreamerRef.current?.addPCM16(new Uint8Array(data));
+    };
 
     client
       .on("error", onError)
       .on("open", onOpen)
       .on("close", onClose)
-      .on("interrupted", stopAudioStreamer)
+      // COMMENTED OUT: This was causing audio to cut prematurely
+      // .on("interrupted", stopAudioStreamer)
       .on("audio", onAudio);
 
     return () => {
@@ -89,7 +97,7 @@ export function useLiveAPI(options: LiveClientOptions): UseLiveAPIResults {
         .off("error", onError)
         .off("open", onOpen)
         .off("close", onClose)
-        .off("interrupted", stopAudioStreamer)
+        // .off("interrupted", stopAudioStreamer)
         .off("audio", onAudio)
         .disconnect();
     };

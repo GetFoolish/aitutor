@@ -9,8 +9,8 @@ import logging
 from enum import Enum
 from typing import Optional, Callable, List, Dict
 from dataclasses import dataclass
-from backend.memory.vector_store import VectorStore
-from backend.memory.knowledge_graph import KnowledgeGraph
+from memory.vector_store import VectorStore
+from memory.knowledge_graph import KnowledgeGraph
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

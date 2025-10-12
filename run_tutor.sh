@@ -34,18 +34,36 @@ echo "Starting DASH API server... Logs -> logs/api.log"
 (cd "$SCRIPT_DIR" && /Users/vandanchopra/Vandan_Personal_Folder/CODE_STUFF/Projects/venvs/aitutor/bin/python DashSystem/dash_api.py) > "$SCRIPT_DIR/logs/api.log" 2>&1 &
 pids+=($!) # Save the PID
 
-# Give the backend servers a moment to start
+# Start the Teaching Assistant server in the background
+echo "🤖 Starting Teaching Assistant server... Logs -> logs/ta_server.log"
+(cd "$SCRIPT_DIR" && /Users/vandanchopra/Vandan_Personal_Folder/CODE_STUFF/Projects/venvs/aitutor/bin/python backend/ta_server.py) > "$SCRIPT_DIR/logs/ta_server.log" 2>&1 &
+pids+=($!) # Save the PID
+
+# Give the backend services a moment to start
 echo "Waiting for backend services to initialize..."
-sleep 2
+sleep 3
 
 # Start the Node.js frontend in the background
 echo "Starting Node.js frontend... Logs -> logs/frontend.log"
 (cd "$SCRIPT_DIR/frontend" && npm start) > "$SCRIPT_DIR/logs/frontend.log" 2>&1 &
 pids+=($!) # Save the PID
 
-echo "Tutor is running with the following PIDs: ${pids[*]}"
-echo "Press Ctrl+C to stop."
-echo "You can view the logs for each service in the 'logs' directory."
+echo ""
+echo "======================================"
+echo "✅ AI Tutor is running!"
+echo "======================================"
+echo "Services:"
+echo "  - MediaMixer (Port 8765)"
+echo "  - DASH API (Port 8000)"
+echo "  - Teaching Assistant (Port 9000) 🤖"
+echo "  - Frontend (Port 3000)"
+echo ""
+echo "PIDs: ${pids[*]}"
+echo ""
+echo "📊 View logs: tail -f logs/ta_server.log"
+echo "🛑 Press Ctrl+C to stop all services"
+echo "======================================"
+echo ""
 
 # Wait indefinitely until the script is interrupted
 wait

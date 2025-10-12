@@ -17,6 +17,7 @@
 import { useRef, useState, useEffect } from "react";
 import "./App.scss";
 import { LiveAPIProvider } from "./contexts/LiveAPIContext";
+import { TABridgeProvider } from "./contexts/TABridgeContext";
 import SidePanel from "./components/side-panel/SidePanel";
 import { Altair } from "./components/altair/Altair";
 import MediaMixerDisplay from "./components/media-mixer-display/MediaMixerDisplay";
@@ -36,18 +37,17 @@ const apiOptions: LiveClientOptions = {
   apiKey: API_KEY,
 };
 
-function App() {
-  // this video reference is used for displaying the active stream, whether that is the webcam or screen capture
-  // feel free to style as you see fit
+// Inner component that has access to LiveAPIContext
+function AppInner() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const renderCanvasRef = useRef<HTMLCanvasElement>(null);
-  // either the screen capture, the video or null, if null we hide it
   const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
   const [mixerStream, setMixerStream] = useState<MediaStream | null>(null);
   const mixerVideoRef = useRef<HTMLVideoElement>(null);
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isScratchpadOpen, setScratchpadOpen] = useState(false);
 
+  // Initialize MediaMixer WebSocket
   useEffect(() => {
     const ws = new WebSocket('ws://localhost:8765');
     setSocket(ws);
@@ -64,42 +64,51 @@ function App() {
   }, [mixerStream]);
 
   return (
+    <div className="streaming-console">
+      <SidePanel />
+      <main>
+        <div className="main-app-area">
+          <div className="question-panel">
+            <ScratchpadCapture socket={socket}>
+              <QuestionDisplay />
+              {isScratchpadOpen && (
+                <div className="scratchpad-container">
+                  <Scratchpad />
+                </div>
+              )}
+            </ScratchpadCapture>
+          </div>
+          <MediaMixerDisplay socket={socket} renderCanvasRef={renderCanvasRef} />
+        </div>
+
+        <ControlTray
+          socket={socket}
+          renderCanvasRef={renderCanvasRef}
+          videoRef={videoRef}
+          supportsVideo={true}
+          onVideoStreamChange={setVideoStream}
+          onMixerStreamChange={setMixerStream}
+          enableEditingSettings={true}
+        >
+          <button onClick={() => setScratchpadOpen(!isScratchpadOpen)}>
+            <span className="material-symbols-outlined">
+              {isScratchpadOpen ? "close" : "edit"}
+            </span>
+          </button>
+        </ControlTray>
+      </main>
+    </div>
+  );
+}
+
+// Main App component wrapper
+function App() {
+  return (
     <div className="App">
       <LiveAPIProvider options={apiOptions}>
-        <div className="streaming-console">
-          <SidePanel />
-          <main>
-            <div className="main-app-area">
-              <div className="question-panel">
-                <ScratchpadCapture socket={socket}>
-                  <QuestionDisplay />
-                  {isScratchpadOpen && (
-                    <div className="scratchpad-container">
-                      <Scratchpad />
-                    </div>
-                  )}
-                </ScratchpadCapture>
-              </div>
-              <MediaMixerDisplay socket={socket} renderCanvasRef={renderCanvasRef} />
-            </div>
-
-            <ControlTray
-              socket={socket}
-              renderCanvasRef={renderCanvasRef}
-              videoRef={videoRef}
-              supportsVideo={true}
-              onVideoStreamChange={setVideoStream}
-              onMixerStreamChange={setMixerStream}
-              enableEditingSettings={true}
-            >
-              <button onClick={() => setScratchpadOpen(!isScratchpadOpen)}>
-                <span className="material-symbols-outlined">
-                  {isScratchpadOpen ? "close" : "edit"}
-                </span>
-              </button>
-            </ControlTray>
-          </main>
-        </div>
+        <TABridgeProvider>
+          <AppInner />
+        </TABridgeProvider>
       </LiveAPIProvider>
     </div>
   );

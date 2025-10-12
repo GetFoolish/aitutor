@@ -92,18 +92,20 @@ class TeachingAssistant:
         Returns:
             Greeting prompt to inject to Gemini
         """
-        # Generate personalized greeting prompt
+        # Generate guidance prompt FOR ADAM about how to greet the student
         if student_name and len(student_name.strip()) > 0:
             greeting_prompt = (
-                f"Welcome back, {student_name}! I'm excited to learn with you today. "
-                f"What would you like to explore? Remember, I'm here to guide you through "
-                f"thinking about problems, not just give you answers. Let's discover together!"
+                f"[Teaching Assistant Note to Adam]: A new session is starting with {student_name}. "
+                f"Please greet them warmly and ask what they'd like to explore today. "
+                f"Remember to emphasize your role as a guide who helps them think through problems, "
+                f"not someone who just gives answers. Set a collaborative, encouraging tone."
             )
         else:
             greeting_prompt = (
-                "Welcome! I'm excited to learn with you today. "
-                "What would you like to explore? Remember, I'm here to guide you through "
-                "thinking about problems, not just give you answers. Let's discover together!"
+                "[Teaching Assistant Note to Adam]: A new session is starting with a student. "
+                "Please greet them warmly and ask what they'd like to explore today. "
+                "Remember to emphasize your role as a guide who helps them think through problems, "
+                "not someone who just gives answers. Set a collaborative, encouraging tone."
             )
 
         # Update session state
@@ -183,11 +185,12 @@ class TeachingAssistant:
             while self.session_state == SessionState.ACTIVE and self.is_monitoring:
                 # Check if student is inactive
                 if self.activity_monitor.is_inactive():
-                    # Generate nudge prompt
+                    # Generate nudge guidance FOR ADAM
                     nudge_prompt = (
-                        "Hey, are you still there? Take your time thinking - "
-                        "I'm here whenever you're ready to continue. "
-                        "If you're stuck, feel free to ask me a question about the problem!"
+                        "[Teaching Assistant Note to Adam]: The student has been inactive for 60 seconds. "
+                        "Please check in with them gently. Ask if they're still there or if they need help. "
+                        "Remind them that it's okay to take time thinking, and encourage them to ask questions if stuck. "
+                        "Keep the tone patient and supportive."
                     )
 
                     # Inject nudge
