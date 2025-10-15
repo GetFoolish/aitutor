@@ -43,3 +43,20 @@ def load_questions(sample_size):
                 return all_questions
             except Exception as e:
                 print(f"Failed to load questions: {e}")
+
+def load_generated_questions(sample_size):
+    """Load all generated questions"""
+    path = pathlib.Path(__file__).resolve().parents[3] / "GenAIQuestions" / "new"
+    all_questions = load_json_objects_from_dir(path, pattern="*.json")
+    if all_questions:
+        if sample_size <= len(all_questions):
+            try:
+                sample = random.sample(all_questions,sample_size)
+                return sample
+            except Exception as e:
+                print(f"Failed to load questions: {e}")
+        if sample_size > len(all_questions):
+            try:
+                return all_questions
+            except Exception as e:
+                print(f"Failed to load questions: {e}")

@@ -1,0 +1,708 @@
+{
+    "answerArea": {
+        "calculator": false,
+        "chi2Table": false,
+        "periodicTable": false,
+        "tTable": false,
+        "zTable": false
+    },
+    "hints": [
+        {
+            "content": "There are $\\blueD4$ equal groups.\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]\n\n",
+            "images": {},
+            "replace": false,
+            "widgets": {
+                "image 1": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A cartoon image of a group of seven balls inside a box labeled 1, soft solid color outline, no fill.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/768ba3d1-bae2-4dc5-8231-9a9ff8866627_H1KCXKkAS.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 2": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A cartoon image of a group of seven balls inside a box labeled 2, soft solid color outline, no fill.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/a5dd3eea-01c2-4c7f-88f6-fbc10ac45c39_yobzrpwYn.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 3": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A cartoon image of a group of seven balls inside a box labeled 3, soft solid color outline, no fill.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/dfde844d-e190-44b9-91d4-f9809128dbe5_9X6EPsdHj.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 4": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A cartoon image of a group of seven balls inside a box labeled 4, soft solid color outline, no fill.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/8d2b8964-20f1-466e-a6c7-2813a0d084da_0nG6UEPUU.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                }
+            }
+        },
+        {
+            "content": "Each group has $\\maroonD7$ balls.\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]\n\n",
+            "images": {},
+            "replace": false,
+            "widgets": {
+                "image 1": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A cartoon image of a group of seven balls inside a box labeled 7, soft solid color outline, no fill.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/1ae87a8d-82d9-4a76-b49d-049567e80c6d_AlTL_OYHO.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 2": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A cartoon image of a group of seven balls inside a box labeled 7, soft solid color outline, no fill.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/4924079b-f5be-465c-83f2-79930f54e630_O4zEODS-td.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 3": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A cartoon image of a group of seven balls inside a box labeled 7, soft solid color outline, no fill.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/1ae87a8d-82d9-4a76-b49d-049567e80c6d_AlTL_OYHO.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 4": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A cartoon image of a group of seven balls inside a box labeled 7, soft solid color outline, no fill.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/4924079b-f5be-465c-83f2-79930f54e630_O4zEODS-td.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                }
+            }
+        },
+        {
+            "content": "Now, lets skip count by $7$s to find the total number of balls:\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]\n\n$7, \\greenD{14}, 21, \\greenD{28}$",
+            "images": {},
+            "replace": false,
+            "widgets": {
+                "image 1": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A cartoon image of a group of seven balls inside a box labeled 7, soft solid color outline, no fill.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/1ae87a8d-82d9-4a76-b49d-049567e80c6d_AlTL_OYHO.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 2": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A cartoon image of a group of seven balls inside a box labeled 14 in green text, soft solid color outline, no fill.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/0989fc38-a8c8-4908-aff9-94680afb3aea_TnNcUazWI.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 3": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A cartoon image of a group of seven balls inside a box labeled 21, soft solid color outline, no fill.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/5f51337e-b8d6-4ed7-aaca-736192967589_CTJ-s-Cq9.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 4": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A cartoon image of a group of seven balls inside a box labeled 28 in green text, soft solid color outline, no fill.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/6c3c67c5-90da-4f6d-9136-954fb5c1fbd0_8niZg5G4O.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                }
+            }
+        },
+        {
+            "content": "Skip count by $7$s: $7, \\greenD{14}, 21, \\greenD{28}$\n\nThere are $\\greenD{28}$ balls in all. ",
+            "images": {},
+            "replace": false,
+            "widgets": {}
+        }
+    ],
+    "itemDataVersion": {
+        "major": 2,
+        "minor": 0
+    },
+    "question": {
+        "content": "**Skip count to find the total number of balls.**\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]\n\nSkip count by $7$s: $7,$ [[\u2603 numeric-input 4]] $, 21,$ [[\u2603 numeric-input 5]]\n\nSo, there are [[\u2603 numeric-input 3]] balls in all. ",
+        "images": {},
+        "widgets": {
+            "image 1": {
+                "alignment": "block",
+                "graded": true,
+                "options": {
+                    "alt": "A cartoon image of a group of seven balls, soft solid color outline, no fill.",
+                    "backgroundImage": {
+                        "height": 91,
+                        "url": "https://ik.imagekit.io/20z1p1q07/6beff82a-b20d-475c-a4af-6f6c5769f3bd_X2hoRXOP3.png",
+                        "width": 120
+                    },
+                    "box": [
+                        120,
+                        91
+                    ],
+                    "caption": "",
+                    "labels": [],
+                    "range": [
+                        [
+                            0,
+                            10
+                        ],
+                        [
+                            0,
+                            10
+                        ]
+                    ],
+                    "static": false,
+                    "title": ""
+                },
+                "static": false,
+                "type": "image",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            },
+            "image 2": {
+                "alignment": "block",
+                "graded": true,
+                "options": {
+                    "alt": "A cartoon image of a group of seven balls, soft solid color outline, no fill.",
+                    "backgroundImage": {
+                        "height": 91,
+                        "url": "https://ik.imagekit.io/20z1p1q07/6beff82a-b20d-475c-a4af-6f6c5769f3bd_X2hoRXOP3.png",
+                        "width": 120
+                    },
+                    "box": [
+                        120,
+                        91
+                    ],
+                    "caption": "",
+                    "labels": [],
+                    "range": [
+                        [
+                            0,
+                            10
+                        ],
+                        [
+                            0,
+                            10
+                        ]
+                    ],
+                    "static": false,
+                    "title": ""
+                },
+                "static": false,
+                "type": "image",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            },
+            "image 3": {
+                "alignment": "block",
+                "graded": true,
+                "options": {
+                    "alt": "A cartoon image of a group of seven balls, soft solid color outline, no fill.",
+                    "backgroundImage": {
+                        "height": 91,
+                        "url": "https://ik.imagekit.io/20z1p1q07/6beff82a-b20d-475c-a4af-6f6c5769f3bd_X2hoRXOP3.png",
+                        "width": 120
+                    },
+                    "box": [
+                        120,
+                        91
+                    ],
+                    "caption": "",
+                    "labels": [],
+                    "range": [
+                        [
+                            0,
+                            10
+                        ],
+                        [
+                            0,
+                            10
+                        ]
+                    ],
+                    "static": false,
+                    "title": ""
+                },
+                "static": false,
+                "type": "image",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            },
+            "image 4": {
+                "alignment": "block",
+                "graded": true,
+                "options": {
+                    "alt": "A cartoon image of a group of seven balls, soft solid color outline, no fill.",
+                    "backgroundImage": {
+                        "height": 91,
+                        "url": "https://ik.imagekit.io/20z1p1q07/6beff82a-b20d-475c-a4af-6f6c5769f3bd_X2hoRXOP3.png",
+                        "width": 120
+                    },
+                    "box": [
+                        120,
+                        91
+                    ],
+                    "caption": "",
+                    "labels": [],
+                    "range": [
+                        [
+                            0,
+                            10
+                        ],
+                        [
+                            0,
+                            10
+                        ]
+                    ],
+                    "static": false,
+                    "title": ""
+                },
+                "static": false,
+                "type": "image",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            },
+            "numeric-input 3": {
+                "alignment": "default",
+                "graded": true,
+                "options": {
+                    "answers": [
+                        {
+                            "maxError": null,
+                            "message": "",
+                            "simplify": "required",
+                            "status": "correct",
+                            "strict": false,
+                            "value": 28
+                        }
+                    ],
+                    "coefficient": false,
+                    "labelText": "",
+                    "multipleNumberInput": false,
+                    "rightAlign": false,
+                    "size": "small",
+                    "static": false
+                },
+                "static": false,
+                "type": "numeric-input",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            },
+            "numeric-input 4": {
+                "alignment": "default",
+                "graded": true,
+                "options": {
+                    "answers": [
+                        {
+                            "maxError": null,
+                            "message": "",
+                            "simplify": "required",
+                            "status": "correct",
+                            "strict": false,
+                            "value": 14
+                        }
+                    ],
+                    "coefficient": false,
+                    "labelText": "",
+                    "multipleNumberInput": false,
+                    "rightAlign": false,
+                    "size": "small",
+                    "static": false
+                },
+                "static": false,
+                "type": "numeric-input",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            },
+            "numeric-input 5": {
+                "alignment": "default",
+                "graded": true,
+                "options": {
+                    "answers": [
+                        {
+                            "maxError": null,
+                            "message": "",
+                            "simplify": "required",
+                            "status": "correct",
+                            "strict": false,
+                            "value": 28
+                        }
+                    ],
+                    "coefficient": false,
+                    "labelText": "",
+                    "multipleNumberInput": false,
+                    "rightAlign": false,
+                    "size": "small",
+                    "static": false
+                },
+                "static": false,
+                "type": "numeric-input",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            }
+        }
+    }
+}

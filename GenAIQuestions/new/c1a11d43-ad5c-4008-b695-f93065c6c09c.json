@@ -1,0 +1,708 @@
+{
+    "answerArea": {
+        "calculator": false,
+        "chi2Table": false,
+        "periodicTable": false,
+        "tTable": false,
+        "zTable": false
+    },
+    "hints": [
+        {
+            "content": "There are $\\blueD4$ equal groups.\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]\n\n",
+            "images": {},
+            "replace": false,
+            "widgets": {
+                "image 1": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A cartoon image of a group of eight apples, with a box drawn around the group labeled 1, soft solid color outline, no fill.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/53615233-1737-4305-a864-042abd820840_Zo2_2L64QA.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 2": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A cartoon image of a group of eight apples, with a box drawn around the group labeled 2, soft solid color outline, no fill.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/11f8e8a0-d198-4db2-9a43-b6935a06770e_cxyaaKfHF.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 3": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A cartoon image of a group of eight apples, with a box drawn around the group labeled 3, soft solid color outline, no fill.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/b85094c2-51e8-4a5e-bc77-741c7872e8f6_kQ_eyJWNg.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 4": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of eight apples. A box drawn around the group is labeled 4. !",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/368d75c88e8e6c8be59e26a9b6835ba6d62d1403",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                }
+            }
+        },
+        {
+            "content": "Each group has $\\maroonD8$ apples.\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]",
+            "images": {},
+            "replace": false,
+            "widgets": {
+                "image 1": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of eight apples. A box drawn around the group is labeled 8. !",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/7e1aca57e8f48b73eb9be5473a66aff11aed9760",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 2": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of eight apples. A box drawn around the group is labeled 8. !",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/7e1aca57e8f48b73eb9be5473a66aff11aed9760",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 3": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of eight apples. A box drawn around the group is labeled 8. !",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/7e1aca57e8f48b73eb9be5473a66aff11aed9760",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 4": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of eight apples. A box drawn around the group is labeled 8. !",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/7e1aca57e8f48b73eb9be5473a66aff11aed9760",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                }
+            }
+        },
+        {
+            "content": "Now, lets skip count by $8$s to find the total number of apples:\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]\n\n$8, \\greenD{16}, 24, \\greenD{32}$",
+            "images": {},
+            "replace": false,
+            "widgets": {
+                "image 1": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of eight apples. A box drawn around the group is labeled 8. !",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/ea288d43594bcbe9e7bd108a55b93a05013aef15",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 2": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of eight apples. A box drawn around the group is labeled 16 in green text. !",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/01f6986ee8e60f212ab789a6a87863604c2086a9",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 3": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of eight apples. A box drawn around the group is labeled 24. !",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/0d7737ffb7f1766753649cb123dc47fee6482906",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 4": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of eight apples. A box drawn around the group is labeled 32 in green text. !",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/c30dff61874b2276f6cb1cfaf5d305ed2d793d00",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                }
+            }
+        },
+        {
+            "content": "Skip count by $8$s: $8, \\greenD{16}, 24, \\greenD{32}$\n\nThere are $\\greenD{32}$ apples in all. ",
+            "images": {},
+            "replace": false,
+            "widgets": {}
+        }
+    ],
+    "itemDataVersion": {
+        "major": 2,
+        "minor": 0
+    },
+    "question": {
+        "content": "**Skip count to find the total number of apples.**\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]\n\nSkip count by $8$s: $8,$ [[\u2603 numeric-input 4]], $24,$ [[\u2603 numeric-input 5]]\n\nSo, there are [[\u2603 numeric-input 3]] apples in all. ",
+        "images": {},
+        "widgets": {
+            "image 1": {
+                "alignment": "block",
+                "graded": true,
+                "options": {
+                    "alt": "A cartoon image of a group of eight apples, soft solid color outline, no fill.",
+                    "backgroundImage": {
+                        "height": 91,
+                        "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/de0e2c635ddf065b80b8450646a11398cb224e64",
+                        "width": 120
+                    },
+                    "box": [
+                        120,
+                        91
+                    ],
+                    "caption": "",
+                    "labels": [],
+                    "range": [
+                        [
+                            0,
+                            10
+                        ],
+                        [
+                            0,
+                            10
+                        ]
+                    ],
+                    "static": false,
+                    "title": ""
+                },
+                "static": false,
+                "type": "image",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            },
+            "image 2": {
+                "alignment": "block",
+                "graded": true,
+                "options": {
+                    "alt": "A cartoon image of a group of eight apples, soft solid color outline, no fill.",
+                    "backgroundImage": {
+                        "height": 91,
+                        "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/de0e2c635ddf065b80b8450646a11398cb224e64",
+                        "width": 120
+                    },
+                    "box": [
+                        120,
+                        91
+                    ],
+                    "caption": "",
+                    "labels": [],
+                    "range": [
+                        [
+                            0,
+                            10
+                        ],
+                        [
+                            0,
+                            10
+                        ]
+                    ],
+                    "static": false,
+                    "title": ""
+                },
+                "static": false,
+                "type": "image",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            },
+            "image 3": {
+                "alignment": "block",
+                "graded": true,
+                "options": {
+                    "alt": "A cartoon image of a group of eight apples, soft solid color outline, no fill.",
+                    "backgroundImage": {
+                        "height": 91,
+                        "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/de0e2c635ddf065b80b8450646a11398cb224e64",
+                        "width": 120
+                    },
+                    "box": [
+                        120,
+                        91
+                    ],
+                    "caption": "",
+                    "labels": [],
+                    "range": [
+                        [
+                            0,
+                            10
+                        ],
+                        [
+                            0,
+                            10
+                        ]
+                    ],
+                    "static": false,
+                    "title": ""
+                },
+                "static": false,
+                "type": "image",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            },
+            "image 4": {
+                "alignment": "block",
+                "graded": true,
+                "options": {
+                    "alt": "A cartoon image of a group of eight apples, soft solid color outline, no fill.",
+                    "backgroundImage": {
+                        "height": 91,
+                        "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/de0e2c635ddf065b80b8450646a11398cb224e64",
+                        "width": 120
+                    },
+                    "box": [
+                        120,
+                        91
+                    ],
+                    "caption": "",
+                    "labels": [],
+                    "range": [
+                        [
+                            0,
+                            10
+                        ],
+                        [
+                            0,
+                            10
+                        ]
+                    ],
+                    "static": false,
+                    "title": ""
+                },
+                "static": false,
+                "type": "image",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            },
+            "numeric-input 3": {
+                "alignment": "default",
+                "graded": true,
+                "options": {
+                    "answers": [
+                        {
+                            "maxError": null,
+                            "message": "",
+                            "simplify": "required",
+                            "status": "correct",
+                            "strict": false,
+                            "value": 32
+                        }
+                    ],
+                    "coefficient": false,
+                    "labelText": "",
+                    "multipleNumberInput": false,
+                    "rightAlign": false,
+                    "size": "small",
+                    "static": false
+                },
+                "static": false,
+                "type": "numeric-input",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            },
+            "numeric-input 4": {
+                "alignment": "default",
+                "graded": true,
+                "options": {
+                    "answers": [
+                        {
+                            "maxError": null,
+                            "message": "",
+                            "simplify": "required",
+                            "status": "correct",
+                            "strict": false,
+                            "value": 16
+                        }
+                    ],
+                    "coefficient": false,
+                    "labelText": "",
+                    "multipleNumberInput": false,
+                    "rightAlign": false,
+                    "size": "small",
+                    "static": false
+                },
+                "static": false,
+                "type": "numeric-input",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            },
+            "numeric-input 5": {
+                "alignment": "default",
+                "graded": true,
+                "options": {
+                    "answers": [
+                        {
+                            "maxError": null,
+                            "message": "",
+                            "simplify": "required",
+                            "status": "correct",
+                            "strict": false,
+                            "value": 32
+                        }
+                    ],
+                    "coefficient": false,
+                    "labelText": "",
+                    "multipleNumberInput": false,
+                    "rightAlign": false,
+                    "size": "small",
+                    "static": false
+                },
+                "static": false,
+                "type": "numeric-input",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            }
+        }
+    }
+}

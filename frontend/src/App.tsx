@@ -15,6 +15,7 @@
  */
 
 import { useRef, useState, useEffect } from "react";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import "./App.scss";
 import { LiveAPIProvider } from "./contexts/LiveAPIContext";
 import SidePanel from "./components/side-panel/SidePanel";
@@ -24,6 +25,7 @@ import QuestionDisplay from "./components/question-display/QuestionDisplay";
 import ControlTray from "./components/control-tray/ControlTray";
 import { LiveClientOptions } from "./types";
 import Scratchpad from "./components/scratchpad/Scratchpad";
+import QuestionValidationComponent from "./components/question-widget-renderer/QuestionValidationComponent";
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string;
 if (typeof API_KEY !== "string") {
@@ -69,44 +71,53 @@ function App() {
   }, [mixerStream]);
 
   return (
-    <div className="App">
-      <LiveAPIProvider options={apiOptions}>
-        <div className="streaming-console">
-          <SidePanel />
-          <main>
-            <div className="main-app-area">
-              <div className="question-panel" style={{border: '2px solid red'}}>
-                <ScratchpadCapture socket={commandSocket}>
-                  <QuestionDisplay />
-                  {isScratchpadOpen && (
-                    <div className="scratchpad-container">
-                      <Scratchpad />
+    <BrowserRouter>
+      <Switch>
+        <Route exact path="/">
+          <div className="App">
+            <LiveAPIProvider options={apiOptions}>
+              <div className="streaming-console">
+                <SidePanel />
+                <main>
+                  <div className="main-app-area">
+                    <div className="question-panel" style={{border: '2px solid red'}}>
+                      <ScratchpadCapture socket={commandSocket}>
+                        <QuestionDisplay />
+                        {isScratchpadOpen && (
+                          <div className="scratchpad-container">
+                            <Scratchpad />
+                          </div>
+                        )}
+                      </ScratchpadCapture>
                     </div>
-                  )}
-                </ScratchpadCapture>
-              </div>
-              <MediaMixerDisplay socket={videoSocket} renderCanvasRef={renderCanvasRef} />
-            </div>
+                    <MediaMixerDisplay socket={videoSocket} renderCanvasRef={renderCanvasRef} />
+                  </div>
 
-            <ControlTray
-              socket={commandSocket}
-              renderCanvasRef={renderCanvasRef}
-              videoRef={videoRef}
-              supportsVideo={true}
-              onVideoStreamChange={setVideoStream}
-              onMixerStreamChange={setMixerStream}
-              enableEditingSettings={true}
-            >
-              <button onClick={() => setScratchpadOpen(!isScratchpadOpen)}>
-                <span className="material-symbols-outlined">
-                  {isScratchpadOpen ? "close" : "edit"}
-                </span>
-              </button>
-            </ControlTray>
-          </main>
-        </div>
-      </LiveAPIProvider>
-    </div>
+                  <ControlTray
+                    socket={commandSocket}
+                    renderCanvasRef={renderCanvasRef}
+                    videoRef={videoRef}
+                    supportsVideo={true}
+                    onVideoStreamChange={setVideoStream}
+                    onMixerStreamChange={setMixerStream}
+                    enableEditingSettings={true}
+                  >
+                    <button onClick={() => setScratchpadOpen(!isScratchpadOpen)}>
+                      <span className="material-symbols-outlined">
+                        {isScratchpadOpen ? "close" : "edit"}
+                      </span>
+                    </button>
+                  </ControlTray>
+                </main>
+              </div>
+            </LiveAPIProvider>
+          </div>
+        </Route>
+        <Route path="/admin/question-validation">
+          <QuestionValidationComponent />
+        </Route>
+      </Switch>
+    </BrowserRouter>
   );
 }
 
