@@ -44,7 +44,7 @@ def generate_images(prompts: List[str]) -> List[str]:
         prompts(List[str])  -> A list of prompts for each image needed
 
     Return:
-        List[str]           -> of image urls
+        dict           -> of image data (alt and urls)
 
     Example:
         resp = generate_image(["6 identical cartoon flowers in a grid, no stem, same colors, no borders, background color #f0f0f0"])
@@ -57,9 +57,12 @@ def generate_images(prompts: List[str]) -> List[str]:
     client = genai.Client(
         api_key=GOOGLE_API_KEY
     )
-    urls = []
+    data = {}
     print("Generating images...")
-    for prompt in prompts:
+    for i, prompt in enumerate(prompts):
+        if prompt == prompts[i-1] and i != 0:
+            data.append(data[-1]) # repeat the last url
+            continue
         try:
             response = client.models.generate_content(
                 model="gemini-2.0-flash-preview-image-generation",
@@ -104,7 +107,8 @@ def generate_images(prompts: List[str]) -> List[str]:
             sleep(2)
             
             url = upload_to_imagekit(image_name, image_file) 
-            urls.append(url)
+            data["prompts"] = prompt 
+            data["url"] = url
             print(f"Successfully generated and uploaded image: {url}")
             
         except Exception as e:
@@ -112,4 +116,4 @@ def generate_images(prompts: List[str]) -> List[str]:
             # Continue with next prompt instead of failing completely
             continue
             
-    return urls
+    return data

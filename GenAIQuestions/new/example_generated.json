@@ -1,0 +1,708 @@
+{
+    "answerArea": {
+        "calculator": false,
+        "chi2Table": false,
+        "periodicTable": false,
+        "tTable": false,
+        "zTable": false
+    },
+    "hints": [
+        {
+            "content": "There are $\\blueD4$ equal groups.\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]\n\n",
+            "images": {},
+            "replace": false,
+            "widgets": {
+                "image 1": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of seven apples. A box drawn around the group is labeled 1.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/dbe99c9d-1162-4c0e-9397-a27ebd7e6f97_04wr6QvkyS.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 2": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of seven apples. A box drawn around the group is labeled 2.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/3c3a34b2-e0f6-49df-8e0c-a7256a04bec4_SsV7SuwDS.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 3": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of seven apples. A box drawn around the group is labeled 3.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/bd214608-34a5-4b27-918e-08d7cb17b36e_yO_Nw-kp8.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 4": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of seven apples. A box drawn around the group is labeled 4.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/9ecc92b2-98a0-4f16-9b9a-a80fb8e2b6b0_oXMkt7f6r.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                }
+            }
+        },
+        {
+            "content": "Each group has $\\maroonD7$ apples.\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]\n",
+            "images": {},
+            "replace": false,
+            "widgets": {
+                "image 1": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of seven apples. A box drawn around the group is labeled 7.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/b15e652c-a3f5-4fcf-915b-dc52c27f3d05_BDDwemErG.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 2": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of seven apples. A box drawn around the group is labeled 7.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/b15e652c-a3f5-4fcf-915b-dc52c27f3d05_BDDwemErG.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 3": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of seven apples. A box drawn around the group is labeled 7.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/b15e652c-a3f5-4fcf-915b-dc52c27f3d05_BDDwemErG.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 4": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of seven apples. A box drawn around the group is labeled 7.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/b15e652c-a3f5-4fcf-915b-dc52c27f3d05_BDDwemErG.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                }
+            }
+        },
+        {
+            "content": "Now, lets skip count by $7$s to find the total number of apples:\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]\n\n$7, \\greenD{14}, 21, \\greenD{28}$",
+            "images": {},
+            "replace": false,
+            "widgets": {
+                "image 1": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of seven apples. A box drawn around the group is labeled 7.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/15426d12-e566-439a-988e-6e9f622d0fcd_1jPM6c3sv.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 2": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of seven apples. A box drawn around the group is labeled 14 in green text.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/b7ea831f-4587-4454-80a1-0a80a6336e53_4Ousxylil.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 3": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of seven apples. A box drawn around the group is labeled 21.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/46aa244f-b91f-401f-b6ae-02900842a697_Ld8EVnjSp.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                },
+                "image 4": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "A group of seven apples. A box drawn around the group is labeled 28 in green text.",
+                        "backgroundImage": {
+                            "height": 103,
+                            "url": "https://ik.imagekit.io/20z1p1q07/c771cb02-cd00-4fb3-a7e0-5637110a3cb9_MOmVrA9wra.png",
+                            "width": 120
+                        },
+                        "box": [
+                            120,
+                            103
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 2,
+                        "minor": 0
+                    }
+                }
+            }
+        },
+        {
+            "content": "Skip count by $7$s: $7, \\greenD{14}, 21, \\greenD{28}$\n\nThere are $\\greenD{28}$ apples in all.",
+            "images": {},
+            "replace": false,
+            "widgets": {}
+        }
+    ],
+    "itemDataVersion": {
+        "major": 2,
+        "minor": 0
+    },
+    "question": {
+        "content": "**Skip count to find the total number of apples.**\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]\n\nSkip count by $7$s: $7,$ [[\u2603 numeric-input 4]], $21,$ [[\u2603 numeric-input 5]]\n\nSo, there are [[\u2603 numeric-input 3]] apples in all.",
+        "images": {},
+        "widgets": {
+            "image 1": {
+                "alignment": "block",
+                "graded": true,
+                "options": {
+                    "alt": "A group of seven apples.",
+                    "backgroundImage": {
+                        "height": 91,
+                        "url": "https://ik.imagekit.io/20z1p1q07/c771cb02-cd00-4fb3-a7e0-5637110a3cb9_MOmVrA9wra.png",
+                        "width": 120
+                    },
+                    "box": [
+                        120,
+                        91
+                    ],
+                    "caption": "",
+                    "labels": [],
+                    "range": [
+                        [
+                            0,
+                            10
+                        ],
+                        [
+                            0,
+                            10
+                        ]
+                    ],
+                    "static": false,
+                    "title": ""
+                },
+                "static": false,
+                "type": "image",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            },
+            "image 2": {
+                "alignment": "block",
+                "graded": true,
+                "options": {
+                    "alt": "A group of seven apples.",
+                    "backgroundImage": {
+                        "height": 91,
+                        "url": "https://ik.imagekit.io/20z1p1q07/c771cb02-cd00-4fb3-a7e0-5637110a3cb9_MOmVrA9wra.png",
+                        "width": 120
+                    },
+                    "box": [
+                        120,
+                        91
+                    ],
+                    "caption": "",
+                    "labels": [],
+                    "range": [
+                        [
+                            0,
+                            10
+                        ],
+                        [
+                            0,
+                            10
+                        ]
+                    ],
+                    "static": false,
+                    "title": ""
+                },
+                "static": false,
+                "type": "image",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            },
+            "image 3": {
+                "alignment": "block",
+                "graded": true,
+                "options": {
+                    "alt": "A group of seven apples.",
+                    "backgroundImage": {
+                        "height": 91,
+                        "url": "https://ik.imagekit.io/20z1p1q07/c771cb02-cd00-4fb3-a7e0-5637110a3cb9_MOmVrA9wra.png",
+                        "width": 120
+                    },
+                    "box": [
+                        120,
+                        91
+                    ],
+                    "caption": "",
+                    "labels": [],
+                    "range": [
+                        [
+                            0,
+                            10
+                        ],
+                        [
+                            0,
+                            10
+                        ]
+                    ],
+                    "static": false,
+                    "title": ""
+                },
+                "static": false,
+                "type": "image",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            },
+            "image 4": {
+                "alignment": "block",
+                "graded": true,
+                "options": {
+                    "alt": "A group of seven apples.",
+                    "backgroundImage": {
+                        "height": 91,
+                        "url": "https://ik.imagekit.io/20z1p1q07/c771cb02-cd00-4fb3-a7e0-5637110a3cb9_MOmVrA9wra.png",
+                        "width": 120
+                    },
+                    "box": [
+                        120,
+                        91
+                    ],
+                    "caption": "",
+                    "labels": [],
+                    "range": [
+                        [
+                            0,
+                            10
+                        ],
+                        [
+                            0,
+                            10
+                        ]
+                    ],
+                    "static": false,
+                    "title": ""
+                },
+                "static": false,
+                "type": "image",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            },
+            "numeric-input 3": {
+                "alignment": "default",
+                "graded": true,
+                "options": {
+                    "answers": [
+                        {
+                            "maxError": null,
+                            "message": "",
+                            "simplify": "required",
+                            "status": "correct",
+                            "strict": false,
+                            "value": 28
+                        }
+                    ],
+                    "coefficient": false,
+                    "labelText": "",
+                    "multipleNumberInput": false,
+                    "rightAlign": false,
+                    "size": "small",
+                    "static": false
+                },
+                "static": false,
+                "type": "numeric-input",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            },
+            "numeric-input 4": {
+                "alignment": "default",
+                "graded": true,
+                "options": {
+                    "answers": [
+                        {
+                            "maxError": null,
+                            "message": "",
+                            "simplify": "required",
+                            "status": "correct",
+                            "strict": false,
+                            "value": 14
+                        }
+                    ],
+                    "coefficient": false,
+                    "labelText": "",
+                    "multipleNumberInput": false,
+                    "rightAlign": false,
+                    "size": "small",
+                    "static": false
+                },
+                "static": false,
+                "type": "numeric-input",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            },
+            "numeric-input 5": {
+                "alignment": "default",
+                "graded": true,
+                "options": {
+                    "answers": [
+                        {
+                            "maxError": null,
+                            "message": "",
+                            "simplify": "required",
+                            "status": "correct",
+                            "strict": false,
+                            "value": 28
+                        }
+                    ],
+                    "coefficient": false,
+                    "labelText": "",
+                    "multipleNumberInput": false,
+                    "rightAlign": false,
+                    "size": "small",
+                    "static": false
+                },
+                "static": false,
+                "type": "numeric-input",
+                "version": {
+                    "major": 2,
+                    "minor": 0
+                }
+            }
+        }
+    }
+}

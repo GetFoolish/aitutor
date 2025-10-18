@@ -11,12 +11,15 @@ import asyncio
 from pathlib import Path 
 
 file_pattern = Path(__file__).parent.resolve() / "examples" / "*.json"
-generated_json = Path(__file__).parent.resolve() / "new" / f"{str(uuid.uuid4())}.json"
-
+new_json_path = Path(__file__).parent.resolve() / "new"
+ 
 T = TypeVar('T')
 
 # load examples 
 async def main():
+    def extract_filename(path: str):
+        return path.split("\\")[-1].removesuffix(".json")
+
     def process_response(response: str) -> str:
         response = response.strip()
         if response.startswith("```json"):
@@ -49,7 +52,9 @@ async def main():
             print(f"The following error occured: {e}")
 
     for path in glob.glob(str(file_pattern)):
-        print(f"Loading example: {path}")
+        source_name = extract_filename(path)
+        new_json = f"{str(new_json_path)}/{source_name}_generated.json"
+        print(f"Loading source: {source_name}.json")
         response = None 
         with open(path, "r", encoding="utf-8") as f:
             try:
@@ -62,11 +67,11 @@ async def main():
         if response:
             try:
                 json_response = json.loads(response)
-                with open(generated_json, "w", encoding="utf-8") as f:
+                with open(new_json, "w", encoding="utf-8") as f:
                     json.dump(json_response, f, indent=4)
-                print(f"\nGeneration completed for: {generated_json}\n")
+                print(f"\nGeneration completed for: {new_json}\n")
             except Exception as e:
-                print(f"Unable to save JSON {generated_json}: {e}")
+                print(f"Unable to save JSON {new_json}: {e}")
         else:
             print(f"No response generated for {path}, skipping...\n")
 

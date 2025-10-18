@@ -19,9 +19,11 @@ export default function QuestionValidationComponent() {
     const [item, setItem] = useState(0);
     const [loading, setLoading] = useState(true);
     const [endOfTest, setEndOfTest] = useState(false);
+    const [isGenerated, setIsGenerated] = useState(false);
+
     console.log("End of test:");
     useEffect(() => {
-        fetch('http://localhost:8001/api/generated_questions/50')
+        fetch('http://localhost:8001/api/generated-questions/50')
             .then(response => response.json())
             .then((data) => {
                 console.log("API response:", data);
@@ -56,27 +58,38 @@ export default function QuestionValidationComponent() {
                         <button
                             onClick={handleNext}
                             className="absolute top-19 right-8 bg-red-500 rounded 
-                                text-white p-2">Next</button>
+                                text-white p-2">Next
+                        </button>
+                        <button onClick={(prev) => setIsGenerated(!prev)}>
+                            {isGenerated == true ? (<p>View Source</p>) : (<p>View Generated</p>)}
+                        </button>
                             {perseusItems && perseusItems.length > 0 ? (
-                            <div>
-                                <PerseusI18nContextProvider locale="en" strings={mockStrings}>
-                                        <ServerItemRenderer
-                                            problemNum={0}
-                                            item={perseusItem}
-                                            dependencies={storybookDependenciesV2}
-                                            apiOptions={{}}
-                                            linterContext={{
-                                                contentType: "",
-                                                highlightLint: true,
-                                                paths: [],
-                                                stack: [],
-                                            }}
-                                            showSolutions="none"
-                                            hintsVisible={0}
-                                            reviewMode={false}
-                                            />
-                                </PerseusI18nContextProvider>
-                            </div>
+                                <div>
+                                    <div className="text-zinc-300">
+                                        {
+                                            isGenerated ?
+                                            (<p>Generated</p>) :
+                                            (<p>Source</p>)
+                                        }
+                                    </div>
+                                    <PerseusI18nContextProvider locale="en" strings={mockStrings}>
+                                            <ServerItemRenderer
+                                                problemNum={0}
+                                                item={isGenerated ? perseusItem.generated : perseusItem.source}
+                                                dependencies={storybookDependenciesV2}
+                                                apiOptions={{}}
+                                                linterContext={{
+                                                    contentType: "",
+                                                    highlightLint: true,
+                                                    paths: [],
+                                                    stack: [],
+                                                }}
+                                                showSolutions="none"
+                                                hintsVisible={0}
+                                                reviewMode={false}
+                                                />
+                                    </PerseusI18nContextProvider>
+                                </div>
                             ) : (
                                 <p>Loading...</p>
                             )}

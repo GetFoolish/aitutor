@@ -5,7 +5,7 @@ import json
 import uuid
 import pathlib 
 from typing import List
-from app.utils.khan_questions_loader import load_questions, load_generated_questions
+from app.utils.khan_questions_loader import load_questions
 
 router = APIRouter()
 
@@ -21,10 +21,11 @@ async def get_questions(sample_size: int):
     return data
 
 # endpoint to get generated questions
-@router.get("/generated_questions/{sample_size}")
+@router.get("/generated-questions/{sample_size}")
 async def get_generated_questions(sample_size: int):
     """Endpoint for retrieving generated questions"""
-    data = load_generated_questions(
-        sample_size=sample_size
+    data = load_questions(
+        sample_size=sample_size,
+        is_generated=True
     )
     return data 
