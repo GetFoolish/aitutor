@@ -2,7 +2,7 @@ import json
 import os
 import random
 import glob
-import pathlib
+import pathlib 
 
 
 path = pathlib.Path(__file__).resolve().parents[2] / "CurriculumBuilder"
@@ -33,13 +33,16 @@ def load_generated_json_from_dir():
     file_pattern = os.path.join(source_path, "*.json")
     all_objects = []
     for file_path in glob.glob(file_pattern):
-        filename = file_path.split("\\")[-1].removesuffix(".json")
+        filename = pathlib.Path(file_path).stem
         data = {}
         try:
+            source_file = file_path
+            generated_file = f"{str(generated_path)}/{filename}_generated.json"
             with open(file_path, "r", encoding="utf-8") as f:
                 data["source"] = json.load(f)
-            with open(f"{str(generated_path)}/{filename}_generated.json", "r", encoding="utf-8") as f:
+            with open(generated_file, "r", encoding="utf-8") as f:
                 data["generated"] = json.load(f)
+                data["metadata"] = {"source_file_path":source_file, "generated_file_path":generated_file}
             all_objects.append(data)
         except Exception as e:
             print(f"Unable to load JSON: {e}")
@@ -62,4 +65,6 @@ def load_questions(sample_size, is_generated: bool = False):
             try:
                 return all_questions
             except Exception as e:
-                print(f"Failed to load questions: {e}")
+                print(f"Failed to load questions: {e}") 
+
+print(load_questions(5, True))

@@ -16,10 +16,10 @@
                     "alignment": "block",
                     "graded": true,
                     "options": {
-                        "alt": "A group of seven apples. A box drawn around the group is labeled 1.",
+                        "alt": "A group of seven balls. A box drawn around the group is labeled 1. !",
                         "backgroundImage": {
                             "height": 103,
-                            "url": "https://ik.imagekit.io/20z1p1q07/dbe99c9d-1162-4c0e-9397-a27ebd7e6f97_04wr6QvkyS.png",
+                            "url": "https://ik.imagekit.io/20z1p1q07/146a12ed-9a65-47fd-93ee-46ebb3844c22_pMBQ_yZRz.png",
                             "width": 120
                         },
                         "box": [
@@ -52,10 +52,10 @@
                     "alignment": "block",
                     "graded": true,
                     "options": {
-                        "alt": "A group of seven apples. A box drawn around the group is labeled 2.",
+                        "alt": "A group of seven balls. A box drawn around the group is labeled 2. !",
                         "backgroundImage": {
                             "height": 103,
-                            "url": "https://ik.imagekit.io/20z1p1q07/3c3a34b2-e0f6-49df-8e0c-a7256a04bec4_SsV7SuwDS.png",
+                            "url": "https://ik.imagekit.io/20z1p1q07/fb088a95-8124-4a8c-9785-022f0bc11fd9_4KfLwOrIA.png",
                             "width": 120
                         },
                         "box": [
@@ -88,10 +88,10 @@
                     "alignment": "block",
                     "graded": true,
                     "options": {
-                        "alt": "A group of seven apples. A box drawn around the group is labeled 3.",
+                        "alt": "A group of seven balls. A box drawn around the group is labeled 3. !",
                         "backgroundImage": {
                             "height": 103,
-                            "url": "https://ik.imagekit.io/20z1p1q07/bd214608-34a5-4b27-918e-08d7cb17b36e_yO_Nw-kp8.png",
+                            "url": "https://ik.imagekit.io/20z1p1q07/8966424b-da80-426b-8fcb-303ab70604ae_s8hQkBL68.png",
                             "width": 120
                         },
                         "box": [
@@ -124,10 +124,10 @@
                     "alignment": "block",
                     "graded": true,
                     "options": {
-                        "alt": "A group of seven apples. A box drawn around the group is labeled 4.",
+                        "alt": "A group of seven balls. A box drawn around the group is labeled 4. !",
                         "backgroundImage": {
                             "height": 103,
-                            "url": "https://ik.imagekit.io/20z1p1q07/9ecc92b2-98a0-4f16-9b9a-a80fb8e2b6b0_oXMkt7f6r.png",
+                            "url": "https://ik.imagekit.io/20z1p1q07/f3ca5ea2-59d8-4e2f-84c6-3040fd54099b__GOb6QflV.png",
                             "width": 120
                         },
                         "box": [
@@ -159,7 +159,7 @@
             }
         },
         {
-            "content": "Each group has $\\maroonD7$ apples.\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]\n",
+            "content": "Each group has $\\maroonD7$ balls.\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]\n\n",
             "images": {},
             "replace": false,
             "widgets": {
@@ -167,10 +167,10 @@
                     "alignment": "block",
                     "graded": true,
                     "options": {
-                        "alt": "A group of seven apples. A box drawn around the group is labeled 7.",
+                        "alt": "A group of seven balls. A box drawn around the group is labeled 7. !",
                         "backgroundImage": {
                             "height": 103,
-                            "url": "https://ik.imagekit.io/20z1p1q07/b15e652c-a3f5-4fcf-915b-dc52c27f3d05_BDDwemErG.png",
+                            "url": "https://ik.imagekit.io/20z1p1q07/44f18e72-3776-4d94-8281-227ddaf086c8_vb5AbDAn8.png",
                             "width": 120
                         },
                         "box": [
@@ -203,10 +203,10 @@
                     "alignment": "block",
                     "graded": true,
                     "options": {
-                        "alt": "A group of seven apples. A box drawn around the group is labeled 7.",
+                        "alt": "A group of seven balls. A box drawn around the group is labeled 7. !",
                         "backgroundImage": {
                             "height": 103,
-                            "url": "https://ik.imagekit.io/20z1p1q07/b15e652c-a3f5-4fcf-915b-dc52c27f3d05_BDDwemErG.png",
+                            "url": "https://ik.imagekit.io/20z1p1q07/44f18e72-3776-4d94-8281-227ddaf086c8_vb5AbDAn8.png",
                             "width": 120
                         },
                         "box": [
@@ -239,10 +239,10 @@
                     "alignment": "block",
                     "graded": true,
                     "options": {
-                        "alt": "A group of seven apples. A box drawn around the group is labeled 7.",
+                        "alt": "A group of seven balls. A box drawn around the group is labeled 7. !",
                         "backgroundImage": {
                             "height": 103,
-                            "url": "https://ik.imagekit.io/20z1p1q07/b15e652c-a3f5-4fcf-915b-dc52c27f3d05_BDDwemErG.png",
+                            "url": "https://ik.imagekit.io/20z1p1q07/44f18e72-3776-4d94-8281-227ddaf086c8_vb5AbDAn8.png",
                             "width": 120
                         },
                         "box": [
@@ -275,10 +275,10 @@
                     "alignment": "block",
                     "graded": true,
                     "options": {
-                        "alt": "A group of seven apples. A box drawn around the group is labeled 7.",
+                        "alt": "A group of seven balls. A box drawn around the group is labeled 7. !",
                         "backgroundImage": {
                             "height": 103,
-                            "url": "https://ik.imagekit.io/20z1p1q07/b15e652c-a3f5-4fcf-915b-dc52c27f3d05_BDDwemErG.png",
+                            "url": "https://ik.imagekit.io/20z1p1q07/44f18e72-3776-4d94-8281-227ddaf086c8_vb5AbDAn8.png",
                             "width": 120
                         },
                         "box": [
@@ -310,7 +310,7 @@
             }
         },
         {
-            "content": "Now, lets skip count by $7$s to find the total number of apples:\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]\n\n$7, \\greenD{14}, 21, \\greenD{28}$",
+            "content": "Now, lets skip count by $7$s to find the total number of balls:\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]\n\n$7, 14, \\greenD{21}, \\greenD{28}$",
             "images": {},
             "replace": false,
             "widgets": {
@@ -318,10 +318,10 @@
                     "alignment": "block",
                     "graded": true,
                     "options": {
-                        "alt": "A group of seven apples. A box drawn around the group is labeled 7.",
+                        "alt": "A group of seven balls. A box drawn around the group is labeled 7. !",
                         "backgroundImage": {
                             "height": 103,
-                            "url": "https://ik.imagekit.io/20z1p1q07/15426d12-e566-439a-988e-6e9f622d0fcd_1jPM6c3sv.png",
+                            "url": "https://ik.imagekit.io/20z1p1q07/0c72cb68-3caf-4e34-8a56-a5b462115af7_DvOMJ8ErE.png",
                             "width": 120
                         },
                         "box": [
@@ -354,10 +354,10 @@
                     "alignment": "block",
                     "graded": true,
                     "options": {
-                        "alt": "A group of seven apples. A box drawn around the group is labeled 14 in green text.",
+                        "alt": "A group of seven balls. A box drawn around the group is labeled 14. !",
                         "backgroundImage": {
                             "height": 103,
-                            "url": "https://ik.imagekit.io/20z1p1q07/b7ea831f-4587-4454-80a1-0a80a6336e53_4Ousxylil.png",
+                            "url": "https://ik.imagekit.io/20z1p1q07/de7627e3-2989-477d-9d25-afc2803da8d8_C3KnoD8rF.png",
                             "width": 120
                         },
                         "box": [
@@ -390,10 +390,10 @@
                     "alignment": "block",
                     "graded": true,
                     "options": {
-                        "alt": "A group of seven apples. A box drawn around the group is labeled 21.",
+                        "alt": "A group of seven balls. A box drawn around the group is labeled 21 in green text. !",
                         "backgroundImage": {
                             "height": 103,
-                            "url": "https://ik.imagekit.io/20z1p1q07/46aa244f-b91f-401f-b6ae-02900842a697_Ld8EVnjSp.png",
+                            "url": "https://ik.imagekit.io/20z1p1q07/616cbe43-a21a-4bdd-adf7-335fe3fa4773_FgV3pY7Vz.png",
                             "width": 120
                         },
                         "box": [
@@ -426,10 +426,10 @@
                     "alignment": "block",
                     "graded": true,
                     "options": {
-                        "alt": "A group of seven apples. A box drawn around the group is labeled 28 in green text.",
+                        "alt": "A group of seven balls. A box drawn around the group is labeled 28 in green text. !",
                         "backgroundImage": {
                             "height": 103,
-                            "url": "https://ik.imagekit.io/20z1p1q07/c771cb02-cd00-4fb3-a7e0-5637110a3cb9_MOmVrA9wra.png",
+                            "url": "https://ik.imagekit.io/20z1p1q07/0376e6be-fde1-4266-b47b-ddde22dfd9a8_hda_RNjgH.png",
                             "width": 120
                         },
                         "box": [
@@ -461,7 +461,7 @@
             }
         },
         {
-            "content": "Skip count by $7$s: $7, \\greenD{14}, 21, \\greenD{28}$\n\nThere are $\\greenD{28}$ apples in all.",
+            "content": "Skip count by $7$s: $7, 14, \\greenD{21}, \\greenD{28}$\n\nThere are $\\greenD{28}$ balls in all. ",
             "images": {},
             "replace": false,
             "widgets": {}
@@ -472,17 +472,17 @@
         "minor": 0
     },
     "question": {
-        "content": "**Skip count to find the total number of apples.**\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]\n\nSkip count by $7$s: $7,$ [[\u2603 numeric-input 4]], $21,$ [[\u2603 numeric-input 5]]\n\nSo, there are [[\u2603 numeric-input 3]] apples in all.",
+        "content": "**Skip count to find the total number of balls.**\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]\n\nSkip count by $7$s: $7, 14,$ [[\u2603 numeric-input 4]] , [[\u2603 numeric-input 5]]\n\nSo, there are [[\u2603 numeric-input 3]] balls in all. ",
         "images": {},
         "widgets": {
             "image 1": {
                 "alignment": "block",
                 "graded": true,
                 "options": {
-                    "alt": "A group of seven apples.",
+                    "alt": "A group of seven balls.",
                     "backgroundImage": {
                         "height": 91,
-                        "url": "https://ik.imagekit.io/20z1p1q07/c771cb02-cd00-4fb3-a7e0-5637110a3cb9_MOmVrA9wra.png",
+                        "url": "https://ik.imagekit.io/20z1p1q07/44f18e72-3776-4d94-8281-227ddaf086c8_vb5AbDAn8.png",
                         "width": 120
                     },
                     "box": [
@@ -515,10 +515,10 @@
                 "alignment": "block",
                 "graded": true,
                 "options": {
-                    "alt": "A group of seven apples.",
+                    "alt": "A group of seven balls.",
                     "backgroundImage": {
                         "height": 91,
-                        "url": "https://ik.imagekit.io/20z1p1q07/c771cb02-cd00-4fb3-a7e0-5637110a3cb9_MOmVrA9wra.png",
+                        "url": "https://ik.imagekit.io/20z1p1q07/44f18e72-3776-4d94-8281-227ddaf086c8_vb5AbDAn8.png",
                         "width": 120
                     },
                     "box": [
@@ -551,10 +551,10 @@
                 "alignment": "block",
                 "graded": true,
                 "options": {
-                    "alt": "A group of seven apples.",
+                    "alt": "A group of seven balls.",
                     "backgroundImage": {
                         "height": 91,
-                        "url": "https://ik.imagekit.io/20z1p1q07/c771cb02-cd00-4fb3-a7e0-5637110a3cb9_MOmVrA9wra.png",
+                        "url": "https://ik.imagekit.io/20z1p1q07/44f18e72-3776-4d94-8281-227ddaf086c8_vb5AbDAn8.png",
                         "width": 120
                     },
                     "box": [
@@ -587,10 +587,10 @@
                 "alignment": "block",
                 "graded": true,
                 "options": {
-                    "alt": "A group of seven apples.",
+                    "alt": "A group of seven balls.",
                     "backgroundImage": {
                         "height": 91,
-                        "url": "https://ik.imagekit.io/20z1p1q07/c771cb02-cd00-4fb3-a7e0-5637110a3cb9_MOmVrA9wra.png",
+                        "url": "https://ik.imagekit.io/20z1p1q07/44f18e72-3776-4d94-8281-227ddaf086c8_vb5AbDAn8.png",
                         "width": 120
                     },
                     "box": [
@@ -658,7 +658,7 @@
                             "simplify": "required",
                             "status": "correct",
                             "strict": false,
-                            "value": 14
+                            "value": 21
                         }
                     ],
                     "coefficient": false,

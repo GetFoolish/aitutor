@@ -7,7 +7,7 @@ import { mockStrings } from "../../package/perseus/src/strings";
 // a component that allows viewing current json on screen
 const JSONViewer = ({ data }: { data: any }) => {
     return (
-        <pre className="bg-gray-900 text-white p-4 rounded-lg overflow-auto max-h-[400px]">
+        <pre className="bg-gray-900 text-white p-4 rounded-lg overflow-y-scroll max-h-[900px]">
             {JSON.stringify(data, null, 2)}
         </pre>
     );
@@ -50,57 +50,74 @@ export default function QuestionValidationComponent() {
     };
 
     return (
-        <div className="bg-[#f0f0f0] h-[100vh] w-[100vw] text-white p-4 flex flex-col items-center">
-            <h1>Question Validation</h1>
-            <div className="h-[100vh] w-[80vw] text-black border rounded-2xl p-4 bg-white overflow-y-scroll mb-4">
-                <div className="framework-perseus">
-                    <div style={{ padding: "20px" }}>
-                        <button
-                            onClick={handleNext}
-                            className="absolute top-19 right-8 bg-red-500 rounded 
-                                text-white p-2">Next
-                        </button>
-                        <button onClick={(prev) => setIsGenerated(!prev)}>
-                            {isGenerated == true ? (<p>View Source</p>) : (<p>View Generated</p>)}
-                        </button>
-                            {perseusItems && perseusItems.length > 0 ? (
-                                <div>
-                                    <div className="text-zinc-300">
-                                        {
-                                            isGenerated ?
-                                            (<p>Generated</p>) :
-                                            (<p>Source</p>)
-                                        }
+        <div className="bg-[#f0f0f0] min-h-[100vh] h-fit w-[100vw] flex flex-col items-center">
+            <h1 className="text-center font-bold m-4">Question Validation</h1>
+            <div className="flex w-[100vw] justify-between items-start relative p-6">
+                <div className="w-[84vw] text-black border rounded-2xl p-4 bg-white mb-4">
+                    <div className="framework-perseus">
+                        <div style={{ padding: "20px" }}>
+                                {perseusItems && perseusItems.length > 0 ? (
+                                    <div>
+                                        <div className="text-zinc-300">
+                                            {
+                                                isGenerated ?
+                                                (
+                                                    <div>
+                                                        <p>Generated</p>
+                                                        <p className="italic">Path: {perseusItem.metadata.generated_file_path}</p>
+                                                    </div>
+                                                )   :   (
+                                                    <div>
+                                                        <p>Source</p>
+                                                        <p className="italic">Path: {perseusItem.metadata.source_file_path}</p>
+                                                    </div>
+                                                )
+                                            }
+                                        </div>
+                                
+                                        <PerseusI18nContextProvider locale="en" strings={mockStrings}>
+                                                <ServerItemRenderer
+                                                    problemNum={0}
+                                                    item={isGenerated == true ? perseusItem.generated : perseusItem.source}
+                                                    dependencies={storybookDependenciesV2}
+                                                    apiOptions={{}}
+                                                    linterContext={{
+                                                        contentType: "",
+                                                        highlightLint: true,
+                                                        paths: [],
+                                                        stack: [],
+                                                    }}
+                                                    showSolutions="none"
+                                                    hintsVisible={0}
+                                                    reviewMode={false}
+                                                    />
+                                        </PerseusI18nContextProvider>
                                     </div>
-                                    <PerseusI18nContextProvider locale="en" strings={mockStrings}>
-                                            <ServerItemRenderer
-                                                problemNum={0}
-                                                item={isGenerated ? perseusItem.generated : perseusItem.source}
-                                                dependencies={storybookDependenciesV2}
-                                                apiOptions={{}}
-                                                linterContext={{
-                                                    contentType: "",
-                                                    highlightLint: true,
-                                                    paths: [],
-                                                    stack: [],
-                                                }}
-                                                showSolutions="none"
-                                                hintsVisible={0}
-                                                reviewMode={false}
-                                                />
-                                    </PerseusI18nContextProvider>
-                                </div>
-                            ) : (
-                                <p>Loading...</p>
-                            )}
+                                ) : (
+                                    <p>Loading...</p>
+                                )}
+                        </div>
                     </div>
+                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} />}
                 </div>
-                {viewJSON && <JSONViewer data={perseusItem} />}
+                <div className="flex flex-col w-[154px] gap-2">
+                    <button
+                        onClick={handleNext}
+                        className="top-19 bg-gray-500 rounded 
+                            text-white p-2">Next
+                    </button>
+                    <button 
+                        className={`${isGenerated == true? "bg-amber-500 text-[white]" : "bg-white text-amber-500 border-2 border-amber-500" } rounded p-2`} 
+                        onClick={() => setIsGenerated((prev) => !prev)}>
+                            {isGenerated == true ? (<p>See Source</p>) : (<p>See Generated</p>)}
+                    </button>
+                    <button 
+                        className="bg-blue-500 rounded text-white p-2 mt-[63vh]"
+                        onClick={() => setViewJSON((prev) => !prev)}>
+                        See JSON
+                    </button>
+                </div>
             </div>
-            <button className="bg-blue-500 rounded text-white p-2"
-                onClick={() => setViewJSON(!viewJSON)}>
-                View JSON
-            </button>
         </div>
     );
 };

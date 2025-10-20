@@ -1,6 +1,7 @@
 from typing import List
 import os 
 from time import sleep
+from rembg import remove
 from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
 import uuid 
 from pathlib import Path
@@ -34,6 +35,87 @@ def upload_to_imagekit(image_name,image_path):
         )     
     image_url = imagekit.url({"path": upload.file_path})
     return image_url
+
+
+from rembg import remove
+from io import BytesIO
+from PIL import Image
+
+def remove_bg_from_bytes(image_bytes):
+    input_image = Image.open(BytesIO(image_bytes))
+    output_image = remove(input_image)
+    buffer = BytesIO()
+    output_image.save(buffer, format="PNG")
+    buffer.seek(0)
+    return buffer
+
+import os
+from pathlib import Path
+from typing import List, Dict, Optional
+
+def clean_png_files(
+    recursive: bool = True,
+    exclude_patterns: Optional[List[str]] = None
+) -> Dict[str, int]:
+    """
+    Remove all PNG files from a directory.
+    
+    Args:
+        directory_path: Path to the directory to clean
+        recursive: If True, clean PNG files in subdirectories as well
+        exclude_patterns: List of patterns to exclude from deletion
+    
+    Returns:
+        Dictionary with 'deleted_count' and 'freed_bytes' keys
+    
+    Raises:
+        ValueError: If directory doesn't exist or isn't a directory
+    """
+    directory_path = BASE_URL / "assets"
+    directory = Path(directory_path)
+    exclude_patterns = exclude_patterns or []
+    
+    if not directory.exists():
+        raise ValueError(f"Directory {directory_path} does not exist")
+    
+    if not directory.is_dir():
+        raise ValueError(f"{directory_path} is not a directory")
+    
+    deleted_count = 0
+    freed_bytes = 0
+    
+    # Choose iteration method based on recursive flag
+    if recursive:
+        file_iterator = directory.rglob('*')
+    else:
+        file_iterator = directory.glob('*')
+    
+    for item in file_iterator:
+        if not item.is_file():
+            continue
+        
+        # Check if file is a PNG
+        if item.suffix.lower() not in ['.png', '.PNG']:
+            continue
+        
+        # Check if file should be excluded
+        if any(pattern in str(item) for pattern in exclude_patterns):
+            continue
+        
+        # Delete the PNG file
+        try:
+            file_size = item.stat().st_size
+            item.unlink()
+            deleted_count += 1
+            freed_bytes += file_size
+        except Exception:
+            # Silently continue on errors (permission issues, etc.)
+            continue
+    
+    return {
+        'deleted_count': deleted_count,
+        'freed_bytes': freed_bytes
+    }
 
 
 def generate_images(prompts: List[str]) -> List[str]:
@@ -101,11 +183,11 @@ def generate_images(prompts: List[str]) -> List[str]:
             
             # Process the image
             image = Image.open(BytesIO(image_data))
+            image = remove(image)
             image_name = f"{str(uuid.uuid4())}.png"
             image_file = f"{str(BASE_URL)}/assets/{image_name}"
             image.save(image_file)
-            sleep(2)
-            
+            sleep(1)
             url = upload_to_imagekit(image_name, image_file) 
             data["url"] = data.get("url", [])
             data["prompts"] = data.get("prompts", [])
@@ -117,5 +199,6 @@ def generate_images(prompts: List[str]) -> List[str]:
             print(f"Error generating image for prompt '{prompt}': {e}")
             # Continue with next prompt instead of failing completely
             continue
-            
+    cleanup_info = clean_png_files()   
+    print(f"Post-generation cleanup successfull:\n{cleanup_info}")  
     return data

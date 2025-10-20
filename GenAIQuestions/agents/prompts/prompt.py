@@ -71,6 +71,10 @@ Your task is to:
    where each prompt corresponds to an image URL found in the input JSON.
    Also include the original image URLs for mapping.
 
+!IMPORTANT:
+- Adher strictly to each alt text description. Do not add labels to images 
+    when no labels are required in the alt text description
+
 Example Input JSON (from question generator agent):
 ```json
 {

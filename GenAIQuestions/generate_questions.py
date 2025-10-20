@@ -17,10 +17,6 @@ T = TypeVar('T')
 
 # load examples 
 async def main():
-    def extract_filename(path: str):
-        path = str(path)
-        return path.split("/")[-1].removesuffix(".json")
-
     def process_response(response: str) -> str:
         response = response.strip()
         if response.startswith("```json"):
@@ -53,7 +49,7 @@ async def main():
             print(f"The following error occured: {e}")
 
     for path in glob.glob(str(file_pattern)):
-        source_name = extract_filename(Path(path).stem)
+        source_name = Path(path).stem
         print(f"Loading source: {source_name}.json")
         response = None 
         with open(path, "r", encoding="utf-8") as f:
