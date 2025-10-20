@@ -65,6 +65,4 @@ def load_questions(sample_size, is_generated: bool = False):
             try:
                 return all_questions
             except Exception as e:
-                print(f"Failed to load questions: {e}") 
-
-print(load_questions(5, True))
+                print(f"Failed to load questions: {e}")

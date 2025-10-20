@@ -21,7 +21,6 @@ export default function QuestionValidationComponent() {
     const [endOfTest, setEndOfTest] = useState(false);
     const [isGenerated, setIsGenerated] = useState(false);
 
-    console.log("End of test:");
     useEffect(() => {
         fetch('http://localhost:8001/api/generated-questions/50')
             .then(response => response.json())
@@ -37,6 +36,19 @@ export default function QuestionValidationComponent() {
     })
 
     const perseusItem = perseusItems && perseusItems.length > 0 ? perseusItems[item] : {};
+
+
+    const handleSave = () => {
+        fetch('http://localhost:8001/api/save-validated-question', {
+            method: 'POST',
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(perseusItem.generated),
+        })
+        .then((response) => {   })
+        .catch((err) => {
+            console.error("Failed to save validated question:", err);
+        });   
+    }   
 
     const handleNext = () => {
         setItem((prev) => {
@@ -107,14 +119,19 @@ export default function QuestionValidationComponent() {
                             text-white p-2">Next
                     </button>
                     <button 
-                        className={`${isGenerated == true? "bg-amber-500 text-[white]" : "bg-white text-amber-500 border-2 border-amber-500" } rounded p-2`} 
+                        className={`${isGenerated == true? "bg-amber-500 text-[white]" : "bg-white text-amber-500" } rounded p-2 border-2 border-amber-500`} 
                         onClick={() => setIsGenerated((prev) => !prev)}>
                             {isGenerated == true ? (<p>See Source</p>) : (<p>See Generated</p>)}
                     </button>
                     <button 
-                        className="bg-blue-500 rounded text-white p-2 mt-[63vh]"
+                        className="bg-emerald-500 rounded text-white p-2"
+                        onClick={handleSave}>
+                        Validate
+                    </button>
+                    <button 
+                        className="bg-black rounded text-white p-2 mt-[53vh]"
                         onClick={() => setViewJSON((prev) => !prev)}>
-                        See JSON
+                        Validate JSON
                     </button>
                 </div>
             </div>
