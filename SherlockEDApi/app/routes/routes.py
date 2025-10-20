@@ -11,6 +11,7 @@ from app.utils.khan_questions_loader import load_questions
 router = APIRouter()
 
 base_dir=pathlib.Path(__file__).resolve().parents[2] / "CurriculumBuilder_validated"
+base_dir.mkdir(parents=True, exist_ok=True)
 
 # endpoint to get questions 
 @router.get("/questions/{sample_size}")
