@@ -50,57 +50,61 @@ export default function QuestionValidationComponent() {
     };
 
     return (
-        <div className="bg-[#f0f0f0] h-[100vh] w-[100vw] text-white p-4 flex flex-col items-center">
-            <h1>Question Validation</h1>
-            <div className="h-[100vh] w-[80vw] text-black border rounded-2xl p-4 bg-white overflow-y-scroll mb-4">
-                <div className="framework-perseus">
-                    <div style={{ padding: "20px" }}>
-                        <button
-                            onClick={handleNext}
-                            className="absolute top-19 right-8 bg-red-500 rounded 
-                                text-white p-2">Next
-                        </button>
-                        <button onClick={(prev) => setIsGenerated(!prev)}>
-                            {isGenerated == true ? (<p>View Source</p>) : (<p>View Generated</p>)}
-                        </button>
-                            {perseusItems && perseusItems.length > 0 ? (
-                                <div>
-                                    <div className="text-zinc-300">
-                                        {
-                                            isGenerated ?
-                                            (<p>Generated</p>) :
-                                            (<p>Source</p>)
-                                        }
+        <div className="bg-[#f0f0f0] h-[100vh] w-[100vw] flex flex-col items-center">
+            <h1 className="text-center font-bold m-4">Question Validation</h1>
+            <div className="flex w-[100vw] justify-between items-center p-6">
+                <div className="w-[84vw] text-black border rounded-2xl p-4 bg-white overflow-y-scroll mb-4">
+                    <div className="framework-perseus">
+                        <div style={{ padding: "20px" }}>
+                                {perseusItems && perseusItems.length > 0 ? (
+                                    <div>
+                                        <div className="text-zinc-300">
+                                            {
+                                                isGenerated ?
+                                                (<p>Generated</p>) :
+                                                (<p>Source</p>)
+                                            }
+                                        </div>
+                                        <PerseusI18nContextProvider locale="en" strings={mockStrings}>
+                                                <ServerItemRenderer
+                                                    problemNum={0}
+                                                    item={isGenerated ? perseusItem.generated : perseusItem.source}
+                                                    dependencies={storybookDependenciesV2}
+                                                    apiOptions={{}}
+                                                    linterContext={{
+                                                        contentType: "",
+                                                        highlightLint: true,
+                                                        paths: [],
+                                                        stack: [],
+                                                    }}
+                                                    showSolutions="none"
+                                                    hintsVisible={0}
+                                                    reviewMode={false}
+                                                    />
+                                        </PerseusI18nContextProvider>
                                     </div>
-                                    <PerseusI18nContextProvider locale="en" strings={mockStrings}>
-                                            <ServerItemRenderer
-                                                problemNum={0}
-                                                item={isGenerated ? perseusItem.generated : perseusItem.source}
-                                                dependencies={storybookDependenciesV2}
-                                                apiOptions={{}}
-                                                linterContext={{
-                                                    contentType: "",
-                                                    highlightLint: true,
-                                                    paths: [],
-                                                    stack: [],
-                                                }}
-                                                showSolutions="none"
-                                                hintsVisible={0}
-                                                reviewMode={false}
-                                                />
-                                    </PerseusI18nContextProvider>
-                                </div>
-                            ) : (
-                                <p>Loading...</p>
-                            )}
+                                ) : (
+                                    <p>Loading...</p>
+                                )}
+                        </div>
                     </div>
+                    {viewJSON && <JSONViewer data={perseusItem} />}
                 </div>
-                {viewJSON && <JSONViewer data={perseusItem} />}
+                <div className="flex flex-col gap-2">
+                    <button
+                        onClick={handleNext}
+                        className="top-19 bg-gray-500 rounded 
+                            text-white p-2">Next
+                    </button>
+                    <button className="bg-amber-500 rounded text-white p-2" onClick={(prev) => setIsGenerated(!prev)}>
+                        {isGenerated == true ? (<p>View Source</p>) : (<p>View Generated</p>)}
+                    </button>
+                    <button className="bg-blue-500 rounded text-white p-2"
+                        onClick={() => setViewJSON(!viewJSON)}>
+                        JSON
+                    </button>
+                </div>
             </div>
-            <button className="bg-blue-500 rounded text-white p-2"
-                onClick={() => setViewJSON(!viewJSON)}>
-                View JSON
-            </button>
         </div>
     );
 };

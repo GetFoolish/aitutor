@@ -61,7 +61,7 @@ def generate_images(prompts: List[str]) -> List[str]:
     print("Generating images...")
     for i, prompt in enumerate(prompts):
         if prompt == prompts[i-1] and i != 0:
-            data.append(data[-1]) # repeat the last url
+            data["url"].append(data["url"][-1]) # repeat the last url
             continue
         try:
             response = client.models.generate_content(
@@ -107,8 +107,10 @@ def generate_images(prompts: List[str]) -> List[str]:
             sleep(2)
             
             url = upload_to_imagekit(image_name, image_file) 
-            data["prompts"] = prompt 
-            data["url"] = url
+            data["url"] = data.get("url", [])
+            data["prompts"] = data.get("prompts", [])
+            data["url"].append(url)
+            data["prompts"].append(prompt)
             print(f"Successfully generated and uploaded image: {url}")
             
         except Exception as e:

@@ -17,9 +17,6 @@ T = TypeVar('T')
 
 # load examples 
 async def main():
-    def extract_filename(path: str):
-        return path.split("\\")[-1].removesuffix(".json")
-
     def process_response(response: str) -> str:
         response = response.strip()
         if response.startswith("```json"):
@@ -52,8 +49,7 @@ async def main():
             print(f"The following error occured: {e}")
 
     for path in glob.glob(str(file_pattern)):
-        source_name = extract_filename(path)
-        new_json = f"{str(new_json_path)}/{source_name}_generated.json"
+        source_name = Path(path).stem
         print(f"Loading source: {source_name}.json")
         response = None 
         with open(path, "r", encoding="utf-8") as f:
@@ -61,12 +57,14 @@ async def main():
                 data = json.load(f)
                 if data:
                     response = await generate_questions(data)
+                    print(response)
             except Exception as e:
                 print(f"Unable to load JSON: {e}")
 
         if response:
             try:
                 json_response = json.loads(response)
+                new_json = f"{str(new_json_path)}/{source_name}_generated.json"
                 with open(new_json, "w", encoding="utf-8") as f:
                     json.dump(json_response, f, indent=4)
                 print(f"\nGeneration completed for: {new_json}\n")
