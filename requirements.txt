@@ -30,3 +30,4 @@ websockets==15.0.1
 google-adk==1.15.1
 imagekitio==4.2.0
 rembg==2.0.67
+onnxruntime==1.17.3

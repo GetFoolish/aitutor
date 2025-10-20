@@ -33,9 +33,9 @@ export default function QuestionValidationComponent() {
                 console.error("Failed to fetch questions:", err);
                 setLoading(false);
             });
-    })
+    }, [])
 
-    const perseusItem = perseusItems && perseusItems.length > 0 ? perseusItems[item] : {};
+    const perseusItem = perseusItems[item] || {};
 
 
     const handleSave = () => {
