@@ -64,8 +64,8 @@ const RendererComponent = () => {
         }
     };
 
-    const perseusItem = perseusItems[item] || {};
-
+    const perseusItem = perseusItems && perseusItems.length > 0 ? perseusItems[item]: {};
+    
     return (
             <div className="framework-perseus">
                 <div style={{ padding: "20px" }}>
