@@ -36,19 +36,6 @@ def upload_to_imagekit(image_name,image_path):
     image_url = imagekit.url({"path": upload.file_path})
     return image_url
 
-
-from rembg import remove
-from io import BytesIO
-from PIL import Image
-
-def remove_bg_from_bytes(image_bytes):
-    input_image = Image.open(BytesIO(image_bytes))
-    output_image = remove(input_image)
-    buffer = BytesIO()
-    output_image.save(buffer, format="PNG")
-    buffer.seek(0)
-    return buffer
-
 import os
 from pathlib import Path
 from typing import List, Dict, Optional
@@ -183,7 +170,7 @@ def generate_images(prompts: List[str]) -> List[str]:
             
             # Process the image
             image = Image.open(BytesIO(image_data))
-            image = remove(image)
+            # image = remove(image)
             image_name = f"{str(uuid.uuid4())}.png"
             image_file = f"{str(BASE_URL)}/assets/{image_name}"
             image.save(image_file)
@@ -193,7 +180,7 @@ def generate_images(prompts: List[str]) -> List[str]:
             data["prompts"] = data.get("prompts", [])
             data["url"].append(url)
             data["prompts"].append(prompt)
-            print(f"Successfully generated and uploaded image: {url}")
+            print(f"Successfully generated {prompt} and uploaded image: {url}")
             
         except Exception as e:
             print(f"Error generating image for prompt '{prompt}': {e}")
