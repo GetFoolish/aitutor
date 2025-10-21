@@ -35,7 +35,7 @@ export default function QuestionValidationComponent() {
             });
     }, [])
 
-    const perseusItem = perseusItems[item] || {};
+    const perseusItem = perseusItems && perseusItems.length > 0 ? perseusItems[item]: {};
 
 
     const handleSave = () => {
