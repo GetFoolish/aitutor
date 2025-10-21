@@ -58,7 +58,6 @@ async def main():
                 data = json.load(f)
                 if data:
                     response = await generate_questions(data)
-                    print(response)
             except Exception as e:
                 print(f"Unable to load JSON: {e}")
 
@@ -74,4 +73,5 @@ async def main():
             print(f"No response generated for {path}, skipping...\n")
 
 if __name__ == "__main__":
+
     asyncio.run(main())
