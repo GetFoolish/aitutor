@@ -58,7 +58,6 @@ async def main():
                 data = json.load(f)
                 if data:
                     response = await generate_questions(data)
-                    print(response)
             except Exception as e:
                 print(f"Unable to load JSON: {e}")
 

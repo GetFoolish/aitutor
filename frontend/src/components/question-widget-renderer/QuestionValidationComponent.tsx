@@ -5,11 +5,69 @@ import { PerseusI18nContextProvider } from "../../package/perseus/src/components
 import { mockStrings } from "../../package/perseus/src/strings";
 
 // a component that allows viewing current json on screen
-const JSONViewer = ({ data }: { data: any }) => {
+// import { useState } from 'react';
+
+const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData: any) => void }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedContent, setEditedContent] = useState(JSON.stringify(data, null, 2));
+
+    const handleSave = () => {
+        try {
+            const parsedData = JSON.parse(editedContent);
+            onDataChange?.(parsedData);
+            setIsEditing(false);
+        } catch (error) {
+            alert('Invalid JSON format');
+        }
+    };
+
+    const handleCancel = () => {
+        setEditedContent(JSON.stringify(data, null, 2));
+        setIsEditing(false);
+    };
+
+    if (isEditing) {
+        return (
+            <div className="space-y-2">
+                <textarea
+                    value={editedContent}
+                    onChange={(e) => setEditedContent(e.target.value)}
+                    className="w-full h-[900px] bg-gray-900 text-white p-4 rounded-lg font-mono text-sm resize-none"
+                    spellCheck={false}
+                />
+                <div className="flex gap-2">
+                    <button 
+                        onClick={handleSave}
+                        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                    >
+                        Save
+                    </button>
+                    <button 
+                        onClick={handleCancel}
+                        className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <pre className="bg-gray-900 text-white p-4 rounded-lg overflow-y-scroll max-h-[900px]">
-            {JSON.stringify(data, null, 2)}
-        </pre>
+        <div className="space-y-2">
+            <pre 
+                className="bg-gray-900 text-white p-4 rounded-lg overflow-y-scroll max-h-[900px] cursor-text"
+                onClick={() => setIsEditing(true)}
+            >
+                {JSON.stringify(data, null, 2)}
+            </pre>
+            <button 
+                onClick={() => setIsEditing(true)}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+                Edit JSON
+            </button>
+        </div>
     );
 };
 
