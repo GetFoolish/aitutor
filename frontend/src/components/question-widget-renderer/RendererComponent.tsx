@@ -30,7 +30,23 @@ const RendererComponent = () => {
                 console.error("Failed to fetch questions:", err);
                 setLoading(false);
             });
-    }, []);
+
+        //     const canvas = document.querySelector('canvas') as HTMLCanvasElement;
+        //     if (canvas) {
+        //     const dataUrl = canvas.toDataURL('image/png');
+        //     console.log(`The Canvas Image: ${dataUrl}`);
+            
+        //     if (dataUrl) {
+        //         const link = document.createElement('a');
+        //         const cleanDataUrl = dataUrl.replace(/^data:image\/png;base64,/, "");
+        //         link.href = dataUrl; // Use the original dataUrl for href
+        //         link.download = 'output.png';
+        //         document.body.appendChild(link);
+        //         link.click();
+        //         document.body.removeChild(link);
+        //     }
+        // }
+  }, []);
 
     const handleNext = () => {
         setItem((prev) => {
