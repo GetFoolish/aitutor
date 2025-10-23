@@ -1,0 +1,143 @@
+diff --git a/SherlockEDApi/app/main.py b/SherlockEDApi/app/main.py
+index 4c7dbc4..77aa759 100644
+--- a/SherlockEDApi/app/main.py
++++ b/SherlockEDApi/app/main.py
+@@ -27,11 +27,11 @@ origins = [
+ 
+ app.add_middleware(
+     CORSMiddleware,
+-    allow_origins=origins,  
++    allow_origins=["*"],  
+     allow_credentials=True,
+     allow_methods=["*"],
+     allow_headers=["*"],
+ )
+ 
+ 
+-app.include_router(app_routes.router, prefix="/api", tags=["api"])
+\ No newline at end of file
++app.include_router(app_routes.router, prefix="/api", tags=["api"])  
+\ No newline at end of file
+diff --git a/SherlockEDApi/app/routes/routes.py b/SherlockEDApi/app/routes/routes.py
+index 2c7499a..c83c2bf 100644
+--- a/SherlockEDApi/app/routes/routes.py
++++ b/SherlockEDApi/app/routes/routes.py
+@@ -6,7 +6,7 @@ import json
+ import uuid
+ import pathlib 
+ from typing import List
+-from app.utils.khan_questions_loader import load_questions
++from app.utils.khan_questions_loader import load_questions 
+ 
+ router = APIRouter()
+ 
+@@ -42,4 +42,7 @@ async def save_validated_json(request: Request):
+         content={"message":"JSON saved successfully"},
+         status_code=201
+     )
++
++
++
+     
+diff --git a/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx b/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
+index 1a9cc3e..b54af99 100644
+--- a/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
++++ b/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
+@@ -7,7 +7,8 @@ import { mockStrings } from "../../package/perseus/src/strings";
+ // a component that allows viewing current json on screen
+ // import { useState } from 'react';
+ 
+-const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData: any) => void }) => {
++// make this function take perseusItem as prop 
++const JSONViewer = ({ data, perseusItem, onDataChange }: { data: any; perseusItem: any,  onDataChange?: (newData: any) => void }) => {
+     const [isEditing, setIsEditing] = useState(false);
+     const [editedContent, setEditedContent] = useState(JSON.stringify(data, null, 2));
+ 
+@@ -16,6 +17,12 @@ const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData
+             const parsedData = JSON.parse(editedContent);
+             onDataChange?.(parsedData);
+             setIsEditing(false);
++            fetch('http://localhost:8001/api/regenerate-from-data', {
++                method: 'POST',
++                headers: { "content-type": "application/json" },
++                body: JSON.stringify({"data":parsedData,"save_path": perseusItem.metadata.generated_file_path}),
++            })
++            .then((response) => console.log("Saved successfully"))
+         } catch (error) {
+             alert('Invalid JSON format');
+         }
+@@ -168,7 +175,7 @@ export default function QuestionValidationComponent() {
+                                 )}
+                         </div>
+                     </div>
+-                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} />}
++                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} perseusItem={perseusItem} />}
+                 </div>
+                 <div className="flex flex-col w-[154px] gap-2">
+                     <button
+diff --git a/frontend/src/components/question-widget-renderer/RendererComponent.tsx b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
+index 98faa43..f8342e3 100644
+--- a/frontend/src/components/question-widget-renderer/RendererComponent.tsx
++++ b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
+@@ -30,7 +30,43 @@ const RendererComponent = () => {
+                 console.error("Failed to fetch questions:", err);
+                 setLoading(false);
+             });
+-    }, []);
++
++        //     const canvas = document.querySelector('canvas') as HTMLCanvasElement;
++        //     if (canvas) {
++        //     const dataUrl = canvas.toDataURL('image/png');
++        //     console.log(`The Canvas Image: ${dataUrl}`);
++            
++        //     if (dataUrl) {
++        //         const link = document.createElement('a');
++        //         const cleanDataUrl = dataUrl.replace(/^data:image\/png;base64,/, "");
++        //         link.href = dataUrl; // Use the original dataUrl for href
++        //         link.download = 'output.png';
++        //         document.body.appendChild(link);
++        //         link.click();
++        //         document.body.removeChild(link);
++        //     }
++        // }
++  }, []);
++
++    const handleDownloadCanvasImage = () => {
++        const canvases = document.querySelectorAll<HTMLCanvasElement>('canvas');
++        canvases.forEach((canvas) => {
++            if (canvas) {
++                const dataUrl = canvas.toDataURL('image/png');
++                console.log(`The Canvas Image: ${dataUrl}`);
++                
++                if (dataUrl) {
++                    const link = document.createElement('a');
++                    const cleanDataUrl = dataUrl.replace(/^data:image\/png;base64,/, "");
++                    link.href = dataUrl; // Use the original dataUrl for href
++                    link.download = 'output.png';
++                    document.body.appendChild(link);
++                    link.click();
++                    document.body.removeChild(link);
++                }
++            }
++        });
++    };
+ 
+     const handleNext = () => {
+         setItem((prev) => {
+@@ -115,9 +151,14 @@ const RendererComponent = () => {
+                         onClick={handleSubmit}>
+                         Submit
+                     </button>
++                    <button 
++                        className="bg-red-500 absolute rounded text-white p-2 right-18 top-8"
++                        onClick={handleDownloadCanvasImage}>
++                        Download Canvas
++                    </button>
+                 </div>
+             </div>
+     );
+ };
+ 
+-export default RendererComponent;
++export default RendererComponent;
+\ No newline at end of file

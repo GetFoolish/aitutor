@@ -7,7 +7,8 @@ import { mockStrings } from "../../package/perseus/src/strings";
 // a component that allows viewing current json on screen
 // import { useState } from 'react';
 
-const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData: any) => void }) => {
+// make this function take perseusItem as prop 
+const JSONViewer = ({ data, perseusItem, onDataChange }: { data: any; perseusItem: any,  onDataChange?: (newData: any) => void }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedContent, setEditedContent] = useState(JSON.stringify(data, null, 2));
 
@@ -16,6 +17,12 @@ const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData
             const parsedData = JSON.parse(editedContent);
             onDataChange?.(parsedData);
             setIsEditing(false);
+            fetch('http://localhost:8001/api/regenerate-from-data', {
+                method: 'POST',
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({"data":parsedData,"save_path": perseusItem.metadata.generated_file_path}),
+            })
+            .then((response) => console.log("Saved successfully"))
         } catch (error) {
             alert('Invalid JSON format');
         }
@@ -168,7 +175,7 @@ export default function QuestionValidationComponent() {
                                 )}
                         </div>
                     </div>
-                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} />}
+                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} perseusItem={perseusItem} />}
                 </div>
                 <div className="flex flex-col w-[154px] gap-2">
                     <button
