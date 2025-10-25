@@ -1,143 +1,570 @@
 diff --git a/SherlockEDApi/app/main.py b/SherlockEDApi/app/main.py
-index 4c7dbc4..77aa759 100644
+index 4c7dbc4..a854cd6 100644
 --- a/SherlockEDApi/app/main.py
 +++ b/SherlockEDApi/app/main.py
-@@ -27,11 +27,11 @@ origins = [
+@@ -1,12 +1,37 @@
+ from fastapi import FastAPI
+ from fastapi.middleware.cors import CORSMiddleware
+ from app.routes import routes as app_routes 
+-
++from beanie import init_beanie 
++from motor.motor_asyncio import AsyncIOMotorClient 
++from contextlib import asynccontextmanager
++from app.database.models import QuestionDocument 
++from app.utils.database import seed_db
++from app.database.models import QuestionDocument  
++
++
++async def is_database_empty():
++    count = await QuestionDocument.find().count()
++    if count > 0:
++        return False
++    return True 
++
++@asynccontextmanager
++async def lifespan(app: FastAPI):
++    print("Starting app...")
++    client = AsyncIOMotorClient("mongodb://localhost:27017")
++    db = client["question_db"]
++    await init_beanie(database=db, document_models=[QuestionDocument])
++    if await is_database_empty():    
++        print("Seeding database...")
++        await seed_db()
++    yield
++    print("Shutting down...")
  
- app.add_middleware(
-     CORSMiddleware,
--    allow_origins=origins,  
-+    allow_origins=["*"],  
-     allow_credentials=True,
-     allow_methods=["*"],
-     allow_headers=["*"],
+ app = FastAPI(
+     title="Exam System API", 
+     description="API for managing exam sessions, user responses, and scoring",
+-    version="1.0.0"
++    version="1.0.0",
++    lifespan=lifespan
  )
  
  
--app.include_router(app_routes.router, prefix="/api", tags=["api"])
-\ No newline at end of file
-+app.include_router(app_routes.router, prefix="/api", tags=["api"])  
-\ No newline at end of file
 diff --git a/SherlockEDApi/app/routes/routes.py b/SherlockEDApi/app/routes/routes.py
-index 2c7499a..c83c2bf 100644
+index c83c2bf..b3d8f8b 100644
 --- a/SherlockEDApi/app/routes/routes.py
 +++ b/SherlockEDApi/app/routes/routes.py
-@@ -6,7 +6,7 @@ import json
+@@ -1,26 +1,106 @@
+ from math import e 
+-from fastapi import APIRouter, Request
++from fastapi import APIRouter, Request, HTTPException, BackgroundTasks
+ from fastapi.responses import JSONResponse
+ import asyncio
+ import json
  import uuid
  import pathlib 
- from typing import List
--from app.utils.khan_questions_loader import load_questions
-+from app.utils.khan_questions_loader import load_questions 
+-from typing import List
++import random
++from typing import List 
++from beanie.operators import LTE
+ from app.utils.khan_questions_loader import load_questions 
++from app.database.models import GeneratedQuestionDocument, QuestionDocument
  
  router = APIRouter()
  
-@@ -42,4 +42,7 @@ async def save_validated_json(request: Request):
+ base_dir=pathlib.Path(__file__).resolve().parents[2] / "CurriculumBuilder_validated"
++
+ base_dir.mkdir(parents=True, exist_ok=True)
+ 
++already_seen = set()
++
++file = {}
++item = {} # question, image-path
++file["data"] = []
++file["data"].append(item) 
++
++def update_json_file():
++    pass
++
++
+ # endpoint to get questions 
+-@router.get("/questions/{sample_size}")
+-async def get_questions(sample_size: int):
++@router.get("/question")
++async def get_questions(task: BackgroundTasks):
+     """Endpoint for retrieving questions"""
+-    data = load_questions(
+-        sample_size=sample_size
+-    )
+-    return data
++    data = await QuestionDocument.find_all().to_list()
++    remaining = [q for q in data if str(q.id) not in already_seen] 
++    if not remaining:
++        return JSONResponse(content={"finished":True, "message": "No questions remaining"})
++    question = random.choice(remaining)
++    already_seen.add(str(question.id))
++    task.add_task(update_json_file, question)
++
++    return JSONResponse(content={"finished":False, "question": question}, status_code=200)
++
++
++# endpoint to get questions 
++@router.get("/question/{id}")
++async def get_questions(task: BackgroundTasks):
++    """Endpoint for retrieving questions"""
++    data = await QuestionDocument.find_all().to_list()
++    remaining = [q for q in data if str(q.id) not in already_seen] 
++    if not remaining:
++        return JSONResponse(content={"finished":True, "message": "No questions remaining"})
++    question = random.choice(remaining)
++    already_seen.add(str(question.id))
++    task.add_task(update_json_file, question)
++
++    return JSONResponse(content={"finished":False, "question": question}, status_code=200)
++
++
++@router.get("/get-question-for-generation/")
++async def get_question_for_generation():
++    response = await QuestionDocument.find(
++        QuestionDocument.source == "khan",
++        LTE(QuestionDocument.generated_count, 2)).project({
++            "answerArea":1,
++            "hints":1,
++            "itemDataVersion":1,
++            "question":1,
++            "_id":1
++        })
++    if response:
++        return response
++    raise HTTPException(status_code=404, detail="No data")
++
++
++@router.post("/save-generated-question/{source_question_id}")
++async def save_generted_question(source_question_id, request: Request):
++    data = request.json()
++    question = GeneratedQuestionDocument(
++        source="aitutor",
++        **data)
++    await question.insert()
++
++    source_question = await QuestionDocument.get(source_question_id)
++    if not source_question:
++        raise HTTPException(status_code=404, detail="Original document not found")
++    source_question.generated.append(question)
++    source_question.generated_count = 1
++    await source_question.save()
++
++    return JSONResponse(content={"message": "Success"}, status_code=201)
++
++
++# endpoint to get questions 
++# @router.post("/test")
++# async def get_questions(request: Request):
++#     """Endpoint for retrieving questions"""
++#     data = await request.json()
++#     data = QuestionDocument(**data)
++#     await data.insert()
++#     return "DONE!"
++
+ 
+ # endpoint to get generated questions
+ @router.get("/generated-questions/{sample_size}")
+@@ -28,7 +108,7 @@ async def get_generated_questions(sample_size: int):
+     """Endpoint for retrieving generated questions"""
+     data = load_questions(
+         sample_size=sample_size,
+-        is_generated=True
++        isGenerated=True
+     )
+     return data 
+ 
+@@ -41,7 +121,7 @@ async def save_validated_json(request: Request):
+     return JSONResponse(
          content={"message":"JSON saved successfully"},
          status_code=201
-     )
-+
-+
-+
-     
-diff --git a/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx b/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
-index 1a9cc3e..b54af99 100644
---- a/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
-+++ b/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
-@@ -7,7 +7,8 @@ import { mockStrings } from "../../package/perseus/src/strings";
- // a component that allows viewing current json on screen
- // import { useState } from 'react';
+-    )
++    ) 
  
--const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData: any) => void }) => {
-+// make this function take perseusItem as prop 
-+const JSONViewer = ({ data, perseusItem, onDataChange }: { data: any; perseusItem: any,  onDataChange?: (newData: any) => void }) => {
-     const [isEditing, setIsEditing] = useState(false);
-     const [editedContent, setEditedContent] = useState(JSON.stringify(data, null, 2));
  
-@@ -16,6 +17,12 @@ const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData
-             const parsedData = JSON.parse(editedContent);
-             onDataChange?.(parsedData);
-             setIsEditing(false);
-+            fetch('http://localhost:8001/api/regenerate-from-data', {
-+                method: 'POST',
-+                headers: { "content-type": "application/json" },
-+                body: JSON.stringify({"data":parsedData,"save_path": perseusItem.metadata.generated_file_path}),
-+            })
-+            .then((response) => console.log("Saved successfully"))
-         } catch (error) {
-             alert('Invalid JSON format');
-         }
-@@ -168,7 +175,7 @@ export default function QuestionValidationComponent() {
-                                 )}
-                         </div>
-                     </div>
--                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} />}
-+                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} perseusItem={perseusItem} />}
-                 </div>
-                 <div className="flex flex-col w-[154px] gap-2">
-                     <button
+ 
+diff --git a/SherlockEDApi/app/utils/khan_questions_loader.py b/SherlockEDApi/app/utils/khan_questions_loader.py
+index 8651261..8a00f28 100644
+--- a/SherlockEDApi/app/utils/khan_questions_loader.py
++++ b/SherlockEDApi/app/utils/khan_questions_loader.py
+@@ -35,7 +35,7 @@ def load_generated_json_from_dir():
+     for file_path in glob.glob(file_pattern):
+         filename = pathlib.Path(file_path).stem
+         data = {}
+-        try:
++        try: 
+             source_file = file_path
+             generated_file = f"{str(generated_path)}/{filename}_generated.json"
+             with open(file_path, "r", encoding="utf-8") as f:
+@@ -48,21 +48,26 @@ def load_generated_json_from_dir():
+             print(f"Unable to load JSON: {e}")
+     return all_objects
+ 
+-def load_questions(sample_size, is_generated: bool = False):
++def load_questions(sample_size:int=10, isGenerated:bool=False):
+     """Loads the requested number of questions"""
+-    if (is_generated == True):
++    if (isGenerated == True):
+         all_questions = load_generated_json_from_dir()
++        if all_questions:
++            if sample_size <= len(all_questions):
++                try:
++                    sample = random.sample(all_questions,sample_size)
++                    return sample
++                except Exception as e:
++                    print(f"Failed to load questions: {e}")
++            if sample_size > len(all_questions):
++                try:
++                    return all_questions
++                except Exception as e:
++                    print(f"Failed to load questions: {e}")
+     else:
+-        all_questions = load_json_objects_from_dir()
+-    if all_questions:
+-        if sample_size <= len(all_questions):
+-            try:
+-                sample = random.sample(all_questions,sample_size)
+-                return sample
+-            except Exception as e:
+-                print(f"Failed to load questions: {e}")
+-        if sample_size > len(all_questions):
+-            try:
+-                return all_questions
+-            except Exception as e:
+-                print(f"Failed to load questions: {e}")
+\ No newline at end of file
++        try:
++            questions = load_json_objects_from_dir()
++            return questions
++        except Exception as e:
++            print("Unable to load questions:", e)
++    
+\ No newline at end of file
+diff --git a/changes.patch b/changes.patch
+index ef151f1..450c439 100644
+--- a/changes.patch
++++ b/changes.patch
+@@ -1,143 +0,0 @@
+-diff --git a/SherlockEDApi/app/main.py b/SherlockEDApi/app/main.py
+-index 4c7dbc4..77aa759 100644
+---- a/SherlockEDApi/app/main.py
+-+++ b/SherlockEDApi/app/main.py
+-@@ -27,11 +27,11 @@ origins = [
+- 
+- app.add_middleware(
+-     CORSMiddleware,
+--    allow_origins=origins,  
+-+    allow_origins=["*"],  
+-     allow_credentials=True,
+-     allow_methods=["*"],
+-     allow_headers=["*"],
+- )
+- 
+- 
+--app.include_router(app_routes.router, prefix="/api", tags=["api"])
+-\ No newline at end of file
+-+app.include_router(app_routes.router, prefix="/api", tags=["api"])  
+-\ No newline at end of file
+-diff --git a/SherlockEDApi/app/routes/routes.py b/SherlockEDApi/app/routes/routes.py
+-index 2c7499a..c83c2bf 100644
+---- a/SherlockEDApi/app/routes/routes.py
+-+++ b/SherlockEDApi/app/routes/routes.py
+-@@ -6,7 +6,7 @@ import json
+- import uuid
+- import pathlib 
+- from typing import List
+--from app.utils.khan_questions_loader import load_questions
+-+from app.utils.khan_questions_loader import load_questions 
+- 
+- router = APIRouter()
+- 
+-@@ -42,4 +42,7 @@ async def save_validated_json(request: Request):
+-         content={"message":"JSON saved successfully"},
+-         status_code=201
+-     )
+-+
+-+
+-+
+-     
+-diff --git a/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx b/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
+-index 1a9cc3e..b54af99 100644
+---- a/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
+-+++ b/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
+-@@ -7,7 +7,8 @@ import { mockStrings } from "../../package/perseus/src/strings";
+- // a component that allows viewing current json on screen
+- // import { useState } from 'react';
+- 
+--const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData: any) => void }) => {
+-+// make this function take perseusItem as prop 
+-+const JSONViewer = ({ data, perseusItem, onDataChange }: { data: any; perseusItem: any,  onDataChange?: (newData: any) => void }) => {
+-     const [isEditing, setIsEditing] = useState(false);
+-     const [editedContent, setEditedContent] = useState(JSON.stringify(data, null, 2));
+- 
+-@@ -16,6 +17,12 @@ const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData
+-             const parsedData = JSON.parse(editedContent);
+-             onDataChange?.(parsedData);
+-             setIsEditing(false);
+-+            fetch('http://localhost:8001/api/regenerate-from-data', {
+-+                method: 'POST',
+-+                headers: { "content-type": "application/json" },
+-+                body: JSON.stringify({"data":parsedData,"save_path": perseusItem.metadata.generated_file_path}),
+-+            })
+-+            .then((response) => console.log("Saved successfully"))
+-         } catch (error) {
+-             alert('Invalid JSON format');
+-         }
+-@@ -168,7 +175,7 @@ export default function QuestionValidationComponent() {
+-                                 )}
+-                         </div>
+-                     </div>
+--                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} />}
+-+                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} perseusItem={perseusItem} />}
+-                 </div>
+-                 <div className="flex flex-col w-[154px] gap-2">
+-                     <button
+-diff --git a/frontend/src/components/question-widget-renderer/RendererComponent.tsx b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
+-index 98faa43..f8342e3 100644
+---- a/frontend/src/components/question-widget-renderer/RendererComponent.tsx
+-+++ b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
+-@@ -30,7 +30,43 @@ const RendererComponent = () => {
+-                 console.error("Failed to fetch questions:", err);
+-                 setLoading(false);
+-             });
+--    }, []);
+-+
+-+        //     const canvas = document.querySelector('canvas') as HTMLCanvasElement;
+-+        //     if (canvas) {
+-+        //     const dataUrl = canvas.toDataURL('image/png');
+-+        //     console.log(`The Canvas Image: ${dataUrl}`);
+-+            
+-+        //     if (dataUrl) {
+-+        //         const link = document.createElement('a');
+-+        //         const cleanDataUrl = dataUrl.replace(/^data:image\/png;base64,/, "");
+-+        //         link.href = dataUrl; // Use the original dataUrl for href
+-+        //         link.download = 'output.png';
+-+        //         document.body.appendChild(link);
+-+        //         link.click();
+-+        //         document.body.removeChild(link);
+-+        //     }
+-+        // }
+-+  }, []);
+-+
+-+    const handleDownloadCanvasImage = () => {
+-+        const canvases = document.querySelectorAll<HTMLCanvasElement>('canvas');
+-+        canvases.forEach((canvas) => {
+-+            if (canvas) {
+-+                const dataUrl = canvas.toDataURL('image/png');
+-+                console.log(`The Canvas Image: ${dataUrl}`);
+-+                
+-+                if (dataUrl) {
+-+                    const link = document.createElement('a');
+-+                    const cleanDataUrl = dataUrl.replace(/^data:image\/png;base64,/, "");
+-+                    link.href = dataUrl; // Use the original dataUrl for href
+-+                    link.download = 'output.png';
+-+                    document.body.appendChild(link);
+-+                    link.click();
+-+                    document.body.removeChild(link);
+-+                }
+-+            }
+-+        });
+-+    };
+- 
+-     const handleNext = () => {
+-         setItem((prev) => {
+-@@ -115,9 +151,14 @@ const RendererComponent = () => {
+-                         onClick={handleSubmit}>
+-                         Submit
+-                     </button>
+-+                    <button 
+-+                        className="bg-red-500 absolute rounded text-white p-2 right-18 top-8"
+-+                        onClick={handleDownloadCanvasImage}>
+-+                        Download Canvas
+-+                    </button>
+-                 </div>
+-             </div>
+-     );
+- };
+- 
+--export default RendererComponent;
+-+export default RendererComponent;
+-\ No newline at end of file
+diff --git a/changes1.patch b/changes1.patch
+deleted file mode 100644
+index dd4ec73..0000000
+--- a/changes1.patch
++++ /dev/null
+@@ -1,93 +0,0 @@
+-diff --git a/SherlockEDApi/app/routes/routes.py b/SherlockEDApi/app/routes/routes.py
+-index 2c7499a..c83c2bf 100644
+---- a/SherlockEDApi/app/routes/routes.py
+-+++ b/SherlockEDApi/app/routes/routes.py
+-@@ -6,7 +6,7 @@ import json
+- import uuid
+- import pathlib 
+- from typing import List
+--from app.utils.khan_questions_loader import load_questions
+-+from app.utils.khan_questions_loader import load_questions 
+- 
+- router = APIRouter()
+- 
+-@@ -42,4 +42,7 @@ async def save_validated_json(request: Request):
+-         content={"message":"JSON saved successfully"},
+-         status_code=201
+-     )
+-+
+-+
+-+
+-     
+-diff --git a/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx b/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
+-index 1a9cc3e..b54af99 100644
+---- a/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
+-+++ b/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
+-@@ -7,7 +7,8 @@ import { mockStrings } from "../../package/perseus/src/strings";
+- // a component that allows viewing current json on screen
+- // import { useState } from 'react';
+- 
+--const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData: any) => void }) => {
+-+// make this function take perseusItem as prop 
+-+const JSONViewer = ({ data, perseusItem, onDataChange }: { data: any; perseusItem: any,  onDataChange?: (newData: any) => void }) => {
+-     const [isEditing, setIsEditing] = useState(false);
+-     const [editedContent, setEditedContent] = useState(JSON.stringify(data, null, 2));
+- 
+-@@ -16,6 +17,12 @@ const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData
+-             const parsedData = JSON.parse(editedContent);
+-             onDataChange?.(parsedData);
+-             setIsEditing(false);
+-+            fetch('http://localhost:8001/api/regenerate-from-data', {
+-+                method: 'POST',
+-+                headers: { "content-type": "application/json" },
+-+                body: JSON.stringify({"data":parsedData,"save_path": perseusItem.metadata.generated_file_path}),
+-+            })
+-+            .then((response) => console.log("Saved successfully"))
+-         } catch (error) {
+-             alert('Invalid JSON format');
+-         }
+-@@ -168,7 +175,7 @@ export default function QuestionValidationComponent() {
+-                                 )}
+-                         </div>
+-                     </div>
+--                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} />}
+-+                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} perseusItem={perseusItem} />}
+-                 </div>
+-                 <div className="flex flex-col w-[154px] gap-2">
+-                     <button
+-diff --git a/frontend/src/components/question-widget-renderer/RendererComponent.tsx b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
+-index 98faa43..2684d7b 100644
+---- a/frontend/src/components/question-widget-renderer/RendererComponent.tsx
+-+++ b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
+-@@ -30,7 +30,23 @@ const RendererComponent = () => {
+-                 console.error("Failed to fetch questions:", err);
+-                 setLoading(false);
+-             });
+--    }, []);
+-+
+-+        //     const canvas = document.querySelector('canvas') as HTMLCanvasElement;
+-+        //     if (canvas) {
+-+        //     const dataUrl = canvas.toDataURL('image/png');
+-+        //     console.log(`The Canvas Image: ${dataUrl}`);
+-+            
+-+        //     if (dataUrl) {
+-+        //         const link = document.createElement('a');
+-+        //         const cleanDataUrl = dataUrl.replace(/^data:image\/png;base64,/, "");
+-+        //         link.href = dataUrl; // Use the original dataUrl for href
+-+        //         link.download = 'output.png';
+-+        //         document.body.appendChild(link);
+-+        //         link.click();
+-+        //         document.body.removeChild(link);
+-+        //     }
+-+        // }
+-+  }, []);
+- 
+-     const handleNext = () => {
+-         setItem((prev) => {
+-@@ -120,4 +136,4 @@ const RendererComponent = () => {
+-     );
+- };
+- 
+--export default RendererComponent;
+-+export default RendererComponent;
+-\ No newline at end of file
 diff --git a/frontend/src/components/question-widget-renderer/RendererComponent.tsx b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
-index 98faa43..f8342e3 100644
+index 2684d7b..adb7f52 100644
 --- a/frontend/src/components/question-widget-renderer/RendererComponent.tsx
 +++ b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
-@@ -30,7 +30,43 @@ const RendererComponent = () => {
-                 console.error("Failed to fetch questions:", err);
-                 setLoading(false);
-             });
--    }, []);
-+
-+        //     const canvas = document.querySelector('canvas') as HTMLCanvasElement;
-+        //     if (canvas) {
-+        //     const dataUrl = canvas.toDataURL('image/png');
-+        //     console.log(`The Canvas Image: ${dataUrl}`);
-+            
-+        //     if (dataUrl) {
-+        //         const link = document.createElement('a');
-+        //         const cleanDataUrl = dataUrl.replace(/^data:image\/png;base64,/, "");
-+        //         link.href = dataUrl; // Use the original dataUrl for href
-+        //         link.download = 'output.png';
-+        //         document.body.appendChild(link);
-+        //         link.click();
-+        //         document.body.removeChild(link);
-+        //     }
-+        // }
-+  }, []);
-+
-+    const handleDownloadCanvasImage = () => {
-+        const canvases = document.querySelectorAll<HTMLCanvasElement>('canvas');
-+        canvases.forEach((canvas) => {
-+            if (canvas) {
-+                const dataUrl = canvas.toDataURL('image/png');
-+                console.log(`The Canvas Image: ${dataUrl}`);
-+                
-+                if (dataUrl) {
-+                    const link = document.createElement('a');
-+                    const cleanDataUrl = dataUrl.replace(/^data:image\/png;base64,/, "");
-+                    link.href = dataUrl; // Use the original dataUrl for href
-+                    link.download = 'output.png';
-+                    document.body.appendChild(link);
-+                    link.click();
-+                    document.body.removeChild(link);
+@@ -10,7 +10,7 @@ import { mockStrings } from "../../package/perseus/src/strings";
+ import { KEScore } from "@khanacademy/perseus-core";
+ 
+ const RendererComponent = () => {
+-    const [perseusItems, setPerseusItems] = useState<PerseusItem[]>([]);
++    const [perseusItem, setPerseusItem] = useState<PerseusItem[]>([]);
+     const [item, setItem] = useState(0);
+     const [loading, setLoading] = useState(true);
+     const [endOfTest, setEndOfTest] = useState(false);
+@@ -19,11 +19,15 @@ const RendererComponent = () => {
+     const rendererRef = useRef<ServerItemRenderer>(null);
+ 
+     useEffect(() => {
+-        fetch("http://localhost:8001/api/questions/10")
++        fetch("http://localhost:8001/api/question")
+             .then((response) => response.json())
+             .then((data) => {
+                 console.log("API response:", data);
+-                setPerseusItems(data);
++                if (!data.finished){
++                    setPerseusItem(data.question);
++                } else {
++                    setEndOfTest(true)
 +                }
-+            }
-+        });
-+    };
+                 setLoading(false);
+             })
+             .catch((err) => {
+@@ -49,18 +53,23 @@ const RendererComponent = () => {
+   }, []);
  
      const handleNext = () => {
-         setItem((prev) => {
-@@ -115,9 +151,14 @@ const RendererComponent = () => {
-                         onClick={handleSubmit}>
-                         Submit
-                     </button>
-+                    <button 
-+                        className="bg-red-500 absolute rounded text-white p-2 right-18 top-8"
-+                        onClick={handleDownloadCanvasImage}>
-+                        Download Canvas
-+                    </button>
-                 </div>
-             </div>
-     );
- };
+-        setItem((prev) => {
+-            const index = prev + 1;
+-
+-            if (index >= perseusItems.length) {
+-                setEndOfTest(true);
+-                return prev; // stay at last valid index
+-            }
+-
+-            setIsAnswered(false);
+-            return index;
+-        });
+-    };
++            fetch("http://localhost:8001/api/question")
++                .then((response) => response.json())
++                .then((data) => {
++                    console.log("API response:", data);
++                    if (!data.finished){
++                        setPerseusItem(data.question);
++                    } else {
++                        setEndOfTest(true)
++                    }
++                })
++                .catch((err) => {
++                    console.error("Failed to fetch questions:", err);
++                    setLoading(false);
++                });
++            
++                setIsAnswered(false);
++        };
  
--export default RendererComponent;
-+export default RendererComponent;
-\ No newline at end of file
+ 
+     const handleSubmit = () => {
+@@ -80,7 +89,7 @@ const RendererComponent = () => {
+         }
+     };
+ 
+-    const perseusItem = perseusItems && perseusItems.length > 0 ? perseusItems[item]: {};
++    // const perseusItem = perseusItems && perseusItems.length > 0 ? perseusItems[item]: {};
+     
+     return (
+             <div className="framework-perseus">
+@@ -93,7 +102,7 @@ const RendererComponent = () => {
+                     {endOfTest ? (
+                         <p>You've successfully completed your test!</p>
+                     ): (
+-                        perseusItems.length > 0 ? (
++                        loading == false ? (
+                         <div>
+                             <PerseusI18nContextProvider locale="en" strings={mockStrings}>
+                                 <RenderStateRoot>

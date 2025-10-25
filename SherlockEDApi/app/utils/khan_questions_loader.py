@@ -35,7 +35,7 @@ def load_generated_json_from_dir():
     for file_path in glob.glob(file_pattern):
         filename = pathlib.Path(file_path).stem
         data = {}
-        try:
+        try: 
             source_file = file_path
             generated_file = f"{str(generated_path)}/{filename}_generated.json"
             with open(file_path, "r", encoding="utf-8") as f:
@@ -48,21 +48,26 @@ def load_generated_json_from_dir():
             print(f"Unable to load JSON: {e}")
     return all_objects
 
-def load_questions(sample_size, is_generated: bool = False):
+def load_questions(sample_size:int=10, isGenerated:bool=False):
     """Loads the requested number of questions"""
-    if (is_generated == True):
+    if (isGenerated == True):
         all_questions = load_generated_json_from_dir()
+        if all_questions:
+            if sample_size <= len(all_questions):
+                try:
+                    sample = random.sample(all_questions,sample_size)
+                    return sample
+                except Exception as e:
+                    print(f"Failed to load questions: {e}")
+            if sample_size > len(all_questions):
+                try:
+                    return all_questions
+                except Exception as e:
+                    print(f"Failed to load questions: {e}")
     else:
-        all_questions = load_json_objects_from_dir()
-    if all_questions:
-        if sample_size <= len(all_questions):
-            try:
-                sample = random.sample(all_questions,sample_size)
-                return sample
-            except Exception as e:
-                print(f"Failed to load questions: {e}")
-        if sample_size > len(all_questions):
-            try:
-                return all_questions
-            except Exception as e:
-                print(f"Failed to load questions: {e}")
+        try:
+            questions = load_json_objects_from_dir()
+            return questions
+        except Exception as e:
+            print("Unable to load questions:", e)
+    

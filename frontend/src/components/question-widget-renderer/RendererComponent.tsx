@@ -10,7 +10,7 @@ import { mockStrings } from "../../package/perseus/src/strings";
 import { KEScore } from "@khanacademy/perseus-core";
 
 const RendererComponent = () => {
-    const [perseusItems, setPerseusItems] = useState<PerseusItem[]>([]);
+    const [perseusItem, setPerseusItem] = useState<PerseusItem[]>([]);
     const [item, setItem] = useState(0);
     const [loading, setLoading] = useState(true);
     const [endOfTest, setEndOfTest] = useState(false);
@@ -19,11 +19,15 @@ const RendererComponent = () => {
     const rendererRef = useRef<ServerItemRenderer>(null);
 
     useEffect(() => {
-        fetch("http://localhost:8001/api/questions/10")
+        fetch("http://localhost:8001/api/question")
             .then((response) => response.json())
             .then((data) => {
                 console.log("API response:", data);
-                setPerseusItems(data);
+                if (!data.finished){
+                    setPerseusItem(data.question);
+                } else {
+                    setEndOfTest(true)
+                }
                 setLoading(false);
             })
             .catch((err) => {
@@ -49,18 +53,23 @@ const RendererComponent = () => {
   }, []);
 
     const handleNext = () => {
-        setItem((prev) => {
-            const index = prev + 1;
-
-            if (index >= perseusItems.length) {
-                setEndOfTest(true);
-                return prev; // stay at last valid index
-            }
-
-            setIsAnswered(false);
-            return index;
-        });
-    };
+            fetch("http://localhost:8001/api/question")
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log("API response:", data);
+                    if (!data.finished){
+                        setPerseusItem(data.question);
+                    } else {
+                        setEndOfTest(true)
+                    }
+                })
+                .catch((err) => {
+                    console.error("Failed to fetch questions:", err);
+                    setLoading(false);
+                });
+            
+                setIsAnswered(false);
+        };
 
 
     const handleSubmit = () => {
@@ -80,7 +89,7 @@ const RendererComponent = () => {
         }
     };
 
-    const perseusItem = perseusItems && perseusItems.length > 0 ? perseusItems[item]: {};
+    // const perseusItem = perseusItems && perseusItems.length > 0 ? perseusItems[item]: {};
     
     return (
             <div className="framework-perseus">
@@ -93,7 +102,7 @@ const RendererComponent = () => {
                     {endOfTest ? (
                         <p>You've successfully completed your test!</p>
                     ): (
-                        perseusItems.length > 0 ? (
+                        loading == false ? (
                         <div>
                             <PerseusI18nContextProvider locale="en" strings={mockStrings}>
                                 <RenderStateRoot>
