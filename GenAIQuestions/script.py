@@ -11,8 +11,25 @@ import asyncio
 import requests
 from pathlib import Path 
 
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
+
+# ---- Setup headless Chrome ----
+chrome_options = Options()
+chrome_options.add_argument("--headless")  # run without UI
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--window-size=1280,1024")
+chrome_options.add_argument("--no-sandbox")
+
 file_pattern = Path(__file__).parent.resolve() / "examples" / "*.json"
 new_json_path = Path(__file__).parent.resolve() / "new"
+
+screenshot_path = Path(__file__).parent.resolve() / "examples" / "screenshot"
+screenshot_path.mkdir(parents=True, exist_ok=True)
  
 T = TypeVar('T')
 
@@ -33,7 +50,7 @@ async def main():
         return response
     
     # generate questions 
-    async def generate_questions(data: json) -> json:
+    async def generate_questions(data: json, filename: str) -> json:
         try:
             print(f"Generating questions...")
             # call function which contains steps
@@ -43,7 +60,7 @@ async def main():
                 prompts = process_response(prompts)
                 prompts = json.loads(prompts)
             prompts = [p["prompt"] for p in prompts["image_data"]]
-            urls = generate_images(prompts)
+            urls = generate_images(prompts,filename)
             response = await run_agent(rebuild_json_prompt, rebuild_json, new_json=new_json, urls=urls)
             return process_response(response)
         except Exception as e:
@@ -52,17 +69,30 @@ async def main():
     count = 2       
     url = f"http://localhost:8001/get-question-for-generation"
     api_response = requests.get(url)
-    questions = api_response.json()
+    question = api_response.json()
+    source_question_id = question.pop("_id")
+
 
     # get questions
     # selenium get id and screenshot  
-    # use updated data for generation
+    driver = webdriver.Chrome(options=chrome_options)
+    try:
+        driver.get(f"http://localhost:3000/{source_question_id}")
+        wait = WebDriverWait(driver, 20)
+        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".framework-perseus svg")))
+        time.sleep(2)
+        element = driver.find_element(By.CSS_SELECTOR, ".framework-perseus")
+        filename = f"{str(screenshot_path)}/{str(uuid.uuid4())}.png"
+        element.screenshot(filename)
+        print("✅ Screenshot saved as", filename)
+    finally:
+        driver.quit()
 
-    for q in questions:
-        source_question_id = q.id
+    # use updated data for generation
+    if question:
         response: None
         try:
-            response = await generate_questions(q)
+            response = await generate_questions(question, filename)
         except Exception as e:
             print(f"Unable to load JSON: {e}")
 
@@ -76,5 +106,4 @@ async def main():
             print(f"No response generated for {q.id}, skipping...\n")
 
 if __name__ == "__main__":
-
     asyncio.run(main())

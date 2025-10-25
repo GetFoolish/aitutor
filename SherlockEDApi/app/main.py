@@ -4,9 +4,8 @@ from app.routes import routes as app_routes
 from beanie import init_beanie 
 from motor.motor_asyncio import AsyncIOMotorClient 
 from contextlib import asynccontextmanager
-from app.database.models import QuestionDocument 
+from app.database.models import QuestionDocument, GeneratedQuestionDocument
 from app.utils.database import seed_db
-from app.database.models import QuestionDocument  
 
 
 async def is_database_empty():
@@ -20,7 +19,7 @@ async def lifespan(app: FastAPI):
     print("Starting app...")
     client = AsyncIOMotorClient("mongodb://localhost:27017")
     db = client["question_db"]
-    await init_beanie(database=db, document_models=[QuestionDocument])
+    await init_beanie(database=db, document_models=[QuestionDocument,GeneratedQuestionDocument])
     if await is_database_empty():    
         print("Seeding database...")
         await seed_db()

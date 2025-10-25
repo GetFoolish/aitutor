@@ -1,570 +1,1240 @@
+diff --git a/GenAIQuestions/agents/image_generator/agent.py b/GenAIQuestions/agents/image_generator/agent.py
+index 67b0143..593191d 100644
+--- a/GenAIQuestions/agents/image_generator/agent.py
++++ b/GenAIQuestions/agents/image_generator/agent.py
+@@ -105,7 +105,7 @@ def clean_png_files(
+     }
+ 
+ 
+-def generate_images(prompts: List[str]) -> List[str]:
++def generate_images(messages: List[str], image_filepath: str) -> List[str]:
+     """
+     Function for generating images with Nano Banana.
+ 
+@@ -128,11 +128,13 @@ def generate_images(prompts: List[str]) -> List[str]:
+     )
+     data = {}
+     print("Generating images...")
+-    for i, prompt in enumerate(prompts):
+-        if prompt == prompts[i-1] and i != 0:
++    for i, message in enumerate(messages):
++        if message == messages[i-1] and i != 0:
+             data["url"].append(data["url"][-1]) # repeat the last url
+-            continue
++            continue 
++        image = Image.open(image_filepath)
+         try:
++            prompt = ["{message}. Create an educational vector illustration similar to the one in the provided image but with the instruction above.", image]
+             response = client.models.generate_content(
+                 model="gemini-2.0-flash-preview-image-generation",
+                 contents=prompt,
+diff --git a/GenAIQuestions/script.py b/GenAIQuestions/script.py
+index 5fdcc20..7853adf 100644
+--- a/GenAIQuestions/script.py
++++ b/GenAIQuestions/script.py
+@@ -11,8 +11,25 @@ import asyncio
+ import requests
+ from pathlib import Path 
+ 
++from selenium import webdriver
++from selenium.webdriver.chrome.options import Options
++from selenium.webdriver.common.by import By
++from selenium.webdriver.support.ui import WebDriverWait
++from selenium.webdriver.support import expected_conditions as EC
++import time
++
++# ---- Setup headless Chrome ----
++chrome_options = Options()
++chrome_options.add_argument("--headless")  # run without UI
++chrome_options.add_argument("--disable-gpu")
++chrome_options.add_argument("--window-size=1280,1024")
++chrome_options.add_argument("--no-sandbox")
++
+ file_pattern = Path(__file__).parent.resolve() / "examples" / "*.json"
+ new_json_path = Path(__file__).parent.resolve() / "new"
++
++screenshot_path = Path(__file__).parent.resolve() / "examples" / "screenshot"
++screenshot_path.mkdir(parents=True, exist_ok=True)
+  
+ T = TypeVar('T')
+ 
+@@ -33,7 +50,7 @@ async def main():
+         return response
+     
+     # generate questions 
+-    async def generate_questions(data: json) -> json:
++    async def generate_questions(data: json, filename: str) -> json:
+         try:
+             print(f"Generating questions...")
+             # call function which contains steps
+@@ -43,7 +60,7 @@ async def main():
+                 prompts = process_response(prompts)
+                 prompts = json.loads(prompts)
+             prompts = [p["prompt"] for p in prompts["image_data"]]
+-            urls = generate_images(prompts)
++            urls = generate_images(prompts,filename)
+             response = await run_agent(rebuild_json_prompt, rebuild_json, new_json=new_json, urls=urls)
+             return process_response(response)
+         except Exception as e:
+@@ -52,17 +69,30 @@ async def main():
+     count = 2       
+     url = f"http://localhost:8001/get-question-for-generation"
+     api_response = requests.get(url)
+-    questions = api_response.json()
++    question = api_response.json()
++    source_question_id = question.pop("_id")
++
+ 
+     # get questions
+     # selenium get id and screenshot  
+-    # use updated data for generation
++    driver = webdriver.Chrome(options=chrome_options)
++    try:
++        driver.get(f"http://localhost:3000/{source_question_id}")
++        wait = WebDriverWait(driver, 20)
++        wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".framework-perseus svg")))
++        time.sleep(2)
++        element = driver.find_element(By.CSS_SELECTOR, ".framework-perseus")
++        filename = f"{str(screenshot_path)}/{str(uuid.uuid4())}.png"
++        element.screenshot(filename)
++        print("✅ Screenshot saved as", filename)
++    finally:
++        driver.quit()
+ 
+-    for q in questions:
+-        source_question_id = q.id
++    # use updated data for generation
++    if question:
+         response: None
+         try:
+-            response = await generate_questions(q)
++            response = await generate_questions(question, filename)
+         except Exception as e:
+             print(f"Unable to load JSON: {e}")
+ 
+@@ -76,5 +106,4 @@ async def main():
+             print(f"No response generated for {q.id}, skipping...\n")
+ 
+ if __name__ == "__main__":
+-
+     asyncio.run(main())
+diff --git a/SherlockEDApi/CurriculumBuilder/1.1.1.1.1_x4f2f1ab7bcf1c348.json b/SherlockEDApi/CurriculumBuilder/1.1.1.1.1_x4f2f1ab7bcf1c348.json
+index cc47e16..c1b7d97 100644
+--- a/SherlockEDApi/CurriculumBuilder/1.1.1.1.1_x4f2f1ab7bcf1c348.json
++++ b/SherlockEDApi/CurriculumBuilder/1.1.1.1.1_x4f2f1ab7bcf1c348.json
+@@ -1,149 +1,126 @@
+ {
+-  "answerArea": {
+-    "calculator": false,
+-    "chi2Table": false,
+-    "periodicTable": false,
+-    "tTable": false,
+-    "zTable": false
+-  },
+-  "hints": [
+-    {
+-      "content": "$2{,}923= 2\\text{ thousands}+9\\text{ hundreds}+2\\text{ tens}+3\\text{ ones}$",
+-      "images": {},
+-      "replace": false,
+-      "widgets": {}
++    "answerArea": {
++        "calculator": false,
++        "chi2Table": false,
++        "periodicTable": false,
++        "tTable": false,
++        "zTable": false
+     },
+-    {
+-      "content": "So, we need to show $2$ thousands, $9$ hundreds, $2$ tens, and $3$ ones with the place value blocks.\n\n[[☃ image 1]]",
+-      "images": {},
+-      "replace": false,
+-      "widgets": {
+-        "image 1": {
+-          "alignment": "block",
+-          "graded": true,
+-          "options": {
+-            "alt": "Two thousands blocks each labeled with 1000, 9 hundreds blocks labeled with 900, 2 tens blocks labeled with 20, and 3 ones blocks labeled with 3. !",
+-            "backgroundImage": {
+-              "height": 179,
+-              "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/2983f41b5a2d4cd148f04711ebed47b7f602e66d",
+-              "width": 438
+-            },
+-            "box": [
+-              438,
+-              179
+-            ],
+-            "caption": "",
+-            "labels": [],
+-            "range": [
+-              [
+-                0,
+-                10
+-              ],
+-              [
+-                0,
+-                10
+-              ]
+-            ],
+-            "static": false,
+-            "title": ""
+-          },
+-          "static": false,
+-          "type": "image",
+-          "version": {
+-            "major": 2,
+-            "minor": 0
+-          }
++    "hints": [
++        {
++            "content": "###First, let's solve $\\greenD8\\times\\blueD{90}$:\n\n$\\begin{align} \\greenD8\\times \\blueD{90}&= \\greenD8\\times (\\blueD9\\times\\blueD{10}) \\\\\n\\\\\n&=  (\\greenD8\\times \\blueD9)\\times\\blueD{10} \\\\\n\\\\\n&= 72\\times\\blueD{10} \\\\  \n\\\\\n&= 720\n \\end{align}$",
++            "images": {},
++            "replace": false,
++            "widgets": {}
++        },
++        {
++            "content": "###Next, let's solve $\\greenD8\\times\\blueD{900}$:\n\n$\\begin{align} \\greenD8\\times \\blueD{900}&= \\greenD8\\times (\\blueD9\\times\\blueD{100}) \\\\\n\\\\\n&=  (\\greenD8\\times \\blueD9)\\times\\blueD{100} \\\\\n\\\\\n&= 72\\times\\blueD{100} \\\\  \n\\\\\n&= 7{,}200\n \\end{align}$",
++            "images": {},
++            "replace": false,
++            "widgets": {}
++        },
++        {
++            "content": "###Finally, let's solve $\\greenD8\\times\\blueD{9{,}000}$:\n\n$\\begin{align} \\greenD8\\times \\blueD{9{,}000}&= \\greenD8\\times (\\blueD9\\times\\blueD{1{,}000}) \\\\\n\\\\\n&=  (\\greenD8\\times \\blueD9)\\times\\blueD{1{,}000} \\\\\n\\\\\n&= 72\\times\\blueD{1{,}000} \\\\  \n\\\\\n&= 72{,}000\n \\end{align}$",
++            "images": {},
++            "replace": false,
++            "widgets": {}
++        },
++        {
++            "content": "###The answer\n\n$8\\times 90 =720$\n\n$8\\times 900 = 7{,}200$ \n\n$8\\times 9{,}000 = 72{,}000$",
++            "images": {},
++            "replace": false,
++            "widgets": {}
+         }
+-      }
++    ],
++    "itemDataVersion": {
++        "major": 2,
++        "minor": 0
+     },
+-    {
+-      "content": "This place value model shows $2{,}923$:\n\n[[☃ image 1]]",
+-      "images": {},
+-      "replace": false,
+-      "widgets": {
+-        "image 1": {
+-          "alignment": "block",
+-          "graded": true,
+-          "options": {
+-            "alt": "Two thousands blocks, 9 hundreds blocks, 2 tens blocks, and 3 ones blocks. !",
+-            "backgroundImage": {
+-              "height": 165,
+-              "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/58dbba903d46e9fb855bc7399ea5d1eeca76baff",
+-              "width": 438
++    "question": {
++        "content": "**Multiply.**  \n\n$8\\times 90 =$ [[☃ numeric-input 1]] \n\n$8\\times 900 =$ [[☃ numeric-input 2]] \n\n$8\\times 9{,}000 =$ [[☃ numeric-input 3]] ",
++        "images": {},
++        "widgets": {
++            "numeric-input 1": {
++                "alignment": "default",
++                "graded": true,
++                "options": {
++                    "answers": [
++                        {
++                            "maxError": null,
++                            "message": "",
++                            "simplify": "required",
++                            "status": "correct",
++                            "strict": false,
++                            "value": 720
++                        }
++                    ],
++                    "coefficient": false,
++                    "labelText": "",
++                    "multipleNumberInput": false,
++                    "size": "normal",
++                    "static": false
++                },
++                "static": false,
++                "type": "numeric-input",
++                "version": {
++                    "major": 2,
++                    "minor": 0
++                }
+             },
+-            "box": [
+-              438,
+-              165
+-            ],
+-            "caption": "",
+-            "labels": [],
+-            "range": [
+-              [
+-                0,
+-                10
+-              ],
+-              [
+-                0,
+-                10
+-              ]
+-            ],
+-            "static": false,
+-            "title": ""
+-          },
+-          "static": false,
+-          "type": "image",
+-          "version": {
+-            "major": 2,
+-            "minor": 0
+-          }
+-        }
+-      }
+-    }
+-  ],
+-  "itemDataVersion": {
+-    "major": 2,
+-    "minor": 0
+-  },
+-  "question": {
+-    "content": "**Which place value model shows $2{,}923$?**\n\n[[☃ radio 1]]",
+-    "images": {},
+-    "widgets": {
+-      "radio 1": {
+-        "alignment": "default",
+-        "graded": true,
+-        "options": {
+-          "choices": [
+-            {
+-              "content": "![Two thousands blocks, 9 hundreds blocks, 2 tens blocks, and 3 ones blocks.](web+graphie://cdn.kastatic.org/ka-perseus-graphie/58dbba903d46e9fb855bc7399ea5d1eeca76baff)",
+-              "correct": true,
+-              "id": "b6aab82c-f1dd-4849-9e7f-f7c6403c5322"
++            "numeric-input 2": {
++                "alignment": "default",
++                "graded": true,
++                "options": {
++                    "answers": [
++                        {
++                            "maxError": null,
++                            "message": "",
++                            "simplify": "required",
++                            "status": "correct",
++                            "strict": false,
++                            "value": 7200
++                        }
++                    ],
++                    "coefficient": false,
++                    "labelText": "",
++                    "multipleNumberInput": false,
++                    "size": "normal",
++                    "static": false
++                },
++                "static": false,
++                "type": "numeric-input",
++                "version": {
++                    "major": 2,
++                    "minor": 0
++                }
+             },
+-            {
+-              "content": "![Two thousands blocks, 2 hundreds blocks, 3 tens blocks, and 9 ones blocks.](web+graphie://cdn.kastatic.org/ka-perseus-graphie/5a652d462923430f13bec40f46f20cec1d6a9a4f)",
+-              "correct": false,
+-              "id": "71554a36-c3b0-42f0-99fd-e1ca4694c5fb"
+-            },
+-            {
+-              "content": "![Two hundreds blocks, 9 tens blocks, and 3 ones blocks.](web+graphie://cdn.kastatic.org/ka-perseus-graphie/994dd315ab07f4faf4d460b154cc9f5e8fe29b0c)",
+-              "correct": false,
+-              "isNoneOfTheAbove": false,
+-              "id": "6e731e1c-03e3-4fb2-97e8-92e39486accc"
++            "numeric-input 3": {
++                "alignment": "default",
++                "graded": true,
++                "options": {
++                    "answers": [
++                        {
++                            "maxError": null,
++                            "message": "",
++                            "simplify": "required",
++                            "status": "correct",
++                            "strict": false,
++                            "value": 72000
++                        }
++                    ],
++                    "coefficient": false,
++                    "labelText": "",
++                    "multipleNumberInput": false,
++                    "size": "normal",
++                    "static": false
++                },
++                "static": false,
++                "type": "numeric-input",
++                "version": {
++                    "major": 2,
++                    "minor": 0
++                }
+             }
+-          ],
+-          "countChoices": false,
+-          "deselectEnabled": false,
+-          "displayCount": null,
+-          "hasNoneOfTheAbove": false,
+-          "multipleSelect": false,
+-          "randomize": false
+-        },
+-        "static": false,
+-        "type": "radio",
+-        "version": {
+-          "major": 2,
+-          "minor": 0
+         }
+-      }
+     }
+-  }
+ }
+\ No newline at end of file
+diff --git a/SherlockEDApi/app/database/models.py b/SherlockEDApi/app/database/models.py
+index 0815ee0..4957662 100644
+--- a/SherlockEDApi/app/database/models.py
++++ b/SherlockEDApi/app/database/models.py
+@@ -1,6 +1,7 @@
+ from beanie import Document, Link
+ from typing import Dict, List, Optional
+ from datetime import datetime
++from pydantic import Field, ConfigDict
+ 
+ class QuestionDocument(Document):
+     answerArea: Optional[Dict] = None
+@@ -12,7 +13,6 @@ class QuestionDocument(Document):
+     generated: List[Link["GeneratedQuestionDocument"]] = []
+     created_at: datetime = datetime.now()
+ 
+-
+     class Settings:
+         name = "questions" 
+ 
+@@ -24,6 +24,5 @@ class GeneratedQuestionDocument(Document):
+     source: str = "aitutor"
+     created_at: datetime = datetime.now()
+ 
+-
+     class Settings:
+         name = "questions-generated"
+\ No newline at end of file
 diff --git a/SherlockEDApi/app/main.py b/SherlockEDApi/app/main.py
-index 4c7dbc4..a854cd6 100644
+index a854cd6..78e5a49 100644
 --- a/SherlockEDApi/app/main.py
 +++ b/SherlockEDApi/app/main.py
-@@ -1,12 +1,37 @@
- from fastapi import FastAPI
- from fastapi.middleware.cors import CORSMiddleware
- from app.routes import routes as app_routes 
--
-+from beanie import init_beanie 
-+from motor.motor_asyncio import AsyncIOMotorClient 
-+from contextlib import asynccontextmanager
-+from app.database.models import QuestionDocument 
-+from app.utils.database import seed_db
-+from app.database.models import QuestionDocument  
-+
-+
-+async def is_database_empty():
-+    count = await QuestionDocument.find().count()
-+    if count > 0:
-+        return False
-+    return True 
-+
-+@asynccontextmanager
-+async def lifespan(app: FastAPI):
-+    print("Starting app...")
-+    client = AsyncIOMotorClient("mongodb://localhost:27017")
-+    db = client["question_db"]
-+    await init_beanie(database=db, document_models=[QuestionDocument])
-+    if await is_database_empty():    
-+        print("Seeding database...")
-+        await seed_db()
-+    yield
-+    print("Shutting down...")
- 
- app = FastAPI(
-     title="Exam System API", 
-     description="API for managing exam sessions, user responses, and scoring",
--    version="1.0.0"
-+    version="1.0.0",
-+    lifespan=lifespan
- )
+@@ -4,9 +4,8 @@ from app.routes import routes as app_routes
+ from beanie import init_beanie 
+ from motor.motor_asyncio import AsyncIOMotorClient 
+ from contextlib import asynccontextmanager
+-from app.database.models import QuestionDocument 
++from app.database.models import QuestionDocument, GeneratedQuestionDocument
+ from app.utils.database import seed_db
+-from app.database.models import QuestionDocument  
  
  
+ async def is_database_empty():
+@@ -20,7 +19,7 @@ async def lifespan(app: FastAPI):
+     print("Starting app...")
+     client = AsyncIOMotorClient("mongodb://localhost:27017")
+     db = client["question_db"]
+-    await init_beanie(database=db, document_models=[QuestionDocument])
++    await init_beanie(database=db, document_models=[QuestionDocument,GeneratedQuestionDocument])
+     if await is_database_empty():    
+         print("Seeding database...")
+         await seed_db()
 diff --git a/SherlockEDApi/app/routes/routes.py b/SherlockEDApi/app/routes/routes.py
-index c83c2bf..b3d8f8b 100644
+index b3d8f8b..3db95db 100644
 --- a/SherlockEDApi/app/routes/routes.py
 +++ b/SherlockEDApi/app/routes/routes.py
-@@ -1,26 +1,106 @@
- from math import e 
--from fastapi import APIRouter, Request
-+from fastapi import APIRouter, Request, HTTPException, BackgroundTasks
- from fastapi.responses import JSONResponse
- import asyncio
+@@ -5,8 +5,10 @@ import asyncio
  import json
  import uuid
  import pathlib 
--from typing import List
-+import random
-+from typing import List 
-+from beanie.operators import LTE
+-import random
+-from typing import List 
++import random 
++from bson import ObjectId
++from typing import List, Dict, Optional
++from pydantic import BaseModel, Field, field_validator
+ from beanie.operators import LTE
  from app.utils.khan_questions_loader import load_questions 
-+from app.database.models import GeneratedQuestionDocument, QuestionDocument
+ from app.database.models import GeneratedQuestionDocument, QuestionDocument
+@@ -27,12 +29,36 @@ file["data"].append(item)
+ def update_json_file():
+     pass
  
- router = APIRouter()
++class Projection(BaseModel):
++    answerArea: Optional[Dict] = None
++    hints: Optional[List[Dict]] = None
++    itemDataVersion: Optional[Dict] = None
++    question: Dict
++
++
++class ProjectionWithID(BaseModel):
++    id: Optional[str] = Field(None, alias="_id")
++    answerArea: Optional[Dict] = None
++    hints: Optional[List[Dict]] = None
++    itemDataVersion: Optional[Dict] = None
++    question: Dict
++
++    model_config = {
++        "populate_by_name": True,
++        "arbitrary_types_allowed": True
++    }
++
++    @field_validator("id", mode="before")
++    def convert_objectid(cls, v):
++        from bson import ObjectId
++        return str(v) if isinstance(v, ObjectId) else v
++
  
- base_dir=pathlib.Path(__file__).resolve().parents[2] / "CurriculumBuilder_validated"
-+
- base_dir.mkdir(parents=True, exist_ok=True)
- 
-+already_seen = set()
-+
-+file = {}
-+item = {} # question, image-path
-+file["data"] = []
-+file["data"].append(item) 
-+
-+def update_json_file():
-+    pass
-+
-+
  # endpoint to get questions 
--@router.get("/questions/{sample_size}")
--async def get_questions(sample_size: int):
-+@router.get("/question")
-+async def get_questions(task: BackgroundTasks):
+ @router.get("/question")
+-async def get_questions(task: BackgroundTasks):
++async def get_questions(task: BackgroundTasks): 
      """Endpoint for retrieving questions"""
--    data = load_questions(
--        sample_size=sample_size
--    )
--    return data
-+    data = await QuestionDocument.find_all().to_list()
-+    remaining = [q for q in data if str(q.id) not in already_seen] 
-+    if not remaining:
-+        return JSONResponse(content={"finished":True, "message": "No questions remaining"})
-+    question = random.choice(remaining)
-+    already_seen.add(str(question.id))
-+    task.add_task(update_json_file, question)
-+
-+    return JSONResponse(content={"finished":False, "question": question}, status_code=200)
-+
-+
-+# endpoint to get questions 
-+@router.get("/question/{id}")
-+async def get_questions(task: BackgroundTasks):
-+    """Endpoint for retrieving questions"""
-+    data = await QuestionDocument.find_all().to_list()
-+    remaining = [q for q in data if str(q.id) not in already_seen] 
-+    if not remaining:
-+        return JSONResponse(content={"finished":True, "message": "No questions remaining"})
-+    question = random.choice(remaining)
-+    already_seen.add(str(question.id))
-+    task.add_task(update_json_file, question)
-+
-+    return JSONResponse(content={"finished":False, "question": question}, status_code=200)
-+
-+
-+@router.get("/get-question-for-generation/")
-+async def get_question_for_generation():
-+    response = await QuestionDocument.find(
-+        QuestionDocument.source == "khan",
-+        LTE(QuestionDocument.generated_count, 2)).project({
-+            "answerArea":1,
-+            "hints":1,
-+            "itemDataVersion":1,
-+            "question":1,
-+            "_id":1
-+        })
-+    if response:
-+        return response
-+    raise HTTPException(status_code=404, detail="No data")
-+
-+
-+@router.post("/save-generated-question/{source_question_id}")
-+async def save_generted_question(source_question_id, request: Request):
-+    data = request.json()
-+    question = GeneratedQuestionDocument(
-+        source="aitutor",
-+        **data)
-+    await question.insert()
-+
-+    source_question = await QuestionDocument.get(source_question_id)
-+    if not source_question:
-+        raise HTTPException(status_code=404, detail="Original document not found")
-+    source_question.generated.append(question)
-+    source_question.generated_count = 1
-+    await source_question.save()
-+
-+    return JSONResponse(content={"message": "Success"}, status_code=201)
-+
-+
-+# endpoint to get questions 
-+# @router.post("/test")
-+# async def get_questions(request: Request):
-+#     """Endpoint for retrieving questions"""
-+#     data = await request.json()
-+#     data = QuestionDocument(**data)
-+#     await data.insert()
-+#     return "DONE!"
-+
+-    data = await QuestionDocument.find_all().to_list()
++    data = await QuestionDocument.find_all().project(Projection).to_list()
+     remaining = [q for q in data if str(q.id) not in already_seen] 
+     if not remaining:
+         return JSONResponse(content={"finished":True, "message": "No questions remaining"})
+@@ -45,30 +71,32 @@ async def get_questions(task: BackgroundTasks):
  
- # endpoint to get generated questions
- @router.get("/generated-questions/{sample_size}")
-@@ -28,7 +108,7 @@ async def get_generated_questions(sample_size: int):
-     """Endpoint for retrieving generated questions"""
-     data = load_questions(
-         sample_size=sample_size,
--        is_generated=True
-+        isGenerated=True
-     )
-     return data 
+ # endpoint to get questions 
+ @router.get("/question/{id}")
+-async def get_questions(task: BackgroundTasks):
++async def get_questions(id: str, task: BackgroundTasks):
+     """Endpoint for retrieving questions"""
+-    data = await QuestionDocument.find_all().to_list()
+-    remaining = [q for q in data if str(q.id) not in already_seen] 
+-    if not remaining:
+-        return JSONResponse(content={"finished":True, "message": "No questions remaining"})
+-    question = random.choice(remaining)
+-    already_seen.add(str(question.id))
+-    task.add_task(update_json_file, question)
++    from bson import ObjectId
++    response = await QuestionDocument.find_one({"_id": ObjectId(id)})
  
-@@ -41,7 +121,7 @@ async def save_validated_json(request: Request):
-     return JSONResponse(
-         content={"message":"JSON saved successfully"},
-         status_code=201
--    )
-+    ) 
- 
- 
- 
-diff --git a/SherlockEDApi/app/utils/khan_questions_loader.py b/SherlockEDApi/app/utils/khan_questions_loader.py
-index 8651261..8a00f28 100644
---- a/SherlockEDApi/app/utils/khan_questions_loader.py
-+++ b/SherlockEDApi/app/utils/khan_questions_loader.py
-@@ -35,7 +35,7 @@ def load_generated_json_from_dir():
-     for file_path in glob.glob(file_pattern):
-         filename = pathlib.Path(file_path).stem
-         data = {}
--        try:
-+        try: 
-             source_file = file_path
-             generated_file = f"{str(generated_path)}/{filename}_generated.json"
-             with open(file_path, "r", encoding="utf-8") as f:
-@@ -48,21 +48,26 @@ def load_generated_json_from_dir():
-             print(f"Unable to load JSON: {e}")
-     return all_objects
- 
--def load_questions(sample_size, is_generated: bool = False):
-+def load_questions(sample_size:int=10, isGenerated:bool=False):
-     """Loads the requested number of questions"""
--    if (is_generated == True):
-+    if (isGenerated == True):
-         all_questions = load_generated_json_from_dir()
-+        if all_questions:
-+            if sample_size <= len(all_questions):
-+                try:
-+                    sample = random.sample(all_questions,sample_size)
-+                    return sample
-+                except Exception as e:
-+                    print(f"Failed to load questions: {e}")
-+            if sample_size > len(all_questions):
-+                try:
-+                    return all_questions
-+                except Exception as e:
-+                    print(f"Failed to load questions: {e}")
-     else:
--        all_questions = load_json_objects_from_dir()
--    if all_questions:
--        if sample_size <= len(all_questions):
--            try:
--                sample = random.sample(all_questions,sample_size)
--                return sample
--            except Exception as e:
--                print(f"Failed to load questions: {e}")
--        if sample_size > len(all_questions):
--            try:
--                return all_questions
--            except Exception as e:
--                print(f"Failed to load questions: {e}")
-\ No newline at end of file
-+        try:
-+            questions = load_json_objects_from_dir()
-+            return questions
-+        except Exception as e:
-+            print("Unable to load questions:", e)
+-    return JSONResponse(content={"finished":False, "question": question}, status_code=200)
++    if response.answerArea and response.hints and response.questions and response.itemDataVersion:
++        question = {"answerArea": response.answerArea, "hints":response.hints, "question":response.question, "itemDataVersion":response.itemDataVersion}
++        
++    metadata = {"source": response.source, "generated_count": response.generated_count }
++    generated = response.generated
++
++    if not question:
++        raise HTTPException(status_code=404, detail="Question not found")
 +    
-\ No newline at end of file
++    return JSONResponse(content={"finished": False, "question": question, "metadata": metadata, "generated": generated}, status_code=200)
++
++    # question = await QuestionDocument.find_one({"_id": ObjectId(id)}).project(Projection)
++    # return JSONResponse(content={"finished":False, "question": question.model_dump()}, status_code=200)
+ 
+ 
+-@router.get("/get-question-for-generation/")
++
++@router.get("/get-question-for-generation")
+ async def get_question_for_generation():
+-    response = await QuestionDocument.find(
++    response = await QuestionDocument.find_one(
+         QuestionDocument.source == "khan",
+-        LTE(QuestionDocument.generated_count, 2)).project({
+-            "answerArea":1,
+-            "hints":1,
+-            "itemDataVersion":1,
+-            "question":1,
+-            "_id":1
+-        })
++        LTE(QuestionDocument.generated_count, 2)).project(ProjectionWithID)
+     if response:
+         return response
+     raise HTTPException(status_code=404, detail="No data")
+@@ -76,7 +104,7 @@ async def get_question_for_generation():
+ 
+ @router.post("/save-generated-question/{source_question_id}")
+ async def save_generted_question(source_question_id, request: Request):
+-    data = request.json()
++    data = await request.json()
+     question = GeneratedQuestionDocument(
+         source="aitutor",
+         **data)
 diff --git a/changes.patch b/changes.patch
-index ef151f1..450c439 100644
+index c9fc20b..1e19ce0 100644
 --- a/changes.patch
 +++ b/changes.patch
-@@ -1,143 +0,0 @@
+@@ -1,570 +0,0 @@
 -diff --git a/SherlockEDApi/app/main.py b/SherlockEDApi/app/main.py
--index 4c7dbc4..77aa759 100644
+-index 4c7dbc4..a854cd6 100644
 ---- a/SherlockEDApi/app/main.py
 -+++ b/SherlockEDApi/app/main.py
--@@ -27,11 +27,11 @@ origins = [
+-@@ -1,12 +1,37 @@
+- from fastapi import FastAPI
+- from fastapi.middleware.cors import CORSMiddleware
+- from app.routes import routes as app_routes 
+--
+-+from beanie import init_beanie 
+-+from motor.motor_asyncio import AsyncIOMotorClient 
+-+from contextlib import asynccontextmanager
+-+from app.database.models import QuestionDocument 
+-+from app.utils.database import seed_db
+-+from app.database.models import QuestionDocument  
+-+
+-+
+-+async def is_database_empty():
+-+    count = await QuestionDocument.find().count()
+-+    if count > 0:
+-+        return False
+-+    return True 
+-+
+-+@asynccontextmanager
+-+async def lifespan(app: FastAPI):
+-+    print("Starting app...")
+-+    client = AsyncIOMotorClient("mongodb://localhost:27017")
+-+    db = client["question_db"]
+-+    await init_beanie(database=db, document_models=[QuestionDocument])
+-+    if await is_database_empty():    
+-+        print("Seeding database...")
+-+        await seed_db()
+-+    yield
+-+    print("Shutting down...")
 - 
-- app.add_middleware(
--     CORSMiddleware,
---    allow_origins=origins,  
--+    allow_origins=["*"],  
--     allow_credentials=True,
--     allow_methods=["*"],
--     allow_headers=["*"],
+- app = FastAPI(
+-     title="Exam System API", 
+-     description="API for managing exam sessions, user responses, and scoring",
+--    version="1.0.0"
+-+    version="1.0.0",
+-+    lifespan=lifespan
 - )
 - 
 - 
---app.include_router(app_routes.router, prefix="/api", tags=["api"])
--\ No newline at end of file
--+app.include_router(app_routes.router, prefix="/api", tags=["api"])  
--\ No newline at end of file
 -diff --git a/SherlockEDApi/app/routes/routes.py b/SherlockEDApi/app/routes/routes.py
--index 2c7499a..c83c2bf 100644
+-index c83c2bf..b3d8f8b 100644
 ---- a/SherlockEDApi/app/routes/routes.py
 -+++ b/SherlockEDApi/app/routes/routes.py
--@@ -6,7 +6,7 @@ import json
+-@@ -1,26 +1,106 @@
+- from math import e 
+--from fastapi import APIRouter, Request
+-+from fastapi import APIRouter, Request, HTTPException, BackgroundTasks
+- from fastapi.responses import JSONResponse
+- import asyncio
+- import json
 - import uuid
 - import pathlib 
-- from typing import List
---from app.utils.khan_questions_loader import load_questions
--+from app.utils.khan_questions_loader import load_questions 
+--from typing import List
+-+import random
+-+from typing import List 
+-+from beanie.operators import LTE
+- from app.utils.khan_questions_loader import load_questions 
+-+from app.database.models import GeneratedQuestionDocument, QuestionDocument
 - 
 - router = APIRouter()
 - 
--@@ -42,4 +42,7 @@ async def save_validated_json(request: Request):
+- base_dir=pathlib.Path(__file__).resolve().parents[2] / "CurriculumBuilder_validated"
+-+
+- base_dir.mkdir(parents=True, exist_ok=True)
+- 
+-+already_seen = set()
+-+
+-+file = {}
+-+item = {} # question, image-path
+-+file["data"] = []
+-+file["data"].append(item) 
+-+
+-+def update_json_file():
+-+    pass
+-+
+-+
+- # endpoint to get questions 
+--@router.get("/questions/{sample_size}")
+--async def get_questions(sample_size: int):
+-+@router.get("/question")
+-+async def get_questions(task: BackgroundTasks):
+-     """Endpoint for retrieving questions"""
+--    data = load_questions(
+--        sample_size=sample_size
+--    )
+--    return data
+-+    data = await QuestionDocument.find_all().to_list()
+-+    remaining = [q for q in data if str(q.id) not in already_seen] 
+-+    if not remaining:
+-+        return JSONResponse(content={"finished":True, "message": "No questions remaining"})
+-+    question = random.choice(remaining)
+-+    already_seen.add(str(question.id))
+-+    task.add_task(update_json_file, question)
+-+
+-+    return JSONResponse(content={"finished":False, "question": question}, status_code=200)
+-+
+-+
+-+# endpoint to get questions 
+-+@router.get("/question/{id}")
+-+async def get_questions(task: BackgroundTasks):
+-+    """Endpoint for retrieving questions"""
+-+    data = await QuestionDocument.find_all().to_list()
+-+    remaining = [q for q in data if str(q.id) not in already_seen] 
+-+    if not remaining:
+-+        return JSONResponse(content={"finished":True, "message": "No questions remaining"})
+-+    question = random.choice(remaining)
+-+    already_seen.add(str(question.id))
+-+    task.add_task(update_json_file, question)
+-+
+-+    return JSONResponse(content={"finished":False, "question": question}, status_code=200)
+-+
+-+
+-+@router.get("/get-question-for-generation/")
+-+async def get_question_for_generation():
+-+    response = await QuestionDocument.find(
+-+        QuestionDocument.source == "khan",
+-+        LTE(QuestionDocument.generated_count, 2)).project({
+-+            "answerArea":1,
+-+            "hints":1,
+-+            "itemDataVersion":1,
+-+            "question":1,
+-+            "_id":1
+-+        })
+-+    if response:
+-+        return response
+-+    raise HTTPException(status_code=404, detail="No data")
+-+
+-+
+-+@router.post("/save-generated-question/{source_question_id}")
+-+async def save_generted_question(source_question_id, request: Request):
+-+    data = request.json()
+-+    question = GeneratedQuestionDocument(
+-+        source="aitutor",
+-+        **data)
+-+    await question.insert()
+-+
+-+    source_question = await QuestionDocument.get(source_question_id)
+-+    if not source_question:
+-+        raise HTTPException(status_code=404, detail="Original document not found")
+-+    source_question.generated.append(question)
+-+    source_question.generated_count = 1
+-+    await source_question.save()
+-+
+-+    return JSONResponse(content={"message": "Success"}, status_code=201)
+-+
+-+
+-+# endpoint to get questions 
+-+# @router.post("/test")
+-+# async def get_questions(request: Request):
+-+#     """Endpoint for retrieving questions"""
+-+#     data = await request.json()
+-+#     data = QuestionDocument(**data)
+-+#     await data.insert()
+-+#     return "DONE!"
+-+
+- 
+- # endpoint to get generated questions
+- @router.get("/generated-questions/{sample_size}")
+-@@ -28,7 +108,7 @@ async def get_generated_questions(sample_size: int):
+-     """Endpoint for retrieving generated questions"""
+-     data = load_questions(
+-         sample_size=sample_size,
+--        is_generated=True
+-+        isGenerated=True
+-     )
+-     return data 
+- 
+-@@ -41,7 +121,7 @@ async def save_validated_json(request: Request):
+-     return JSONResponse(
 -         content={"message":"JSON saved successfully"},
 -         status_code=201
--     )
--+
--+
--+
--     
--diff --git a/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx b/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
--index 1a9cc3e..b54af99 100644
----- a/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
--+++ b/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
--@@ -7,7 +7,8 @@ import { mockStrings } from "../../package/perseus/src/strings";
-- // a component that allows viewing current json on screen
-- // import { useState } from 'react';
+--    )
+-+    ) 
 - 
---const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData: any) => void }) => {
--+// make this function take perseusItem as prop 
--+const JSONViewer = ({ data, perseusItem, onDataChange }: { data: any; perseusItem: any,  onDataChange?: (newData: any) => void }) => {
--     const [isEditing, setIsEditing] = useState(false);
--     const [editedContent, setEditedContent] = useState(JSON.stringify(data, null, 2));
 - 
--@@ -16,6 +17,12 @@ const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData
--             const parsedData = JSON.parse(editedContent);
--             onDataChange?.(parsedData);
--             setIsEditing(false);
--+            fetch('http://localhost:8001/api/regenerate-from-data', {
--+                method: 'POST',
--+                headers: { "content-type": "application/json" },
--+                body: JSON.stringify({"data":parsedData,"save_path": perseusItem.metadata.generated_file_path}),
--+            })
--+            .then((response) => console.log("Saved successfully"))
--         } catch (error) {
--             alert('Invalid JSON format');
--         }
--@@ -168,7 +175,7 @@ export default function QuestionValidationComponent() {
--                                 )}
--                         </div>
--                     </div>
---                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} />}
--+                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} perseusItem={perseusItem} />}
--                 </div>
--                 <div className="flex flex-col w-[154px] gap-2">
--                     <button
+- 
+-diff --git a/SherlockEDApi/app/utils/khan_questions_loader.py b/SherlockEDApi/app/utils/khan_questions_loader.py
+-index 8651261..8a00f28 100644
+---- a/SherlockEDApi/app/utils/khan_questions_loader.py
+-+++ b/SherlockEDApi/app/utils/khan_questions_loader.py
+-@@ -35,7 +35,7 @@ def load_generated_json_from_dir():
+-     for file_path in glob.glob(file_pattern):
+-         filename = pathlib.Path(file_path).stem
+-         data = {}
+--        try:
+-+        try: 
+-             source_file = file_path
+-             generated_file = f"{str(generated_path)}/{filename}_generated.json"
+-             with open(file_path, "r", encoding="utf-8") as f:
+-@@ -48,21 +48,26 @@ def load_generated_json_from_dir():
+-             print(f"Unable to load JSON: {e}")
+-     return all_objects
+- 
+--def load_questions(sample_size, is_generated: bool = False):
+-+def load_questions(sample_size:int=10, isGenerated:bool=False):
+-     """Loads the requested number of questions"""
+--    if (is_generated == True):
+-+    if (isGenerated == True):
+-         all_questions = load_generated_json_from_dir()
+-+        if all_questions:
+-+            if sample_size <= len(all_questions):
+-+                try:
+-+                    sample = random.sample(all_questions,sample_size)
+-+                    return sample
+-+                except Exception as e:
+-+                    print(f"Failed to load questions: {e}")
+-+            if sample_size > len(all_questions):
+-+                try:
+-+                    return all_questions
+-+                except Exception as e:
+-+                    print(f"Failed to load questions: {e}")
+-     else:
+--        all_questions = load_json_objects_from_dir()
+--    if all_questions:
+--        if sample_size <= len(all_questions):
+--            try:
+--                sample = random.sample(all_questions,sample_size)
+--                return sample
+--            except Exception as e:
+--                print(f"Failed to load questions: {e}")
+--        if sample_size > len(all_questions):
+--            try:
+--                return all_questions
+--            except Exception as e:
+--                print(f"Failed to load questions: {e}")
+-\ No newline at end of file
+-+        try:
+-+            questions = load_json_objects_from_dir()
+-+            return questions
+-+        except Exception as e:
+-+            print("Unable to load questions:", e)
+-+    
+-\ No newline at end of file
+-diff --git a/changes.patch b/changes.patch
+-index ef151f1..450c439 100644
+---- a/changes.patch
+-+++ b/changes.patch
+-@@ -1,143 +0,0 @@
+--diff --git a/SherlockEDApi/app/main.py b/SherlockEDApi/app/main.py
+--index 4c7dbc4..77aa759 100644
+----- a/SherlockEDApi/app/main.py
+--+++ b/SherlockEDApi/app/main.py
+--@@ -27,11 +27,11 @@ origins = [
+-- 
+-- app.add_middleware(
+--     CORSMiddleware,
+---    allow_origins=origins,  
+--+    allow_origins=["*"],  
+--     allow_credentials=True,
+--     allow_methods=["*"],
+--     allow_headers=["*"],
+-- )
+-- 
+-- 
+---app.include_router(app_routes.router, prefix="/api", tags=["api"])
+--\ No newline at end of file
+--+app.include_router(app_routes.router, prefix="/api", tags=["api"])  
+--\ No newline at end of file
+--diff --git a/SherlockEDApi/app/routes/routes.py b/SherlockEDApi/app/routes/routes.py
+--index 2c7499a..c83c2bf 100644
+----- a/SherlockEDApi/app/routes/routes.py
+--+++ b/SherlockEDApi/app/routes/routes.py
+--@@ -6,7 +6,7 @@ import json
+-- import uuid
+-- import pathlib 
+-- from typing import List
+---from app.utils.khan_questions_loader import load_questions
+--+from app.utils.khan_questions_loader import load_questions 
+-- 
+-- router = APIRouter()
+-- 
+--@@ -42,4 +42,7 @@ async def save_validated_json(request: Request):
+--         content={"message":"JSON saved successfully"},
+--         status_code=201
+--     )
+--+
+--+
+--+
+--     
+--diff --git a/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx b/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
+--index 1a9cc3e..b54af99 100644
+----- a/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
+--+++ b/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
+--@@ -7,7 +7,8 @@ import { mockStrings } from "../../package/perseus/src/strings";
+-- // a component that allows viewing current json on screen
+-- // import { useState } from 'react';
+-- 
+---const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData: any) => void }) => {
+--+// make this function take perseusItem as prop 
+--+const JSONViewer = ({ data, perseusItem, onDataChange }: { data: any; perseusItem: any,  onDataChange?: (newData: any) => void }) => {
+--     const [isEditing, setIsEditing] = useState(false);
+--     const [editedContent, setEditedContent] = useState(JSON.stringify(data, null, 2));
+-- 
+--@@ -16,6 +17,12 @@ const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData
+--             const parsedData = JSON.parse(editedContent);
+--             onDataChange?.(parsedData);
+--             setIsEditing(false);
+--+            fetch('http://localhost:8001/api/regenerate-from-data', {
+--+                method: 'POST',
+--+                headers: { "content-type": "application/json" },
+--+                body: JSON.stringify({"data":parsedData,"save_path": perseusItem.metadata.generated_file_path}),
+--+            })
+--+            .then((response) => console.log("Saved successfully"))
+--         } catch (error) {
+--             alert('Invalid JSON format');
+--         }
+--@@ -168,7 +175,7 @@ export default function QuestionValidationComponent() {
+--                                 )}
+--                         </div>
+--                     </div>
+---                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} />}
+--+                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} perseusItem={perseusItem} />}
+--                 </div>
+--                 <div className="flex flex-col w-[154px] gap-2">
+--                     <button
+--diff --git a/frontend/src/components/question-widget-renderer/RendererComponent.tsx b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
+--index 98faa43..f8342e3 100644
+----- a/frontend/src/components/question-widget-renderer/RendererComponent.tsx
+--+++ b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
+--@@ -30,7 +30,43 @@ const RendererComponent = () => {
+--                 console.error("Failed to fetch questions:", err);
+--                 setLoading(false);
+--             });
+---    }, []);
+--+
+--+        //     const canvas = document.querySelector('canvas') as HTMLCanvasElement;
+--+        //     if (canvas) {
+--+        //     const dataUrl = canvas.toDataURL('image/png');
+--+        //     console.log(`The Canvas Image: ${dataUrl}`);
+--+            
+--+        //     if (dataUrl) {
+--+        //         const link = document.createElement('a');
+--+        //         const cleanDataUrl = dataUrl.replace(/^data:image\/png;base64,/, "");
+--+        //         link.href = dataUrl; // Use the original dataUrl for href
+--+        //         link.download = 'output.png';
+--+        //         document.body.appendChild(link);
+--+        //         link.click();
+--+        //         document.body.removeChild(link);
+--+        //     }
+--+        // }
+--+  }, []);
+--+
+--+    const handleDownloadCanvasImage = () => {
+--+        const canvases = document.querySelectorAll<HTMLCanvasElement>('canvas');
+--+        canvases.forEach((canvas) => {
+--+            if (canvas) {
+--+                const dataUrl = canvas.toDataURL('image/png');
+--+                console.log(`The Canvas Image: ${dataUrl}`);
+--+                
+--+                if (dataUrl) {
+--+                    const link = document.createElement('a');
+--+                    const cleanDataUrl = dataUrl.replace(/^data:image\/png;base64,/, "");
+--+                    link.href = dataUrl; // Use the original dataUrl for href
+--+                    link.download = 'output.png';
+--+                    document.body.appendChild(link);
+--+                    link.click();
+--+                    document.body.removeChild(link);
+--+                }
+--+            }
+--+        });
+--+    };
+-- 
+--     const handleNext = () => {
+--         setItem((prev) => {
+--@@ -115,9 +151,14 @@ const RendererComponent = () => {
+--                         onClick={handleSubmit}>
+--                         Submit
+--                     </button>
+--+                    <button 
+--+                        className="bg-red-500 absolute rounded text-white p-2 right-18 top-8"
+--+                        onClick={handleDownloadCanvasImage}>
+--+                        Download Canvas
+--+                    </button>
+--                 </div>
+--             </div>
+--     );
+-- };
+-- 
+---export default RendererComponent;
+--+export default RendererComponent;
+--\ No newline at end of file
+-diff --git a/changes1.patch b/changes1.patch
+-deleted file mode 100644
+-index dd4ec73..0000000
+---- a/changes1.patch
+-+++ /dev/null
+-@@ -1,93 +0,0 @@
+--diff --git a/SherlockEDApi/app/routes/routes.py b/SherlockEDApi/app/routes/routes.py
+--index 2c7499a..c83c2bf 100644
+----- a/SherlockEDApi/app/routes/routes.py
+--+++ b/SherlockEDApi/app/routes/routes.py
+--@@ -6,7 +6,7 @@ import json
+-- import uuid
+-- import pathlib 
+-- from typing import List
+---from app.utils.khan_questions_loader import load_questions
+--+from app.utils.khan_questions_loader import load_questions 
+-- 
+-- router = APIRouter()
+-- 
+--@@ -42,4 +42,7 @@ async def save_validated_json(request: Request):
+--         content={"message":"JSON saved successfully"},
+--         status_code=201
+--     )
+--+
+--+
+--+
+--     
+--diff --git a/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx b/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
+--index 1a9cc3e..b54af99 100644
+----- a/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
+--+++ b/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
+--@@ -7,7 +7,8 @@ import { mockStrings } from "../../package/perseus/src/strings";
+-- // a component that allows viewing current json on screen
+-- // import { useState } from 'react';
+-- 
+---const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData: any) => void }) => {
+--+// make this function take perseusItem as prop 
+--+const JSONViewer = ({ data, perseusItem, onDataChange }: { data: any; perseusItem: any,  onDataChange?: (newData: any) => void }) => {
+--     const [isEditing, setIsEditing] = useState(false);
+--     const [editedContent, setEditedContent] = useState(JSON.stringify(data, null, 2));
+-- 
+--@@ -16,6 +17,12 @@ const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData
+--             const parsedData = JSON.parse(editedContent);
+--             onDataChange?.(parsedData);
+--             setIsEditing(false);
+--+            fetch('http://localhost:8001/api/regenerate-from-data', {
+--+                method: 'POST',
+--+                headers: { "content-type": "application/json" },
+--+                body: JSON.stringify({"data":parsedData,"save_path": perseusItem.metadata.generated_file_path}),
+--+            })
+--+            .then((response) => console.log("Saved successfully"))
+--         } catch (error) {
+--             alert('Invalid JSON format');
+--         }
+--@@ -168,7 +175,7 @@ export default function QuestionValidationComponent() {
+--                                 )}
+--                         </div>
+--                     </div>
+---                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} />}
+--+                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} perseusItem={perseusItem} />}
+--                 </div>
+--                 <div className="flex flex-col w-[154px] gap-2">
+--                     <button
+--diff --git a/frontend/src/components/question-widget-renderer/RendererComponent.tsx b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
+--index 98faa43..2684d7b 100644
+----- a/frontend/src/components/question-widget-renderer/RendererComponent.tsx
+--+++ b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
+--@@ -30,7 +30,23 @@ const RendererComponent = () => {
+--                 console.error("Failed to fetch questions:", err);
+--                 setLoading(false);
+--             });
+---    }, []);
+--+
+--+        //     const canvas = document.querySelector('canvas') as HTMLCanvasElement;
+--+        //     if (canvas) {
+--+        //     const dataUrl = canvas.toDataURL('image/png');
+--+        //     console.log(`The Canvas Image: ${dataUrl}`);
+--+            
+--+        //     if (dataUrl) {
+--+        //         const link = document.createElement('a');
+--+        //         const cleanDataUrl = dataUrl.replace(/^data:image\/png;base64,/, "");
+--+        //         link.href = dataUrl; // Use the original dataUrl for href
+--+        //         link.download = 'output.png';
+--+        //         document.body.appendChild(link);
+--+        //         link.click();
+--+        //         document.body.removeChild(link);
+--+        //     }
+--+        // }
+--+  }, []);
+-- 
+--     const handleNext = () => {
+--         setItem((prev) => {
+--@@ -120,4 +136,4 @@ const RendererComponent = () => {
+--     );
+-- };
+-- 
+---export default RendererComponent;
+--+export default RendererComponent;
+--\ No newline at end of file
 -diff --git a/frontend/src/components/question-widget-renderer/RendererComponent.tsx b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
--index 98faa43..f8342e3 100644
+-index 2684d7b..adb7f52 100644
 ---- a/frontend/src/components/question-widget-renderer/RendererComponent.tsx
 -+++ b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
--@@ -30,7 +30,43 @@ const RendererComponent = () => {
--                 console.error("Failed to fetch questions:", err);
--                 setLoading(false);
--             });
---    }, []);
--+
--+        //     const canvas = document.querySelector('canvas') as HTMLCanvasElement;
--+        //     if (canvas) {
--+        //     const dataUrl = canvas.toDataURL('image/png');
--+        //     console.log(`The Canvas Image: ${dataUrl}`);
--+            
--+        //     if (dataUrl) {
--+        //         const link = document.createElement('a');
--+        //         const cleanDataUrl = dataUrl.replace(/^data:image\/png;base64,/, "");
--+        //         link.href = dataUrl; // Use the original dataUrl for href
--+        //         link.download = 'output.png';
--+        //         document.body.appendChild(link);
--+        //         link.click();
--+        //         document.body.removeChild(link);
--+        //     }
--+        // }
--+  }, []);
--+
--+    const handleDownloadCanvasImage = () => {
--+        const canvases = document.querySelectorAll<HTMLCanvasElement>('canvas');
--+        canvases.forEach((canvas) => {
--+            if (canvas) {
--+                const dataUrl = canvas.toDataURL('image/png');
--+                console.log(`The Canvas Image: ${dataUrl}`);
--+                
--+                if (dataUrl) {
--+                    const link = document.createElement('a');
--+                    const cleanDataUrl = dataUrl.replace(/^data:image\/png;base64,/, "");
--+                    link.href = dataUrl; // Use the original dataUrl for href
--+                    link.download = 'output.png';
--+                    document.body.appendChild(link);
--+                    link.click();
--+                    document.body.removeChild(link);
+-@@ -10,7 +10,7 @@ import { mockStrings } from "../../package/perseus/src/strings";
+- import { KEScore } from "@khanacademy/perseus-core";
+- 
+- const RendererComponent = () => {
+--    const [perseusItems, setPerseusItems] = useState<PerseusItem[]>([]);
+-+    const [perseusItem, setPerseusItem] = useState<PerseusItem[]>([]);
+-     const [item, setItem] = useState(0);
+-     const [loading, setLoading] = useState(true);
+-     const [endOfTest, setEndOfTest] = useState(false);
+-@@ -19,11 +19,15 @@ const RendererComponent = () => {
+-     const rendererRef = useRef<ServerItemRenderer>(null);
+- 
+-     useEffect(() => {
+--        fetch("http://localhost:8001/api/questions/10")
+-+        fetch("http://localhost:8001/api/question")
+-             .then((response) => response.json())
+-             .then((data) => {
+-                 console.log("API response:", data);
+--                setPerseusItems(data);
+-+                if (!data.finished){
+-+                    setPerseusItem(data.question);
+-+                } else {
+-+                    setEndOfTest(true)
 -+                }
--+            }
--+        });
--+    };
-- 
--     const handleNext = () => {
--         setItem((prev) => {
--@@ -115,9 +151,14 @@ const RendererComponent = () => {
--                         onClick={handleSubmit}>
--                         Submit
--                     </button>
--+                    <button 
--+                        className="bg-red-500 absolute rounded text-white p-2 right-18 top-8"
--+                        onClick={handleDownloadCanvasImage}>
--+                        Download Canvas
--+                    </button>
--                 </div>
--             </div>
--     );
-- };
-- 
---export default RendererComponent;
--+export default RendererComponent;
--\ No newline at end of file
-diff --git a/changes1.patch b/changes1.patch
-deleted file mode 100644
-index dd4ec73..0000000
---- a/changes1.patch
-+++ /dev/null
-@@ -1,93 +0,0 @@
--diff --git a/SherlockEDApi/app/routes/routes.py b/SherlockEDApi/app/routes/routes.py
--index 2c7499a..c83c2bf 100644
----- a/SherlockEDApi/app/routes/routes.py
--+++ b/SherlockEDApi/app/routes/routes.py
--@@ -6,7 +6,7 @@ import json
-- import uuid
-- import pathlib 
-- from typing import List
---from app.utils.khan_questions_loader import load_questions
--+from app.utils.khan_questions_loader import load_questions 
-- 
-- router = APIRouter()
-- 
--@@ -42,4 +42,7 @@ async def save_validated_json(request: Request):
--         content={"message":"JSON saved successfully"},
--         status_code=201
--     )
--+
--+
--+
--     
--diff --git a/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx b/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
--index 1a9cc3e..b54af99 100644
----- a/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
--+++ b/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
--@@ -7,7 +7,8 @@ import { mockStrings } from "../../package/perseus/src/strings";
-- // a component that allows viewing current json on screen
-- // import { useState } from 'react';
-- 
---const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData: any) => void }) => {
--+// make this function take perseusItem as prop 
--+const JSONViewer = ({ data, perseusItem, onDataChange }: { data: any; perseusItem: any,  onDataChange?: (newData: any) => void }) => {
--     const [isEditing, setIsEditing] = useState(false);
--     const [editedContent, setEditedContent] = useState(JSON.stringify(data, null, 2));
-- 
--@@ -16,6 +17,12 @@ const JSONViewer = ({ data, onDataChange }: { data: any; onDataChange?: (newData
--             const parsedData = JSON.parse(editedContent);
--             onDataChange?.(parsedData);
--             setIsEditing(false);
--+            fetch('http://localhost:8001/api/regenerate-from-data', {
--+                method: 'POST',
--+                headers: { "content-type": "application/json" },
--+                body: JSON.stringify({"data":parsedData,"save_path": perseusItem.metadata.generated_file_path}),
--+            })
--+            .then((response) => console.log("Saved successfully"))
--         } catch (error) {
--             alert('Invalid JSON format');
--         }
--@@ -168,7 +175,7 @@ export default function QuestionValidationComponent() {
--                                 )}
--                         </div>
--                     </div>
---                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} />}
--+                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} perseusItem={perseusItem} />}
--                 </div>
--                 <div className="flex flex-col w-[154px] gap-2">
--                     <button
--diff --git a/frontend/src/components/question-widget-renderer/RendererComponent.tsx b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
--index 98faa43..2684d7b 100644
----- a/frontend/src/components/question-widget-renderer/RendererComponent.tsx
--+++ b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
--@@ -30,7 +30,23 @@ const RendererComponent = () => {
--                 console.error("Failed to fetch questions:", err);
 -                 setLoading(false);
--             });
---    }, []);
--+
--+        //     const canvas = document.querySelector('canvas') as HTMLCanvasElement;
--+        //     if (canvas) {
--+        //     const dataUrl = canvas.toDataURL('image/png');
--+        //     console.log(`The Canvas Image: ${dataUrl}`);
--+            
--+        //     if (dataUrl) {
--+        //         const link = document.createElement('a');
--+        //         const cleanDataUrl = dataUrl.replace(/^data:image\/png;base64,/, "");
--+        //         link.href = dataUrl; // Use the original dataUrl for href
--+        //         link.download = 'output.png';
--+        //         document.body.appendChild(link);
--+        //         link.click();
--+        //         document.body.removeChild(link);
--+        //     }
--+        // }
--+  }, []);
+-             })
+-             .catch((err) => {
+-@@ -49,18 +53,23 @@ const RendererComponent = () => {
+-   }, []);
 - 
 -     const handleNext = () => {
--         setItem((prev) => {
--@@ -120,4 +136,4 @@ const RendererComponent = () => {
--     );
-- };
+--        setItem((prev) => {
+--            const index = prev + 1;
+--
+--            if (index >= perseusItems.length) {
+--                setEndOfTest(true);
+--                return prev; // stay at last valid index
+--            }
+--
+--            setIsAnswered(false);
+--            return index;
+--        });
+--    };
+-+            fetch("http://localhost:8001/api/question")
+-+                .then((response) => response.json())
+-+                .then((data) => {
+-+                    console.log("API response:", data);
+-+                    if (!data.finished){
+-+                        setPerseusItem(data.question);
+-+                    } else {
+-+                        setEndOfTest(true)
+-+                    }
+-+                })
+-+                .catch((err) => {
+-+                    console.error("Failed to fetch questions:", err);
+-+                    setLoading(false);
+-+                });
+-+            
+-+                setIsAnswered(false);
+-+        };
 - 
---export default RendererComponent;
--+export default RendererComponent;
--\ No newline at end of file
-diff --git a/frontend/src/components/question-widget-renderer/RendererComponent.tsx b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
-index 2684d7b..adb7f52 100644
---- a/frontend/src/components/question-widget-renderer/RendererComponent.tsx
-+++ b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
-@@ -10,7 +10,7 @@ import { mockStrings } from "../../package/perseus/src/strings";
- import { KEScore } from "@khanacademy/perseus-core";
+- 
+-     const handleSubmit = () => {
+-@@ -80,7 +89,7 @@ const RendererComponent = () => {
+-         }
+-     };
+- 
+--    const perseusItem = perseusItems && perseusItems.length > 0 ? perseusItems[item]: {};
+-+    // const perseusItem = perseusItems && perseusItems.length > 0 ? perseusItems[item]: {};
+-     
+-     return (
+-             <div className="framework-perseus">
+-@@ -93,7 +102,7 @@ const RendererComponent = () => {
+-                     {endOfTest ? (
+-                         <p>You've successfully completed your test!</p>
+-                     ): (
+--                        perseusItems.length > 0 ? (
+-+                        loading == false ? (
+-                         <div>
+-                             <PerseusI18nContextProvider locale="en" strings={mockStrings}>
+-                                 <RenderStateRoot>
+diff --git a/frontend/src/App.tsx b/frontend/src/App.tsx
+index f4211f2..cf4e43e 100644
+--- a/frontend/src/App.tsx
++++ b/frontend/src/App.tsx
+@@ -25,6 +25,7 @@ import QuestionDisplay from "./components/question-display/QuestionDisplay";
+ import ControlTray from "./components/control-tray/ControlTray";
+ import { LiveClientOptions } from "./types";
+ import Scratchpad from "./components/scratchpad/Scratchpad";
++import RendererComponent from "./components/question-widget-renderer/RendererComponent"
+ import QuestionValidationComponent from "./components/question-widget-renderer/QuestionValidationComponent";
  
- const RendererComponent = () => {
--    const [perseusItems, setPerseusItems] = useState<PerseusItem[]>([]);
-+    const [perseusItem, setPerseusItem] = useState<PerseusItem[]>([]);
-     const [item, setItem] = useState(0);
+ const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string;
+@@ -113,6 +114,9 @@ function App() {
+             </LiveAPIProvider>
+           </div>
+         </Route>
++        <Route path="/:id">
++          <RendererComponent />
++        </Route>
+         <Route path="/admin/question-validation">
+           <QuestionValidationComponent />
+         </Route>
+diff --git a/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx b/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
+index db42b00..285f746 100644
+--- a/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
++++ b/frontend/src/components/question-widget-renderer/QuestionValidationComponent.tsx
+@@ -3,6 +3,7 @@ import {ServerItemRenderer} from "../../package/perseus/src/server-item-renderer
+ import { storybookDependenciesV2 } from "../../package/perseus/testing/test-dependencies";
+ import { PerseusI18nContextProvider } from "../../package/perseus/src/components/i18n-context";
+ import { mockStrings } from "../../package/perseus/src/strings";
++import { useParams } from "react-router-dom"
+ 
+ // a component that allows viewing current json on screen
+ // import { useState } from 'react';
+@@ -82,13 +83,18 @@ export default function QuestionValidationComponent() {
      const [loading, setLoading] = useState(true);
      const [endOfTest, setEndOfTest] = useState(false);
-@@ -19,11 +19,15 @@ const RendererComponent = () => {
-     const rendererRef = useRef<ServerItemRenderer>(null);
+     const [isGenerated, setIsGenerated] = useState(false);
++    const [generatedItems, setGeneratedItems] = useState<{}>();
++    const [itemMetadata, setItemMetadata] = useState<{}>();
++    const { id } = useParams<{id:string}>();
  
      useEffect(() => {
--        fetch("http://localhost:8001/api/questions/10")
-+        fetch("http://localhost:8001/api/question")
-             .then((response) => response.json())
+-        fetch('http://localhost:8001/api/generated-questions/50')
++        fetch(`http://localhost:8001/api/generated-questions/${id}`)
+             .then(response => response.json())
              .then((data) => {
                  console.log("API response:", data);
 -                setPerseusItems(data);
-+                if (!data.finished){
-+                    setPerseusItem(data.question);
-+                } else {
-+                    setEndOfTest(true)
-+                }
++                setPerseusItems(data.question);
++                setGeneratedItems(data.generated);
++                setItemMetadata(data.metadata)
                  setLoading(false);
              })
              .catch((err) => {
-@@ -49,18 +53,23 @@ const RendererComponent = () => {
-   }, []);
+diff --git a/frontend/src/components/question-widget-renderer/RendererComponent.tsx b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
+index adb7f52..43b15e9 100644
+--- a/frontend/src/components/question-widget-renderer/RendererComponent.tsx
++++ b/frontend/src/components/question-widget-renderer/RendererComponent.tsx
+@@ -8,6 +8,7 @@ import { RenderStateRoot } from "@khanacademy/wonder-blocks-core";
+ import { PerseusI18nContextProvider } from "../../package/perseus/src/components/i18n-context";
+ import { mockStrings } from "../../package/perseus/src/strings";
+ import { KEScore } from "@khanacademy/perseus-core";
++import { useParams } from "react-router-dom"
+ 
+ const RendererComponent = () => {
+     const [perseusItem, setPerseusItem] = useState<PerseusItem[]>([]);
+@@ -17,9 +18,12 @@ const RendererComponent = () => {
+     const [score, setScore] = useState<KEScore>();
+     const [isAnswered, setIsAnswered] = useState(false);
+     const rendererRef = useRef<ServerItemRenderer>(null);
++    const { id } = useParams<{id?: string}>();
++
+ 
+     useEffect(() => {
+-        fetch("http://localhost:8001/api/question")
++        const url = id ? `http://localhost:8001/api/question/${id}` : "http://localhost:8001/api/question";
++        fetch(url)
+             .then((response) => response.json())
+             .then((data) => {
+                 console.log("API response:", data);
+@@ -34,23 +38,7 @@ const RendererComponent = () => {
+                 console.error("Failed to fetch questions:", err);
+                 setLoading(false);
+             });
+-
+-        //     const canvas = document.querySelector('canvas') as HTMLCanvasElement;
+-        //     if (canvas) {
+-        //     const dataUrl = canvas.toDataURL('image/png');
+-        //     console.log(`The Canvas Image: ${dataUrl}`);
+-            
+-        //     if (dataUrl) {
+-        //         const link = document.createElement('a');
+-        //         const cleanDataUrl = dataUrl.replace(/^data:image\/png;base64,/, "");
+-        //         link.href = dataUrl; // Use the original dataUrl for href
+-        //         link.download = 'output.png';
+-        //         document.body.appendChild(link);
+-        //         link.click();
+-        //         document.body.removeChild(link);
+-        //     }
+-        // }
+-  }, []);
++    }, []);
  
      const handleNext = () => {
--        setItem((prev) => {
--            const index = prev + 1;
--
--            if (index >= perseusItems.length) {
--                setEndOfTest(true);
--                return prev; // stay at last valid index
--            }
--
--            setIsAnswered(false);
--            return index;
--        });
--    };
-+            fetch("http://localhost:8001/api/question")
-+                .then((response) => response.json())
-+                .then((data) => {
-+                    console.log("API response:", data);
-+                    if (!data.finished){
-+                        setPerseusItem(data.question);
-+                    } else {
-+                        setEndOfTest(true)
-+                    }
-+                })
-+                .catch((err) => {
-+                    console.error("Failed to fetch questions:", err);
-+                    setLoading(false);
-+                });
-+            
-+                setIsAnswered(false);
-+        };
- 
- 
-     const handleSubmit = () => {
-@@ -80,7 +89,7 @@ const RendererComponent = () => {
-         }
-     };
- 
--    const perseusItem = perseusItems && perseusItems.length > 0 ? perseusItems[item]: {};
-+    // const perseusItem = perseusItems && perseusItems.length > 0 ? perseusItems[item]: {};
-     
-     return (
-             <div className="framework-perseus">
-@@ -93,7 +102,7 @@ const RendererComponent = () => {
-                     {endOfTest ? (
-                         <p>You've successfully completed your test!</p>
-                     ): (
--                        perseusItems.length > 0 ? (
-+                        loading == false ? (
-                         <div>
-                             <PerseusI18nContextProvider locale="en" strings={mockStrings}>
-                                 <RenderStateRoot>
+             fetch("http://localhost:8001/api/question")

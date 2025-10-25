@@ -8,6 +8,7 @@ import { RenderStateRoot } from "@khanacademy/wonder-blocks-core";
 import { PerseusI18nContextProvider } from "../../package/perseus/src/components/i18n-context";
 import { mockStrings } from "../../package/perseus/src/strings";
 import { KEScore } from "@khanacademy/perseus-core";
+import { useParams } from "react-router-dom"
 
 const RendererComponent = () => {
     const [perseusItem, setPerseusItem] = useState<PerseusItem[]>([]);
@@ -17,9 +18,12 @@ const RendererComponent = () => {
     const [score, setScore] = useState<KEScore>();
     const [isAnswered, setIsAnswered] = useState(false);
     const rendererRef = useRef<ServerItemRenderer>(null);
+    const { id } = useParams<{id?: string}>();
+
 
     useEffect(() => {
-        fetch("http://localhost:8001/api/question")
+        const url = id ? `http://localhost:8001/api/question/${id}` : "http://localhost:8001/api/question";
+        fetch(url)
             .then((response) => response.json())
             .then((data) => {
                 console.log("API response:", data);
@@ -34,23 +38,7 @@ const RendererComponent = () => {
                 console.error("Failed to fetch questions:", err);
                 setLoading(false);
             });
-
-        //     const canvas = document.querySelector('canvas') as HTMLCanvasElement;
-        //     if (canvas) {
-        //     const dataUrl = canvas.toDataURL('image/png');
-        //     console.log(`The Canvas Image: ${dataUrl}`);
-            
-        //     if (dataUrl) {
-        //         const link = document.createElement('a');
-        //         const cleanDataUrl = dataUrl.replace(/^data:image\/png;base64,/, "");
-        //         link.href = dataUrl; // Use the original dataUrl for href
-        //         link.download = 'output.png';
-        //         document.body.appendChild(link);
-        //         link.click();
-        //         document.body.removeChild(link);
-        //     }
-        // }
-  }, []);
+    }, []);
 
     const handleNext = () => {
             fetch("http://localhost:8001/api/question")

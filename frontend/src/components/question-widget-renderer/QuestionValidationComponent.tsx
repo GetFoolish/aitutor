@@ -3,6 +3,7 @@ import {ServerItemRenderer} from "../../package/perseus/src/server-item-renderer
 import { storybookDependenciesV2 } from "../../package/perseus/testing/test-dependencies";
 import { PerseusI18nContextProvider } from "../../package/perseus/src/components/i18n-context";
 import { mockStrings } from "../../package/perseus/src/strings";
+import { useParams } from "react-router-dom"
 
 // a component that allows viewing current json on screen
 // import { useState } from 'react';
@@ -82,13 +83,18 @@ export default function QuestionValidationComponent() {
     const [loading, setLoading] = useState(true);
     const [endOfTest, setEndOfTest] = useState(false);
     const [isGenerated, setIsGenerated] = useState(false);
+    const [generatedItems, setGeneratedItems] = useState<{}>();
+    const [itemMetadata, setItemMetadata] = useState<{}>();
+    const { id } = useParams<{id:string}>();
 
     useEffect(() => {
-        fetch('http://localhost:8001/api/generated-questions/50')
+        fetch(`http://localhost:8001/api/generated-questions/${id}`)
             .then(response => response.json())
             .then((data) => {
                 console.log("API response:", data);
-                setPerseusItems(data);
+                setPerseusItems(data.question);
+                setGeneratedItems(data.generated);
+                setItemMetadata(data.metadata)
                 setLoading(false);
             })
             .catch((err) => {

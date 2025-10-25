@@ -105,7 +105,7 @@ def clean_png_files(
     }
 
 
-def generate_images(prompts: List[str]) -> List[str]:
+def generate_images(messages: List[str], image_filepath: str) -> List[str]:
     """
     Function for generating images with Nano Banana.
 
@@ -128,11 +128,13 @@ def generate_images(prompts: List[str]) -> List[str]:
     )
     data = {}
     print("Generating images...")
-    for i, prompt in enumerate(prompts):
-        if prompt == prompts[i-1] and i != 0:
+    for i, message in enumerate(messages):
+        if message == messages[i-1] and i != 0:
             data["url"].append(data["url"][-1]) # repeat the last url
-            continue
+            continue 
+        image = Image.open(image_filepath)
         try:
+            prompt = ["{message}. Create an educational vector illustration similar to the one in the provided image but with the instruction above.", image]
             response = client.models.generate_content(
                 model="gemini-2.0-flash-preview-image-generation",
                 contents=prompt,

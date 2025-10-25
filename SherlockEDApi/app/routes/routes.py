@@ -5,8 +5,10 @@ import asyncio
 import json
 import uuid
 import pathlib 
-import random
-from typing import List 
+import random 
+from bson import ObjectId
+from typing import List, Dict, Optional
+from pydantic import BaseModel, Field, field_validator
 from beanie.operators import LTE
 from app.utils.khan_questions_loader import load_questions 
 from app.database.models import GeneratedQuestionDocument, QuestionDocument
@@ -27,12 +29,36 @@ file["data"].append(item)
 def update_json_file():
     pass
 
+class Projection(BaseModel):
+    answerArea: Optional[Dict] = None
+    hints: Optional[List[Dict]] = None
+    itemDataVersion: Optional[Dict] = None
+    question: Dict
+
+
+class ProjectionWithID(BaseModel):
+    id: Optional[str] = Field(None, alias="_id")
+    answerArea: Optional[Dict] = None
+    hints: Optional[List[Dict]] = None
+    itemDataVersion: Optional[Dict] = None
+    question: Dict
+
+    model_config = {
+        "populate_by_name": True,
+        "arbitrary_types_allowed": True
+    }
+
+    @field_validator("id", mode="before")
+    def convert_objectid(cls, v):
+        from bson import ObjectId
+        return str(v) if isinstance(v, ObjectId) else v
+
 
 # endpoint to get questions 
 @router.get("/question")
-async def get_questions(task: BackgroundTasks):
+async def get_questions(task: BackgroundTasks): 
     """Endpoint for retrieving questions"""
-    data = await QuestionDocument.find_all().to_list()
+    data = await QuestionDocument.find_all().project(Projection).to_list()
     remaining = [q for q in data if str(q.id) not in already_seen] 
     if not remaining:
         return JSONResponse(content={"finished":True, "message": "No questions remaining"})
@@ -45,30 +71,32 @@ async def get_questions(task: BackgroundTasks):
 
 # endpoint to get questions 
 @router.get("/question/{id}")
-async def get_questions(task: BackgroundTasks):
+async def get_questions(id: str, task: BackgroundTasks):
     """Endpoint for retrieving questions"""
-    data = await QuestionDocument.find_all().to_list()
-    remaining = [q for q in data if str(q.id) not in already_seen] 
-    if not remaining:
-        return JSONResponse(content={"finished":True, "message": "No questions remaining"})
-    question = random.choice(remaining)
-    already_seen.add(str(question.id))
-    task.add_task(update_json_file, question)
+    from bson import ObjectId
+    response = await QuestionDocument.find_one({"_id": ObjectId(id)})
 
-    return JSONResponse(content={"finished":False, "question": question}, status_code=200)
+    if response.answerArea and response.hints and response.questions and response.itemDataVersion:
+        question = {"answerArea": response.answerArea, "hints":response.hints, "question":response.question, "itemDataVersion":response.itemDataVersion}
+        
+    metadata = {"source": response.source, "generated_count": response.generated_count }
+    generated = response.generated
+
+    if not question:
+        raise HTTPException(status_code=404, detail="Question not found")
+    
+    return JSONResponse(content={"finished": False, "question": question, "metadata": metadata, "generated": generated}, status_code=200)
+
+    # question = await QuestionDocument.find_one({"_id": ObjectId(id)}).project(Projection)
+    # return JSONResponse(content={"finished":False, "question": question.model_dump()}, status_code=200)
 
 
-@router.get("/get-question-for-generation/")
+
+@router.get("/get-question-for-generation")
 async def get_question_for_generation():
-    response = await QuestionDocument.find(
+    response = await QuestionDocument.find_one(
         QuestionDocument.source == "khan",
-        LTE(QuestionDocument.generated_count, 2)).project({
-            "answerArea":1,
-            "hints":1,
-            "itemDataVersion":1,
-            "question":1,
-            "_id":1
-        })
+        LTE(QuestionDocument.generated_count, 2)).project(ProjectionWithID)
     if response:
         return response
     raise HTTPException(status_code=404, detail="No data")
@@ -76,7 +104,7 @@ async def get_question_for_generation():
 
 @router.post("/save-generated-question/{source_question_id}")
 async def save_generted_question(source_question_id, request: Request):
-    data = request.json()
+    data = await request.json()
     question = GeneratedQuestionDocument(
         source="aitutor",
         **data)
