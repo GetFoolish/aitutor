@@ -8,7 +8,7 @@ from google.adk.artifacts import InMemoryArtifactService
 from google.adk.sessions import InMemorySessionService
 from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
 from dotenv import load_dotenv 
-from agents.prompts.prompt import generator_prompt
+from GenAIQuestions.agents.prompts.instructions import generator_instruction
 from pathlib import Path
 
 USER_ID="sherlockED"
@@ -17,7 +17,7 @@ questions_generator_agent = Agent(
     name="questions_generator_agent",
     description="Agent that generates new perseus format questions",
     model="gemini-2.0-flash",
-    instruction=generator_prompt,
+    instruction=generator_instruction,
     output_key="question_json"
 )
 

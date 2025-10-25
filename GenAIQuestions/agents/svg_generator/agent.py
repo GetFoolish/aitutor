@@ -8,23 +8,23 @@ from google.adk.artifacts import InMemoryArtifactService
 from google.adk.sessions import InMemorySessionService
 from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
 from dotenv import load_dotenv 
-from GenAIQuestions.agents.prompts.instructions import json_rebuilder_instruction
+from GenAIQuestions.agents.prompts.instructions import svg_generator_instruction
 from google import genai 
 from pathlib import Path
 
 USER_ID="sherlockED"
 
-json_rebuilder_agent = Agent(
-    name="json_rebuilder_agent",
-    description="Rebuilds the original JSON with new image URLs and alt texts.",
+svg_generator_agent = Agent(
+    name="svg_generator_agent",
+    description="Generates SVGs from descriptive text prompts.",
     model="gemini-2.0-flash",
-    instruction=json_rebuilder_instruction,
-    output_key="updated_json"
+    instruction=svg_generator_instruction,
+    output_key="svg_data"
 )
 
 runner = Runner(
-    app_name="QuestionsGenerator",
-    agent=json_rebuilder_agent,
+    app_name="SVGGenerator",
+    agent=svg_generator_agent,
     session_service=InMemorySessionService(),
     artifact_service=InMemoryArtifactService(),
     memory_service=InMemoryMemoryService()
@@ -34,7 +34,7 @@ session_service = runner.session_service
 
 async def create_session():
     session = await session_service.create_session(
-        app_name="QuestionsGenerator",
+        app_name="SVGGenerator",
         user_id=USER_ID
     )
     return session.id

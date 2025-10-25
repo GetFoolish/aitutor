@@ -8,7 +8,7 @@ from google.adk.artifacts import InMemoryArtifactService
 from google.adk.sessions import InMemorySessionService
 from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
 from dotenv import load_dotenv 
-from agents.prompts.prompt import descriptive_text_extractor_prompt
+from GenAIQuestions.agents.prompts.instructions import descriptive_text_extractor_instruction
 from google import genai 
 from pathlib import Path
 
@@ -18,7 +18,7 @@ descriptive_text_extractor_agent = Agent(
     name="descriptive_text_extractor_agent",
     description="Extracts image URLs and generates descriptive text prompts.",
     model="gemini-2.0-flash",
-    instruction=descriptive_text_extractor_prompt,
+    instruction=descriptive_text_extractor_instruction,
     output_key="image_data_with_prompts"
 )
 

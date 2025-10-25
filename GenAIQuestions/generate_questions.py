@@ -2,8 +2,9 @@ from typing import Callable, TypeVar
 from agents.question_generator.main import run as generate_question
 from agents.prompt_generator.main import run as generate_prompt
 from agents.json_rebuilder.main import run as rebuild_json
+from agents.svg_generator.main import run as generate_svg
 from agents.image_generator.agent import generate_images 
-from agents.prompts.client import new_question_prompt, new_images_prompt, rebuild_json_prompt
+from agents.prompts.client import new_question_prompt, new_images_prompt, rebuild_json_prompt, new_svg_prompt
 import glob 
 import uuid
 import json 
@@ -42,8 +43,12 @@ async def main():
                 prompts = process_response(prompts)
                 prompts = json.loads(prompts)
             prompts = [p["prompt"] for p in prompts["image_data"]]
-            urls = generate_images(prompts)
-            response = await run_agent(rebuild_json_prompt, rebuild_json, new_json=new_json, urls=urls)
+    
+            image_filepath = ''
+            image_file = open(image_filepath, 'r', encoding='utf-8')
+            SVGs = await run_agent(new_svg_prompt, generate_svg, prompts)
+            # urls = generate_images(prompts)
+            # response = await run_agent(rebuild_json_prompt, rebuild_json, new_json=new_json, urls=urls)
             return process_response(response)
         except Exception as e:
             print(f"The following error occured: {e}")

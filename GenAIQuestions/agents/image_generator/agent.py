@@ -2,11 +2,11 @@ from typing import List
 import os 
 from time import sleep
 from rembg import remove
-from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
+
 import uuid 
 from pathlib import Path
 from dotenv import load_dotenv 
-from imagekitio import ImageKit 
+
 from google import genai  
 from google.genai import types
 from PIL import Image

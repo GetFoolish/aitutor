@@ -78,7 +78,7 @@ const JSONViewer = ({ data, perseusItem, onDataChange }: { data: any; perseusIte
 
 export default function QuestionValidationComponent() {
     const [viewJSON, setViewJSON] = useState(false);
-    const [perseusItems, setPerseusItems] = useState<any>(null);
+    const [perseusItem, setPerseusItem] = useState<any>(null);
     const [item, setItem] = useState(0);
     const [loading, setLoading] = useState(true);
     const [endOfTest, setEndOfTest] = useState(false);
@@ -92,7 +92,7 @@ export default function QuestionValidationComponent() {
             .then(response => response.json())
             .then((data) => {
                 console.log("API response:", data);
-                setPerseusItems(data.question);
+                setPerseusItem(data.question);
                 setGeneratedItems(data.generated);
                 setItemMetadata(data.metadata)
                 setLoading(false);
@@ -103,7 +103,7 @@ export default function QuestionValidationComponent() {
             });
     }, [])
 
-    const perseusItem = perseusItems && perseusItems.length > 0 ? perseusItems[item]: {};
+    // const perseusItem = perseusItems && perseusItems.length > 0 ? perseusItems[item]: {};
 
 
     const handleSave = () => {
@@ -121,7 +121,7 @@ export default function QuestionValidationComponent() {
     const handleNext = () => {
         setItem((prev) => {
             const index = prev + 1;
-            if (!perseusItems || index >= perseusItems.length) {
+            if (!perseusItem || index >= perseusItem.length) {
                 setEndOfTest(true);
                 return prev; // stay at last valid index
             }
@@ -136,7 +136,7 @@ export default function QuestionValidationComponent() {
                 <div className="w-[84vw] text-black border rounded-2xl p-4 bg-white mb-4">
                     <div className="framework-perseus">
                         <div style={{ padding: "20px" }}>
-                                {perseusItems && perseusItems.length > 0 ? (
+                                {perseusItem && perseusItem.length > 0 ? (
                                     <div>
                                         <div className="text-zinc-300">
                                             {
@@ -144,33 +144,33 @@ export default function QuestionValidationComponent() {
                                                 (
                                                     <div>
                                                         <p>Generated</p>
-                                                        <p className="italic">Path: {perseusItem.metadata.generated_file_path}</p>
+                                                        {/* <p className="italic">Path: {perseusItem.metadata.generated_file_path}</p> */}
                                                     </div>
                                                 )   :   (
                                                     <div>
                                                         <p>Source</p>
-                                                        <p className="italic">Path: {perseusItem.metadata.source_file_path}</p>
+                                                        {/* <p className="italic">Path: {perseusItem.metadata.source_file_path}</p> */}
                                                     </div>
                                                 )
                                             }
                                         </div>
                                 
                                         <PerseusI18nContextProvider locale="en" strings={mockStrings}>
-                                                <ServerItemRenderer
-                                                    problemNum={0}
-                                                    item={isGenerated == true ? perseusItem.generated : perseusItem.source}
-                                                    dependencies={storybookDependenciesV2}
-                                                    apiOptions={{}}
-                                                    linterContext={{
-                                                        contentType: "",
-                                                        highlightLint: true,
-                                                        paths: [],
-                                                        stack: [],
-                                                    }}
-                                                    showSolutions="none"
-                                                    hintsVisible={0}
-                                                    reviewMode={false}
-                                                    />
+                                            <ServerItemRenderer
+                                                problemNum={0}
+                                                item={isGenerated == true ? perseusItem.generated : perseusItem.source}
+                                                dependencies={storybookDependenciesV2}
+                                                apiOptions={{}}
+                                                linterContext={{
+                                                    contentType: "",
+                                                    highlightLint: true,
+                                                    paths: [],
+                                                    stack: [],
+                                                }}
+                                                showSolutions="none"
+                                                hintsVisible={0}
+                                                reviewMode={false}
+                                            />
                                         </PerseusI18nContextProvider>
                                     </div>
                                 ) : (
