@@ -60,12 +60,12 @@ class MockDASHSystem:
         # User skill states
         self.user_states = {}
         
-        print("✅ Mock DASHSystem initialized with sample skills")
+        print(" Mock DASHSystem initialized with sample skills")
         print(f"   Total skills: {len(self.SKILLS_CACHE)}")
     
     def create_user(self, user_id: str, age: int, grade_level: str):
         """Create a new user with three-state initialization"""
-        print(f"\n👤 Creating user: {user_id} (age {age}, {grade_level})")
+        print(f"\n Creating user: {user_id} (age {age}, {grade_level})")
         
         user_grade = GradeLevel[grade_level].value
         skill_states = {}
@@ -97,13 +97,13 @@ class MockDASHSystem:
             print(f"   {skill_id}: {initial_strength:.1f} ({state})")
         
         self.user_states[user_id] = skill_states
-        print(f"✅ User created with {len(skill_states)} skill states")
+        print(f" User created with {len(skill_states)} skill states")
         
         return user_id
     
     def get_breadcrumb_related_skills(self, skill_id: str) -> Dict[str, float]:
         """Find skills related by breadcrumb similarity"""
-        print(f"\n🌳 Finding breadcrumb-related skills for: {skill_id}")
+        print(f"\n Finding breadcrumb-related skills for: {skill_id}")
         
         # Parse breadcrumb: "math_3_1.1.1" -> ["1", "1", "1"]
         parts = skill_id.split('_')
@@ -157,7 +157,7 @@ class MockDASHSystem:
         print(f"\n📝 Recording attempt: {skill_id} - {'Correct' if is_correct else 'Incorrect'}")
         
         if user_id not in self.user_states:
-            print("❌ User not found")
+            print(" User not found")
             return []
         
         current_time = time.time()
@@ -210,7 +210,7 @@ class MockDASHSystem:
                 print(f"   Cascade: {related_skill_id}: {old_related_strength:.3f} → {new_related_strength:.3f}")
                 affected_skills.append(related_skill_id)
         
-        print(f"✅ {len(affected_skills)} skills affected")
+        print(f" {len(affected_skills)} skills affected")
         return affected_skills
     
     def check_grade_unlock(self, user_id: str, current_grade: int):
@@ -279,7 +279,7 @@ class MockDASHSystem:
 def demonstrate_feature_1_cold_start():
     """Demonstrate Feature 1: Three-State Cold Start System"""
     print("\n" + "="*80)
-    print("🧠 FEATURE 1: THREE-STATE COLD START SYSTEM")
+    print(" FEATURE 1: THREE-STATE COLD START SYSTEM")
     print("="*80)
     print("Testing intelligent student initialization that solves the cold start problem")
     
@@ -288,7 +288,7 @@ def demonstrate_feature_1_cold_start():
     # Create Grade 3 student
     user_id = dash.create_user("demo_student", 8, "GRADE_3")
     
-    print("\n✅ Cold Start System Working Correctly!")
+    print("\n Cold Start System Working Correctly!")
     print("   - New students start at appropriate grade level")
     print("   - No time wasted on content they likely know")
     print("   - Advanced content locked until current grade mastered")
@@ -298,7 +298,7 @@ def demonstrate_feature_1_cold_start():
 def demonstrate_feature_2_breadcrumb_cascade(dash, user_id):
     """Demonstrate Feature 2: Breadcrumb Cascade Logic"""
     print("\n" + "="*80)
-    print("🌳 FEATURE 2: BREADCRUMB CASCADE LOGIC")
+    print(" FEATURE 2: BREADCRUMB CASCADE LOGIC")
     print("="*80)
     print("Testing automatic skill relationship updates")
     
@@ -309,14 +309,14 @@ def demonstrate_feature_2_breadcrumb_cascade(dash, user_id):
     related_skills = dash.get_breadcrumb_related_skills(skill_id)
     
     # Record a wrong answer to trigger negative cascade
-    print(f"\n❌ Recording WRONG answer for {skill_id}")
+    print(f"\n Recording WRONG answer for {skill_id}")
     affected_skills = dash.record_question_attempt(user_id, skill_id, False, 10.0)
     
     # Record a correct answer to trigger positive cascade
-    print(f"\n✅ Recording CORRECT answer for {skill_id}")
+    print(f"\n Recording CORRECT answer for {skill_id}")
     affected_skills = dash.record_question_attempt(user_id, skill_id, True, 5.0)
     
-    print("\n✅ Breadcrumb Cascade Working Correctly!")
+    print("\n Breadcrumb Cascade Working Correctly!")
     print("   - Related skills automatically updated")
     print("   - System detects knowledge gaps")
     print("   - No diagnostic tests needed!")
@@ -326,12 +326,12 @@ def demonstrate_feature_2_breadcrumb_cascade(dash, user_id):
 def demonstrate_feature_3_grade_progression(dash, user_id):
     """Demonstrate Feature 3: Grade Progression System"""
     print("\n" + "="*80)
-    print("🚀 FEATURE 3: GRADE PROGRESSION SYSTEM")
+    print(" FEATURE 3: GRADE PROGRESSION SYSTEM")
     print("="*80)
     print("Testing automatic grade unlocking when current grade is mastered")
     
     # Simulate mastering Grade 3 by answering many questions correctly
-    print("\n📚 Simulating Grade 3 mastery...")
+    print("\n Simulating Grade 3 mastery...")
     
     grade3_skills = ["math_3_1.1.1", "math_3_1.2.1"]
     
@@ -344,14 +344,14 @@ def demonstrate_feature_3_grade_progression(dash, user_id):
     
     # Show final statistics
     stats = dash.get_user_statistics(user_id)
-    print(f"\n📊 Final Statistics:")
+    print(f"\n Final Statistics:")
     print(f"   Total questions: {stats['total_questions_answered']}")
     print(f"   Accuracy: {stats['accuracy']*100:.1f}%")
     print(f"   Skills mastered: {stats['skills_mastered']}")
     print(f"   Skills learning: {stats['skills_learning']}")
     print(f"   Skills locked: {stats['skills_locked']}")
     
-    print("\n✅ Grade Progression System Working Correctly!")
+    print("\n Grade Progression System Working Correctly!")
     print("   - Grade 4 automatically unlocked")
     print("   - Student can now access advanced content")
     print("   - Seamless progression without manual intervention")
@@ -359,7 +359,7 @@ def demonstrate_feature_3_grade_progression(dash, user_id):
 def main():
     """Run all three feature demonstrations"""
     print("\n" + "="*80)
-    print("🧪 DASHSYSTEM V2 - THREE KEY FEATURES DEMONSTRATION")
+    print(" DASHSYSTEM V2 - THREE KEY FEATURES DEMONSTRATION")
     print("="*80)
     print("Demonstrating the core algorithms that make DASHSystem intelligent")
     
@@ -374,15 +374,15 @@ def main():
         demonstrate_feature_3_grade_progression(dash, user_id)
         
         print("\n" + "="*80)
-        print("🎉 ALL THREE FEATURES DEMONSTRATED SUCCESSFULLY!")
+        print(" ALL THREE FEATURES DEMONSTRATED SUCCESSFULLY!")
         print("="*80)
         print("DASHSystem V2 core algorithms are working correctly:")
-        print("✅ Three-State Cold Start System")
-        print("✅ Breadcrumb Cascade Logic") 
-        print("✅ Grade Progression System")
+        print(" Three-State Cold Start System")
+        print(" Breadcrumb Cascade Logic") 
+        print(" Grade Progression System")
         
     except Exception as e:
-        print(f"\n❌ DEMONSTRATION FAILED: {e}")
+        print(f"\n DEMONSTRATION FAILED: {e}")
         import traceback
         traceback.print_exc()
 
