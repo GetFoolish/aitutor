@@ -8,7 +8,7 @@ from google.adk.artifacts import InMemoryArtifactService
 from google.adk.sessions import InMemorySessionService
 from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
 from dotenv import load_dotenv 
-from GenAIQuestions.agents.prompts.instructions import json_rebuilder_instruction
+from agents.prompts.instructions import json_rebuilder_instruction
 from google import genai 
 from pathlib import Path
 

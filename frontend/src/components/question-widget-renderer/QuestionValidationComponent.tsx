@@ -8,75 +8,7 @@ import { useParams } from "react-router-dom"
 // a component that allows viewing current json on screen
 // import { useState } from 'react';
 
-// make this function take perseusItem as prop 
-const JSONViewer = ({ data, perseusItem, onDataChange }: { data: any; perseusItem: any,  onDataChange?: (newData: any) => void }) => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [editedContent, setEditedContent] = useState(JSON.stringify(data, null, 2));
-
-    const handleSave = () => {
-        try {
-            const parsedData = JSON.parse(editedContent);
-            onDataChange?.(parsedData);
-            setIsEditing(false);
-            fetch('http://localhost:8001/api/regenerate-from-data', {
-                method: 'POST',
-            })
-            .then((response) => console.log("Saved successfully"))
-        } catch (error) {
-            alert('Invalid JSON format');
-        }
-
-    const handleCancel = () => {
-        setEditedContent(JSON.stringify(data, null, 2));
-        setIsEditing(false);
-    };
-
-    if (isEditing) {
-        return (
-            <div className="space-y-2">
-                <textarea
-                    value={editedContent}
-                    onChange={(e) => setEditedContent(e.target.value)}
-                    className="w-full h-[900px] bg-gray-900 text-white p-4 rounded-lg font-mono text-sm resize-none"
-                    spellCheck={false}
-                />
-                <div className="flex gap-2">
-                    <button 
-                        onClick={handleSave}
-                        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                    >
-                        Save
-                    </button>
-                    <button 
-                        onClick={handleCancel}
-                        className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
-                    >
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="space-y-2">
-            <pre 
-                className="bg-gray-900 text-white p-4 rounded-lg overflow-y-scroll max-h-[900px] cursor-text"
-                onClick={() => setIsEditing(true)}
-            >
-                {JSON.stringify(data, null, 2)}
-            </pre>
-            <button 
-                onClick={() => setIsEditing(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-                Edit JSON
-            </button>
-        </div>
-    );
-};
-
-export default function QuestionValidationComponent() {
+function QuestionValidationComponent() {
     const [viewJSON, setViewJSON] = useState(false);
     const [perseusItem, setPerseusItem] = useState<any>(null);
     const [item, setItem] = useState(0);
@@ -206,3 +138,80 @@ export default function QuestionValidationComponent() {
         </div>
     );
 };
+export default QuestionValidationComponent
+
+interface JSONViewerProps {
+    data: any;
+    perseusItem: any;
+    onDataChange?: (newData: any) => void;
+}
+
+const JSONViewer: React.FC<JSONViewerProps> = ({ data, perseusItem, onDataChange }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedContent, setEditedContent] = useState(JSON.stringify(data, null, 2));
+
+    const handleSave = () => {
+        try {
+            const parsedData = JSON.parse(editedContent);
+            onDataChange?.(parsedData);
+            setIsEditing(false);
+
+            fetch("http://localhost:8001/api/regenerate-from-data", {
+                method: "POST",
+            }).then(() => console.log("Saved successfully"));
+        } catch (error) {
+            alert("Invalid JSON format");
+        }
+    }; // <-- FIXED: properly closed handleSave
+
+    const handleCancel = () => {
+        setEditedContent(JSON.stringify(data, null, 2));
+        setIsEditing(false);
+    };
+
+    if (isEditing) {
+        return (
+            <div className="space-y-2">
+                <textarea
+                    value={editedContent}
+                    onChange={(e) => setEditedContent(e.target.value)}
+                    className="w-full h-[900px] bg-gray-900 text-white p-4 rounded-lg font-mono text-sm resize-none"
+                    spellCheck={false}
+                />
+                <div className="flex gap-2">
+                    <button
+                        onClick={handleSave}
+                        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                    >
+                        Save
+                    </button>
+                    <button
+                        onClick={handleCancel}
+                        className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-2">
+            <pre
+                className="bg-gray-900 text-white p-4 rounded-lg overflow-y-scroll max-h-[900px] cursor-text"
+                onClick={() => setIsEditing(true)}
+            >
+                {JSON.stringify(data, null, 2)}
+            </pre>
+            <button
+                onClick={() => setIsEditing(true)}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+                Edit JSON
+            </button>
+        </div>
+    );
+}; 
+
+export { JSONViewer };

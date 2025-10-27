@@ -1,11 +1,12 @@
 from math import e 
 from fastapi import APIRouter, Request, HTTPException, BackgroundTasks
 from fastapi.responses import JSONResponse
-import asyncio
+from fastapi.encoders import jsonable_encoder
 import json
 import uuid
 import pathlib 
 import random 
+from beanie import Link
 from bson import ObjectId
 from typing import List, Dict, Optional
 from pydantic import BaseModel, Field, field_validator
@@ -50,42 +51,56 @@ class ProjectionWithID(BaseModel):
 
     @field_validator("id", mode="before")
     def convert_objectid(cls, v):
-        from bson import ObjectId
         return str(v) if isinstance(v, ObjectId) else v
 
 
 # endpoint to get questions 
 @router.get("/question")
-async def get_questions(task: BackgroundTasks): 
+async def get_questions(): 
     """Endpoint for retrieving questions"""
-    data = await QuestionDocument.find_all().project(Projection).to_list()
-    remaining = [q for q in data if str(q.id) not in already_seen] 
+    data = await QuestionDocument.find_all().project(ProjectionWithID).to_list()
+    remaining = [q.model_dump() for q in data if str(ObjectId(q.id)) not in already_seen] 
     if not remaining:
         return JSONResponse(content={"finished":True, "message": "No questions remaining"})
     question = random.choice(remaining)
-    already_seen.add(str(question.id))
-    task.add_task(update_json_file, question)
+    question_id = question["id"]
+    already_seen.add(str(question_id))
 
     return JSONResponse(content={"finished":False, "question": question}, status_code=200)
 
 
-# endpoint to get questions 
 @router.get("/question/{id}")
-async def get_questions(id: str, task: BackgroundTasks):
-    """Endpoint for retrieving questions"""
-    from bson import ObjectId
-    response = await QuestionDocument.find_one({"_id": ObjectId(id)})
-
-    if response.answerArea and response.hints and response.questions and response.itemDataVersion:
-        question = {"answerArea": response.answerArea, "hints":response.hints, "question":response.question, "itemDataVersion":response.itemDataVersion}
-        
-    metadata = {"source": response.source, "generated_count": response.generated_count }
-    generated = response.generated
-
-    if not question:
+async def get_questions(id: str):
+    response = await QuestionDocument.find_one({"_id": ObjectId(id)}, fetch_links=True)
+    if not response:
         raise HTTPException(status_code=404, detail="Question not found")
-    
-    return JSONResponse(content={"finished": False, "question": question, "metadata": metadata, "generated": generated}, status_code=200)
+
+    data = response.model_dump()
+
+    question = {
+        "answerArea": data.get("answerArea"),
+        "hints": data.get("hints"),
+        "question": data.get("question"),
+        "itemDataVersion": data.get("itemDataVersion"),
+    }
+
+    metadata = {
+        "source": data.get("source"),
+        "generated_count": data.get("generated_count"),
+    }
+
+    generated = data.get("generated")
+
+    # ✅ Use jsonable_encoder to handle PydanticObjectId and Links safely
+    return JSONResponse(
+        content=jsonable_encoder({
+            "finished": False,
+            "question": question,
+            "metadata": metadata,
+            "generated": generated,
+        }),
+        status_code=200,
+    )
 
     # question = await QuestionDocument.find_one({"_id": ObjectId(id)}).project(Projection)
     # return JSONResponse(content={"finished":False, "question": question.model_dump()}, status_code=200)
@@ -118,16 +133,6 @@ async def save_generted_question(source_question_id, request: Request):
     await source_question.save()
 
     return JSONResponse(content={"message": "Success"}, status_code=201)
-
-
-# endpoint to get questions 
-# @router.post("/test")
-# async def get_questions(request: Request):
-#     """Endpoint for retrieving questions"""
-#     data = await request.json()
-#     data = QuestionDocument(**data)
-#     await data.insert()
-#     return "DONE!"
 
 
 # endpoint to get generated questions

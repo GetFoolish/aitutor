@@ -114,8 +114,45 @@ function App() {
             </LiveAPIProvider>
           </div>
         </Route>
-        <Route path="/:id">
-          <RendererComponent />
+        <Route exact path="/:id">
+          <div className="App">
+            <LiveAPIProvider options={apiOptions}>
+              <div className="streaming-console">
+                <SidePanel />
+                <main>
+                  <div className="main-app-area">
+                    <div className="question-panel" style={{border: '2px solid red'}}>
+                      <ScratchpadCapture socket={commandSocket}>
+                        <QuestionDisplay />
+                        {isScratchpadOpen && (
+                          <div className="scratchpad-container">
+                            <Scratchpad />
+                          </div>
+                        )}
+                      </ScratchpadCapture>
+                    </div>
+                    <MediaMixerDisplay socket={videoSocket} renderCanvasRef={renderCanvasRef} />
+                  </div>
+
+                  <ControlTray
+                    socket={commandSocket}
+                    renderCanvasRef={renderCanvasRef}
+                    videoRef={videoRef}
+                    supportsVideo={true}
+                    onVideoStreamChange={setVideoStream}
+                    onMixerStreamChange={setMixerStream}
+                    enableEditingSettings={true}
+                  >
+                    <button onClick={() => setScratchpadOpen(!isScratchpadOpen)}>
+                      <span className="material-symbols-outlined">
+                        {isScratchpadOpen ? "close" : "edit"}
+                      </span>
+                    </button>
+                  </ControlTray>
+                </main>
+              </div>
+            </LiveAPIProvider>
+          </div>
         </Route>
         <Route path="/admin/question-validation">
           <QuestionValidationComponent />
