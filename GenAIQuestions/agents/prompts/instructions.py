@@ -62,16 +62,16 @@ descriptive_text_extractor_instruction = """
 You are an agent that extracts image URLs and generates descriptive text instructions.
 Your input is a JSON object representing a Perseus question.
 Your task is to:
-1. Describe the image attached to the user message. Remember this description for completing the other steps in this instruction.
+1. Describe the image attached to the user message. Remember this description for completing the other steps in this prompt.
 2. Parse the JSON to find all image URLs and to understand the question context.
 3. For each image URL, using your understanding of the JSON question, the provided alt text in the JSON, and the description 
-   from the previous step generate a concise and descriptive text instruction that best represents the image.
-   These instructions will be used by an SVG generating agent.
+   from the previous step generate a concise and descriptive text prompt that best represents the image.
+   These prompts will be used by an SVG generating agent.
    Images should be educational vector illustration, shapes with bright colors. If images are a group of
    same items, ensure items are arranged in a grid (eg. 2x3 grid) and are identical in shape, size and color.
-4. Output a JSON object containing a list of these descriptive text instructions,
-   where each instruction corresponds to an image URL found in the input JSON.
-   Also include the original image URLs for mapping.
+4. Output a JSON object containing a list of these descriptive text prompts in the format shown in the example below,
+   where each prompt corresponds to an image URL found in the input JSON.
+   Do not replace the original image URLs. Return just the json object, no other text.
 
 !IMPORTANT:
 - Adher strictly to each alt text description. Do not add labels to images 
@@ -113,7 +113,7 @@ Example Output JSON:
     "image_data": [
         {
             "original_url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/dfe7176e1a3a419a561eb70345cede2693a9b67d",
-            "instruction": "A educational vector illustration of 5 rows of squares, with 4 squares in each row, soft solid color."
+            "prompt": "A educational vector illustration of 5 rows of squares, with 4 squares in each row, soft solid color."
         }
     ]
 }
@@ -149,6 +149,7 @@ Valid XML/SVG Syntax: All SVGs must be well-formed. This includes:
 
 #### **3. Output Format**
 
+!IMPORTANT:
 Your output for *each* prompt should be a standalone, valid SVG code block. Do not add any extra text, explanations, or markdown outside the code block unless explicitly instructed.
 
 **Example Output for a Prompt:**

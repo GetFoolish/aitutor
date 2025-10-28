@@ -17,7 +17,7 @@ file_pattern = Path(__file__).parent.resolve() / "examples" / "*.json"
 new_json_path = Path(__file__).parent.resolve() / "new" 
 
 
-assets = Path(__file__).parent.resolve() / "assets"
+assets = Path(__file__).parent.parent.resolve() / "assets"
 assets.mkdir(parents=True, exist_ok=True)
  
 T = TypeVar('T')
@@ -35,7 +35,7 @@ async def main():
     async def process_and_upload_svg(svg):
         filepath = assets / f"{str(uuid.uuid4())}.png"
         filename = Path(filepath).stem
-        await process_svg(filepath)
+        await process_svg(svg,filepath)
         url = await upload_to_imagekit(filename, filepath)
         return url
     # helper function to run agents with formatted prompts
@@ -44,6 +44,7 @@ async def main():
         response = await func(prompt)
         return response
     
+
     # generate questions 
     async def generate_questions(data: json, image_file: bytes, filename: str=None) -> json:
         try:
@@ -54,11 +55,11 @@ async def main():
             if isinstance(prompts, str):
                 prompts = process_response(prompts)
                 prompts = json.loads(prompts)
-            # prompts = [p["prompt"] for p in prompts["image_data"]]
             for p in prompts["image_data"]:
-                svg = await run_agent(new_svg_prompt, generate_svg, p["prompt"])
-                p["url"] = process_and_upload_svg(svg)
-            # urls = generate_images(prompts)
+                print(f"Generating SVG for prompt: {p['prompt']}")
+                svg = await run_agent(new_svg_prompt, generate_svg, prompts=p["prompt"])
+                p["original_url"] = await process_and_upload_svg(svg)
+                print(f"Uploaded image to: {p['original_url']}")
             response = await run_agent(rebuild_json_prompt, rebuild_json, new_json=new_json, prompts=prompts)
             return process_response(response)
         except Exception as e:
@@ -72,24 +73,24 @@ async def main():
         api_response = requests.get(url)
         question = api_response.json()
         if "question" in question:
-            source_question_id = question.pop("_id")
+            # source_question_id = question.pop("_id")
+            source_question_id = "68fc3eb527d6738d148b08ea"
         print(f"Processing question ID: {source_question_id}")
 
         filename = get_screenshot_sample(source_question_id)
         print(f"Screenshot saved at: {filename}")
         image_file = open(filename, "rb").read()
-        sys.exit()
         if question: 
             response: None
             try:
                 response = await generate_questions(question, filename, image_file)
             except Exception as e:
                 print(f"Unable to load JSON: {e}")
-
             if response:
-                url = f"http://localhost:8001/save-generated-question/{source_question_id}"
+                url = f"http://localhost:8001/api/save-generated-question/{source_question_id}"
                 try:
                     response = requests.post(url, data=response)
+                    print(f"Saved generated question for {response}")
                 except Exception as e:
                     print(f"Unable to save JSON: {e}")
             else:
@@ -97,34 +98,5 @@ async def main():
     except Exception as e:
         print(f"The following error occured in main loop: {e}")
         
-
-#     # main entry point   
-#     url = f"http://localhost:8001/api/get-question-for-generation"
-#     print("Fetching question data...")
-#     api_response = requests.get(url)
-#     question = api_response.json()
-#     if hasattr(question, "question"):
-#         source_question_id = question.pop("_id", None)
-#     print(f"Processing question ID: {source_question_id}")
-
-#     filename = get_screenshot_sample(source_question_id)
-#     image_file = open(filename, "rb").read()
-
-#     if question:
-#         response: None
-#         try:
-#             response = await generate_questions(question, filename, image_file)
-#         except Exception as e:
-#             print(f"Unable to load JSON: {e}")
-
-#         if response:
-#             url = f"http://localhost:8001/save-generated-question/{source_question_id}"
-#             try:
-#                 response = requests.post(url, data=response)
-#             except Exception as e:
-#                 print(f"Unable to save JSON: {e}")
-#         else:
-#             print(f"No response generated for {filename}, skipping...\n")
-
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(main()) 

@@ -36,3 +36,8 @@ ehthumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Generated files 
+assets/*
+GenAIQuestions/*.json 
+GenAIQuestions/*.png

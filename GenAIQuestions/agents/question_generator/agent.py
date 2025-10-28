@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from agents.prompts.instructions import generator_instruction
 from pathlib import Path
 
+load_dotenv()
 USER_ID="sherlockED"
 
 questions_generator_agent = Agent(

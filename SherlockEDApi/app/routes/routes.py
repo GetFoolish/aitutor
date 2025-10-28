@@ -109,10 +109,11 @@ async def get_questions(id: str):
 
 @router.get("/get-question-for-generation")
 async def get_question_for_generation():
-    response = await QuestionDocument.find_one(
+    responses = await QuestionDocument.find(
         QuestionDocument.source == "khan",
-        LTE(QuestionDocument.generated_count, 2)).project(ProjectionWithID)
-    if response:
+        LTE(QuestionDocument.generated_count, 2)).project(ProjectionWithID).to_list()
+    if responses:
+        response = random.choice(responses)
         return response
     raise HTTPException(status_code=404, detail="No data")
 
@@ -120,9 +121,7 @@ async def get_question_for_generation():
 @router.post("/save-generated-question/{source_question_id}")
 async def save_generted_question(source_question_id, request: Request):
     data = await request.json()
-    question = GeneratedQuestionDocument(
-        source="aitutor",
-        **data)
+    question = GeneratedQuestionDocument(**data)
     await question.insert()
 
     source_question = await QuestionDocument.get(source_question_id)

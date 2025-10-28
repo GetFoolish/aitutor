@@ -12,6 +12,7 @@ from agents.prompts.instructions import svg_generator_instruction
 from google import genai 
 from pathlib import Path
 
+load_dotenv()
 USER_ID="sherlockED"
 
 svg_generator_agent = Agent(

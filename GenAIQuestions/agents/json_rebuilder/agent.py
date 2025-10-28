@@ -13,6 +13,7 @@ from google import genai
 from pathlib import Path
 
 USER_ID="sherlockED"
+load_dotenv()
 
 json_rebuilder_agent = Agent(
     name="json_rebuilder_agent",

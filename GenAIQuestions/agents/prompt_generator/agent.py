@@ -12,6 +12,7 @@ from agents.prompts.instructions import descriptive_text_extractor_instruction
 from google import genai 
 from pathlib import Path
 
+load_dotenv()
 USER_ID="sherlockED"
 
 descriptive_text_extractor_agent = Agent(

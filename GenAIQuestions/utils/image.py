@@ -1,12 +1,18 @@
 from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
 from imagekitio import ImageKit 
+from dotenv import load_dotenv
 import cairosvg 
 import os
 
-
+load_dotenv()
 async def process_svg(svg, filepath):
+    svg = svg.strip()
+    if svg.startswith("```svg"):
+        svg = svg.removeprefix("```svg")
+    if svg.endswith("```"):
+        svg = svg.removesuffix("```")
     try:
-        cairosvg.svg2png(bytestring=svg, write_to=filepath)
+        cairosvg.svg2png(bytestring=svg, write_to=str(filepath))
     except Exception as e:
        print("Unable to convert svg to png", e)
        
@@ -19,7 +25,7 @@ async def upload_to_imagekit(image_name,image_path):
         url_endpoint=os.getenv("IMAGEKIT_URL_ENDPOINT")
     )
     upload = imagekit.upload_file(
-            file=open(image_path,"rb"),
+            file=open(str(image_path),"rb"),
             file_name=image_name,
             options=UploadFileRequestOptions(
                 response_fields=["is_private_file", "tags"],
