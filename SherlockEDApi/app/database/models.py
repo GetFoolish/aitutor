@@ -22,6 +22,7 @@ class GeneratedQuestionDocument(Document):
     itemDataVersion: Optional[Dict] = None
     question: Dict 
     source: str = "aitutor"
+    human_approved: bool = False
     created_at: datetime = datetime.now()
 
     class Settings:

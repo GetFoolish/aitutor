@@ -69,6 +69,14 @@ async def get_questions():
     return JSONResponse(content={"finished":False, "question": question}, status_code=200)
 
 
+# endpoint to get questions 
+@router.get("/questions")
+async def get_questions(): 
+    """Endpoint for retrieving questions"""
+    data = await QuestionDocument.find_all().project(ProjectionWithID).to_list()
+    return JSONResponse(content=[q.model_dump() for q in data], status_code=200)
+
+
 @router.get("/question/{id}")
 async def get_questions(id: str):
     response = await QuestionDocument.find_one({"_id": ObjectId(id)}, fetch_links=True)
@@ -153,8 +161,4 @@ async def save_validated_json(request: Request):
     return JSONResponse(
         content={"message":"JSON saved successfully"},
         status_code=201
-    ) 
-
-
-
-    
+    )

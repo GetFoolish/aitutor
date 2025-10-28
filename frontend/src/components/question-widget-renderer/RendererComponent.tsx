@@ -11,8 +11,9 @@ import { KEScore } from "@khanacademy/perseus-core";
 import { useParams } from "react-router-dom"
 
 const RendererComponent = () => {
-    const [perseusItem, setPerseusItem] = useState<PerseusItem[]>([]);
-    const [item, setItem] = useState(0);
+    const [perseusItem, setPerseusItem] = useState<PerseusItem>();
+    const [perseusItems, setPerseusItems] = useState<PerseusItem[]>([]);
+    const [index, setIndex] = useState(1);
     const [loading, setLoading] = useState(true);
     const [endOfTest, setEndOfTest] = useState(false);
     const [score, setScore] = useState<KEScore>();
@@ -27,10 +28,11 @@ const RendererComponent = () => {
             .then((response) => response.json())
             .then((data) => {
                 console.log("API response:", data);
-                if (!data.finished){
-                    setPerseusItem(data.question);
+                if (Array.isArray(data)){
+                    setPerseusItems(data)
+                    setPerseusItem(data[0])
                 } else {
-                    setEndOfTest(true)
+                    setPerseusItem(data)
                 }
                 setLoading(false);
             })
@@ -41,22 +43,14 @@ const RendererComponent = () => {
     }, []);
 
     const handleNext = () => {
-            fetch("http://localhost:8001/api/question")
-                .then((response) => response.json())
-                .then((data) => {
-                    console.log("API response:", data);
-                    if (!data.finished){
-                        setPerseusItem(data.question);
-                    } else {
-                        setEndOfTest(true)
-                    }
-                })
-                .catch((err) => {
-                    console.error("Failed to fetch questions:", err);
-                    setLoading(false);
-                });
-            
+            if (index > perseusItems.length) {
+                setEndOfTest(true)
+            } else {
+                const item = perseusItems[index]
+                setPerseusItem(item)
                 setIsAnswered(false);
+                setIndex((prev) => prev + 1)
+            }
         };
 
 
@@ -124,7 +118,7 @@ const RendererComponent = () => {
                         )
                     )}
                     <button 
-                        className="bg-blue-500 absolute rounded text-white p-2 right-8 mt-8"
+                        className="bg-blue-500 absolute rounded text-white p-2 right-8 t0p-[60vh]"
                         onClick={handleSubmit}>
                         Submit
                     </button>
