@@ -133,6 +133,16 @@ async def save_generted_question(source_question_id, request: Request):
 
     return JSONResponse(content={"message": "Success"}, status_code=201)
 
+@router.get("/get-generated-question")
+async def get_generated_question():
+    """Endpoint for retrieving a generated question"""
+    data = await GeneratedQuestionDocument.find(
+        GeneratedQuestionDocument.human_approved
+    ).project(ProjectionWithID).to_list()
+    responses = await QuestionDocument.find(
+        QuestionDocument.source == "khan",
+        LTE(QuestionDocument.generated_count, 2)).project(ProjectionWithID).to_list()
+    if responses:
 
 # endpoint to get generated questions
 @router.get("/generated-questions/{sample_size}")
