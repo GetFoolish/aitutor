@@ -4,6 +4,7 @@ import { storybookDependenciesV2 } from "../../package/perseus/testing/test-depe
 import { PerseusI18nContextProvider } from "../../package/perseus/src/components/i18n-context";
 import { mockStrings } from "../../package/perseus/src/strings";
 import { useParams } from "react-router-dom"
+import { FaArrowRight } from "react-icons/fa"; // Importing a suitable icon
 
 // a component that allows viewing current json on screen
 // import { useState } from 'react';
@@ -29,6 +30,8 @@ function QuestionValidationComponent() {
                 setGeneratedItems(data.generated);
                 setItemMetadata(data.metadata);
                 setLoading(false);
+                console.log("Generated Items on fetch:", data.generated); // Debugging line
+                console.log("Generated Items Length on fetch:", data.generated ? data.generated.length : 0); // Debugging line
             })
             .catch((err) => {
                 console.error("Failed to fetch questions:", err);
@@ -94,14 +97,14 @@ function QuestionValidationComponent() {
                 <div className="w-[84vw] text-black border rounded-2xl p-4 bg-white mb-4">
                     <div className="framework-perseus">
                         <div style={{ padding: "20px" }}>
-                                {perseusItem && perseusItem.length > 0 ? (
+                                {perseusItem ? (
                                     <div>
                                         <div className="text-zinc-300">
                                             {
                                                 isGenerated ?
                                                 (
                                                     <div>
-                                                        <p>Generated</p>
+                                                        <p>Generated (ID: {perseusItem._id})</p>
                                                         {/* <p className="italic">Path: {perseusItem.metadata.generated_file_path}</p> */}
                                                     </div>
                                                 )   :   (
@@ -112,12 +115,15 @@ function QuestionValidationComponent() {
                                                 )
                                             }
                                         </div>
-                                        <button
-                                            className="bg-green "
-                                            onClick={handleNextGenerated}
-                                            disabled={!isGenerated || generatedItems.length === 0}>
-                                            Next Generated
-                                        </button>
+                                        {generatedItems.length > 1 && isGenerated && (
+                                            <button
+                                                className="flex items-center gap-2 p-2 rounded text-zinc-300 mb-4"
+                                                onClick={handleNextGenerated}
+                                                disabled={!isGenerated || generatedItems.length === 0}>
+                                                
+                                                    next <FaArrowRight />
+                                            </button>
+                                        )}
                                 
                                         <PerseusI18nContextProvider locale="en" strings={mockStrings}>
                                             <ServerItemRenderer
@@ -157,7 +163,11 @@ function QuestionValidationComponent() {
                                 const newState = !prev;
                                 if (newState) {
                                     // Switched to generated, display the current generated item
-                                    setPerseusItem(generatedItems[generatedIndex] || null);
+                                    const generatedItem = generatedItems[generatedIndex] ? { ...generatedItems[generatedIndex] } : null;
+                                    if (generatedItem) {
+                                        delete generatedItem._id; // Remove _id for rendering
+                                    }
+                                    setPerseusItem(generatedItem);
                                 } else {
                                     // Switched to source, display the original question
                                     setPerseusItem(originalQuestion);
@@ -168,16 +178,11 @@ function QuestionValidationComponent() {
                             {isGenerated ? (<p>See Source</p>) : (<p>See Generated</p>)}
                     </button>
                     <button 
-                        className="bg-emerald-500 rounded text-white p-2"
-                        onClick={handleSave}>
-                        Save
-                    </button>
-                    <button 
                         className="bg-green-600 rounded text-white p-2"
                         onClick={async () => {
-                            if (isGenerated && perseusItem && perseusItem._id) {
+                            if (isGenerated && perseusItem && generatedItems[generatedIndex] && generatedItems[generatedIndex]._id) {
                                 try {
-                                    const response = await fetch(`http://localhost:8001/api/approve-question/${perseusItem._id}`, {
+                                    const response = await fetch(`http://localhost:8001/api/approve-question/${generatedItems[generatedIndex]._id}`, {
                                         method: 'POST',
                                         headers: { "content-type": "application/json" },
                                     });
@@ -197,11 +202,11 @@ function QuestionValidationComponent() {
                                 alert("Please select a generated question to approve.");
                             }
                         }}
-                        disabled={!isGenerated || !perseusItem || !perseusItem._id}>
+                        disabled={!isGenerated || !generatedItems[generatedIndex] || !generatedItems[generatedIndex]._id}>
                         Approve
                     </button>
                     <button 
-                        className="bg-black rounded text-white p-2 mt-[53vh]"
+                        className="bg-black rounded text-white p-2 "
                         onClick={() => setViewJSON((prev) => !prev)}>
                         Validate JSON
                     </button>

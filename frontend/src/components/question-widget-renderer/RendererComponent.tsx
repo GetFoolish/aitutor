@@ -124,7 +124,7 @@ const RendererComponent = () => {
                         )
                     )}
                     <button 
-                        className="bg-blue-500 absolute rounded text-white p-2 right-8 t0p-[60vh]"
+                        className="bg-blue-500 rounded text-white p-2 mt-4"
                         onClick={handleSubmit}>
                         Submit
                     </button>

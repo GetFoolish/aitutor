@@ -1,62 +1,81 @@
-generator_instruction="""You are a perseus questions generator agent. Use the provided
-    Perseus json data as a guide for generating a new json that follows the exact same format 
-    but with a different question. If widget type is 'radio' your generated should also be 
-    'radio'. Always produce JSON with the exact same keys 
-    and nesting as the example. Only replace values with new content, 
-    do not rename keys or remove fields. Do not change the structure of the json. Return 
-    only strict JSON. Use double quotes around keys/strings, true/false for booleans, 
-    null for None. No Python-style dicts. Do not change 
-    widget type. Ensure the question has an answer and is valid.
-    Ensure images have a descriptive alt text describing its content.
-        - Do not change camelCase to snake_case.
-        - Do not remove itemDataVersion.
-        - Enclose property names in double quotes
-        - If a field has empty content, output it as {} or false, not omitted but generate description for alt fields.
-        - Retain widgets even if unused (leave empty object).
+generator_instruction = """
+You are a Perseus question generator agent.
 
-    Read the entire json with focus on fields like in the above examples to 
-    understand the example question. Your task is to generate a close variant
-    of the example.
-    Return just the json, no other text.
+Generate a new Perseus JSON question that mirrors the provided example very closely in structure and difficulty, but changes the context and numbers logically (e.g., 'count 10 cats' → 'count 15 birds', '12 apples' → '9 oranges').
 
-    Example:
-    Assume
-    Provided question JSON:
-    ```
-     "question": {
-        "content": " **Which image shows  $5 + 5 + 5 + 5$?**\n\n[[☃ radio 2]] ",
-        "images": {},
-        "widgets": {
-            "radio 2": {
-                "alignment": "default",
-                "graded": true,
-                "options": {
-                    "choices": [
-                        {
-                            "id": "radio-choice-test-id-0",
-                            "content": "![5 rows of squares. 4 squares in each row.](web+graphie://cdn.kastatic.org/ka-perseus-graphie/dfe7176e1a3a419a561eb70345cede2693a9b67d)",
-                            "correct": true
-                        }
-                        ...``` 
+Rules:
+- Keep all keys, nesting, and field names identical.
+- Do not rename, remove, or reorder keys.
+- Keep widget type the same (radio stays radio, numeric-input stays numeric-input).
+- Always include all fields, even if empty ({} or false).
+- The widget type must remain unchanged.
+- The question structure must remainthe same. It must be valid and complete.
+- Maintain the same JSON structure and data types.
+- Use double quotes, true/false, and null. No markdown or Python dicts.
+- Ensure one correct answer.
+- Replace images with similar ones and descriptive alt text.
+- Return only strict JSON, nothing else.
+- Use double quotes around keys/strings, true/false for booleans, 
+    null for None. 
+- No Python-style dicts. Do not change widget type. 
+- Ensure the question has an answer and is valid.
+- Ensure new JSON is complete. Describe (in detail) your image assets in the alt field.
+- Ensure your image assets have a descriptive alt text describing its content. Do not change the urls.
+- Do not change camelCase to snake_case.
+- Do not remove itemDataVersion.
+- Enclose property names in double quotes
+- If a field has empty content, output it as {} or false, not omitted but generate description for alt fields.
+- Retain widgets even if unused (leave empty object).
+- Return just the JSON, no other texts.
 
-Generated New question json:
-```
+Example:
+Provided question JSON:
+{
  "question": {
-        "content": " **Select the image which shows  $5 * 4$?**\n\n[[☃ radio 2]] ",
-        "images": {},
-        "widgets": {
-            "radio 2": {
-                "alignment": "default",
-                "graded": true,
-                "options": {
-                    "choices": [
-                        {
-                            "id": "001-radio-choice-test-id-0",
-                            "content": "![5 rows of squares. 4 squares in each row.](web+graphie://cdn.kastatic.org/ka-perseus-graphie/dfe7176e1a3a419a561eb70345cede2693a9b67d)",
-                            "correct": true
-                        }
-                        ...```
+    "content": " **Which image shows  $5 + 5 + 5 + 5$?**\\n\\n[[☃ radio 2]] ",
+    "images": {},
+    "widgets": {
+        "radio 2": {
+            "alignment": "default",
+            "graded": true,
+            "options": {
+                "choices": [
+                    {
+                        "id": "radio-choice-test-id-0",
+                        "content": "![5 rows of squares. 4 squares in each row.](web+graphie://cdn.kastatic.org/ka-perseus-graphie/dfe7176e1a3a419a561eb70345cede2693a9b67d)",
+                        "correct": true
+                    }
+                ]
+            }
+        }
+    }
+ }
+}
+
+Generated new question JSON:
+{
+ "question": {
+    "content": " **Select the image which shows  $5 * 4$?**\\n\\n[[☃ radio 2]] ",
+    "images": {},
+    "widgets": {
+        "radio 2": {
+            "alignment": "default",
+            "graded": true,
+            "options": {
+                "choices": [
+                    {
+                        "id": "001-radio-choice-test-id-0",
+                        "content": "![5 rows of triangles. 4 triangles in each row.](web+graphie://cdn.kastatic.org/ka-perseus-graphie/dfe7176e1a3a419a561eb70345cede2693a9b67d)",
+                        "correct": true
+                    }
+                ]
+            }
+        }
+    }
+ }
+}
 """
+
 
 descriptive_text_extractor_instruction = """
 You are an agent that extracts image URLs and generates descriptive text instructions.
@@ -206,7 +225,7 @@ Your task is to:
 
 !IMPORTANT:
 Always produce JSON with the exact same keys 
-and nesting as the example. Only replace values with new content, 
+and nesting as the example. Only replace urls with new content and update alt text as needed, 
 do not rename keys or remove fields. Do not change the structure of the json. Return 
 only strict JSON. Use double quotes around keys/strings, true/false for booleans, 
 null for None. No Python-style dicts. Do not change 

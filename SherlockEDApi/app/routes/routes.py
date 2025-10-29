@@ -20,16 +20,6 @@ base_dir=pathlib.Path(__file__).resolve().parents[2] / "CurriculumBuilder_valida
 
 base_dir.mkdir(parents=True, exist_ok=True)
 
-already_seen = set()
-
-file = {}
-item = {} # question, image-path
-file["data"] = []
-file["data"].append(item) 
-
-def update_json_file():
-    pass
-
 class Projection(BaseModel):
     answerArea: Optional[Dict] = None
     hints: Optional[List[Dict]] = None
@@ -57,9 +47,33 @@ class ProjectionWithID(BaseModel):
 # endpoint to get questions 
 @router.get("/questions/{sample}")
 async def get_questions(sample: int): 
-    """Endpoint for retrieving questions"""
-    data = await QuestionDocument.find_all().limit(sample).project(ProjectionWithID).to_list()
+    """Endpoint for retrieving random questions"""
+    # Use aggregation pipeline to get random questions
+    data = await QuestionDocument.aggregate(
+        [
+            {"$sample": {"size": sample}},
+            {"$project": {
+                "_id": {"$toString": "$_id"}, # Convert ObjectId to string
+                "answerArea": "$answerArea",
+                "hints": "$hints",
+                "itemDataVersion": "$itemDataVersion",
+                "question": "$question",
+            }}
+        ],
+        projection_model=ProjectionWithID
+    ).to_list()
     return JSONResponse(content=[q.model_dump() for q in data], status_code=200)
+
+
+@router.get("/question/{id}")
+async def get_question_by_id(id: str):
+    """Endpoint to get a single QuestionDocument by its ID"""
+    question = await QuestionDocument.find_one({"_id": ObjectId(id)}).project(ProjectionWithID)
+    
+    if not question:
+        raise HTTPException(status_code=404, detail="Question not found")
+
+    return JSONResponse(content=question.model_dump(), status_code=200)
 
 
 @router.get("/get-question-for-validation")
@@ -89,7 +103,6 @@ async def get_question_for_validation():
 
     generated_data = data.get("generated", [])
 
-    # ✅ Safely encode ObjectIds and nested links
     return JSONResponse(
         content=jsonable_encoder({
             "finished": False,
@@ -99,9 +112,6 @@ async def get_question_for_validation():
         }),
         status_code=200,
     )
-    # question = await QuestionDocument.find_one({"_id": ObjectId(id)}).project(Projection)
-    # return JSONResponse(content={"finished":False, "question": question.model_dump()}, status_code=200)
-
 
 
 @router.get("/get-question-for-generation")
@@ -130,16 +140,6 @@ async def save_generted_question(source_question_id, request: Request):
 
     return JSONResponse(content={"message": "Success"}, status_code=201)
 
-
-# endpoint to get generated questions
-@router.get("/generated-questions/{sample_size}")
-async def get_generated_questions(sample_size: int):
-    """Endpoint for retrieving generated questions"""
-    data = load_questions(
-        sample_size=sample_size,
-        isGenerated=True
-    )
-    return data 
 
 @router.post("/save-validated-question")
 async def save_validated_json(request: Request):
