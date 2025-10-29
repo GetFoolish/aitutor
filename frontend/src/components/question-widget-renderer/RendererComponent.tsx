@@ -9,9 +9,10 @@ import { PerseusI18nContextProvider } from "../../package/perseus/src/components
 import { mockStrings } from "../../package/perseus/src/strings";
 import { KEScore } from "@khanacademy/perseus-core";
 import { useParams } from "react-router-dom"
+import { NULL } from "sass";
 
 const RendererComponent = () => {
-    const [perseusItem, setPerseusItem] = useState<PerseusItem>();
+    const [perseusItem, setPerseusItem] = useState<PerseusItem | null>();
     const [perseusItems, setPerseusItems] = useState<PerseusItem[]>([]);
     const [index, setIndex] = useState(1);
     const [loading, setLoading] = useState(true);
@@ -23,7 +24,7 @@ const RendererComponent = () => {
 
 
     useEffect(() => {
-        const url = id ? `http://localhost:8001/api/question/${id}` : "http://localhost:8001/api/question";
+        const url = id ? `http://localhost:8001/api/question/${id}` : "http://localhost:8001/api/questions/10";
         fetch(url)
             .then((response) => response.json())
             .then((data) => {
@@ -43,21 +44,24 @@ const RendererComponent = () => {
     }, []);
 
     const handleNext = () => {
-            if (index > perseusItems.length) {
-                setEndOfTest(true)
+            const handleNext = () => {
+            if (index + 1 >= perseusItems.length) {
+                setEndOfTest(true);
+                setPerseusItem(null);
             } else {
-                const item = perseusItems[index]
-                setPerseusItem(item)
+                const item = perseusItems[index + 1];
+                setPerseusItem(item);
                 setIsAnswered(false);
-                setIndex((prev) => prev + 1)
+                setIndex((prev) => prev + 1);
             }
         };
+    };
 
 
     const handleSubmit = () => {
         if (rendererRef.current) {
             const userInput = rendererRef.current.getUserInput();
-            const question = perseusItem.question;
+            const question = perseusItem?.question;
             const score = scorePerseusItem(question, userInput, "en");
 
             // Continue to include an empty guess for the now defunct answer area.

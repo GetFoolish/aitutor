@@ -11,16 +11,16 @@ import { useParams } from "react-router-dom"
 function QuestionValidationComponent() {
     const [viewJSON, setViewJSON] = useState(false);
     const [perseusItem, setPerseusItem] = useState<any>(null);
-    const [item, setItem] = useState(0);
+    const [index, setIndex] = useState(0);
     const [loading, setLoading] = useState(true);
     const [endOfTest, setEndOfTest] = useState(false);
     const [isGenerated, setIsGenerated] = useState(false);
-    const [generatedItems, setGeneratedItems] = useState<{}>();
+    const [generatedItems, setGeneratedItems] = useState<[]>([]);
     const [itemMetadata, setItemMetadata] = useState<{}>();
     const { id } = useParams<{id:string}>();
 
-    useEffect(() => {
-        fetch(`http://localhost:8001/api/generated-questions/${id}`)
+    useEffect(() => { 
+        fetch(`http://localhost:8001/api/get-question-for-validation`)
             .then(response => response.json())
             .then((data) => {
                 console.log("API response:", data);
@@ -51,15 +51,21 @@ function QuestionValidationComponent() {
     }   
 
     const handleNext = () => {
-        setItem((prev) => {
-            const index = prev + 1;
-            if (!perseusItem || index >= perseusItem.length) {
-                setEndOfTest(true);
-                return prev; // stay at last valid index
-            }
-            return index;
-        });
+        
     };
+
+    const handleNextGenerated = () => {
+        if (index + 1 >= generatedItems.length) {
+            setPerseusItem(null);
+        } else {
+            const item = generatedItems[index + 1];
+            setPerseusItem(item);
+            setIndex((prev) => prev + 1);
+        }
+    };
+
+    console.log(isGenerated)
+
 
     return (
         <div className="bg-[#f0f0f0] min-h-[100vh] h-fit w-[100vw] flex flex-col items-center">
@@ -86,11 +92,16 @@ function QuestionValidationComponent() {
                                                 )
                                             }
                                         </div>
+                                        <button
+                                            className="bg-green "
+                                            onClick={handleNextGenerated}>
+                                            next
+                                        </button>
                                 
                                         <PerseusI18nContextProvider locale="en" strings={mockStrings}>
                                             <ServerItemRenderer
                                                 problemNum={0}
-                                                item={isGenerated == true ? perseusItem.generated : perseusItem.source}
+                                                item={isGenerated == true ? generatedItems : perseusItem}
                                                 dependencies={storybookDependenciesV2}
                                                 apiOptions={{}}
                                                 linterContext={{

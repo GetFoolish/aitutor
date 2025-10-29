@@ -27,3 +27,5 @@ class GeneratedQuestionDocument(Document):
 
     class Settings:
         name = "questions-generated"
+
+        
