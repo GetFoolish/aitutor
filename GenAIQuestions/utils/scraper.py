@@ -60,7 +60,7 @@ def get_screenshot_sample(source_question_id: str):
         wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".framework-perseus")))
         print("Page loaded, taking screenshot...")
         time.sleep(1)
-        element = driver.find_element(By.CSS_SELECTOR, ".framework-perseus")
+        element = driver.find_element(By.CSS_SELECTOR, ".framework-perseus .graphie svg")
         filename = screenshot_path / f"{uuid.uuid4()}.png"
         element.screenshot(str(filename))
         return str(filename)
