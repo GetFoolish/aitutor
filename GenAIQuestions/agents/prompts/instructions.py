@@ -71,12 +71,13 @@ Your task is to:
    same items, ensure items are arranged in a grid (eg. 2x3 grid) and are identical in shape, size and color.
 4. Output a JSON object containing a list of these descriptive text prompts in the format shown in the example below,
    where each prompt corresponds to an image URL found in the input JSON.
-   Do not replace the original image URLs. Return just the json object, no other text.
+   Do not replace the original image URLs. Return just the json object, no other text. If no images are found, return an empty list.
 
 !IMPORTANT:
 - Adher strictly to each alt text description. Do not add labels to images 
-    when no labels are required in the alt text description
-
+    when no labels are required in the alt text description.
+- If no images are found, return an empty list.
+e
 Example Input JSON (from question generator agent):
 ```json
 {

@@ -52,15 +52,48 @@ async def main():
             # call function which contains steps
             new_json = await run_agent(new_question_prompt, generate_question, data=data)
             prompts = await run_agent(new_images_prompt, generate_prompt, new_json=new_json, image_file=image_file)
+            print(f"Raw prompts from generate_prompt: {prompts}")
+
+            processed_prompts = {} # Initialize as empty dict
             if isinstance(prompts, str):
-                prompts = process_response(prompts)
-                prompts = json.loads(prompts)
-            for p in prompts["image_data"]:
-                print(f"Generating SVG for prompt: {p['prompt']}")
-                svg = await run_agent(new_svg_prompt, generate_svg, prompts=p["prompt"])
-                p["original_url"] = await process_and_upload_svg(svg)
-                print(f"Uploaded image to: {p['original_url']}")
-            response = await run_agent(rebuild_json_prompt, rebuild_json, new_json=new_json, prompts=prompts)
+                try:
+                    processed_prompts = process_response(prompts)
+                    processed_prompts = json.loads(processed_prompts)
+                    print(f"Parsed prompts (JSON): {processed_prompts}")
+                except json.JSONDecodeError as e:
+                    print(f"JSONDecodeError when parsing prompts: {e}")
+                    # processed_prompts remains {}
+            elif isinstance(prompts, dict):
+                processed_prompts = prompts
+                print(f"Prompts is already a dict: {processed_prompts}")
+            else:
+                print(f"Prompts is neither string nor dict, type: {type(prompts)}")
+                # processed_prompts remains {}
+
+            # Ensure "image_data" is a list, even if missing or wrong type
+            image_data = processed_prompts.get("image_data", [])
+            if not isinstance(image_data, list):
+                print(f"Warning: 'image_data' is not a list. Type: {type(image_data)}. Treating as empty.")
+                image_data = []
+
+            if len(image_data) > 0:
+                print(f"Entering loop for image generation. Number of images: {len(image_data)}")
+                for p in image_data:
+                    # Add a check for 'prompt' key in each item
+                    if "prompt" in p and p["prompt"]:
+                        print(f"Generating SVG for prompt: {p['prompt']}")
+                        svg = await run_agent(new_svg_prompt, generate_svg, prompts=p["prompt"])
+                        p["original_url"] = await process_and_upload_svg(svg)
+                        print(f"Uploaded image to: {p['original_url']}")
+                    else:
+                        print(f"Skipping SVG generation for item due to missing or empty 'prompt' key: {p}")
+                
+                # Update processed_prompts with the potentially modified image_data
+                processed_prompts["image_data"] = image_data
+                response = await run_agent(rebuild_json_prompt, rebuild_json, new_json=new_json, prompts=processed_prompts)
+            else:
+                print("No image data found or prompts is empty, skipping SVG generation loop.")
+                response = await run_agent(rebuild_json_prompt, rebuild_json, new_json=new_json)
             return process_response(response)
         except Exception as e:
             print(f"The following error occured: {e}")
@@ -99,4 +132,4 @@ async def main():
         print(f"The following error occured in main loop: {e}")
         
 if __name__ == "__main__":
-    asyncio.run(main()) 
+    asyncio.run(main())

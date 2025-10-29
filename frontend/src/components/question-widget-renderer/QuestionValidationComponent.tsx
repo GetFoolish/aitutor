@@ -10,12 +10,12 @@ import { useParams } from "react-router-dom"
 
 function QuestionValidationComponent() {
     const [viewJSON, setViewJSON] = useState(false);
-    const [perseusItem, setPerseusItem] = useState<any>(null);
-    const [index, setIndex] = useState(0);
+    const [originalQuestion, setOriginalQuestion] = useState<any>(null);
+    const [perseusItem, setPerseusItem] = useState<any>(null); // This will hold the currently displayed item (original or generated)
+    const [generatedItems, setGeneratedItems] = useState<any[]>([]);
+    const [generatedIndex, setGeneratedIndex] = useState(0); // Index for navigating generated items
     const [loading, setLoading] = useState(true);
-    const [endOfTest, setEndOfTest] = useState(false);
-    const [isGenerated, setIsGenerated] = useState(false);
-    const [generatedItems, setGeneratedItems] = useState<[]>([]);
+    const [isGenerated, setIsGenerated] = useState(false); // Controls whether generated items are shown
     const [itemMetadata, setItemMetadata] = useState<{}>();
     const { id } = useParams<{id:string}>();
 
@@ -24,9 +24,10 @@ function QuestionValidationComponent() {
             .then(response => response.json())
             .then((data) => {
                 console.log("API response:", data);
-                setPerseusItem(data.question);
+                setOriginalQuestion(data.question); // Store the original question
+                setPerseusItem(data.question); // Initially display the original question
                 setGeneratedItems(data.generated);
-                setItemMetadata(data.metadata)
+                setItemMetadata(data.metadata);
                 setLoading(false);
             })
             .catch((err) => {
@@ -51,16 +52,35 @@ function QuestionValidationComponent() {
     }   
 
     const handleNext = () => {
-        
+        setLoading(true);
+        setIsGenerated(false); // Reset to show original question
+        setGeneratedIndex(0); // Reset generated index
+
+        fetch(`http://localhost:8001/api/get-question-for-validation`)
+            .then(response => response.json())
+            .then((data) => {
+                console.log("API response:", data);
+                setOriginalQuestion(data.question);
+                setPerseusItem(data.question);
+                setGeneratedItems(data.generated);
+                setItemMetadata(data.metadata);
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.error("Failed to fetch questions:", err);
+                setLoading(false);
+            });
     };
 
     const handleNextGenerated = () => {
-        if (index + 1 >= generatedItems.length) {
-            setPerseusItem(null);
+        if (generatedIndex + 1 < generatedItems.length) {
+            const nextIndex = generatedIndex + 1;
+            setGeneratedIndex(nextIndex);
+            setPerseusItem(generatedItems[nextIndex]);
         } else {
-            const item = generatedItems[index + 1];
-            setPerseusItem(item);
-            setIndex((prev) => prev + 1);
+            // Optionally, loop back to the first generated item or show an end message
+            setGeneratedIndex(0);
+            setPerseusItem(generatedItems[0]);
         }
     };
 
@@ -94,14 +114,15 @@ function QuestionValidationComponent() {
                                         </div>
                                         <button
                                             className="bg-green "
-                                            onClick={handleNextGenerated}>
-                                            next
+                                            onClick={handleNextGenerated}
+                                            disabled={!isGenerated || generatedItems.length === 0}>
+                                            Next Generated
                                         </button>
                                 
                                         <PerseusI18nContextProvider locale="en" strings={mockStrings}>
                                             <ServerItemRenderer
                                                 problemNum={0}
-                                                item={isGenerated == true ? generatedItems : perseusItem}
+                                                item={perseusItem} // perseusItem now holds the correct item
                                                 dependencies={storybookDependenciesV2}
                                                 apiOptions={{}}
                                                 linterContext={{
@@ -121,23 +142,63 @@ function QuestionValidationComponent() {
                                 )}
                         </div>
                     </div>
-                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem.generated : perseusItem.source} perseusItem={perseusItem} />}
+                    {viewJSON && <JSONViewer data={isGenerated ? perseusItem : originalQuestion} perseusItem={perseusItem} />}
                 </div>
                 <div className="flex flex-col w-[154px] gap-2">
                     <button
                         onClick={handleNext}
                         className="top-19 bg-gray-500 rounded 
-                            text-white p-2">Next
+                            text-white p-2">Next (Source)
                     </button>
                     <button 
-                        className={`${isGenerated == true? "bg-amber-500 text-[white]" : "bg-white text-amber-500" } rounded p-2 border-2 border-amber-500`} 
-                        onClick={() => setIsGenerated((prev) => !prev)}>
-                            {isGenerated == true ? (<p>See Source</p>) : (<p>See Generated</p>)}
+                        className={`${isGenerated ? "bg-amber-500 text-[white]" : "bg-white text-amber-500" } rounded p-2 border-2 border-amber-500`} 
+                        onClick={() => {
+                            setIsGenerated((prev) => {
+                                const newState = !prev;
+                                if (newState) {
+                                    // Switched to generated, display the current generated item
+                                    setPerseusItem(generatedItems[generatedIndex] || null);
+                                } else {
+                                    // Switched to source, display the original question
+                                    setPerseusItem(originalQuestion);
+                                }
+                                return newState;
+                            });
+                        }}>
+                            {isGenerated ? (<p>See Source</p>) : (<p>See Generated</p>)}
                     </button>
                     <button 
                         className="bg-emerald-500 rounded text-white p-2"
                         onClick={handleSave}>
-                        Validate
+                        Save
+                    </button>
+                    <button 
+                        className="bg-green-600 rounded text-white p-2"
+                        onClick={async () => {
+                            if (isGenerated && perseusItem && perseusItem._id) {
+                                try {
+                                    const response = await fetch(`http://localhost:8001/api/approve-question/${perseusItem._id}`, {
+                                        method: 'POST',
+                                        headers: { "content-type": "application/json" },
+                                    });
+                                    if (!response.ok) {
+                                        throw new Error(`HTTP error! status: ${response.status}`);
+                                    }
+                                    const data = await response.json();
+                                    console.log("Approval successful:", data);
+                                    alert("Question approved successfully!");
+                                    // Optionally, fetch next question or update UI
+                                    handleNext(); // Move to the next question after approval
+                                } catch (error) {
+                                    console.error("Failed to approve question:", error);
+                                    alert("Failed to approve question.");
+                                }
+                            } else {
+                                alert("Please select a generated question to approve.");
+                            }
+                        }}
+                        disabled={!isGenerated || !perseusItem || !perseusItem._id}>
+                        Approve
                     </button>
                     <button 
                         className="bg-black rounded text-white p-2 mt-[53vh]"

@@ -71,14 +71,8 @@ async def get_question_for_validation():
 
     if not questions:
         raise HTTPException(status_code=404, detail="No questions available for validation")
-
-    # Select a random one
     question = random.choice(questions)
-
-    # Fetch its linked generated questions
     await question.fetch_link(QuestionDocument.generated)
-
-    # --- Prepare structured response ---
     data = question.model_dump()
 
     question_data = {
@@ -136,17 +130,6 @@ async def save_generted_question(source_question_id, request: Request):
 
     return JSONResponse(content={"message": "Success"}, status_code=201)
 
-# @router.get("/get-generated-question")
-# async def get_generated_question():
-#     """Endpoint for retrieving a generated question"""
-#     data = await GeneratedQuestionDocument.find(
-#         GeneratedQuestionDocument.human_approved == False
-#     ).project(ProjectionWithID).to_list()
-#     if not data:
-#         raise HTTPException(status_code=404, detail="Generated question not found")
-#     parent_question = data.fetch_link(
-#         GeneratedQuestionDocument.
-#     )
 
 # endpoint to get generated questions
 @router.get("/generated-questions/{sample_size}")
@@ -168,3 +151,20 @@ async def save_validated_json(request: Request):
         content={"message":"JSON saved successfully"},
         status_code=201
     )
+
+@router.post("/approve-question/{question_id}")
+async def approve_question(question_id: str):
+    try:
+        # Find the GeneratedQuestionDocument by its _id
+        question_doc = await GeneratedQuestionDocument.get(ObjectId(question_id))
+
+        if not question_doc:
+            raise HTTPException(status_code=404, detail="Generated question not found")
+
+        # Set human_approved to True
+        question_doc.human_approved = True
+        await question_doc.save()
+
+        return JSONResponse(content={"message": "Question approved successfully"}, status_code=200)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to approve question: {e}")

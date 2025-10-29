@@ -9,7 +9,7 @@ import { PerseusI18nContextProvider } from "../../package/perseus/src/components
 import { mockStrings } from "../../package/perseus/src/strings";
 import { KEScore } from "@khanacademy/perseus-core";
 import { useParams } from "react-router-dom"
-import { NULL } from "sass";
+import { NULL } from "sass"; 
 
 const RendererComponent = () => {
     const [perseusItem, setPerseusItem] = useState<PerseusItem | null>();
@@ -44,38 +44,36 @@ const RendererComponent = () => {
     }, []);
 
     const handleNext = () => {
-            const handleNext = () => {
-            if (index + 1 >= perseusItems.length) {
-                setEndOfTest(true);
-                setPerseusItem(null);
-            } else {
-                const item = perseusItems[index + 1];
-                setPerseusItem(item);
-                setIsAnswered(false);
-                setIndex((prev) => prev + 1);
-            }
-        };
+        if (index + 1 >= perseusItems.length) {
+            setEndOfTest(true);
+            setPerseusItem(null);
+        } else {
+            const item = perseusItems[index + 1];
+            setPerseusItem(item);
+            setIsAnswered(false);
+            setIndex((prev) => prev + 1);
+        }
     };
 
 
     const handleSubmit = () => {
-        if (rendererRef.current) {
-            const userInput = rendererRef.current.getUserInput();
-            const question = perseusItem?.question;
-            const score = scorePerseusItem(question, userInput, "en");
-
-            // Continue to include an empty guess for the now defunct answer area.
-            const maxCompatGuess = [rendererRef.current.getUserInputLegacy(), []];
-            const keScore = keScoreFromPerseusScore(score, maxCompatGuess, rendererRef.current.getSerializedState().question);
-
-            // return score for the given question 
-            setIsAnswered(true);
-            setScore(keScore);
-            console.log("Score:", keScore);
+        if (!rendererRef.current || !perseusItem) {
+            console.warn("Renderer not ready or no item to submit.");
+            return;
         }
-    };
+        const userInput = rendererRef.current.getUserInput();
+        const question = perseusItem.question; // perseusItem is guaranteed not null here
+        const score = scorePerseusItem(question, userInput, "en");
 
-    // const perseusItem = perseusItems && perseusItems.length > 0 ? perseusItems[item]: {};
+        // Continue to include an empty guess for the now defunct answer area.
+        const maxCompatGuess = [rendererRef.current.getUserInputLegacy(), []];
+        const keScore = keScoreFromPerseusScore(score, maxCompatGuess, rendererRef.current.getSerializedState().question);
+
+        // return score for the given question 
+        setIsAnswered(true);
+        setScore(keScore);
+        console.log("Score:", keScore);
+    };
     
     return (
             <div className="framework-perseus">
@@ -90,26 +88,30 @@ const RendererComponent = () => {
                     ): (
                         loading == false ? (
                         <div>
-                            <PerseusI18nContextProvider locale="en" strings={mockStrings}>
-                                <RenderStateRoot>
-                                    <ServerItemRenderer
-                                        ref={rendererRef}
-                                        problemNum={0}
-                                        item={perseusItem}
-                                        dependencies={storybookDependenciesV2}
-                                        apiOptions={{}}
-                                        linterContext={{
-                                            contentType: "",
-                                            highlightLint: true,
-                                            paths: [],
-                                            stack: [],
-                                        }}
-                                        showSolutions="none"
-                                        hintsVisible={0}
-                                        reviewMode={false}
-                                        />
-                                </RenderStateRoot>
-                            </PerseusI18nContextProvider>
+                            {perseusItem ? ( // Conditionally render ServerItemRenderer
+                                <PerseusI18nContextProvider locale="en" strings={mockStrings}>
+                                    <RenderStateRoot>
+                                        <ServerItemRenderer
+                                            ref={rendererRef}
+                                            problemNum={0}
+                                            item={perseusItem}
+                                            dependencies={storybookDependenciesV2}
+                                            apiOptions={{}}
+                                            linterContext={{
+                                                contentType: "",
+                                                highlightLint: true,
+                                                paths: [],
+                                                stack: [],
+                                            }}
+                                            showSolutions="none"
+                                            hintsVisible={0}
+                                            reviewMode={false}
+                                            />
+                                    </RenderStateRoot>
+                                </PerseusI18nContextProvider>
+                            ) : (
+                                <p>No question available.</p> // Or some other placeholder
+                            )}
                             {isAnswered && <div 
                                 className="flex justify-between mt-9">
                                     <span className={score?.correct ? "text-green-400 italic" : "text-red-400 italic"}>
