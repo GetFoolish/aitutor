@@ -47,7 +47,7 @@ async def main():
     
 
     # generate questions 
-    async def generate_questions(data: json, image_file: bytes, filename: str=None) -> json:
+    async def generate_questions(data: json, image_file: bytes) -> json:
         try:
             print(f"Generating questions...")
             # call function which contains steps
@@ -110,7 +110,7 @@ async def main():
         if question: 
             response: None
             try:
-                response = await generate_questions(question, filename, image_file)
+                response = await generate_questions(data=question, image_file=image_file)
             except Exception as e:
                 print(f"Unable to load JSON: {e}")
             if response:

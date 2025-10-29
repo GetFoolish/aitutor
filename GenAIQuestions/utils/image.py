@@ -10,6 +10,7 @@ load_dotenv()
 
 # Define BASE_DIR to correctly locate the assets directory
 BASE_DIR = Path(__file__).parent.parent.parent.resolve()
+BASE_DIR.mkdir(parents=True, exist_ok=True)
 
 async def process_svg(svg, filepath):
     svg = svg.strip()

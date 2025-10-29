@@ -99,32 +99,34 @@ function QuestionValidationComponent() {
                         <div style={{ padding: "20px" }}>
                                 {perseusItem ? (
                                     <div>
-                                        <div className="text-zinc-300">
-                                            {
-                                                isGenerated ?
-                                                (
-                                                    <div>
-                                                        <p>Generated (ID: {perseusItem._id})</p>
-                                                        {/* <p className="italic">Path: {perseusItem.metadata.generated_file_path}</p> */}
-                                                    </div>
-                                                )   :   (
-                                                    <div>
-                                                        <p>Source</p>
-                                                        {/* <p className="italic">Path: {perseusItem.metadata.source_file_path}</p> */}
-                                                    </div>
-                                                )
-                                            }
+                                        <div className="flex justify-between items-center" >
+                                            <div className="text-zinc-300">
+                                                {
+                                                    isGenerated ?
+                                                    (
+                                                        <div>
+                                                            <p>Generated (ID)</p>
+                                                            {/* <p className="italic">Path: {perseusItem.metadata.generated_file_path}</p> */}
+                                                        </div>
+                                                    )   :   (
+                                                        <div>
+                                                            <p>Source</p>
+                                                            {/* <p className="italic">Path: {perseusItem.metadata.source_file_path}</p> */}
+                                                        </div>
+                                                    )
+                                                }
+                                            </div>
+                                            {generatedItems.length > 1 && isGenerated && (
+                                                <button
+                                                    className="flex items-center gap-2 p-2 rounded text-zinc-300 mb-4"
+                                                    onClick={handleNextGenerated}
+                                                    disabled={!isGenerated || generatedItems.length === 0}>
+                                                    
+                                                        next <FaArrowRight />
+                                                </button>
+                                            )}
+                                    
                                         </div>
-                                        {generatedItems.length > 1 && isGenerated && (
-                                            <button
-                                                className="flex items-center gap-2 p-2 rounded text-zinc-300 mb-4"
-                                                onClick={handleNextGenerated}
-                                                disabled={!isGenerated || generatedItems.length === 0}>
-                                                
-                                                    next <FaArrowRight />
-                                            </button>
-                                        )}
-                                
                                         <PerseusI18nContextProvider locale="en" strings={mockStrings}>
                                             <ServerItemRenderer
                                                 problemNum={0}
@@ -165,6 +167,7 @@ function QuestionValidationComponent() {
                                     // Switched to generated, display the current generated item
                                     const generatedItem = generatedItems[generatedIndex] ? { ...generatedItems[generatedIndex] } : null;
                                     if (generatedItem) {
+                                        
                                         delete generatedItem._id; // Remove _id for rendering
                                     }
                                     setPerseusItem(generatedItem);
