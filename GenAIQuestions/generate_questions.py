@@ -101,8 +101,7 @@ async def main():
         api_response = requests.get(url)
         question = api_response.json()
         if "question" in question:
-            # source_question_id = question.pop("_id")
-            source_question_id = "6902067a770306b6ca9d1e74"
+            source_question_id = question.pop("_id")
         print(f"Processing question ID: {source_question_id}")
 
         filename = get_screenshot_sample(source_question_id)
@@ -133,3 +132,4 @@ async def main():
         
 if __name__ == "__main__":
     asyncio.run(main())
+
