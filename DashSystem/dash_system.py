@@ -6,6 +6,8 @@ from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
+from db.config_repository import get_config_document
+from db.mongo_client import ping_database
 from user_manager import UserManager, UserProfile, SkillState
 from QuestionGeneratorAgent.question_generator_agent import QuestionGeneratorAgent
 
@@ -58,7 +60,7 @@ class DASHSystem:
         self.student_states: Dict[str, Dict[str, StudentSkillState]] = {}
         self.questions: Dict[str, Question] = {}
         self.curriculum: Dict = {}
-        self.user_manager = UserManager(users_folder="Users")
+        self.user_manager = UserManager(users_folder="Users", use_mongo=True)
         
         # Initialize the Question Generator Agent
         try:
@@ -69,53 +71,102 @@ class DASHSystem:
             self.question_generator = None
             print(f"⚠️ Could not initialize Question Generator Agent: {e}")
 
-        self._load_from_files(self.skills_file_path, self.curriculum_file_path)
+        self._initialize_learning_materials()
     
+    def _initialize_learning_materials(self):
+        if self._load_from_mongo():
+            return
+        self._load_from_files(self.skills_file_path, self.curriculum_file_path)
+
+    def _load_from_mongo(self) -> bool:
+        if not ping_database():
+            return False
+
+        try:
+            skills_data = get_config_document("skills")
+            curriculum_data = get_config_document("curriculum")
+        except KeyError:
+            return False
+
+        self._hydrate_skills(skills_data)
+        self.curriculum = curriculum_data
+        self._build_question_index(curriculum_data)
+        print(f"✅ Loaded {len(self.skills)} skills from MongoDB.")
+        return True
+
+    def _hydrate_skills(self, skills_data: Dict[str, Dict]) -> None:
+        self.skills.clear()
+        for skill_id, skill_data in skills_data.items():
+            grade_level = GradeLevel[skill_data['grade_level']]
+            skill = Skill(
+                skill_id=skill_data['skill_id'],
+                name=skill_data['name'],
+                grade_level=grade_level,
+                prerequisites=skill_data.get('prerequisites', []),
+                forgetting_rate=skill_data.get('forgetting_rate', 0.1),
+                difficulty=skill_data.get('difficulty', 0.0)
+            )
+            self.skills[skill_id] = skill
+
+    def _build_question_index(self, curriculum_data: Dict) -> None:
+        self.questions.clear()
+        grades = curriculum_data.get('grades', {})
+        for grade_data in grades.values():
+            for skill_data in grade_data.get('skills', []):
+                skill_id = skill_data.get('skill_id')
+                for question_data in skill_data.get('questions', []):
+                    question = Question(
+                        question_id=question_data['question_id'],
+                        skill_ids=[skill_id] if skill_id else [],
+                        content=question_data['content'],
+                        difficulty=question_data.get('difficulty', 0.0)
+                    )
+                    self.questions[question.question_id] = question
+        print(f"✅ Indexed {len(self.questions)} questions.")
+
     def _reload_questions(self):
-        """Reload only the questions from the curriculum file."""
+        """Reload only the questions from the configured store."""
+        if self._load_curriculum_from_mongo():
+            return
+        self._reload_questions_from_file()
+
+    def _load_curriculum_from_mongo(self) -> bool:
+        if not ping_database():
+            return False
+        try:
+            curriculum_data = get_config_document("curriculum")
+        except KeyError:
+            return False
+        self.curriculum = curriculum_data
+        self._build_question_index(curriculum_data)
+        return True
+
+    def _reload_questions_from_file(self) -> None:
         try:
             with open(self.curriculum_file_path, 'r') as f:
-                self.curriculum = json.load(f)
-            
-            self.questions.clear()
-            for grade_key, grade_data in self.curriculum['grades'].items():
-                for skill_data in grade_data['skills']:
-                    for question_data in skill_data['questions']:
-                        question = Question(
-                            question_id=question_data['question_id'],
-                            skill_ids=[skill_data['skill_id']],
-                            content=question_data['content'],
-                            difficulty=question_data['difficulty']
-                        )
-                        self.questions[question.question_id] = question
-            print(f"✅ Reloaded {len(self.questions)} questions from curriculum.")
-        except Exception as e:
-            print(f"❌ Error reloading questions: {e}")
+                curriculum_data = json.load(f)
+        except Exception as exc:
+            print(f"❌ Error reloading questions from file: {exc}")
+            return
+
+        self.curriculum = curriculum_data
+        self._build_question_index(curriculum_data)
 
     def _load_from_files(self, skills_file: str, curriculum_file: str):
         """Load skills and curriculum from JSON files"""
         try:
-            # Load skills
             with open(skills_file, 'r') as f:
                 skills_data = json.load(f)
-            
-            for skill_id, skill_data in skills_data.items():
-                grade_level = GradeLevel[skill_data['grade_level']]
-                skill = Skill(
-                    skill_id=skill_data['skill_id'],
-                    name=skill_data['name'],
-                    grade_level=grade_level,
-                    prerequisites=skill_data['prerequisites'],
-                    forgetting_rate=skill_data['forgetting_rate'],
-                    difficulty=skill_data['difficulty']
-                )
-                self.skills[skill_id] = skill
-            
-            # Load curriculum and questions
-            self._reload_questions()
-            
+            self._hydrate_skills(skills_data)
+
+            with open(curriculum_file, 'r') as f:
+                curriculum_data = json.load(f)
+
+            self.curriculum = curriculum_data
+            self._build_question_index(curriculum_data)
+
             print(f"✅ Loaded {len(self.skills)} skills from JSON files")
-            
+
         except FileNotFoundError as e:
             print(f"❌ Error: Could not find file {e.filename}")
             print("🔄 Falling back to hardcoded curriculum...")
@@ -310,11 +361,34 @@ class DASHSystem:
         
         return unique_affected_skills
     
-    def load_user_or_create(self, user_id: str) -> UserProfile:
-        """Load existing user or create new one with all skills initialized"""
+    def load_user_or_create(self, user_id: str, grade_level: Optional[GradeLevel] = None) -> UserProfile:
+        """
+        Load existing user or create a new one.
+        If creating a new user and grade_level is provided, initializes skill levels:
+        - Skills below the grade level are marked as "mastered" (memory_strength = 3.0)
+        - Skills at or above the grade level start at 0.0
+        """
+        # Check if user exists to determine if it's a creation event
+        is_new_user = not self.user_manager.user_exists(user_id)
+
         all_skill_ids = list(self.skills.keys())
         user_profile = self.user_manager.get_or_create_user(user_id, all_skill_ids)
-        
+
+        # If it's a new user and a grade level is provided, initialize skills based on grade
+        if is_new_user and grade_level:
+            print(f"🚀 New user '{user_id}' at grade {grade_level.name}. Initializing past skills as mastered...")
+            for skill_id, skill in self.skills.items():
+                # If skill's grade is lower than the user's starting grade, mark as mastered
+                if skill.grade_level.value < grade_level.value:
+                    if skill_id in user_profile.skill_states:
+                        user_profile.skill_states[skill_id].memory_strength = 3.0
+                        user_profile.skill_states[skill_id].last_practice_time = time.time()
+                        print(f"  ✓ Mastered '{skill.name}' ({skill.grade_level.name})")
+
+            # Save the updated profile with initialized skills
+            self.user_manager.save_user(user_profile)
+            print(f"✅ Initialized {user_id} with skills below {grade_level.name} marked as mastered")
+
         # Sync user profile with current student_states for backward compatibility
         self.student_states[user_id] = {}
         for skill_id, skill_state in user_profile.skill_states.items():
@@ -324,7 +398,7 @@ class DASHSystem:
                 practice_count=skill_state.practice_count,
                 correct_count=skill_state.correct_count
             )
-        
+
         return user_profile
     
     def save_user_state(self, user_id: str, user_profile: UserProfile):
@@ -385,25 +459,33 @@ class DASHSystem:
         
         return scores
     
+    def are_prerequisites_met(self, student_id: str, skill_id: str, current_time: float, threshold: float = 0.7) -> bool:
+        """Check if all prerequisites for a skill are met"""
+        skill = self.skills.get(skill_id)
+        if not skill:
+            return False
+
+        for prereq_id in skill.prerequisites:
+            prereq_prob = self.predict_correctness(student_id, prereq_id, current_time)
+            if prereq_prob < threshold:
+                return False
+
+        return True
+
     def get_recommended_skills(self, student_id: str, current_time: float, threshold: float = 0.7) -> List[str]:
         """Get skills that need practice based on memory strength decay"""
         recommendations = []
-        
+
         for skill_id, skill in self.skills.items():
             probability = self.predict_correctness(student_id, skill_id, current_time)
-            
-            # Check if prerequisites are met
-            prerequisites_met = True
-            for prereq_id in skill.prerequisites:
-                prereq_prob = self.predict_correctness(student_id, prereq_id, current_time)
-                if prereq_prob < threshold:
-                    prerequisites_met = False
-                    break
-            
+
+            # Check if prerequisites are met using the new method
+            prerequisites_met = self.are_prerequisites_met(student_id, skill_id, current_time, threshold)
+
             # Recommend if probability is below threshold and prerequisites are met
             if probability < threshold and prerequisites_met:
                 recommendations.append(skill_id)
-        
+
         return recommendations
 
     def get_next_question(self, student_id: str, current_time: float, is_retry: bool = False) -> Optional[Question]:

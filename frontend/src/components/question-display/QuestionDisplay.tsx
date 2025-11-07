@@ -1,14 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import './question-display.scss';
 import RendererComponent from "../question-widget-renderer/RendererComponent";
+import { Scratchpad } from "../scratchpad/Scratchpad";
 
 const QuestionDisplay: React.FC = () => {
-  
   return (
-    <div className="question-display" style={{width: '100%', height: '100%'}}>
-      <h2 className="question-title">Here's your next question:</h2>
-      <div className="perseus-content" id="perseus-capture-area">
+    <div className="question-display-wrapper">
+      <h2 style={{
+        color: 'white',
+        marginBottom: '20px',
+        fontSize: '24px',
+        fontWeight: 'bold'
+      }}>
+        Here's your next question:
+      </h2>
+
+      <div className="perseus-question-box">
         <RendererComponent />
+      </div>
+
+      <div style={{ marginTop: '30px' }}>
+        <Scratchpad height={300} />
       </div>
     </div>
   );

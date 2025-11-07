@@ -5,6 +5,9 @@ from typing import Dict, List, Optional
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
 
+from db.mongo_client import ping_database
+from db.user_repository import get_user as mongo_get_user, upsert_user as mongo_upsert_user
+
 @dataclass
 class QuestionAttempt:
     question_id: str
@@ -72,12 +75,18 @@ class UserProfile:
         )
 
 class UserManager:
-    def __init__(self, users_folder: str = "Users"):
+    def __init__(self, users_folder: str = "Users", use_mongo: bool = True):
         self.users_folder = users_folder
-        self.ensure_users_folder_exists()
+        self.use_mongo = use_mongo and ping_database()
+        if self.use_mongo:
+            print("✅ UserManager configured to use MongoDB.")
+        else:
+            self.ensure_users_folder_exists()
     
     def ensure_users_folder_exists(self):
         """Create users folder if it doesn't exist"""
+        if self.use_mongo:
+            return
         if not os.path.exists(self.users_folder):
             os.makedirs(self.users_folder)
             print(f"📁 Created {self.users_folder} folder for user data")
@@ -88,6 +97,8 @@ class UserManager:
     
     def user_exists(self, user_id: str) -> bool:
         """Check if a user file exists"""
+        if self.use_mongo:
+            return mongo_get_user(user_id) is not None
         return os.path.exists(self.get_user_file_path(user_id))
     
     def create_new_user(self, user_id: str, all_skill_ids: List[str]) -> UserProfile:
@@ -119,6 +130,18 @@ class UserManager:
     
     def load_user(self, user_id: str) -> Optional[UserProfile]:
         """Load a user profile from JSON file"""
+        if self.use_mongo:
+            document = mongo_get_user(user_id)
+            if not document:
+                return None
+            try:
+                user_profile = UserProfile.from_dict(document)
+                print(f"📂 Loaded user profile from MongoDB: {user_id}")
+                return user_profile
+            except (KeyError, TypeError) as exc:
+                print(f"❌ Error parsing MongoDB user {user_id}: {exc}")
+                return None
+
         file_path = self.get_user_file_path(user_id)
         
         if not os.path.exists(file_path):
@@ -139,11 +162,21 @@ class UserManager:
     def save_user(self, user_profile: UserProfile):
         """Save a user profile to JSON file"""
         user_profile.last_updated = time.time()
+        payload = user_profile.to_dict()
+
+        if self.use_mongo:
+            try:
+                mongo_upsert_user(user_profile.user_id, payload)
+                print(f"💾 Saved user profile to MongoDB: {user_profile.user_id}")
+            except Exception as exc:
+                print(f"❌ Error saving user {user_profile.user_id} to MongoDB: {exc}")
+            return
+
         file_path = self.get_user_file_path(user_profile.user_id)
         
         try:
             with open(file_path, 'w') as f:
-                json.dump(user_profile.to_dict(), f, indent=2)
+                json.dump(payload, f, indent=2)
             
             print(f"💾 Saved user profile: {user_profile.user_id}")
             

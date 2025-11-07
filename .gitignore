@@ -16,7 +16,11 @@ __pycache__/
 *.pyd
 .Python
 env/
+env.old/
 venv/
+*.egg-info/
+dist/
+build/
 
 # Environment variables
 .env
@@ -36,3 +40,11 @@ ehthumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Build artifacts
+frontend/dist/
+frontend/build/
+package-lock.json
+
+# Screenshots and temp files
+question_screenshots/

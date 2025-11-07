@@ -15,10 +15,47 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({ socket, renderCan
   const [error, setError] = useState<string | null>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
+  // Get MediaMixer command socket to enable screen sharing
+  const [commandSocket, setCommandSocket] = useState<WebSocket | null>(null);
+  const { toggleScreen } = useMediaMixer({ socket: commandSocket });
+
+  // Setup command socket connection for sending toggle commands
   useEffect(() => {
-    if (!socket) return;
+    console.log('MediaMixerDisplay: Connecting to command WebSocket on ws://localhost:8765');
+    const ws = new WebSocket('ws://localhost:8765');
+
+    ws.onopen = () => {
+      console.log('MediaMixerDisplay: Command socket connected');
+      setCommandSocket(ws);
+    };
+
+    ws.onerror = (err) => {
+      console.error('MediaMixerDisplay: Command socket error:', err);
+    };
+
+    return () => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
+    };
+  }, []);
+
+  // Disable automatic screen sharing - user video only
+  useEffect(() => {
+    if (commandSocket && commandSocket.readyState === WebSocket.OPEN) {
+      console.log('MediaMixerDisplay: Screen sharing disabled (showing user video only)');
+      // toggleScreen(true); // Commented out to show only user camera, not screen
+    }
+  }, [commandSocket, toggleScreen]);
+
+  useEffect(() => {
+    if (!socket) {
+      console.log('MediaMixerDisplay: No socket provided yet');
+      return;
+    }
 
     console.log('MediaMixerDisplay: Setting up video WebSocket connection');
+    console.log('MediaMixerDisplay: Socket readyState:', socket.readyState);
 
     const image = new Image();
     image.onload = () => {
@@ -33,38 +70,54 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({ socket, renderCan
       }
     };
 
-    socket.onopen = () => {
+    // Check if already connected (readyState === 1 means OPEN)
+    if (socket.readyState === WebSocket.OPEN) {
+      console.log('MediaMixerDisplay: Socket already connected');
+      setIsConnected(true);
+      setError(null);
+    }
+
+    const handleOpen = () => {
       console.log('MediaMixerDisplay: Connected to video WebSocket');
       setIsConnected(true);
       setError(null);
     };
 
-    socket.onmessage = (event) => {
+    const handleMessage = (event: MessageEvent) => {
       const frame = event.data;
       const imageUrl = `data:image/jpeg;base64,${frame}`;
       setImageData(imageUrl);
       image.src = imageUrl;
     };
 
-    socket.onerror = (err) => {
+    const handleError = (err: Event) => {
       console.error('MediaMixerDisplay: WebSocket error:', err);
       setError('Failed to connect to MediaMixer video stream. Is it running?');
       setIsConnected(false);
     };
 
-    socket.onclose = () => {
+    const handleClose = () => {
       console.log('MediaMixerDisplay: Disconnected from video WebSocket');
       setIsConnected(false);
     };
 
+    socket.addEventListener('open', handleOpen);
+    socket.addEventListener('message', handleMessage);
+    socket.addEventListener('error', handleError);
+    socket.addEventListener('close', handleClose);
+
     return () => {
       console.log('MediaMixerDisplay: Cleaning up video WebSocket');
+      socket.removeEventListener('open', handleOpen);
+      socket.removeEventListener('message', handleMessage);
+      socket.removeEventListener('error', handleError);
+      socket.removeEventListener('close', handleClose);
     };
   }, [socket, renderCanvasRef]);
 
   return (
-    <div className={cn("media-mixer-display", { "collapsed": isCollapsed })}>
-      <header className="top">
+    <div className={cn("media-mixer-display", { "collapsed": isCollapsed })} style={{ border: '2px solid var(--border)', borderRadius: 'var(--radius)' }}>
+      <header className="top" style={{ background: 'var(--surface-light)', padding: 'var(--space-2)', borderBottom: '1px solid var(--border)' }}>
         <button onClick={() => setIsCollapsed(!isCollapsed)} className="collapse-button">
           {isCollapsed ? (
             <RiSidebarUnfoldLine color="#b4b8bb" />
@@ -72,13 +125,37 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({ socket, renderCan
             <RiSidebarFoldLine color="#b4b8bb" />
           )}
         </button>
-        <h2>Media Mixer Display</h2>
+        <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>
+          Your Workspace {isConnected && <span style={{ color: 'var(--success)', fontSize: '12px' }}>● Live</span>}
+        </h2>
       </header>
-      <div className="media-mixer-content">
-        {error && <div className="error-message">{error}</div>}
-        {!isConnected && !error && <div>Connecting to MediaMixer...</div>}
+      <div className="media-mixer-content" style={{ padding: 'var(--space-2)', minHeight: '200px', background: 'var(--bg)' }}>
+        {error && <div className="error-message" style={{ color: 'var(--error)', padding: 'var(--space-2)', background: 'rgba(255, 112, 112, 0.1)', borderRadius: 'var(--radius-sm)' }}>{error}</div>}
+        {!socket && <div style={{ color: 'var(--text-secondary)', padding: 'var(--space-2)' }}>Waiting for workspace connection...</div>}
+        {socket && !isConnected && !error && <div style={{ color: 'var(--warning)', padding: 'var(--space-2)' }}>Connecting to your workspace...</div>}
+        {isConnected && !imageData && <div style={{ color: 'var(--accent)', padding: 'var(--space-2)' }}>Workspace connected! Waiting for video...</div>}
         {isConnected && imageData && (
-          <img src={imageData} alt="MediaMixer Stream" style={{ width: '100%', height: 'auto' }} />
+          <div>
+            <img
+              src={imageData}
+              alt="Your workspace - Use paper/whiteboard to work out problems"
+              style={{
+                width: '100%',
+                height: 'auto',
+                borderRadius: 'var(--radius-sm)',
+                border: '2px solid var(--success)'
+              }}
+            />
+            <p style={{
+              fontSize: '12px',
+              color: 'var(--text-tertiary)',
+              marginTop: 'var(--space-1)',
+              fontStyle: 'italic',
+              textAlign: 'center'
+            }}>
+              Use your paper or whiteboard to work out the problem
+            </p>
+          </div>
         )}
       </div>
     </div>

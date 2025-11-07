@@ -19,6 +19,8 @@ class ConfigManager:
             return os.getenv("OPENROUTER_API_KEY", "")
         elif provider == "google":
             return os.getenv("GOOGLE_API_KEY", "")
+        elif provider == "daily":
+            return os.getenv("DAILY_API_KEY", "")
         else:
             raise ValueError(f"Unknown provider: {provider}")
     
@@ -35,6 +37,10 @@ class ConfigManager:
             raise ValueError(f"Unknown provider: {provider}")
         
         return self.config["api_endpoints"][provider]
+
+    def get_database_uri(self) -> str:
+        """Get MongoDB connection URI"""
+        return os.getenv("MONGODB_URI", "")
     
     def update_model(self, use_case: str, model: str):
         """Update the model for a specific use case"""
@@ -43,3 +49,19 @@ class ConfigManager:
             # Save back to config.json
             with open('config.json', 'w') as f:
                 json.dump(self.config, f, indent=2)
+
+    def get_database_name(self) -> str:
+        """Get configured MongoDB database name"""
+        return self.config.get("database", {}).get("name", "ai_tutor")
+
+    def get_daily_room_url(self) -> str:
+        """Return configured Daily room URL"""
+        return os.getenv("DAILY_ROOM_URL", "")
+
+    def get_pipecat_start_url(self) -> str:
+        """Return the Pipecat bot start endpoint"""
+        return os.getenv("PIPECAT_START_URL", "http://localhost:7860/start")
+
+    def get_pipecat_public_api_key(self) -> str:
+        """Return the optional public API key for Pipecat"""
+        return os.getenv("PIPECAT_PUBLIC_API_KEY", "")

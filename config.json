@@ -2,7 +2,7 @@
   "llm_models": {
     "question_generator": {
       "provider": "openrouter",
-      "model": "anthropic/claude-3-haiku",
+      "model": "openai/gpt-oss-safeguard-20b",
       "temperature": 0.7,
       "max_tokens": 1000
     },
@@ -21,5 +21,8 @@
   },
   "api_endpoints": {
     "openrouter": "https://openrouter.ai/api/v1/chat/completions"
+  },
+  "database": {
+    "name": "ai_tutor"
   }
 }

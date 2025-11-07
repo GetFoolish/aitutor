@@ -6,6 +6,9 @@ import random
 import glob
 import pathlib
 
+from db.mongo_client import ping_database
+from db.perseus_repository import get_random_questions
+
 path = pathlib.Path(__file__).parent.parent.resolve() / "CurriculumBuilder" 
 
 def load_json_objects_from_dir(directory: str, pattern: str = "*.json") -> list:
@@ -27,10 +30,18 @@ def load_json_objects_from_dir(directory: str, pattern: str = "*.json") -> list:
 
 def load_questions(sample_size: int = 10):
     """Loads the requested number of questions"""
-    all_questions = load_json_objects_from_dir(path)
-    if all_questions and sample_size <= len(all_questions):
+    if ping_database():
         try:
-            sample = random.sample(all_questions,sample_size)
-            return sample
+            questions = get_random_questions(sample_size)
+            if questions:
+                return questions
+        except Exception as exc:
+            print(f"⚠️ MongoDB question load failed: {exc}")
+
+    all_questions = load_json_objects_from_dir(path)
+    if all_questions:
+        try:
+            return random.sample(all_questions, min(sample_size, len(all_questions)))
         except Exception as e:
-            print(f"Failed to load questions: {e}")
+            print(f"Failed to load questions from files: {e}")
+    return []

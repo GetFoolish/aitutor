@@ -10,6 +10,8 @@ from datetime import datetime
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from LLMBase.llm_client import OpenRouterClient
+from db.config_repository import get_config_document, upsert_config_document
+from db.mongo_client import ping_database
 from .validators import SubjectValidator
 
 # Determine project root to reliably find config.json
@@ -17,23 +19,47 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CONFIG_PATH = os.path.join(PROJECT_ROOT, 'config.json')
 
 class QuestionGeneratorAgent:
-    def __init__(self, curriculum_file: str):
-        if not os.path.isabs(curriculum_file):
-            raise ValueError("QuestionGeneratorAgent requires an absolute path for the curriculum_file.")
+    def __init__(self, curriculum_file: Optional[str] = None):
         self.curriculum_file = curriculum_file
         self.llm_client = OpenRouterClient(config_path=CONFIG_PATH)
         self.validator = SubjectValidator()
-        self.load_curriculum()
-        
-    def load_curriculum(self):
-        """Load the current curriculum"""
+        self.use_mongo = False
+        self.curriculum: Dict = {}
+
+        if ping_database():
+            try:
+                self.curriculum = get_config_document("curriculum")
+                self.use_mongo = True
+                print("✅ Question Generator Agent using MongoDB curriculum.")
+            except KeyError:
+                pass
+
+        if not self.use_mongo:
+            if curriculum_file is None:
+                raise ValueError("QuestionGeneratorAgent requires a curriculum_file when MongoDB is unavailable.")
+            if not os.path.isabs(curriculum_file):
+                curriculum_file = os.path.abspath(curriculum_file)
+            self.curriculum_file = curriculum_file
+            self.curriculum = self._load_curriculum_from_file()
+
+    def _load_curriculum_from_file(self) -> Dict:
         with open(self.curriculum_file, 'r') as f:
-            self.curriculum = json.load(f)
+            return json.load(f)
+
+    def load_curriculum(self):
+        """Reload curriculum from the active storage backend."""
+        if self.use_mongo:
+            self.curriculum = get_config_document("curriculum")
+        else:
+            self.curriculum = self._load_curriculum_from_file()
     
     def save_curriculum(self):
-        """Save the updated curriculum"""
-        with open(self.curriculum_file, 'w') as f:
-            json.dump(self.curriculum, f, indent=2)
+        """Persist the updated curriculum to the active storage backend."""
+        if self.use_mongo:
+            upsert_config_document("curriculum", self.curriculum)
+        if self.curriculum_file:
+            with open(self.curriculum_file, 'w') as f:
+                json.dump(self.curriculum, f, indent=2)
     
     def generate_variations(self, source_question_id: str, num_variations: int = 3, 
                           subject: str = "math") -> List[str]:

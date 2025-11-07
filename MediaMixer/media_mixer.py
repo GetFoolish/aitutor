@@ -18,7 +18,7 @@ import json
 class MediaMixer:
     """Clean MediaMixer implementation"""
 
-    def __init__(self, width=1280, height=2160, fps=15):
+    def __init__(self, width=2560, height=4320, fps=15):  # High resolution for crisp text readability
         self.width = width
         self.height = height
         self.fps = fps
@@ -27,12 +27,12 @@ class MediaMixer:
         # State
         self.running = False
         self.show_camera = False
-        self.show_screen = False
+        self.show_screen = True  # Enable screen sharing by default for Pipecat integration
         self.camera = None
         self.screen_capture = mss.mss()
         self.scratchpad_frame = None
 
-        print("MediaMixer initialized - waiting for toggle commands")
+        print("MediaMixer initialized - screen sharing ENABLED by default")
 
     def init_camera(self):
         """Initialize camera when needed"""
@@ -69,6 +69,9 @@ class MediaMixer:
             return None
 
         try:
+            # Capture primary monitor (monitors[1])
+            # monitors[0] = all monitors combined
+            # monitors[1] = primary display
             monitor = self.screen_capture.monitors[1]
             screenshot = self.screen_capture.grab(monitor)
             frame = np.array(screenshot)
@@ -79,7 +82,33 @@ class MediaMixer:
             return None
 
     def mix_frames(self):
-        """Mix all sources into single frame"""
+        """Mix all sources into single frame with smart layout"""
+        camera_frame = self.get_camera_frame()
+        screen_frame = self.get_screen_frame()
+
+        # If both screen AND scratchpad are available, use 2-section vertical layout
+        if screen_frame is not None and self.scratchpad_frame is not None:
+            # Create 2-section layout (1920x2160 = 1920x1080 * 2)
+            dual_height = self.width  # Square sections for readability
+            mixed_frame = np.zeros((dual_height * 2, self.width, 3), dtype=np.uint8)
+
+            # Top half: Scratchpad
+            scratchpad = cv2.resize(self.scratchpad_frame, (self.width, dual_height))
+            mixed_frame[0:dual_height, :] = scratchpad
+
+            # Bottom half: Screen
+            screen_resized = cv2.resize(screen_frame, (self.width, dual_height))
+            mixed_frame[dual_height:dual_height*2, :] = screen_resized
+
+            print("MediaMixer: Mixing scratchpad + screen (2-section layout)")
+            return mixed_frame
+
+        # If only screen is available, use full-frame screen for better AI readability
+        if screen_frame is not None:
+            # Return full-resolution screen only (1920x1920 for better quality)
+            return cv2.resize(screen_frame, (self.width, self.width))
+
+        # Fallback to 3-section mix only if no screen available
         mixed_frame = np.zeros((self.height, self.width, 3), dtype=np.uint8)
 
         # Section 1: Scratchpad (white if no data)
@@ -90,12 +119,10 @@ class MediaMixer:
         mixed_frame[0:self.section_height, :] = scratchpad
 
         # Section 2: Screen share (black if disabled)
-        screen_frame = self.get_screen_frame()
         if screen_frame is not None:
             mixed_frame[self.section_height:2*self.section_height, :] = screen_frame
 
         # Section 3: Camera (gray if disabled)
-        camera_frame = self.get_camera_frame()
         if camera_frame is not None:
             mixed_frame[2*self.section_height:3*self.section_height, :] = camera_frame
         else:
@@ -105,7 +132,7 @@ class MediaMixer:
 
     def frame_to_base64(self, frame):
         """Convert frame to base64 JPEG"""
-        _, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 80])
+        _, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 95])  # Higher quality for better text readability
         return base64.b64encode(buffer).decode('utf-8')
 
     def handle_command(self, data):

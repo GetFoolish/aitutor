@@ -16,15 +16,60 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
+import './styles/global.css';
 import reportWebVitals from './reportWebVitals';
 import "./package/perseus/testing/perseus-init.tsx";
+import { ChakraProvider, ColorModeScript, extendTheme } from '@chakra-ui/react';
+import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { GameProvider } from './contexts/GameContext';
+import { AppRouter } from './router';
+
+const theme = extendTheme({
+  config: {
+    initialColorMode: 'dark',
+    useSystemColorMode: false,
+  },
+  colors: {
+    brand: {
+      50: '#E6F2FF',
+      100: '#BAD9FF',
+      200: '#8DC1FF',
+      300: '#61A8FF',
+      400: '#3490FF',
+      500: '#0877FF',
+      600: '#0660CC',
+      700: '#044899',
+      800: '#023066',
+      900: '#011833',
+    },
+  },
+  styles: {
+    global: {
+      body: {
+        bg: '#1c1f21',
+        color: '#e1e2e3',
+      },
+    },
+  },
+});
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <App />
+  <>
+    <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+    <ThemeProvider>
+      <ChakraProvider theme={theme}>
+        <AuthProvider>
+          <GameProvider>
+            <AppRouter />
+          </GameProvider>
+        </AuthProvider>
+      </ChakraProvider>
+    </ThemeProvider>
+  </>
 );
 
 // If you want to start measuring performance in your app, pass a function

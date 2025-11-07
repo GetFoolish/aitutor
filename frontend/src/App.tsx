@@ -16,97 +16,169 @@
 
 import { useRef, useState, useEffect } from "react";
 import "./App.scss";
-import { LiveAPIProvider } from "./contexts/LiveAPIContext";
-import SidePanel from "./components/side-panel/SidePanel";
-import MediaMixerDisplay from "./components/media-mixer-display/MediaMixerDisplay";
-import ScratchpadCapture from "./components/scratchpad-capture/ScratchpadCapture";
+import "@pipecat-ai/voice-ui-kit/styles.scoped";
+import { PipecatAppBase } from "@pipecat-ai/voice-ui-kit";
+import { useAuth } from "./contexts/AuthContext";
+import { LoginSignup } from "./components/auth/LoginSignup";
+import { Header } from "./components/header/Header";
+import { LearningPathSidebar } from "./components/learning-path/LearningPathSidebar";
 import QuestionDisplay from "./components/question-display/QuestionDisplay";
-import ControlTray from "./components/control-tray/ControlTray";
-import { LiveClientOptions } from "./types";
-import Scratchpad from "./components/scratchpad/Scratchpad";
+import { FloatingVideoWidget } from "./components/floating-recorder/FloatingVideoWidget";
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string;
-if (typeof API_KEY !== "string") {
-  throw new Error("set VITE_GEMINI_API_KEY in .env");
-}
+// Pipecat endpoints (not Gemini Live API)
+const voiceStartEndpoint =
+  (import.meta.env.VITE_VOICE_START_ENDPOINT as string) ||
+  "http://localhost:7860/start";
 
-const apiOptions: LiveClientOptions = {
-  apiKey: API_KEY,
-};
+const voiceStatusEndpoint = voiceStartEndpoint.replace("/start", "/status");
 
 function App() {
-  // this video reference is used for displaying the active stream, whether that is the webcam or screen capture
-  // feel free to style as you see fit
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const { user, isLoading } = useAuth();
   const renderCanvasRef = useRef<HTMLCanvasElement>(null);
-  // either the screen capture, the video or null, if null we hide it
-  const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
-  const [mixerStream, setMixerStream] = useState<MediaStream | null>(null);
-  const mixerVideoRef = useRef<HTMLVideoElement>(null);
   const [commandSocket, setCommandSocket] = useState<WebSocket | null>(null);
   const [videoSocket, setVideoSocket] = useState<WebSocket | null>(null);
-  const [isScratchpadOpen, setScratchpadOpen] = useState(false);
 
+  // Debug logging for connection - MUST be before early returns (Rules of Hooks)
   useEffect(() => {
+    console.log("[App] Voice start endpoint:", voiceStartEndpoint);
+    console.log("[App] Voice status endpoint:", voiceStatusEndpoint);
+  }, []);
+
+  // WebSocket setup - MUST be before early returns (Rules of Hooks)
+  useEffect(() => {
+    // Only create WebSocket connections when user is authenticated
+    if (!user) return;
+
+    console.log('[App] Creating MediaMixer WebSocket connections...');
+
     // Command WebSocket for sending frames/commands TO MediaMixer
     const commandWs = new WebSocket('ws://localhost:8765');
+
+    commandWs.onopen = () => {
+      console.log('[App] Command WebSocket (8765) connected');
+    };
+
+    commandWs.onerror = (err) => {
+      console.error('[App] Command WebSocket (8765) error:', err);
+    };
+
+    commandWs.onclose = () => {
+      console.log('[App] Command WebSocket (8765) closed');
+    };
+
     setCommandSocket(commandWs);
 
     // Video WebSocket for receiving video FROM MediaMixer
     const videoWs = new WebSocket('ws://localhost:8766');
+
+    videoWs.onopen = () => {
+      console.log('[App] Video WebSocket (8766) connected');
+    };
+
+    videoWs.onerror = (err) => {
+      console.error('[App] Video WebSocket (8766) error:', err);
+    };
+
+    videoWs.onclose = () => {
+      console.log('[App] Video WebSocket (8766) closed');
+    };
+
     setVideoSocket(videoWs);
 
     return () => {
+      console.log('[App] Closing MediaMixer WebSockets');
       commandWs.close();
       videoWs.close();
     };
-  }, []);
+  }, [user]);
 
-  useEffect(() => {
-    if (mixerVideoRef.current && mixerStream) {
-      mixerVideoRef.current.srcObject = mixerStream;
-    }
-  }, [mixerStream]);
+  console.log('[App] Render - isLoading:', isLoading, 'user:', user?.email);
+
+  // Show login if not authenticated
+  if (isLoading) {
+    console.log('[App] Showing loading state');
+    return <div style={{color: 'white', padding: '20px'}}>Loading...</div>;
+  }
+
+  if (!user) {
+    console.log('[App] No user, showing LoginSignup');
+    return <LoginSignup />;
+  }
+
+  console.log('[App] User authenticated, rendering main app');
 
   return (
-    <div className="App">
-      <LiveAPIProvider options={apiOptions}>
-        <div className="streaming-console">
-          <SidePanel />
-          <main>
-            <div className="main-app-area">
-              <div className="question-panel" style={{border: '2px solid red'}}>
-                <ScratchpadCapture socket={commandSocket}>
+    <PipecatAppBase
+      transportType="daily"
+      connectParams={{
+        endpoint: voiceStartEndpoint,
+        config: {
+          enableMic: true,
+          enableCam: false,
+        },
+        requestData: {
+          createDailyRoom: true,
+          user_id: user?.user_id || "demo_user",  // Pass user_id to Pipecat
+          dailyRoomProperties: {
+            start_video_off: true,
+            start_audio_off: false,
+          },
+        },
+      }}
+      debug={true}
+    >
+      {({ handleConnect, handleDisconnect }) => {
+        const onConnect = async () => {
+          console.log("[App] Connect button clicked");
+          try {
+            await handleConnect();
+            console.log("[App] Connection initiated");
+          } catch (error) {
+            console.error("[App] Connection error:", error);
+          }
+        };
+
+        const onDisconnect = async () => {
+          console.log("[App] Disconnect button clicked");
+          try {
+            await handleDisconnect();
+            console.log("[App] Disconnection initiated");
+          } catch (error) {
+            console.error("[App] Disconnection error:", error);
+          }
+        };
+
+        return (
+          <div className="container">
+            <div className="layout">
+              {/* Header with Credits and User Profile */}
+              <Header />
+
+              {/* Main Content Grid - 2 Column Layout */}
+              <div className="main">
+                {/* Learning Path Sidebar */}
+                <div className="sidebar">
+                  <LearningPathSidebar />
+                </div>
+
+                {/* Main Content Area */}
+                <div className="content">
+                  {/* Question Display */}
                   <QuestionDisplay />
-                  {isScratchpadOpen && (
-                    <div className="scratchpad-container">
-                      <Scratchpad />
-                    </div>
-                  )}
-                </ScratchpadCapture>
+                </div>
               </div>
-              <MediaMixerDisplay socket={videoSocket} renderCanvasRef={renderCanvasRef} />
             </div>
 
-            <ControlTray
-              socket={commandSocket}
-              renderCanvasRef={renderCanvasRef}
-              videoRef={videoRef}
-              supportsVideo={true}
-              onVideoStreamChange={setVideoStream}
-              onMixerStreamChange={setMixerStream}
-              enableEditingSettings={true}
-            >
-              <button onClick={() => setScratchpadOpen(!isScratchpadOpen)}>
-                <span className="material-symbols-outlined">
-                  {isScratchpadOpen ? "close" : "edit"}
-                </span>
-              </button>
-            </ControlTray>
-          </main>
-        </div>
-      </LiveAPIProvider>
-    </div>
+            {/* Floating Video Widget */}
+            <FloatingVideoWidget
+              onConnect={onConnect}
+              onDisconnect={onDisconnect}
+              commandSocket={commandSocket}
+            />
+          </div>
+        );
+      }}
+    </PipecatAppBase>
   );
 }
 

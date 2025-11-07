@@ -55,7 +55,8 @@
 
 body {
   font-family: "Space Mono", monospace;
-  background: var(--Neutral-30);
+  background: var(--Neutral-10);
+  color: var(--Neutral-90);
 }
 
 .material-symbols-outlined {
@@ -116,8 +117,8 @@ body {
 }
 
 .streaming-console {
-  background: lightgreen;
-  color: var(--gray-300);
+  background: var(--Neutral-10);
+  color: var(--Neutral-90);
   display: flex;
   height: 100vh;
   width: 100vw;
@@ -151,20 +152,23 @@ body {
   .main-app-area {
     display: flex;
     flex: 1;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
+    gap: 1.5rem;
+    padding: 1rem;
     width: 100%;
+    box-sizing: border-box;
   }
 
-.question-panel {
-  position: relative;
-  display: flex;
-  flex: 2;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start; /* push content towards top */
-  height: 100vh;
-}
+  .question-panel {
+    position: relative;
+    display: flex;
+    flex: 2;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    height: 100%;
+  }
 
   .media-mixer-display {
     display: flex;
@@ -173,14 +177,88 @@ body {
     align-items: center;
     justify-content: center;
     height: 100%;
-  }
-
-  .media-mixer-display {
     border-left: 1px solid var(--border-stroke);
     transition: all 0.3s ease-in-out;
   }
 
-  
+  .voice-console-panel {
+    flex: 1.2;
+    display: flex !important;
+    flex-direction: column;
+    min-width: 300px;
+    min-height: 400px;
+    background: var(--Neutral-15);
+    border-radius: 16px;
+    border: 1px solid var(--border-stroke);
+    overflow: hidden;
+
+    // Ensure connect button and controls are visible
+    button[data-state], button {
+      display: inline-flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    // Make sure the header controls are visible
+    [class*="PanelHeader"] {
+      display: flex !important;
+      visibility: visible !important;
+
+      > div {
+        display: flex !important;
+        gap: 0.5rem;
+      }
+    }
+  }
+
+  .voice-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    font-size: 0.65rem;
+    line-height: 1.1;
+    color: var(--gray-300);
+
+    &-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    &-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gray-500);
+      display: inline-block;
+    }
+
+    &-label {
+      font-weight: 600;
+    }
+
+    &-detail {
+      font-size: 0.6rem;
+      color: var(--gray-500);
+    }
+  }
+
+  .voice-status.voice-status-checking .voice-status-indicator {
+    background: var(--gray-500);
+  }
+
+  .voice-status.voice-status-ok .voice-status-indicator {
+    background: var(--accent-green);
+  }
+
+  .voice-status.voice-status-reachable .voice-status-indicator {
+    background: var(--accent-blue);
+  }
+
+  .voice-status.voice-status-error .voice-status-indicator {
+    background: var(--Red-500);
+  }
 
   .function-call {
     position: absolute;
@@ -199,11 +277,34 @@ body {
   max-height: fit-content;
 }
 
+/* Scratchpad container - remove absolute positioning so it flows normally in document */
 .scratchpad-container {
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
   width: 100%;
-  height: 100%;
-  z-index: 10;
 }
+
+/* Perseus text visibility fixes - BLACK for readability */
+.perseus-renderer-responsive,
+[class*="perseus"],
+[class*="Perseus"] {
+  color: #000000 !important;
+
+  p, span, div, label, input, textarea {
+    color: #000000 !important;
+  }
+
+  /* Radio buttons and checkboxes */
+  input[type="radio"],
+  input[type="checkbox"] {
+    filter: brightness(1.5);
+  }
+}
+
+/* Ensure all text is visible */
+* {
+  &:not(button):not([class*="badge"]):not([class*="Badge"]) {
+    color: inherit;
+  }
+}
+
+/* Main App Layout - NO DUPLICATES! Using global.css definitions for .container, .layout, .main, .sidebar, .content */

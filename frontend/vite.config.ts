@@ -22,5 +22,8 @@ export default defineConfig({
     'process.env': JSON.stringify({}),
     'process.platform': JSON.stringify('browser'),
     'process.version': JSON.stringify(''),
+  },
+  optimizeDeps: {
+    exclude: ['@khanacademy/perseus-core', '@khanacademy/perseus', '@khanacademy/perseus-linter'],
   }
 })
