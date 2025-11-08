@@ -41,10 +41,10 @@ def get_chrome_driver():
     chrome_options.add_argument("--hide-scrollbars")
     chrome_options.add_argument("--disable-extensions")
     chrome_options.add_argument("--remote-debugging-port=9222")
-    chrome_options.binary_location = "/usr/bin/google-chrome"
+    # chrome_options.binary_location = "/usr/bin/google-chrome"  # Not needed on macOS
 
 
-    return webdriver.Chrome(service=Service("/usr/local/bin/chromedriver"), options=chrome_options)
+    return webdriver.Chrome(service=Service("/Users/vandanchopra/.wdm/drivers/chromedriver/mac64/142.0.7444.61/chromedriver-mac-arm64/chromedriver"), options=chrome_options)
 
 def get_screenshot_sample(source_question_id: str):
     screenshot_path = Path(__file__).parent.parent.resolve() / "examples" / "screenshot"

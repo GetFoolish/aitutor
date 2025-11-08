@@ -27,10 +27,16 @@ T = TypeVar('T')
 async def main():
     def process_response(response: str) -> str:
         response = response.strip()
-        if response.startswith("```json"):
-            response = response.removeprefix("```json")
-        if response.endswith("```"):
-            response = response.removesuffix("```")
+        # Find the JSON block if it's wrapped in markdown code blocks
+        if "```json" in response:
+            # Extract everything between ```json and the closing ```
+            start = response.find("```json") + len("```json")
+            end = response.find("```", start)
+            if end != -1:
+                response = response[start:end]
+        elif response.startswith("```") and response.endswith("```"):
+            # Handle generic code blocks
+            response = response.removeprefix("```").removesuffix("```")
         return response.strip()
     
     async def process_and_upload_svg(svg):
@@ -45,7 +51,6 @@ async def main():
         response = await func(prompt)
         return response
     
-
     # generate questions 
     async def generate_questions(data: json, image_file: bytes) -> json:
         try:
@@ -54,13 +59,15 @@ async def main():
             new_json = await run_agent(new_question_prompt, generate_question, data=data)
             prompts = await run_agent(new_images_prompt, generate_prompt, new_json=new_json, image_file=image_file)
 
-            processed_prompts = {} 
+            processed_prompts = {}
             if isinstance(prompts, str):
                 try:
                     processed_prompts = process_response(prompts)
+                    print(f"DEBUG - Processed prompts string: {processed_prompts[:200] if processed_prompts else 'EMPTY'}")  # Show first 200 chars
                     processed_prompts = json.loads(processed_prompts)
                 except json.JSONDecodeError as e:
                     print(f"JSONDecodeError when parsing prompts: {e}")
+                    print(f"DEBUG - Raw prompts response: {prompts[:500] if prompts else 'EMPTY'}")  # Show first 500 chars
                     processed_prompts = {} # Ensure processed_prompts is a dict on error
             elif isinstance(prompts, dict):
                 processed_prompts = prompts

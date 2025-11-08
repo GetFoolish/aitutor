@@ -2,20 +2,18 @@
 node_modules/
 
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-npm-start.log
 
-# Python
+# Python virtual environments
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 .Python
-env/
 venv/
 
 # Environment variables
@@ -23,7 +21,7 @@ venv/
 .env.*
 *.env
 
-# OS-specific
+# OS-specific files
 .DS_Store
 Thumbs.db
 ehthumbs.db
@@ -37,7 +35,9 @@ ehthumbs.db
 *.sln
 *.sw?
 
-# Generated files 
-assets/*
-GenAIQuestions/*.json 
+# Generated files
+dist/
+build/
+assets/
+GenAIQuestions/*.json
 GenAIQuestions/*.png

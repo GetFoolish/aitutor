@@ -26,13 +26,13 @@
     "@phosphor-icons/core": "^2.1.1",
     "@popperjs/core": "^2.11.8",
     "@tailwindcss/vite": "^4.1.13",
-    "aphrodite": "^2.4.0",
+    "aphrodite": "^1.2.5",
     "classnames": "^2.5.1",
     "dotenv-flow": "^4.1.0",
     "eventemitter3": "^5.0.1",
     "html-to-image": "^1.11.13",
     "html2canvas": "^1.4.1",
-    "jquery": "^1.11.3",
+    "jquery": "^2.1.1",
     "lodash": "^4.17.21",
     "raphael": "^2.3.0",
     "react": "^18.3.1",
@@ -87,6 +87,8 @@
   "resolutions": {
     "@khanacademy/perseus-core": "19.2.0",
     "@khanacademy/kas": "2.1.1",
-    "@khanacademy/perseus-utils": "2.1.0"
+    "@khanacademy/perseus-utils": "2.1.0",
+    "aphrodite": "^1.2.5",
+    "jquery": "^2.1.1"
   }
 }
