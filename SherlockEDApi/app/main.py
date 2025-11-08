@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app import routes as app_routes
+from auth.auth_routes import router as auth_router
 import uvicorn
 
 app = FastAPI(
@@ -19,7 +20,7 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -33,4 +34,5 @@ async def root():
 async def health_check():
     return {"status": "healthy", "message": "API is running"}
 
+app.include_router(auth_router)
 app.include_router(app_routes.router, prefix="/api", tags=["api"])
