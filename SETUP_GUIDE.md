@@ -54,13 +54,7 @@ source env/bin/activate  # On Windows: env\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 4. Install bcrypt Compatible Version
-```bash
-# IMPORTANT: bcrypt 5.x is incompatible with passlib
-pip install "bcrypt<5.0"
-```
-
-### 5. Frontend Setup
+### 4. Frontend Setup
 ```bash
 cd frontend
 npm install --force

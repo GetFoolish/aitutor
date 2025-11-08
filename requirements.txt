@@ -53,7 +53,7 @@ scikit-learn==1.7.2
 
 # Additional Dependencies
 python-dateutil==2.9.0.post0
-bcrypt==5.0.0
+bcrypt==4.3.0  # Version 5.x is incompatible with passlib 1.7.4
 cryptography==46.0.3
 
 # Video Search Agent
