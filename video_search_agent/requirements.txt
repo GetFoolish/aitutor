@@ -1,0 +1,11 @@
+anthropic
+youtube-transcript-api
+google-api-python-client
+requests
+langdetect
+pycountry
+beautifulsoup4
+numpy
+scikit-learn
+openai
+pytube

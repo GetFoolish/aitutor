@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# API Keys (IMPORTANT - Don't commit!)
+.env
+*.key
+*_api_key.txt
+
+# Large output files
+output/*.json
+
+# Temp files
+*.log
+*.tmp
+.cache/
+
+# Test files
+test_*.py
+demo_*.py
+*_test.py
+
+# Screenshots
+*.png
+*.jpg
+*.jpeg
