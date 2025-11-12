@@ -9,7 +9,7 @@ lets look at the file for our To-dos and wrap then up one by one. Keep making th
 [DONE]4. change the name of left-section to 'question-panel'. and change the name of the media-mixer panel to media-mixer-display. also, lets also make the media-mixer-display collapsable to the right side of the screen.
 [DONE] 5. Now lets move the dash_system.py file into a folder of it's own with the name 'DashSystem'.
 [DONE] 6. lets move skills.json and curriculum.json to a folder called 'QuestionsBank'. make sure to refactor any files that are using these two files.
-7. Lets check if dash_system.py has a function / method that decides which the next question should be. it will be based on Next Skill to be practiced 'recommendation' function, based on 'current skills table'.
+[DONE] 7. Lets check if dash_system.py has a function / method that decides which the next question should be. it will be based on Next Skill to be practiced 'recommendation' function, based on 'current skills table'.
 8. Now lets add the skill bar / menu.
 9. Now develop the frontend like khan academy where we will display the next question. and test it.
 
