@@ -30,6 +30,7 @@
     "classnames": "^2.5.1",
     "dotenv-flow": "^4.1.0",
     "eventemitter3": "^5.0.1",
+    "framer-motion": "^12.23.24",
     "html-to-image": "^1.11.13",
     "html2canvas": "^1.4.1",
     "jquery": "^2.1.1",

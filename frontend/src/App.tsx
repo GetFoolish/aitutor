@@ -25,8 +25,11 @@ import QuestionDisplay from "./components/question-display/QuestionDisplay";
 import ControlTray from "./components/control-tray/ControlTray";
 import { LiveClientOptions } from "./types";
 import Scratchpad from "./components/scratchpad/Scratchpad";
-import RendererComponent from "./components/question-widget-renderer/RendererComponent"
+import RendererComponent from "./components/question-widget-renderer/RendererComponent";
 import QuestionValidationComponent from "./components/question-widget-renderer/QuestionValidationComponent";
+import LoomRecordingWidget from "./components/loom-recording-widget/LoomRecordingWidget";
+import LoginScreen from "./components/auth/Login";
+import RegisterScreen from "./components/auth/Register";
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string;
 if (typeof API_KEY !== "string") {
@@ -52,11 +55,11 @@ function App() {
 
   useEffect(() => {
     // Command WebSocket for sending frames/commands TO MediaMixer
-    const commandWs = new WebSocket('ws://localhost:8765');
+    const commandWs = new WebSocket("ws://localhost:8765");
     setCommandSocket(commandWs);
 
     // Video WebSocket for receiving video FROM MediaMixer
-    const videoWs = new WebSocket('ws://localhost:8766');
+    const videoWs = new WebSocket("ws://localhost:8766");
     setVideoSocket(videoWs);
 
     return () => {
@@ -75,44 +78,63 @@ function App() {
     <BrowserRouter>
       <Switch>
         <Route exact path="/">
-          <div className="App">
-            <LiveAPIProvider options={apiOptions}>
-              <div className="streaming-console">
-                <SidePanel />
-                <main>
-                  <div className="main-app-area">
-                    <div className="question-panel" style={{border: '2px solid red'}}>
-                      <ScratchpadCapture socket={commandSocket}>
-                        <QuestionDisplay />
-                        {isScratchpadOpen && (
-                          <div className="scratchpad-container">
-                            <Scratchpad />
-                          </div>
-                        )}
-                      </ScratchpadCapture>
+          <LoomRecordingWidget>
+            <div className="App">
+              <LiveAPIProvider options={apiOptions}>
+                <div className="streaming-console">
+                  <SidePanel />
+                  <main>
+                    <div className="main-app-area">
+                      <div
+                        className="question-panel"
+                        style={{ border: "2px solid red" }}
+                      >
+                        <ScratchpadCapture socket={commandSocket}>
+                          <QuestionDisplay />
+                          {isScratchpadOpen && (
+                            <div className="scratchpad-container">
+                              <Scratchpad />
+                            </div>
+                          )}
+                        </ScratchpadCapture>
+                      </div>
+                      <MediaMixerDisplay
+                        socket={videoSocket}
+                        renderCanvasRef={renderCanvasRef}
+                      />
                     </div>
-                    <MediaMixerDisplay socket={videoSocket} renderCanvasRef={renderCanvasRef} />
-                  </div>
 
-                  <ControlTray
-                    socket={commandSocket}
-                    renderCanvasRef={renderCanvasRef}
-                    videoRef={videoRef}
-                    supportsVideo={true}
-                    onVideoStreamChange={setVideoStream}
-                    onMixerStreamChange={setMixerStream}
-                    enableEditingSettings={true}
-                  >
-                    <button onClick={() => setScratchpadOpen(!isScratchpadOpen)}>
-                      <span className="material-symbols-outlined">
-                        {isScratchpadOpen ? "close" : "edit"}
-                      </span>
-                    </button>
-                  </ControlTray>
-                </main>
-              </div>
-            </LiveAPIProvider>
-          </div>
+                    <ControlTray
+                      socket={commandSocket}
+                      renderCanvasRef={renderCanvasRef}
+                      videoRef={videoRef}
+                      supportsVideo={true}
+                      onVideoStreamChange={setVideoStream}
+                      onMixerStreamChange={setMixerStream}
+                      enableEditingSettings={true}
+                    >
+                      <button
+                        onClick={() => setScratchpadOpen(!isScratchpadOpen)}
+                      >
+                        <span className="material-symbols-outlined">
+                          {isScratchpadOpen ? "close" : "edit"}
+                        </span>
+                      </button>
+                    </ControlTray>
+                  </main>
+                </div>
+              </LiveAPIProvider>
+            </div>
+          </LoomRecordingWidget>
+        </Route>
+        <Route path="/admin/question-validation">
+          <QuestionValidationComponent />
+        </Route>
+        <Route path="/login">
+          <LoginScreen />
+        </Route>
+        <Route path="/register">
+          <RegisterScreen />
         </Route>
         <Route exact path="/:id">
           <div className="App">
@@ -121,7 +143,10 @@ function App() {
                 <SidePanel />
                 <main>
                   <div className="main-app-area">
-                    <div className="question-panel" style={{border: '2px solid red'}}>
+                    <div
+                      className="question-panel"
+                      style={{ border: "2px solid red" }}
+                    >
                       <ScratchpadCapture socket={commandSocket}>
                         <QuestionDisplay />
                         {isScratchpadOpen && (
@@ -131,7 +156,10 @@ function App() {
                         )}
                       </ScratchpadCapture>
                     </div>
-                    <MediaMixerDisplay socket={videoSocket} renderCanvasRef={renderCanvasRef} />
+                    <MediaMixerDisplay
+                      socket={videoSocket}
+                      renderCanvasRef={renderCanvasRef}
+                    />
                   </div>
 
                   <ControlTray
@@ -143,7 +171,9 @@ function App() {
                     onMixerStreamChange={setMixerStream}
                     enableEditingSettings={true}
                   >
-                    <button onClick={() => setScratchpadOpen(!isScratchpadOpen)}>
+                    <button
+                      onClick={() => setScratchpadOpen(!isScratchpadOpen)}
+                    >
                       <span className="material-symbols-outlined">
                         {isScratchpadOpen ? "close" : "edit"}
                       </span>
@@ -153,9 +183,6 @@ function App() {
               </div>
             </LiveAPIProvider>
           </div>
-        </Route>
-        <Route path="/admin/question-validation">
-          <QuestionValidationComponent />
         </Route>
       </Switch>
     </BrowserRouter>
