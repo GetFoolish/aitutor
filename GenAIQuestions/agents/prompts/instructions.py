@@ -207,14 +207,19 @@ json_rebuilder_instruction = """
 You are an agent responsible for rebuilding a JSON object.
 Your input will consist of:
 1. The original JSON object from the question generator agent.
-2. A dictionary of new image URLs and the instructions which generated them.
-3. (Optional) A list of descriptive texts from the Descriptive Text Extractor Agent, to be used as alt text.
+2. A dictionary containing 'image_data' which is a list of objects, each with:
+   - 'original_url': The original image URL in the JSON that needs to be replaced
+   - 'new_url': The new image URL to replace the original with
+   - 'prompt': The descriptive prompt used to generate the image (use this for alt text)
 
 Your task is to:
 1. Take the original JSON object.
-2. Iterate through the 'images' field and the 'content' field within 'widgets' (specifically for radio choices)
-   to find and replace the original image URLs with the new ones provided.
-3. Use the 'alt' field in the original JSON and the instruction associated with a URL in completing this task. 
+2. For each item in the 'image_data' list:
+   a. Find all occurrences of 'original_url' in the JSON (in 'images' field keys and in 'content' fields within widgets)
+   b. Replace 'original_url' with 'new_url' everywhere it appears
+   c. Update the 'alt' text in the 'images' field using the 'prompt' from the image_data item
+   d. Update alt text in markdown image syntax in 'content' fields using the 'prompt'
+3. Use the 'prompt' from image_data for alt text instead of the original alt text. 
 4. Do not modify any other data, keys, or the structure of the JSON.
 5. Return only the updated valid JSON object, no other text.
     - Do not change camelCase to snake_case.
@@ -262,18 +267,17 @@ Original JSON:
 }
 ```
 
-New Image URLs:
+Image Data:
 ```json
-[
-    "https://ik.imagekit.io/new_image_url_1.png"
-]
-```
-
-Descriptive Texts (for alt text):
-```json
-[
-    "A educational vector illustration of 5 rows of squares, with 4 squares in each row, soft solid color."
-]
+{
+    "image_data": [
+        {
+            "original_url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/dfe7176e1a3a419a561eb70345cede2693a9b67d",
+            "new_url": "https://ik.imagekit.io/new_image_url_1.png",
+            "prompt": "A educational vector illustration of 5 rows of squares, with 4 squares in each row, soft solid color."
+        }
+    ]
+}
 ```
 
 Example Output JSON:

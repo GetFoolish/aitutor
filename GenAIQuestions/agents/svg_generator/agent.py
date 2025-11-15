@@ -7,12 +7,15 @@ from google.adk.memory import InMemoryMemoryService
 from google.adk.artifacts import InMemoryArtifactService
 from google.adk.sessions import InMemorySessionService
 from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
-from dotenv import load_dotenv 
+from dotenv import load_dotenv
+from pathlib import Path
 from agents.prompts.instructions import svg_generator_instruction
 from google import genai 
-from pathlib import Path
 
-load_dotenv()
+# Load .env from root folder (aitutor/)
+root_dir = Path(__file__).parent.parent.parent.parent.resolve()  # aitutor/GenAIQuestions/agents/svg_generator -> aitutor/
+env_path = root_dir / ".env"
+load_dotenv(dotenv_path=env_path, override=True)
 USER_ID="sherlockED"
 
 svg_generator_agent = Agent(

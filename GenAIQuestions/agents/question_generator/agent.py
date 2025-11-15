@@ -11,7 +11,10 @@ from dotenv import load_dotenv
 from agents.prompts.instructions import generator_instruction
 from pathlib import Path
 
-load_dotenv()
+# Load .env from root folder (aitutor/)
+root_dir = Path(__file__).parent.parent.parent.parent.resolve()  # aitutor/GenAIQuestions/agents/question_generator -> aitutor/
+env_path = root_dir / ".env"
+load_dotenv(dotenv_path=env_path, override=True)
 USER_ID="sherlockED"
 
 questions_generator_agent = Agent(

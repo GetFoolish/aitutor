@@ -6,8 +6,11 @@ from dotenv import load_dotenv
 class ConfigManager:
     def __init__(self, config_path: str = 'config.json'):
         self.config_path = config_path
-        # Load environment variables (override existing ones)
-        load_dotenv(override=True)
+        # Load .env from root folder (aitutor/)
+        from pathlib import Path
+        root_dir = Path(__file__).parent.resolve()  # config_manager.py is in aitutor/ root
+        env_path = root_dir / ".env"
+        load_dotenv(dotenv_path=env_path, override=True)
         
         # Load config.json
         with open(self.config_path, 'r') as f:

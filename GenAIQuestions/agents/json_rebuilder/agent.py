@@ -13,7 +13,10 @@ from google import genai
 from pathlib import Path
 
 USER_ID="sherlockED"
-load_dotenv()
+# Load .env from root folder (aitutor/)
+root_dir = Path(__file__).parent.parent.parent.parent.resolve()  # aitutor/GenAIQuestions/agents/json_rebuilder -> aitutor/
+env_path = root_dir / ".env"
+load_dotenv(dotenv_path=env_path, override=True)
 
 json_rebuilder_agent = Agent(
     name="json_rebuilder_agent",

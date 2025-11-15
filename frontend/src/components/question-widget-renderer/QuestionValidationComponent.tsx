@@ -3,7 +3,7 @@ import {ServerItemRenderer} from "../../package/perseus/src/server-item-renderer
 import { storybookDependenciesV2 } from "../../package/perseus/testing/test-dependencies";
 import { PerseusI18nContextProvider } from "../../package/perseus/src/components/i18n-context";
 import { mockStrings } from "../../package/perseus/src/strings";
-import { useParams } from "react-router-dom"
+import { useParams, useHistory } from "react-router-dom"
 import { FaArrowRight } from "react-icons/fa"; // Importing a suitable icon
 
 // a component that allows viewing current json on screen
@@ -17,27 +17,64 @@ function QuestionValidationComponent() {
     const [generatedIndex, setGeneratedIndex] = useState(0); // Index for navigating generated items
     const [loading, setLoading] = useState(true);
     const [isGenerated, setIsGenerated] = useState(false); // Controls whether generated items are shown
-    const [itemMetadata, setItemMetadata] = useState<{}>();
+    const [itemMetadata, setItemMetadata] = useState<{ source_question_id?: string } | undefined>();
     const { id } = useParams<{id:string}>();
+    const history = useHistory();
 
-    useEffect(() => { 
-        fetch(`http://localhost:8001/api/get-question-for-validation`)
-            .then(response => response.json())
+    const fetchQuestion = (questionId?: string, updateRoute: boolean = false) => {
+        setLoading(true);
+        const url = questionId 
+            ? `http://localhost:8001/api/get-question-for-validation?question_id=${questionId}`
+            : `http://localhost:8001/api/get-question-for-validation`;
+        
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then((data) => {
                 console.log("API response:", data);
+                if (!data.question) {
+                    throw new Error("No question data in response");
+                }
                 setOriginalQuestion(data.question); // Store the original question
-                setPerseusItem(data.question); // Initially display the original question
-                setGeneratedItems(data.generated);
                 setItemMetadata(data.metadata);
+
+                const normalizedGenerated = (data.generated || []).map((item: any) => {
+                    if (item.id && !item._id) {
+                        return {
+                            ...item,
+                            _id: typeof item.id === "object" ? item.id.toString() : item.id,
+                        };
+                    }
+                    return item;
+                });
+
+                setGeneratedItems(normalizedGenerated);
+                setGeneratedIndex(0);
+                setIsGenerated(false);
+                setPerseusItem(data.question); // Default to original question first
                 setLoading(false);
-                console.log("Generated Items on fetch:", data.generated); // Debugging line
-                console.log("Generated Items Length on fetch:", data.generated ? data.generated.length : 0); // Debugging line
+                
+                if (updateRoute && data.metadata?.source_question_id) {
+                    history.replace(`/admin/question-validation/${data.metadata.source_question_id}`);
+                }
+
+                console.log("Generated Items on fetch:", normalizedGenerated);
+                console.log("Generated Items Length on fetch:", normalizedGenerated.length);
             })
             .catch((err) => {
                 console.error("Failed to fetch questions:", err);
+                alert(`Error loading question: ${err.message}. Check console for details.`);
                 setLoading(false);
             });
-    }, [])
+    };
+
+    useEffect(() => { 
+        fetchQuestion(id);
+    }, [id])
 
     // const perseusItem = perseusItems && perseusItems.length > 0 ? perseusItems[item]: {};
 
@@ -55,24 +92,8 @@ function QuestionValidationComponent() {
     }   
 
     const handleNext = () => {
-        setLoading(true);
-        setIsGenerated(false); // Reset to show original question
-        setGeneratedIndex(0); // Reset generated index
-
-        fetch(`http://localhost:8001/api/get-question-for-validation`)
-            .then(response => response.json())
-            .then((data) => {
-                console.log("API response:", data);
-                setOriginalQuestion(data.question);
-                setPerseusItem(data.question);
-                setGeneratedItems(data.generated);
-                setItemMetadata(data.metadata);
-                setLoading(false);
-            })
-            .catch((err) => {
-                console.error("Failed to fetch questions:", err);
-                setLoading(false);
-            });
+        // Fetch a new random question without leaving the page
+        fetchQuestion(undefined, true);
     };
 
     const handleNextGenerated = () => {
@@ -181,32 +202,127 @@ function QuestionValidationComponent() {
                             {isGenerated ? (<p>See Source</p>) : (<p>See Generated</p>)}
                     </button>
                     <button 
-                        className="bg-green-600 rounded text-white p-2"
+                        className="bg-green-600 rounded text-white p-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
                         onClick={async () => {
-                            if (isGenerated && perseusItem && generatedItems[generatedIndex] && generatedItems[generatedIndex]._id) {
-                                try {
-                                    const response = await fetch(`http://localhost:8001/api/approve-question/${generatedItems[generatedIndex]._id}`, {
-                                        method: 'POST',
-                                        headers: { "content-type": "application/json" },
-                                    });
-                                    if (!response.ok) {
-                                        throw new Error(`HTTP error! status: ${response.status}`);
-                                    }
-                                    const data = await response.json();
-                                    console.log("Approval successful:", data);
-                                    alert("Question approved successfully!");
-                                    // Optionally, fetch next question or update UI
-                                    handleNext(); // Move to the next question after approval
-                                } catch (error) {
-                                    console.error("Failed to approve question:", error);
-                                    alert("Failed to approve question.");
+                            console.log("=== APPROVE BUTTON CLICKED ===");
+                            console.log("isGenerated:", isGenerated);
+                            console.log("generatedIndex:", generatedIndex);
+                            console.log("generatedItems:", generatedItems);
+                            console.log("generatedItems[generatedIndex]:", generatedItems[generatedIndex]);
+                            console.log("generatedItems[generatedIndex]._id:", generatedItems[generatedIndex]?._id);
+                            if (!isGenerated) {
+                                alert("Please click 'See Generated' first to view a generated question.");
+                                return;
+                            }
+                            if (!generatedItems[generatedIndex] || !generatedItems[generatedIndex]._id) {
+                                alert("No generated question selected. Make sure you're viewing a generated question.");
+                                return;
+                            }
+                            
+                            const generatedId = generatedItems[generatedIndex]._id;
+                            console.log("Approving question:", generatedId);
+                            
+                            try {
+                                const response = await fetch(`http://localhost:8001/api/approve-question/${generatedId}`, {
+                                    method: 'POST',
+                                    headers: { "content-type": "application/json" },
+                                });
+                                
+                                if (!response.ok) {
+                                    const errorText = await response.text();
+                                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
                                 }
-                            } else {
-                                alert("Please select a generated question to approve.");
+                                
+                                const data = await response.json();
+                                console.log("Approval successful:", data);
+                                alert("Question approved successfully!");
+                                
+                                // Remove the approved item from the list
+                                const updatedItems = generatedItems.filter((_, idx) => idx !== generatedIndex);
+                                setGeneratedItems(updatedItems);
+                                
+                                // If no more generated items, go back to list
+                                if (updatedItems.length === 0) {
+                                    // Go back to list to see updated counts
+                                    history.push("/admin/question-validation", {
+                                        recentAction: "approved",
+                                        questionId: (itemMetadata?.source_question_id ?? id),
+                                    });
+                                } else {
+                                    // Show the next generated item (or first if we were on the last one)
+                                    const nextIndex = generatedIndex < updatedItems.length ? generatedIndex : 0;
+                                    setGeneratedIndex(nextIndex);
+                                    const nextItem = { ...updatedItems[nextIndex] };
+                                    delete nextItem._id;
+                                    setPerseusItem(nextItem);
+                                }
+                            } catch (error: any) {
+                                console.error("Failed to approve question:", error);
+                                alert(`Failed to approve question: ${error.message || error}`);
                             }
                         }}
-                        disabled={!isGenerated || !generatedItems[generatedIndex] || !generatedItems[generatedIndex]._id}>
+                        disabled={!isGenerated || !generatedItems[generatedIndex] || !generatedItems[generatedIndex]._id}
+                        title={!isGenerated ? "Click 'See Generated' first" : (!generatedItems[generatedIndex]?._id ? "No generated question ID" : "Approve this question")}>
                         Approve
+                    </button>
+                    <button 
+                        className="bg-red-600 rounded text-white p-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        onClick={async () => {
+                            console.log("=== REJECT BUTTON CLICKED ===");
+                            console.log("isGenerated:", isGenerated);
+                            console.log("generatedIndex:", generatedIndex);
+                            console.log("generatedItems:", generatedItems);
+                            console.log("generatedItems[generatedIndex]:", generatedItems[generatedIndex]);
+                            console.log("generatedItems[generatedIndex]._id:", generatedItems[generatedIndex]?._id);
+                            if (!isGenerated) {
+                                alert("Please click 'See Generated' first to view a generated question.");
+                                return;
+                            }
+                            if (!generatedItems[generatedIndex] || !generatedItems[generatedIndex]._id) {
+                                alert("No generated question selected. Make sure you're viewing a generated question.");
+                                return;
+                            }
+                            
+                            if (!window.confirm("Are you sure you want to reject and delete this question?")) {
+                                return;
+                            }
+                            
+                            const generatedId = generatedItems[generatedIndex]._id;
+                            console.log("Rejecting question:", generatedId);
+                            
+                            try {
+                                const response = await fetch(`http://localhost:8001/api/reject-question/${generatedId}`, {
+                                    method: 'POST',
+                                    headers: { "content-type": "application/json" },
+                                });
+                                
+                                if (!response.ok) {
+                                    const errorText = await response.text();
+                                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                                }
+                                
+                                const data = await response.json();
+                                console.log("Rejection successful:", data);
+                                alert("Question rejected and deleted successfully!");
+                                
+                                // Remove the rejected item from the list
+                                const updatedItems = generatedItems.filter((_, idx) => idx !== generatedIndex);
+                                setGeneratedItems(updatedItems);
+                                
+                                // Always go back to list after reject to see updated counts
+                                // This ensures the list refreshes and shows correct data
+                                history.push("/admin/question-validation", {
+                                    recentAction: "rejected",
+                                    questionId: (itemMetadata?.source_question_id ?? id),
+                                });
+                            } catch (error: any) {
+                                console.error("Failed to reject question:", error);
+                                alert(`Failed to reject question: ${error.message || error}`);
+                            }
+                        }}
+                        disabled={!isGenerated || !generatedItems[generatedIndex] || !generatedItems[generatedIndex]._id}
+                        title={!isGenerated ? "Click 'See Generated' first" : (!generatedItems[generatedIndex]?._id ? "No generated question ID" : "Reject this question")}>
+                        Reject
                     </button>
                     <button 
                         className="bg-black rounded text-white p-2 "

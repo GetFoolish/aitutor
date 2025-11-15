@@ -14,9 +14,13 @@ from io import BytesIO
 
 BASE_URL=Path(__file__).resolve().parents[3]
 USER_ID="sherlockED"
-GOOGLE_API_KEY=os.getenv("GOOGLE_API_KEY")
 
-load_dotenv()
+# Load .env from root folder (aitutor/)
+root_dir = Path(__file__).parent.parent.parent.parent.resolve()  # aitutor/GenAIQuestions/agents/image_generator -> aitutor/
+env_path = root_dir / ".env"
+load_dotenv(dotenv_path=env_path, override=True)
+
+GOOGLE_API_KEY=os.getenv("GOOGLE_API_KEY")
 
 def upload_to_imagekit(image_name,image_path):
     #  Put essential values of keys [UrlEndpoint, PrivateKey, PublicKey]
@@ -134,14 +138,33 @@ def generate_images(messages: List[str], image_filepath: str) -> List[str]:
             continue 
         image = Image.open(image_filepath)
         try:
-            prompt = ["{message}. Create an educational vector illustration similar to the one in the provided image but with the instruction above.", image]
-            response = client.models.generate_content(
-                model="gemini-2.0-flash-preview-image-generation",
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    response_modalities=["TEXT", "IMAGE"]
-                ),
-            )
+            prompt_text = f"{message}. Create an educational vector illustration similar to the one in the provided image but with the instruction above."
+            prompt = [prompt_text, image]
+            print(f"Generating image {i+1}/{len(messages)} with prompt: {prompt_text[:100]}...")
+            try:
+                response = client.models.generate_content(
+                    model="gemini-2.0-flash-preview-image-generation",
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        response_modalities=["TEXT", "IMAGE"]
+                    ),
+                )
+            except Exception as api_error:
+                print(f"API error during image generation: {api_error}")
+                print("This might be a temporary API issue. Retrying in 2 seconds...")
+                sleep(2)
+                # Retry once
+                try:
+                    response = client.models.generate_content(
+                        model="gemini-2.0-flash-preview-image-generation",
+                        contents=prompt,
+                        config=types.GenerateContentConfig(
+                            response_modalities=["TEXT", "IMAGE"]
+                        ),
+                    )
+                except Exception as retry_error:
+                    print(f"Retry also failed: {retry_error}")
+                    raise
             
             # Check if response has candidates and content
             if not response.candidates:

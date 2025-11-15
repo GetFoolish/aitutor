@@ -27,6 +27,7 @@ import { LiveClientOptions } from "./types";
 import Scratchpad from "./components/scratchpad/Scratchpad";
 import RendererComponent from "./components/question-widget-renderer/RendererComponent"
 import QuestionValidationComponent from "./components/question-widget-renderer/QuestionValidationComponent";
+import QuestionListComponent from "./components/question-widget-renderer/QuestionListComponent";
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string;
 if (typeof API_KEY !== "string") {
@@ -74,6 +75,12 @@ function App() {
   return (
     <BrowserRouter>
       <Switch>
+        <Route exact path="/admin/question-validation">
+          <QuestionListComponent />
+        </Route>
+        <Route path="/admin/question-validation/:id">
+          <QuestionValidationComponent />
+        </Route>
         <Route exact path="/">
           <div className="App">
             <LiveAPIProvider options={apiOptions}>
@@ -153,9 +160,6 @@ function App() {
               </div>
             </LiveAPIProvider>
           </div>
-        </Route>
-        <Route path="/admin/question-validation">
-          <QuestionValidationComponent />
         </Route>
       </Switch>
     </BrowserRouter>
