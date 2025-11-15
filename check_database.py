@@ -43,7 +43,9 @@ async def check_database():
     for q in all_questions:
         await q.fetch_all_links()
         for gen_q in q.generated:
-            await gen_q.fetch()
+            # In Beanie, generated can be either Link or a realized document.
+            if hasattr(gen_q, "fetch"):
+                gen_q = await gen_q.fetch()
             if not gen_q.human_approved:
                 pending_count += 1
                 break
