@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import { memo, ReactNode, RefObject, useEffect, useRef, useState } from 'react';
 import { useLiveAPIContext } from '../../contexts/LiveAPIContext';
-import { useMediaMixer } from '../../hooks/use-media-mixer';
+import { useMediaCapture } from '../../hooks/useMediaCapture';
 import { AudioRecorder } from '../../lib/audio-recorder';
 import AudioPulse from '../audio-pulse/AudioPulse';
 import './control-tray.scss';
@@ -50,14 +50,12 @@ function ControlTray({
   enableEditingSettings,
 }: ControlTrayProps) {
   const { client, connected, connect, disconnect, volume } = useLiveAPIContext();
-  const { toggleCamera, toggleScreen } = useMediaMixer({ socket });
+  const { cameraEnabled, screenEnabled, toggleCamera, toggleScreen } = useMediaCapture({ socket });
   const [activeVideoStream, setActiveVideoStream] = useState<MediaStream | null>(null);
   const [inVolume, setInVolume] = useState(0);
   const [audioRecorder] = useState(() => new AudioRecorder());
   const [muted, setMuted] = useState(false);
   const connectButtonRef = useRef<HTMLButtonElement>(null);
-  const [isWebcamOn, setIsWebcamOn] = useState(false);
-  const [isScreenShareOn, setIsScreenShareOn] = useState(false);
 
   useEffect(() => {
     if (!connected && connectButtonRef.current) {
@@ -122,18 +120,12 @@ function ControlTray({
     };
   }, [connected, activeVideoStream, client, videoRef, renderCanvasRef]);
 
-  const toggleWebcam = async () => {
-    const newIsWebcamOn = !isWebcamOn;
-    console.log(`Toggling webcam. New state: ${newIsWebcamOn ? 'ON' : 'OFF'}`);
-    toggleCamera(newIsWebcamOn);
-    setIsWebcamOn(newIsWebcamOn);
+  const handleToggleWebcam = async () => {
+    await toggleCamera(!cameraEnabled);
   };
 
-  const toggleScreenShare = async () => {
-    const newIsScreenShareOn = !isScreenShareOn;
-    console.log(`Toggling screen share. New state: ${newIsScreenShareOn ? 'ON' : 'OFF'}`);
-    toggleScreen(newIsScreenShareOn);
-    setIsScreenShareOn(newIsScreenShareOn);
+  const handleToggleScreenShare = async () => {
+    await toggleScreen(!screenEnabled);
   };
 
   return (
@@ -162,16 +154,16 @@ function ControlTray({
         {supportsVideo && (
           <>
             <MediaStreamButton
-              isStreaming={isScreenShareOn}
-              start={toggleScreenShare}
-              stop={toggleScreenShare}
+              isStreaming={screenEnabled}
+              start={handleToggleScreenShare}
+              stop={handleToggleScreenShare}
               onIcon="cancel_presentation"
               offIcon="present_to_all"
             />
             <MediaStreamButton
-              isStreaming={isWebcamOn}
-              start={toggleWebcam}
-              stop={toggleWebcam}
+              isStreaming={cameraEnabled}
+              start={handleToggleWebcam}
+              stop={handleToggleWebcam}
               onIcon="videocam_off"
               offIcon="videocam"
             />

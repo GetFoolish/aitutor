@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 """
-Clean MediaMixer - Combines camera, screen share, and scratchpad streams
+MediaMixer - Cloud Run Compatible Version
+Combines camera, screen share, and scratchpad streams
 """
 
 import cv2
 import numpy as np
 from PIL import Image
-import mss
 import base64
 import io
 import asyncio
 import websockets
 import signal
 import json
-import time
+import os
 
 
 class MediaMixer:
-    """Clean MediaMixer implementation"""
+    """MediaMixer - receives all frames from browser"""
 
     def __init__(self, width=1280, height=2160, fps=15):
         self.width = width
@@ -25,228 +25,194 @@ class MediaMixer:
         self.fps = fps
         self.section_height = height // 3
 
-        # State
+        # Performance optimization: use smaller internal resolution
+        self.internal_width = 640  # Half resolution
+        self.internal_height = 1080  # Half resolution
+        self.internal_section_height = self.internal_height // 3
+
+        # State - all frames come from browser
         self.running = False
         self.show_camera = False
         self.show_screen = False
-        self.camera = None
-        self.screen_capture = mss.mss()
         self.scratchpad_frame = None
+        self.camera_frame = None
+        self.screen_frame = None
 
-        print("MediaMixer initialized - waiting for toggle commands")
-
-    def init_camera(self):
-        """Initialize camera when needed"""
-        if not self.camera:
-            self.camera = cv2.VideoCapture(0)
-            if self.camera.isOpened():
-                self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-                self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-                # Try to read a frame to ensure camera is actually working
-                ret, frame = self.camera.read()
-                if ret and frame is not None:
-                    print("Camera initialized successfully and verified working")
-                else:
-                    print("Warning: Camera opened but failed to read initial frame")
-                    # Don't release yet, might need warm-up time
-            else:
-                print("Warning: Could not open camera")
-                self.camera = None
-
-    def release_camera(self):
-        """Release camera resources"""
-        if self.camera:
-            print("Releasing camera resources...")
-            self.camera.release()
-            self.camera = None
-
-    def get_camera_frame(self):
-        """Get camera frame if enabled"""
-        if not self.show_camera:
-            return None
-        
-        # Check if camera exists and is opened
-        if not self.camera:
-            # Log once when camera is None but show_camera is True
-            if not hasattr(self, '_camera_none_logged') or time.time() - self._camera_none_logged > 10:
-                print("Warning: Camera is None but show_camera is True. Re-initializing...")
-                self.init_camera()
-                self._camera_none_logged = time.time()
-            return None
-        
-        # Verify camera is still opened (it might have been closed externally)
-        if not self.camera.isOpened():
-            print("Warning: Camera was closed, re-initializing...")
-            self.camera.release()
-            self.camera = None
-            self.init_camera()
-            if not self.camera or not self.camera.isOpened():
-                return None
-
-        ret, frame = self.camera.read()
-        if ret and frame is not None:
-            # Verify frame has valid dimensions
-            if frame.size > 0 and frame.shape[0] > 0 and frame.shape[1] > 0:
-                return cv2.resize(frame, (self.width, self.section_height))
-            else:
-                # Log once if frame is empty
-                if not hasattr(self, '_empty_frame_logged') or time.time() - self._empty_frame_logged > 5:
-                    print(f"Warning: Camera frame is empty (shape={frame.shape if frame is not None else 'None'})")
-                    self._empty_frame_logged = time.time()
-        else:
-            # Log error if read fails (but don't spam the logs)
-            if not hasattr(self, '_last_camera_error_log') or time.time() - self._last_camera_error_log > 5:
-                print(f"Warning: Failed to read camera frame (ret={ret}, frame is None={frame is None}, isOpened={self.camera.isOpened()})")
-                # Try to re-initialize if read consistently fails
-                if hasattr(self, '_camera_read_fail_count'):
-                    self._camera_read_fail_count += 1
-                else:
-                    self._camera_read_fail_count = 1
-                
-                # If we've failed 10 times in a row, try re-initializing
-                if self._camera_read_fail_count >= 10:
-                    print("Camera read failing repeatedly, attempting re-initialization...")
-                    self.release_camera()
-                    self.init_camera()
-                    self._camera_read_fail_count = 0
-                
-                self._last_camera_error_log = time.time()
-        return None
-
-    def get_screen_frame(self):
-        """Get screen frame if enabled"""
-        if not self.show_screen:
-            return None
-
-        try:
-            monitor = self.screen_capture.monitors[1]
-            screenshot = self.screen_capture.grab(monitor)
-            frame = np.array(screenshot)
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
-            return cv2.resize(frame, (self.width, self.section_height))
-        except Exception as e:
-            print(f"Error capturing screen: {e}")
-            return None
+        print("MediaMixer initialized - waiting for frames from browser")
 
     def mix_frames(self):
         """Mix all sources into single frame"""
-        mixed_frame = np.zeros((self.height, self.width, 3), dtype=np.uint8)
+        # Use smaller internal resolution for better performance
+        mixed_frame = np.zeros((self.internal_height, self.internal_width, 3), dtype=np.uint8)
 
         # Section 1: Scratchpad (white if no data)
         if self.scratchpad_frame is not None:
-            scratchpad = cv2.resize(self.scratchpad_frame, (self.width, self.section_height))
+            scratchpad = cv2.resize(self.scratchpad_frame, (self.internal_width, self.internal_section_height))
         else:
-            scratchpad = np.ones((self.section_height, self.width, 3), dtype=np.uint8) * 255
-        mixed_frame[0:self.section_height, :] = scratchpad
+            scratchpad = np.ones((self.internal_section_height, self.internal_width, 3), dtype=np.uint8) * 255
+        mixed_frame[0:self.internal_section_height, :] = scratchpad
 
         # Section 2: Screen share (black if disabled)
-        screen_frame = self.get_screen_frame()
-        if screen_frame is not None:
-            mixed_frame[self.section_height:2*self.section_height, :] = screen_frame
+        if self.show_screen and self.screen_frame is not None:
+            screen = cv2.resize(self.screen_frame, (self.internal_width, self.internal_section_height))
+            mixed_frame[self.internal_section_height:2*self.internal_section_height, :] = screen
+        else:
+            mixed_frame[self.internal_section_height:2*self.internal_section_height, :] = 0
 
         # Section 3: Camera (gray if disabled)
-        camera_frame = self.get_camera_frame()
-        if camera_frame is not None:
-            mixed_frame[2*self.section_height:3*self.section_height, :] = camera_frame
+        if self.show_camera and self.camera_frame is not None:
+            camera = cv2.resize(self.camera_frame, (self.internal_width, self.internal_section_height))
+            mixed_frame[2*self.internal_section_height:3*self.internal_section_height, :] = camera
         else:
-            mixed_frame[2*self.section_height:3*self.section_height, :] = 64
+            mixed_frame[2*self.internal_section_height:3*self.internal_section_height, :] = 64
 
         return mixed_frame
 
     def frame_to_base64(self, frame):
-        """Convert frame to base64 JPEG"""
-        _, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 80])
+        """Convert frame to base64 JPEG with lower quality for performance"""
+        # Reduce quality to 60 for better performance (was 80)
+        _, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 60])
         return base64.b64encode(buffer).decode('utf-8')
 
     def handle_command(self, data):
         """Handle WebSocket commands"""
         if data.get('type') == 'scratchpad_frame':
-            print(f"MediaMixer: Received scratchpad frame, data length: {len(data.get('data', ''))}")
             try:
                 base64_data = data['data'].split(',')[1]
                 img_bytes = base64.b64decode(base64_data)
                 img = Image.open(io.BytesIO(img_bytes))
                 self.scratchpad_frame = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
-                print(f"MediaMixer: Scratchpad frame processed, size: {self.scratchpad_frame.shape}")
             except Exception as e:
-                print(f"MediaMixer: Error processing scratchpad frame: {e}")
+                print(f"Error processing scratchpad frame: {e}")
+
+        elif data.get('type') == 'camera_frame':
+            try:
+                base64_data = data['data'].split(',')[1] if ',' in data['data'] else data['data']
+                img_bytes = base64.b64decode(base64_data)
+                img = Image.open(io.BytesIO(img_bytes))
+                self.camera_frame = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+            except Exception as e:
+                print(f"Error processing camera frame: {e}")
+
+        elif data.get('type') == 'screen_frame':
+            try:
+                base64_data = data['data'].split(',')[1] if ',' in data['data'] else data['data']
+                img_bytes = base64.b64decode(base64_data)
+                img = Image.open(io.BytesIO(img_bytes))
+                self.screen_frame = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+            except Exception as e:
+                print(f"Error processing screen frame: {e}")
 
         elif data.get('type') == 'toggle_camera':
             enabled = data.get('data', {}).get('enabled', False)
             self.show_camera = enabled
             print(f"Camera toggled: {'ON' if enabled else 'OFF'}")
 
-            if enabled and not self.camera:
-                self.init_camera()
-            elif not enabled:
-                self.release_camera()
-
         elif data.get('type') == 'toggle_screen':
             enabled = data.get('data', {}).get('enabled', False)
             self.show_screen = enabled
             print(f"Screen share toggled: {'ON' if enabled else 'OFF'}")
 
-        else:
-            print(f"Unknown command: {data.get('type')}")
-
     def stop(self):
         """Clean shutdown"""
         print("Stopping MediaMixer...")
         self.running = False
-        self.release_camera()
-        cv2.destroyAllWindows()
         print("MediaMixer stopped")
 
 
-# Global mixer instance shared between both servers
+# Global mixer instance
 mixer = MediaMixer()
 
-async def handle_command_client(websocket):
-    """Handle WebSocket client for commands/input (port 8765)"""
-    print(f"Command client connected: {websocket.remote_address}")
 
-    try:
-        async for message in websocket:
-            try:
-                data = json.loads(message)
-                mixer.handle_command(data)
-            except Exception as e:
-                print(f"Error processing command: {e}")
-    except websockets.exceptions.ConnectionClosed:
-        pass
-    finally:
-        print(f"Command client {websocket.remote_address} disconnected")
+async def handle_websocket(websocket, *args):
+    """Handle WebSocket connections - compatible with different websockets versions"""
+    # Extract path from arguments or websocket object
+    # websockets library may pass path as second argument or we need to extract it
+    path = None
+    
+    # Try to get path from arguments first
+    if args and len(args) > 0:
+        path = args[0]
+    
+    # If not in arguments, try to get from websocket object
+    if path is None:
+        try:
+            # Try different ways to access the path
+            if hasattr(websocket, 'path'):
+                path = websocket.path
+            elif hasattr(websocket, 'request') and hasattr(websocket.request, 'path'):
+                path = websocket.request.path
+            elif hasattr(websocket, 'request_headers'):
+                # Try to extract from request line in headers
+                path = getattr(websocket, 'path', '/')
+        except Exception as e:
+            print(f"Warning: Could not determine path: {e}")
+            path = '/'
+    
+    # Default fallback
+    if path is None:
+        path = '/'
+    
+    print(f"Client connected from {websocket.remote_address} on path {path}")
 
+    if path == "/command":
+        # Command connection - receives frames and commands
+        try:
+            async for message in websocket:
+                try:
+                    data = json.loads(message)
+                    mixer.handle_command(data)
+                except Exception as e:
+                    print(f"Error processing command: {e}")
+        except websockets.exceptions.ConnectionClosed:
+            pass
+        finally:
+            print(f"Command client disconnected")
 
-async def handle_video_client(websocket):
-    """Handle WebSocket client for video output (port 8766)"""
-    print(f"Video client connected: {websocket.remote_address}")
-    mixer.running = True
+    elif path == "/video":
+        # Video connection - sends mixed frames
+        mixer.running = True
+        try:
+            # Reduce frame rate to 10 FPS for better performance (was 15)
+            frame_delay = 1 / 10
+            while mixer.running:
+                try:
+                    frame = mixer.mix_frames()
+                    base64_frame = mixer.frame_to_base64(frame)
+                    await websocket.send(base64_frame)
 
-    try:
-        while mixer.running:
-            try:
-                frame = mixer.mix_frames()
-                base64_frame = mixer.frame_to_base64(frame)
-                await websocket.send(base64_frame)
+                    # 10 FPS for better network performance
+                    await asyncio.sleep(frame_delay)
 
-                # Responsive sleep for quick shutdown
-                for _ in range(67):  # 67ms total (15 FPS)
-                    if not mixer.running:
-                        break
-                    await asyncio.sleep(0.001)  # 1ms chunks
-
-            except websockets.exceptions.ConnectionClosed:
-                break
-            except Exception as e:
-                print(f"Error sending frames: {e}")
-                break
-    finally:
-        print(f"Video client {websocket.remote_address} disconnected")
+                except websockets.exceptions.ConnectionClosed:
+                    print("Video WebSocket connection closed during send")
+                    break
+                except websockets.exceptions.ConnectionClosedOK:
+                    print("Video WebSocket connection closed normally")
+                    break
+                except websockets.exceptions.ConnectionClosedError:
+                    print("Video WebSocket connection closed with error")
+                    break
+                except Exception as e:
+                    print(f"Error sending frames: {e}")
+                    import traceback
+                    traceback.print_exc()
+                    break
+        finally:
+            # Reset running state when video connection closes
+            # Only reset if this connection was the one running it
+            if mixer.running:
+                mixer.running = False
+            print(f"Video client disconnected")
+    else:
+        print(f"Unknown path: {path}")
 
 
 async def main():
     """Main server function"""
+    # Get port from environment (Cloud Run uses PORT env var)
+    port = int(os.environ.get('PORT', 8765))  # 8765 for local, 8080 for cloud
+
     shutdown_event = asyncio.Event()
 
     def signal_handler(signum, frame):
@@ -256,30 +222,25 @@ async def main():
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
-    command_server = None
-    video_server = None
+    server = None
     try:
-        # Start command server (port 8765) - receives commands/frames from frontend
-        command_server = await websockets.serve(handle_command_client, "localhost", 8765)
-        print("Command WebSocket server started on ws://localhost:8765")
-
-        # Start video server (port 8766) - sends video frames to frontend
-        video_server = await websockets.serve(handle_video_client, "localhost", 8766)
-        print("Video WebSocket server started on ws://localhost:8766")
-
-        print("Press Ctrl+C to stop")
+        # Single WebSocket server with path-based routing
+        server = await websockets.serve(handle_websocket, "0.0.0.0", port)
+        print(f"MediaMixer WebSocket server started on port {port}")
+        print(f"  - Command endpoint: /command")
+        print(f"  - Video endpoint: /video")
+        print("Waiting for connections...")
 
         await shutdown_event.wait()
 
     except Exception as e:
         print(f"Server error: {e}")
+        import traceback
+        traceback.print_exc()
     finally:
-        if command_server:
-            command_server.close()
-            await command_server.wait_closed()
-        if video_server:
-            video_server.close()
-            await video_server.wait_closed()
+        if server:
+            server.close()
+            await server.wait_closed()
         mixer.stop()
         print("Server shutdown complete")
 
