@@ -31,6 +31,7 @@ export type UseLiveAPIResults = {
   connected: boolean;
   connect: () => Promise<void>;
   disconnect: () => Promise<void>;
+  interruptAudio: () => void;
   volume: number;
 };
 
@@ -108,6 +109,10 @@ export function useLiveAPI(options: LiveClientOptions): UseLiveAPIResults {
     setConnected(false);
   }, [setConnected, client]);
 
+  const interruptAudio = useCallback(() => {
+    audioStreamerRef.current?.stop();
+  }, []);
+
   return {
     client,
     config,
@@ -117,6 +122,7 @@ export function useLiveAPI(options: LiveClientOptions): UseLiveAPIResults {
     connected,
     connect,
     disconnect,
+    interruptAudio,
     volume,
   };
 }

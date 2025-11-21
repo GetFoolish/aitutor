@@ -62,12 +62,14 @@ class DASHSystem:
         
         # Initialize the Question Generator Agent
         try:
-            qg_curriculum_path = "QuestionsBank/curriculum.json"
+            # Get absolute path to curriculum file
+            project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            qg_curriculum_path = os.path.join(project_root, "QuestionsBank", "curriculum.json")
             self.question_generator = QuestionGeneratorAgent(curriculum_file=qg_curriculum_path)
-            print("✅ Question Generator Agent initialized.")
+            print("Question Generator Agent initialized.")
         except Exception as e:
             self.question_generator = None
-            print(f"⚠️ Could not initialize Question Generator Agent: {e}")
+            print(f"Could not initialize Question Generator Agent: {e}")
 
         self._load_from_files(self.skills_file_path, self.curriculum_file_path)
     
@@ -88,9 +90,9 @@ class DASHSystem:
                             difficulty=question_data['difficulty']
                         )
                         self.questions[question.question_id] = question
-            print(f"✅ Reloaded {len(self.questions)} questions from curriculum.")
+            print(f"[OK] Reloaded {len(self.questions)} questions from curriculum.")
         except Exception as e:
-            print(f"❌ Error reloading questions: {e}")
+            print(f"[ERROR] Error reloading questions: {e}")
 
     def _load_from_files(self, skills_file: str, curriculum_file: str):
         """Load skills and curriculum from JSON files"""
@@ -114,19 +116,19 @@ class DASHSystem:
             # Load curriculum and questions
             self._reload_questions()
             
-            print(f"✅ Loaded {len(self.skills)} skills from JSON files")
+            print(f"[OK] Loaded {len(self.skills)} skills from JSON files")
             
         except FileNotFoundError as e:
-            print(f"❌ Error: Could not find file {e.filename}")
-            print("🔄 Falling back to hardcoded curriculum...")
+            print(f"[ERROR] Error: Could not find file {e.filename}")
+            print("[INFO] Falling back to hardcoded curriculum...")
             self._initialize_k12_math_curriculum_fallback()
         except json.JSONDecodeError as e:
-            print(f"❌ Error: Invalid JSON format - {e}")
-            print("🔄 Falling back to hardcoded curriculum...")
+            print(f"[ERROR] Error: Invalid JSON format - {e}")
+            print("[INFO] Falling back to hardcoded curriculum...")
             self._initialize_k12_math_curriculum_fallback()
         except Exception as e:
-            print(f"❌ Unexpected error loading curriculum: {e}")
-            print("🔄 Falling back to hardcoded curriculum...")
+            print(f"[ERROR] Unexpected error loading curriculum: {e}")
+            print("[INFO] Falling back to hardcoded curriculum...")
             self._initialize_k12_math_curriculum_fallback()
     
     def _initialize_k12_math_curriculum_fallback(self):
@@ -437,7 +439,7 @@ class DASHSystem:
             print("No unanswered questions found and cannot generate new ones.")
             return None
 
-        print("🤔 No unanswered questions available. Attempting to generate a new one...")
+        print("[INFO] No unanswered questions available. Attempting to generate a new one...")
         
         top_skill_id = recommended_skills[0]
         
@@ -459,17 +461,17 @@ class DASHSystem:
             return None
 
         try:
-            print(f"🧬 Generating variation based on question {source_question_id} for skill {top_skill_id}...")
+            print(f"[INFO] Generating variation based on question {source_question_id} for skill {top_skill_id}...")
             generated_ids = self.question_generator.generate_variations(source_question_id, num_variations=1)
             
             if generated_ids:
-                print(f"✅ Successfully generated {len(generated_ids)} new question(s).")
+                print(f"[OK] Successfully generated {len(generated_ids)} new question(s).")
                 self._reload_questions()
                 # Retry finding a question
                 return self.get_next_question(student_id, current_time, is_retry=True)
             else:
-                print("⚠️  Question generation did not produce any new questions.")
+                print("[WARNING] Question generation did not produce any new questions.")
                 return None
         except Exception as e:
-            print(f"❌ Error during question generation: {e}")
+            print(f"[ERROR] Error during question generation: {e}")
             return None
