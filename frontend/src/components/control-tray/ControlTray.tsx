@@ -1,11 +1,14 @@
 import cn from 'classnames';
 import { memo, ReactNode, RefObject, useEffect, useRef, useState } from 'react';
 import { useLiveAPIContext } from '../../contexts/LiveAPIContext';
-import { useMediaMixer } from '../../hooks/use-media-mixer';
+import { useMediaCapture } from '../../hooks/useMediaCapture';
 import { AudioRecorder } from '../../lib/audio-recorder';
 import AudioPulse from '../audio-pulse/AudioPulse';
 import './control-tray.scss';
 import SettingsDialog from '../settings-dialog/SettingsDialog';
+
+const TEACHING_ASSISTANT_API_URL = 'http://localhost:8002';
+const USER_ID = 'mongodb_test_user';
 
 export type ControlTrayProps = {
   socket: WebSocket | null;
@@ -49,15 +52,14 @@ function ControlTray({
   supportsVideo,
   enableEditingSettings,
 }: ControlTrayProps) {
-  const { client, connected, connect, disconnect, volume } = useLiveAPIContext();
-  const { toggleCamera, toggleScreen } = useMediaMixer({ socket });
+  const { client, connected, connect, disconnect, interruptAudio, volume } = useLiveAPIContext();
+  const { cameraEnabled, screenEnabled, toggleCamera, toggleScreen } = useMediaCapture({ socket });
   const [activeVideoStream, setActiveVideoStream] = useState<MediaStream | null>(null);
   const [inVolume, setInVolume] = useState(0);
   const [audioRecorder] = useState(() => new AudioRecorder());
   const [muted, setMuted] = useState(false);
   const connectButtonRef = useRef<HTMLButtonElement>(null);
-  const [isWebcamOn, setIsWebcamOn] = useState(false);
-  const [isScreenShareOn, setIsScreenShareOn] = useState(false);
+  const turnCompleteRef = useRef(false);
 
   useEffect(() => {
     if (!connected && connectButtonRef.current) {
@@ -92,6 +94,46 @@ function ControlTray({
   }, [connected, client, muted, audioRecorder]);
 
   useEffect(() => {
+    const onTurnComplete = () => {
+      turnCompleteRef.current = true;
+      
+      if (connected) {
+        fetch(`${TEACHING_ASSISTANT_API_URL}/conversation/turn`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }).catch((error) => {
+          console.error('Failed to record conversation turn:', error);
+        });
+      }
+    };
+
+    const onInterrupted = () => {
+      turnCompleteRef.current = true;
+      
+      if (connected) {
+        fetch(`${TEACHING_ASSISTANT_API_URL}/conversation/turn`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }).catch((error) => {
+          console.error('Failed to record conversation turn:', error);
+        });
+      }
+    };
+
+    client.on('turncomplete', onTurnComplete);
+    client.on('interrupted', onInterrupted);
+
+    return () => {
+      client.off('turncomplete', onTurnComplete);
+      client.off('interrupted', onInterrupted);
+    };
+  }, [client, connected]);
+
+  useEffect(() => {
     if (videoRef.current) {
       videoRef.current.srcObject = activeVideoStream;
     }
@@ -122,18 +164,223 @@ function ControlTray({
     };
   }, [connected, activeVideoStream, client, videoRef, renderCanvasRef]);
 
-  const toggleWebcam = async () => {
-    const newIsWebcamOn = !isWebcamOn;
-    console.log(`Toggling webcam. New state: ${newIsWebcamOn ? 'ON' : 'OFF'}`);
-    toggleCamera(newIsWebcamOn);
-    setIsWebcamOn(newIsWebcamOn);
+  useEffect(() => {
+    if (!connected) {
+      return;
+    }
+
+    let sessionStarted = false;
+    const checkSessionStart = async () => {
+      try {
+        const response = await fetch(`${TEACHING_ASSISTANT_API_URL}/session/info`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.session_active) {
+            sessionStarted = true;
+          }
+        }
+      } catch (error) {
+        console.error('Failed to check session info:', error);
+      }
+    };
+
+    const checkInactivity = async () => {
+      if (!sessionStarted) {
+        await checkSessionStart();
+        if (!sessionStarted) {
+          return;
+        }
+      }
+
+      try {
+        const response = await fetch(`${TEACHING_ASSISTANT_API_URL}/inactivity/check`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.prompt && client.status === 'connected') {
+            client.send({ text: data.prompt });
+          }
+        }
+      } catch (error) {
+        console.error('Failed to check inactivity:', error);
+      }
+    };
+
+    const initialDelay = setTimeout(() => {
+      checkInactivity();
+    }, 2000);
+
+    const intervalId = setInterval(checkInactivity, 5000);
+
+    return () => {
+      clearTimeout(initialDelay);
+      clearInterval(intervalId);
+    };
+  }, [connected, client]);
+
+  const handleToggleWebcam = async () => {
+    await toggleCamera(!cameraEnabled);
   };
 
-  const toggleScreenShare = async () => {
-    const newIsScreenShareOn = !isScreenShareOn;
-    console.log(`Toggling screen share. New state: ${newIsScreenShareOn ? 'ON' : 'OFF'}`);
-    toggleScreen(newIsScreenShareOn);
-    setIsScreenShareOn(newIsScreenShareOn);
+  const handleToggleScreenShare = async () => {
+    await toggleScreen(!screenEnabled);
+  };
+
+  const handleConnect = async () => {
+    // Set up setupComplete listener BEFORE connecting to avoid race condition
+    let setupCompleteReceived = false;
+    let setupCompleteResolver: (() => void) | null = null;
+    
+    const onSetupComplete = () => {
+      setupCompleteReceived = true;
+      if (setupCompleteResolver) {
+        setupCompleteResolver();
+        setupCompleteResolver = null;
+      }
+      client.off('setupcomplete', onSetupComplete);
+    };
+    client.on('setupcomplete', onSetupComplete);
+    
+    await connect();
+    
+    // Wait for connection to be established
+    const waitForConnection = () => {
+      return new Promise<void>((resolve) => {
+        if (client.status === 'connected') {
+          resolve();
+          return;
+        }
+        const checkConnection = () => {
+          if (client.status === 'connected') {
+            client.off('open', checkConnection);
+            resolve();
+          }
+        };
+        client.on('open', checkConnection);
+      });
+    };
+
+    // Wait for setupComplete with timeout fallback (matches variant's approach)
+    const waitForSetupComplete = () => {
+      return new Promise<void>((resolve) => {
+        // If already received, resolve immediately
+        if (setupCompleteReceived) {
+          resolve();
+          return;
+        }
+        
+        // Store resolver for early event handler
+        setupCompleteResolver = resolve;
+        
+        // Timeout fallback: if setupComplete doesn't arrive in 2 seconds, proceed anyway
+        setTimeout(() => {
+          if (setupCompleteResolver === resolve) {
+            setupCompleteResolver = null;
+            resolve();
+          }
+        }, 2000);
+      });
+    };
+
+    try {
+      // Wait for connection
+      await waitForConnection();
+      
+      // Wait for audio pipeline to be ready (with timeout fallback)
+      await waitForSetupComplete();
+      
+      // Small delay like variant uses (500ms) to ensure audio pipeline is fully ready
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      
+      const response = await fetch(`${TEACHING_ASSISTANT_API_URL}/session/start`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user_id: USER_ID }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.prompt && client.status === 'connected') {
+          client.send({ text: data.prompt });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to get greeting from TeachingAssistant:', error);
+    } finally {
+      // Clean up listener if still attached
+      client.off('setupcomplete', onSetupComplete);
+      setupCompleteResolver = null;
+    }
+  };
+
+  const handleDisconnect = async () => {
+    if (!connected) return;
+
+    try {
+      interruptAudio();
+      
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      const response = await fetch(`${TEACHING_ASSISTANT_API_URL}/session/end`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ interrupt_audio: true }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.prompt && client.status === 'connected') {
+          const goodbyeTurnComplete = { current: false };
+          const goodbyeAudioReceived = { current: false };
+          let lastAudioTime = 0;
+          
+          const onAudio = () => {
+            goodbyeAudioReceived.current = true;
+            lastAudioTime = Date.now();
+          };
+          
+          const onTurnComplete = () => {
+            if (goodbyeAudioReceived.current) {
+              goodbyeTurnComplete.current = true;
+            }
+          };
+          
+          client.on('audio', onAudio);
+          client.on('turncomplete', onTurnComplete);
+          
+          client.send({ text: data.prompt }, true);
+          
+          const maxWaitTime = 30000;
+          const startTime = Date.now();
+          const audioSilenceTimeout = 5000;
+          
+          while (!goodbyeTurnComplete.current && (Date.now() - startTime) < maxWaitTime) {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            
+            if (goodbyeAudioReceived.current && lastAudioTime > 0) {
+              const timeSinceLastAudio = Date.now() - lastAudioTime;
+              if (timeSinceLastAudio > audioSilenceTimeout && goodbyeTurnComplete.current) {
+                break;
+              }
+            }
+          }
+          
+          if (goodbyeAudioReceived.current) {
+            await new Promise((resolve) => setTimeout(resolve, 1500));
+          }
+          
+          client.off('audio', onAudio);
+          client.off('turncomplete', onTurnComplete);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to get goodbye from TeachingAssistant:', error);
+    }
+
+    disconnect();
   };
 
   return (
@@ -162,16 +409,16 @@ function ControlTray({
         {supportsVideo && (
           <>
             <MediaStreamButton
-              isStreaming={isScreenShareOn}
-              start={toggleScreenShare}
-              stop={toggleScreenShare}
+              isStreaming={screenEnabled}
+              start={handleToggleScreenShare}
+              stop={handleToggleScreenShare}
               onIcon="cancel_presentation"
               offIcon="present_to_all"
             />
             <MediaStreamButton
-              isStreaming={isWebcamOn}
-              start={toggleWebcam}
-              stop={toggleWebcam}
+              isStreaming={cameraEnabled}
+              start={handleToggleWebcam}
+              stop={handleToggleWebcam}
               onIcon="videocam_off"
               offIcon="videocam"
             />
@@ -185,7 +432,7 @@ function ControlTray({
           <button
             ref={connectButtonRef}
             className={cn('action-button connect-toggle', { connected })}
-            onClick={connected ? disconnect : connect}
+            onClick={connected ? handleDisconnect : handleConnect}
           >
             <span className="material-symbols-outlined filled">
               {connected ? 'pause' : 'play_arrow'}

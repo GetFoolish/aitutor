@@ -69,7 +69,8 @@ class Sorter extends React.Component<Props> implements Widget {
     }
 
     getPromptJSON(): SorterPromptJSON {
-        return _getPromptJSON(this.props.userInput);
+        // Provide safe default when userInput is undefined
+        return _getPromptJSON(this.props.userInput || {options: [], changed: false});
     }
 
     moveOptionToIndex: (option: SortableOption, index: number) => void = (
@@ -87,10 +88,12 @@ class Sorter extends React.Component<Props> implements Widget {
      */
     getSerializedState(): any {
         const {userInput, ...rest} = this.props;
+        // Provide safe defaults when userInput is undefined
+        const safeUserInput = userInput || {options: [], changed: false};
         return {
             ...rest,
-            changed: userInput.changed,
-            options: userInput.options,
+            changed: safeUserInput.changed,
+            options: safeUserInput.options,
         };
     }
 
@@ -98,10 +101,13 @@ class Sorter extends React.Component<Props> implements Widget {
         const {apiOptions, userInput} = this.props;
         const marginPx = apiOptions.isMobile ? 8 : 5;
 
+        // Provide safe default when userInput is undefined to prevent crash
+        const options = userInput?.options || [];
+
         return (
             <div className="perseus-widget-sorter perseus-clearfix">
                 <Sortable
-                    options={userInput.options}
+                    options={options}
                     layout={this.props.layout}
                     margin={marginPx}
                     padding={this.props.padding}

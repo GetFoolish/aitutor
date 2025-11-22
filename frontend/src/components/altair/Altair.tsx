@@ -41,10 +41,9 @@ const declaration: FunctionDeclaration = {
 
 function AltairComponent() {
   const [jsonString, setJSONString] = useState<string>("");
-  const { client, setConfig, setModel } = useLiveAPIContext();
+  const { client, setConfig } = useLiveAPIContext();
 
   useEffect(() => {
-    setModel("models/gemini-2.0-flash-exp");
     setConfig({
       responseModalities: [Modality.AUDIO],
       speechConfig: {
@@ -56,7 +55,7 @@ function AltairComponent() {
         { functionDeclarations: [declaration] },
       ],
     });
-  }, [setConfig, setModel]);
+  }, [setConfig]);
 
   useEffect(() => {
     const onToolCall = (toolCall: LiveServerToolCall) => {

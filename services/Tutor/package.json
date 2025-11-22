@@ -1,0 +1,19 @@
+{
+  "name": "adam-tutor-service",
+  "version": "1.0.0",
+  "description": "Backend proxy service for Gemini Live API (Adam Tutor)",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@google/genai": "^0.14.0",
+    "ws": "^8.18.0",
+    "dotenv": "^16.4.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+

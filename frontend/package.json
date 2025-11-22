@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "dependencies": {
     "@google/genai": "^0.14.0",
-    "@khanacademy/math-input": "^26.2.4",
     "@khanacademy/kmath": "^2.2.8",
+    "@khanacademy/math-input": "^26.2.4",
     "@khanacademy/mathjax-renderer": "^3.0.0",
     "@khanacademy/perseus": "68.0.2",
     "@khanacademy/wonder-blocks-accordion": "^3.1.39",
@@ -78,7 +78,7 @@
     "tailwindcss": "^4.1.13",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3",
-    "vite": "^7.1.6"
+    "vite": "^5.4.11"
   },
   "overrides": {
     "typescript": "^5.6.3"

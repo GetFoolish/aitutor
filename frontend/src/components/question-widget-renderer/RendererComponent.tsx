@@ -9,6 +9,8 @@ import { PerseusI18nContextProvider } from "../../package/perseus/src/components
 import { mockStrings } from "../../package/perseus/src/strings";
 import { KEScore } from "@khanacademy/perseus-core";
 
+const TEACHING_ASSISTANT_API_URL = 'http://localhost:8002';
+
 const RendererComponent = () => {
     const [perseusItems, setPerseusItems] = useState<PerseusItem[]>([]);
     const [item, setItem] = useState(0);
@@ -16,21 +18,50 @@ const RendererComponent = () => {
     const [endOfTest, setEndOfTest] = useState(false);
     const [score, setScore] = useState<KEScore>();
     const [isAnswered, setIsAnswered] = useState(false);
+    const [startTime, setStartTime] = useState<number>(Date.now());
     const rendererRef = useRef<ServerItemRenderer>(null);
+    
+    // User ID - age is now fetched from MongoDB, not frontend
+    const user_id = "mongodb_test_user"; // Use the MongoDB test user
 
     useEffect(() => {
-        fetch("http://localhost:8001/api/questions/16")
+        // Use DASH API with intelligent question selection
+        // Age is fetched from MongoDB based on user_id
+        setLoading(true);
+        setItem(0);
+        setEndOfTest(false);
+        setIsAnswered(false);
+        
+        fetch(`http://localhost:8000/api/questions/16?user_id=${user_id}`)
             .then((response) => response.json())
             .then((data) => {
                 console.log("API response:", data);
                 setPerseusItems(data);
                 setLoading(false);
+                setStartTime(Date.now()); // Reset timer for first question
             })
             .catch((err) => {
                 console.error("Failed to fetch questions:", err);
                 setLoading(false);
             });
-    }, []);
+    }, []); // No dependencies - user_id is constant
+
+    // Log when question is displayed
+    useEffect(() => {
+        if (perseusItems.length > 0 && !loading) {
+            const currentItem = perseusItems[item];
+            const metadata = (currentItem as any).dash_metadata || {};
+            
+            fetch(`http://localhost:8000/api/question-displayed/${user_id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    question_index: item,
+                    metadata: metadata
+                })
+            }).catch(err => console.error('Failed to log question display:', err));
+        }
+    }, [item, perseusItems, loading]);
 
     const handleNext = () => {
         setItem((prev) => {
@@ -46,12 +77,13 @@ const RendererComponent = () => {
             }
 
             setIsAnswered(false);
+            setStartTime(Date.now()); // Reset timer for next question
             return index;
         });
     };
 
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (rendererRef.current) {
             const userInput = rendererRef.current.getUserInput();
             const question = perseusItem.question;
@@ -61,10 +93,58 @@ const RendererComponent = () => {
             const maxCompatGuess = [rendererRef.current.getUserInputLegacy(), []];
             const keScore = keScoreFromPerseusScore(score, maxCompatGuess, rendererRef.current.getSerializedState().question);
 
-            // return score for the given question 
+            // Calculate response time
+            const responseTimeSeconds = (Date.now() - startTime) / 1000;
+
+            // Submit answer to DASH API for tracking and adaptive difficulty
+            try {
+                const currentItem = perseusItems[item];
+                const metadata = (currentItem as any).dash_metadata || {};
+
+                const answerData = {
+                    question_id: metadata.dash_question_id || `q_${item}`,
+                    skill_ids: metadata.skill_ids || ["counting_1_10"],
+                    is_correct: keScore.correct,
+                    response_time_seconds: responseTimeSeconds
+                };
+
+                const response = await fetch(`http://localhost:8000/api/submit-answer/${user_id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(answerData),
+                });
+
+                const result = await response.json();
+                console.log("Answer submitted to DASH:", result);
+            } catch (error) {
+                console.error("Failed to submit answer to DASH:", error);
+            }
+
+            // Display score to user
             setIsAnswered(true);
             setScore(keScore);
             console.log("Score:", keScore);
+
+            // Record question answer with TeachingAssistant
+            try {
+                const questionId = metadata.dash_question_id || `q_${item}_${Date.now()}`;
+                fetch(`${TEACHING_ASSISTANT_API_URL}/question/answered`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        question_id: questionId,
+                        is_correct: keScore.correct || false,
+                    }),
+                }).catch((error) => {
+                    console.error('Failed to record question answer to TeachingAssistant:', error);
+                });
+            } catch (error) {
+                console.error('Error recording question answer:', error);
+            }
         }
     };
 
@@ -73,6 +153,21 @@ const RendererComponent = () => {
     return (
             <div className="framework-perseus">
                 <div style={{ padding: "20px" }}>
+                    {/* User Info Display (Age from MongoDB) */}
+                    <div className="mb-6 p-4 bg-gray-100 rounded-lg border border-gray-300">
+                        <div className="flex items-center gap-4">
+                            <span className="font-semibold text-gray-700">
+                                User: {user_id}
+                            </span>
+                            <span className="text-sm text-gray-600 italic">
+                                {loading ? "Loading questions..." : `${perseusItems.length} questions loaded`}
+                            </span>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2">
+                            💡 Age and grade are loaded from MongoDB based on user profile.
+                        </p>
+                    </div>
+
                     <button
                         onClick={handleNext}
                         className="absolute top-19 right-8 bg-black rounded 

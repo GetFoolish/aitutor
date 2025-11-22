@@ -22,17 +22,7 @@ import MediaMixerDisplay from "./components/media-mixer-display/MediaMixerDispla
 import ScratchpadCapture from "./components/scratchpad-capture/ScratchpadCapture";
 import QuestionDisplay from "./components/question-display/QuestionDisplay";
 import ControlTray from "./components/control-tray/ControlTray";
-import { LiveClientOptions } from "./types";
 import Scratchpad from "./components/scratchpad/Scratchpad";
-
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string;
-if (typeof API_KEY !== "string") {
-  throw new Error("set VITE_GEMINI_API_KEY in .env");
-}
-
-const apiOptions: LiveClientOptions = {
-  apiKey: API_KEY,
-};
 
 function App() {
   // this video reference is used for displaying the active stream, whether that is the webcam or screen capture
@@ -49,11 +39,11 @@ function App() {
 
   useEffect(() => {
     // Command WebSocket for sending frames/commands TO MediaMixer
-    const commandWs = new WebSocket('ws://localhost:8765');
+    const commandWs = new WebSocket('ws://localhost:8765/command');
     setCommandSocket(commandWs);
 
     // Video WebSocket for receiving video FROM MediaMixer
-    const videoWs = new WebSocket('ws://localhost:8766');
+    const videoWs = new WebSocket('ws://localhost:8765/video');
     setVideoSocket(videoWs);
 
     return () => {
@@ -70,7 +60,7 @@ function App() {
 
   return (
     <div className="App">
-      <LiveAPIProvider options={apiOptions}>
+      <LiveAPIProvider>
         <div className="streaming-console">
           <SidePanel />
           <main>

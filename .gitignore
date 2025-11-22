@@ -17,6 +17,7 @@ __pycache__/
 .Python
 env/
 venv/
+.venv/
 
 # Environment variables
 .env
@@ -36,3 +37,6 @@ ehthumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+
+.cursor/

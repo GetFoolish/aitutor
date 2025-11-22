@@ -1,7 +1,6 @@
 import React, { useEffect, useState, RefObject } from 'react';
 import cn from 'classnames';
 import { RiSidebarFoldLine, RiSidebarUnfoldLine } from "react-icons/ri";
-import { useMediaMixer } from '../../hooks/use-media-mixer';
 import './media-mixer-display.scss';
 
 interface MediaMixerDisplayProps {

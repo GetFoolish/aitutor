@@ -37,7 +37,26 @@ else
 fi
 
 # Get the python executable (now guaranteed to be from venv)
-PYTHON_BIN="$(command -v python3 || command -v python)"
+# On Windows, explicitly use the venv's Python to avoid finding system Python
+if [[ -n "$VIRTUAL_ENV" ]]; then
+    # Use the venv's Python explicitly
+    if [[ -f "$VIRTUAL_ENV/Scripts/python.exe" ]]; then
+        # Windows native path
+        PYTHON_BIN="$VIRTUAL_ENV/Scripts/python.exe"
+    elif [[ -f "$VIRTUAL_ENV/bin/python3" ]]; then
+        # Unix-style path (Git Bash/Linux/Mac)
+        PYTHON_BIN="$VIRTUAL_ENV/bin/python3"
+    elif [[ -f "$VIRTUAL_ENV/bin/python" ]]; then
+        PYTHON_BIN="$VIRTUAL_ENV/bin/python"
+    else
+        # Fallback to PATH search if venv Python not found
+        PYTHON_BIN="$(command -v python3 || command -v python)"
+        echo "⚠️  Warning: Could not find venv Python, using: $PYTHON_BIN"
+    fi
+else
+    # No venv active, search PATH
+    PYTHON_BIN="$(command -v python3 || command -v python)"
+fi
 echo "Using Python: $PYTHON_BIN"
 
 # Array to hold the PIDs of background processes
@@ -58,29 +77,42 @@ trap cleanup INT
 
 # Start the Python backend in the background
 echo "Starting Python backend... Logs -> logs/mediamixer.log"
-(cd "$SCRIPT_DIR" && "$PYTHON_BIN" MediaMixer/media_mixer.py) > "$SCRIPT_DIR/logs/mediamixer.log" 2>&1 &
+(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/MediaMixer/media_mixer.py) > "$SCRIPT_DIR/logs/mediamixer.log" 2>&1 &
 pids+=($!)
 
 # Start the FastAPI server in the background
-echo "Starting DASH API server... Logs -> logs/api.log"
-(cd "$SCRIPT_DIR" && "$PYTHON_BIN" DashSystem/dash_api.py) > "$SCRIPT_DIR/logs/api.log" 2>&1 &
+echo "Starting DASH API server... Logs -> logs/dash_api.log"
+(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/DashSystem/dash_api.py) > "$SCRIPT_DIR/logs/dash_api.log" 2>&1 &
 pids+=($!)
 
 # Start the SherlockEDExam FastAPI server in the background
-echo "Starting SherlockED Exam API server... Logs -> logs/api.log"
-(cd "$SCRIPT_DIR" && "$PYTHON_BIN" SherlockEDApi/run_backend.py) > "$SCRIPT_DIR/logs/sherlocked_exam.log" 2>&1 &
+echo "Starting SherlockED Exam API server... Logs -> logs/sherlocked_exam.log"
+(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/SherlockEDApi/run_backend.py) > "$SCRIPT_DIR/logs/sherlocked_exam.log" 2>&1 &
+pids+=($!)
+
+# Start the Tutor service (Node.js backend for Gemini Live API)
+echo "Starting Tutor service (Adam)... Logs -> logs/tutor.log"
+(cd "$SCRIPT_DIR/services/Tutor" && node server.js) > "$SCRIPT_DIR/logs/tutor.log" 2>&1 &
+pids+=($!)
+
+# Start the TeachingAssistant API server in the background
+echo "Starting TeachingAssistant API server... Logs -> logs/teaching_assistant.log"
+(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/TeachingAssistant/api.py) > "$SCRIPT_DIR/logs/teaching_assistant.log" 2>&1 &
 pids+=($!)
 
 # Give the backend servers a moment to start
 echo "Waiting for backend services to initialize..."
-sleep 2
+sleep 3
 
 # Extract ports dynamically from configuration files
 FRONTEND_PORT=$(grep -o '"port":[[:space:]]*[0-9]*' "$SCRIPT_DIR/frontend/vite.config.ts" 2>/dev/null | grep -o '[0-9]*' || echo "3000")
-DASH_API_PORT=$(grep -o 'port=[0-9]*' "$SCRIPT_DIR/DashSystem/dash_api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8000")
-SHERLOCKED_API_PORT=$(grep -o 'port=[0-9]*' "$SCRIPT_DIR/SherlockEDApi/run_backend.py" 2>/dev/null | grep -o '[0-9]*' || echo "8001")
-MEDIAMIXER_COMMAND_PORT=$(grep -o 'localhost",[[:space:]]*[0-9]*' "$SCRIPT_DIR/MediaMixer/media_mixer.py" 2>/dev/null | head -1 | grep -o '[0-9]*' || echo "8765")
-MEDIAMIXER_VIDEO_PORT=$(grep -o 'localhost",[[:space:]]*[0-9]*' "$SCRIPT_DIR/MediaMixer/media_mixer.py" 2>/dev/null | tail -1 | grep -o '[0-9]*' || echo "8766")
+DASH_API_PORT=$(grep -o 'port=[0-9]*' "$SCRIPT_DIR/services/DashSystem/dash_api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8000")
+SHERLOCKED_API_PORT=$(grep -o 'port=[0-9]*' "$SCRIPT_DIR/services/SherlockEDApi/run_backend.py" 2>/dev/null | grep -o '[0-9]*' || echo "8001")
+TEACHING_ASSISTANT_PORT=$(grep -o 'port.*[0-9]*' "$SCRIPT_DIR/services/TeachingAssistant/api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8002")
+# MediaMixer now uses single port with path-based routing
+MEDIAMIXER_PORT=$(grep -o "PORT',[[:space:]]*[0-9]*" "$SCRIPT_DIR/services/MediaMixer/media_mixer.py" 2>/dev/null | grep -o '[0-9]*' | head -1 || echo "8765")
+MEDIAMIXER_COMMAND_PORT=$MEDIAMIXER_PORT
+MEDIAMIXER_VIDEO_PORT=$MEDIAMIXER_PORT
 
 # Start the Node.js frontend in the background
 echo "Starting Node.js frontend... Logs -> logs/frontend.log"
@@ -93,8 +125,10 @@ echo "📡 Service URLs:"
 echo "  🌐 Frontend:           http://localhost:$FRONTEND_PORT"
 echo "  🔧 DASH API:           http://localhost:$DASH_API_PORT"
 echo "  🕵️  SherlockED API:     http://localhost:$SHERLOCKED_API_PORT"
-echo "  📹 MediaMixer Command: ws://localhost:$MEDIAMIXER_COMMAND_PORT"
-echo "  📺 MediaMixer Video:   ws://localhost:$MEDIAMIXER_VIDEO_PORT"
+echo "  👨‍🏫 TeachingAssistant:  http://localhost:$TEACHING_ASSISTANT_PORT"
+echo "  🎓 Tutor Service:      ws://localhost:8767"
+echo "  📹 MediaMixer Command: ws://localhost:$MEDIAMIXER_COMMAND_PORT/command"
+echo "  📺 MediaMixer Video:   ws://localhost:$MEDIAMIXER_VIDEO_PORT/video"
 echo ""
 echo "Press Ctrl+C to stop."
 echo "You can view the logs for each service in the 'logs' directory."
