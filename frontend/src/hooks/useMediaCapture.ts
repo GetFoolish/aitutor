@@ -80,8 +80,8 @@ export const useMediaCapture = ({ socket }: UseMediaCaptureProps) => {
         const ctx = canvas.getContext('2d')!;
 
         ctx.drawImage(video, 0, 0);
-        // Reduce quality for better performance
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+        // Increased quality to 0.85 for better text clarity
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
 
         // Send to MediaMixer via WebSocket
         if (socket && socket.readyState === WebSocket.OPEN) {
@@ -141,8 +141,8 @@ export const useMediaCapture = ({ socket }: UseMediaCaptureProps) => {
         const ctx = canvas.getContext('2d')!;
 
         ctx.drawImage(video, 0, 0);
-        // Reduce quality for better performance
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+        // Increased quality to 0.85 for better text clarity
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
 
         // Send to MediaMixer via WebSocket
         if (socket && socket.readyState === WebSocket.OPEN) {

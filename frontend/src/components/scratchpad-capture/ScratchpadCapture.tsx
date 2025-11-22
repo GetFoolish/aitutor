@@ -22,7 +22,8 @@ const ScratchpadCapture: React.FC<ScratchpadCaptureProps> = ({ children, socket 
       if (questionPanel) {
         htmlToImage.toPng(questionPanel, {
           cacheBust: true,
-          skipFonts: true
+          skipFonts: true,
+          pixelRatio: 2  // Higher DPI for sharper text capture
         })
           .then((dataUrl) => {
             const payload = JSON.stringify({ type: 'scratchpad_frame', data: dataUrl });

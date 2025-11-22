@@ -25,9 +25,9 @@ class MediaMixer:
         self.fps = fps
         self.section_height = height // 3
 
-        # Performance optimization: use smaller internal resolution
-        self.internal_width = 640  # Half resolution
-        self.internal_height = 1080  # Half resolution
+        # Use full resolution for better text clarity
+        self.internal_width = width  # Full resolution
+        self.internal_height = height  # Full resolution
         self.internal_section_height = self.internal_height // 3
 
         # State - all frames come from browser
@@ -42,7 +42,7 @@ class MediaMixer:
 
     def mix_frames(self):
         """Mix all sources into single frame"""
-        # Use smaller internal resolution for better performance
+        # Use full resolution for better text clarity
         mixed_frame = np.zeros((self.internal_height, self.internal_width, 3), dtype=np.uint8)
 
         # Section 1: Scratchpad (white if no data)
@@ -69,9 +69,9 @@ class MediaMixer:
         return mixed_frame
 
     def frame_to_base64(self, frame):
-        """Convert frame to base64 JPEG with lower quality for performance"""
-        # Reduce quality to 60 for better performance (was 80)
-        _, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 60])
+        """Convert frame to base64 JPEG with improved quality for text clarity"""
+        # Increased quality to 85 for better text readability
+        _, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 85])
         return base64.b64encode(buffer).decode('utf-8')
 
     def handle_command(self, data):
