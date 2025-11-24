@@ -1,0 +1,1316 @@
+Already have image (with digest): gcr.io/cloud-builders/docker
+Sending build context to Docker daemon  8.646MB
+Step 1/23 : FROM node:18-alpine as builder
+ ---> ee77c6cd7c18
+Step 2/23 : WORKDIR /app
+ ---> Using cache
+ ---> 0c6d97b6ff35
+Step 3/23 : ARG VITE_DASH_API_URL
+ ---> Running in ab12f695f481
+Removing intermediate container ab12f695f481
+ ---> 196a10b17a32
+Step 4/23 : ARG VITE_SHERLOCKED_API_URL
+ ---> Running in 4d79d09bde8b
+Removing intermediate container 4d79d09bde8b
+ ---> 0b495b6dee40
+Step 5/23 : ARG VITE_TEACHING_ASSISTANT_API_URL
+ ---> Running in 4bfb6564f702
+Removing intermediate container 4bfb6564f702
+ ---> e44ce1597b40
+Step 6/23 : ARG VITE_MEDIAMIXER_COMMAND_WS
+ ---> Running in 279233e0b205
+Removing intermediate container 279233e0b205
+ ---> bc9bf42fa721
+Step 7/23 : ARG VITE_MEDIAMIXER_VIDEO_WS
+ ---> Running in e656c1bd3593
+Removing intermediate container e656c1bd3593
+ ---> e325ef26860b
+Step 8/23 : ARG VITE_TUTOR_WS
+ ---> Running in e5ac8a643a7b
+Removing intermediate container e5ac8a643a7b
+ ---> 8097a9d7bc3b
+Step 9/23 : ENV VITE_DASH_API_URL=$VITE_DASH_API_URL
+ ---> Running in a483b25e6f23
+Removing intermediate container a483b25e6f23
+ ---> 4b94aa8452cc
+Step 10/23 : ENV VITE_SHERLOCKED_API_URL=$VITE_SHERLOCKED_API_URL
+ ---> Running in d3b8486f973b
+Removing intermediate container d3b8486f973b
+ ---> 447edba59a6c
+Step 11/23 : ENV VITE_TEACHING_ASSISTANT_API_URL=$VITE_TEACHING_ASSISTANT_API_URL
+ ---> Running in 01a34f31ce72
+Removing intermediate container 01a34f31ce72
+ ---> b4f09af73e7b
+Step 12/23 : ENV VITE_MEDIAMIXER_COMMAND_WS=$VITE_MEDIAMIXER_COMMAND_WS
+ ---> Running in 2e9639a69ab6
+Removing intermediate container 2e9639a69ab6
+ ---> 84dc30c4b86c
+Step 13/23 : ENV VITE_MEDIAMIXER_VIDEO_WS=$VITE_MEDIAMIXER_VIDEO_WS
+ ---> Running in 4aa5b40b220b
+Removing intermediate container 4aa5b40b220b
+ ---> ad74242fa0fb
+Step 14/23 : ENV VITE_TUTOR_WS=$VITE_TUTOR_WS
+ ---> Running in 5caa005dcc2c
+Removing intermediate container 5caa005dcc2c
+ ---> a05c6ba68a29
+Step 15/23 : COPY frontend/package*.json ./
+ ---> 633c7e30193f
+Step 16/23 : RUN npm install --legacy-peer-deps
+ ---> Running in 28060dfaea61
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'mafs@0.19.0',
+npm warn EBADENGINE   required: { node: '>=20' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+npm warn deprecated jquery@1.12.4: This version is deprecated. Please upgrade to the latest version or find support at https://www.herodevs.com/support/jquery-nes.
+added 534 packages, and audited 535 packages in 14s
+99 packages are looking for funding
+  run `npm fund` for details
+11 vulnerabilities (7 moderate, 4 high)
+To address issues that do not require attention, run:
+  npm audit fix
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+Run `npm audit` for details.
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.6.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.6.3
+npm notice To update run: npm install -g npm@11.6.3
+npm notice
+Removing intermediate container 28060dfaea61
+ ---> 34ac31933b96
+Step 17/23 : COPY frontend/ ./
+ ---> fc5b513eebe9
+Step 18/23 : RUN npm run build
+ ---> Running in 104a75c2212f
+> multimodal-live-api-web-console@0.1.0 build
+> tsc && vite build
+src/package/perseus/src/article-renderer.tsx(97,13): error TS7034: Variable 'focusedInput' implicitly has type 'any' in some locations where its type cannot be determined.
+src/package/perseus/src/article-renderer.tsx(130,37): error TS7005: Variable 'focusedInput' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-classes.ts(8,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/components/graphie-classes.ts(89,30): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-classes.ts(116,24): error TS7006: Parameter 'graphie' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-classes.ts(121,27): error TS7006: Parameter 'graphie' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(1,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/components/graphie-movables.ts(63,20): error TS7006: Parameter 'graphie' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(79,21): error TS7006: Parameter 'coord' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(92,20): error TS7006: Parameter 'graphie' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(122,54): error TS7006: Parameter 'graphie' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(122,63): error TS7006: Parameter 'props' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(160,20): error TS7006: Parameter 'graphie' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(186,20): error TS7006: Parameter 'graphie' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(217,20): error TS7006: Parameter 'graphie' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(249,53): error TS7006: Parameter 'graphie' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(249,62): error TS7006: Parameter 'props' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(254,6): error TS7006: Parameter 'graphie' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(254,15): error TS7006: Parameter 'props' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(259,54): error TS7006: Parameter 'graphie' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(259,63): error TS7006: Parameter 'props' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(271,20): error TS7006: Parameter 'graphie' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(292,52): error TS7006: Parameter 'graphie' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(292,61): error TS7006: Parameter 'props' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(310,55): error TS7006: Parameter 'graphie' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(310,64): error TS7006: Parameter 'props' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(314,53): error TS7006: Parameter 'graphie' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie-movables.ts(314,62): error TS7006: Parameter 'props' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie.tsx(2,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
+src/package/perseus/src/components/graphie.tsx(4,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/components/graphie.tsx(41,32): error TS7051: Parameter has a name but no type. Did you mean 'arg0: boolean'?
+src/package/perseus/src/components/graphie.tsx(261,40): error TS7006: Parameter 'prop' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie.tsx(377,30): error TS7006: Parameter 'oldMovable' implicitly has an 'any' type.
+src/package/perseus/src/components/graphie.tsx(377,42): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/package/perseus/src/components/highlighting/ui/util.ts(56,11): error TS7034: Variable 'mutableRects' implicitly has type 'any[]' in some locations where its type cannot be determined.
+src/package/perseus/src/components/highlighting/ui/util.ts(60,9): error TS7005: Variable 'mutableRects' implicitly has an 'any[]' type.
+src/package/perseus/src/components/highlighting/ui/util.ts(62,12): error TS7005: Variable 'mutableRects' implicitly has an 'any[]' type.
+src/package/perseus/src/components/highlighting/ui/util.ts(137,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/icon.tsx(128,17): error TS2322: Type 'import("/app/node_modules/aphrodite/typings/css-properties").CSSProperties | undefined' is not assignable to type 'React.CSSProperties | undefined'.
+  Type 'CSSProperties' is not assignable to type 'Properties<string | number, string & {}>'.
+    Types of property 'animationDelay' are incompatible.
+      Type 'string | number | undefined' is not assignable to type 'AnimationDelay<string & {}> | undefined'.
+        Type 'number' is not assignable to type 'AnimationDelay<string & {}> | undefined'.
+src/package/perseus/src/components/info-tip/info-tip-base.tsx(16,28): error TS2322: Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/src/components/info-tip/info-tip-base.tsx(22,17): error TS2322: Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/src/components/math-input.tsx(19,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
+src/package/perseus/src/components/math-input.tsx(21,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/components/math-input.tsx(22,26): error TS7016: Could not find a declaration file for module 'uuid'. '/app/node_modules/uuid/dist/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/uuid` if it exists or add a new declaration (.d.ts) file containing `declare module 'uuid';`
+src/package/perseus/src/components/math-input.tsx(99,5): error TS2612: Property 'context' will overwrite the base property in 'Component<InnerProps, State, any>'. If this is intentional, add an initializer. Otherwise, add a 'declare' modifier or remove the redundant declaration.
+src/package/perseus/src/components/math-input.tsx(141,20): error TS7006: Parameter 'mathQuill' implicitly has an 'any' type.
+src/package/perseus/src/components/math-input.tsx(149,31): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ FRAC: (mathQuill: any) => void; x: MathFieldUpdaterCallback; y: MathFieldUpdaterCallback; p: MathFieldUpdaterCallback; ... 103 more ...; Z: MathFieldUpdaterCallback; }'.
+src/package/perseus/src/components/math-input.tsx(179,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/math-input.tsx(313,21): error TS2322: Type 'false | object' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+  Type 'false' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+src/package/perseus/src/components/math-input.tsx(354,49): error TS2339: Property 'srOnly' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/components/math-input.tsx(359,37): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: Props): PopoverContentCore', gave the following error.
+    Type 'object' is not assignable to type 'StyleType'.
+  Overload 2 of 2, '(props: Props, context: any): PopoverContentCore', gave the following error.
+    Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/src/components/math-input.tsx(421,5): error TS2612: Property 'context' will overwrite the base property in 'Component<Props, State, any>'. If this is intentional, add an initializer. Otherwise, add a 'declare' modifier or remove the redundant declaration.
+src/package/perseus/src/components/math-input.tsx(451,25): error TS7031: Binding element 'hovered' implicitly has an 'any' type.
+src/package/perseus/src/components/math-input.tsx(451,34): error TS7031: Binding element 'focused' implicitly has an 'any' type.
+src/package/perseus/src/components/math-input.tsx(451,43): error TS7031: Binding element 'active' implicitly has an 'any' type.
+src/package/perseus/src/components/math-input.tsx(467,15): error TS2322: Type 'object[]' is not assignable to type 'StyleType'.
+  Type 'object[]' is not assignable to type 'CSSProperties'.
+    Types of property 'fill' are incompatible.
+      Type '(value: object, start?: number | undefined, end?: number | undefined) => object[]' is not assignable to type 'string'.
+src/package/perseus/src/components/number-input.tsx(6,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/components/range-input.tsx(43,37): error TS7006: Parameter 'val' implicitly has an 'any' type.
+src/package/perseus/src/components/range-input.tsx(52,37): error TS7006: Parameter 'val' implicitly has an 'any' type.
+src/package/perseus/src/components/sortable.tsx(6,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
+src/package/perseus/src/components/sortable.tsx(9,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/components/sortable.tsx(182,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/sortable.tsx(190,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/sortable.tsx(238,20): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/components/sortable.tsx(259,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/sortable.tsx(264,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/sortable.tsx(564,23): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/package/perseus/src/components/sortable.tsx(595,40): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/package/perseus/src/components/sortable.tsx(595,46): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/components/sortable.tsx(608,57): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/package/perseus/src/components/sortable.tsx(645,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/sortable.tsx(647,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/sortable.tsx(661,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/sortable.tsx(663,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/sortable.tsx(669,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/sortable.tsx(673,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/sortable.tsx(677,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/sortable.tsx(682,37): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/package/perseus/src/components/sortable.tsx(690,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/sortable.tsx(695,37): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/package/perseus/src/components/sortable.tsx(705,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/sortable.tsx(718,27): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/package/perseus/src/components/sortable.tsx(722,29): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/sortable.tsx(729,25): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/sortable.tsx(756,57): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/package/perseus/src/components/sortable.tsx(820,23): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/package/perseus/src/components/sortable.tsx(820,29): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/components/sortable.tsx(820,32): error TS7006: Parameter 'items' implicitly has an 'any' type.
+src/package/perseus/src/components/sortable.tsx(842,25): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/sortable.tsx(849,25): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: DraggableProps): Draggable', gave the following error.
+    Type 'string | number | undefined' is not assignable to type 'string | undefined'.
+      Type 'number' is not assignable to type 'string'.
+  Overload 2 of 2, '(props: DraggableProps, context: any): Draggable', gave the following error.
+    Type 'string | number | undefined' is not assignable to type 'string | undefined'.
+      Type 'number' is not assignable to type 'string'.
+src/package/perseus/src/components/sortable.tsx(897,29): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: PlaceholderProps): Placeholder', gave the following error.
+    Type 'string | number | undefined' is not assignable to type 'string | undefined'.
+      Type 'number' is not assignable to type 'string'.
+  Overload 2 of 2, '(props: PlaceholderProps, context: any): Placeholder', gave the following error.
+    Type 'string | number | undefined' is not assignable to type 'string | undefined'.
+      Type 'number' is not assignable to type 'string'.
+src/package/perseus/src/components/stub-tag-editor.tsx(6,7): error TS7034: Variable 'EMPTY_ARRAY' implicitly has type 'any[]' in some locations where its type cannot be determined.
+src/package/perseus/src/components/stub-tag-editor.tsx(29,16): error TS7005: Variable 'EMPTY_ARRAY' implicitly has an 'any[]' type.
+src/package/perseus/src/components/stub-tag-editor.tsx(44,50): error TS7005: Variable 'EMPTY_ARRAY' implicitly has an 'any[]' type.
+src/package/perseus/src/components/svg-image.tsx(6,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
+src/package/perseus/src/components/svg-image.tsx(8,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/components/svg-image.tsx(27,36): error TS7006: Parameter 'imageUrl' implicitly has an 'any' type.
+src/package/perseus/src/components/svg-image.tsx(278,32): error TS7006: Parameter 'labelData' implicitly has an 'any' type.
+src/package/perseus/src/components/svg-image.tsx(349,42): error TS7006: Parameter 'styleValue' implicitly has an 'any' type.
+src/package/perseus/src/components/svg-image.tsx(349,54): error TS7006: Parameter 'styleName' implicitly has an 'any' type.
+src/package/perseus/src/components/svg-image.tsx(549,21): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(props: Props): Graphie', gave the following error.
+    Type '(number | undefined)[]' is not assignable to type 'Size'.
+      Target requires 2 element(s) but source may have fewer.
+  Overload 2 of 2, '(props: Props, context: any): Graphie', gave the following error.
+    Type '(number | undefined)[]' is not assignable to type 'Size'.
+      Target requires 2 element(s) but source may have fewer.
+src/package/perseus/src/components/text-list-editor.tsx(3,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
+src/package/perseus/src/components/text-list-editor.tsx(7,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/components/text-list-editor.tsx(14,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/components/text-list-editor.tsx(141,23): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/package/perseus/src/components/text-list-editor.tsx(141,29): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/components/visibility-observer/get-scroll-parent.ts(5,42): error TS7006: Parameter 'parents' implicitly has an 'any' type.
+src/package/perseus/src/components/visibility-observer/get-scroll-parent.ts(13,40): error TS7006: Parameter 'prop' implicitly has an 'any' type.
+src/package/perseus/src/hints-renderer.tsx(6,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/hints-renderer.tsx(104,30): error TS7006: Parameter 'data' implicitly has an 'any' type.
+src/package/perseus/src/hints-renderer.tsx(104,36): error TS7006: Parameter 'src' implicitly has an 'any' type.
+src/package/perseus/src/hints-renderer.tsx(137,47): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/hints-renderer.tsx(206,42): error TS2339: Property 'responsiveLabel' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/interactive2.ts(16,16): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
+src/package/perseus/src/interactive2.ts(21,16): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
+src/package/perseus/src/interactive2/arrowhead.ts(2,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/interactive2/get-clip-point.ts(8,39): error TS7006: Parameter 'graph' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/interactive-util.ts(6,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/interactive2/interactive-util.ts(13,5): error TS7034: Variable 'prefixedTransform' implicitly has type 'any' in some locations where its type cannot be determined.
+src/package/perseus/src/interactive2/interactive-util.ts(26,32): error TS7006: Parameter 'prefix' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/interactive-util.ts(28,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/interactive2/interactive-util.ts(40,5): error TS7034: Variable 'canUse3dTransform' implicitly has type 'any' in some locations where its type cannot be determined.
+src/package/perseus/src/interactive2/interactive-util.ts(79,44): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/interactive-util.ts(92,48): error TS7006: Parameter 'methodFunc' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/interactive-util.ts(92,60): error TS7006: Parameter 'methodName' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/interactive-util.ts(149,13): error TS7005: Variable 'canUse3dTransform' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/interactive-util.ts(150,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/interactive2/movable-helper-methods.ts(12,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/interactive2/movable-helper-methods.ts(20,23): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-helper-methods.ts(41,34): error TS7006: Parameter 'current' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-helper-methods.ts(41,43): error TS7006: Parameter 'previous' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-helper-methods.ts(41,53): error TS7006: Parameter 'extraOptions' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-helper-methods.ts(46,14): error TS7006: Parameter 'memo' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-helper-methods.ts(46,20): error TS7006: Parameter 'constraint' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-helper-methods.ts(117,23): error TS7006: Parameter 'eventName' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-helper-methods.ts(117,34): error TS7006: Parameter 'id' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-helper-methods.ts(117,38): error TS7006: Parameter 'func' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-helper-methods.ts(134,25): error TS7006: Parameter 'eventName' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-helper-methods.ts(134,36): error TS7006: Parameter 'id' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-helper-methods.ts(148,27): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-line-options.ts(6,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/interactive2/movable-line-options.ts(103,36): error TS7006: Parameter 'element' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-line-options.ts(140,23): error TS7006: Parameter 'arrow' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-line-options.ts(140,30): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-line.ts(6,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/interactive2/movable-line.ts(98,23): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-line.ts(108,23): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-line.ts(191,35): error TS7006: Parameter 'mouseCoord' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-line.ts(191,47): error TS7006: Parameter 'prevMouseCoord' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-line.ts(253,22): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-line.ts(257,22): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-point-options.ts(6,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/interactive2/movable-point.tsx(55,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/interactive2/movable-point.tsx(157,12): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-point.tsx(237,32): error TS7006: Parameter 'container' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-point.tsx(268,31): error TS7006: Parameter 'startMouseCoord' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-point.tsx(321,26): error TS7006: Parameter 'mouseCoord' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-point.tsx(321,38): error TS7006: Parameter 'prevMouseCoord' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-point.tsx(524,18): error TS7006: Parameter 'contents' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-point.tsx(575,25): error TS7006: Parameter 'coord' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-point.tsx(609,39): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'State'.
+  No index signature with a parameter of type 'string' was found on type 'State'.
+src/package/perseus/src/interactive2/movable-point.tsx(610,9): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'State'.
+  No index signature with a parameter of type 'string' was found on type 'State'.
+src/package/perseus/src/interactive2/movable-point.tsx(621,14): error TS7006: Parameter 'eventName' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-point.tsx(621,25): error TS7006: Parameter 'id' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-point.tsx(629,13): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'State'.
+src/package/perseus/src/interactive2/movable-point.tsx(636,18): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-polygon-options.ts(7,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/interactive2/movable-polygon-options.ts(14,19): error TS7006: Parameter 'memo' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-polygon-options.ts(14,25): error TS7006: Parameter 'arg' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-polygon-options.ts(23,45): error TS7006: Parameter 'segment' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-polygon-options.ts(158,31): error TS7006: Parameter 'label' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-polygon-options.ts(195,31): error TS7006: Parameter 'label' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-polygon-options.ts(262,34): error TS7006: Parameter 'labelType' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-polygon.ts(7,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/interactive2/movable-polygon.ts(109,23): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-polygon.ts(119,23): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-polygon.ts(197,35): error TS7006: Parameter 'mouseCoord' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-polygon.ts(197,47): error TS7006: Parameter 'prevMouseCoord' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-polygon.ts(254,21): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-polygon.ts(258,52): error TS7006: Parameter 'point' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-polygon.ts(280,22): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable-polygon.ts(284,22): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable.ts(14,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
+src/package/perseus/src/interactive2/movable.ts(15,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/interactive2/movable.ts(122,34): error TS7053: Element implicitly has an 'any' type because expression of type '0' can't be used to index type '{ toFront(): void; toBack(): void; remove(): void; getMouseTarget(): Element; }'.
+  Property '0' does not exist on type '{ toFront(): void; toBack(): void; remove(): void; getMouseTarget(): Element; }'.
+src/package/perseus/src/interactive2/movable.ts(155,27): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable.ts(161,44): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/movable.ts(178,34): error TS7053: Element implicitly has an 'any' type because expression of type '0' can't be used to index type '{ toFront(): void; toBack(): void; remove(): void; getMouseTarget(): Element; }'.
+  Property '0' does not exist on type '{ toFront(): void; toBack(): void; remove(): void; getMouseTarget(): Element; }'.
+src/package/perseus/src/interactive2/movable.ts(366,39): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'State'.
+  No index signature with a parameter of type 'string' was found on type 'State'.
+src/package/perseus/src/interactive2/movable.ts(367,9): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'State'.
+  No index signature with a parameter of type 'string' was found on type 'State'.
+src/package/perseus/src/interactive2/movable.ts(384,13): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'State'.
+  No index signature with a parameter of type 'string' was found on type 'State'.
+src/package/perseus/src/interactive2/movable.ts(389,27): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/wrapped-drawing.ts(6,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
+src/package/perseus/src/interactive2/wrapped-drawing.ts(36,15): error TS7006: Parameter 'transformation' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/wrapped-drawing.ts(66,16): error TS7053: Element implicitly has an 'any' type because expression of type '0' can't be used to index type 'VisibleShape'.
+  Property '0' does not exist on type 'VisibleShape'.
+src/package/perseus/src/interactive2/wrapped-drawing.ts(69,12): error TS7006: Parameter 'point' implicitly has an 'any' type.
+src/package/perseus/src/interactive2/wrapped-drawing.ts(94,10): error TS7019: Rest parameter 'args' implicitly has an 'any[]' type.
+src/package/perseus/src/interactive2/wrapped-drawing.ts(98,13): error TS7019: Rest parameter 'args' implicitly has an 'any[]' type.
+src/package/perseus/src/interactive2/wrapped-ellipse.ts(2,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/interactive2/wrapped-line.ts(2,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/interactive2/wrapped-path.ts(1,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/mixins/changeable.ts(13,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/mixins/changeable.ts(39,5): error TS7006: Parameter 'callback' implicitly has an 'any' type.
+src/package/perseus/src/mixins/changeable.ts(58,5): error TS7006: Parameter 'callback' implicitly has an 'any' type.
+src/package/perseus/src/mixins/editor-jsonify.ts(1,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/mixins/widget-prop-denylist.ts(58,13): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/package/perseus/src/perseus-markdown.tsx(4,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/perseus-markdown.tsx(19,17): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(19,23): error TS7006: Parameter 'output' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(19,31): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(49,17): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(49,23): error TS7006: Parameter 'output' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(49,31): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(58,26): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(58,32): error TS7006: Parameter 'output' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(58,40): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(80,17): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(80,23): error TS7006: Parameter 'output' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(80,31): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(155,17): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(155,23): error TS7006: Parameter 'output' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(155,31): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(164,17): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(164,23): error TS7006: Parameter 'output' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(164,31): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(174,17): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(174,23): error TS7006: Parameter 'output' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(174,31): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(184,17): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(184,23): error TS7006: Parameter 'output' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(184,31): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(194,26): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(194,32): error TS7006: Parameter 'output' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(194,40): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(211,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/perseus-markdown.tsx(230,17): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(230,23): error TS7006: Parameter 'output' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(230,31): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(256,17): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(256,23): error TS7006: Parameter 'output' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(256,31): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(314,7): error TS7023: 'getContent' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
+src/package/perseus/src/perseus-markdown.tsx(339,18): error TS7006: Parameter 'object' implicitly has an 'any' type.
+src/package/perseus/src/perseus-markdown.tsx(346,11): error TS7022: 'nestedContent' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
+src/package/perseus/src/renderability.ts(16,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/renderability.ts(64,5): error TS7006: Parameter 'rendererOptions' implicitly has an 'any' type.
+src/package/perseus/src/renderer.tsx(19,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
+src/package/perseus/src/renderer.tsx(22,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/renderer.tsx(102,5): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/renderer.tsx(435,13): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Readonly<MakeWidgetMap<PerseusWidgetTypes>>'.
+  No index signature with a parameter of type 'string' was found on type 'Readonly<MakeWidgetMap<PerseusWidgetTypes>>'.
+src/package/perseus/src/renderer.tsx(449,28): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Readonly<MakeWidgetMap<PerseusWidgetTypes>>'.
+  No index signature with a parameter of type 'string' was found on type 'Readonly<MakeWidgetMap<PerseusWidgetTypes>>'.
+src/package/perseus/src/renderer.tsx(458,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/renderer.tsx(513,29): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'MakeWidgetMap<PerseusWidgetTypes>'.
+  No index signature with a parameter of type 'string' was found on type 'MakeWidgetMap<PerseusWidgetTypes>'.
+src/package/perseus/src/renderer.tsx(517,28): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Readonly<MakeWidgetMap<PerseusWidgetTypes>>'.
+  No index signature with a parameter of type 'string' was found on type 'Readonly<MakeWidgetMap<PerseusWidgetTypes>>'.
+src/package/perseus/src/renderer.tsx(540,24): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'MakeWidgetMap<UserInputRegistry>'.
+  No index signature with a parameter of type 'string' was found on type 'MakeWidgetMap<UserInputRegistry>'.
+src/package/perseus/src/renderer.tsx(843,21): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/renderer.tsx(1233,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/renderer.tsx(1324,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/renderer.tsx(1326,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/renderer.tsx(1372,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/renderer.tsx(1374,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/renderer.tsx(1388,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/renderer.tsx(1390,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/renderer.tsx(1418,23): error TS7006: Parameter 'info' implicitly has an 'any' type.
+src/package/perseus/src/renderer.tsx(1418,29): error TS7006: Parameter 'id' implicitly has an 'any' type.
+src/package/perseus/src/renderer.tsx(1515,20): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'MakeWidgetMap<UserInputRegistry>'.
+  No index signature with a parameter of type 'string' was found on type 'MakeWidgetMap<UserInputRegistry>'.
+src/package/perseus/src/renderer.tsx(1551,13): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/package/perseus/src/server-item-renderer.tsx(13,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/server-item-renderer.tsx(109,5): error TS2564: Property 'questionRenderer' has no initializer and is not definitely assigned in the constructor.
+src/package/perseus/src/strings.ts(1481,12): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'PerseusStrings'.
+src/package/perseus/src/strings.ts(1481,30): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ErrorStringMap'.
+  No index signature with a parameter of type 'string' was found on type 'ErrorStringMap'.
+src/package/perseus/src/translation-linter.ts(2,24): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/types.ts(26,27): error TS2307: Cannot find module '@khanacademy/wonder-blocks-data' or its corresponding type declarations.
+src/package/perseus/src/types.ts(446,18): error TS2304: Cannot find name 'Empty'.
+src/package/perseus/src/types.ts(511,18): error TS2304: Cannot find name 'Empty'.
+src/package/perseus/src/types.ts(512,14): error TS2304: Cannot find name 'Empty'.
+src/package/perseus/src/types.ts(515,25): error TS2304: Cannot find name 'Empty'.
+src/package/perseus/src/types.ts(523,24): error TS2304: Cannot find name 'Empty'.
+src/package/perseus/src/types.ts(524,18): error TS2304: Cannot find name 'Empty'.
+src/package/perseus/src/types.ts(525,25): error TS2304: Cannot find name 'Empty'.
+src/package/perseus/src/user-input-manager.tsx(53,13): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'MakeWidgetMap<UserInputRegistry>'.
+  No index signature with a parameter of type 'string' was found on type 'MakeWidgetMap<UserInputRegistry>'.
+src/package/perseus/src/user-input-manager.tsx(57,13): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'MakeWidgetMap<UserInputRegistry>'.
+  No index signature with a parameter of type 'string' was found on type 'MakeWidgetMap<UserInputRegistry>'.
+src/package/perseus/src/user-input-manager.tsx(88,17): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'MakeWidgetMap<PerseusWidgetTypes>'.
+  No index signature with a parameter of type 'string' was found on type 'MakeWidgetMap<PerseusWidgetTypes>'.
+src/package/perseus/src/user-input-manager.tsx(90,13): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'MakeWidgetMap<UserInputRegistry>'.
+  No index signature with a parameter of type 'string' was found on type 'MakeWidgetMap<UserInputRegistry>'.
+src/package/perseus/src/util.ts(10,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/util.ts(119,15): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util.ts(121,15): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util.ts(126,11): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util.ts(373,25): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/package/perseus/src/util/drawing-transform.ts(5,5): error TS7010: 'setSize', which lacks return-type annotation, implicitly has an 'any' return type.
+src/package/perseus/src/util/drawing-transform.ts(32,19): error TS7024: Function implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
+src/package/perseus/src/util/drawing-transform.ts(55,20): error TS7024: Function implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
+src/package/perseus/src/util/drawing-transform.ts(68,21): error TS7024: Function implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
+src/package/perseus/src/util/extract-perseus-data.ts(713,20): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'MakeWidgetMap<PerseusWidgetTypes>'.
+  No index signature with a parameter of type 'string' was found on type 'MakeWidgetMap<PerseusWidgetTypes>'.
+src/package/perseus/src/util/graphie-utils.ts(222,39): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie-utils.ts(222,42): error TS7006: Parameter 'status' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie-utils.ts(222,50): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(10,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
+src/package/perseus/src/util/graphie.ts(11,21): error TS7016: Could not find a declaration file for module 'raphael'. '/app/node_modules/raphael/raphael.min.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/raphael` if it exists or add a new declaration (.d.ts) file containing `declare module 'raphael';`
+src/package/perseus/src/util/graphie.ts(232,17): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ range?: Coord | [Interval, Interval] | undefined; grid?: boolean | undefined; gridRange?: Coord | [Interval, Interval] | undefined; ... 19 more ...; isMobile?: boolean | undefined; }'.
+  No index signature with a parameter of type 'string' was found on type '{ range?: Coord | [Interval, Interval] | undefined; grid?: boolean | undefined; gridRange?: Coord | [Interval, Interval] | undefined; ... 19 more ...; isMobile?: boolean | undefined; }'.
+src/package/perseus/src/util/graphie.ts(411,46): error TS7053: Element implicitly has an 'any' type because expression of type '0' can't be used to index type 'number | [number, number]'.
+  Property '0' does not exist on type 'number | [number, number]'.
+src/package/perseus/src/util/graphie.ts(412,31): error TS7053: Element implicitly has an 'any' type because expression of type '0' can't be used to index type 'number | [number, number]'.
+  Property '0' does not exist on type 'number | [number, number]'.
+src/package/perseus/src/util/graphie.ts(412,44): error TS7053: Element implicitly has an 'any' type because expression of type '1' can't be used to index type 'number | [number, number]'.
+  Property '1' does not exist on type 'number | [number, number]'.
+src/package/perseus/src/util/graphie.ts(457,42): error TS7053: Element implicitly has an 'any' type because expression of type '1' can't be used to index type 'number | [number, number]'.
+  Property '1' does not exist on type 'number | [number, number]'.
+src/package/perseus/src/util/graphie.ts(458,27): error TS7053: Element implicitly has an 'any' type because expression of type '1' can't be used to index type 'number | [number, number]'.
+  Property '1' does not exist on type 'number | [number, number]'.
+src/package/perseus/src/util/graphie.ts(458,40): error TS7053: Element implicitly has an 'any' type because expression of type '0' can't be used to index type 'number | [number, number]'.
+  Property '0' does not exist on type 'number | [number, number]'.
+src/package/perseus/src/util/graphie.ts(516,46): error TS7053: Element implicitly has an 'any' type because expression of type '0' can't be used to index type 'number | [number, number]'.
+  Property '0' does not exist on type 'number | [number, number]'.
+src/package/perseus/src/util/graphie.ts(516,60): error TS7053: Element implicitly has an 'any' type because expression of type '0' can't be used to index type 'number | number[]'.
+  Property '0' does not exist on type 'number | number[]'.
+src/package/perseus/src/util/graphie.ts(562,42): error TS7053: Element implicitly has an 'any' type because expression of type '1' can't be used to index type 'number | [number, number]'.
+  Property '1' does not exist on type 'number | [number, number]'.
+src/package/perseus/src/util/graphie.ts(562,56): error TS7053: Element implicitly has an 'any' type because expression of type '1' can't be used to index type 'number | number[]'.
+  Property '1' does not exist on type 'number | number[]'.
+src/package/perseus/src/util/graphie.ts(670,28): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(707,10): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(707,13): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(707,16): error TS7006: Parameter 'width' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(707,23): error TS7006: Parameter 'height' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(722,13): error TS7006: Parameter 'center' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(722,21): error TS7006: Parameter 'radii' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(1007,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/graphie.ts(1021,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/graphie.ts(1030,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/graphie.ts(1033,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/graphie.ts(1051,27): error TS7006: Parameter 'xy' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(1057,32): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(1115,35): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(1138,43): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(1201,45): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(1301,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/graphie.ts(1387,21): error TS7006: Parameter 'scale' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(1391,24): error TS7006: Parameter 'pair' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(1403,36): error TS7006: Parameter 'val' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(1407,18): error TS7006: Parameter 'val' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(1411,18): error TS7006: Parameter 'val' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(1415,17): error TS7006: Parameter 'val' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(1423,33): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ readonly scale: (scale: any) => void; readonly clipRect: (pair: any) => { "clip-rect": string; }; readonly strokeWidth: (val: any) => { "stroke-width": number; }; readonly rx: (val: any) => { rx: any; }; readonly ry: (val: any) => { ...; }; readonly r: (val: any) => { ...; }; }'.
+  No index signature with a parameter of type 'string' was found on type '{ readonly scale: (scale: any) => void; readonly clipRect: (pair: any) => { "clip-rect": string; }; readonly strokeWidth: (val: any) => { "stroke-width": number; }; readonly rx: (val: any) => { rx: any; }; readonly ry: (val: any) => { ...; }; readonly r: (val: any) => { ...; }; }'.
+src/package/perseus/src/util/graphie.ts(1478,57): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(1487,68): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(1495,62): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(1509,61): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(1515,60): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/util/graphie.ts(1573,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/graphie.ts(1579,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/graphie.ts(1764,29): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ readonly center: readonly [-0.5, -0.5]; readonly above: readonly [-0.5, -1]; readonly "above right": readonly [0, -1]; readonly right: readonly [0, -0.5]; readonly "below right": readonly [0, 0]; readonly below: readonly [-0.5, 0]; readonly "below left": readonly [...]; readonly left: readonly [...]; readonly "abo...'.
+src/package/perseus/src/util/graphie.ts(1771,13): error TS7053: Element implicitly has an 'any' type because expression of type '"fontSize"' can't be used to index type '{ marginLeft: number; marginTop: number; padding: string; }'.
+  Property 'fontSize' does not exist on type '{ marginLeft: number; marginTop: number; padding: string; }'.
+src/package/perseus/src/util/graphie.ts(1808,5): error TS7023: 'findAngleDeprecated' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
+src/package/perseus/src/util/interactive.ts(20,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
+src/package/perseus/src/util/interactive.ts(21,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/util/interactive.ts(56,41): error TS7006: Parameter 'degrees' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(82,27): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(128,40): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(134,48): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(175,26): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(216,34): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(259,34): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(304,28): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(420,32): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(713,39): error TS7006: Parameter 'offset' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(722,27): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(834,27): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(916,17): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/package/perseus/src/util/interactive.ts(917,17): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/package/perseus/src/util/interactive.ts(920,17): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/package/perseus/src/util/interactive.ts(921,17): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/package/perseus/src/util/interactive.ts(924,17): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/package/perseus/src/util/interactive.ts(1130,43): error TS7006: Parameter 'syncToPoints' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1140,46): error TS7006: Parameter 'line' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1148,56): error TS7006: Parameter 'coord' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1187,40): error TS7006: Parameter 'element' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1205,44): error TS7006: Parameter 'arrow' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1205,51): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1325,27): error TS7006: Parameter 'label' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1343,27): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1384,29): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(1386,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(1393,29): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(1395,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(1437,39): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1443,37): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(1445,37): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(1449,37): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(1451,37): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(1612,34): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1675,62): error TS7006: Parameter 'coordOrPoint' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1675,76): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1688,64): error TS7006: Parameter 'coord' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1717,57): error TS7006: Parameter 'label' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1717,64): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1737,56): error TS7006: Parameter 'label' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1737,63): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1755,59): error TS7006: Parameter 'label' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1755,66): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1824,65): error TS7006: Parameter 'coordOrPoint' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1849,27): error TS7006: Parameter 'label' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1860,27): error TS7006: Parameter 'label' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1883,27): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1893,43): error TS7006: Parameter 'point' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1910,58): error TS7006: Parameter 'point' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1926,39): error TS7006: Parameter 'point' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1932,29): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(1934,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(1941,29): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(1943,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(1973,39): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(1980,37): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(1982,37): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(1987,37): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(1989,37): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(2060,55): error TS7006: Parameter 'coordOrPoint' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2060,69): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2086,62): error TS7006: Parameter 'point' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2098,66): error TS7006: Parameter 'point' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2130,34): error TS7006: Parameter 'point' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2130,41): error TS7006: Parameter 'padding' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2143,41): error TS7006: Parameter 'point' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2143,48): error TS7006: Parameter 'padding' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2143,57): error TS7006: Parameter 'angle' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2194,32): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2195,16): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2202,31): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2272,27): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2310,29): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/package/perseus/src/util/interactive.ts(2367,48): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2390,23): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2398,23): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2428,69): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2483,13): error TS7006: Parameter 'graphie' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2485,13): error TS7006: Parameter 'radius' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2486,13): error TS7006: Parameter 'halfWidth' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2487,13): error TS7006: Parameter 'lengthAngle' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2488,13): error TS7006: Parameter 'angle' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2489,13): error TS7006: Parameter 'interacting' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2493,17): error TS7006: Parameter 'distanceFromArrowMidline' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2600,17): error TS7034: Variable 'drawnRotateHandle' implicitly has type 'any' in some locations where its type cannot be determined.
+src/package/perseus/src/util/interactive.ts(2616,21): error TS7005: Variable 'drawnRotateHandle' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2652,45): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2652,48): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2719,55): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2723,54): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2733,21): error TS7005: Variable 'drawnRotateHandle' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2749,13): error TS7006: Parameter 'graphie' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2835,35): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2835,38): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2841,38): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2841,41): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2850,17): error TS7034: Variable 'currentlyDrawnButton' implicitly has type 'any' in some locations where its type cannot be determined.
+src/package/perseus/src/util/interactive.ts(2856,52): error TS7006: Parameter 'isHighlight' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2862,48): error TS7006: Parameter 'opacity' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2884,21): error TS7005: Variable 'currentlyDrawnButton' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2898,38): error TS7006: Parameter 'coordA' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2898,46): error TS7006: Parameter 'coordZ' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2936,55): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2940,54): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2947,17): error TS7005: Variable 'currentlyDrawnButton' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2962,27): error TS7006: Parameter 'center' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(2967,22): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3007,19): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3088,27): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3088,30): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3124,47): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3130,61): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3143,47): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3147,46): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3164,50): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3167,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(3170,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(3173,65): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3175,21): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(3177,21): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(3180,21): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(3182,21): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(3192,21): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/package/perseus/src/util/interactive.ts(3206,51): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3239,33): error TS7006: Parameter 'now' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3239,38): error TS7006: Parameter 'fx' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3248,25): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/package/perseus/src/util/interactive.ts(3273,33): error TS7006: Parameter 'now' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3273,38): error TS7006: Parameter 'fx' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3332,9): error TS7034: Variable 'tickHeightMap' implicitly has type 'any' in some locations where its type cannot be determined.
+src/package/perseus/src/util/interactive.ts(3346,13): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{}'.
+src/package/perseus/src/util/interactive.ts(3350,66): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3350,69): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3351,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(3358,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(3360,24): error TS7005: Variable 'tickHeightMap' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3379,33): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3396,21): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ mm: number; cm: number; m: number; km: number; in: number; ft: number; yd: number; mi: number; }'.
+src/package/perseus/src/util/interactive.ts(3446,19): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3452,43): error TS7006: Parameter 'el' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3457,46): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3460,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(3463,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(3466,56): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3468,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(3470,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(3473,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/interactive.ts(3496,47): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3514,27): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3514,30): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3546,27): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3546,30): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3629,19): error TS7006: Parameter 'point' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3663,19): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3724,38): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3745,45): error TS7006: Parameter 'newPoint' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3745,55): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3756,34): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3799,27): error TS7006: Parameter 'point' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3809,27): error TS7006: Parameter 'ray' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3838,27): error TS7006: Parameter 'point' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3848,27): error TS7006: Parameter 'ray' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3873,35): error TS7006: Parameter 'coords' implicitly has an 'any' type.
+src/package/perseus/src/util/interactive.ts(3902,23): error TS7006: Parameter 'shouldChangeReflexivity' implicitly has an 'any' type.
+src/package/perseus/src/util/test-utils.ts(158,5): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/package/perseus/src/util/tex.ts(2,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
+src/package/perseus/src/util/tex.ts(49,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/util/widget-enum-utils.ts(134,24): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<WidgetName, WidgetEnum>'.
+  No index signature with a parameter of type 'string' was found on type 'Record<WidgetName, WidgetEnum>'.
+src/package/perseus/src/widget-ai-utils/grapher/grapher-ai-utils.ts(27,9): error TS7053: Element implicitly has an 'any' type because expression of type '"asymptote"' can't be used to index type 'GrapherAnswerTypes'.
+  Property 'asymptote' does not exist on type 'GrapherAnswerTypes'.
+src/package/perseus/src/widget-type-utils.ts(21,20): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'MakeWidgetMap<PerseusWidgetTypes>'.
+  No index signature with a parameter of type 'string' was found on type 'MakeWidgetMap<PerseusWidgetTypes>'.
+src/package/perseus/src/widget-type-utils.ts(29,20): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'MakeWidgetMap<PerseusWidgetTypes>'.
+  No index signature with a parameter of type 'string' was found on type 'MakeWidgetMap<PerseusWidgetTypes>'.
+src/package/perseus/src/widget-type-utils.ts(80,12): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'MakeWidgetMap<PerseusWidgetTypes>'.
+  No index signature with a parameter of type 'string' was found on type 'MakeWidgetMap<PerseusWidgetTypes>'.
+src/package/perseus/src/widget-type-utils.ts(99,13): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'MakeWidgetMap<PerseusWidgetTypes>'.
+  No index signature with a parameter of type 'string' was found on type 'MakeWidgetMap<PerseusWidgetTypes>'.
+src/package/perseus/src/widgets.ts(157,13): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
+  No index signature with a parameter of type 'string' was found on type '{}'.
+src/package/perseus/src/widgets/__testutils__/renderQuestion.tsx(9,8): error TS2307: Cannot find module '../../../../../testing/test-dependencies' or its corresponding type declarations.
+src/package/perseus/src/widgets/__testutils__/story-decorators.tsx(3,33): error TS7006: Parameter 'Story' implicitly has an 'any' type.
+src/package/perseus/src/widgets/__testutils__/story-decorators.tsx(9,34): error TS7006: Parameter 'Story' implicitly has an 'any' type.
+src/package/perseus/src/widgets/__testutils__/story-decorators.tsx(15,40): error TS7006: Parameter 'Story' implicitly has an 'any' type.
+src/package/perseus/src/widgets/__testutils__/story-decorators.tsx(21,30): error TS7006: Parameter 'Story' implicitly has an 'any' type.
+src/package/perseus/src/widgets/categorizer/categorizer.tsx(7,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/categorizer/categorizer.tsx(165,78): error TS2339: Property 'responsiveInput' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/categorizer/categorizer.tsx(166,78): error TS2339: Property 'responsiveRadioInput' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/cs-program/cs-program.tsx(6,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
+src/package/perseus/src/widgets/cs-program/cs-program.tsx(8,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/cs-program/cs-program.tsx(149,51): error TS7006: Parameter 'setting' implicitly has an 'any' type.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(1,28): error TS2307: Cannot find module '../../../../../testing/render-question-with-cypress' or its corresponding type declarations.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(2,39): error TS2307: Cannot find module '../../../../../testing/test-dependencies' or its corresponding type declarations.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(25,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(28,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(29,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(30,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(33,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(34,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(43,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(44,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(45,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(48,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(49,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(50,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(51,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(52,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(53,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(56,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(57,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(58,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(59,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(60,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(61,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(73,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(74,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(75,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(78,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(79,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(82,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(83,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(84,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(85,13): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(92,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.cypress.ts(93,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/explanation/explanation.tsx(8,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/explanation/explanation.tsx(141,29): error TS2322: Type '(false | object)[]' is not assignable to type 'StyleType'.
+  Type '(false | object)[]' is not assignable to type 'CSSProperties'.
+    Types of property 'fill' are incompatible.
+      Type '(value: false | object, start?: number | undefined, end?: number | undefined) => (false | object)[]' is not assignable to type 'string'.
+src/package/perseus/src/widgets/explanation/explanation.tsx(145,35): error TS2322: Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/src/widgets/expression/expression.tsx(9,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/expression/expression.tsx(48,25): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ arctg: string; cosec: string; cossec: string; cotg: string; ctg: string; sen: string; tg: string; }'.
+src/package/perseus/src/widgets/free-response/free-response.tsx(84,21): error TS2322: Type '(object | undefined)[]' is not assignable to type 'StyleType'.
+  Type '(object | undefined)[]' is not assignable to type 'CSSProperties'.
+    Types of property 'fill' are incompatible.
+      Type '(value: object | undefined, start?: number | undefined, end?: number | undefined) => (object | undefined)[]' is not assignable to type 'string'.
+src/package/perseus/src/widgets/free-response/free-response.tsx(95,29): error TS2322: Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/src/widgets/free-response/free-response.tsx(107,19): error TS2322: Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/src/widgets/free-response/free-response.tsx(122,29): error TS2322: Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/src/widgets/graded-group-set/graded-group-set.tsx(62,29): error TS2322: Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/src/widgets/graded-group-set/graded-group-set.tsx(70,41): error TS2322: Type 'false | object' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+  Type 'false' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+src/package/perseus/src/widgets/graded-group-set/graded-group-set.tsx(75,47): error TS2322: Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/src/widgets/graded-group-set/graded-group-set.tsx(76,71): error TS2339: Property 'srOnly' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/graded-group-set/graded-group-set.tsx(169,29): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/graded-group-set/graded-group-set.tsx(313,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/graded-group/graded-group.tsx(8,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/graded-group/graded-group.tsx(57,5): error TS7006: Parameter 'answerable' implicitly has an 'any' type.
+src/package/perseus/src/widgets/graded-group/graded-group.tsx(73,5): error TS2304: Cannot find name 'Empty'.
+src/package/perseus/src/widgets/graded-group/graded-group.tsx(105,5): error TS2304: Cannot find name 'Empty'.
+src/package/perseus/src/widgets/graded-group/graded-group.tsx(233,33): error TS7006: Parameter 'newFocus' implicitly has an 'any' type.
+src/package/perseus/src/widgets/graded-group/graded-group.tsx(233,43): error TS7006: Parameter 'oldFocus' implicitly has an 'any' type.
+src/package/perseus/src/widgets/graded-group/graded-group.tsx(249,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/graded-group/graded-group.tsx(254,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/graded-group/graded-group.tsx(332,53): error TS2339: Property 'srOnly' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(6,39): error TS2307: Cannot find module '../../../../../testing/render-question-with-cypress' or its corresponding type declarations.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(7,39): error TS2307: Cannot find module '../../../../../testing/test-dependencies' or its corresponding type declarations.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(45,13): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(67,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(69,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(71,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(74,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(76,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(79,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(84,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(106,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(108,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(110,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(113,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(115,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(118,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(123,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(148,13): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(170,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(172,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(174,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(177,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(181,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(184,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(186,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(189,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(194,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(216,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(218,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(220,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(223,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(225,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(228,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(230,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(233,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(238,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(263,13): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(285,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(287,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(289,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(292,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(294,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(297,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(302,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(324,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(326,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(328,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(331,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(333,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(336,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(341,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(366,13): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(388,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(390,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(393,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(396,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(402,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(405,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(411,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(414,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(422,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(444,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(446,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(449,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(452,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(458,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(461,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(467,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(470,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(478,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(503,13): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(525,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(527,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(530,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(533,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(536,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(539,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(544,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(566,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(568,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(571,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(574,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(577,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(580,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(585,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(610,13): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(632,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(634,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(637,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(640,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(642,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(645,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(650,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(672,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(674,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(677,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(680,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(682,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(685,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(690,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(715,13): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(737,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(739,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(741,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(746,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(749,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(751,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(754,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(759,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(781,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(783,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(785,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(790,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(793,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(795,29): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(798,33): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.cypress.ts(803,21): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/grapher/grapher.tsx(129,25): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'MovableMap'.
+src/package/perseus/src/widgets/grapher/grapher.tsx(152,30): error TS7006: Parameter 'newCoord' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.tsx(152,40): error TS7006: Parameter 'oldCoord' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.tsx(155,69): error TS7006: Parameter 'coord' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.tsx(167,26): error TS7006: Parameter 'newCoord' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.tsx(171,34): error TS7006: Parameter 'coord' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.tsx(189,37): error TS7006: Parameter 'coord' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.tsx(189,44): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.tsx(208,44): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.tsx(220,34): error TS7006: Parameter 'otherCoord' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.tsx(220,46): error TS7006: Parameter 'j' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.tsx(262,30): error TS7006: Parameter 'newCoord' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.tsx(262,40): error TS7006: Parameter 'oldCoord' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.tsx(271,58): error TS7006: Parameter 'coord' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.tsx(296,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/grapher/grapher.tsx(401,48): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.tsx(403,40): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.tsx(414,47): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.tsx(416,54): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.tsx(432,48): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/grapher.tsx(442,48): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/widgets/grapher/util.tsx(4,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/iframe/iframe.tsx(10,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
+src/package/perseus/src/widgets/iframe/iframe.tsx(100,17): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ readonly width: string; readonly height: string; }'.
+src/package/perseus/src/widgets/image/image.class.tsx(3,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/image/image.cypress.ts(1,39): error TS2307: Cannot find module '../../../../../testing/render-question-with-cypress' or its corresponding type declarations.
+src/package/perseus/src/widgets/image/image.cypress.ts(2,39): error TS2307: Cannot find module '../../../../../testing/test-dependencies' or its corresponding type declarations.
+src/package/perseus/src/widgets/image/image.cypress.ts(21,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/image/image.cypress.ts(22,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/image/image.cypress.ts(30,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/image/image.cypress.ts(34,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/image/image.cypress.ts(35,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/image/image.cypress.ts(37,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/image/image.cypress.ts(40,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/image/image.cypress.ts(48,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/image/image.cypress.ts(52,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/image/image.cypress.ts(53,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/image/image.cypress.ts(56,9): error TS2304: Cannot find name 'cy'.
+src/package/perseus/src/widgets/input-number/input-number.tsx(215,17): error TS2322: Type '(object | null)[]' is not assignable to type 'StyleType'.
+  Type '(object | null)[]' is not assignable to type 'CSSProperties'.
+    Types of property 'fill' are incompatible.
+      Type '(value: object | null, start?: number | undefined, end?: number | undefined) => (object | null)[]' is not assignable to type 'string'.
+src/package/perseus/src/widgets/interaction/interaction.tsx(6,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/interaction/interaction.tsx(65,19): error TS7006: Parameter 'expr' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interaction/interaction.tsx(65,25): error TS7006: Parameter 'options' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interaction/interaction.tsx(161,40): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interaction/interaction.tsx(206,39): error TS7006: Parameter 'name' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interaction/interaction.tsx(232,23): error TS7006: Parameter 'arg' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interaction/interaction.tsx(293,31): error TS7006: Parameter 'element' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interaction/interaction.tsx(293,40): error TS7006: Parameter 'n' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interaction/interaction.tsx(733,57): error TS7006: Parameter 'element' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interaction/interaction.tsx(734,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/interaction/interaction.tsx(751,56): error TS7006: Parameter 'element' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interaction/interaction.tsx(752,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/interaction/interaction.tsx(754,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/interaction/interaction.tsx(785,52): error TS7006: Parameter 'element' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interaction/interaction.tsx(786,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/interactive-graphs/graphs/components/sr-description-within-svg.tsx(30,29): error TS2339: Property 'srOnly' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/interactive-graphs/graphs/quadratic.tsx(68,16): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/graphs/use-draggable.ts(99,25): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ left: Vector2; right: Vector2; up: Vector2; down: Vector2; }'.
+src/package/perseus/src/widgets/interactive-graphs/graphs/use-draggable.ts(99,51): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<"ArrowUp" | "ArrowRight" | "ArrowDown" | "ArrowLeft", "left" | "right" | "down" | "up" | undefined>'.
+  No index signature with a parameter of type 'string' was found on type 'Record<"ArrowUp" | "ArrowRight" | "ArrowDown" | "ArrowLeft", "left" | "right" | "down" | "up" | undefined>'.
+src/package/perseus/src/widgets/interactive-graphs/graphs/utils.ts(179,5): error TS7006: Parameter 'pointNumber' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/interactive-graph.tsx(10,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/interactive-graphs/interactive-graph.tsx(464,18): error TS7006: Parameter 'coords' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/interactive-graph.tsx(500,43): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/interactive-graph.tsx(512,51): error TS2345: Argument of type 'Coord[] | null | undefined' is not assignable to parameter of type 'Coord[]'.
+  Type 'undefined' is not assignable to type 'Coord[]'.
+src/package/perseus/src/widgets/interactive-graphs/interactive-graph.tsx(616,44): error TS7006: Parameter 'coord' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/interactive-graph.tsx(616,51): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/interactive-graph.tsx(660,44): error TS7006: Parameter 'coord' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/interactive-graph.tsx(660,51): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/interactive-graph.tsx(802,42): error TS7006: Parameter 'segment' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/interactive-graph.tsx(805,42): error TS7006: Parameter 'coord' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/interactive-graph.tsx(844,40): error TS7006: Parameter 'coord' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/locked-figures/locked-function.tsx(17,16): error TS7051: Parameter has a name but no type. Did you mean 'arg0: number'?
+src/package/perseus/src/widgets/interactive-graphs/mafs-graph.tsx(418,29): error TS2322: Type '{ display: "hidden" | undefined; textAlign: "center"; backgroundColor: string; border: string; padding: string; boxShadow: string; top: string; transform: string; }' is not assignable to type 'StyleType'.
+  Types of property 'display' are incompatible.
+    Type '"hidden" | undefined' is not assignable to type '"none" | "flex" | "grid" | "block" | "contents" | "inline" | "run-in" | "flow" | "flow-root" | "ruby" | "table" | "ruby-base" | "ruby-base-container" | "ruby-text" | "ruby-text-container" | ... 26 more ... | undefined'.
+      Type '"hidden"' is not assignable to type '"none" | "flex" | "grid" | "block" | "contents" | "inline" | "run-in" | "flow" | "flow-root" | "ruby" | "table" | "ruby-base" | "ruby-base-container" | "ruby-text" | "ruby-text-container" | ... 26 more ... | undefined'.
+src/package/perseus/src/widgets/interactive-graphs/reducer/interactive-graph-action.ts(41,21): error TS7006: Parameter 'pointIndex' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/reducer/interactive-graph-action.ts(41,33): error TS7006: Parameter 'destination' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/reducer/interactive-graph-action.ts(72,21): error TS7006: Parameter 'pointIndex' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/reducer/interactive-graph-action.ts(72,33): error TS7006: Parameter 'destination' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/reducer/interactive-graph-reducer.ts(11,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/interactive-graphs/reducer/interactive-graph-reducer.ts(779,22): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/reducer/interactive-graph-reducer.ts(846,20): error TS7015: Element implicitly has an 'any' type because index expression is not of type 'number'.
+src/package/perseus/src/widgets/interactive-graphs/reducer/interactive-graph-reducer.ts(1022,18): error TS7006: Parameter 'j' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/reducer/interactive-graph-reducer.ts(1027,31): error TS7006: Parameter 'j' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/reducer/interactive-graph-reducer.ts(1031,43): error TS7006: Parameter 'vertex' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/reducer/interactive-graph-reducer.ts(1123,18): error TS7006: Parameter 'j' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/reducer/interactive-graph-reducer.ts(1132,19): error TS7006: Parameter 'coords' implicitly has an 'any' type.
+src/package/perseus/src/widgets/interactive-graphs/reducer/interactive-graph-reducer.ts(1139,30): error TS7006: Parameter 'j' implicitly has an 'any' type.
+src/package/perseus/src/widgets/label-image/answer-choices.tsx(10,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/label-image/answer-pill.tsx(72,25): error TS2322: Type 'CSSProperties' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+  Type 'Properties<string | number, string & {}>' is not assignable to type 'CSSPropertiesLossy'.
+    Index signature for type 'string' is missing in type 'Properties<string | number, string & {}>'.
+src/package/perseus/src/widgets/label-image/answer-pill.tsx(74,25): error TS2322: Type 'false | object' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+  Type 'false' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+src/package/perseus/src/widgets/label-image/answer-pill.tsx(75,25): error TS2322: Type 'false | object' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+  Type 'false' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+src/package/perseus/src/widgets/label-image/answer-pill.tsx(76,25): error TS2322: Type 'false | CSSProperties | undefined' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+  Type 'false' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+src/package/perseus/src/widgets/label-image/hide-answers-toggle.tsx(18,15): error TS2322: Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/src/widgets/label-image/label-image.tsx(499,17): error TS2322: Type 'string | undefined' is not assignable to type '"top" | "bottom" | "left" | "right"'.
+  Type 'undefined' is not assignable to type '"top" | "bottom" | "left" | "right"'.
+src/package/perseus/src/widgets/label-image/label-image.tsx(792,47): error TS7006: Parameter 'm' implicitly has an 'any' type.
+src/package/perseus/src/widgets/label-image/marker.tsx(103,17): error TS2322: Type 'false | object' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+  Type 'false' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+src/package/perseus/src/widgets/label-image/marker.tsx(110,48): error TS2322: Type 'false | object' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+  Type 'false' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+src/package/perseus/src/widgets/label-image/marker.tsx(112,13): error TS2322: Type 'object[]' is not assignable to type 'StyleType'.
+  Type 'object[]' is not assignable to type 'CSSProperties'.
+    Types of property 'fill' are incompatible.
+      Type '(value: object, start?: number | undefined, end?: number | undefined) => object[]' is not assignable to type 'string'.
+src/package/perseus/src/widgets/label-image/marker.tsx(119,13): error TS2322: Type 'object[]' is not assignable to type 'StyleType'.
+  Type 'object[]' is not assignable to type 'CSSProperties'.
+    Types of property 'fill' are incompatible.
+      Type '(value: object, start?: number | undefined, end?: number | undefined) => object[]' is not assignable to type 'string'.
+src/package/perseus/src/widgets/label-image/marker.tsx(129,44): error TS2322: Type 'StyleType' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+  Type 'null' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+src/package/perseus/src/widgets/label-image/marker.tsx(159,25): error TS2322: Type 'false | object' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+  Type 'false' is not assignable to type 'string | number | any[] | CSSPropertiesComplete | CSSPropertiesLossy | undefined'.
+src/package/perseus/src/widgets/label-image/marker.tsx(237,9): error TS2322: Type '"0"' is not assignable to type 'number | "infinite" | CSSWideKeyword | undefined'.
+src/package/perseus/src/widgets/label-image/marker.tsx(246,9): error TS2322: Type '"2"' is not assignable to type 'number | "infinite" | CSSWideKeyword | undefined'.
+src/package/perseus/src/widgets/matcher/matcher.tsx(6,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/matrix/matrix.tsx(7,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/matrix/matrix.tsx(57,34): error TS7006: Parameter 'path' implicitly has an 'any' type.
+src/package/perseus/src/widgets/matrix/matrix.tsx(63,37): error TS7006: Parameter 'path' implicitly has an 'any' type.
+src/package/perseus/src/widgets/matrix/matrix.tsx(203,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/matrix/matrix.tsx(206,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/matrix/matrix.tsx(211,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/matrix/matrix.tsx(217,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/matrix/matrix.tsx(221,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/matrix/matrix.tsx(224,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/matrix/matrix.tsx(357,40): error TS7006: Parameter 'row' implicitly has an 'any' type.
+src/package/perseus/src/widgets/matrix/matrix.tsx(361,52): error TS7006: Parameter 'col' implicitly has an 'any' type.
+src/package/perseus/src/widgets/matrix/matrix.tsx(407,53): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/widgets/matrix/matrix.tsx(410,52): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/package/perseus/src/widgets/matrix/matrix.tsx(410,59): error TS7006: Parameter 'cb' implicitly has an 'any' type.
+src/package/perseus/src/widgets/measurer/measurer.tsx(5,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
+src/package/perseus/src/widgets/measurer/measurer.tsx(8,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/measurer/measurer.tsx(65,5): error TS7008: Member 'ruler' implicitly has an 'any' type.
+src/package/perseus/src/widgets/measurer/measurer.tsx(66,5): error TS7008: Member 'protractor' implicitly has an 'any' type.
+src/package/perseus/src/widgets/measurer/measurer.tsx(72,24): error TS7006: Parameter 'prevProps' implicitly has an 'any' type.
+src/package/perseus/src/widgets/measurer/measurer.tsx(83,14): error TS7006: Parameter 'prop' implicitly has an 'any' type.
+src/package/perseus/src/widgets/measurer/measurer.tsx(84,44): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Readonly<Props>'.
+src/package/perseus/src/widgets/measurer/measurer.tsx(97,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/mock-widgets/mock-widget.tsx(89,19): error TS2322: Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/src/widgets/molecule/molecule-drawing.ts(13,19): error TS7006: Parameter 'ctx' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/molecule-drawing.ts(109,29): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/molecule-drawing.ts(134,9): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ readonly text: (ctx: any, item: any) => void; readonly "line:single": (ctx: any, item: any) => void; readonly "line:double": (ctx: any, item: any) => void; readonly "line:triple": (ctx: any, item: any) => void; }'.
+src/package/perseus/src/widgets/molecule/molecule-drawing.ts(155,12): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ readonly "line:single": 0; readonly "line:double": 0; readonly "line:triple": 0; readonly text: 1; }'.
+src/package/perseus/src/widgets/molecule/molecule-drawing.ts(155,35): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ readonly "line:single": 0; readonly "line:double": 0; readonly "line:triple": 0; readonly text: 1; }'.
+src/package/perseus/src/widgets/molecule/molecule-layout.ts(28,32): error TS7006: Parameter 'angle' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/molecule-layout.ts(28,39): error TS7006: Parameter 'length' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/molecule-layout.ts(83,45): error TS7006: Parameter 'c' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/molecule-layout.ts(158,42): error TS7006: Parameter 'toAtom' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/molecule-layout.ts(220,20): error TS7006: Parameter 'idx' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/molecule-layout.ts(247,42): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/molecule-layout.ts(281,5): error TS7006: Parameter 'outputs' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/molecule-layout.ts(282,5): error TS7006: Parameter 'atomProcessingQueue' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/molecule-layout.ts(283,5): error TS7006: Parameter 'atoms' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/molecule-layout.ts(284,5): error TS7006: Parameter 'bonds' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/molecule-layout.ts(285,5): error TS7006: Parameter 'rotationAngle' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/molecule-layout.ts(293,40): error TS7006: Parameter 'c' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/molecule-layout.ts(323,48): error TS7006: Parameter 'atoms' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/molecule.tsx(73,27): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/molecule.tsx(76,27): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/molecule.tsx(79,27): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/molecule.tsx(82,27): error TS7006: Parameter 'item' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/smiles-parser.ts(33,16): error TS7006: Parameter 'obj' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/smiles-parser.ts(33,21): error TS7006: Parameter 'keylist' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/smiles-parser.ts(33,30): error TS7006: Parameter 'val' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/smiles-parser.ts(62,15): error TS7006: Parameter 'obj' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/smiles-parser.ts(70,19): error TS7006: Parameter 'smiles' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/smiles-parser.ts(78,41): error TS7006: Parameter 'ctx' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/smiles-parser.ts(87,11): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/smiles-parser.ts(103,15): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/smiles-parser.ts(158,19): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/smiles-parser.ts(162,11): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/smiles-parser.ts(171,38): error TS7006: Parameter '_ctx' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/smiles-parser.ts(185,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/molecule/smiles-parser.ts(197,20): error TS7006: Parameter 'smiles' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/smiles-parser.ts(197,28): error TS7006: Parameter 'ctx' implicitly has an 'any' type.
+src/package/perseus/src/widgets/molecule/smiles-parser.ts(268,15): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
+src/package/perseus/src/widgets/number-line/number-line.tsx(4,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/number-line/number-line.tsx(121,60): error TS7006: Parameter 'graphie' implicitly has an 'any' type.
+src/package/perseus/src/widgets/number-line/number-line.tsx(121,69): error TS7006: Parameter 'props' implicitly has an 'any' type.
+src/package/perseus/src/widgets/number-line/number-line.tsx(145,34): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/package/perseus/src/widgets/number-line/number-line.tsx(145,37): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/package/perseus/src/widgets/number-line/number-line.tsx(509,34): error TS7006: Parameter 'prevCoord' implicitly has an 'any' type.
+src/package/perseus/src/widgets/number-line/number-line.tsx(513,34): error TS7006: Parameter 'prevCoord' implicitly has an 'any' type.
+src/package/perseus/src/widgets/number-line/number-line.tsx(521,26): error TS7006: Parameter 'coord' implicitly has an 'any' type.
+src/package/perseus/src/widgets/number-line/number-line.tsx(706,41): error TS7006: Parameter 'val' implicitly has an 'any' type.
+src/package/perseus/src/widgets/number-line/number-line.tsx(786,9): error TS2322: Type 'number | undefined' is not assignable to type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/package/perseus/src/widgets/number-line/number-line.tsx(799,9): error TS2322: Type 'number | undefined' is not assignable to type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/package/perseus/src/widgets/numeric-input/input-with-examples.tsx(5,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/numeric-input/numeric-input.tsx(113,17): error TS2322: Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/src/widgets/orderer/orderer.tsx(5,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
+src/package/perseus/src/widgets/orderer/orderer.tsx(8,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/orderer/orderer.tsx(129,43): error TS7006: Parameter 'nextState' implicitly has an 'any' type.
+src/package/perseus/src/widgets/orderer/orderer.tsx(144,24): error TS7006: Parameter 'prevProps' implicitly has an 'any' type.
+src/package/perseus/src/widgets/orderer/orderer.tsx(171,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(365,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(377,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(387,22): error TS18048: 'opt' is possibly 'undefined'.
+src/package/perseus/src/widgets/orderer/orderer.tsx(387,26): error TS2339: Property 'key' does not exist on type 'string | PerseusRenderer'.
+  Property 'key' does not exist on type 'string'.
+src/package/perseus/src/widgets/orderer/orderer.tsx(388,26): error TS18048: 'opt' is possibly 'undefined'.
+src/package/perseus/src/widgets/orderer/orderer.tsx(388,30): error TS2339: Property 'content' does not exist on type 'string | PerseusRenderer'.
+  Property 'content' does not exist on type 'string'.
+src/package/perseus/src/widgets/orderer/orderer.tsx(389,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(391,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(395,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(442,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(454,21): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(463,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(465,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(512,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(514,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(516,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(519,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(522,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(529,27): error TS7006: Parameter 'opt' implicitly has an 'any' type.
+src/package/perseus/src/widgets/orderer/orderer.tsx(529,32): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/widgets/orderer/orderer.tsx(534,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(542,27): error TS7006: Parameter '_' implicitly has an 'any' type.
+src/package/perseus/src/widgets/orderer/orderer.tsx(542,30): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/widgets/orderer/orderer.tsx(547,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(565,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(568,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(570,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(572,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(574,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(576,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(578,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(580,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/orderer/orderer.tsx(754,51): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/widgets/passage-ref-target/passage-ref-target.tsx(4,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/passage-ref/passage-ref.tsx(6,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/passage/passage-markdown.tsx(3,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/passage/passage-markdown.tsx(87,14): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'PerseusStrings'.
+  No index signature with a parameter of type 'string' was found on type 'PerseusStrings'.
+src/package/perseus/src/widgets/passage/passage-markdown.tsx(132,26): error TS7006: Parameter 'source' implicitly has an 'any' type.
+src/package/perseus/src/widgets/passage/passage.tsx(4,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
+src/package/perseus/src/widgets/passage/passage.tsx(7,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/passage/passage.tsx(127,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/passage/passage.tsx(214,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/passage/passage.tsx(274,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/passage/passage.tsx(278,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/passage/passage.tsx(302,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/passage/passage.tsx(306,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/passage/passage.tsx(332,9): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/passage/passage.tsx(453,55): error TS7006: Parameter 'lineN' implicitly has an 'any' type.
+src/package/perseus/src/widgets/phet-simulation/phet-simulation.tsx(61,17): error TS7006: Parameter 'props' implicitly has an 'any' type.
+src/package/perseus/src/widgets/phet-simulation/phet-simulation.tsx(70,30): error TS7006: Parameter 'prevProps' implicitly has an 'any' type.
+src/package/perseus/src/widgets/phet-simulation/phet-simulation.tsx(227,19): error TS2322: Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/src/widgets/phet-simulation/phet-simulation.tsx(245,27): error TS2322: Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/src/widgets/phet-simulation/phet-simulation.tsx(252,29): error TS2322: Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/src/widgets/phet-simulation/phet-simulation.tsx(258,23): error TS2322: Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/src/widgets/plotter/plotter.tsx(10,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
+src/package/perseus/src/widgets/plotter/plotter.tsx(12,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/plotter/plotter.tsx(94,14): error TS7006: Parameter 'prop' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(94,34): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Readonly<Props>'.
+src/package/perseus/src/widgets/plotter/plotter.tsx(94,52): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Props'.
+src/package/perseus/src/widgets/plotter/plotter.tsx(250,57): error TS7006: Parameter 'dim' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(250,62): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(517,15): error TS7034: Variable 'categoryHeightPromises' implicitly has type 'any[]' in some locations where its type cannot be determined.
+src/package/perseus/src/widgets/plotter/plotter.tsx(521,65): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(531,53): error TS7006: Parameter 'category' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(531,63): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(534,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/plotter/plotter.tsx(549,53): error TS7006: Parameter 'category' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(549,63): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(552,21): error TS7034: Variable 'x' implicitly has type 'any' in some locations where its type cannot be determined.
+src/package/perseus/src/widgets/plotter/plotter.tsx(585,29): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/plotter/plotter.tsx(593,25): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/plotter/plotter.tsx(605,39): error TS7005: Variable 'x' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(605,55): error TS7005: Variable 'x' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(611,21): error TS7005: Variable 'categoryHeightPromises' implicitly has an 'any[]' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(670,44): error TS7006: Parameter 'height' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(814,54): error TS7006: Parameter 'dx' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(859,22): error TS7006: Parameter 'coord' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(859,29): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(909,50): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(909,53): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(939,68): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(939,71): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(956,51): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(956,54): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(992,30): error TS7006: Parameter 'j' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(1006,45): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(1012,67): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(1016,69): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(1102,32): error TS7006: Parameter 'ps' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(1102,36): error TS7006: Parameter 'i' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(1103,34): error TS7006: Parameter 'pic' implicitly has an 'any' type.
+src/package/perseus/src/widgets/plotter/plotter.tsx(1103,39): error TS7006: Parameter 'j' implicitly has an 'any' type.
+src/package/perseus/src/widgets/python-program/python-program.tsx(60,19): error TS2322: Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/src/widgets/radio/base-radio.tsx(11,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/radio/base-radio.tsx(216,20): error TS2339: Property 'radio' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/radio/base-radio.tsx(217,20): error TS2339: Property 'responsiveRadioContainer' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/radio/base-radio.tsx(220,24): error TS2339: Property 'radioContainerFirstHighlighted' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/radio/base-radio.tsx(223,24): error TS2339: Property 'radioContainerLastHighlighted' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/radio/base-radio.tsx(229,20): error TS2339: Property 'instructions' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/radio/base-radio.tsx(229,53): error TS2339: Property 'instructionsMobile' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/radio/base-radio.tsx(238,44): error TS2339: Property 'responsiveFieldset' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/radio/base-radio.tsx(269,36): error TS7006: Parameter 'newValues' implicitly has an 'any' type.
+src/package/perseus/src/widgets/radio/base-radio.tsx(295,36): error TS2339: Property 'item' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/radio/base-radio.tsx(296,36): error TS2339: Property 'responsiveItem' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/radio/base-radio.tsx(297,47): error TS2339: Property 'selectedItem' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/radio/base-radio.tsx(300,40): error TS2339: Property 'aboveBackdrop' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/radio/base-radio.tsx(304,40): error TS2339: Property 'aboveBackdropMobile' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/radio/base-radio.tsx(307,40): error TS2339: Property 'nextHighlighted' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/radio/base-radio.tsx(388,39): error TS2339: Property 'responsiveContainer' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/radio/choice-icon/choice-icon.tsx(104,42): error TS2339: Property 'iconWrapper' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/widgets/radio/choice.tsx(8,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/radio/multiple-choice-component.new.tsx(13,35): error TS2307: Cannot find module '@khanacademy/perseus/strings' or its corresponding type declarations.
+  There are types at '/app/node_modules/@khanacademy/perseus/dist/strings.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
+src/package/perseus/src/widgets/radio/radio.ff.tsx(7,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/radio/radio.ts(2,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/radio/util.ts(6,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/radio/util.ts(60,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/widgets/table/table.tsx(214,51): error TS7006: Parameter 'ref' implicitly has an 'any' type.
+src/package/perseus/src/widgets/table/table.tsx(222,56): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/widgets/table/table.tsx(249,55): error TS7006: Parameter 'ref' implicitly has an 'any' type.
+src/package/perseus/src/widgets/table/table.tsx(272,60): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/widgets/video/video-transcript-link.tsx(52,23): error TS2322: Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/src/widgets/video/video.tsx(7,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
+src/package/perseus/src/widgets/video/video.tsx(89,39): error TS2339: Property 'srOnly' does not exist on type 'StyleDeclaration<{}>'.
+src/package/perseus/src/zoom.ts(11,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
+src/package/perseus/src/zoom.ts(37,22): error TS7015: Element implicitly has an 'any' type because index expression is not of type 'number'.
+src/package/perseus/src/zoom.ts(39,22): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ readonly WebkitTransition: "webkitTransitionEnd"; readonly MozTransition: "transitionend"; readonly OTransition: "oTransitionEnd otransitionend"; readonly transition: "transitionend"; }'.
+  No index signature with a parameter of type 'string' was found on type '{ readonly WebkitTransition: "webkitTransitionEnd"; readonly MozTransition: "transitionend"; readonly OTransition: "oTransitionEnd otransitionend"; readonly transition: "transitionend"; }'.
+src/package/perseus/src/zoom.ts(48,1): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/zoom.ts(77,27): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/zoom.ts(78,13): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/zoom.ts(80,17): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/zoom.ts(95,5): error TS7006: Parameter 'contentString' implicitly has an 'any' type.
+src/package/perseus/src/zoom.ts(221,24): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
+src/package/perseus/src/zoom.ts(225,57): error TS7006: Parameter 'forceDispose' implicitly has an 'any' type.
+src/package/perseus/src/zoom.ts(288,51): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/package/perseus/src/zoom.ts(425,5): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/zoom.ts(427,5): error TS2578: Unused '@ts-expect-error' directive.
+src/package/perseus/src/zoom.ts(564,33): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
+src/package/perseus/testing/test-dependencies.tsx(53,16): error TS7006: Parameter 'id' implicitly has an 'any' type.
+src/package/perseus/testing/test-dependencies.tsx(53,20): error TS7006: Parameter 'kind' implicitly has an 'any' type.
+src/package/perseus/testing/test-dependencies.tsx(121,5): error TS2322: Type '(str: string | null | undefined) => string | null | undefined' is not assignable to type 'StaticUrlFn'.
+  Type 'string | null | undefined' is not assignable to type 'string'.
+    Type 'undefined' is not assignable to type 'string'.
+src/package/perseus/testing/test-dependencies.tsx(136,5): error TS2322: Type '(str: string | null | undefined) => string | null | undefined' is not assignable to type 'StaticUrlFn'.
+  Type 'string | null | undefined' is not assignable to type 'string'.
+    Type 'undefined' is not assignable to type 'string'.
+src/package/perseus/testing/test-keypad-context-wrapper.tsx(4,22): error TS2307: Cannot find module 'storybook/actions' or its corresponding type declarations.
+src/package/perseus/testing/test-keypad-context-wrapper.tsx(30,15): error TS2322: Type 'object' is not assignable to type 'StyleType'.
+src/package/perseus/testing/test-keypad-context-wrapper.tsx(36,25): error TS2322: Type '(false | object)[]' is not assignable to type 'StyleType'.
+  Type '(false | object)[]' is not assignable to type 'CSSProperties'.
+    Types of property 'fill' are incompatible.
+      Type '(value: false | object, start?: number | undefined, end?: number | undefined) => (false | object)[]' is not assignable to type 'string'.
+The command '/bin/sh -c npm run build' returned a non-zero code: 2

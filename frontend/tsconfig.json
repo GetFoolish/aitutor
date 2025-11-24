@@ -27,7 +27,9 @@
     "src/**/__docs__/**/*",
     "src/**/*.test.ts",
     "src/**/*.test.tsx",
-    "src/**/*.stories.tsx"
+    "src/**/*.stories.tsx",
+    "src/**/*.cypress.ts",
+    "src/package/perseus/**/*"
   ],
   "ts-node": {
     "compilerOptions": {
