@@ -66,20 +66,20 @@ if [ "$ENV" = "staging" ]; then
     
     # Use placeholders if services don't exist yet (first deployment)
     if [ -z "$DASH_API_URL" ]; then
-        echo "⚠️  DASH API not found. Using placeholder URL (will be updated after deployment)"
-        DASH_API_URL="https://dash-api-staging-PLACEHOLDER.us-central1.run.app"
+        echo "⚠️  DASH API not found. Using existing URL"
+        DASH_API_URL="https://dash-api-staging-utmfhquz6a-uc.a.run.app"
     fi
     if [ -z "$SHERLOCKED_API_URL" ]; then
-        echo "⚠️  SherlockED API not found. Using placeholder URL (will be updated after deployment)"
-        SHERLOCKED_API_URL="https://sherlocked-api-staging-PLACEHOLDER.us-central1.run.app"
+        echo "⚠️  SherlockED API not found. Using existing URL"
+        SHERLOCKED_API_URL="https://sherlocked-api-staging-utmfhquz6a-uc.a.run.app"
     fi
     if [ -z "$TEACHING_ASSISTANT_API_URL" ]; then
-        echo "⚠️  TeachingAssistant API not found. Using placeholder URL (will be updated after deployment)"
-        TEACHING_ASSISTANT_API_URL="https://teaching-assistant-staging-PLACEHOLDER.us-central1.run.app"
+        echo "⚠️  TeachingAssistant API not found. Using existing URL"
+        TEACHING_ASSISTANT_API_URL="https://teaching-assistant-staging-utmfhquz6a-uc.a.run.app"
     fi
     if [ -z "$MEDIAMIXER_URL" ]; then
-        echo "⚠️  MediaMixer not found. Using placeholder URL (will be updated after deployment)"
-        MEDIAMIXER_URL="https://mediamixer-staging-PLACEHOLDER.us-central1.run.app"
+        echo "⚠️  MediaMixer not found. Using existing URL"
+        MEDIAMIXER_URL="https://mediamixer-staging-utmfhquz6a-uc.a.run.app"
     fi
     if [ -z "$TUTOR_URL" ]; then
         echo "⚠️  Tutor service not found. Using placeholder URL (will be updated after deployment)"

@@ -11,7 +11,8 @@ app = FastAPI(
 
 origins = [
         "http://localhost",
-        "http://localhost:3000", 
+        "http://localhost:3000",
+        "https://tutor-frontend-staging-utmfhquz6a-uc.a.run.app",
     ]
 
 app.add_middleware(

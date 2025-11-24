@@ -1,5 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import { WebSocketServer } from 'ws';
+import http from 'http';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -26,15 +27,36 @@ const SYSTEM_PROMPT = readFileSync(
   'utf-8'
 );
 
-// WebSocket server for frontend connections
-const wss = new WebSocketServer({ 
-  port: PORT,
-  host: '0.0.0.0'  // Listen on all interfaces for Cloud Run
+// Create HTTP server for health checks (required by Cloud Run)
+const server = http.createServer((req, res) => {
+  // Health check endpoint
+  if (req.method === 'GET' && (req.url === '/' || req.url === '/health')) {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('OK');
+    return;
+  }
+  // For any other requests, return 404
+  res.writeHead(404, { 'Content-Type': 'text/plain' });
+  res.end('Not Found');
 });
 
-console.log(`🎓 Adam Tutor Service started on ws://localhost:${PORT}`);
-console.log(`📝 System prompt loaded (${SYSTEM_PROMPT.length} characters)`);
-console.log(`🤖 Using model: ${GEMINI_MODEL}`);
+// Create WebSocket server attached to HTTP server
+const wss = new WebSocketServer({ noServer: true });
+
+// Handle WebSocket upgrade requests
+server.on('upgrade', (request, socket, head) => {
+  wss.handleUpgrade(request, socket, head, (ws) => {
+    wss.emit('connection', ws, request);
+  });
+});
+
+// Start the HTTP server (which also handles WebSocket upgrades)
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`🎓 Adam Tutor Service started on ws://localhost:${PORT}`);
+  console.log(`📝 System prompt loaded (${SYSTEM_PROMPT.length} characters)`);
+  console.log(`🤖 Using model: ${GEMINI_MODEL}`);
+  console.log(`💚 Health check available at http://localhost:${PORT}/health`);
+});
 
 wss.on('connection', (clientWs) => {
   console.log('✅ Frontend client connected');
@@ -166,8 +188,10 @@ wss.on('connection', (clientWs) => {
 process.on('SIGINT', () => {
   console.log('\n🛑 Shutting down Adam Tutor Service...');
   wss.close(() => {
-    console.log('✅ Server closed');
-    process.exit(0);
+    server.close(() => {
+      console.log('✅ Server closed');
+      process.exit(0);
+    });
   });
 });
 

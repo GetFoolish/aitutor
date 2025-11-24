@@ -31,7 +31,7 @@ dash_system = DASHSystem()
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Allows the React frontend to connect
+    allow_origins=["http://localhost:3000", "https://tutor-frontend-staging-utmfhquz6a-uc.a.run.app"],  # Allows the React frontend to connect
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
