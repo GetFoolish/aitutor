@@ -1,0 +1,661 @@
+// Variables
+$widget-bg: #1a1a1a;
+$widget-border: #333;
+$accent-blue: #4a9eff;
+$accent-green: #4ade80;
+$text-primary: #ffffff;
+$text-secondary: #a0a0a0;
+$hover-bg: #2a2a2a;
+$active-bg: #3a3a3a;
+
+.new-app {
+  width: 100vw;
+  height: 100vh;
+  background: #f5f5f5;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+// Debug Panel at Top
+.debug-panel {
+  background: #1e1e1e;
+  border-bottom: 1px solid #333;
+  padding: 8px 16px;
+  flex-shrink: 0;
+
+  .debug-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+
+    .debug-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: $accent-blue;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .debug-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .debug-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      background: transparent;
+      border: 1px solid #444;
+      border-radius: 4px;
+      color: $text-secondary;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &:hover {
+        background: #2a2a2a;
+        color: $text-primary;
+      }
+
+      &.active {
+        background: $accent-blue;
+        border-color: $accent-blue;
+        color: white;
+      }
+
+      .material-symbols-outlined {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .debug-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    .debug-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: $text-secondary;
+
+      .material-symbols-outlined {
+        font-size: 14px;
+        color: #666;
+      }
+    }
+  }
+}
+
+// Main Content Area (contains sidebar, question, widget)
+.main-content-area {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+// Learning Journey Sidebar
+.learning-journey {
+  width: 280px;
+  height: 100%;
+  background: $widget-bg;
+  padding: 24px 16px;
+  overflow-y: auto;
+  flex-shrink: 0;
+
+  .journey-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: $text-primary;
+    }
+
+    .grade-badge {
+      padding: 4px 10px;
+      background: $accent-blue;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: white;
+    }
+  }
+
+  .skills-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .skill-item {
+    .skill-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+
+      .skill-name {
+        font-size: 13px;
+        color: $text-primary;
+      }
+
+      .skill-value {
+        font-size: 13px;
+        font-weight: 600;
+        color: $accent-green;
+
+        &.low {
+          color: #f59e0b;
+        }
+      }
+    }
+
+    .skill-bar {
+      height: 6px;
+      background: #333;
+      border-radius: 3px;
+      overflow: hidden;
+
+      .skill-progress {
+        height: 100%;
+        background: $accent-green;
+        border-radius: 3px;
+        transition: width 0.3s ease;
+
+        &.low {
+          background: #f59e0b;
+        }
+      }
+    }
+  }
+}
+
+// Main Question Area
+.question-area {
+  flex: 1;
+  height: 100%;
+  overflow-y: auto;
+  background: white;
+  position: relative;
+  border: 2px solid #ef4444; // Red border to show capture area
+
+  .scratchpad-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.95);
+    z-index: 10;
+  }
+}
+
+// Media Mixer Panel (right side)
+.mixer-panel {
+  width: 320px;
+  height: 100%;
+  background: $widget-bg;
+  border-left: 1px solid #333;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  position: relative;
+
+  .mixer-resize-handle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    cursor: ew-resize;
+    background: transparent;
+    transition: background 0.2s;
+    z-index: 10;
+
+    &:hover {
+      background: $accent-blue;
+    }
+
+    &:active {
+      background: $accent-blue;
+    }
+  }
+
+  .mixer-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #333;
+
+    .material-symbols-outlined {
+      font-size: 18px;
+      color: $text-secondary;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 500;
+      color: $text-primary;
+    }
+  }
+
+  .media-mixer-display {
+    flex: 1;
+    border: none;
+
+    .top {
+      display: none;
+    }
+  }
+}
+
+// Floating Widget
+.tutor-widget {
+  position: fixed;
+  z-index: 1000;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  cursor: move;
+  user-select: none;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+
+  &.dragging {
+    cursor: grabbing;
+  }
+}
+
+// Widget Mixer Panel - appears to the right of the widget
+.widget-mixer-panel {
+  width: 200px;
+  background: $widget-bg;
+  border-radius: 0 16px 16px 0;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  cursor: default;
+
+  .mixer-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #333;
+    flex-shrink: 0;
+
+    .material-symbols-outlined {
+      font-size: 18px;
+      color: $text-secondary;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 500;
+      color: $text-primary;
+    }
+  }
+
+  .media-mixer-display {
+    flex: 1;
+    border: none;
+    overflow: hidden;
+
+    .top {
+      display: none;
+    }
+  }
+}
+
+// Expanded View
+.widget-expanded {
+  width: 340px;
+  background: $widget-bg;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+
+  // When mixer panel is open, only round left corners
+  .tutor-widget:has(.widget-mixer-panel) & {
+    border-radius: 16px 0 0 16px;
+  }
+
+  .widget-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid $widget-border;
+
+    h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: $text-primary;
+      letter-spacing: 1px;
+    }
+  }
+
+  .widget-controls {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    cursor: default;
+  }
+
+  .control-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: $hover-bg;
+    padding: 10px 12px;
+    border-radius: 8px;
+
+    .control-icon {
+      color: $text-secondary;
+
+      .material-symbols-outlined {
+        font-size: 20px;
+      }
+    }
+
+    .device-select {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: $text-primary;
+      font-size: 14px;
+      cursor: pointer;
+      outline: none;
+
+      option {
+        background: $widget-bg;
+        color: $text-primary;
+      }
+    }
+
+    .audio-meter {
+      width: 60px;
+      height: 6px;
+      background: #333;
+      border-radius: 3px;
+      overflow: hidden;
+
+      .audio-level {
+        height: 100%;
+        background: $accent-green;
+        transition: width 0.1s ease;
+      }
+    }
+
+    .screen-share-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: $text-primary;
+      font-size: 14px;
+      text-align: left;
+      cursor: pointer;
+      padding: 0;
+
+      &:hover {
+        color: $accent-blue;
+      }
+    }
+  }
+
+  .start-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px;
+    background: $accent-blue;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    .material-symbols-outlined {
+      font-size: 20px;
+    }
+
+    &:hover {
+      background: darken($accent-blue, 10%);
+      transform: scale(1.02);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+
+  .widget-actions {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid $widget-border;
+
+    .action-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: $text-secondary;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      .material-symbols-outlined {
+        font-size: 20px;
+      }
+
+      &:hover {
+        background: $hover-bg;
+        color: $text-primary;
+      }
+
+      &.active {
+        background: $active-bg;
+        color: $accent-blue;
+      }
+    }
+  }
+}
+
+// Collapsed View
+.widget-collapsed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  background: $widget-bg;
+  border-radius: 28px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+
+  .collapsed-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 12px;
+    color: $text-secondary;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+
+    .material-symbols-outlined {
+      font-size: 22px;
+    }
+
+    &:hover {
+      background: $hover-bg;
+      color: $text-primary;
+    }
+
+    &.active {
+      color: $accent-blue;
+    }
+
+    &.stop-btn {
+      color: #ff4444;
+      margin-top: 8px;
+
+      &:hover {
+        background: rgba(255, 68, 68, 0.2);
+      }
+    }
+
+    .mic-indicator {
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      border: 2px solid $accent-green;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+
+  .audio-visualizer {
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .session-timer {
+    font-size: 12px;
+    color: $text-secondary;
+    padding: 8px 0;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// AI Avatar
+.ai-avatar {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: $widget-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  left: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  .material-symbols-outlined {
+    font-size: 28px;
+    color: $accent-blue;
+    z-index: 1;
+  }
+
+  .avatar-pulse {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: $accent-blue;
+    opacity: 0;
+    animation: none;
+  }
+
+  &.active .avatar-pulse {
+    animation: pulse 2s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.3;
+  }
+}
+
+// Viewer Panel
+.viewer-panel {
+  position: fixed;
+  width: 300px;
+  background: $widget-bg;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  padding: 16px;
+  z-index: 999;
+
+  h3 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: $text-secondary;
+    font-weight: 500;
+  }
+
+  .viewer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    // Override MediaMixerDisplay styles for compact view
+    .media-mixer-display {
+      border: none;
+      height: auto;
+
+      .top {
+        display: none;
+      }
+
+      .media-mixer-content {
+        padding: 0;
+
+        img {
+          border-radius: 8px;
+        }
+      }
+    }
+  }
+
+  .preview-box {
+    aspect-ratio: 16/9;
+    background: #2a2a2a;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: $text-secondary;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .widget-expanded {
+    width: 300px;
+  }
+}

@@ -18,7 +18,7 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({ socket, renderCan
   useEffect(() => {
     if (!socket) return;
 
-    console.log('MediaMixerDisplay: Setting up video WebSocket connection');
+    console.log('MediaMixerDisplay: Setting up video WebSocket connection, readyState:', socket.readyState);
 
     const image = new Image();
     image.onload = () => {
@@ -32,6 +32,13 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({ socket, renderCan
         }
       }
     };
+
+    // Check if already connected
+    if (socket.readyState === WebSocket.OPEN) {
+      console.log('MediaMixerDisplay: WebSocket already open');
+      setIsConnected(true);
+      setError(null);
+    }
 
     socket.onopen = () => {
       console.log('MediaMixerDisplay: Connected to video WebSocket');
