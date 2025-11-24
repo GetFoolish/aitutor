@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "src/**/__tests__/**/*",
+    "src/**/__docs__/**/*",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/**/*.stories.tsx",
+    "src/**/*.cypress.ts",
+    "src/package/**/*",
+    "node_modules"
+  ],
+  "compilerOptions": {
+    "noEmit": true
+  }
+}
+

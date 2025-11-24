@@ -21,7 +21,12 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "src/**/*"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.js",
+    "src/**/*.jsx"
+  ],
   "exclude": [
     "src/**/__tests__/**/*",
     "src/**/__docs__/**/*",
@@ -29,7 +34,7 @@
     "src/**/*.test.tsx",
     "src/**/*.stories.tsx",
     "src/**/*.cypress.ts",
-    "src/package/perseus/**/*"
+    "src/package/**/*"
   ],
   "ts-node": {
     "compilerOptions": {

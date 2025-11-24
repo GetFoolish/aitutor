@@ -1,62 +1,62 @@
 Already have image (with digest): gcr.io/cloud-builders/docker
-Sending build context to Docker daemon  8.646MB
+Sending build context to Docker daemon  8.813MB
 Step 1/23 : FROM node:18-alpine as builder
  ---> ee77c6cd7c18
 Step 2/23 : WORKDIR /app
  ---> Using cache
- ---> 0c6d97b6ff35
+ ---> 4102660966bd
 Step 3/23 : ARG VITE_DASH_API_URL
- ---> Running in ab12f695f481
-Removing intermediate container ab12f695f481
- ---> 196a10b17a32
+ ---> Running in 4d00193b8c7c
+Removing intermediate container 4d00193b8c7c
+ ---> efcb52fb7b7b
 Step 4/23 : ARG VITE_SHERLOCKED_API_URL
- ---> Running in 4d79d09bde8b
-Removing intermediate container 4d79d09bde8b
- ---> 0b495b6dee40
+ ---> Running in 167d05bccd21
+Removing intermediate container 167d05bccd21
+ ---> b44b7aba45cb
 Step 5/23 : ARG VITE_TEACHING_ASSISTANT_API_URL
- ---> Running in 4bfb6564f702
-Removing intermediate container 4bfb6564f702
- ---> e44ce1597b40
+ ---> Running in 3ce7e2755209
+Removing intermediate container 3ce7e2755209
+ ---> 4af3641a87c1
 Step 6/23 : ARG VITE_MEDIAMIXER_COMMAND_WS
- ---> Running in 279233e0b205
-Removing intermediate container 279233e0b205
- ---> bc9bf42fa721
+ ---> Running in e4e9e39d0f20
+Removing intermediate container e4e9e39d0f20
+ ---> c5f71b65b13f
 Step 7/23 : ARG VITE_MEDIAMIXER_VIDEO_WS
- ---> Running in e656c1bd3593
-Removing intermediate container e656c1bd3593
- ---> e325ef26860b
+ ---> Running in 773be5af4b18
+Removing intermediate container 773be5af4b18
+ ---> 5eb363f5f3b4
 Step 8/23 : ARG VITE_TUTOR_WS
- ---> Running in e5ac8a643a7b
-Removing intermediate container e5ac8a643a7b
- ---> 8097a9d7bc3b
+ ---> Running in 46cf25b6e8eb
+Removing intermediate container 46cf25b6e8eb
+ ---> 9d61e2463dae
 Step 9/23 : ENV VITE_DASH_API_URL=$VITE_DASH_API_URL
- ---> Running in a483b25e6f23
-Removing intermediate container a483b25e6f23
- ---> 4b94aa8452cc
+ ---> Running in 7a689f00d8a4
+Removing intermediate container 7a689f00d8a4
+ ---> e05042f727ce
 Step 10/23 : ENV VITE_SHERLOCKED_API_URL=$VITE_SHERLOCKED_API_URL
- ---> Running in d3b8486f973b
-Removing intermediate container d3b8486f973b
- ---> 447edba59a6c
+ ---> Running in 8db712ade7f0
+Removing intermediate container 8db712ade7f0
+ ---> 47767fb4aded
 Step 11/23 : ENV VITE_TEACHING_ASSISTANT_API_URL=$VITE_TEACHING_ASSISTANT_API_URL
- ---> Running in 01a34f31ce72
-Removing intermediate container 01a34f31ce72
- ---> b4f09af73e7b
+ ---> Running in 2dfd547f6b65
+Removing intermediate container 2dfd547f6b65
+ ---> 1dff61a42915
 Step 12/23 : ENV VITE_MEDIAMIXER_COMMAND_WS=$VITE_MEDIAMIXER_COMMAND_WS
- ---> Running in 2e9639a69ab6
-Removing intermediate container 2e9639a69ab6
- ---> 84dc30c4b86c
+ ---> Running in 08f4d415a419
+Removing intermediate container 08f4d415a419
+ ---> ac0e685ba3b5
 Step 13/23 : ENV VITE_MEDIAMIXER_VIDEO_WS=$VITE_MEDIAMIXER_VIDEO_WS
- ---> Running in 4aa5b40b220b
-Removing intermediate container 4aa5b40b220b
- ---> ad74242fa0fb
+ ---> Running in 8e08fb17fb82
+Removing intermediate container 8e08fb17fb82
+ ---> 31f933a6b266
 Step 14/23 : ENV VITE_TUTOR_WS=$VITE_TUTOR_WS
- ---> Running in 5caa005dcc2c
-Removing intermediate container 5caa005dcc2c
- ---> a05c6ba68a29
+ ---> Running in 49239426d6e9
+Removing intermediate container 49239426d6e9
+ ---> 113e03138dbf
 Step 15/23 : COPY frontend/package*.json ./
- ---> 633c7e30193f
+ ---> 5b252f2765c1
 Step 16/23 : RUN npm install --legacy-peer-deps
- ---> Running in 28060dfaea61
+ ---> Running in 8457404f1f0b
 npm warn EBADENGINE Unsupported engine {
 npm warn EBADENGINE   package: 'mafs@0.19.0',
 npm warn EBADENGINE   required: { node: '>=20' },
@@ -77,16 +77,14 @@ npm notice New major version of npm available! 10.8.2 -> 11.6.3
 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.6.3
 npm notice To update run: npm install -g npm@11.6.3
 npm notice
-Removing intermediate container 28060dfaea61
- ---> 34ac31933b96
+Removing intermediate container 8457404f1f0b
+ ---> 316c1bc24002
 Step 17/23 : COPY frontend/ ./
- ---> fc5b513eebe9
+ ---> 22237c9692e2
 Step 18/23 : RUN npm run build
- ---> Running in 104a75c2212f
+ ---> Running in 9c91b6d3620d
 > multimodal-live-api-web-console@0.1.0 build
 > tsc && vite build
-src/package/perseus/src/article-renderer.tsx(97,13): error TS7034: Variable 'focusedInput' implicitly has type 'any' in some locations where its type cannot be determined.
-src/package/perseus/src/article-renderer.tsx(130,37): error TS7005: Variable 'focusedInput' implicitly has an 'any' type.
 src/package/perseus/src/components/graphie-classes.ts(8,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
   Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
 src/package/perseus/src/components/graphie-classes.ts(89,30): error TS7009: 'new' expression, whose target lacks a construct signature, implicitly has an 'any' type.
@@ -235,8 +233,6 @@ src/package/perseus/src/components/text-list-editor.tsx(7,15): error TS7016: Cou
 src/package/perseus/src/components/text-list-editor.tsx(14,9): error TS2578: Unused '@ts-expect-error' directive.
 src/package/perseus/src/components/text-list-editor.tsx(141,23): error TS7006: Parameter 'item' implicitly has an 'any' type.
 src/package/perseus/src/components/text-list-editor.tsx(141,29): error TS7006: Parameter 'i' implicitly has an 'any' type.
-src/package/perseus/src/components/visibility-observer/get-scroll-parent.ts(5,42): error TS7006: Parameter 'parents' implicitly has an 'any' type.
-src/package/perseus/src/components/visibility-observer/get-scroll-parent.ts(13,40): error TS7006: Parameter 'prop' implicitly has an 'any' type.
 src/package/perseus/src/hints-renderer.tsx(6,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
   Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
 src/package/perseus/src/hints-renderer.tsx(104,30): error TS7006: Parameter 'data' implicitly has an 'any' type.
@@ -354,12 +350,6 @@ src/package/perseus/src/interactive2/wrapped-line.ts(2,15): error TS7016: Could 
   Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
 src/package/perseus/src/interactive2/wrapped-path.ts(1,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
   Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
-src/package/perseus/src/mixins/changeable.ts(13,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
-  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
-src/package/perseus/src/mixins/changeable.ts(39,5): error TS7006: Parameter 'callback' implicitly has an 'any' type.
-src/package/perseus/src/mixins/changeable.ts(58,5): error TS7006: Parameter 'callback' implicitly has an 'any' type.
-src/package/perseus/src/mixins/editor-jsonify.ts(1,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
-  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
 src/package/perseus/src/mixins/widget-prop-denylist.ts(58,13): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
   No index signature with a parameter of type 'string' was found on type '{}'.
 src/package/perseus/src/perseus-markdown.tsx(4,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
@@ -401,9 +391,6 @@ src/package/perseus/src/perseus-markdown.tsx(256,31): error TS7006: Parameter 's
 src/package/perseus/src/perseus-markdown.tsx(314,7): error TS7023: 'getContent' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
 src/package/perseus/src/perseus-markdown.tsx(339,18): error TS7006: Parameter 'object' implicitly has an 'any' type.
 src/package/perseus/src/perseus-markdown.tsx(346,11): error TS7022: 'nestedContent' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
-src/package/perseus/src/renderability.ts(16,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
-  Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
-src/package/perseus/src/renderability.ts(64,5): error TS7006: Parameter 'rendererOptions' implicitly has an 'any' type.
 src/package/perseus/src/renderer.tsx(19,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
   Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
 src/package/perseus/src/renderer.tsx(22,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
@@ -468,8 +455,6 @@ src/package/perseus/src/util/drawing-transform.ts(5,5): error TS7010: 'setSize',
 src/package/perseus/src/util/drawing-transform.ts(32,19): error TS7024: Function implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
 src/package/perseus/src/util/drawing-transform.ts(55,20): error TS7024: Function implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
 src/package/perseus/src/util/drawing-transform.ts(68,21): error TS7024: Function implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
-src/package/perseus/src/util/extract-perseus-data.ts(713,20): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'MakeWidgetMap<PerseusWidgetTypes>'.
-  No index signature with a parameter of type 'string' was found on type 'MakeWidgetMap<PerseusWidgetTypes>'.
 src/package/perseus/src/util/graphie-utils.ts(222,39): error TS7006: Parameter 'x' implicitly has an 'any' type.
 src/package/perseus/src/util/graphie-utils.ts(222,42): error TS7006: Parameter 'status' implicitly has an 'any' type.
 src/package/perseus/src/util/graphie-utils.ts(222,50): error TS7006: Parameter 'error' implicitly has an 'any' type.
@@ -704,13 +689,9 @@ src/package/perseus/src/util/interactive.ts(3838,27): error TS7006: Parameter 'p
 src/package/perseus/src/util/interactive.ts(3848,27): error TS7006: Parameter 'ray' implicitly has an 'any' type.
 src/package/perseus/src/util/interactive.ts(3873,35): error TS7006: Parameter 'coords' implicitly has an 'any' type.
 src/package/perseus/src/util/interactive.ts(3902,23): error TS7006: Parameter 'shouldChangeReflexivity' implicitly has an 'any' type.
-src/package/perseus/src/util/test-utils.ts(158,5): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
-  No index signature with a parameter of type 'string' was found on type '{}'.
 src/package/perseus/src/util/tex.ts(2,15): error TS7016: Could not find a declaration file for module 'jquery'. '/app/node_modules/jquery/dist/jquery.js' implicitly has an 'any' type.
   Try `npm i --save-dev @types/jquery` if it exists or add a new declaration (.d.ts) file containing `declare module 'jquery';`
 src/package/perseus/src/util/tex.ts(49,17): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/util/widget-enum-utils.ts(134,24): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Record<WidgetName, WidgetEnum>'.
-  No index signature with a parameter of type 'string' was found on type 'Record<WidgetName, WidgetEnum>'.
 src/package/perseus/src/widget-ai-utils/grapher/grapher-ai-utils.ts(27,9): error TS7053: Element implicitly has an 'any' type because expression of type '"asymptote"' can't be used to index type 'GrapherAnswerTypes'.
   Property 'asymptote' does not exist on type 'GrapherAnswerTypes'.
 src/package/perseus/src/widget-type-utils.ts(21,20): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'MakeWidgetMap<PerseusWidgetTypes>'.
@@ -723,11 +704,6 @@ src/package/perseus/src/widget-type-utils.ts(99,13): error TS7053: Element impli
   No index signature with a parameter of type 'string' was found on type 'MakeWidgetMap<PerseusWidgetTypes>'.
 src/package/perseus/src/widgets.ts(157,13): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{}'.
   No index signature with a parameter of type 'string' was found on type '{}'.
-src/package/perseus/src/widgets/__testutils__/renderQuestion.tsx(9,8): error TS2307: Cannot find module '../../../../../testing/test-dependencies' or its corresponding type declarations.
-src/package/perseus/src/widgets/__testutils__/story-decorators.tsx(3,33): error TS7006: Parameter 'Story' implicitly has an 'any' type.
-src/package/perseus/src/widgets/__testutils__/story-decorators.tsx(9,34): error TS7006: Parameter 'Story' implicitly has an 'any' type.
-src/package/perseus/src/widgets/__testutils__/story-decorators.tsx(15,40): error TS7006: Parameter 'Story' implicitly has an 'any' type.
-src/package/perseus/src/widgets/__testutils__/story-decorators.tsx(21,30): error TS7006: Parameter 'Story' implicitly has an 'any' type.
 src/package/perseus/src/widgets/categorizer/categorizer.tsx(7,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
   Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
 src/package/perseus/src/widgets/categorizer/categorizer.tsx(165,78): error TS2339: Property 'responsiveInput' does not exist on type 'StyleDeclaration<{}>'.
@@ -737,40 +713,6 @@ src/package/perseus/src/widgets/cs-program/cs-program.tsx(6,15): error TS7016: C
 src/package/perseus/src/widgets/cs-program/cs-program.tsx(8,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
   Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
 src/package/perseus/src/widgets/cs-program/cs-program.tsx(149,51): error TS7006: Parameter 'setting' implicitly has an 'any' type.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(1,28): error TS2307: Cannot find module '../../../../../testing/render-question-with-cypress' or its corresponding type declarations.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(2,39): error TS2307: Cannot find module '../../../../../testing/test-dependencies' or its corresponding type declarations.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(25,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(28,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(29,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(30,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(33,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(34,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(43,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(44,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(45,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(48,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(49,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(50,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(51,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(52,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(53,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(56,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(57,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(58,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(59,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(60,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(61,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(73,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(74,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(75,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(78,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(79,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(82,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(83,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(84,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(85,13): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(92,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/explanation/explanation.cypress.ts(93,9): error TS2304: Cannot find name 'cy'.
 src/package/perseus/src/widgets/explanation/explanation.tsx(8,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
   Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
 src/package/perseus/src/widgets/explanation/explanation.tsx(141,29): error TS2322: Type '(false | object)[]' is not assignable to type 'StyleType'.
@@ -805,123 +747,6 @@ src/package/perseus/src/widgets/graded-group/graded-group.tsx(233,43): error TS7
 src/package/perseus/src/widgets/graded-group/graded-group.tsx(249,13): error TS2578: Unused '@ts-expect-error' directive.
 src/package/perseus/src/widgets/graded-group/graded-group.tsx(254,13): error TS2578: Unused '@ts-expect-error' directive.
 src/package/perseus/src/widgets/graded-group/graded-group.tsx(332,53): error TS2339: Property 'srOnly' does not exist on type 'StyleDeclaration<{}>'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(6,39): error TS2307: Cannot find module '../../../../../testing/render-question-with-cypress' or its corresponding type declarations.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(7,39): error TS2307: Cannot find module '../../../../../testing/test-dependencies' or its corresponding type declarations.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(45,13): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(67,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(69,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(71,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(74,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(76,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(79,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(84,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(106,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(108,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(110,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(113,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(115,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(118,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(123,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(148,13): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(170,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(172,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(174,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(177,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(181,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(184,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(186,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(189,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(194,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(216,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(218,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(220,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(223,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(225,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(228,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(230,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(233,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(238,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(263,13): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(285,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(287,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(289,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(292,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(294,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(297,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(302,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(324,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(326,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(328,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(331,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(333,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(336,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(341,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(366,13): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(388,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(390,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(393,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(396,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(402,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(405,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(411,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(414,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(422,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(444,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(446,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(449,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(452,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(458,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(461,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(467,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(470,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(478,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(503,13): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(525,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(527,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(530,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(533,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(536,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(539,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(544,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(566,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(568,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(571,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(574,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(577,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(580,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(585,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(610,13): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(632,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(634,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(637,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(640,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(642,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(645,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(650,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(672,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(674,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(677,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(680,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(682,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(685,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(690,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(715,13): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(737,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(739,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(741,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(746,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(749,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(751,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(754,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(759,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(781,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(783,21): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(785,32): error TS7006: Parameter 'node' implicitly has an 'any' type.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(790,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(793,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(795,29): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(798,33): error TS2578: Unused '@ts-expect-error' directive.
-src/package/perseus/src/widgets/grapher/grapher.cypress.ts(803,21): error TS2304: Cannot find name 'cy'.
 src/package/perseus/src/widgets/grapher/grapher.tsx(129,25): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'MovableMap'.
 src/package/perseus/src/widgets/grapher/grapher.tsx(152,30): error TS7006: Parameter 'newCoord' implicitly has an 'any' type.
 src/package/perseus/src/widgets/grapher/grapher.tsx(152,40): error TS7006: Parameter 'oldCoord' implicitly has an 'any' type.
@@ -950,19 +775,6 @@ src/package/perseus/src/widgets/iframe/iframe.tsx(10,15): error TS7016: Could no
 src/package/perseus/src/widgets/iframe/iframe.tsx(100,17): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ readonly width: string; readonly height: string; }'.
 src/package/perseus/src/widgets/image/image.class.tsx(3,15): error TS7016: Could not find a declaration file for module 'underscore'. '/app/node_modules/underscore/underscore-umd.js' implicitly has an 'any' type.
   Try `npm i --save-dev @types/underscore` if it exists or add a new declaration (.d.ts) file containing `declare module 'underscore';`
-src/package/perseus/src/widgets/image/image.cypress.ts(1,39): error TS2307: Cannot find module '../../../../../testing/render-question-with-cypress' or its corresponding type declarations.
-src/package/perseus/src/widgets/image/image.cypress.ts(2,39): error TS2307: Cannot find module '../../../../../testing/test-dependencies' or its corresponding type declarations.
-src/package/perseus/src/widgets/image/image.cypress.ts(21,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/image/image.cypress.ts(22,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/image/image.cypress.ts(30,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/image/image.cypress.ts(34,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/image/image.cypress.ts(35,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/image/image.cypress.ts(37,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/image/image.cypress.ts(40,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/image/image.cypress.ts(48,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/image/image.cypress.ts(52,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/image/image.cypress.ts(53,9): error TS2304: Cannot find name 'cy'.
-src/package/perseus/src/widgets/image/image.cypress.ts(56,9): error TS2304: Cannot find name 'cy'.
 src/package/perseus/src/widgets/input-number/input-number.tsx(215,17): error TS2322: Type '(object | null)[]' is not assignable to type 'StyleType'.
   Type '(object | null)[]' is not assignable to type 'CSSProperties'.
     Types of property 'fill' are incompatible.
@@ -1307,10 +1119,4 @@ src/package/perseus/testing/test-dependencies.tsx(121,5): error TS2322: Type '(s
 src/package/perseus/testing/test-dependencies.tsx(136,5): error TS2322: Type '(str: string | null | undefined) => string | null | undefined' is not assignable to type 'StaticUrlFn'.
   Type 'string | null | undefined' is not assignable to type 'string'.
     Type 'undefined' is not assignable to type 'string'.
-src/package/perseus/testing/test-keypad-context-wrapper.tsx(4,22): error TS2307: Cannot find module 'storybook/actions' or its corresponding type declarations.
-src/package/perseus/testing/test-keypad-context-wrapper.tsx(30,15): error TS2322: Type 'object' is not assignable to type 'StyleType'.
-src/package/perseus/testing/test-keypad-context-wrapper.tsx(36,25): error TS2322: Type '(false | object)[]' is not assignable to type 'StyleType'.
-  Type '(false | object)[]' is not assignable to type 'CSSProperties'.
-    Types of property 'fill' are incompatible.
-      Type '(value: false | object, start?: number | undefined, end?: number | undefined) => (false | object)[]' is not assignable to type 'string'.
 The command '/bin/sh -c npm run build' returned a non-zero code: 2
