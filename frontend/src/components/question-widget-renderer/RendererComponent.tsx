@@ -97,11 +97,12 @@ const RendererComponent = () => {
             // Calculate response time
             const responseTimeSeconds = (Date.now() - startTime) / 1000;
 
+            // Get metadata for use in both API calls
+            const currentItem = perseusItems[item];
+            const metadata = (currentItem as any).dash_metadata || {};
+
             // Submit answer to DASH API for tracking and adaptive difficulty
             try {
-                const currentItem = perseusItems[item];
-                const metadata = (currentItem as any).dash_metadata || {};
-
                 const answerData = {
                     question_id: metadata.dash_question_id || `q_${item}`,
                     skill_ids: metadata.skill_ids || ["counting_1_10"],

@@ -82,8 +82,8 @@ if [ "$ENV" = "staging" ]; then
         MEDIAMIXER_URL="https://mediamixer-staging-utmfhquz6a-uc.a.run.app"
     fi
     if [ -z "$TUTOR_URL" ]; then
-        echo "⚠️  Tutor service not found. Using placeholder URL (will be updated after deployment)"
-        TUTOR_URL="https://tutor-staging-PLACEHOLDER.us-central1.run.app"
+        echo "⚠️  Tutor service not found. Using existing URL"
+        TUTOR_URL="https://tutor-staging-utmfhquz6a-uc.a.run.app"
     fi
 else
     echo "📦 Deploying PRODUCTION environment..."
