@@ -39,11 +39,13 @@ function App() {
 
   useEffect(() => {
     // Command WebSocket for sending frames/commands TO MediaMixer
-    const commandWs = new WebSocket('ws://localhost:8765/command');
+    const commandWsUrl = import.meta.env.VITE_MEDIAMIXER_COMMAND_WS || 'ws://localhost:8765/command';
+    const commandWs = new WebSocket(commandWsUrl);
     setCommandSocket(commandWs);
 
     // Video WebSocket for receiving video FROM MediaMixer
-    const videoWs = new WebSocket('ws://localhost:8765/video');
+    const videoWsUrl = import.meta.env.VITE_MEDIAMIXER_VIDEO_WS || 'ws://localhost:8765/video';
+    const videoWs = new WebSocket(videoWsUrl);
     setVideoSocket(videoWs);
 
     return () => {

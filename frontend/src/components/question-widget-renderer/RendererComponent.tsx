@@ -9,7 +9,8 @@ import { PerseusI18nContextProvider } from "../../package/perseus/src/components
 import { mockStrings } from "../../package/perseus/src/strings";
 import { KEScore } from "@khanacademy/perseus-core";
 
-const TEACHING_ASSISTANT_API_URL = 'http://localhost:8002';
+const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
+const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 
 const RendererComponent = () => {
     const [perseusItems, setPerseusItems] = useState<PerseusItem[]>([]);
@@ -32,7 +33,7 @@ const RendererComponent = () => {
         setEndOfTest(false);
         setIsAnswered(false);
         
-        fetch(`http://localhost:8000/api/questions/16?user_id=${user_id}`)
+        fetch(`${DASH_API_URL}/api/questions/16?user_id=${user_id}`)
             .then((response) => response.json())
             .then((data) => {
                 console.log("API response:", data);
@@ -52,7 +53,7 @@ const RendererComponent = () => {
             const currentItem = perseusItems[item];
             const metadata = (currentItem as any).dash_metadata || {};
             
-            fetch(`http://localhost:8000/api/question-displayed/${user_id}`, {
+            fetch(`${DASH_API_URL}/api/question-displayed/${user_id}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -108,7 +109,7 @@ const RendererComponent = () => {
                     response_time_seconds: responseTimeSeconds
                 };
 
-                const response = await fetch(`http://localhost:8000/api/submit-answer/${user_id}`, {
+                const response = await fetch(`${DASH_API_URL}/api/submit-answer/${user_id}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
