@@ -7,7 +7,7 @@ import AudioPulse from '../audio-pulse/AudioPulse';
 import './control-tray.scss';
 import SettingsDialog from '../settings-dialog/SettingsDialog';
 
-const TEACHING_ASSISTANT_API_URL = 'http://localhost:8002';
+const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
 const USER_ID = 'mongodb_test_user';
 
 export type ControlTrayProps = {

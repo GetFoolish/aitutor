@@ -88,8 +88,9 @@ export class GenAIProxyClient extends EventEmitter<LiveClientEventTypes> {
     this._status = "connecting";
     this.config = config;
 
-    // Connect to local backend
-    this.ws = new WebSocket("ws://localhost:8767");
+    // Connect to backend (use environment variable with fallback for local dev)
+    const tutorWsUrl = import.meta.env.VITE_TUTOR_WS || "ws://localhost:8767";
+    this.ws = new WebSocket(tutorWsUrl);
 
     this.ws.onopen = () => {
       console.log("Connected to Tutor backend");

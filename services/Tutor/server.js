@@ -11,7 +11,7 @@ const __dirname = dirname(__filename);
 const rootDir = join(__dirname, '../..');
 dotenv.config({ path: join(rootDir, '.env') });
 
-const PORT = 8767;
+const PORT = process.env.PORT || 8767;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'models/gemini-2.5-flash-native-audio-preview-09-2025';
 
@@ -27,7 +27,10 @@ const SYSTEM_PROMPT = readFileSync(
 );
 
 // WebSocket server for frontend connections
-const wss = new WebSocketServer({ port: PORT });
+const wss = new WebSocketServer({ 
+  port: PORT,
+  host: '0.0.0.0'  // Listen on all interfaces for Cloud Run
+});
 
 console.log(`🎓 Adam Tutor Service started on ws://localhost:${PORT}`);
 console.log(`📝 System prompt loaded (${SYSTEM_PROMPT.length} characters)`);
