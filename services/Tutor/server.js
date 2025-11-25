@@ -51,7 +51,9 @@ const server = http.createServer((req, res) => {
 const wss = new WebSocketServer({ noServer: true });
 
 // Handle WebSocket upgrade requests
+// Cloud Run supports WebSocket upgrades on any path
 server.on('upgrade', (request, socket, head) => {
+  // Accept WebSocket upgrade on any path (root path is used by frontend)
   wss.handleUpgrade(request, socket, head, (ws) => {
     wss.emit('connection', ws, request);
   });

@@ -13,14 +13,30 @@ app = FastAPI(title="Teaching Assistant API")
 
 # Configure CORS - must be added before routes
 # FastAPI's CORSMiddleware automatically handles OPTIONS preflight requests
+# For Cloud Run, we need to ensure OPTIONS requests are handled properly
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://localhost:5173", "https://tutor-frontend-staging-utmfhquz6a-uc.a.run.app"],
     allow_credentials=True,
-    allow_methods=["*"],  # Includes OPTIONS for preflight
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],  # Explicitly include OPTIONS
     allow_headers=["*"],
     expose_headers=["*"],
 )
+
+# Explicit OPTIONS handler for Cloud Run compatibility (backup)
+@app.options("/{full_path:path}")
+async def options_handler(full_path: str):
+    """Handle OPTIONS preflight requests explicitly for Cloud Run"""
+    from fastapi.responses import Response
+    return Response(
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": "https://tutor-frontend-staging-utmfhquz6a-uc.a.run.app",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+            "Access-Control-Allow-Headers": "*",
+            "Access-Control-Allow-Credentials": "true",
+        }
+    )
 
 ta = TeachingAssistant()
 
