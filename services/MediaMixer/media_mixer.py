@@ -14,6 +14,22 @@ import websockets
 import signal
 import json
 import os
+import sys
+import time
+import uuid
+import logging
+from typing import Dict, Optional, Tuple, Any
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s|%(levelname)s|%(message)s|file:%(filename)s:line:%(lineno)d',
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.StreamHandler(sys.stderr)
+    ]
+)
+logger = logging.getLogger(__name__)
 
 
 class MediaMixer:
@@ -38,7 +54,7 @@ class MediaMixer:
         self.camera_frame = None
         self.screen_frame = None
 
-        print("MediaMixer initialized - waiting for frames from browser")
+        logger.info("MediaMixer initialized - waiting for frames from browser")
 
     def mix_frames(self):
         """Mix all sources into single frame"""
@@ -83,7 +99,7 @@ class MediaMixer:
                 img = Image.open(io.BytesIO(img_bytes))
                 self.scratchpad_frame = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
             except Exception as e:
-                print(f"Error processing scratchpad frame: {e}")
+                logger.error(f"Error processing scratchpad frame: {e}", exc_info=True)
 
         elif data.get('type') == 'camera_frame':
             try:
@@ -92,7 +108,7 @@ class MediaMixer:
                 img = Image.open(io.BytesIO(img_bytes))
                 self.camera_frame = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
             except Exception as e:
-                print(f"Error processing camera frame: {e}")
+                logger.error(f"Error processing camera frame: {e}", exc_info=True)
 
         elif data.get('type') == 'screen_frame':
             try:
@@ -101,27 +117,163 @@ class MediaMixer:
                 img = Image.open(io.BytesIO(img_bytes))
                 self.screen_frame = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
             except Exception as e:
-                print(f"Error processing screen frame: {e}")
+                logger.error(f"Error processing screen frame: {e}", exc_info=True)
 
         elif data.get('type') == 'toggle_camera':
             enabled = data.get('data', {}).get('enabled', False)
             self.show_camera = enabled
-            print(f"Camera toggled: {'ON' if enabled else 'OFF'}")
+            logger.info(f"Camera toggled: {'ON' if enabled else 'OFF'}")
 
         elif data.get('type') == 'toggle_screen':
             enabled = data.get('data', {}).get('enabled', False)
             self.show_screen = enabled
-            print(f"Screen share toggled: {'ON' if enabled else 'OFF'}")
+            logger.info(f"Screen share toggled: {'ON' if enabled else 'OFF'}")
 
     def stop(self):
         """Clean shutdown"""
-        print("Stopping MediaMixer...")
+        logger.info("Stopping MediaMixer...")
         self.running = False
-        print("MediaMixer stopped")
+        logger.info("MediaMixer stopped")
 
 
-# Global mixer instance
-mixer = MediaMixer()
+# Session management for multi-tenant support
+class SessionManager:
+    """Manages multiple MediaMixer instances, one per student session"""
+    
+    def __init__(self):
+        # Map session_id -> MediaMixer instance
+        self.sessions: Dict[str, MediaMixer] = {}
+        # Map connection -> session_id (for both command and video connections)
+        self.connection_to_session: Dict[Any, str] = {}
+        # Map session_id -> (command_ws, video_ws, created_at)
+        self.session_connections: Dict[str, Tuple[Optional[Any], Optional[Any], float]] = {}
+        # Connection pairing window (seconds) - connections from same IP within this window are paired
+        self.pairing_window = 5.0
+        # Cleanup interval for orphaned sessions
+        self.last_cleanup = time.time()
+        self.cleanup_interval = 60.0  # Clean up every 60 seconds
+        self.session_timeout = 300.0  # Remove sessions inactive for 5 minutes
+    
+    def _get_client_ip(self, websocket) -> str:
+        """Extract client IP address from websocket"""
+        try:
+            if hasattr(websocket, 'remote_address'):
+                if isinstance(websocket.remote_address, tuple):
+                    return websocket.remote_address[0]
+                return str(websocket.remote_address)
+            elif hasattr(websocket, 'request') and hasattr(websocket.request, 'remote_addr'):
+                return websocket.request.remote_addr
+        except Exception as e:
+            logger.warning(f"Could not extract IP address: {e}")
+        return "unknown"
+    
+    def _generate_session_id(self, client_ip: str) -> str:
+        """Generate a unique session ID"""
+        return f"{client_ip}_{uuid.uuid4().hex[:8]}"
+    
+    def get_or_create_session(self, websocket, path: str) -> Tuple[str, MediaMixer]:
+        """Get or create a session for a connection"""
+        client_ip = self._get_client_ip(websocket)
+        current_time = time.time()
+        
+        # Check if this connection already has a session
+        if websocket in self.connection_to_session:
+            session_id = self.connection_to_session[websocket]
+            return session_id, self.sessions[session_id]
+        
+        # Try to find existing session from same IP within pairing window
+        for session_id, (cmd_ws, vid_ws, created_at) in list(self.session_connections.items()):
+            if current_time - created_at > self.pairing_window:
+                continue
+            
+            session_ip = session_id.split('_')[0] if '_' in session_id else "unknown"
+            if session_ip == client_ip:
+                # Found existing session from same IP
+                mixer = self.sessions[session_id]
+                
+                # Check if we can pair this connection
+                if path == "/command" and cmd_ws is None:
+                    # Pair command connection
+                    self.connection_to_session[websocket] = session_id
+                    self.session_connections[session_id] = (websocket, vid_ws, created_at)
+                    logger.info(f"Paired command connection to existing session {session_id}")
+                    return session_id, mixer
+                elif path == "/video" and vid_ws is None:
+                    # Pair video connection
+                    self.connection_to_session[websocket] = session_id
+                    self.session_connections[session_id] = (cmd_ws, websocket, created_at)
+                    logger.info(f"Paired video connection to existing session {session_id}")
+                    return session_id, mixer
+        
+        # Create new session
+        session_id = self._generate_session_id(client_ip)
+        mixer = MediaMixer()
+        self.sessions[session_id] = mixer
+        self.connection_to_session[websocket] = session_id
+        
+        if path == "/command":
+            self.session_connections[session_id] = (websocket, None, current_time)
+        elif path == "/video":
+            self.session_connections[session_id] = (None, websocket, current_time)
+        
+        logger.info(f"Created new session {session_id} for {client_ip} on path {path}")
+        return session_id, mixer
+    
+    def remove_connection(self, websocket):
+        """Remove a connection and cleanup session if both connections are gone"""
+        if websocket not in self.connection_to_session:
+            return
+        
+        session_id = self.connection_to_session[websocket]
+        del self.connection_to_session[websocket]
+        
+        if session_id in self.session_connections:
+            cmd_ws, vid_ws, created_at = self.session_connections[session_id]
+            
+            # Remove this connection from the session
+            if cmd_ws == websocket:
+                cmd_ws = None
+            elif vid_ws == websocket:
+                vid_ws = None
+            
+            # Update session connections
+            if cmd_ws is None and vid_ws is None:
+                # Both connections closed, cleanup session
+                if session_id in self.sessions:
+                    self.sessions[session_id].stop()
+                    del self.sessions[session_id]
+                del self.session_connections[session_id]
+                logger.info(f"Cleaned up session {session_id} (both connections closed)")
+            else:
+                # One connection still active
+                self.session_connections[session_id] = (cmd_ws, vid_ws, created_at)
+                logger.info(f"Removed connection from session {session_id}, session still active")
+    
+    def cleanup_orphaned_sessions(self):
+        """Remove sessions that have been inactive for too long"""
+        current_time = time.time()
+        if current_time - self.last_cleanup < self.cleanup_interval:
+            return
+        
+        self.last_cleanup = current_time
+        sessions_to_remove = []
+        
+        for session_id, (cmd_ws, vid_ws, created_at) in list(self.session_connections.items()):
+            # Check if session is orphaned (no active connections and old)
+            if cmd_ws is None and vid_ws is None:
+                if current_time - created_at > self.session_timeout:
+                    sessions_to_remove.append(session_id)
+        
+        for session_id in sessions_to_remove:
+            if session_id in self.sessions:
+                self.sessions[session_id].stop()
+                del self.sessions[session_id]
+            del self.session_connections[session_id]
+            logger.info(f"Cleaned up orphaned session {session_id}")
+
+
+# Global session manager
+session_manager = SessionManager()
 
 
 async def handle_websocket(websocket, *args):
@@ -146,14 +298,16 @@ async def handle_websocket(websocket, *args):
                 # Try to extract from request line in headers
                 path = getattr(websocket, 'path', '/')
         except Exception as e:
-            print(f"Warning: Could not determine path: {e}")
+            logger.warning(f"Could not determine path: {e}")
             path = '/'
     
     # Default fallback
     if path is None:
         path = '/'
     
-    print(f"Client connected from {websocket.remote_address} on path {path}")
+    # Get or create session for this connection
+    session_id, mixer = session_manager.get_or_create_session(websocket, path)
+    logger.info(f"Client connected from {websocket.remote_address} on path {path} (session: {session_id})")
 
     if path == "/command":
         # Command connection - receives frames and commands
@@ -163,11 +317,12 @@ async def handle_websocket(websocket, *args):
                     data = json.loads(message)
                     mixer.handle_command(data)
                 except Exception as e:
-                    print(f"Error processing command: {e}")
+                    logger.error(f"Error processing command: {e}", exc_info=True)
         except websockets.exceptions.ConnectionClosed:
             pass
         finally:
-            print(f"Command client disconnected")
+            logger.info(f"Command client disconnected (session: {session_id})")
+            session_manager.remove_connection(websocket)
 
     elif path == "/video":
         # Video connection - sends mixed frames
@@ -177,6 +332,9 @@ async def handle_websocket(websocket, *args):
             frame_delay = 1 / 10
             while mixer.running:
                 try:
+                    # Periodic cleanup of orphaned sessions
+                    session_manager.cleanup_orphaned_sessions()
+                    
                     frame = mixer.mix_frames()
                     base64_frame = mixer.frame_to_base64(frame)
                     await websocket.send(base64_frame)
@@ -185,27 +343,29 @@ async def handle_websocket(websocket, *args):
                     await asyncio.sleep(frame_delay)
 
                 except websockets.exceptions.ConnectionClosed:
-                    print("Video WebSocket connection closed during send")
+                    logger.warning(f"Video WebSocket connection closed during send (session: {session_id})")
                     break
                 except websockets.exceptions.ConnectionClosedOK:
-                    print("Video WebSocket connection closed normally")
+                    logger.info(f"Video WebSocket connection closed normally (session: {session_id})")
                     break
                 except websockets.exceptions.ConnectionClosedError:
-                    print("Video WebSocket connection closed with error")
+                    logger.error(f"Video WebSocket connection closed with error (session: {session_id})")
                     break
                 except Exception as e:
-                    print(f"Error sending frames: {e}")
-                    import traceback
-                    traceback.print_exc()
-                    break
+                    logger.error(f"Error sending frames (session: {session_id}): {e}", exc_info=True)
+                    # Continue the loop instead of breaking to keep connection alive
+                    # Only break on connection errors, not processing errors
+                    await asyncio.sleep(frame_delay)
+                    continue
         finally:
             # Reset running state when video connection closes
             # Only reset if this connection was the one running it
             if mixer.running:
                 mixer.running = False
-            print(f"Video client disconnected")
+            logger.info(f"Video client disconnected (session: {session_id})")
+            session_manager.remove_connection(websocket)
     else:
-        print(f"Unknown path: {path}")
+        logger.warning(f"Unknown path: {path}")
 
 
 async def main():
@@ -216,7 +376,7 @@ async def main():
     shutdown_event = asyncio.Event()
 
     def signal_handler(signum, frame):
-        print(f"\nShutting down (signal {signum})...")
+        logger.info(f"Shutting down (signal {signum})...")
         asyncio.get_event_loop().call_soon_threadsafe(shutdown_event.set)
 
     signal.signal(signal.SIGINT, signal_handler)
@@ -226,23 +386,26 @@ async def main():
     try:
         # Single WebSocket server with path-based routing
         server = await websockets.serve(handle_websocket, "0.0.0.0", port)
-        print(f"MediaMixer WebSocket server started on port {port}")
-        print(f"  - Command endpoint: /command")
-        print(f"  - Video endpoint: /video")
-        print("Waiting for connections...")
+        logger.info(f"MediaMixer WebSocket server started on port {port}")
+        logger.info("  - Command endpoint: /command")
+        logger.info("  - Video endpoint: /video")
+        logger.info("Waiting for connections...")
 
         await shutdown_event.wait()
 
     except Exception as e:
-        print(f"Server error: {e}")
-        import traceback
-        traceback.print_exc()
+        logger.critical(f"Server error: {e}", exc_info=True)
     finally:
         if server:
             server.close()
             await server.wait_closed()
-        mixer.stop()
-        print("Server shutdown complete")
+        # Stop all active mixers
+        for session_id, mixer in list(session_manager.sessions.items()):
+            mixer.stop()
+        session_manager.sessions.clear()
+        session_manager.connection_to_session.clear()
+        session_manager.session_connections.clear()
+        logger.info("Server shutdown complete")
 
 
 if __name__ == '__main__':

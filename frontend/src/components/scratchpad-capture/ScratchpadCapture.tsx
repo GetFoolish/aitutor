@@ -20,10 +20,10 @@ const ScratchpadCapture: React.FC<ScratchpadCaptureProps> = ({ children, socket 
       const questionPanel = document.querySelector('.question-panel') as HTMLElement;
 
       if (questionPanel) {
-        htmlToImage.toPng(questionPanel, {
-          cacheBust: true,
+        htmlToImage.toJpeg(questionPanel, {
+          quality: 0.9,  // Increased quality for better image clarity
           skipFonts: true,
-          pixelRatio: 2  // Higher DPI for sharper text capture
+          pixelRatio: 1.5  // Balanced quality and size (1.5x instead of 2x for better performance)
         })
           .then((dataUrl) => {
             const payload = JSON.stringify({ type: 'scratchpad_frame', data: dataUrl });
@@ -57,7 +57,7 @@ const ScratchpadCapture: React.FC<ScratchpadCaptureProps> = ({ children, socket 
       const questionPanel = document.querySelector('.question-panel');
       if (questionPanel && socket && socket.readyState === WebSocket.OPEN) {
         console.log('✅ Question panel found, starting capture');
-        intervalId = window.setInterval(captureFrame, 500);
+        intervalId = window.setInterval(captureFrame, 1000);  // Reduced from 500ms to 1000ms (1 FPS) to reduce load
       } else {
         // Check again in 100ms
         setTimeout(waitForQuestionPanel, 100);
