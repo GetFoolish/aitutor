@@ -52,7 +52,25 @@ const wss = new WebSocketServer({ noServer: true });
 
 // Handle WebSocket upgrade requests
 // Cloud Run supports WebSocket upgrades on any path
+// Note: WebSocket connections don't use CORS preflight, but we validate origin for security
 server.on('upgrade', (request, socket, head) => {
+  // Validate origin for security (optional but recommended)
+  const origin = request.headers.origin;
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://tutor-frontend-staging-utmfhquz6a-uc.a.run.app'
+  ];
+  
+  // Allow WebSocket connections from allowed origins or if no origin (direct connection)
+  // Cloud Run may not always send origin header, so we allow connections without origin
+  if (origin && !allowedOrigins.includes(origin)) {
+    console.warn(`⚠️  WebSocket connection rejected from origin: ${origin}`);
+    socket.write('HTTP/1.1 403 Forbidden\r\n\r\n');
+    socket.destroy();
+    return;
+  }
+  
   // Accept WebSocket upgrade on any path (root path is used by frontend)
   wss.handleUpgrade(request, socket, head, (ws) => {
     wss.emit('connection', ws, request);
