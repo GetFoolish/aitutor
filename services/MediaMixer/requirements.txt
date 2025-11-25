@@ -10,3 +10,4 @@ itsdangerous
 jinja2
 markupsafe
 websockets
+aiohttp

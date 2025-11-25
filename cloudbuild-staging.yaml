@@ -194,6 +194,10 @@ steps:
       - '2'
       - '--memory'
       - '2Gi'
+      - '--min-instances'
+      - '1'
+      - '--max-instances'
+      - '10'
     id: 'deploy-mediamixer'
     waitFor: ['push-mediamixer']
 
@@ -213,6 +217,12 @@ steps:
       - '--allow-unauthenticated'
       - '--port'
       - '8080'
+      - '--timeout'
+      - '3600'
+      - '--min-instances'
+      - '1'
+      - '--max-instances'
+      - '10'
       - '--set-env-vars'
       - 'GEMINI_API_KEY=${_GEMINI_API_KEY},GEMINI_MODEL=${_GEMINI_MODEL}'
     id: 'deploy-tutor'

@@ -15,12 +15,15 @@ origins = [
         "https://tutor-frontend-staging-utmfhquz6a-uc.a.run.app",
     ]
 
+# Configure CORS - must be added before routes
+# FastAPI's CORSMiddleware automatically handles OPTIONS preflight requests
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,  
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["*"],  # Includes OPTIONS for preflight
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 @app.get("/")

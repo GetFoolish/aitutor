@@ -10,7 +10,6 @@ from PIL import Image
 import base64
 import io
 import asyncio
-import websockets
 import signal
 import json
 import os
@@ -19,6 +18,7 @@ import time
 import uuid
 import logging
 from typing import Dict, Optional, Tuple, Any
+from aiohttp import web
 
 # Configure logging
 logging.basicConfig(
@@ -155,14 +155,18 @@ class SessionManager:
         self.session_timeout = 300.0  # Remove sessions inactive for 5 minutes
     
     def _get_client_ip(self, websocket) -> str:
-        """Extract client IP address from websocket"""
+        """Extract client IP address from websocket (supports both aiohttp and websockets library)"""
         try:
-            if hasattr(websocket, 'remote_address'):
+            # For aiohttp WebSocket
+            if hasattr(websocket, 'request') and hasattr(websocket.request, 'remote'):
+                return websocket.request.remote
+            elif hasattr(websocket, 'request') and hasattr(websocket.request, 'remote_addr'):
+                return websocket.request.remote_addr
+            # For websockets library (backward compatibility)
+            elif hasattr(websocket, 'remote_address'):
                 if isinstance(websocket.remote_address, tuple):
                     return websocket.remote_address[0]
                 return str(websocket.remote_address)
-            elif hasattr(websocket, 'request') and hasattr(websocket.request, 'remote_addr'):
-                return websocket.request.remote_addr
         except Exception as e:
             logger.warning(f"Could not extract IP address: {e}")
         return "unknown"
@@ -276,53 +280,42 @@ class SessionManager:
 session_manager = SessionManager()
 
 
-async def handle_websocket(websocket, *args):
-    """Handle WebSocket connections - compatible with different websockets versions"""
-    # Extract path from arguments or websocket object
-    # websockets library may pass path as second argument or we need to extract it
-    path = None
-    
-    # Try to get path from arguments first
-    if args and len(args) > 0:
-        path = args[0]
-    
-    # If not in arguments, try to get from websocket object
-    if path is None:
-        try:
-            # Try different ways to access the path
-            if hasattr(websocket, 'path'):
-                path = websocket.path
-            elif hasattr(websocket, 'request') and hasattr(websocket.request, 'path'):
-                path = websocket.request.path
-            elif hasattr(websocket, 'request_headers'):
-                # Try to extract from request line in headers
-                path = getattr(websocket, 'path', '/')
-        except Exception as e:
-            logger.warning(f"Could not determine path: {e}")
-            path = '/'
-    
-    # Default fallback
-    if path is None:
-        path = '/'
-    
+async def handle_websocket_aiohttp(ws, path):
+    """Handle WebSocket connections using aiohttp WebSocket"""
     # Get or create session for this connection
-    session_id, mixer = session_manager.get_or_create_session(websocket, path)
-    logger.info(f"Client connected from {websocket.remote_address} on path {path} (session: {session_id})")
+    session_id, mixer = session_manager.get_or_create_session(ws, path)
+    
+    # Extract remote address for logging
+    try:
+        if hasattr(ws, 'request') and hasattr(ws.request, 'remote'):
+            remote_addr = ws.request.remote
+        elif hasattr(ws, 'request') and hasattr(ws.request, 'remote_addr'):
+            remote_addr = ws.request.remote_addr
+        else:
+            remote_addr = 'unknown'
+    except:
+        remote_addr = 'unknown'
+    
+    logger.info(f"Client connected from {remote_addr} on path {path} (session: {session_id})")
 
     if path == "/command":
         # Command connection - receives frames and commands
         try:
-            async for message in websocket:
-                try:
-                    data = json.loads(message)
-                    mixer.handle_command(data)
-                except Exception as e:
-                    logger.error(f"Error processing command: {e}", exc_info=True)
-        except websockets.exceptions.ConnectionClosed:
-            pass
+            async for msg in ws:
+                if msg.type == web.WSMsgType.TEXT:
+                    try:
+                        data = json.loads(msg.data)
+                        mixer.handle_command(data)
+                    except Exception as e:
+                        logger.error(f"Error processing command: {e}", exc_info=True)
+                elif msg.type == web.WSMsgType.ERROR:
+                    logger.error(f"WebSocket error: {ws.exception()}")
+                    break
+        except Exception as e:
+            logger.error(f"Command connection error: {e}", exc_info=True)
         finally:
             logger.info(f"Command client disconnected (session: {session_id})")
-            session_manager.remove_connection(websocket)
+            session_manager.remove_connection(ws)
 
     elif path == "/video":
         # Video connection - sends mixed frames
@@ -337,21 +330,16 @@ async def handle_websocket(websocket, *args):
                     
                     frame = mixer.mix_frames()
                     base64_frame = mixer.frame_to_base64(frame)
-                    await websocket.send(base64_frame)
+                    await ws.send_str(base64_frame)
 
                     # 10 FPS for better network performance
                     await asyncio.sleep(frame_delay)
 
-                except websockets.exceptions.ConnectionClosed:
-                    logger.warning(f"Video WebSocket connection closed during send (session: {session_id})")
-                    break
-                except websockets.exceptions.ConnectionClosedOK:
-                    logger.info(f"Video WebSocket connection closed normally (session: {session_id})")
-                    break
-                except websockets.exceptions.ConnectionClosedError:
-                    logger.error(f"Video WebSocket connection closed with error (session: {session_id})")
-                    break
                 except Exception as e:
+                    # Check if it's a connection error
+                    if ws.closed:
+                        logger.info(f"Video WebSocket connection closed (session: {session_id})")
+                        break
                     logger.error(f"Error sending frames (session: {session_id}): {e}", exc_info=True)
                     # Continue the loop instead of breaking to keep connection alive
                     # Only break on connection errors, not processing errors
@@ -363,10 +351,31 @@ async def handle_websocket(websocket, *args):
             if mixer.running:
                 mixer.running = False
             logger.info(f"Video client disconnected (session: {session_id})")
-            session_manager.remove_connection(websocket)
+            session_manager.remove_connection(ws)
     else:
         logger.warning(f"Unknown path: {path}")
+        await ws.close()
 
+
+async def health_check_handler(request):
+    """HTTP health check endpoint for Cloud Run"""
+    return web.Response(text="OK", status=200)
+
+async def websocket_handler(request):
+    """Handle WebSocket upgrade requests"""
+    ws = web.WebSocketResponse()
+    await ws.prepare(request)
+    
+    path = request.path
+    try:
+        await handle_websocket_aiohttp(ws, path)
+    except Exception as e:
+        logger.error(f"WebSocket handler error: {e}", exc_info=True)
+    finally:
+        if not ws.closed:
+            await ws.close()
+    
+    return ws
 
 async def main():
     """Main server function"""
@@ -382,13 +391,25 @@ async def main():
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
-    server = None
+    # Create aiohttp app that handles both HTTP and WebSocket
+    app = web.Application()
+    app.router.add_get('/health', health_check_handler)
+    app.router.add_get('/', health_check_handler)
+    app.router.add_get('/command', websocket_handler)
+    app.router.add_get('/video', websocket_handler)
+    
+    # Create HTTP server runner
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', port)
+    
     try:
-        # Single WebSocket server with path-based routing
-        server = await websockets.serve(handle_websocket, "0.0.0.0", port)
-        logger.info(f"MediaMixer WebSocket server started on port {port}")
-        logger.info("  - Command endpoint: /command")
-        logger.info("  - Video endpoint: /video")
+        # Start server (handles both HTTP and WebSocket)
+        await site.start()
+        logger.info(f"MediaMixer server started on port {port}")
+        logger.info("  - HTTP health check: http://0.0.0.0:{port}/health")
+        logger.info("  - WebSocket command endpoint: ws://0.0.0.0:{port}/command")
+        logger.info("  - WebSocket video endpoint: ws://0.0.0.0:{port}/video")
         logger.info("Waiting for connections...")
 
         await shutdown_event.wait()
@@ -396,9 +417,9 @@ async def main():
     except Exception as e:
         logger.critical(f"Server error: {e}", exc_info=True)
     finally:
-        if server:
-            server.close()
-            await server.wait_closed()
+        # Cleanup server
+        await runner.cleanup()
+        
         # Stop all active mixers
         for session_id, mixer in list(session_manager.sessions.items()):
             mixer.stop()
