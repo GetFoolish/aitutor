@@ -52,23 +52,9 @@ const wss = new WebSocketServer({ noServer: true });
 
 // Handle WebSocket upgrade requests
 server.on('upgrade', (request, socket, head) => {
-  console.log(`🔌 WebSocket upgrade request from ${request.headers.origin || 'unknown origin'} on path: ${request.url}`);
-  
-  // Handle socket errors during upgrade
-  socket.on('error', (error) => {
-    console.error('❌ Socket error during upgrade:', error);
+  wss.handleUpgrade(request, socket, head, (ws) => {
+    wss.emit('connection', ws, request);
   });
-  
-  try {
-    wss.handleUpgrade(request, socket, head, (ws) => {
-      console.log('✅ WebSocket upgrade successful');
-      wss.emit('connection', ws, request);
-    });
-  } catch (error) {
-    console.error('❌ WebSocket upgrade failed:', error);
-    socket.write('HTTP/1.1 400 Bad Request\r\n\r\n');
-    socket.destroy();
-  }
 });
 
 // Start the HTTP server (which also handles WebSocket upgrades)
@@ -95,7 +81,6 @@ wss.on('connection', (clientWs) => {
   
   let geminiSession = null;
   let geminiClient = null;
-  let isUserInitiatedDisconnect = false;
 
   // Handle messages from frontend
   clientWs.on('message', async (data) => {
@@ -151,15 +136,11 @@ wss.on('connection', (clientWs) => {
                 }));
               },
               onclose: (event) => {
-                const reason = isUserInitiatedDisconnect 
-                  ? 'Connection closed by user' 
-                  : (event.reason || 'Connection closed');
-                console.log(`🔌 Gemini connection closed: ${reason}`);
+                console.log(`🔌 Gemini connection closed: ${event.reason || 'Unknown reason'}`);
                 clientWs.send(JSON.stringify({
                   type: 'close',
-                  reason: reason
+                  reason: event.reason
                 }));
-                isUserInitiatedDisconnect = false; // Reset flag
               }
             }
           });
@@ -177,10 +158,9 @@ wss.on('connection', (clientWs) => {
       // Handle disconnect request
       else if (message.type === 'disconnect') {
         if (geminiSession) {
-          isUserInitiatedDisconnect = true;
           geminiSession.close();
           geminiSession = null;
-          console.log('🔌 Gemini session closed by user');
+          console.log('🔌 Gemini session closed');
         }
       }
       

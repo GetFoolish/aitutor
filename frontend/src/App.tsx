@@ -23,7 +23,6 @@ import ScratchpadCapture from "./components/scratchpad-capture/ScratchpadCapture
 import QuestionDisplay from "./components/question-display/QuestionDisplay";
 import ControlTray from "./components/control-tray/ControlTray";
 import Scratchpad from "./components/scratchpad/Scratchpad";
-import { useWebSocketWithReconnect } from "./hooks/useWebSocketWithReconnect";
 
 function App() {
   // this video reference is used for displaying the active stream, whether that is the webcam or screen capture
@@ -34,25 +33,26 @@ function App() {
   const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
   const [mixerStream, setMixerStream] = useState<MediaStream | null>(null);
   const mixerVideoRef = useRef<HTMLVideoElement>(null);
+  const [commandSocket, setCommandSocket] = useState<WebSocket | null>(null);
+  const [videoSocket, setVideoSocket] = useState<WebSocket | null>(null);
   const [isScratchpadOpen, setScratchpadOpen] = useState(false);
 
-  // Command WebSocket for sending frames/commands TO MediaMixer with reconnection
-  const commandWsUrl = import.meta.env.VITE_MEDIAMIXER_COMMAND_WS || 'ws://localhost:8765/command';
-  const { socket: commandSocket } = useWebSocketWithReconnect({
-    url: commandWsUrl,
-    maxReconnectAttempts: 10,
-    reconnectInterval: 3000,
-    enabled: true,
-  });
+  useEffect(() => {
+    // Command WebSocket for sending frames/commands TO MediaMixer
+    const commandWsUrl = import.meta.env.VITE_MEDIAMIXER_COMMAND_WS || 'ws://localhost:8765/command';
+    const commandWs = new WebSocket(commandWsUrl);
+    setCommandSocket(commandWs);
 
-  // Video WebSocket for receiving video FROM MediaMixer with reconnection
-  const videoWsUrl = import.meta.env.VITE_MEDIAMIXER_VIDEO_WS || 'ws://localhost:8765/video';
-  const { socket: videoSocket } = useWebSocketWithReconnect({
-    url: videoWsUrl,
-    maxReconnectAttempts: 10,
-    reconnectInterval: 3000,
-    enabled: true,
-  });
+    // Video WebSocket for receiving video FROM MediaMixer
+    const videoWsUrl = import.meta.env.VITE_MEDIAMIXER_VIDEO_WS || 'ws://localhost:8765/video';
+    const videoWs = new WebSocket(videoWsUrl);
+    setVideoSocket(videoWs);
+
+    return () => {
+      commandWs.close();
+      videoWs.close();
+    };
+  }, []);
 
   useEffect(() => {
     if (mixerVideoRef.current && mixerStream) {
