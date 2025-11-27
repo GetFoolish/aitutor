@@ -8,7 +8,8 @@ import sys
 import os
 
 # Add project root to path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
 
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -49,8 +50,8 @@ def migrate_perseus_questions():
     print("   ✅ Indexes created: slug (unique), skill_prefix, filename")
     
     # Find all Perseus files (use absolute path from project root)
-    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    perseus_dir = os.path.join(project_root, "SherlockEDApi", "CurriculumBuilder")
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    perseus_dir = os.path.join(project_root, "services", "SherlockEDApi", "CurriculumBuilder")
     pattern = os.path.join(perseus_dir, "*.json")
     perseus_files = glob.glob(pattern)
     

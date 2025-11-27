@@ -6,7 +6,7 @@ import sys
 import os
 
 # Add project root to path
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
 
 from managers.mongodb_manager import mongo_db
@@ -19,8 +19,8 @@ def create_test_user():
     # 🎯 CHANGE THESE VALUES TO TEST DIFFERENT GRADES:
     # ============================================================
     user_id = "mongodb_test_user"
-    age = 6  # Change age here (5=K, 6=Grade1, 7=Grade2, 8=Grade3, etc.)
-    current_grade = "GRADE_1"  # Must match age (5→K, 6→GRADE_1, 7→GRADE_2, etc.)
+    age = 5  # Change age here (5=K, 6=Grade1, 7=Grade2, 8=Grade3, etc.)
+    current_grade = "K"  # Must match age (5→K, 6→GRADE_1, 7→GRADE_2, etc.)
     # ============================================================
     
     # Note: MongoDB has Perseus questions for K-2 only

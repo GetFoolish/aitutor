@@ -7,7 +7,8 @@ import sys
 import os
 
 # Add project root to path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
 
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -46,8 +47,8 @@ def migrate_skills():
     print("   ✅ Indexes created: skill_id (unique), grade_level, prerequisites")
     
     # Load skills.json (use absolute path from project root)
-    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    skills_file = os.path.join(project_root, "QuestionsBank", "skills.json")
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    skills_file = os.path.join(project_root, "services", "QuestionBankGenerator", "QuestionsBank", "skills.json")
     print(f"\n📂 Reading {skills_file}...")
     
     with open(skills_file, 'r', encoding='utf-8') as f:

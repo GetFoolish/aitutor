@@ -7,7 +7,8 @@ import sys
 import os
 
 # Add project root to path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
 
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -47,8 +48,8 @@ def migrate_dash_questions():
     print("   ✅ Indexes created: question_id (unique), skill_id, grade, difficulty")
     
     # Load curriculum.json (use absolute path from project root)
-    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    curriculum_file = os.path.join(project_root, "QuestionsBank", "curriculum.json")
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    curriculum_file = os.path.join(project_root, "services", "QuestionBankGenerator", "QuestionsBank", "curriculum.json")
     print(f"\n📂 Reading {curriculum_file}...")
     
     with open(curriculum_file, 'r', encoding='utf-8') as f:
