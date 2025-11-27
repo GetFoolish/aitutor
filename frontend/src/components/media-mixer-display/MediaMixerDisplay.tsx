@@ -1,7 +1,5 @@
 import React, { useEffect, useState, RefObject } from "react";
 import cn from "classnames";
-import { RiSidebarFoldLine, RiSidebarUnfoldLine } from "react-icons/ri";
-import "./media-mixer-display.scss";
 
 interface MediaMixerDisplayProps {
   socket: WebSocket | null;
@@ -15,7 +13,6 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
   const [imageData, setImageData] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isCollapsed, setIsCollapsed] = useState(false);
 
   useEffect(() => {
     if (!socket) return;
@@ -41,6 +38,20 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
       setError(null);
     };
 
+    // Check if already open
+    if (socket.readyState === WebSocket.OPEN) {
+      console.log("MediaMixerDisplay: WebSocket already open");
+      setIsConnected(true);
+      setError(null);
+    } else if (
+      socket.readyState === WebSocket.CLOSED ||
+      socket.readyState === WebSocket.CLOSING
+    ) {
+      console.log("MediaMixerDisplay: WebSocket already closed");
+      setError("Connection failed. Please refresh.");
+      setIsConnected(false);
+    }
+
     socket.onmessage = (event) => {
       const frame = event.data;
       const imageUrl = `data:image/jpeg;base64,${frame}`;
@@ -65,43 +76,62 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
   }, [socket, renderCanvasRef]);
 
   return (
-    <div
-      className={cn("media-mixer-display", {
-        collapsed: isCollapsed,
-      })}
-    >
-      <header className="top">
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="collapse-button"
-          type="button"
-        >
-          {isCollapsed ? (
-            <RiSidebarUnfoldLine color="#b4b8bb" />
-          ) : (
-            <RiSidebarFoldLine color="#b4b8bb" />
-          )}
-        </button>
-        <div className="header-text">
-        <h2>Media Mixer Display</h2>
+    <div className="flex flex-col h-full w-full bg-card text-card-foreground rounded-xl overflow-hidden">
+      <header className="flex justify-between items-center p-4 border-b border-white/10 bg-black text-white">
+        <div className="flex items-center gap-3 overflow-hidden">
+          <div className="p-1.5 bg-white/10 rounded-lg">
+            <span className="material-symbols-outlined text-white text-xl">
+              cast
+            </span>
+          </div>
+          <h2 className="font-semibold text-base tracking-tight truncate">
+            Media Mixer
+          </h2>
           <span
-            className={cn("status-pill", {
-              connected: isConnected && !error,
-              error: !!error,
-            })}
+            className={cn(
+              "px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border",
+              {
+                "bg-green-500/20 text-green-400 border-green-500/30":
+                  isConnected && !error,
+                "bg-red-500/20 text-red-400 border-red-500/30": !!error,
+                "bg-yellow-500/20 text-yellow-400 border-yellow-500/30":
+                  !isConnected && !error,
+              },
+            )}
           >
             {error ? "Offline" : isConnected ? "Live" : "Connecting"}
           </span>
         </div>
       </header>
-      <div className="media-mixer-content">
-        {error && <div className="error-message">{error}</div>}
+      <div className="flex-1 flex flex-col items-center justify-center p-0 bg-black/95 relative overflow-hidden group">
+        {error && (
+          <div className="text-sm text-center p-4 rounded-xl border border-red-500/20 bg-red-500/10 text-red-400 max-w-[90%] backdrop-blur-md shadow-lg">
+            <span className="material-symbols-outlined text-2xl mb-2 block">
+              error
+            </span>
+            {error}
+          </div>
+        )}
         {!isConnected && !error && (
-          <div className="placeholder-message">Connecting to MediaMixer...</div>
+          <div className="flex flex-col items-center gap-3 text-muted-foreground animate-pulse">
+            <span className="material-symbols-outlined text-4xl opacity-50">
+              connecting_airports
+            </span>
+            <div className="text-sm font-medium">Connecting to Stream...</div>
+          </div>
         )}
         {isConnected && imageData && (
-          <div className="video-frame">
-            <img src={imageData} alt="MediaMixer Stream" />
+          <div className="w-full h-full flex items-center justify-center bg-zinc-900 relative">
+            <img
+              src={imageData}
+              alt="MediaMixer Stream"
+              className="w-full h-full object-contain"
+            />
+            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <span className="px-2 py-1 bg-black/50 text-white text-xs rounded-md backdrop-blur-md">
+                Live Feed
+              </span>
+            </div>
           </div>
         )}
       </div>

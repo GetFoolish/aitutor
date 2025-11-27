@@ -25,7 +25,7 @@ type FunctionDeclarationsTool = Tool & {
   functionDeclarations: FunctionDeclaration[];
 };
 
-export default function SettingsDialog() {
+export default function SettingsDialog({ trigger }: { trigger?: React.ReactNode }) {
   const { config, setConfig, connected } = useLiveAPIContext();
   const [userPrompt, setUserPrompt] = useState("");
 
@@ -102,14 +102,16 @@ export default function SettingsDialog() {
     <div className="settings-dialog">
       <Dialog>
         <DialogTrigger asChild>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            className="action-button material-symbols-outlined"
-          >
-            settings
-          </Button>
+          {trigger || (
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="action-button material-symbols-outlined"
+            >
+              settings
+            </Button>
+          )}
         </DialogTrigger>
         <DialogContent className="dialog">
           <DialogHeader>

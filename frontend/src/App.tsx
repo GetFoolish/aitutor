@@ -22,6 +22,7 @@ import MediaMixerDisplay from "./components/media-mixer-display/MediaMixerDispla
 import ScratchpadCapture from "./components/scratchpad-capture/ScratchpadCapture";
 import QuestionDisplay from "./components/question-display/QuestionDisplay";
 import ControlTray from "./components/control-tray/ControlTray";
+import FloatingControlPanel from "./components/floating-control-panel/FloatingControlPanel";
 import Scratchpad from "./components/scratchpad/Scratchpad";
 import { ThemeProvider } from "./components/theme/theme-provier";
 import { Toaster } from "@/components/ui/sonner";
@@ -40,17 +41,49 @@ function App() {
   const [isScratchpadOpen, setScratchpadOpen] = useState(false);
 
   useEffect(() => {
-    // Command WebSocket for sending frames/commands TO MediaMixer
-    const commandWs = new WebSocket("ws://localhost:8765/command");
-    setCommandSocket(commandWs);
+    let commandWs: WebSocket | null = null;
+    let videoWs: WebSocket | null = null;
+    let reconnectTimeout: number | undefined;
 
-    // Video WebSocket for receiving video FROM MediaMixer
-    const videoWs = new WebSocket("ws://localhost:8765/video");
-    setVideoSocket(videoWs);
+    const connectWebSockets = () => {
+      // Command WebSocket
+      commandWs = new WebSocket("ws://localhost:8765/command");
+      commandWs.onopen = () => {
+        console.log("Command WebSocket connected");
+        setCommandSocket(commandWs);
+      };
+      commandWs.onclose = () => {
+        console.log("Command WebSocket disconnected");
+        setCommandSocket(null);
+      };
+      commandWs.onerror = (error) => {
+        console.error("Command WebSocket error:", error);
+      };
+
+      // Video WebSocket
+      videoWs = new WebSocket("ws://localhost:8765/video");
+      videoWs.onopen = () => {
+        console.log("Video WebSocket connected");
+        setVideoSocket(videoWs);
+      };
+      videoWs.onclose = () => {
+        console.log("Video WebSocket disconnected");
+        setVideoSocket(null);
+        // Try to reconnect both if video fails (assuming they go down together)
+        clearTimeout(reconnectTimeout);
+        reconnectTimeout = window.setTimeout(connectWebSockets, 3000);
+      };
+      videoWs.onerror = (error) => {
+        console.error("Video WebSocket error:", error);
+      };
+    };
+
+    connectWebSockets();
 
     return () => {
-      commandWs.close();
-      videoWs.close();
+      clearTimeout(reconnectTimeout);
+      if (commandWs) commandWs.close();
+      if (videoWs) videoWs.close();
     };
   }, []);
 
@@ -82,27 +115,19 @@ function App() {
                     )}
                   </ScratchpadCapture>
                 </div>
-                <MediaMixerDisplay
-                  socket={videoSocket}
+                <FloatingControlPanel
+                  socket={commandSocket}
                   renderCanvasRef={renderCanvasRef}
+                  videoRef={videoRef}
+                  supportsVideo={true}
+                  onVideoStreamChange={setVideoStream}
+                  onMixerStreamChange={setMixerStream}
+                  enableEditingSettings={true}
+                  onPaintClick={() => setScratchpadOpen(!isScratchpadOpen)}
+                  isPaintActive={isScratchpadOpen}
+                  videoSocket={videoSocket}
                 />
               </div>
-
-              <ControlTray
-                socket={commandSocket}
-                renderCanvasRef={renderCanvasRef}
-                videoRef={videoRef}
-                supportsVideo={true}
-                onVideoStreamChange={setVideoStream}
-                onMixerStreamChange={setMixerStream}
-                enableEditingSettings={true}
-              >
-                <button onClick={() => setScratchpadOpen(!isScratchpadOpen)}>
-                  <span className="material-symbols-outlined">
-                    {isScratchpadOpen ? "close" : "edit"}
-                  </span>
-                </button>
-              </ControlTray>
             </main>
           </div>
         </LiveAPIProvider>
