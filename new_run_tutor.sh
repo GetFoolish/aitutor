@@ -9,7 +9,11 @@ mkdir -p "$SCRIPT_DIR/logs"
 
 # Detect and activate the Python virtual environment
 if [[ -z "$VIRTUAL_ENV" ]]; then
-    if [[ -d "$SCRIPT_DIR/env" ]]; then
+    if [[ -d "$SCRIPT_DIR/venv" ]]; then
+        echo "Activating local venv..."
+        # shellcheck source=/dev/null
+        source "$SCRIPT_DIR/venv/Scripts/activate" 2>/dev/null || source "$SCRIPT_DIR/venv/bin/activate"
+    elif [[ -d "$SCRIPT_DIR/env" ]]; then
         echo "Activating local env..."
         # shellcheck source=/dev/null
         source "$SCRIPT_DIR/env/Scripts/activate" 2>/dev/null || source "$SCRIPT_DIR/env/bin/activate"
@@ -20,8 +24,8 @@ if [[ -z "$VIRTUAL_ENV" ]]; then
     else
         echo "❌ No virtual environment found."
         echo "👉 Please create one with:"
-        echo "    python -m venv env"
-        echo "    source env/bin/activate"
+        echo "    python -m venv venv"
+        echo "    source venv/bin/activate"
         echo "👉 Next, install the required packages with:"
         echo "    pip install -r requirements.txt"
         echo "👉 Finally, run this script again."
@@ -35,8 +39,12 @@ fi
 # Force Python to point explicitly to the venv interpreter (Windows-safe)
 # ---------------------------------------------------------------------------
 
-# Prefer Python from env/Scripts (Windows) or env/bin (Unix)
-if [[ -x "$SCRIPT_DIR/env/Scripts/python.exe" ]]; then
+# Prefer Python from venv/env/Scripts (Windows) or venv/env/bin (Unix)
+if [[ -x "$SCRIPT_DIR/venv/Scripts/python.exe" ]]; then
+    PYTHON_BIN="$SCRIPT_DIR/venv/Scripts/python.exe"
+elif [[ -x "$SCRIPT_DIR/venv/bin/python" ]]; then
+    PYTHON_BIN="$SCRIPT_DIR/venv/bin/python"
+elif [[ -x "$SCRIPT_DIR/env/Scripts/python.exe" ]]; then
     PYTHON_BIN="$SCRIPT_DIR/env/Scripts/python.exe"
 elif [[ -x "$SCRIPT_DIR/.env/Scripts/python.exe" ]]; then
     PYTHON_BIN="$SCRIPT_DIR/.env/Scripts/python.exe"

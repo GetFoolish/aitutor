@@ -1,0 +1,30 @@
+[
+  {
+    "speaker": "Student",
+    "text": "Hey, uh, are you there?"
+  },
+  {
+    "speaker": "AI",
+    "text": "Yes, I'm here. How can I help you today?"
+  },
+  {
+    "speaker": "Student",
+    "text": "I love dancing and I love the English language I love literature and I was wondering what you think is a good way for me to start dancing again."
+  },
+  {
+    "speaker": "AI",
+    "text": "Since you love both dancing and English literature, have you considered exploring dance interpretations of literary works or perhaps joining a dance class that focuses on storytelling through movement?"
+  },
+  {
+    "speaker": "Student",
+    "text": "Interesting. Hold on."
+  },
+  {
+    "speaker": "AI",
+    "text": "Sure, take your time. I'll be here."
+  },
+  {
+    "speaker": "AI",
+    "text": "Okay. Did you have a chance to think about it? What are your thoughts?"
+  }
+]

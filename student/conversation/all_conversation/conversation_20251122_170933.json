@@ -1,0 +1,50 @@
+[
+  {
+    "speaker": "Student",
+    "text": "Hey, can you hear me?"
+  },
+  {
+    "speaker": "AI",
+    "text": "Yes, I can hear you. How can I help you today?"
+  },
+  {
+    "speaker": "Student",
+    "text": "Yes."
+  },
+  {
+    "speaker": "AI",
+    "text": "Great! How can I help you today?"
+  },
+  {
+    "speaker": "Student",
+    "text": "Great"
+  },
+  {
+    "speaker": "AI",
+    "text": "How can I assist you today?"
+  },
+  {
+    "speaker": "Student",
+    "text": "How can I assist?"
+  },
+  {
+    "speaker": "AI",
+    "text": "You can assist by answering my questions and engaging in a conversa"
+  },
+  {
+    "speaker": "Student",
+    "text": "You can assist"
+  },
+  {
+    "speaker": "AI",
+    "text": "Ok. And how"
+  },
+  {
+    "speaker": "Student",
+    "text": "Okay."
+  },
+  {
+    "speaker": "AI",
+    "text": "How ca"
+  }
+]

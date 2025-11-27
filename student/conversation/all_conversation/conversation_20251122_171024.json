@@ -1,0 +1,42 @@
+[
+  {
+    "speaker": "Student",
+    "text": "Hey, ik weet niet."
+  },
+  {
+    "speaker": "AI",
+    "text": "Hoi Kevin, wat kan ik voor je doen?"
+  },
+  {
+    "speaker": "Student",
+    "text": "So what did you say?"
+  },
+  {
+    "speaker": "AI",
+    "text": "Ik vroeg wat ik voor je kon doen."
+  },
+  {
+    "speaker": "Student",
+    "text": "Can you talk in English?"
+  },
+  {
+    "speaker": "AI",
+    "text": "Yes, I can speak in English. Would you like me to switch to English now?"
+  },
+  {
+    "speaker": "Student",
+    "text": "Yes please."
+  },
+  {
+    "speaker": "AI",
+    "text": "Okay, I will switch to English now. What can I do for you?"
+  },
+  {
+    "speaker": "Student",
+    "text": "What do you know about me?"
+  },
+  {
+    "speaker": "AI",
+    "text": "I don't have access to any personal information about you. My responses are based on the conversations we have here. Is there anything specific you'd like me to know?"
+  }
+]

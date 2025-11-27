@@ -1,0 +1,26 @@
+[
+  {
+    "speaker": "Student",
+    "text": "Hey, are you there?"
+  },
+  {
+    "speaker": "AI",
+    "text": "Yes, I'm here. How can I help you today?"
+  },
+  {
+    "speaker": "Student",
+    "text": "Uh, I want to know um, so I really like dancing and I really like English literature."
+  },
+  {
+    "speaker": "AI",
+    "text": "That's great!"
+  },
+  {
+    "speaker": "Student",
+    "text": "I was wondering how I could combine both my interests."
+  },
+  {
+    "speaker": "AI",
+    "text": "That's an interesting combination of interests. Have you considered looking into dance in English literature, like poems or stories about dance, or even the history of dance as portrayed in literature?"
+  }
+]
