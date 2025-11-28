@@ -100,6 +100,11 @@ echo "Starting TeachingAssistant API server... Logs -> logs/teaching_assistant.l
 (cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/TeachingAssistant/api.py) > "$SCRIPT_DIR/logs/teaching_assistant.log" 2>&1 &
 pids+=($!)
 
+# Start the Memory Watcher for real-time memory extraction
+echo "Starting Memory Watcher... Logs -> logs/memory_watcher.log"
+(cd "$SCRIPT_DIR" && "$PYTHON_BIN" -m Memory.consolidator) > "$SCRIPT_DIR/logs/memory_watcher.log" 2>&1 &
+pids+=($!)
+
 # Give the backend servers a moment to start
 echo "Waiting for backend services to initialize..."
 sleep 3
@@ -127,6 +132,7 @@ echo "  🔧 DASH API:           http://localhost:$DASH_API_PORT"
 echo "  🕵️  SherlockED API:     http://localhost:$SHERLOCKED_API_PORT"
 echo "  👨‍🏫 TeachingAssistant:  http://localhost:$TEACHING_ASSISTANT_PORT"
 echo "  🎓 Tutor Service:      ws://localhost:8767"
+echo "  🧠 Memory Watcher:     Running (logs/memory_watcher.log)"
 echo "  📹 MediaMixer Command: ws://localhost:$MEDIAMIXER_COMMAND_PORT/command"
 echo "  📺 MediaMixer Video:   ws://localhost:$MEDIAMIXER_VIDEO_PORT/video"
 echo ""

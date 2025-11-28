@@ -63,3 +63,7 @@ class ConversationManager:
         """Get current session data."""
         return self.session
 
+
+
+
+

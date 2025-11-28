@@ -135,6 +135,11 @@ Write-Host "Starting TeachingAssistant API server... Logs -> logs/teaching_assis
 $proc = Start-Process -FilePath "cmd" -ArgumentList "/c", "`"$PYTHON_BIN`" services\TeachingAssistant\api.py 2>&1" -WorkingDirectory $SCRIPT_DIR -NoNewWindow -PassThru -RedirectStandardOutput "$SCRIPT_DIR\logs\teaching_assistant.log"
 $processes += $proc
 
+# Start the Memory Watcher for real-time memory extraction
+Write-Host "Starting Memory Watcher... Logs -> logs/memory_watcher.log"
+$proc = Start-Process -FilePath "cmd" -ArgumentList "/c", "chcp 65001 >nul && `"$PYTHON_BIN`" -m Memory.consolidator 2>&1" -WorkingDirectory $SCRIPT_DIR -NoNewWindow -PassThru -RedirectStandardOutput "$SCRIPT_DIR\logs\memory_watcher.log"
+$processes += $proc
+
 # Give the backend servers a moment to start
 Write-Host "Waiting for backend services to initialize..."
 Start-Sleep -Seconds 3
@@ -203,6 +208,7 @@ Write-Host "  DASH API:           http://localhost:$DASH_API_PORT"
 Write-Host "  SherlockED API:     http://localhost:$SHERLOCKED_API_PORT"
 Write-Host "  TeachingAssistant:  http://localhost:$TEACHING_ASSISTANT_PORT"
 Write-Host "  Tutor Service:      ws://localhost:8767"
+Write-Host "  Memory Watcher:     Running (logs/memory_watcher.log)"
 Write-Host "  MediaMixer Command: ws://localhost:$MEDIAMIXER_COMMAND_PORT/command"
 Write-Host "  MediaMixer Video:   ws://localhost:$MEDIAMIXER_VIDEO_PORT/video"
 Write-Host ""

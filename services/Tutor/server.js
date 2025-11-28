@@ -202,8 +202,10 @@ wss.on('connection', (clientWs) => {
                     conversationManager.appendUserChunk(geminiMessage.serverContent.inputTranscription.text);
                   }
                   
-                  // Buffer adam output transcription chunks
+                  // When Adam starts speaking, flush the user buffer first
                   if (geminiMessage.serverContent.outputTranscription?.text) {
+                    // Flush user turn before Adam's response (user finished speaking)
+                    conversationManager.flushUserTurn();
                     conversationManager.appendAdamChunk(geminiMessage.serverContent.outputTranscription.text);
                   }
                   
@@ -212,7 +214,7 @@ wss.on('connection', (clientWs) => {
                     conversationManager.flushAdamTurn();
                   }
                   
-                  // On interrupted (user started speaking), flush user buffer from previous and adam buffer
+                  // On interrupted (user started speaking), flush adam buffer
                   if (geminiMessage.serverContent.interrupted) {
                     conversationManager.flushAdamTurn();
                   }
@@ -250,10 +252,6 @@ wss.on('connection', (clientWs) => {
       
       else if (message.type === 'realtimeInput') {
         if (geminiSession) {
-          // When user sends audio, flush any pending user transcription from previous turn
-          if (message.data?.mimeType?.includes('audio')) {
-            conversationManager.flushUserTurn();
-          }
           geminiSession.sendRealtimeInput({ media: message.data });
         }
       }
