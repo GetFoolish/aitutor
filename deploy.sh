@@ -63,6 +63,8 @@ if [ "$ENV" = "staging" ]; then
     SHERLOCKED_API_URL=$(gcloud run services describe sherlocked-api-staging --region $REGION --format 'value(status.url)' 2>/dev/null || echo "")
     TEACHING_ASSISTANT_API_URL=$(gcloud run services describe teaching-assistant-staging --region $REGION --format 'value(status.url)' 2>/dev/null || echo "")
     TUTOR_URL=$(gcloud run services describe tutor-staging --region $REGION --format 'value(status.url)' 2>/dev/null || echo "")
+    AUTH_SERVICE_URL=$(gcloud run services describe auth-service-staging --region $REGION --format 'value(status.url)' 2>/dev/null || echo "")
+    FRONTEND_URL=$(gcloud run services describe tutor-frontend-staging --region $REGION --format 'value(status.url)' 2>/dev/null || echo "")
     
     # Use placeholders if services don't exist yet (first deployment)
     if [ -z "$DASH_API_URL" ]; then
@@ -81,6 +83,14 @@ if [ "$ENV" = "staging" ]; then
         echo "⚠️  Tutor service not found. Using existing URL"
         TUTOR_URL="https://tutor-staging-utmfhquz6a-uc.a.run.app"
     fi
+    if [ -z "$AUTH_SERVICE_URL" ]; then
+        echo "⚠️  Auth Service not found. Will be created on first deployment"
+        AUTH_SERVICE_URL="https://auth-service-staging-PLACEHOLDER.us-central1.run.app"
+    fi
+    if [ -z "$FRONTEND_URL" ]; then
+        echo "⚠️  Frontend not found. Will be created on first deployment"
+        FRONTEND_URL="https://tutor-frontend-staging-PLACEHOLDER.us-central1.run.app"
+    fi
 else
     echo "📦 Deploying PRODUCTION environment..."
     CONFIG_FILE="cloudbuild.yaml"
@@ -94,23 +104,33 @@ else
     SHERLOCKED_API_URL=$(gcloud run services describe sherlocked-api --region $REGION --format 'value(status.url)' 2>/dev/null || echo "")
     TEACHING_ASSISTANT_API_URL=$(gcloud run services describe teaching-assistant --region $REGION --format 'value(status.url)' 2>/dev/null || echo "")
     TUTOR_URL=$(gcloud run services describe tutor --region $REGION --format 'value(status.url)' 2>/dev/null || echo "")
+    AUTH_SERVICE_URL=$(gcloud run services describe auth-service --region $REGION --format 'value(status.url)' 2>/dev/null || echo "")
+    FRONTEND_URL=$(gcloud run services describe tutor-frontend --region $REGION --format 'value(status.url)' 2>/dev/null || echo "")
     
     # Use placeholders if services don't exist yet (first deployment)
     if [ -z "$DASH_API_URL" ]; then
         echo "⚠️  DASH API not found. Will be created on first deployment"
-        DASH_API_URL="https://dash-api-PLACEHOLDER.us-central1.run.app"
+        DASH_API_URL="https://dash-api-utmfhquz6a-uc.a.run.app"
     fi
     if [ -z "$SHERLOCKED_API_URL" ]; then
         echo "⚠️  SherlockED API not found. Will be created on first deployment"
-        SHERLOCKED_API_URL="https://sherlocked-api-PLACEHOLDER.us-central1.run.app"
+        SHERLOCKED_API_URL="https://sherlocked-api-utmfhquz6a-uc.a.run.app"
     fi
     if [ -z "$TEACHING_ASSISTANT_API_URL" ]; then
         echo "⚠️  TeachingAssistant API not found. Will be created on first deployment"
-        TEACHING_ASSISTANT_API_URL="https://teaching-assistant-PLACEHOLDER.us-central1.run.app"
+        TEACHING_ASSISTANT_API_URL="https://teaching-assistant-utmfhquz6a-uc.a.run.app"
     fi
     if [ -z "$TUTOR_URL" ]; then
         echo "⚠️  Tutor service not found. Will be created on first deployment"
-        TUTOR_URL="https://tutor-PLACEHOLDER.us-central1.run.app"
+        TUTOR_URL="https://tutor-utmfhquz6a-uc.a.run.app"
+    fi
+    if [ -z "$AUTH_SERVICE_URL" ]; then
+        echo "⚠️  Auth Service not found. Will be created on first deployment"
+        AUTH_SERVICE_URL="https://auth-service-PLACEHOLDER.us-central1.run.app"
+    fi
+    if [ -z "$FRONTEND_URL" ]; then
+        echo "⚠️  Frontend not found. Will be created on first deployment"
+        FRONTEND_URL="https://tutor-frontend-PLACEHOLDER.us-central1.run.app"
     fi
 fi
 
@@ -128,7 +148,7 @@ echo ""
 echo "📤 Submitting Cloud Build job..."
 gcloud builds submit \
   --config=$CONFIG_FILE \
-  --substitutions=_ENV_SUFFIX="$ENV_SUFFIX_SUB",_MONGODB_URI="$MONGODB_URI",_MONGODB_DB_NAME="$MONGODB_DB_NAME",_OPENROUTER_API_KEY="$OPENROUTER_API_KEY",_GEMINI_API_KEY="$GEMINI_API_KEY",_GEMINI_MODEL="$GEMINI_MODEL",_DASH_API_URL="$DASH_API_URL",_SHERLOCKED_API_URL="$SHERLOCKED_API_URL",_TEACHING_ASSISTANT_API_URL="$TEACHING_ASSISTANT_API_URL",_TUTOR_WS="$TUTOR_WS_URL" \
+  --substitutions=_ENV_SUFFIX="$ENV_SUFFIX_SUB",_MONGODB_URI="$MONGODB_URI",_MONGODB_DB_NAME="$MONGODB_DB_NAME",_OPENROUTER_API_KEY="$OPENROUTER_API_KEY",_GEMINI_API_KEY="$GEMINI_API_KEY",_GEMINI_MODEL="$GEMINI_MODEL",_JWT_SECRET="$JWT_SECRET",_GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID",_GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET",_DASH_API_URL="$DASH_API_URL",_SHERLOCKED_API_URL="$SHERLOCKED_API_URL",_TEACHING_ASSISTANT_API_URL="$TEACHING_ASSISTANT_API_URL",_TUTOR_WS="$TUTOR_WS_URL",_AUTH_SERVICE_URL="$AUTH_SERVICE_URL",_FRONTEND_URL="$FRONTEND_URL" \
   .
 
 # Get actual deployed URLs
@@ -139,6 +159,7 @@ DASH_URL=$(gcloud run services describe dash-api$SERVICE_SUFFIX --region $REGION
 SHERLOCKED_URL=$(gcloud run services describe sherlocked-api$SERVICE_SUFFIX --region $REGION --format 'value(status.url)' 2>/dev/null)
 TEACHING_ASSISTANT_URL=$(gcloud run services describe teaching-assistant$SERVICE_SUFFIX --region $REGION --format 'value(status.url)' 2>/dev/null)
 TUTOR_URL=$(gcloud run services describe tutor$SERVICE_SUFFIX --region $REGION --format 'value(status.url)' 2>/dev/null)
+AUTH_SERVICE_URL=$(gcloud run services describe auth-service$SERVICE_SUFFIX --region $REGION --format 'value(status.url)' 2>/dev/null)
 FRONTEND_URL=$(gcloud run services describe tutor-frontend$SERVICE_SUFFIX --region $REGION --format 'value(status.url)' 2>/dev/null)
 
 # Convert to WSS
@@ -149,6 +170,7 @@ echo "🎉 Deployment Complete! ($ENV environment)"
 echo ""
 echo "📝 Service URLs:"
 echo "  🌐 Frontend:           $FRONTEND_URL"
+echo "  🔐 Auth Service:       $AUTH_SERVICE_URL"
 echo "  🔧 DASH API:           $DASH_URL"
 echo "  🕵️  SherlockED:         $SHERLOCKED_URL"
 echo "  👨‍🏫 TeachingAssistant:  $TEACHING_ASSISTANT_URL"
