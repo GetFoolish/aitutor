@@ -17,10 +17,12 @@ __pycache__/
 .Python
 env/
 venv/
+.venv/
 
 # Environment variables
 .env
 .env.*
+*.env
 
 # OS-specific
 .DS_Store
@@ -35,3 +37,6 @@ ehthumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+
+.cursor/

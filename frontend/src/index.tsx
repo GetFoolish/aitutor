@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import "./package/perseus/testing/perseus-init.tsx";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

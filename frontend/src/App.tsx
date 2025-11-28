@@ -18,23 +18,13 @@ import { useRef, useState, useEffect } from "react";
 import "./App.scss";
 import { LiveAPIProvider } from "./contexts/LiveAPIContext";
 import SidePanel from "./components/side-panel/SidePanel";
-import { Altair } from "./components/altair/Altair";
-import MediaMixerDisplay from "./components/media-mixer-display/MediaMixerDisplay";
 import ScratchpadCapture from "./components/scratchpad-capture/ScratchpadCapture";
 import QuestionDisplay from "./components/question-display/QuestionDisplay";
 import ControlTray from "./components/control-tray/ControlTray";
-import cn from "classnames";
-import { LiveClientOptions } from "./types";
 import Scratchpad from "./components/scratchpad/Scratchpad";
-
-const API_KEY = process.env.REACT_APP_GEMINI_API_KEY as string;
-if (typeof API_KEY !== "string") {
-  throw new Error("set REACT_APP_GEMINI_API_KEY in .env");
-}
-
-const apiOptions: LiveClientOptions = {
-  apiKey: API_KEY,
-};
+import { useMediaMixer } from "./hooks/useMediaMixer";
+import { useMediaCapture } from "./hooks/useMediaCapture";
+import "./components/media-mixer-display/media-mixer-display.scss";
 
 function App() {
   // this video reference is used for displaying the active stream, whether that is the webcam or screen capture
@@ -45,17 +35,45 @@ function App() {
   const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
   const [mixerStream, setMixerStream] = useState<MediaStream | null>(null);
   const mixerVideoRef = useRef<HTMLVideoElement>(null);
-  const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isScratchpadOpen, setScratchpadOpen] = useState(false);
 
-  useEffect(() => {
-    const ws = new WebSocket('ws://localhost:8765');
-    setSocket(ws);
+  // Ref to hold mediaMixer instance for use in callbacks
+  const mediaMixerRef = useRef<any>(null);
 
-    return () => {
-      ws.close();
-    };
-  }, []);
+  // Media capture with frame callbacks - must be called before useMediaMixer
+  const { cameraEnabled, screenEnabled, toggleCamera, toggleScreen } = useMediaCapture({
+    onCameraFrame: (imageData) => {
+      mediaMixerRef.current?.updateCameraFrame(imageData);
+    },
+    onScreenFrame: (imageData) => {
+      mediaMixerRef.current?.updateScreenFrame(imageData);
+    }
+  });
+
+  // MediaMixer hook for local video mixing - uses state from useMediaCapture
+  const mediaMixer = useMediaMixer({
+    width: 1280,
+    height: 2160,
+    fps: 10,
+    quality: 0.85,
+    cameraEnabled: cameraEnabled,
+    screenEnabled: screenEnabled
+  });
+
+  // Store mediaMixer in ref for use in callbacks
+  useEffect(() => {
+    mediaMixerRef.current = mediaMixer;
+  }, [mediaMixer]);
+
+  // Start mixer when component mounts and canvas is available
+  useEffect(() => {
+    if (mediaMixer.canvasRef.current) {
+      mediaMixer.setIsRunning(true);
+      return () => {
+        mediaMixer.setIsRunning(false);
+      };
+    }
+  }, [mediaMixer]);
 
   useEffect(() => {
     if (mixerVideoRef.current && mixerStream) {
@@ -65,13 +83,15 @@ function App() {
 
   return (
     <div className="App">
-      <LiveAPIProvider options={apiOptions}>
+      <LiveAPIProvider>
         <div className="streaming-console">
           <SidePanel />
           <main>
             <div className="main-app-area">
-              <div className="question-panel">
-                <ScratchpadCapture socket={socket}>
+              <div className="question-panel" style={{border: '2px solid red'}}>
+                <ScratchpadCapture onFrameCaptured={(imageData) => {
+                  mediaMixer.updateScratchpadFrame(imageData);
+                }}>
                   <QuestionDisplay />
                   {isScratchpadOpen && (
                     <div className="scratchpad-container">
@@ -80,17 +100,39 @@ function App() {
                   )}
                 </ScratchpadCapture>
               </div>
-              <MediaMixerDisplay socket={socket} renderCanvasRef={renderCanvasRef} />
+
+              {/* Direct canvas display - no WebSocket needed */}
+              <div className="media-mixer-display">
+                <div className="media-mixer-content">
+                  <canvas
+                    ref={(canvas) => {
+                      // Set both refs to the same canvas element
+                      mediaMixer.canvasRef.current = canvas;
+                      renderCanvasRef.current = canvas;
+                    }}
+                    width={1280}
+                    height={2160}
+                    style={{
+                      maxWidth: '100%',
+                      maxHeight: '100%',
+                      objectFit: 'contain'
+                    }}
+                  />
+                </div>
+              </div>
             </div>
 
             <ControlTray
-              socket={socket}
               renderCanvasRef={renderCanvasRef}
               videoRef={videoRef}
               supportsVideo={true}
               onVideoStreamChange={setVideoStream}
               onMixerStreamChange={setMixerStream}
               enableEditingSettings={true}
+              cameraEnabled={cameraEnabled}
+              screenEnabled={screenEnabled}
+              onToggleCamera={toggleCamera}
+              onToggleScreen={toggleScreen}
             >
               <button onClick={() => setScratchpadOpen(!isScratchpadOpen)}>
                 <span className="material-symbols-outlined">

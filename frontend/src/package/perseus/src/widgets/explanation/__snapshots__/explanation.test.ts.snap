@@ -1,0 +1,145 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Explanation should snapshot when expanded: expanded 1`] = `
+<div>
+  <div
+    class="perseus-renderer perseus-renderer-responsive"
+  >
+    <div
+      class="paragraph"
+      data-perseus-paragraph-index="0"
+    >
+      <div
+        class="paragraph"
+      >
+        Here's the explanation
+
+        <div
+          class="perseus-widget-container widget-nohighlight widget-inline"
+        >
+          <button
+            aria-controls=":r1:"
+            aria-disabled="false"
+            aria-expanded="true"
+            class="button_vr44p2-o_O-reset_1ck4g21-o_O-shared_1jpsfmg-o_O-default_nj32ps-o_O-small_tjsyec-o_O-inlineStyles_1s8anjv"
+            type="button"
+          >
+            <span
+              class="text_f1191h-o_O-BodyText_1xtvlx3-o_O-BodyTextSmallMediumWeight_1qmn0hf-o_O-text_1kowsup-o_O-smallText_v9nlfb-o_O-inlineStyles_egvfd8"
+            >
+              Hide explanation!
+            </span>
+            <div
+              class="default_xu2jcg-o_O-endIcon_zk6zd4-o_O-iconWrapper_1xbs5sz-o_O-endIconWrapper_weejk7-o_O-endIconWrapperTertiary_9p0zpt"
+            >
+              <span
+                aria-hidden="true"
+                class="svg_1q6jc65-o_O-icon_1c9fkuf-o_O-inlineStyles_1ge1p6k"
+              />
+            </div>
+          </button>
+          <div
+            aria-hidden="false"
+            class="default_xu2jcg-o_O-content_1pprw9s-o_O-contentExpanded_1ojyq0m"
+            data-testid="content-container"
+            id=":r1:"
+          >
+            <div
+              class="default_xu2jcg-o_O-contentWrapper_y9ev9r"
+            >
+              <div
+                class="perseus-renderer perseus-renderer-responsive"
+              >
+                <div
+                  class="paragraph"
+                  data-perseus-paragraph-index="0"
+                >
+                  <div
+                    class="paragraph"
+                  >
+                    This is an explanation
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+Did you get that?
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Explanation should snapshot: initial render 1`] = `
+<div>
+  <div
+    class="perseus-renderer perseus-renderer-responsive"
+  >
+    <div
+      class="paragraph"
+      data-perseus-paragraph-index="0"
+    >
+      <div
+        class="paragraph"
+      >
+        Here's the explanation
+
+        <div
+          class="perseus-widget-container widget-nohighlight widget-inline"
+        >
+          <button
+            aria-controls=":r0:"
+            aria-disabled="false"
+            aria-expanded="false"
+            class="button_vr44p2-o_O-reset_1ck4g21-o_O-shared_1jpsfmg-o_O-default_nj32ps-o_O-small_tjsyec-o_O-inlineStyles_1s8anjv"
+            type="button"
+          >
+            <span
+              class="text_f1191h-o_O-BodyText_1xtvlx3-o_O-BodyTextSmallMediumWeight_1qmn0hf-o_O-text_1kowsup-o_O-smallText_v9nlfb-o_O-inlineStyles_egvfd8"
+            >
+              Explanation
+            </span>
+            <div
+              class="default_xu2jcg-o_O-endIcon_zk6zd4-o_O-iconWrapper_1xbs5sz-o_O-endIconWrapper_weejk7-o_O-endIconWrapperTertiary_9p0zpt"
+            >
+              <span
+                aria-hidden="true"
+                class="svg_1q6jc65-o_O-icon_1c9fkuf-o_O-inlineStyles_b7oxmz"
+              />
+            </div>
+          </button>
+          <div
+            aria-hidden="true"
+            class="default_xu2jcg-o_O-content_1pprw9s-o_O-contentCollapsed_j2403j"
+            data-testid="content-container"
+            id=":r0:"
+          >
+            <div
+              class="default_xu2jcg-o_O-contentWrapper_y9ev9r"
+            >
+              <div
+                class="perseus-renderer perseus-renderer-responsive"
+              >
+                <div
+                  class="paragraph"
+                  data-perseus-paragraph-index="0"
+                >
+                  <div
+                    class="paragraph"
+                  >
+                    This is an explanation
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+Did you get that?
+      </div>
+    </div>
+  </div>
+</div>
+`;

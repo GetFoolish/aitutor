@@ -1,0 +1,226 @@
+steps:
+  # Build DashSystem API
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/dash-api${_ENV_SUFFIX}'
+      - '-f'
+      - 'services/DashSystem/Dockerfile'
+      - '.'
+    id: 'build-dash-api'
+
+  # Build SherlockED API
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/sherlocked-api${_ENV_SUFFIX}'
+      - '-f'
+      - 'services/SherlockEDApi/Dockerfile'
+      - '.'
+    id: 'build-sherlocked-api'
+
+  # Build TeachingAssistant API
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/teaching-assistant${_ENV_SUFFIX}'
+      - '-f'
+      - 'services/TeachingAssistant/Dockerfile'
+      - '.'
+    id: 'build-teaching-assistant'
+
+
+  # Build Tutor Service
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/tutor${_ENV_SUFFIX}'
+      - '-f'
+      - 'services/Tutor/Dockerfile'
+      - '.'
+    id: 'build-tutor'
+
+  # Build Frontend
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/tutor-frontend${_ENV_SUFFIX}'
+      - '-f'
+      - 'frontend/Dockerfile'
+      - --build-arg
+      - VITE_DASH_API_URL=${_DASH_API_URL}
+      - --build-arg
+      - VITE_SHERLOCKED_API_URL=${_SHERLOCKED_API_URL}
+      - --build-arg
+      - VITE_TEACHING_ASSISTANT_API_URL=${_TEACHING_ASSISTANT_API_URL}
+      - --build-arg
+      - VITE_TUTOR_WS=${_TUTOR_WS}
+      - '.'
+    id: 'build-frontend'
+    waitFor: ['build-dash-api', 'build-sherlocked-api', 'build-teaching-assistant', 'build-tutor']
+
+  # Push all images
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/dash-api${_ENV_SUFFIX}']
+    id: 'push-dash-api'
+    waitFor: ['build-dash-api']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/sherlocked-api${_ENV_SUFFIX}']
+    id: 'push-sherlocked-api'
+    waitFor: ['build-sherlocked-api']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/teaching-assistant${_ENV_SUFFIX}']
+    id: 'push-teaching-assistant'
+    waitFor: ['build-teaching-assistant']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/tutor${_ENV_SUFFIX}']
+    id: 'push-tutor'
+    waitFor: ['build-tutor']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/tutor-frontend${_ENV_SUFFIX}']
+    id: 'push-frontend'
+    waitFor: ['build-frontend']
+
+  # Deploy DashSystem API to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'dash-api${_ENV_SUFFIX}'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/dash-api${_ENV_SUFFIX}'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '8080'
+      - '--set-env-vars'
+      - 'MONGODB_URI=${_MONGODB_URI},MONGODB_DB_NAME=${_MONGODB_DB_NAME},OPENROUTER_API_KEY=${_OPENROUTER_API_KEY}'
+    id: 'deploy-dash-api'
+    waitFor: ['push-dash-api']
+
+  # Deploy SherlockED API to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'sherlocked-api${_ENV_SUFFIX}'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/sherlocked-api${_ENV_SUFFIX}'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '8080'
+      - '--set-env-vars'
+      - 'MONGODB_URI=${_MONGODB_URI},MONGODB_DB_NAME=${_MONGODB_DB_NAME}'
+    id: 'deploy-sherlocked-api'
+    waitFor: ['push-sherlocked-api']
+
+  # Deploy TeachingAssistant API to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'teaching-assistant${_ENV_SUFFIX}'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/teaching-assistant${_ENV_SUFFIX}'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '8080'
+      - '--set-env-vars'
+      - 'MONGODB_URI=${_MONGODB_URI},MONGODB_DB_NAME=${_MONGODB_DB_NAME},OPENROUTER_API_KEY=${_OPENROUTER_API_KEY}'
+    id: 'deploy-teaching-assistant'
+    waitFor: ['push-teaching-assistant']
+
+  # Deploy Tutor Service to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'tutor${_ENV_SUFFIX}'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/tutor${_ENV_SUFFIX}'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '8080'
+      - '--timeout'
+      - '3600'
+      - '--min-instances'
+      - '1'
+      - '--max-instances'
+      - '10'
+      - '--set-env-vars'
+      - 'GEMINI_API_KEY=${_GEMINI_API_KEY},GEMINI_MODEL=${_GEMINI_MODEL}'
+    id: 'deploy-tutor'
+    waitFor: ['push-tutor']
+
+  # Deploy Frontend to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'tutor-frontend${_ENV_SUFFIX}'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/tutor-frontend${_ENV_SUFFIX}'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '8080'
+    id: 'deploy-frontend'
+    waitFor: ['push-frontend']
+
+images:
+  - 'gcr.io/$PROJECT_ID/dash-api${_ENV_SUFFIX}'
+  - 'gcr.io/$PROJECT_ID/sherlocked-api${_ENV_SUFFIX}'
+  - 'gcr.io/$PROJECT_ID/teaching-assistant${_ENV_SUFFIX}'
+  - 'gcr.io/$PROJECT_ID/tutor${_ENV_SUFFIX}'
+  - 'gcr.io/$PROJECT_ID/tutor-frontend${_ENV_SUFFIX}'
+
+substitutions:
+  _ENV_SUFFIX: 'REPLACE_IN_COMMAND'
+  _MONGODB_URI: 'REPLACE_IN_COMMAND'
+  _MONGODB_DB_NAME: 'ai_tutor'
+  _OPENROUTER_API_KEY: 'REPLACE_IN_COMMAND'
+  _GEMINI_API_KEY: 'REPLACE_IN_COMMAND'
+  _GEMINI_MODEL: 'models/gemini-2.5-flash-native-audio-preview-09-2025'
+  _DASH_API_URL: 'REPLACE_IN_COMMAND'
+  _SHERLOCKED_API_URL: 'REPLACE_IN_COMMAND'
+  _TEACHING_ASSISTANT_API_URL: 'REPLACE_IN_COMMAND'
+  _TUTOR_WS: 'REPLACE_IN_COMMAND'
+
+options:
+  machineType: 'E2_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 3600s
+

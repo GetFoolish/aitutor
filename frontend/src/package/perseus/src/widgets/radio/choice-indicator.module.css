@@ -1,0 +1,120 @@
+.base {
+    appearance: none; /* Remove user agent formatting in favor of our own */
+    background-color: var(--wb-semanticColor-core-transparent);
+    border: solid var(--wb-border-width-medium)
+        var(--wb-semanticColor-core-border-neutral-strong);
+    color: var(--wb-semanticColor-core-foreground-neutral-default);
+    cursor: pointer;
+    font-family: var(--wb-font-family-sans);
+    font-size: var(--perseus-multiple-choice-indicator-font-size);
+    font-weight: var(--wb-font-weight-bold);
+    height: var(--perseus-multiple-choice-indicator-size);
+    line-height: var(--wb-font-heading-lineHeight-small);
+    outline: 0 solid var(--wb-semanticColor-core-background-instructive-default);
+    outline-offset: 0;
+    padding: 0;
+    /* Along with the `transform` property applied to the <fieldset> ancestor,
+           the following `position` property will enable the indicator to stay in a fixed place while scrolling.
+     */
+    position: fixed;
+    width: var(--perseus-multiple-choice-indicator-size);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .base {
+        transition:
+            all 0.125s,
+            outline-width 0s,
+            outline-offset 0s;
+    }
+}
+
+/* Show outline on focus, and when the choice container is hovered on devices with hover capability.
+   Since we don't have a reference to the container's class name,
+       we grab the parent element with :has(> .base)
+       and apply the ring when the parent is hovered.
+   The exception to this is when the indicator is showing correctness
+       (i.e. has the classes .is-correct or .is-wrong).
+ */
+.base:focus {
+    outline-offset: var(--wb-sizing-size_020);
+    outline-width: var(--wb-sizing-size_020);
+}
+
+@media (hover: hover) {
+    .base:hover,
+    :has(> .base):hover .base:not(:where(.is-correct, .is-wrong)) {
+        outline-offset: var(--wb-sizing-size_020);
+        outline-width: var(--wb-sizing-size_020);
+    }
+}
+
+/* button is checked */
+.base[aria-pressed="true"] {
+    background-color: var(
+        --wb-semanticColor-core-background-instructive-default
+    );
+    border-width: 0;
+    color: var(--wb-semanticColor-core-foreground-knockout-default);
+}
+
+/* Icon inside the button when showing correctness */
+.icon {
+    /* The size of the icon, and the space between the icon and the choice letter
+           should scale visually with the font-size.
+       Even though the checkbox is an icon, it is acting like text (i.e. similar to unicode icons).
+       If we change the font size of the letter, we want the icon to scale proportionally.
+       The space between the icon and the letter should also be proportional to their size.
+       By setting the width, height, and margin to an em unit,
+           we don't have to worry about adjusting these if we change the font size of the letter,
+           and it will scale with any user-based font-size changes.
+       The height and width of the icon is calculated based upon the revised specs,
+           which end up being this weird fraction.
+     */
+    margin-inline-end: calc(1em / 3) !important;
+    height: calc(7em / 6) !important;
+    width: calc(7em / 6) !important;
+}
+
+.is-correct,
+.is-wrong {
+    cursor: default;
+}
+
+@media (hover: hover) {
+    .is-correct:hover,
+    .is-wrong:hover {
+        outline: none;
+    }
+}
+
+.is-correct[aria-pressed="true"] {
+    background-color: var(--wb-semanticColor-core-background-success-strong);
+    color: var(--wb-semanticColor-core-foreground-knockout-default);
+    width: var(--perseus-multiple-choice-indicator-correct-size);
+}
+
+.is-wrong {
+    background-color: var(--wb-semanticColor-core-transparent);
+    border-color: var(--wb-semanticColor-core-border-disabled-strong);
+    color: var(--wb-semanticColor-core-foreground-neutral-subtle);
+}
+
+.circle-shape {
+    /* Why set border-radius to 100vh?
+       Extremely large border radii cause an overlap situation,
+           resulting in a recalculation to the smallest radius that doesn't cause overlap,
+           and applying the reduction proportionally across all radii.
+       https://drafts.csswg.org/css-backgrounds/#corner-overlap
+       Using this method of rounding the edges instead of specifying a pre-determined amount
+           in order to make the measurement relative to the size of the button.
+       In the case where the single-select indicator has multiple elements in its content (like a checkmark),
+           the shape changes from a circle to a gel-capsule.
+       This property setting automatically handles that case without the need for JS logic.
+    */
+    border-radius: 100vh;
+}
+
+.square-shape {
+    border-radius: var(--wb-sizing-size_040);
+}

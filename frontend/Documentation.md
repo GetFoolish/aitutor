@@ -1,0 +1,2 @@
+## About `new_run_tutor.sh` 
+- The script starts your virtual environment if it exists, dynamically locates and uses the python package from the virtual environment in starting the python servers. If no `.env` file is found it prompts the user to create one and intall dependencies. Useful for when running on a remote server or vps through ssh. Because enviromnent are dynamically figured out and not hard coded.

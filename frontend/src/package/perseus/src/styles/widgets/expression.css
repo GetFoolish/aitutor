@@ -1,0 +1,10 @@
+.perseus-widget-expression {
+    position: relative;
+}
+.perseus-widget-expression > span {
+    display: inline-block;
+    vertical-align: middle;
+}
+.perseus-widget-expression .perseus-formats-tooltip {
+    width: 190px;
+}

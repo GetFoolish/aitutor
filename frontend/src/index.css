@@ -1,3 +1,6 @@
+/* src/index.css or src/App.css */
+@import "tailwindcss";
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -10,4 +13,138 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Core dropdown container */
+.framework-perseus [data-testid="dropdown-core-container"] {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  min-width: 160px;
+  padding: 4px 0;
+  z-index: 1000;
+}
+
+/* Listbox items */
+.framework-perseus [data-testid="dropdown-core-container"] [role="option"] {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #333;
+  background: #f0f0f0;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+/* Hover + focus states */
+.framework-perseus [data-testid="dropdown-core-container"] [role="option"]:hover:not([aria-disabled="true"]),
+.framework-perseus [data-testid="dropdown-core-container"] [role="option"][aria-selected="true"] {
+  background: #f5f5f5;
+}
+
+/* Disabled option */
+.framework-perseus [data-testid="dropdown-core-container"] [role="option"][aria-disabled="true"] {
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+
+/* Target Perseus input fields safely */
+.framework-perseus input[data-testid="input-with-examples"] {
+  border: 2px solid #1c1d1e !important; /* customize color */
+  border-radius: 6px !important;        /* keep it rounded */
+  padding: 6px 10px !important;         /* add breathing room */
+  box-sizing: border-box !important;    /* ensure padding doesn’t mess width */
+}
+
+/* Optional: change border on focus */
+.framework-perseus input[data-testid="input-with-examples"]:focus {
+  border-color: #1c1d1e !important;   /* brighter border on focus */
+  outline: none !important;           /* remove default outline */
+  box-shadow: 0 0 0 2px rgba(0,119,204,0.2) !important; /* subtle glow */
+}
+
+td {
+  background-color: #f0f0f0 !important;
+}
+
+.description button {
+  background-color: #f0f0f0 !important;
+}
+
+/* DROPDOWN TRIGGER BUTTON */
+.perseus-dropdown > button[role="combobox"] {
+  background: #fff !important;
+  border: 1px solid #ccc !important;
+  border-radius: 6px !important;
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+  color: #333 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 200px !important; /* adjust as needed */
+  cursor: pointer !important;
+}
+
+.perseus-dropdown > button[role="combobox"]:hover {
+  border-color: #888 !important;
+}
+
+.perseus-dropdown > button[role="combobox"][aria-expanded="true"] {
+  border-color: #4a90e2 !important;
+  box-shadow: 0 0 0 2px rgba(74,144,226,0.2) !important;
+}
+
+/* CARET ICON */
+.perseus-dropdown > button[role="combobox"] > span:last-child {
+  margin-left: auto !important;
+  transition: transform 0.2s ease !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6.5 9l5.5 5 5.5-5' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+}
+
+.perseus-dropdown > button[role="combobox"][aria-expanded="true"] 
+  .svg_1q6jc65-o_O-icon_1t6z7z6 {
+  transform: rotate(180deg) !important;
+}
+
+/* POPPER MENU */
+[data-testid="dropdown-core-container"] {
+  background: #fff !important;
+  border: 1px solid #ddd !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08) !important;
+  min-width: 200px !important;
+  padding: 4px 0 !important ;
+  z-index: 1000 !important;
+}
+
+/* MENU OPTIONS */
+[data-testid="dropdown-core-container"] [role="option"] {
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+  color: #333 !important;
+  background: #fff !important;
+  border: none !important;
+  text-align: left !important ;
+  cursor: pointer !important;
+  width: 100% !important;
+}
+
+[data-testid="dropdown-core-container"] [role="option"]:hover:not([aria-disabled="true"]),
+[data-testid="dropdown-core-container"] [role="option"][aria-selected="true"] {
+  background: #f5f5f5 !important;
+}
+
+[data-testid="dropdown-core-container"] [role="option"][aria-disabled="true"] {
+  color: #aaa !important;
+  cursor: not-allowed !important;
+}
+
+a[target="lint-help-window"] {
+  display: none !important;
 }

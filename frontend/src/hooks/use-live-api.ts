@@ -15,30 +15,27 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { GenAILiveClient } from "../lib/genai-live-client";
-import { LiveClientOptions } from "../types";
+import { GenAIProxyClient } from "../lib/genai-proxy-client";
 import { AudioStreamer } from "../lib/audio-streamer";
 import { audioContext } from "../lib/utils";
 import VolMeterWorket from "../lib/worklets/vol-meter";
 import { LiveConnectConfig } from "@google/genai";
 
 export type UseLiveAPIResults = {
-  client: GenAILiveClient;
+  client: GenAIProxyClient;
   setConfig: (config: LiveConnectConfig) => void;
   config: LiveConnectConfig;
-  model: string;
-  setModel: (model: string) => void;
   connected: boolean;
   connect: () => Promise<void>;
   disconnect: () => Promise<void>;
+  interruptAudio: () => void;
   volume: number;
 };
 
-export function useLiveAPI(options: LiveClientOptions): UseLiveAPIResults {
-  const client = useMemo(() => new GenAILiveClient(options), [options]);
+export function useLiveAPI(): UseLiveAPIResults {
+  const client = useMemo(() => new GenAIProxyClient(), []);
   const audioStreamerRef = useRef<AudioStreamer | null>(null);
 
-  const [model, setModel] = useState<string>("models/gemini-2.0-flash-exp");
   const [config, setConfig] = useState<LiveConnectConfig>({});
   const [connected, setConnected] = useState(false);
   const [volume, setVolume] = useState(0);
@@ -100,23 +97,26 @@ export function useLiveAPI(options: LiveClientOptions): UseLiveAPIResults {
       throw new Error("config has not been set");
     }
     client.disconnect();
-    await client.connect(model, config);
-  }, [client, config, model]);
+    await client.connect(config);
+  }, [client, config]);
 
   const disconnect = useCallback(async () => {
     client.disconnect();
     setConnected(false);
   }, [setConnected, client]);
 
+  const interruptAudio = useCallback(() => {
+    audioStreamerRef.current?.stop();
+  }, []);
+
   return {
     client,
     config,
     setConfig,
-    model,
-    setModel,
     connected,
     connect,
     disconnect,
+    interruptAudio,
     volume,
   };
 }

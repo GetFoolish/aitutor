@@ -156,15 +156,15 @@ body {
     width: 100%;
   }
 
-  .question-panel {
-    position: relative;
-    display: flex;
-    flex: 2;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-  }
+.question-panel {
+  position: relative;
+  display: flex;
+  flex: 2;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* push content towards top */
+  height: 100vh;
+}
 
   .media-mixer-display {
     display: flex;

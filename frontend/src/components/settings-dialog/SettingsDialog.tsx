@@ -9,7 +9,7 @@ import "./settings-dialog.scss";
 import { useLiveAPIContext } from "../../contexts/LiveAPIContext";
 import VoiceSelector from "./VoiceSelector";
 import ResponseModalitySelector from "./ResponseModalitySelector";
-import { FunctionDeclaration, LiveConnectConfig, Tool } from "@google/genai";
+import { FunctionDeclaration, LiveConnectConfig, Modality, Tool } from "@google/genai";
 
 type FunctionDeclarationsTool = Tool & {
   functionDeclarations: FunctionDeclaration[];
@@ -18,7 +18,6 @@ type FunctionDeclarationsTool = Tool & {
 export default function SettingsDialog() {
   const [open, setOpen] = useState(false);
   const { config, setConfig, connected } = useLiveAPIContext();
-  const [basePrompt, setBasePrompt] = useState("");
   const [userPrompt, setUserPrompt] = useState("");
 
   const functionDeclarations: FunctionDeclaration[] = useMemo(() => {
@@ -35,21 +34,19 @@ export default function SettingsDialog() {
   }, [config]);
 
   useEffect(() => {
-    const fetchPrompt = async () => {
-      try {
-        const response = await fetch('/ai_tutor_system_prompt.md');
-        const promptText = await response.text();
-        setBasePrompt(promptText);
-        setConfig({
-          ...config,
-          systemInstruction: promptText,
-        });
-      } catch (error) {
-        console.error('Error fetching system prompt:', error);
+    // Set initial config with audio requirements for gemini-2.5-flash-native-audio-preview
+    // System prompt is now loaded by the backend
+    setConfig({
+      ...config,
+      responseModalities: [Modality.AUDIO],
+      speechConfig: {
+        voiceConfig: {
+          prebuiltVoiceConfig: {
+            voiceName: "Puck"
+          }
+        }
       }
-    };
-
-    fetchPrompt();
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -57,14 +54,14 @@ export default function SettingsDialog() {
     (event: ChangeEvent<HTMLTextAreaElement>) => {
       const newUserPrompt = event.target.value;
       setUserPrompt(newUserPrompt);
-      const combinedPrompt = `${basePrompt}\n${newUserPrompt}`;
+      // Backend handles base prompt, we just send additional instructions
       const newConfig: LiveConnectConfig = {
         ...config,
-        systemInstruction: combinedPrompt.trim(),
+        systemInstruction: newUserPrompt.trim(),
       };
       setConfig(newConfig);
     },
-    [basePrompt, config, setConfig]
+    [config, setConfig]
   );
 
   const updateFunctionDescription = useCallback(
