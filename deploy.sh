@@ -98,19 +98,19 @@ else
     # Use placeholders if services don't exist yet (first deployment)
     if [ -z "$DASH_API_URL" ]; then
         echo "⚠️  DASH API not found. Will be created on first deployment"
-        DASH_API_URL="https://dash-api-PLACEHOLDER.us-central1.run.app"
+        DASH_API_URL="https://dash-api-utmfhquz6a-uc.a.run.app"
     fi
     if [ -z "$SHERLOCKED_API_URL" ]; then
         echo "⚠️  SherlockED API not found. Will be created on first deployment"
-        SHERLOCKED_API_URL="https://sherlocked-api-PLACEHOLDER.us-central1.run.app"
+        SHERLOCKED_API_URL="https://sherlocked-api-utmfhquz6a-uc.a.run.app"
     fi
     if [ -z "$TEACHING_ASSISTANT_API_URL" ]; then
         echo "⚠️  TeachingAssistant API not found. Will be created on first deployment"
-        TEACHING_ASSISTANT_API_URL="https://teaching-assistant-PLACEHOLDER.us-central1.run.app"
+        TEACHING_ASSISTANT_API_URL="https://teaching-assistant-utmfhquz6a-uc.a.run.app"
     fi
     if [ -z "$TUTOR_URL" ]; then
         echo "⚠️  Tutor service not found. Will be created on first deployment"
-        TUTOR_URL="https://tutor-PLACEHOLDER.us-central1.run.app"
+        TUTOR_URL="https://tutor-utmfhquz6a-uc.a.run.app"
     fi
 fi
 
