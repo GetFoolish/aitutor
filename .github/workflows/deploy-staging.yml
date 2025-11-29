@@ -36,6 +36,7 @@ jobs:
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> $GITHUB_ENV
           echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> $GITHUB_ENV
+          echo "CORS_ORIGINS=https://tutor-frontend-staging-utmfhquz6a-uc.a.run.app" >> $GITHUB_ENV
 
       - name: Deploy to staging
         run: |

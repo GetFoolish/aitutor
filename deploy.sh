@@ -21,17 +21,7 @@ echo ""
 # Set the project
 gcloud config set project $PROJECT_ID
 
-# Set default CORS origins based on environment
-# CORS_ORIGINS specifies which frontend origins can make requests to the backend APIs
-if [ "$ENV" = "staging" ]; then
-    DEFAULT_CORS_ORIGINS="http://localhost:3000,http://localhost:5173,https://tutor-frontend-staging-utmfhquz6a-uc.a.run.app"
-else
-    # Production frontend URL (from GitHub Actions logs)
-    DEFAULT_CORS_ORIGINS="http://localhost:3000,http://localhost:5173,https://tutor-frontend-utmfhquz6a-uc.a.run.app"
-fi
-
-# Use environment variable or default
-CORS_ORIGINS=${CORS_ORIGINS:-$DEFAULT_CORS_ORIGINS}
+# CORS_ORIGINS is now set explicitly in GitHub Actions workflows
 
 # Validate required environment variables
 REQUIRED_VARS=("MONGODB_URI" "MONGODB_DB_NAME" "OPENROUTER_API_KEY" "GEMINI_API_KEY" "JWT_SECRET" "GOOGLE_CLIENT_ID" "GOOGLE_CLIENT_SECRET")
