@@ -28,14 +28,11 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Auth Service")
 
-# Configure CORS with environment-specific origins
-cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:5173,https://tutor-frontend-staging-utmfhquz6a-uc.a.run.app")
-origins = [origin.strip() for origin in cors_origins.split(",")]
-
+# Configure CORS - allow all origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,  # Must be False when allow_origins=["*"]
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"],

@@ -10,14 +10,11 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Configure CORS with environment-specific origins
-cors_origins = os.getenv("CORS_ORIGINS", "http://localhost,http://localhost:3000,https://tutor-frontend-staging-utmfhquz6a-uc.a.run.app")
-origins = [origin.strip() for origin in cors_origins.split(",")]
-
+# Configure CORS - allow all origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,  # Must be False when allow_origins=["*"]
     allow_methods=["*"],  # Includes OPTIONS for preflight
     allow_headers=["*"],
     expose_headers=["*"],

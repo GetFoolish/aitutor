@@ -12,14 +12,11 @@ from shared.auth_middleware import get_current_user
 
 app = FastAPI(title="Teaching Assistant API")
 
-# Configure CORS with environment-specific origins
-cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:5173,https://tutor-frontend-staging-utmfhquz6a-uc.a.run.app")
-origins = [origin.strip() for origin in cors_origins.split(",")]
-
+# Configure CORS - allow all origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,  # Must be False when allow_origins=["*"]
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],  # Explicitly include OPTIONS
     allow_headers=["*"],
     expose_headers=["*"],
@@ -33,10 +30,9 @@ async def options_handler(full_path: str):
     return Response(
         status_code=200,
         headers={
-            "Access-Control-Allow-Origin": "https://tutor-frontend-staging-utmfhquz6a-uc.a.run.app",
+            "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS, PATCH",
             "Access-Control-Allow-Headers": "*",
-            "Access-Control-Allow-Credentials": "true",
         }
     )
 
