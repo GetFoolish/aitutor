@@ -153,10 +153,14 @@ echo ""
 # Submit build with substitutions
 # Use alternate delimiter (^@^) to handle commas in CORS_ORIGINS
 # The ^@^ syntax tells gcloud to use @ as delimiter instead of comma
+# Encode MONGODB_URI in base64 to prevent Cloud Build substitution conflicts
 echo "📤 Submitting Cloud Build job..."
+# Base64 encode the MongoDB URI to avoid special character issues
+# Use Python for cross-platform base64 encoding (works on Linux, macOS, Windows)
+ENCODED_MONGODB_URI=$(python3 -c "import base64, sys; print(base64.b64encode('$MONGODB_URI'.encode('utf-8')).decode('utf-8'))" 2>/dev/null || python -c "import base64, sys; print(base64.b64encode('$MONGODB_URI'.encode('utf-8')).decode('utf-8'))")
 gcloud builds submit \
   --config=$CONFIG_FILE \
-  --substitutions=^@^_ENV_SUFFIX="$ENV_SUFFIX_SUB"@_MONGODB_URI="$MONGODB_URI"@_MONGODB_DB_NAME="$MONGODB_DB_NAME"@_OPENROUTER_API_KEY="$OPENROUTER_API_KEY"@_GEMINI_API_KEY="$GEMINI_API_KEY"@_GEMINI_MODEL="$GEMINI_MODEL"@_JWT_SECRET="$JWT_SECRET"@_GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID"@_GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET"@_DASH_API_URL="$DASH_API_URL"@_SHERLOCKED_API_URL="$SHERLOCKED_API_URL"@_TEACHING_ASSISTANT_API_URL="$TEACHING_ASSISTANT_API_URL"@_TUTOR_WS="$TUTOR_WS_URL"@_AUTH_SERVICE_URL="$AUTH_SERVICE_URL"@_FRONTEND_URL="$FRONTEND_URL"@_CORS_ORIGINS="$CORS_ORIGINS" \
+  --substitutions=^@^_ENV_SUFFIX="$ENV_SUFFIX_SUB"@_MONGODB_URI="$ENCODED_MONGODB_URI"@_MONGODB_DB_NAME="$MONGODB_DB_NAME"@_OPENROUTER_API_KEY="$OPENROUTER_API_KEY"@_GEMINI_API_KEY="$GEMINI_API_KEY"@_GEMINI_MODEL="$GEMINI_MODEL"@_JWT_SECRET="$JWT_SECRET"@_GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID"@_GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET"@_DASH_API_URL="$DASH_API_URL"@_SHERLOCKED_API_URL="$SHERLOCKED_API_URL"@_TEACHING_ASSISTANT_API_URL="$TEACHING_ASSISTANT_API_URL"@_TUTOR_WS="$TUTOR_WS_URL"@_AUTH_SERVICE_URL="$AUTH_SERVICE_URL"@_FRONTEND_URL="$FRONTEND_URL"@_CORS_ORIGINS="$CORS_ORIGINS" \
   .
 
 # Get actual deployed URLs
