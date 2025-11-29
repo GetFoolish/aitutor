@@ -6,7 +6,7 @@ import glob
 import random
 import logging
 from typing import List, Dict, Optional
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -24,15 +24,18 @@ logger = logging.getLogger(__name__)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from services.DashSystem.dash_system import DASHSystem, Question
+from shared.auth_middleware import get_current_user
 
 app = FastAPI()
 dash_system = DASHSystem()
 
-# Configure CORS - must be added before routes
-# FastAPI's CORSMiddleware automatically handles OPTIONS preflight requests
+# Configure CORS with environment-specific origins
+cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,https://tutor-frontend-staging-utmfhquz6a-uc.a.run.app")
+origins = [origin.strip() for origin in cors_origins.split(",")]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "https://tutor-frontend-staging-utmfhquz6a-uc.a.run.app"],  # Allows the React frontend to connect
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],  # Includes OPTIONS for preflight
     allow_headers=["*"],
@@ -233,15 +236,18 @@ def load_perseus_items_from_dir(directory: str, limit: Optional[int] = None) -> 
     return all_items
 
 @app.get("/api/questions/{sample_size}", response_model=List[PerseusQuestion])
-def get_questions_with_dash_intelligence(sample_size: int, user_id: str = "default_user"):
+def get_questions_with_dash_intelligence(request: Request, sample_size: int):
     """
     Gets questions using DASH intelligence but returns full Perseus items.
     Uses DASH to intelligently select questions based on learning journey and adaptive difficulty.
     
     Args:
+        request: FastAPI request object (for JWT extraction)
         sample_size: Number of questions to return
-        user_id: Unique identifier for the user (age fetched from MongoDB)
     """
+    # Get user_id from JWT token
+    user_id = get_current_user(request)
+    
     logger.info(f"\n{'='*80}")
     logger.info(f"[NEW_SESSION] Requesting {sample_size} questions for user: {user_id}")
     logger.info(f"{'='*80}\n")
@@ -286,9 +292,12 @@ def get_questions_with_dash_intelligence(sample_size: int, user_id: str = "defau
     # Return all questions (all selected by DASH with full intelligence)
     return perseus_items
 
-@app.post("/api/question-displayed/{user_id}")
-def log_question_displayed(user_id: str, display_info: dict):
+@app.post("/api/question-displayed")
+def log_question_displayed(request: Request, display_info: dict):
     """Log when student views a question (Next button clicked)"""
+    
+    # Get user_id from JWT token
+    user_id = get_current_user(request)
     
     idx = display_info.get('question_index', 0)
     metadata = display_info.get('metadata', {})
@@ -325,12 +334,15 @@ def log_question_displayed(user_id: str, display_info: dict):
     logger.info(f"{'='*80}\n")
     return {"success": True}
 
-@app.get("/next-question/{user_id}", response_model=Question)
-def get_next_question(user_id: str):
+@app.get("/next-question", response_model=Question)
+def get_next_question(request: Request):
     """
     Gets the next recommended question for a given user.
     (Original endpoint kept for backward compatibility)
     """
+    # Get user_id from JWT token
+    user_id = get_current_user(request)
+    
     # Ensure the user exists and is loaded
     dash_system.load_user_or_create(user_id)
     
@@ -349,12 +361,15 @@ class AnswerSubmission(BaseModel):
     is_correct: bool
     response_time_seconds: float
 
-@app.post("/api/submit-answer/{user_id}")
-def submit_answer(user_id: str, answer: AnswerSubmission):
+@app.post("/api/submit-answer")
+def submit_answer(request: Request, answer: AnswerSubmission):
     """
     Record a question attempt and update DASH system.
     This enables tracking and adaptive difficulty.
     """
+    # Get user_id from JWT token
+    user_id = get_current_user(request)
+    
     logger.info(f"\n{'-'*80}")
     
     user_profile = dash_system.user_manager.load_user(user_id)

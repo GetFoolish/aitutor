@@ -378,3 +378,115 @@ class UserManager:
         
         user_files = [f for f in os.listdir(self.users_folder) if f.endswith('.json')]
         return [f[:-5] for f in user_files]  # Remove .json extension
+    
+    def get_user_by_google_id(self, google_id: str) -> Optional[UserProfile]:
+        """Get user by Google ID"""
+        if not self.use_mongodb or not self.mongo:
+            raise RuntimeError("MongoDB is required. Please configure MONGODB_URI in .env file.")
+        
+        try:
+            data = self.mongo.users.find_one({"google_id": google_id})
+            
+            if not data:
+                return None
+            
+            # Remove MongoDB _id field
+            data.pop('_id', None)
+            
+            user_profile = UserProfile.from_dict(data)
+            logger.info(f"[MONGODB] Loaded user by Google ID: {google_id} -> {user_profile.user_id}")
+            return user_profile
+            
+        except Exception as e:
+            logger.error(f"[ERROR] Error loading user by Google ID {google_id}: {e}")
+            return None
+    
+    def create_google_user(
+        self,
+        google_id: str,
+        email: str,
+        name: str,
+        age: int,
+        picture: str = "",
+        user_type: str = "student"
+    ) -> UserProfile:
+        """
+        Create a new user from Google OAuth
+        
+        Args:
+            google_id: Google user ID
+            email: Google email
+            name: Display name
+            age: Student age
+            picture: Profile picture URL
+            user_type: User type (always "student" for now)
+            
+        Returns:
+            Created UserProfile
+        """
+        import uuid
+        
+        # Generate unique user_id
+        user_id = f"user_{uuid.uuid4().hex[:12]}"
+        
+        # Calculate grade from age
+        current_grade = calculate_grade_from_age(age)
+        
+        # Get all skills for cold-start initialization
+        from services.DashSystem.dash_system import DASHSystem
+        dash_system = DASHSystem()
+        all_skills = dash_system.skills
+        
+        # Initialize skills based on grade
+        skill_states = self.initialize_skills_for_grade(current_grade, all_skills)
+        
+        current_time = time.time()
+        
+        user_profile = UserProfile(
+            user_id=user_id,
+            created_at=current_time,
+            last_updated=current_time,
+            skill_states=skill_states,
+            question_history=[],
+            student_notes={},
+            age=age,
+            current_grade=current_grade
+        )
+        
+        # Save to MongoDB with Google OAuth fields
+        user_dict = user_profile.to_dict()
+        user_dict.update({
+            "google_id": google_id,
+            "google_email": email,
+            "google_name": name,
+            "google_picture": picture,
+            "user_type": user_type,
+            "last_login": current_time,
+            "is_active": True
+        })
+        
+        # Save to MongoDB
+        if not self.use_mongodb or not self.mongo:
+            raise RuntimeError("MongoDB is required. Please configure MONGODB_URI in .env file.")
+        
+        try:
+            self.mongo.users.insert_one(user_dict)
+            logger.info(f"[MONGODB] Created Google OAuth user: {user_id} (age: {age}, grade: {current_grade})")
+        except Exception as e:
+            logger.error(f"[ERROR] Error saving Google OAuth user: {e}")
+            raise RuntimeError(f"Failed to save user to MongoDB: {e}")
+        
+        return user_profile
+    
+    def update_last_login(self, user_id: str):
+        """Update last login timestamp"""
+        if not self.use_mongodb or not self.mongo:
+            return
+        
+        try:
+            self.mongo.users.update_one(
+                {"user_id": user_id},
+                {"$set": {"last_login": time.time()}}
+            )
+        except Exception as e:
+            logger.error(f"[ERROR] Error updating last login for {user_id}: {e}")

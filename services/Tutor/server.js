@@ -5,6 +5,8 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
+import { parse } from 'url';
 
 // Load environment variables from root .env (optional - Cloud Run uses env vars directly)
 const __filename = fileURLToPath(import.meta.url);
@@ -20,6 +22,7 @@ try {
 const PORT = process.env.PORT || 8767;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'models/gemini-2.5-flash-native-audio-preview-09-2025';
+const JWT_SECRET = process.env.JWT_SECRET || 'change-me-in-production';
 
 // Load system prompt (with error handling)
 let SYSTEM_PROMPT = '';
@@ -56,11 +59,8 @@ const wss = new WebSocketServer({ noServer: true });
 server.on('upgrade', (request, socket, head) => {
   // Validate origin for security (optional but recommended)
   const origin = request.headers.origin;
-  const allowedOrigins = [
-    'http://localhost:3000',
-    'http://localhost:5173',
-    'https://tutor-frontend-staging-utmfhquz6a-uc.a.run.app'
-  ];
+  const corsOrigins = process.env.CORS_ORIGINS || 'http://localhost:3000,http://localhost:5173,https://tutor-frontend-staging-utmfhquz6a-uc.a.run.app';
+  const allowedOrigins = corsOrigins.split(',').map(origin => origin.trim());
   
   // Allow WebSocket connections from allowed origins or if no origin (direct connection)
   // Cloud Run may not always send origin header, so we allow connections without origin
@@ -71,10 +71,42 @@ server.on('upgrade', (request, socket, head) => {
     return;
   }
   
-  // Accept WebSocket upgrade on any path (root path is used by frontend)
-  wss.handleUpgrade(request, socket, head, (ws) => {
-    wss.emit('connection', ws, request);
-  });
+  // Extract and validate JWT token from query parameters
+  const parsedUrl = parse(request.url, true);
+  const token = parsedUrl.query.token;
+  
+  if (!token) {
+    console.warn('⚠️  WebSocket connection rejected: missing token');
+    socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+    socket.destroy();
+    return;
+  }
+  
+  // Verify JWT token
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user_id = decoded.sub;
+    
+    if (!user_id) {
+      throw new Error('Invalid token: missing user_id');
+    }
+    
+    // Store user_id in request for later use
+    request.user_id = user_id;
+    console.log(`✅ WebSocket connection authenticated for user: ${user_id}`);
+    
+    // Accept WebSocket upgrade
+    wss.handleUpgrade(request, socket, head, (ws) => {
+      // Attach user_id to WebSocket connection
+      ws.user_id = user_id;
+      wss.emit('connection', ws, request);
+    });
+  } catch (error) {
+    console.warn(`⚠️  WebSocket connection rejected: invalid token - ${error.message}`);
+    socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+    socket.destroy();
+    return;
+  }
 });
 
 // Start the HTTP server (which also handles WebSocket upgrades)
@@ -96,8 +128,9 @@ server.on('error', (error) => {
   process.exit(1);
 });
 
-wss.on('connection', (clientWs) => {
-  console.log('✅ Frontend client connected');
+wss.on('connection', (clientWs, request) => {
+  const user_id = clientWs.user_id || request.user_id || 'unknown';
+  console.log(`✅ Frontend client connected (user: ${user_id})`);
   
   let geminiSession = null;
   let geminiClient = null;

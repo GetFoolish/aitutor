@@ -90,7 +90,16 @@ export class GenAIProxyClient extends EventEmitter<LiveClientEventTypes> {
 
     // Connect to backend (use environment variable with fallback for local dev)
     const tutorWsUrl = import.meta.env.VITE_TUTOR_WS || "ws://localhost:8767";
-    this.ws = new WebSocket(tutorWsUrl);
+    
+    // Get JWT token from localStorage
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+    
+    // Add token to WebSocket URL
+    const wsUrlWithToken = `${tutorWsUrl}?token=${encodeURIComponent(token)}`;
+    this.ws = new WebSocket(wsUrlWithToken);
 
     this.ws.onopen = () => {
       console.log("Connected to Tutor backend");

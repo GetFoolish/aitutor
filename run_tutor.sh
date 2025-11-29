@@ -3,6 +3,28 @@
 # Get the directory where the script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
+# Load environment variables from .env file if it exists
+if [[ -f ".env" ]]; then
+    echo "Loading environment variables from .env file..."
+    # Read .env file and export variables (works on Windows/Git Bash)
+    while IFS='=' read -r key value; do
+        # Skip comments and empty lines
+        [[ $key =~ ^[[:space:]]*#.*$ ]] && continue
+        [[ -z "$key" ]] && continue
+        # Remove leading/trailing whitespace
+        key=$(echo "$key" | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
+        # Remove quotes from value if present
+        value=$(echo "$value" | sed 's/^"//' | sed 's/"$//' | sed "s/^'//" | sed "s/'$//")
+        # Export the variable
+        export "$key=$value"
+        echo "  Loaded: $key"
+    done < .env
+    echo "✅ Environment variables loaded from .env"
+else
+    echo "⚠️  No .env file found. Using default values."
+    echo "   Create a .env file with your MongoDB Atlas URI and other config."
+fi
+
 # Clean up old logs and create a fresh logs directory
 rm -rf "$SCRIPT_DIR/logs"
 mkdir -p "$SCRIPT_DIR/logs"
@@ -96,15 +118,21 @@ echo "Starting TeachingAssistant API server... Logs -> logs/teaching_assistant.l
 (cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/TeachingAssistant/api.py) > "$SCRIPT_DIR/logs/teaching_assistant.log" 2>&1 &
 pids+=($!)
 
+# Start the Auth Service API server in the background
+echo "Starting Auth Service API server... Logs -> logs/auth_service.log"
+(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/AuthService/auth_api.py) > "$SCRIPT_DIR/logs/auth_service.log" 2>&1 &
+pids+=($!)
+
 # Give the backend servers a moment to start
 echo "Waiting for backend services to initialize..."
 sleep 3
 
 # Extract ports dynamically from configuration files
 FRONTEND_PORT=$(grep -o '"port":[[:space:]]*[0-9]*' "$SCRIPT_DIR/frontend/vite.config.ts" 2>/dev/null | grep -o '[0-9]*' || echo "3000")
-DASH_API_PORT=$(grep -o 'port=[0-9]*' "$SCRIPT_DIR/services/DashSystem/dash_api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8000")
-SHERLOCKED_API_PORT=$(grep -o 'port=[0-9]*' "$SCRIPT_DIR/services/SherlockEDApi/run_backend.py" 2>/dev/null | grep -o '[0-9]*' || echo "8001")
-TEACHING_ASSISTANT_PORT=$(grep -o 'port.*[0-9]*' "$SCRIPT_DIR/services/TeachingAssistant/api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8002")
+DASH_API_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/DashSystem/dash_api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8000")
+SHERLOCKED_API_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/SherlockEDApi/run_backend.py" 2>/dev/null | grep -o '[0-9]*' || echo "8001")
+TEACHING_ASSISTANT_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/TeachingAssistant/api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8002")
+AUTH_SERVICE_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/AuthService/auth_api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8003")
 
 # Start the Node.js frontend in the background
 echo "Starting Node.js frontend... Logs -> logs/frontend.log"
@@ -115,6 +143,7 @@ echo "Tutor is running with the following PIDs: ${pids[*]}"
 echo ""
 echo "📡 Service URLs:"
 echo "  🌐 Frontend:           http://localhost:$FRONTEND_PORT"
+echo "  🔐 Auth Service:       http://localhost:$AUTH_SERVICE_PORT"
 echo "  🔧 DASH API:           http://localhost:$DASH_API_PORT"
 echo "  🕵️  SherlockED API:     http://localhost:$SHERLOCKED_API_PORT"
 echo "  👨‍🏫 TeachingAssistant:  http://localhost:$TEACHING_ASSISTANT_PORT"

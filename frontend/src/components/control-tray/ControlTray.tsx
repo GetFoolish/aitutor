@@ -3,6 +3,8 @@ import { memo, ReactNode, RefObject, useEffect, useRef, useState } from 'react';
 import { useLiveAPIContext } from '../../contexts/LiveAPIContext';
 import { useMediaCapture } from '../../hooks/useMediaCapture';
 import { AudioRecorder } from '../../lib/audio-recorder';
+import { jwtUtils } from '../../lib/jwt-utils';
+import { apiUtils } from '../../lib/api-utils';
 import AudioPulse from '../audio-pulse/AudioPulse';
 import './control-tray.scss';
 import SettingsDialog from '../settings-dialog/SettingsDialog';
@@ -104,14 +106,12 @@ function ControlTray({
       turnCompleteRef.current = true;
       
       if (connected) {
-        fetch(`${TEACHING_ASSISTANT_API_URL}/conversation/turn`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }).catch((error) => {
-          console.error('Failed to record conversation turn:', error);
-        });
+        const token = jwtUtils.getToken();
+        if (token) {
+          apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/conversation/turn`).catch((error) => {
+            console.error('Failed to record conversation turn:', error);
+          });
+        }
       }
     };
 
@@ -119,14 +119,12 @@ function ControlTray({
       turnCompleteRef.current = true;
       
       if (connected) {
-        fetch(`${TEACHING_ASSISTANT_API_URL}/conversation/turn`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }).catch((error) => {
-          console.error('Failed to record conversation turn:', error);
-        });
+        const token = jwtUtils.getToken();
+        if (token) {
+          apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/conversation/turn`).catch((error) => {
+            console.error('Failed to record conversation turn:', error);
+          });
+        }
       }
     };
 
@@ -178,7 +176,10 @@ function ControlTray({
     let sessionStarted = false;
     const checkSessionStart = async () => {
       try {
-        const response = await fetch(`${TEACHING_ASSISTANT_API_URL}/session/info`);
+        const token = jwtUtils.getToken();
+        if (!token) return;
+
+        const response = await apiUtils.get(`${TEACHING_ASSISTANT_API_URL}/session/info`);
         if (response.ok) {
           const data = await response.json();
           if (data.session_active) {
@@ -298,13 +299,13 @@ function ControlTray({
       // Small delay like variant uses (500ms) to ensure audio pipeline is fully ready
       await new Promise((resolve) => setTimeout(resolve, 500));
       
-      const response = await fetch(`${TEACHING_ASSISTANT_API_URL}/session/start`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ user_id: USER_ID }),
-      });
+      const token = jwtUtils.getToken();
+      if (!token) {
+        console.error('No authentication token for TeachingAssistant session start');
+        return;
+      }
+
+      const response = await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/session/start`);
 
       if (response.ok) {
         const data = await response.json();
@@ -329,13 +330,13 @@ function ControlTray({
       
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      const response = await fetch(`${TEACHING_ASSISTANT_API_URL}/session/end`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ interrupt_audio: true }),
-      });
+      const token = jwtUtils.getToken();
+      if (!token) {
+        console.error('No authentication token for TeachingAssistant session end');
+        return;
+      }
+
+      const response = await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/session/end`, { interrupt_audio: true });
 
       if (response.ok) {
         const data = await response.json();

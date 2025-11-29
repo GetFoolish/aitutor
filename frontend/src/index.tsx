@@ -15,16 +15,28 @@
  */
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { AuthProvider } from './contexts/AuthContext';
+import LoginPage from './components/auth/LoginPage';
 import "./package/perseus/testing/perseus-init.tsx";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <App />
+  <BrowserRouter>
+    <AuthProvider>
+      <Switch>
+        <Route path="/auth/callback" component={LoginPage} />
+        <Route path="/auth/setup" component={LoginPage} />
+        <Route path="/login" component={LoginPage} />
+        <Route path="/" component={App} />
+      </Switch>
+    </AuthProvider>
+  </BrowserRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function

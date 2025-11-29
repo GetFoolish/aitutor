@@ -30,6 +30,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy managers directory (needed for MongoDB and config)
 COPY managers/ ./managers/
 
+# Copy shared directory (needed for authentication)
+COPY shared/ ./shared/
+
 # Copy services directory
 COPY services/ ./services/
 

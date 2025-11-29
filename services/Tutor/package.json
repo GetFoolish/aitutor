@@ -10,7 +10,8 @@
   "dependencies": {
     "@google/genai": "^0.14.0",
     "ws": "^8.18.0",
-    "dotenv": "^16.4.7"
+    "dotenv": "^16.4.7",
+    "jsonwebtoken": "^9.0.2"
   },
   "engines": {
     "node": ">=18.0.0"

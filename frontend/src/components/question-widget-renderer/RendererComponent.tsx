@@ -8,11 +8,15 @@ import { RenderStateRoot } from "@khanacademy/wonder-blocks-core";
 import { PerseusI18nContextProvider } from "../../package/perseus/src/components/i18n-context";
 import { mockStrings } from "../../package/perseus/src/strings";
 import { KEScore } from "@khanacademy/perseus-core";
+import { useAuth } from "../../contexts/AuthContext";
+import { jwtUtils } from "../../lib/jwt-utils";
+import { apiUtils } from "../../lib/api-utils";
 
 const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 
 const RendererComponent = () => {
+    const { user } = useAuth();
     const [perseusItems, setPerseusItems] = useState<PerseusItem[]>([]);
     const [item, setItem] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -22,10 +26,12 @@ const RendererComponent = () => {
     const [startTime, setStartTime] = useState<number>(Date.now());
     const rendererRef = useRef<ServerItemRenderer>(null);
     
-    // User ID - age is now fetched from MongoDB, not frontend
-    const user_id = "mongodb_test_user"; // Use the MongoDB test user
+    // Get user_id from authenticated user
+    const user_id = user?.user_id;
 
     useEffect(() => {
+        if (!user_id) return; // Wait for user to be loaded
+        
         // Use DASH API with intelligent question selection
         // Age is fetched from MongoDB based on user_id
         setLoading(true);
@@ -33,8 +39,20 @@ const RendererComponent = () => {
         setEndOfTest(false);
         setIsAnswered(false);
         
-        fetch(`${DASH_API_URL}/api/questions/16?user_id=${user_id}`)
-            .then((response) => response.json())
+        const token = jwtUtils.getToken();
+        if (!token) {
+            console.error("No authentication token");
+            setLoading(false);
+            return;
+        }
+        
+        apiUtils.get(`${DASH_API_URL}/api/questions/16`)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then((data) => {
                 console.log("API response:", data);
                 setPerseusItems(data);
@@ -45,24 +63,23 @@ const RendererComponent = () => {
                 console.error("Failed to fetch questions:", err);
                 setLoading(false);
             });
-    }, []); // No dependencies - user_id is constant
+    }, [user_id]); // Re-fetch when user_id changes
 
     // Log when question is displayed
     useEffect(() => {
-        if (perseusItems.length > 0 && !loading) {
+        if (perseusItems.length > 0 && !loading && user_id) {
             const currentItem = perseusItems[item];
             const metadata = (currentItem as any).dash_metadata || {};
+            const token = jwtUtils.getToken();
             
-            fetch(`${DASH_API_URL}/api/question-displayed/${user_id}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    question_index: item,
-                    metadata: metadata
-                })
+            if (!token) return;
+            
+            apiUtils.post(`${DASH_API_URL}/api/question-displayed`, {
+                question_index: item,
+                metadata: metadata
             }).catch(err => console.error('Failed to log question display:', err));
         }
-    }, [item, perseusItems, loading]);
+    }, [item, perseusItems, loading, user_id]);
 
     const handleNext = () => {
         setItem((prev) => {
@@ -110,13 +127,13 @@ const RendererComponent = () => {
                     response_time_seconds: responseTimeSeconds
                 };
 
-                const response = await fetch(`${DASH_API_URL}/api/submit-answer/${user_id}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(answerData),
-                });
+                const token = jwtUtils.getToken();
+                if (!token) {
+                    console.error("No authentication token");
+                    return;
+                }
+
+                const response = await apiUtils.post(`${DASH_API_URL}/api/submit-answer`, answerData);
 
                 const result = await response.json();
                 console.log("Answer submitted to DASH:", result);
@@ -132,18 +149,22 @@ const RendererComponent = () => {
             // Record question answer with TeachingAssistant
             try {
                 const questionId = metadata.dash_question_id || `q_${item}_${Date.now()}`;
-                fetch(`${TEACHING_ASSISTANT_API_URL}/question/answered`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        question_id: questionId,
-                        is_correct: keScore.correct || false,
-                    }),
-                }).catch((error) => {
-                    console.error('Failed to record question answer to TeachingAssistant:', error);
-                });
+                const token = jwtUtils.getToken();
+                if (token) {
+                    fetch(`${TEACHING_ASSISTANT_API_URL}/question/answered`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            question_id: questionId,
+                            is_correct: keScore.correct || false,
+                        }),
+                    }).catch((error) => {
+                        console.error('Failed to record question answer to TeachingAssistant:', error);
+                    });
+                }
             } catch (error) {
                 console.error('Error recording question answer:', error);
             }

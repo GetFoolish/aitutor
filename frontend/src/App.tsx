@@ -17,6 +17,7 @@
 import { useRef, useState, useEffect } from "react";
 import "./App.scss";
 import { LiveAPIProvider } from "./contexts/LiveAPIContext";
+import AuthGuard from "./components/auth/AuthGuard";
 import SidePanel from "./components/side-panel/SidePanel";
 import ScratchpadCapture from "./components/scratchpad-capture/ScratchpadCapture";
 import QuestionDisplay from "./components/question-display/QuestionDisplay";
@@ -83,7 +84,8 @@ function App() {
 
   return (
     <div className="App">
-      <LiveAPIProvider>
+      <AuthGuard>
+        <LiveAPIProvider>
         <div className="streaming-console">
           <SidePanel />
           <main>
@@ -143,6 +145,7 @@ function App() {
           </main>
         </div>
       </LiveAPIProvider>
+      </AuthGuard>
     </div>
   );
 }

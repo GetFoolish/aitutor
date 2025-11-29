@@ -7,7 +7,7 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # -----------------------------------------------
-# Stage 2: Install system dependencies
+# Stage 2: System dependencies
 # -----------------------------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
@@ -17,15 +17,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # -----------------------------------------------
-# Stage 3: Install Python dependencies
+# Stage 3: Python dependencies
 # -----------------------------------------------
-# Copy only requirements file first for caching
+# Copy only requirements first for caching
 COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
 # -----------------------------------------------
-# Stage 4: Copy application code
+# Stage 4: Copy the application code
 # -----------------------------------------------
 # Copy managers directory (needed for MongoDB and config)
 COPY managers/ ./managers/
@@ -45,5 +45,5 @@ COPY config.json .
 EXPOSE 8080
 ENV PORT=8080
 
-CMD ["python", "-m", "services.TeachingAssistant.api"]
+CMD ["python", "-m", "services.AuthService.auth_api"]
 
