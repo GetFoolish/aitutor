@@ -25,7 +25,11 @@ type FunctionDeclarationsTool = Tool & {
   functionDeclarations: FunctionDeclaration[];
 };
 
-export default function SettingsDialog({ trigger }: { trigger?: React.ReactNode }) {
+export default function SettingsDialog({
+  trigger,
+}: {
+  trigger?: React.ReactNode;
+}) {
   const { config, setConfig, connected } = useLiveAPIContext();
   const [userPrompt, setUserPrompt] = useState("");
 
@@ -99,7 +103,7 @@ export default function SettingsDialog({ trigger }: { trigger?: React.ReactNode 
   );
 
   return (
-    <div className="settings-dialog">
+    <div className="settings-dialog z-1002">
       <Dialog>
         <DialogTrigger asChild>
           {trigger || (

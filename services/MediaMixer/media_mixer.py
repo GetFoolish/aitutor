@@ -225,7 +225,8 @@ async def main():
     server = None
     try:
         # Single WebSocket server with path-based routing
-        server = await websockets.serve(handle_websocket, "0.0.0.0", port)
+        # Set max_size to None to allow large frames (default is 1MB)
+        server = await websockets.serve(handle_websocket, "0.0.0.0", port, max_size=None)
         print(f"MediaMixer WebSocket server started on port {port}")
         print(f"  - Command endpoint: /command")
         print(f"  - Video endpoint: /video")

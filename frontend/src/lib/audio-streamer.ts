@@ -35,7 +35,7 @@ export class AudioStreamer {
   public source: AudioBufferSourceNode;
   private endOfQueueAudioSource: AudioBufferSourceNode | null = null;
 
-  public onComplete = () => {};
+  public onComplete = () => { };
 
   constructor(public context: AudioContext) {
     this.gainNode = this.context.createGain();

@@ -18,6 +18,7 @@ import { useRef, useState, useEffect } from "react";
 import "./App.scss";
 import { LiveAPIProvider } from "./contexts/LiveAPIContext";
 import SidePanel from "./components/side-panel/SidePanel";
+import Header from "./components/header/Header";
 import MediaMixerDisplay from "./components/media-mixer-display/MediaMixerDisplay";
 import ScratchpadCapture from "./components/scratchpad-capture/ScratchpadCapture";
 import QuestionDisplay from "./components/question-display/QuestionDisplay";
@@ -39,6 +40,7 @@ function App() {
   const [commandSocket, setCommandSocket] = useState<WebSocket | null>(null);
   const [videoSocket, setVideoSocket] = useState<WebSocket | null>(null);
   const [isScratchpadOpen, setScratchpadOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     let commandWs: WebSocket | null = null;
@@ -95,17 +97,20 @@ function App() {
 
   return (
     <ThemeProvider defaultTheme="light" storageKey="ai-tutor-theme">
-      <Toaster richColors closeButton />
       <div className="App">
         <LiveAPIProvider>
+          <Header
+            sidebarOpen={isSidebarOpen}
+            onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+          />
           <div className="streaming-console">
-            <SidePanel />
-            <main>
+            <SidePanel
+              open={isSidebarOpen}
+              onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
+            />
+            <main style={{ marginRight: isSidebarOpen ? "420px" : "0" }}>
               <div className="main-app-area">
-                <div
-                  className="question-panel"
-                  style={{ border: "2px solid red" }}
-                >
+                <div className="question-panel">
                   <ScratchpadCapture socket={commandSocket}>
                     <QuestionDisplay />
                     {isScratchpadOpen && (
@@ -130,6 +135,7 @@ function App() {
               </div>
             </main>
           </div>
+          <Toaster richColors closeButton />
         </LiveAPIProvider>
       </div>
     </ThemeProvider>
