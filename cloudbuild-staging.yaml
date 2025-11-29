@@ -1,26 +1,4 @@
 steps:
-  # Decode base64 encoded MongoDB URI to avoid substitution conflicts
-  - name: 'bash'
-    args:
-      - '-c'
-      - |
-        echo "Decoding MongoDB URI..."
-        if [[ -n "${_MONGODB_URI}" ]]; then
-          DECODED_URI=$(echo "${_MONGODB_URI}" | base64 -d)
-          echo "MONGODB_URI=$DECODED_URI" >> /workspace/env_vars.txt
-        else
-          echo "MONGODB_URI=$(cat /workspace/env_vars.txt | grep MONGODB_URI | cut -d= -f2-)" >> /workspace/env_vars.txt
-        fi
-        # Export other variables
-        echo "MONGODB_DB_NAME=${_MONGODB_DB_NAME}" >> /workspace/env_vars.txt
-        echo "OPENROUTER_API_KEY=${_OPENROUTER_API_KEY}" >> /workspace/env_vars.txt
-        echo "GEMINI_API_KEY=${_GEMINI_API_KEY}" >> /workspace/env_vars.txt
-        echo "GEMINI_MODEL=${_GEMINI_MODEL}" >> /workspace/env_vars.txt
-        echo "JWT_SECRET=${_JWT_SECRET}" >> /workspace/env_vars.txt
-        echo "GOOGLE_CLIENT_ID=${_GOOGLE_CLIENT_ID}" >> /workspace/env_vars.txt
-        echo "GOOGLE_CLIENT_SECRET=${_GOOGLE_CLIENT_SECRET}" >> /workspace/env_vars.txt
-        echo "CORS_ORIGINS=${_CORS_ORIGINS}" >> /workspace/env_vars.txt
-    id: 'decode-env-vars'
 
   # Build DashSystem API
   - name: 'gcr.io/cloud-builders/docker'
@@ -130,7 +108,7 @@ steps:
       - '--port'
       - '8080'
       - '--set-env-vars'
-      - 'MONGODB_URI=$(cat /workspace/env_vars.txt | grep MONGODB_URI | cut -d= -f2-),MONGODB_DB_NAME=${_MONGODB_DB_NAME},OPENROUTER_API_KEY=${_OPENROUTER_API_KEY}'
+      - 'MONGODB_URI=$(echo "${_MONGODB_URI}" | base64 -d),MONGODB_DB_NAME=${_MONGODB_DB_NAME},OPENROUTER_API_KEY=${_OPENROUTER_API_KEY}'
     id: 'deploy-dash-api'
     waitFor: ['push-dash-api']
 
@@ -151,7 +129,7 @@ steps:
       - '--port'
       - '8080'
       - '--set-env-vars'
-      - 'MONGODB_URI=$(cat /workspace/env_vars.txt | grep MONGODB_URI | cut -d= -f2-),MONGODB_DB_NAME=${_MONGODB_DB_NAME}'
+      - 'MONGODB_URI=$(echo "${_MONGODB_URI}" | base64 -d),MONGODB_DB_NAME=${_MONGODB_DB_NAME}'
     id: 'deploy-sherlocked-api'
     waitFor: ['push-sherlocked-api']
 
@@ -172,7 +150,7 @@ steps:
       - '--port'
       - '8080'
       - '--set-env-vars'
-      - 'MONGODB_URI=$(cat /workspace/env_vars.txt | grep MONGODB_URI | cut -d= -f2-),MONGODB_DB_NAME=${_MONGODB_DB_NAME},OPENROUTER_API_KEY=${_OPENROUTER_API_KEY}'
+      - 'MONGODB_URI=$(echo "${_MONGODB_URI}" | base64 -d),MONGODB_DB_NAME=${_MONGODB_DB_NAME},OPENROUTER_API_KEY=${_OPENROUTER_API_KEY}'
     id: 'deploy-teaching-assistant'
     waitFor: ['push-teaching-assistant']
 
