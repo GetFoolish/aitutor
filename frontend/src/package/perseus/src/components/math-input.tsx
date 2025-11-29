@@ -442,7 +442,7 @@ class MathInput extends React.Component<Props, State> {
             <InnerMathInput
                 {...this.props}
                 ref={this.inputRef}
-                mathInputStrings={this.context.strings}
+                mathInputStrings={this.context?.strings || {}}
             />
         );
     }

@@ -108,7 +108,7 @@ steps:
       - '--port'
       - '8080'
       - '--set-env-vars'
-      - 'MONGODB_URI=$(echo "${_MONGODB_URI}" | base64 -d),MONGODB_DB_NAME=${_MONGODB_DB_NAME},OPENROUTER_API_KEY=${_OPENROUTER_API_KEY}'
+      - 'MONGODB_URI=${_MONGODB_URI},MONGODB_DB_NAME=${_MONGODB_DB_NAME},OPENROUTER_API_KEY=${_OPENROUTER_API_KEY}'
     id: 'deploy-dash-api'
     waitFor: ['push-dash-api']
 
@@ -129,7 +129,7 @@ steps:
       - '--port'
       - '8080'
       - '--set-env-vars'
-      - 'MONGODB_URI=$(echo "${_MONGODB_URI}" | base64 -d),MONGODB_DB_NAME=${_MONGODB_DB_NAME}'
+      - 'MONGODB_URI=${_MONGODB_URI},MONGODB_DB_NAME=${_MONGODB_DB_NAME}'
     id: 'deploy-sherlocked-api'
     waitFor: ['push-sherlocked-api']
 
@@ -150,7 +150,7 @@ steps:
       - '--port'
       - '8080'
       - '--set-env-vars'
-      - 'MONGODB_URI=$(echo "${_MONGODB_URI}" | base64 -d),MONGODB_DB_NAME=${_MONGODB_DB_NAME},OPENROUTER_API_KEY=${_OPENROUTER_API_KEY}'
+      - 'MONGODB_URI=${_MONGODB_URI},MONGODB_DB_NAME=${_MONGODB_DB_NAME},OPENROUTER_API_KEY=${_OPENROUTER_API_KEY}'
     id: 'deploy-teaching-assistant'
     waitFor: ['push-teaching-assistant']
 
@@ -177,7 +177,7 @@ steps:
       - '--max-instances'
       - '10'
       - '--set-env-vars'
-      - 'GEMINI_API_KEY=${_GEMINI_API_KEY},GEMINI_MODEL=${_GEMINI_MODEL}'
+      - 'GEMINI_API_KEY=${_GEMINI_API_KEY},GEMINI_MODEL=${_GEMINI_MODEL},JWT_SECRET=${_JWT_SECRET}'
     id: 'deploy-tutor'
     waitFor: ['push-tutor']
 
@@ -213,6 +213,7 @@ substitutions:
   _OPENROUTER_API_KEY: 'REPLACE_IN_COMMAND'
   _GEMINI_API_KEY: 'REPLACE_IN_COMMAND'
   _GEMINI_MODEL: 'models/gemini-2.5-flash-native-audio-preview-09-2025'
+  _JWT_SECRET: 'REPLACE_IN_COMMAND'
   _DASH_API_URL: 'REPLACE_IN_COMMAND'
   _SHERLOCKED_API_URL: 'REPLACE_IN_COMMAND'
   _TEACHING_ASSISTANT_API_URL: 'REPLACE_IN_COMMAND'
