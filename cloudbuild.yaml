@@ -128,7 +128,7 @@ steps:
       - '--port'
       - '8080'
       - '--set-env-vars'
-      - 'MONGODB_URI=${_MONGODB_URI},MONGODB_DB_NAME=${_MONGODB_DB_NAME},OPENROUTER_API_KEY=${_OPENROUTER_API_KEY}'
+      - 'MONGODB_URI=${_MONGODB_URI},MONGODB_DB_NAME=${_MONGODB_DB_NAME},OPENROUTER_API_KEY=${_OPENROUTER_API_KEY},JWT_SECRET=${_JWT_SECRET}'
     id: 'deploy-dash-api'
     waitFor: ['push-dash-api']
 
@@ -149,7 +149,7 @@ steps:
       - '--port'
       - '8080'
       - '--set-env-vars'
-      - 'MONGODB_URI=${_MONGODB_URI},MONGODB_DB_NAME=${_MONGODB_DB_NAME}'
+      - 'MONGODB_URI=${_MONGODB_URI},MONGODB_DB_NAME=${_MONGODB_DB_NAME},JWT_SECRET=${_JWT_SECRET}'
     id: 'deploy-sherlocked-api'
     waitFor: ['push-sherlocked-api']
 
@@ -170,7 +170,7 @@ steps:
       - '--port'
       - '8080'
       - '--set-env-vars'
-      - 'MONGODB_URI=${_MONGODB_URI},MONGODB_DB_NAME=${_MONGODB_DB_NAME},OPENROUTER_API_KEY=${_OPENROUTER_API_KEY}'
+      - 'MONGODB_URI=${_MONGODB_URI},MONGODB_DB_NAME=${_MONGODB_DB_NAME},OPENROUTER_API_KEY=${_OPENROUTER_API_KEY},JWT_SECRET=${_JWT_SECRET}'
     id: 'deploy-teaching-assistant'
     waitFor: ['push-teaching-assistant']
 
@@ -271,4 +271,3 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 timeout: 3600s
-
