@@ -30,7 +30,6 @@ root.render(
   <BrowserRouter>
     <AuthProvider>
       <Switch>
-        <Route path="/auth/callback" component={LoginPage} />
         <Route path="/auth/setup" component={LoginPage} />
         <Route path="/login" component={LoginPage} />
         <Route path="/" component={App} />
