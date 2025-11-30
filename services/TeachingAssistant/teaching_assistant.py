@@ -1,13 +1,20 @@
 import time
+import sys
+import os
 from typing import Optional, Dict, Any
 from .greeting_handler import GreetingHandler
 from .inactivity_handler import InactivityHandler
+
+# Add parent directory to path for Memory module import
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from Memory import MemoryRetriever
 
 
 class TeachingAssistant:
     def __init__(self):
         self.greeting_handler = GreetingHandler()
         self.inactivity_handler = InactivityHandler()
+        self.memory_retriever = MemoryRetriever()
         self.current_user_id: Optional[str] = None
         self.session_active: bool = False
     
@@ -20,6 +27,8 @@ class TeachingAssistant:
         self.inactivity_handler.stop_monitoring()
         self.inactivity_handler.reset()
         self.inactivity_handler.start_monitoring()
+        # Start memory retrieval watcher
+        self.memory_retriever.start_retrieval_watcher(poll_interval=1.0, verbose=True)
         return self.greeting_handler.start_session(user_id)
     
     def end_session(self) -> str:
@@ -31,6 +40,8 @@ class TeachingAssistant:
         self.current_user_id = None
         self.inactivity_handler.stop_monitoring()
         self.inactivity_handler.reset()
+        # Stop memory retrieval watcher
+        self.memory_retriever.stop_retrieval_watcher()
         
         return self.greeting_handler.end_session(user_id)
     

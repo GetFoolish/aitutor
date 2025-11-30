@@ -1,7 +1,7 @@
 from .schema import Memory, MemoryType
 from .vector_store import MemoryStore
 from .extractor import MemoryExtractor
-from .retriever import MemoryRetriever
+from .retriever import MemoryRetriever, MemoryRetrievalWatcher
 from .consolidator import (
     SessionClosingCache,
     OpeningContextCache,
@@ -16,6 +16,7 @@ __all__ = [
     'MemoryStore',
     'MemoryExtractor',
     'MemoryRetriever',
+    'MemoryRetrievalWatcher',
     'SessionClosingCache',
     'OpeningContextCache',
     'MemoryConsolidator',

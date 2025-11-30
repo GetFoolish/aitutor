@@ -186,7 +186,8 @@ class MemoryStore:
         student_id: str,
         mem_type: Optional[MemoryType] = None,
         top_k: int = 5,
-        metadata_filter: Optional[Dict[str, Any]] = None
+        metadata_filter: Optional[Dict[str, Any]] = None,
+        exclude_session_id: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         query_embedding = get_query_embedding(query)
 
@@ -195,7 +196,13 @@ class MemoryStore:
         filter_dict = {}
         if metadata_filter:
             for key, value in metadata_filter.items():
+                if isinstance(value, dict) and any(op in value for op in ["$eq", "$ne", "$gt", "$gte", "$lt", "$lte", "$in", "$nin"]):
+                    filter_dict[key] = value
+                else:
                 filter_dict[key] = {"$eq": value}
+        
+        if exclude_session_id:
+            filter_dict["session_id"] = {"$ne": exclude_session_id}
 
         if mem_type:
             namespaces = [mem_type.value]

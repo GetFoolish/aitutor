@@ -454,6 +454,10 @@ class ConversationWatcher:
         self._processed_turns: Dict[str, int] = {}
         self._session_caches: Dict[str, SessionClosingCache] = {}
         self._completed_sessions: Set[str] = set()
+        self._exchange_buffers: Dict[str, List[Dict[str, Any]]] = {}
+        self._user_turn_counts: Dict[str, int] = {}
+        self._processed_exchange_ids: Dict[str, Set[str]] = {}
+        self._batch_size: int = 3
 
         self.store = MemoryStore()
         self.extractor = MemoryExtractor()
@@ -461,6 +465,7 @@ class ConversationWatcher:
 
         self._running = False
         self._thread: Optional[threading.Thread] = None
+        self._lock = threading.Lock()
 
     def log(self, message: str) -> None:
         if self.verbose:
@@ -526,10 +531,16 @@ class ConversationWatcher:
         if session_id not in self._session_caches:
             self._session_caches[session_id] = SessionClosingCache(user_id, session_id)
             self.log(f"New session: {session_id} (user: {user_id})")
+        
+        if session_id not in self._exchange_buffers:
+            self._exchange_buffers[session_id] = []
+        if session_id not in self._user_turn_counts:
+            self._user_turn_counts[session_id] = 0
+        if session_id not in self._processed_exchange_ids:
+            self._processed_exchange_ids[session_id] = set()
 
         cache = self._session_caches[session_id]
 
-        new_turns_processed = 0
         i = last_processed + 1
 
         while i < len(turns):
@@ -537,6 +548,7 @@ class ConversationWatcher:
 
             if turn.get('speaker') == 'user':
                 user_texts = []
+                turn_timestamp = turn.get('timestamp', datetime.utcnow().isoformat() + 'Z')
                 while i < len(turns) and turns[i].get('speaker') == 'user':
                     text = turns[i].get('text', '').strip()
                     if text and text != '<noise>':
@@ -551,8 +563,11 @@ class ConversationWatcher:
                 user_text = ' '.join(user_texts)
 
                 if user_text:
-                    self._process_exchange(session_id, user_id, user_text, adam_text, cache)
-                    new_turns_processed += 1
+                    exchange_id = f"{session_id}_{i}_{turn_timestamp}"
+                    if exchange_id not in self._processed_exchange_ids[session_id]:
+                        self._process_exchange(
+                            session_id, user_id, user_text, adam_text, cache, exchange_id, i
+                        )
             else:
                 i += 1
 
@@ -567,51 +582,93 @@ class ConversationWatcher:
         user_id: str,
         user_text: str,
         adam_text: str,
-        cache: SessionClosingCache
+        cache: SessionClosingCache,
+        exchange_id: str,
+        turn_index: int
     ) -> None:
         try:
             preview = user_text[:50]
         except:
             preview = "[text]"
-        self.log(f"Processing exchange: \"{preview}...\"")
+        self.log(f"Buffering exchange: \"{preview}...\"")
 
         cache.update_after_exchange(user_text, adam_text, 'general')
 
+        with self._lock:
+            exchange_data = {
+                "exchange_id": exchange_id,
+                "user_text": user_text,
+                "ai_text": adam_text,
+                "turn_index": turn_index,
+                "timestamp": datetime.utcnow().isoformat() + 'Z'
+            }
+            self._exchange_buffers[session_id].append(exchange_data)
+            self._user_turn_counts[session_id] += 1
+
+            if self._user_turn_counts[session_id] >= self._batch_size:
+                batch = self._exchange_buffers[session_id][-self._batch_size:]
+                self._exchange_buffers[session_id] = []
+                self._user_turn_counts[session_id] = 0
+
         _executor.submit(
-            self._extract_and_save_memories,
-            session_id, user_id, user_text, adam_text, cache
+                    self._extract_and_save_memories_batch,
+                    session_id, user_id, batch, cache
         )
 
-    def _extract_and_save_memories(
+    def _extract_and_save_memories_batch(
         self,
         session_id: str,
         user_id: str,
-        user_text: str,
-        adam_text: str,
+        exchanges: List[Dict[str, Any]],
         cache: SessionClosingCache
     ) -> None:
         try:
+            self.log(f"Batch extracting memories from {len(exchanges)} exchanges")
+            
+            combined_student_text = "\n\n".join([
+                f"Exchange {i+1}:\nStudent: {ex['user_text']}\nAI: {ex.get('ai_text', '')}"
+                for i, ex in enumerate(exchanges)
+            ])
+            
+            combined_ai_text = "\n\n".join([
+                ex.get('ai_text', '') for ex in exchanges
+            ])
+
             memories = self.extractor.extract_memories(
-                student_text=user_text,
-                ai_text=adam_text,
+                student_text=combined_student_text,
+                ai_text=combined_ai_text,
                 topic='general',
                 student_id=user_id,
                 session_id=session_id
             )
 
             if memories:
-                self.log(f"Extracted {len(memories)} memories")
+                self.log(f"Extracted {len(memories)} memories from batch")
                 for mem in memories:
                     self.log(f"  - [{mem.type.value}] {mem.text[:50]}...")
                     cache.add_memory(mem)
                     self.store.save_memory(mem)
             else:
-                self.log("No memories extracted (exchange not memorable)")
+                self.log("No memories extracted from batch")
+
+            with self._lock:
+                for ex in exchanges:
+                    self._processed_exchange_ids[session_id].add(ex['exchange_id'])
+
         except Exception as e:
-            self.log(f"Extraction error: {e}")
+            self.log(f"Batch extraction error: {e}")
 
     def _finalize_session(self, session_id: str, user_id: str, cache: SessionClosingCache) -> None:
         self.log(f"Session ended: {session_id}")
+
+        with self._lock:
+            remaining_exchanges = self._exchange_buffers.get(session_id, [])
+            if remaining_exchanges:
+                self.log(f"Processing {len(remaining_exchanges)} remaining exchanges")
+                _executor.submit(
+                    self._extract_and_save_memories_batch,
+                    session_id, user_id, remaining_exchanges, cache
+                )
 
         try:
             result = self.consolidator.consolidate_session(user_id, cache)
@@ -621,10 +678,17 @@ class ConversationWatcher:
 
         self._completed_sessions.add(session_id)
 
+        with self._lock:
         if session_id in self._session_caches:
             del self._session_caches[session_id]
         if session_id in self._processed_turns:
             del self._processed_turns[session_id]
+            if session_id in self._exchange_buffers:
+                del self._exchange_buffers[session_id]
+            if session_id in self._user_turn_counts:
+                del self._user_turn_counts[session_id]
+            if session_id in self._processed_exchange_ids:
+                del self._processed_exchange_ids[session_id]
 
     def process_existing_sessions(self) -> Dict[str, Any]:
         results = {
@@ -655,6 +719,13 @@ class ConversationWatcher:
 
                 self.log(f"Processing session: {session_id}")
 
+                if session_id not in self._exchange_buffers:
+                    self._exchange_buffers[session_id] = []
+                if session_id not in self._user_turn_counts:
+                    self._user_turn_counts[session_id] = 0
+                if session_id not in self._processed_exchange_ids:
+                    self._processed_exchange_ids[session_id] = set()
+
                 cache = SessionClosingCache(user_id, session_id)
 
                 i = 0
@@ -663,6 +734,7 @@ class ConversationWatcher:
 
                     if turn.get('speaker') == 'user':
                         user_texts = []
+                        turn_timestamp = turn.get('timestamp', datetime.utcnow().isoformat() + 'Z')
                         while i < len(turns) and turns[i].get('speaker') == 'user':
                             text = turns[i].get('text', '').strip()
                             if text and text != '<noise>':
@@ -677,13 +749,32 @@ class ConversationWatcher:
                         user_text = ' '.join(user_texts)
 
                         if user_text:
-                            self._process_exchange(session_id, user_id, user_text, adam_text, cache)
-                            results['memories_extracted'] += len(cache.cache['new_memories'])
+                            exchange_id = f"{session_id}_{i}_{turn_timestamp}"
+                            if exchange_id not in self._processed_exchange_ids[session_id]:
+                                self._process_exchange(
+                                    session_id, user_id, user_text, adam_text, cache, exchange_id, i
+                                )
                     else:
                         i += 1
 
+                with self._lock:
+                    remaining_exchanges = self._exchange_buffers.get(session_id, [])
+                    if remaining_exchanges:
+                        self._extract_and_save_memories_batch(
+                            session_id, user_id, remaining_exchanges, cache
+                        )
+
                 self.consolidator.consolidate_session(user_id, cache)
+                results['memories_extracted'] += len(cache.cache['new_memories'])
                 results['sessions_processed'] += 1
+
+                with self._lock:
+                    if session_id in self._exchange_buffers:
+                        del self._exchange_buffers[session_id]
+                    if session_id in self._user_turn_counts:
+                        del self._user_turn_counts[session_id]
+                    if session_id in self._processed_exchange_ids:
+                        del self._processed_exchange_ids[session_id]
 
             except Exception as e:
                 results['errors'].append(f"{session_id}: {str(e)}")
