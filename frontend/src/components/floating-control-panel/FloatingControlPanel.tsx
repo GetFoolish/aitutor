@@ -31,6 +31,7 @@ import {
   ChevronUp,
   Home,
   X,
+  Eye,
 } from "lucide-react";
 
 export type FloatingControlPanelProps = {
@@ -462,9 +463,9 @@ function FloatingControlPanel({
                   ? "bg-blue-500/10 text-blue-500 dark:bg-blue-500/20 dark:text-blue-400"
                   : "bg-neutral-100 dark:bg-white/5 text-neutral-700 dark:text-white hover:bg-neutral-200 dark:hover:bg-white/10",
               )}
-              title="Shared Media"
+              title="View"
             >
-              <ImageIcon className="w-5 h-5" />
+              <Eye className="w-5 h-5" />
             </button>
 
             <div
@@ -483,8 +484,9 @@ function FloatingControlPanel({
           <div className="flex flex-col gap-3">
             {/* Audio Control */}
             <div
+              onClick={handleMute}
               className={cn(
-                "flex items-center justify-between p-3.5 rounded-2xl border transition-all duration-200 group",
+                "flex items-center justify-between p-3.5 rounded-2xl border transition-all duration-200 group cursor-pointer",
                 !muted
                   ? "bg-gradient-to-r from-blue-500/5 to-blue-600/5 border-blue-500/20 hover:border-blue-500/30"
                   : "bg-neutral-50 dark:bg-neutral-800/50 border-neutral-200 dark:border-white/5 hover:border-neutral-300 dark:hover:border-white/10",
@@ -512,7 +514,11 @@ function FloatingControlPanel({
                   <select
                     className="bg-transparent border-none text-sm text-neutral-900 dark:text-white outline-none cursor-pointer w-[140px] truncate p-0 font-medium"
                     value={selectedAudioDevice}
-                    onChange={(e) => setSelectedAudioDevice(e.target.value)}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      setSelectedAudioDevice(e.target.value);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
                     disabled={connected}
                   >
                     {audioDevices.map((device) => (
@@ -528,7 +534,10 @@ function FloatingControlPanel({
                 </div>
               </div>
               <button
-                onClick={handleMute}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMute();
+                }}
                 className={cn(
                   "text-xs font-semibold px-3 py-1.5 rounded-full transition-all",
                   !muted
@@ -543,8 +552,9 @@ function FloatingControlPanel({
             {/* Camera Control */}
             {supportsVideo && (
               <div
+                onClick={() => toggleCamera(!cameraEnabled)}
                 className={cn(
-                  "flex items-center justify-between p-3.5 rounded-2xl border transition-all duration-200",
+                  "flex items-center justify-between p-3.5 rounded-2xl border transition-all duration-200 cursor-pointer",
                   cameraEnabled
                     ? "bg-gradient-to-r from-purple-500/5 to-purple-600/5 border-purple-500/20 hover:border-purple-500/30"
                     : "bg-neutral-50 dark:bg-neutral-800/50 border-neutral-200 dark:border-white/5 hover:border-neutral-300 dark:hover:border-white/10",
@@ -570,7 +580,10 @@ function FloatingControlPanel({
                   </span>
                 </div>
                 <button
-                  onClick={() => toggleCamera(!cameraEnabled)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleCamera(!cameraEnabled);
+                  }}
                   className={cn(
                     "text-xs font-semibold px-3 py-1.5 rounded-full transition-all",
                     cameraEnabled
@@ -586,8 +599,9 @@ function FloatingControlPanel({
             {/* Screen Share Control */}
             {supportsVideo && (
               <div
+                onClick={() => toggleScreen(!screenEnabled)}
                 className={cn(
-                  "flex items-center justify-between p-3.5 rounded-2xl border transition-all duration-200",
+                  "flex items-center justify-between p-3.5 rounded-2xl border transition-all duration-200 cursor-pointer",
                   screenEnabled
                     ? "bg-gradient-to-r from-green-500/5 to-green-600/5 border-green-500/20 hover:border-green-500/30"
                     : "bg-neutral-50 dark:bg-neutral-800/50 border-neutral-200 dark:border-white/5 hover:border-neutral-300 dark:hover:border-white/10",
@@ -613,7 +627,10 @@ function FloatingControlPanel({
                   </span>
                 </div>
                 <button
-                  onClick={() => toggleScreen(!screenEnabled)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleScreen(!screenEnabled);
+                  }}
                   className={cn(
                     "text-xs font-semibold px-3 py-1.5 rounded-full transition-all",
                     screenEnabled
@@ -701,9 +718,9 @@ function FloatingControlPanel({
                       : "bg-neutral-100 dark:bg-white/5 group-hover:bg-neutral-200 dark:group-hover:bg-white/10",
                   )}
                 >
-                  <ImageIcon className="w-4 h-4" />
+                  <Eye className="w-4 h-4" />
                 </div>
-                <span className="text-[10px] font-medium">Media</span>
+                <span className="text-[10px] font-medium">View</span>
               </button>
               <button className="flex flex-col items-center gap-1.5 p-2 rounded-xl hover:bg-neutral-100 dark:hover:bg-white/5 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors group">
                 <div className="p-1.5 rounded-lg bg-neutral-100 dark:bg-white/5 group-hover:bg-neutral-200 dark:group-hover:bg-white/10 transition-colors">

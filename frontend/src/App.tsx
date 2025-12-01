@@ -18,6 +18,7 @@ import { useRef, useState, useEffect } from "react";
 import "./App.scss";
 import { LiveAPIProvider } from "./contexts/LiveAPIContext";
 import SidePanel from "./components/side-panel/SidePanel";
+import GradingSidebar from "./components/grading-sidebar/GradingSidebar";
 import Header from "./components/header/Header";
 import MediaMixerDisplay from "./components/media-mixer-display/MediaMixerDisplay";
 import ScratchpadCapture from "./components/scratchpad-capture/ScratchpadCapture";
@@ -41,6 +42,17 @@ function App() {
   const [videoSocket, setVideoSocket] = useState<WebSocket | null>(null);
   const [isScratchpadOpen, setScratchpadOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isGradingSidebarOpen, setIsGradingSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    if (!isSidebarOpen) setIsGradingSidebarOpen(false);
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const toggleGradingSidebar = () => {
+    if (!isGradingSidebarOpen) setIsSidebarOpen(false);
+    setIsGradingSidebarOpen(!isGradingSidebarOpen);
+  };
 
   useEffect(() => {
     let commandWs: WebSocket | null = null;
@@ -101,14 +113,22 @@ function App() {
         <LiveAPIProvider>
           <Header
             sidebarOpen={isSidebarOpen}
-            onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+            onToggleSidebar={toggleSidebar}
           />
           <div className="streaming-console">
             <SidePanel
               open={isSidebarOpen}
-              onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
+              onToggle={toggleSidebar}
             />
-            <main style={{ marginRight: isSidebarOpen ? "420px" : "0" }}>
+            <GradingSidebar
+              open={isGradingSidebarOpen}
+              onToggle={toggleGradingSidebar}
+            />
+            <main style={{
+              marginRight: isSidebarOpen ? "420px" : "0",
+              marginLeft: isGradingSidebarOpen ? "420px" : "60px",
+              transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
+            }}>
               <div className="main-app-area">
                 <div className="question-panel">
                   <ScratchpadCapture socket={commandSocket}>

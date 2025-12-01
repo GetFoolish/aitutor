@@ -535,3 +535,55 @@ a[target="lint-help-window"] {
     }
   }
 }
+
+/* Global Scrollbar Styling */
+@layer utilities {
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+  }
+
+  /* WebKit (Chrome, Edge, Safari) */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.5);
+    border-radius: 9999px;
+    transition: background-color 0.2s;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(107, 114, 128, 0.8);
+  }
+
+  /* Light Mode Overrides */
+  :root:not(.dark) * {
+    scrollbar-color: rgba(156, 163, 175, 0.5) rgba(255, 255, 255, 0.5);
+  }
+
+  :root:not(.dark) ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Dark Mode Overrides */
+  .dark * {
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
