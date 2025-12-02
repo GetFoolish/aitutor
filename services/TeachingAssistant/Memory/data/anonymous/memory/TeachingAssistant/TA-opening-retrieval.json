@@ -293,7 +293,32 @@
         "Student has a favorite cricketer."
       ],
       "status": "success"
+    },
+    {
+      "opening_id": "opening_20251202_163115_6bb7a2",
+      "session_id": "sess_20251202_163029_m253z3",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T16:31:15.504574Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Welcome back!",
+      "last_session_summary": "",
+      "unfinished_threads": [
+        "Continue with general"
+      ],
+      "personal_relevance": "Prefers physics over math.",
+      "emotional_state_last": "neutral",
+      "suggested_opener": "Hey! What would you like to work on today?",
+      "key_moments_last": [],
+      "topics_last_session": [
+        "general"
+      ],
+      "personal_memories": [
+        "Prefers physics over math.",
+        "Student has a favorite subject.",
+        "Student has a favorite cricketer."
+      ],
+      "status": "success"
     }
   ],
-  "last_updated": "2025-12-02T15:27:01.033716Z"
+  "last_updated": "2025-12-02T16:31:15.516373Z"
 }

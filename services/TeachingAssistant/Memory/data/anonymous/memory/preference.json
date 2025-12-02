@@ -12,19 +12,5 @@
       "response": "excited"
     },
     "session_id": "sess_20251202_151706_ty3q2z"
-  },
-  {
-    "id": "mem_6bec5b9659b0",
-    "student_id": "anonymous",
-    "type": "preference",
-    "text": "Student expresses excitement to learn.",
-    "timestamp": "2025-12-02T15:33:14.564922Z",
-    "importance": 0.6,
-    "metadata": {
-      "category": "emotional_response",
-      "trigger": "math session start",
-      "response": "excitement"
-    },
-    "session_id": "sess_20251202_153218_j2tovx"
   }
 ]

@@ -320,7 +320,26 @@
       ],
       "new_memories_count": 3,
       "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_163115_ccfc0d",
+      "session_id": "sess_20251202_163029_m253z3",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T16:31:15.481995Z",
+      "session_duration_seconds": 38,
+      "session_summary": "",
+      "key_moments": [],
+      "emotional_arc": [],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Good session! See you next time.",
+      "next_session_hooks": [
+        "Continue with general"
+      ],
+      "new_memories_count": 0,
+      "status": "success"
     }
   ],
-  "last_updated": "2025-12-02T15:34:24.501429Z"
+  "last_updated": "2025-12-02T16:31:15.494034Z"
 }

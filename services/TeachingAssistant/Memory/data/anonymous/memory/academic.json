@@ -13,19 +13,6 @@
     "session_id": "sess_20251202_144626_6axrcj"
   },
   {
-    "id": "mem_495b0cde57ee",
-    "student_id": "anonymous",
-    "type": "academic",
-    "text": "Prefers to study chemistry instead of math.",
-    "timestamp": "2025-12-02T15:34:23.480384Z",
-    "importance": 0.6,
-    "metadata": {
-      "topic": "chemistry",
-      "emotion": "neutral"
-    },
-    "session_id": "sess_20251202_153218_j2tovx"
-  },
-  {
     "id": "mem_4fa791232421",
     "student_id": "anonymous",
     "type": "academic",

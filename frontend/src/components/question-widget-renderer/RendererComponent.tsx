@@ -23,7 +23,7 @@ const RendererComponent = () => {
     const rendererRef = useRef<ServerItemRenderer>(null);
     
     // User ID - age is now fetched from MongoDB, not frontend
-    const user_id = "anonymous"; // Use anonymous user instead of test user
+    const user_id = "anonymous"; // Use the MongoDB test user
 
     useEffect(() => {
         // Use DASH API with intelligent question selection
