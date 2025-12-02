@@ -27,7 +27,11 @@ import { CheckCircle2, XCircle, Sparkles } from "lucide-react";
 
 const TEACHING_ASSISTANT_API_URL = "http://localhost:8002";
 
-const RendererComponent = () => {
+interface RendererComponentProps {
+    onSkillChange?: (skill: string) => void;
+}
+
+const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
     const [perseusItems, setPerseusItems] = useState<PerseusItem[]>([]);
     const [item, setItem] = useState(0);
     const [endOfTest, setEndOfTest] = useState(false);
@@ -86,6 +90,15 @@ const RendererComponent = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [item, perseusItems, isLoading, user_id]);
+
+    // Mock skill state update
+    useEffect(() => {
+        if (onSkillChange) {
+            // Mock variable as requested
+            const mockSkill = "decimals_intro";
+            onSkillChange(mockSkill);
+        }
+    }, [onSkillChange]);
 
     // Trigger feedback animation and auto-scroll
     useEffect(() => {

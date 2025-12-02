@@ -27,8 +27,10 @@ type FunctionDeclarationsTool = Tool & {
 
 export default function SettingsDialog({
   trigger,
+  className,
 }: {
   trigger?: React.ReactNode;
+  className?: string;
 }) {
   const { config, setConfig, connected } = useLiveAPIContext();
   const [userPrompt, setUserPrompt] = useState("");
@@ -103,7 +105,7 @@ export default function SettingsDialog({
   );
 
   return (
-    <div className="settings-dialog z-1002">
+    <div className={`settings-dialog z-1002 ${className || ""}`}>
       <Dialog>
         <DialogTrigger asChild>
           {trigger || (

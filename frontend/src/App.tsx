@@ -43,6 +43,7 @@ function App() {
   const [isScratchpadOpen, setScratchpadOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isGradingSidebarOpen, setIsGradingSidebarOpen] = useState(false);
+  const [currentSkill, setCurrentSkill] = useState<string | null>(null);
 
   const toggleSidebar = () => {
     if (!isSidebarOpen) setIsGradingSidebarOpen(false);
@@ -123,6 +124,7 @@ function App() {
             <GradingSidebar
               open={isGradingSidebarOpen}
               onToggle={toggleGradingSidebar}
+              currentSkill={currentSkill}
             />
             <main style={{
               marginRight: isSidebarOpen ? "420px" : "0",
@@ -132,7 +134,7 @@ function App() {
               <div className="main-app-area">
                 <div className="question-panel">
                   <ScratchpadCapture socket={commandSocket}>
-                    <QuestionDisplay />
+                    <QuestionDisplay onSkillChange={setCurrentSkill} />
                     {isScratchpadOpen && (
                       <div className="scratchpad-container">
                         <Scratchpad />

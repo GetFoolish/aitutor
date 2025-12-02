@@ -223,35 +223,103 @@ function FloatingControlPanel({
     }
   }, [connected, connect, disconnect]);
 
+  const [verticalAlign, setVerticalAlign] = useState<"top" | "bottom">("top");
+
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  // Initialize position on mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setPosition({ x: window.innerWidth - 380, y: 96 });
+      setHasInitialized(true);
+    }
+  }, []);
+
   // Memoize popover position calculation to avoid expensive DOM queries
   const calculatePopoverPosition = useCallback(() => {
-    if (!panelRef.current) return "right";
+    if (!panelRef.current) return { side: "right" as const, vertical: "top" as const };
 
     const panelRect = panelRef.current.getBoundingClientRect();
     const popoverWidth = 360;
     const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
     const spaceOnRight = viewportWidth - panelRect.right;
     const spaceOnLeft = panelRect.left;
     const preferredMargin = 16;
 
+    let side: "left" | "right" = "right";
     if (spaceOnRight >= popoverWidth + preferredMargin) {
-      return "right";
+      side = "right";
     } else if (spaceOnLeft >= popoverWidth + preferredMargin) {
-      return "left";
+      side = "left";
     }
-    return "right";
+
+    // Calculate vertical alignment based on panel's center relative to screen center
+    const panelCenterY = panelRect.top + panelRect.height / 2;
+    const screenCenterY = viewportHeight / 2;
+    const vertical: "top" | "bottom" = panelCenterY > screenCenterY ? "bottom" : "top";
+
+    return { side, vertical };
   }, []);
+
+  const updatePopoverPosition = useCallback(() => {
+    const { side, vertical } = calculatePopoverPosition();
+    setPopoverPosition(side);
+    setVerticalAlign(vertical);
+  }, [calculatePopoverPosition]);
 
   const toggleSharedMedia = useCallback(() => {
     if (!sharedMediaOpen) {
-      setPopoverPosition(calculatePopoverPosition());
+      updatePopoverPosition();
     }
     setSharedMediaOpen(!sharedMediaOpen);
-  }, [sharedMediaOpen, calculatePopoverPosition]);
+  }, [sharedMediaOpen, updatePopoverPosition]);
 
   const handleCollapse = useCallback(() => {
     setIsCollapsed(!isCollapsed);
   }, [isCollapsed]);
+
+  // Adjust position when collapsing/expanding to prevent overflow
+  useEffect(() => {
+    if (!hasInitialized || !panelRef.current) return;
+
+    // Use setTimeout to allow layout to update (height change)
+    const timer = setTimeout(() => {
+      if (!panelRef.current) return;
+      const rect = panelRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const viewportWidth = window.innerWidth;
+      const margin = 16;
+
+      let newY = position.y;
+      let newX = position.x;
+
+      // Check bottom overflow
+      if (rect.bottom > viewportHeight - margin) {
+        newY = viewportHeight - rect.height - margin;
+      }
+      // Check top overflow
+      if (newY < margin) {
+        newY = margin;
+      }
+
+      // Check right overflow
+      if (rect.right > viewportWidth - margin) {
+        newX = viewportWidth - rect.width - margin;
+      }
+      // Check left overflow
+      if (newX < margin) {
+        newX = margin;
+      }
+
+      if (newY !== position.y || newX !== position.x) {
+        setPosition({ x: newX, y: newY });
+      }
+    }, 50); // Small delay for transition
+
+    return () => clearTimeout(timer);
+  }, [isCollapsed, hasInitialized]); // Removed 'position' dependency to avoid loops, relying on rect reading
 
   const handleMute = useCallback(() => {
     setMuted(!muted);
@@ -262,9 +330,35 @@ function FloatingControlPanel({
     setIsDragging(true);
   }, []);
 
+  const handleDrag = useCallback((e: any, data: { x: number; y: number }) => {
+    if (!panelRef.current) return;
+
+    const rect = panelRef.current.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    // Clamp values to keep panel within viewport
+    let newX = data.x;
+    let newY = data.y;
+
+    // Horizontal boundaries
+    if (newX < 0) newX = 0;
+    else if (newX + rect.width > viewportWidth) newX = viewportWidth - rect.width;
+
+    // Vertical boundaries
+    if (newY < 0) newY = 0;
+    else if (newY + rect.height > viewportHeight) newY = viewportHeight - rect.height;
+
+    setPosition({ x: newX, y: newY });
+  }, []);
+
   const handleDragStop = useCallback(() => {
     setIsDragging(false);
-  }, []);
+    // Recalculate position after drag ends
+    if (sharedMediaOpen) {
+      updatePopoverPosition();
+    }
+  }, [sharedMediaOpen, updatePopoverPosition]);
 
   // Memoize panel classes to avoid recalculating on every render
   const panelClasses = useMemo(
@@ -279,8 +373,8 @@ function FloatingControlPanel({
         isCollapsed
           ? "w-[64px] rounded-full py-4 px-2"
           : "w-[340px] rounded-3xl p-5",
-        // Initial position
-        "top-24 right-8",
+        // Ensure origin is top-left for controlled positioning
+        "top-0 left-0",
         // Hover effect
         !isDragging &&
         "hover:border-neutral-300 dark:hover:border-white/20 hover:shadow-3xl",
@@ -288,12 +382,15 @@ function FloatingControlPanel({
     [isCollapsed, isDragging],
   );
 
+  if (!hasInitialized) return null; // Prevent hydration mismatch
+
   return (
     <Draggable
       handle=".drag-handle"
       nodeRef={panelRef}
-      bounds="body"
+      position={position}
       onStart={handleDragStart}
+      onDrag={handleDrag}
       onStop={handleDragStop}
     >
       <div
@@ -434,6 +531,7 @@ function FloatingControlPanel({
 
             {enableEditingSettings && (
               <SettingsDialog
+                className="!h-auto !block"
                 trigger={
                   <button className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-white/5 hover:bg-neutral-200 dark:hover:bg-white/10 flex items-center justify-center text-neutral-700 dark:text-white transition-colors">
                     <Settings className="w-5 h-5" />
@@ -670,6 +768,7 @@ function FloatingControlPanel({
             <div className="grid grid-cols-4 gap-2 pt-3 border-t border-neutral-200 dark:border-white/10">
               {enableEditingSettings && (
                 <SettingsDialog
+                  className="!h-auto !block"
                   trigger={
                     <button className="flex flex-col items-center gap-1.5 p-2 rounded-xl hover:bg-neutral-100 dark:hover:bg-white/5 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors group">
                       <div className="p-1.5 rounded-lg bg-neutral-100 dark:bg-white/5 group-hover:bg-neutral-200 dark:group-hover:bg-white/10 transition-colors">
@@ -736,17 +835,18 @@ function FloatingControlPanel({
         {sharedMediaOpen && (
           <div
             className={cn(
-              "absolute top-0 w-[360px] h-auto flex flex-col bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl border border-neutral-200 dark:border-white/10 rounded-3xl shadow-2xl overflow-hidden z-[1001] animate-in fade-in duration-200",
+              "absolute w-[360px] h-auto flex flex-col bg-white/95 dark:bg-neutral-900/95 backdrop-blur-xl border border-neutral-200 dark:border-white/10 rounded-3xl shadow-2xl overflow-hidden z-[1001] animate-in fade-in duration-200",
               popoverPosition === "right"
                 ? "left-full ml-4 slide-in-from-left-4"
                 : "right-full mr-4 slide-in-from-right-4",
+              verticalAlign === "bottom" ? "bottom-0" : "top-0",
             )}
           >
             <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-white/10 bg-neutral-50/50 dark:bg-white/5">
               <div className="flex items-center gap-2">
                 <ImageIcon className="w-5 h-5 text-blue-500 dark:text-blue-400" />
                 <h3 className="font-semibold text-neutral-900 dark:text-white">
-                  Shared Media
+                  What Adam Can See
                 </h3>
                 <span
                   className={cn(
@@ -792,5 +892,4 @@ function FloatingControlPanel({
     </Draggable>
   );
 }
-
 export default memo(FloatingControlPanel);
