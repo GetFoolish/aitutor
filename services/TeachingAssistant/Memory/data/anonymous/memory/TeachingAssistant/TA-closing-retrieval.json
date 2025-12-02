@@ -1,0 +1,326 @@
+{
+  "closings": [
+    {
+      "closing_id": "closing_20251202_082518_d3d674",
+      "session_id": "sess_20251202_082359_wbc660",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T08:25:18.919612Z",
+      "session_duration_seconds": null,
+      "session_summary": "Key moments: Struggled: student is seeking help and unsure, indicating they are stuck or confused.",
+      "key_moments": [
+        "Struggled: student is seeking help and unsure, indicating they are stuck or confused."
+      ],
+      "emotional_arc": [],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Good session! See you next time.",
+      "next_session_hooks": [
+        "Revisit what we struggled with",
+        "Continue with general"
+      ],
+      "new_memories_count": 2,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_135616_59eaec",
+      "session_id": "sess_20251202_135550_gfc5at",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T13:56:16.080009Z",
+      "session_duration_seconds": null,
+      "session_summary": "",
+      "key_moments": [],
+      "emotional_arc": [],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Good session! See you next time.",
+      "next_session_hooks": [
+        "Continue with general"
+      ],
+      "new_memories_count": 0,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_135646_2e57bb",
+      "session_id": "sess_20251202_135438_fy6mvr",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T13:56:46.545736Z",
+      "session_duration_seconds": 13,
+      "session_summary": "",
+      "key_moments": [],
+      "emotional_arc": [],
+      "topics_covered": [],
+      "goodbye_message": "",
+      "next_session_hooks": [],
+      "new_memories_count": 0,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_140605_cf01fa",
+      "session_id": "sess_20251202_140557_mttvni",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:06:05.640789Z",
+      "session_duration_seconds": 7,
+      "session_summary": "",
+      "key_moments": [],
+      "emotional_arc": [],
+      "topics_covered": [],
+      "goodbye_message": "",
+      "next_session_hooks": [],
+      "new_memories_count": 0,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_141054_83ed8d",
+      "session_id": "sess_20251202_141047_q61p0o",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:10:54.707792Z",
+      "session_duration_seconds": 6,
+      "session_summary": "",
+      "key_moments": [],
+      "emotional_arc": [],
+      "topics_covered": [],
+      "goodbye_message": "",
+      "next_session_hooks": [],
+      "new_memories_count": 0,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_141437_a2817a",
+      "session_id": "sess_20251202_141413_cfldhr",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:14:37.981978Z",
+      "session_duration_seconds": 23,
+      "session_summary": "",
+      "key_moments": [],
+      "emotional_arc": [],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Good session! See you next time.",
+      "next_session_hooks": [
+        "Continue with general"
+      ],
+      "new_memories_count": 0,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_143530_5a0ab9",
+      "session_id": "sess_20251202_143230_ro8pof",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:35:30.139378Z",
+      "session_duration_seconds": 178,
+      "session_summary": "",
+      "key_moments": [],
+      "emotional_arc": [
+        "happy"
+      ],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Nice session! See you next time.",
+      "next_session_hooks": [
+        "Continue with general"
+      ],
+      "new_memories_count": 0,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_144705_0c4825",
+      "session_id": "sess_20251202_144626_6axrcj",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:47:05.128253Z",
+      "session_duration_seconds": null,
+      "session_summary": "Key moments: Struggled: student expresses a preference for a different subject and avoidance of the current one.",
+      "key_moments": [
+        "Struggled: student expresses a preference for a different subject and avoidance of the current one."
+      ],
+      "emotional_arc": [],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Good session! See you next time.",
+      "next_session_hooks": [
+        "Revisit what we struggled with",
+        "Continue with general"
+      ],
+      "new_memories_count": 2,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_145219_400fc3",
+      "session_id": "sess_20251202_145151_55axx6",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:52:19.374956Z",
+      "session_duration_seconds": null,
+      "session_summary": "",
+      "key_moments": [],
+      "emotional_arc": [],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Good session! See you next time.",
+      "next_session_hooks": [
+        "Continue with general"
+      ],
+      "new_memories_count": 0,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_150252_005f56",
+      "session_id": "sess_20251202_150243_ml6bg8",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:02:52.185228Z",
+      "session_duration_seconds": 7,
+      "session_summary": "",
+      "key_moments": [],
+      "emotional_arc": [],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Good session! See you next time.",
+      "next_session_hooks": [
+        "Continue with general"
+      ],
+      "new_memories_count": 0,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_150513_cd589b",
+      "session_id": "sess_20251202_150447_mf2bji",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:05:13.193640Z",
+      "session_duration_seconds": 25,
+      "session_summary": "",
+      "key_moments": [],
+      "emotional_arc": [
+        "excited"
+      ],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Great work today! Can't wait to build on this next time.",
+      "next_session_hooks": [
+        "Continue with general"
+      ],
+      "new_memories_count": 0,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_151302_201a4c",
+      "session_id": "sess_20251202_151226_7u362w",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:13:02.018289Z",
+      "session_duration_seconds": 32,
+      "session_summary": "Emotional journey: excited -> excited",
+      "key_moments": [],
+      "emotional_arc": [
+        "excited",
+        "excited"
+      ],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Great work today! Can't wait to build on this next time.",
+      "next_session_hooks": [
+        "Continue with general"
+      ],
+      "new_memories_count": 0,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_151630_ac605b",
+      "session_id": "sess_20251202_151555_blv6xo",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:16:30.108577Z",
+      "session_duration_seconds": 31,
+      "session_summary": "Key moments: Struggled: student's message is incomplete and likely indicates a lack of understanding or being stuck.; Struggled: student's message is incomplete and likely indicates a lack of understanding or a need for clarification.",
+      "key_moments": [
+        "Struggled: student's message is incomplete and likely indicates a lack of understanding or being stuck.",
+        "Struggled: student's message is incomplete and likely indicates a lack of understanding or a need for clarification."
+      ],
+      "emotional_arc": [
+        "happy"
+      ],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Nice session! See you next time.",
+      "next_session_hooks": [
+        "Revisit what we struggled with",
+        "Continue with general"
+      ],
+      "new_memories_count": 0,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_151749_153f55",
+      "session_id": "sess_20251202_151706_ty3q2z",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:17:49.686016Z",
+      "session_duration_seconds": 39,
+      "session_summary": "Emotional journey: excited -> excited",
+      "key_moments": [],
+      "emotional_arc": [
+        "excited",
+        "excited"
+      ],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Great work today! Can't wait to build on this next time.",
+      "next_session_hooks": [
+        "Continue with general"
+      ],
+      "new_memories_count": 2,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_152701_064798",
+      "session_id": "sess_20251202_152557_ljtus1",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:27:01.003560Z",
+      "session_duration_seconds": 59,
+      "session_summary": "",
+      "key_moments": [],
+      "emotional_arc": [
+        "happy"
+      ],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Nice session! See you next time.",
+      "next_session_hooks": [
+        "Continue with general"
+      ],
+      "new_memories_count": 1,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_153424_f92418",
+      "session_id": "sess_20251202_153218_j2tovx",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:34:24.490911Z",
+      "session_duration_seconds": null,
+      "session_summary": "Key moments: Struggled: student expresses a preference to learn a different subject (chemistry) than the current one (math), indicating a lack of engagement.",
+      "key_moments": [
+        "Struggled: student expresses a preference to learn a different subject (chemistry) than the current one (math), indicating a lack of engagement."
+      ],
+      "emotional_arc": [
+        "excited"
+      ],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Great work today! Can't wait to build on this next time.",
+      "next_session_hooks": [
+        "Revisit what we struggled with",
+        "Continue with general"
+      ],
+      "new_memories_count": 3,
+      "status": "success"
+    }
+  ],
+  "last_updated": "2025-12-02T15:34:24.501429Z"
+}

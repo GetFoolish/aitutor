@@ -1,0 +1,33 @@
+{
+  "session_id": "sess_20251202_144626_6axrcj",
+  "user_id": "anonymous",
+  "start_time": "2025-12-02T14:46:26.730Z",
+  "end_time": "2025-12-02T14:47:02.961Z",
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "Hey there! How are you doing today? Ready to dive into some math together?",
+      "timestamp": "2025-12-02T14:46:34.134Z"
+    },
+    {
+      "speaker": "user",
+      "text": "No I don't want to dive in match I like physics.",
+      "timestamp": "2025-12-02T14:46:43.351Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "Oh, physics it is! That's a fantastic choice. There's so much to explore there. What kind of physics are you interested in?",
+      "timestamp": "2025-12-02T14:46:51.532Z"
+    },
+    {
+      "speaker": "user",
+      "text": "I like motion in physics.",
+      "timestamp": "2025-12-02T14:46:59.678Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "Motion is a really engaging topic in physics! We could talk about concepts like velocity, acceleration, or forces. What specifically about motion are you most interested in right now?",
+      "timestamp": "2025-12-02T14:47:02.959Z"
+    }
+  ]
+}

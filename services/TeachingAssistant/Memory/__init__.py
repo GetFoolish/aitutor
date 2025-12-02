@@ -6,8 +6,8 @@ from .consolidator import (
     SessionClosingCache,
     OpeningContextCache,
     MemoryConsolidator,
-    ConversationWatcher,
-    run_memory_watcher
+    ConversationWatcher
+    # run_memory_watcher  # COMMENTED: File polling disabled - function is commented out in consolidator.py
 )
 
 __all__ = [
@@ -21,5 +21,5 @@ __all__ = [
     'OpeningContextCache',
     'MemoryConsolidator',
     'ConversationWatcher',
-    'run_memory_watcher',
+    # 'run_memory_watcher',  # COMMENTED: File polling disabled
 ]

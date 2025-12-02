@@ -1,0 +1,28 @@
+{
+  "session_id": "sess_20251202_135550_gfc5at",
+  "user_id": "anonymous",
+  "start_time": "2025-12-02T13:55:50.351Z",
+  "end_time": "2025-12-02T13:57:19.693Z",
+  "turns": [
+    {
+      "speaker": "user",
+      "text": "Hello.",
+      "timestamp": "2025-12-02T13:56:02.034Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "Hello there! How can I help you today?",
+      "timestamp": "2025-12-02T13:56:04.583Z"
+    },
+    {
+      "speaker": "user",
+      "text": "What is your name?",
+      "timestamp": "2025-12-02T13:56:09.968Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "My name is Gemini. It's nice to meet you.",
+      "timestamp": "2025-12-02T13:56:13.436Z"
+    }
+  ]
+}

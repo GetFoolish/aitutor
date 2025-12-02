@@ -1,0 +1,18 @@
+{
+  "session_id": "sess_20251202_141413_cfldhr",
+  "user_id": "anonymous",
+  "start_time": "2025-12-02T14:14:13.706Z",
+  "end_time": "2025-12-02T14:14:36.972Z",
+  "turns": [
+    {
+      "speaker": "user",
+      "text": "<noise> Hello.",
+      "timestamp": "2025-12-02T14:14:27.769Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "Hello! It looks like the next question is loading. Just let me know when it appears, and we can jump in.",
+      "timestamp": "2025-12-02T14:14:34.077Z"
+    }
+  ]
+}

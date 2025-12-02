@@ -19,18 +19,21 @@ def _get_pinecone_index():
     if _index is None:
         from pinecone import Pinecone
         _pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-        index_name = os.getenv("PINECONE_INDEX_NAME", "17-november-aitutor")
+        index_name = os.getenv("PINECONE_INDEX_NAME")
         _index = _pc.Index(index_name)
     return _index
 
 
 class MemoryStore:
-    def __init__(self, storage_path: Optional[str] = None):
+    def __init__(self, storage_path: Optional[str] = None, student_id: Optional[str] = None):
         if storage_path is None:
+            if not student_id:
+                raise ValueError("student_id is required for MemoryStore")
             base_dir = os.path.dirname(os.path.abspath(__file__))
-            storage_path = os.path.join(base_dir, 'data', 'memory')
+            storage_path = os.path.join(base_dir, 'data', student_id, 'memory')
 
         self.storage_path = storage_path
+        self.student_id = student_id
         os.makedirs(self.storage_path, exist_ok=True)
         self._lock = threading.Lock()
         self._index = None
@@ -279,12 +282,62 @@ class MemoryStore:
         return False
 
     def get_recent_context(self, student_id: str, limit: int = 3) -> List[Memory]:
-        memories = self._load_file(MemoryType.CONTEXT)
-        results = [
-            Memory.from_dict(m) for m in memories
-            if m.get('student_id') == student_id
-        ]
-
-        results.sort(key=lambda x: x.timestamp, reverse=True)
-
-        return results[:limit]
+        """Get recent context memories from Pinecone, sorted by timestamp."""
+        # Use a neutral query to get all context memories for this student
+        # We'll sort by timestamp in Python
+        query_embedding = get_query_embedding("context session summary")
+        
+        index = self._get_index()
+        
+        # Filter by student_id and type=context
+        filter_dict = {
+            "student_id": {"$eq": student_id},
+            "type": {"$eq": "context"}
+        }
+        
+        try:
+            # Query Pinecone for context memories
+            # Get more results than needed to ensure we have recent ones
+            results = index.query(
+                vector=query_embedding,
+                top_k=min(limit * 5, 20),  # Get more to sort by timestamp
+                namespace=MemoryType.CONTEXT.value,
+                filter=filter_dict,
+                include_metadata=True
+            )
+            
+            # Convert to Memory objects and sort by timestamp
+            memories = []
+            for match in results.matches:
+                meta = match.metadata
+                mem_data = {
+                    "id": match.id,
+                    "student_id": meta.get("student_id", student_id),
+                    "type": meta.get("type", "context"),
+                    "text": meta.get("text", ""),
+                    "importance": meta.get("importance", 0.5),
+                    "timestamp": meta.get("timestamp", datetime.utcnow().isoformat() + 'Z'),
+                    "metadata": {}
+                }
+                if meta.get("session_id"):
+                    mem_data["session_id"] = meta.get("session_id")
+                
+                # Copy metadata fields
+                for key in ['emotion', 'valence', 'category', 'topic', 'trigger', 'response', 'resolution', 'session_end', 'next_topic']:
+                    if meta.get(key):
+                        mem_data["metadata"][key] = meta.get(key)
+                
+                try:
+                    memory = Memory.from_dict(mem_data)
+                    memories.append(memory)
+                except Exception:
+                    continue
+            
+            # Sort by timestamp (most recent first)
+            memories.sort(key=lambda x: x.timestamp, reverse=True)
+            
+            return memories[:limit]
+            
+        except Exception:
+            # Fallback: return empty list if Pinecone query fails
+            return []

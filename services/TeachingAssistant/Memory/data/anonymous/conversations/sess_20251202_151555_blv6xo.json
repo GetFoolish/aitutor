@@ -1,0 +1,38 @@
+{
+  "session_id": "sess_20251202_151555_blv6xo",
+  "user_id": "anonymous",
+  "start_time": "2025-12-02T15:15:55.846Z",
+  "end_time": "2025-12-02T15:16:27.001Z",
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "Hey there! How are you doing today? Ready to do some math together?",
+      "timestamp": "2025-12-02T15:16:02.140Z"
+    },
+    {
+      "speaker": "user",
+      "text": "<noise> I am good what about you",
+      "timestamp": "2025-12-02T15:16:05.858Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "I'm doing well, thanks for asking! Looks like the question is still loading. We can give it a moment.",
+      "timestamp": "2025-12-02T15:16:12.395Z"
+    },
+    {
+      "speaker": "user",
+      "text": "ใน <noise>",
+      "timestamp": "2025-12-02T15:16:19.070Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "Just letting you know I'm still here! We'll wait for the question to pop up. No rush at all.",
+      "timestamp": "2025-12-02T15:16:25.423Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "We didn't",
+      "timestamp": "2025-12-02T15:16:27.000Z"
+    }
+  ]
+}

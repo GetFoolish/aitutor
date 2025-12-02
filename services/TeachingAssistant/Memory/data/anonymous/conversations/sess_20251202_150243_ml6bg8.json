@@ -1,0 +1,13 @@
+{
+  "session_id": "sess_20251202_150243_ml6bg8",
+  "user_id": "anonymous",
+  "start_time": "2025-12-02T15:02:43.649Z",
+  "end_time": "2025-12-02T15:02:51.128Z",
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "Hey there! Thanks for joining me today. How are you feeling about learning some math today? Ready to tackle a few problems? I'm always here to help, so if you get stuck or confused at any point, just let me know and we can work it out together.",
+      "timestamp": "2025-12-02T15:02:51.124Z"
+    }
+  ]
+}

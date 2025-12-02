@@ -1,6 +1,6 @@
 import sys
 import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
@@ -8,6 +8,7 @@ from typing import Optional
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from services.TeachingAssistant.teaching_assistant import TeachingAssistant
+from services.TeachingAssistant.Memory.consolidator import ConversationWatcher
 
 app = FastAPI(title="Teaching Assistant API")
 
@@ -20,6 +21,10 @@ app.add_middleware(
 )
 
 ta = TeachingAssistant()
+
+# Global conversation watcher for real-time memory processing
+conversation_watcher = ConversationWatcher(verbose=True)
+# Note: We don't call start() - no file polling needed, only real-time events
 
 
 class StartSessionRequest(BaseModel):
@@ -40,6 +45,33 @@ class PromptResponse(BaseModel):
     session_info: dict
 
 
+class ConversationTurnRequest(BaseModel):
+    session_id: str
+    user_id: str
+    user_text: str
+    adam_text: str
+    timestamp: str
+
+
+class SessionStartRequest(BaseModel):
+    session_id: str
+    user_id: str
+
+
+class MemorySessionEndRequest(BaseModel):
+    session_id: str
+    user_id: str
+    end_time: str
+
+
+class UserTurnRequest(BaseModel):
+    session_id: str
+    user_id: str
+    user_text: str
+    timestamp: str
+    adam_text: str = ""
+
+
 @app.get("/health")
 def health_check():
     return {"status": "healthy", "service": "TeachingAssistant"}
@@ -56,7 +88,7 @@ def start_session(request: StartSessionRequest):
 
 
 @app.post("/session/end", response_model=PromptResponse)
-def end_session(request: Optional[EndSessionRequest] = None):
+def end_session(request: Optional[EndSessionRequest] = Body(None)):
     try:
         prompt = ta.end_session()
         if not prompt:
@@ -64,6 +96,8 @@ def end_session(request: Optional[EndSessionRequest] = None):
         
         session_info = ta.get_session_info()
         return PromptResponse(prompt=prompt, session_info=session_info)
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -99,6 +133,84 @@ def check_inactivity():
             session_info = ta.get_session_info()
             return PromptResponse(prompt=prompt, session_info=session_info)
         return PromptResponse(prompt="", session_info=ta.get_session_info())
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/memory/session/start")
+def memory_session_start(request: SessionStartRequest):
+    """Handle real-time session start event for memory processing."""
+    try:
+        # Initialize memory retriever if not already initialized for this user
+        if not ta.memory_retriever or ta.current_user_id != request.user_id:
+            from services.TeachingAssistant.Memory.retriever import MemoryRetriever, MemoryRetrievalWatcher
+            ta.memory_retriever = MemoryRetriever(student_id=request.user_id)
+            ta.memory_retriever.watcher = MemoryRetrievalWatcher(
+                retriever=ta.memory_retriever,
+                verbose=True
+            )
+            ta.current_user_id = request.user_id
+        
+        conversation_watcher.on_session_start(request.session_id, request.user_id)
+        return {"status": "ok", "session_id": request.session_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/memory/turn")
+def memory_turn(request: ConversationTurnRequest):
+    """Handle real-time conversation turn event for memory processing."""
+    try:
+        conversation_watcher.on_turn(
+            request.session_id,
+            request.user_id,
+            request.user_text,
+            request.adam_text,
+            request.timestamp
+        )
+        return {"status": "ok", "session_id": request.session_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/memory/session/end")
+def memory_session_end(request: MemorySessionEndRequest):
+    """Handle real-time session end event for memory processing."""
+    try:
+        conversation_watcher.on_session_end(request.session_id, request.user_id, request.end_time)
+        # Clear conversation history for this session
+        if ta.memory_retriever:
+            ta.memory_retriever.clear_session_history(request.session_id)
+        return {"status": "ok", "session_id": request.session_id}
+    except Exception as e:
+        import traceback
+        error_detail = f"{str(e)}\n{traceback.format_exc()}"
+        print(f"Error in memory_session_end: {error_detail}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/memory/retrieval/user-turn")
+def memory_retrieval_user_turn(request: UserTurnRequest):
+    """Handle real-time user turn event for memory retrieval."""
+    try:
+        # Initialize memory retriever if not already initialized for this user
+        if not ta.memory_retriever or ta.current_user_id != request.user_id:
+            from services.TeachingAssistant.Memory.retriever import MemoryRetriever, MemoryRetrievalWatcher
+            ta.memory_retriever = MemoryRetriever(student_id=request.user_id)
+            ta.memory_retriever.watcher = MemoryRetrievalWatcher(
+                retriever=ta.memory_retriever,
+                verbose=True
+            )
+            ta.current_user_id = request.user_id
+        
+        ta.memory_retriever.on_user_turn(
+            session_id=request.session_id,
+            user_id=request.user_id,
+            user_text=request.user_text,
+            timestamp=request.timestamp,
+            adam_text=request.adam_text
+        )
+        return {"status": "ok", "session_id": request.session_id}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

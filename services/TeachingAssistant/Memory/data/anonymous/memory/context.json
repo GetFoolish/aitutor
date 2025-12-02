@@ -1,0 +1,56 @@
+[
+  {
+    "id": "mem_e2a86ed78b9b",
+    "student_id": "anonymous",
+    "type": "context",
+    "text": "Key moments: Struggled: student's message is incomplete and likely indicates a lack of understanding or being stuck.; Struggled: student's message is incomplete and likely indicates a lack of understanding or a need for clarification.. Student felt: happy",
+    "timestamp": "2025-12-02T15:16:28.092616Z",
+    "importance": 0.8,
+    "metadata": {
+      "session_end": true,
+      "emotion": "happy",
+      "next_topic": "general"
+    },
+    "session_id": "sess_20251202_151555_blv6xo"
+  },
+  {
+    "id": "mem_3555f19e9422",
+    "student_id": "anonymous",
+    "type": "context",
+    "text": "Student felt: excited",
+    "timestamp": "2025-12-02T15:17:48.700064Z",
+    "importance": 0.8,
+    "metadata": {
+      "session_end": true,
+      "emotion": "excited",
+      "next_topic": "general"
+    },
+    "session_id": "sess_20251202_151706_ty3q2z"
+  },
+  {
+    "id": "mem_d7673d8e2a14",
+    "student_id": "anonymous",
+    "type": "context",
+    "text": "Session ended early",
+    "timestamp": "2025-12-02T15:17:46.792006Z",
+    "importance": 0.5,
+    "metadata": {
+      "session_end": true,
+      "emotion": "positive"
+    },
+    "session_id": "sess_20251202_151706_ty3q2z"
+  },
+  {
+    "id": "mem_b79ac30bd118",
+    "student_id": "anonymous",
+    "type": "context",
+    "text": "Student joined the session despite technical difficulties.",
+    "timestamp": "2025-12-02T15:26:58.631866Z",
+    "importance": 0.6,
+    "metadata": {
+      "session_end": true,
+      "emotion": "appreciative"
+    },
+    "session_id": "sess_20251202_152557_ljtus1"
+  }
+]

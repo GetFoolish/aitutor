@@ -1,0 +1,2557 @@
+{
+  "retrievals": [
+    {
+      "retrieval_id": "deep_ret_20251202_115823_84e833",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T11:58:23.834970Z",
+      "student_message": "we started it monday. i get the basic shape, the U thing. but the formulas are messing me up. specifically the discriminant part.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 0,
+          "memories": []
+        }
+      },
+      "retrieval_time_ms": 4729.1,
+      "status": "success",
+      "generated_query": "Math help: Quadratic equations, discriminant, formulas, student struggles with understanding and application, specifically after Monday's class.",
+      "original_message": "we started it monday. i get the basic shape, the U thing. but the formulas are messing me up. specifically the discriminant part."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_115855_f0354d",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T11:58:55.283654Z",
+      "student_message": "okay, that makes sense.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 0,
+          "memories": []
+        }
+      },
+      "retrieval_time_ms": 4967.36,
+      "status": "success",
+      "generated_query": "Quadratic equations, discriminant, real roots, struggling with formulas, example $y = x^2 + 4x + 5$, student feeling overwhelmed by math concepts.",
+      "original_message": "okay, that makes sense."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_115929_50e9bf",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T11:59:29.553133Z",
+      "student_message": "4 squared is 16. and then... 4 times 1 times 5 is 20. so 16 - 20.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 0,
+          "memories": []
+        }
+      },
+      "retrieval_time_ms": 5084.37,
+      "status": "success",
+      "generated_query": "Quadratic equations, discriminant, number of real roots, and completing the square for equation y = x^2 + 4x + 5.",
+      "original_message": "4 squared is 16. and then... 4 times 1 times 5 is 20. so 16 - 20."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120004_c0594b",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:00:04.247909Z",
+      "student_message": "physically, yeah. mentally... i dunno. i get super nervous before games. same with tests actually.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 0,
+          "memories": []
+        }
+      },
+      "retrieval_time_ms": 5689.84,
+      "status": "success",
+      "generated_query": "\"Quadratic equations, discriminant, and whether the function touches the x-axis (ground). Student relating concepts to basketball and personal experiences with anxiety before games and tests.\"",
+      "original_message": "physically, yeah. mentally... i dunno. i get super nervous before games. same with tests actually."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120016_199dfe",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:00:16.528895Z",
+      "student_message": "yeah well it sucks. i have a math test friday morning too. so it's like a double whammy of stress.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": false
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 0,
+          "memories": []
+        }
+      },
+      "retrieval_time_ms": 6341.85,
+      "status": "success",
+      "generated_query": "Quadratic equations, discriminant, and the roots' relation to the x-axis (touching the ground/airball analogy). Also, stress/anxiety related to upcoming tests and sports games, particularly basketball.",
+      "original_message": "yeah well it sucks. i have a math test friday morning too. so it's like a double whammy of stress."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120043_5aefb8",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:00:43.089047Z",
+      "student_message": "ugh sorry. one sec.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": false
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 1,
+          "memories": [
+            {
+              "memory_id": "mem_250e5fed2d85",
+              "type": "context",
+              "text": "Has a math test on Friday morning, compounding stress with the game.",
+              "score": 1.0,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T12:00:20.857044Z",
+              "metadata": {
+                "emotion": "stressed"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 9096.56,
+      "status": "success",
+      "generated_query": "Math problems resulting in negative numbers, connecting it to basketball (airball), and test anxiety.",
+      "original_message": "ugh sorry. one sec."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120056_530cde",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:00:56.375289Z",
+      "student_message": "MAX! QUIET! sorry, my dog is barking at... literally nothing.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 2,
+          "memories": [
+            {
+              "memory_id": "mem_671d35838148",
+              "type": "context",
+              "text": "Preparing for a test on Friday.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:00:47.014424Z",
+              "metadata": {
+                "emotion": "anxious",
+                "next_topic": "quadratics"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_250e5fed2d85",
+              "type": "context",
+              "text": "Has a math test on Friday morning, compounding stress with the game.",
+              "score": 1.0,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T12:00:20.857044Z",
+              "metadata": {
+                "emotion": "stressed"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 6627.13,
+      "status": "success",
+      "generated_query": "Math concepts and basketball game anxiety; student discussing imaginary roots and a math test on Friday, comparing to pre-game nerves.",
+      "original_message": "MAX! QUIET! sorry, my dog is barking at... literally nothing."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120114_361ee0",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:01:14.108855Z",
+      "student_message": "i guess so. that one looks even harder though.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": false
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 2,
+          "memories": [
+            {
+              "memory_id": "mem_671d35838148",
+              "type": "context",
+              "text": "Preparing for a test on Friday.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:00:47.014424Z",
+              "metadata": {
+                "emotion": "anxious",
+                "next_topic": "quadratics"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_250e5fed2d85",
+              "type": "context",
+              "text": "Has a math test on Friday morning, compounding stress with the game.",
+              "score": 1.0,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T12:00:20.857044Z",
+              "metadata": {
+                "emotion": "stressed"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 5644.6,
+      "status": "success",
+      "generated_query": "Math concepts and test anxiety, basketball game stress on Friday, drawing as a learning aid, and a mention of a golden retriever.",
+      "original_message": "i guess so. that one looks even harder though."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120135_3be330",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:01:35.117016Z",
+      "student_message": "yeah?",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_05c879dc9ddd",
+              "type": "context",
+              "text": "Has a math test and a basketball game on Friday.",
+              "score": 1.0,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T12:01:18.091105Z",
+              "metadata": {
+                "emotion": "stressed",
+                "next_topic": "prioritization"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_671d35838148",
+              "type": "context",
+              "text": "Preparing for a test on Friday.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:00:47.014424Z",
+              "metadata": {
+                "emotion": "anxious",
+                "next_topic": "quadratics"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_250e5fed2d85",
+              "type": "context",
+              "text": "Has a math test on Friday morning, compounding stress with the game.",
+              "score": 1.0,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T12:00:20.857044Z",
+              "metadata": {
+                "emotion": "stressed"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 4479.49,
+      "status": "success",
+      "generated_query": "Student experiencing test anxiety and stress related to an upcoming math test, focusing on solving an equation, potentially using visual aids.",
+      "original_message": "yeah?"
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120204_47a546",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:02:04.298786Z",
+      "student_message": "wait how did you get that?",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_05c879dc9ddd",
+              "type": "context",
+              "text": "Has a math test and a basketball game on Friday.",
+              "score": 1.0,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T12:01:18.091105Z",
+              "metadata": {
+                "emotion": "stressed",
+                "next_topic": "prioritization"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_671d35838148",
+              "type": "context",
+              "text": "Preparing for a test on Friday.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:00:47.014424Z",
+              "metadata": {
+                "emotion": "anxious",
+                "next_topic": "quadratics"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_250e5fed2d85",
+              "type": "context",
+              "text": "Has a math test on Friday morning, compounding stress with the game.",
+              "score": 1.0,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T12:00:20.857044Z",
+              "metadata": {
+                "emotion": "stressed"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 4948.37,
+      "status": "success",
+      "generated_query": "Solving quadratic equations by completing the square, specifically focusing on the steps involved in manipulating the equation $x^2 + 6x = -5$ to isolate and solve for x.",
+      "original_message": "wait how did you get that?"
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120237_6a4743",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:02:37.460647Z",
+      "student_message": "thanks. see ya.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_303e174af358",
+              "type": "context",
+              "text": "Session ends with offers of further help or casual chat",
+              "score": 1.0,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T12:02:13.917126Z",
+              "metadata": {
+                "session_end": true
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_05c879dc9ddd",
+              "type": "context",
+              "text": "Has a math test and a basketball game on Friday.",
+              "score": 1.0,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T12:01:18.091105Z",
+              "metadata": {
+                "emotion": "stressed",
+                "next_topic": "prioritization"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 5600.92,
+      "status": "success",
+      "generated_query": "Solving quadratic equations, completing the square, understanding the relationship between the expression and the square root. User struggled with the steps and then ran off to practice.",
+      "original_message": "thanks. see ya."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120248_9322ac",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:02:48.662982Z",
+      "student_message": "tired. so tired.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": false
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_303e174af358",
+              "type": "context",
+              "text": "Session ends with offers of further help or casual chat",
+              "score": 1.0,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T12:02:13.917126Z",
+              "metadata": {
+                "session_end": true
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_05c879dc9ddd",
+              "type": "context",
+              "text": "Has a math test and a basketball game on Friday.",
+              "score": 1.0,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T12:01:18.091105Z",
+              "metadata": {
+                "emotion": "stressed",
+                "next_topic": "prioritization"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 5778.72,
+      "status": "success",
+      "generated_query": "Solving a quadratic equation by completing the square, specifically focusing on the step where the constant term is isolated and the equation is simplified to solve for x, and the user expressing confusion and then understanding.",
+      "original_message": "tired. so tired."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120311_46cb19",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:03:11.038698Z",
+      "student_message": "honestly? better than i thought. i was shaking when he handed it out. like palms sweating and everything.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": false
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_fc3a2ae66230",
+              "type": "context",
+              "text": "Session ended with an unaddressed question about a graph",
+              "score": 1.0,
+              "importance": 0.4,
+              "timestamp": "2025-12-02T12:02:59.222052Z",
+              "metadata": {
+                "session_end": true,
+                "next_topic": "graph"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_303e174af358",
+              "type": "context",
+              "text": "Session ends with offers of further help or casual chat",
+              "score": 1.0,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T12:02:13.917126Z",
+              "metadata": {
+                "session_end": true
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 5353.55,
+      "status": "success",
+      "generated_query": "Student's reaction to receiving something (likely a score or grade) and discussing a challenging sports practice. Includes emotional and physical responses like sweating and shaking.",
+      "original_message": "honestly? better than i thought. i was shaking when he handed it out. like palms sweating and everything."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120320_5835f9",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:03:20.742029Z",
+      "student_message": "kinda. there was a question about roots and i panicked, but then i remembered the airball thing we talked about. i literally drew a little hoop on my scratch paper.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_fc3a2ae66230",
+              "type": "context",
+              "text": "Session ended with an unaddressed question about a graph",
+              "score": 1.0,
+              "importance": 0.4,
+              "timestamp": "2025-12-02T12:02:59.222052Z",
+              "metadata": {
+                "session_end": true,
+                "next_topic": "graph"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_303e174af358",
+              "type": "context",
+              "text": "Session ends with offers of further help or casual chat",
+              "score": 1.0,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T12:02:13.917126Z",
+              "metadata": {
+                "session_end": true
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 4248.88,
+      "status": "success",
+      "generated_query": "student learning about square roots, related to a specific question where they felt panicked, and referencing a \"airball thing\" that helped them.",
+      "original_message": "kinda. there was a question about roots and i panicked, but then i remembered the airball thing we talked about. i literally drew a little hoop on my scratch paper."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120336_4b0f11",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:03:36.520119Z",
+      "student_message": "thanks. feels good to not completely bomb it.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": false
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_fc3a2ae66230",
+              "type": "context",
+              "text": "Session ended with an unaddressed question about a graph",
+              "score": 1.0,
+              "importance": 0.4,
+              "timestamp": "2025-12-02T12:02:59.222052Z",
+              "metadata": {
+                "session_end": true,
+                "next_topic": "graph"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_303e174af358",
+              "type": "context",
+              "text": "Session ends with offers of further help or casual chat",
+              "score": 1.0,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T12:02:13.917126Z",
+              "metadata": {
+                "session_end": true
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 5200.77,
+      "status": "success",
+      "generated_query": "Math problem related to square roots and the discriminant, likely involving a negative result, and connecting to a basketball analogy or memory.",
+      "original_message": "thanks. feels good to not completely bomb it."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120356_577c48",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:03:56.396046Z",
+      "student_message": "2.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_fc3a2ae66230",
+              "type": "context",
+              "text": "Session ended with an unaddressed question about a graph",
+              "score": 1.0,
+              "importance": 0.4,
+              "timestamp": "2025-12-02T12:02:59.222052Z",
+              "metadata": {
+                "session_end": true,
+                "next_topic": "graph"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_303e174af358",
+              "type": "context",
+              "text": "Session ends with offers of further help or casual chat",
+              "score": 1.0,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T12:02:13.917126Z",
+              "metadata": {
+                "session_end": true
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 4713.24,
+      "status": "success",
+      "generated_query": "Math exam, roots, discriminant, quadratic equations, practice test performance, basketball game, winning score, feeling of relief.",
+      "original_message": "2."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120427_d016eb",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:04:27.078611Z",
+      "student_message": "okay. move the 3 over. $x^2 - 5x = -3$.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_fc3a2ae66230",
+              "type": "context",
+              "text": "Session ended with an unaddressed question about a graph",
+              "score": 1.0,
+              "importance": 0.4,
+              "timestamp": "2025-12-02T12:02:59.222052Z",
+              "metadata": {
+                "session_end": true,
+                "next_topic": "graph"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_303e174af358",
+              "type": "context",
+              "text": "Session ends with offers of further help or casual chat",
+              "score": 1.0,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T12:02:13.917126Z",
+              "metadata": {
+                "session_end": true
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 4913.57,
+      "status": "success",
+      "generated_query": "solving quadratic equations, roots, discriminant, completing the square, factoring, and comparing methods.",
+      "original_message": "okay. move the 3 over. $x^2 - 5x = -3$."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120443_d19cdb",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:04:43.840779Z",
+      "student_message": "ugh. i hate fractions. can't we just use 2.5?",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": false
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_fc3a2ae66230",
+              "type": "context",
+              "text": "Session ended with an unaddressed question about a graph",
+              "score": 1.0,
+              "importance": 0.4,
+              "timestamp": "2025-12-02T12:02:59.222052Z",
+              "metadata": {
+                "session_end": true,
+                "next_topic": "graph"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_303e174af358",
+              "type": "context",
+              "text": "Session ends with offers of further help or casual chat",
+              "score": 1.0,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T12:02:13.917126Z",
+              "metadata": {
+                "session_end": true
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 5559.17,
+      "status": "success",
+      "generated_query": "Completing the square, solving quadratic equations, including adding/subtracting constants and working with fractions. Comparing results from completing the square to factoring.",
+      "original_message": "ugh. i hate fractions. can't we just use 2.5?"
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120507_832477",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:05:07.762099Z",
+      "student_message": "how do i add -3 and a fraction? i don't know... this is getting annoying.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_fc3a2ae66230",
+              "type": "context",
+              "text": "Session ended with an unaddressed question about a graph",
+              "score": 1.0,
+              "importance": 0.4,
+              "timestamp": "2025-12-02T12:02:59.222052Z",
+              "metadata": {
+                "session_end": true,
+                "next_topic": "graph"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_303e174af358",
+              "type": "context",
+              "text": "Session ends with offers of further help or casual chat",
+              "score": 1.0,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T12:02:13.917126Z",
+              "metadata": {
+                "session_end": true
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 5981.39,
+      "status": "success",
+      "generated_query": "Solving quadratic equations, completing the square, dealing with fractions, and combining constants.",
+      "original_message": "how do i add -3 and a fraction? i don't know... this is getting annoying."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120530_6f09b8",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:05:30.201654Z",
+      "student_message": "no seriously, i hate this. why do we have to do this? just use a calculator.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": false
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_fc3a2ae66230",
+              "type": "context",
+              "text": "Session ended with an unaddressed question about a graph",
+              "score": 1.0,
+              "importance": 0.4,
+              "timestamp": "2025-12-02T12:02:59.222052Z",
+              "metadata": {
+                "session_end": true,
+                "next_topic": "graph"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_303e174af358",
+              "type": "context",
+              "text": "Session ends with offers of further help or casual chat",
+              "score": 1.0,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T12:02:13.917126Z",
+              "metadata": {
+                "session_end": true
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 5652.12,
+      "status": "success",
+      "generated_query": "Completing the square, solving quadratic equations, fractions, and the user's frustration with the process.",
+      "original_message": "no seriously, i hate this. why do we have to do this? just use a calculator."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120547_b095d3",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:05:47.204478Z",
+      "student_message": "yeah obviously.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_fc3a2ae66230",
+              "type": "context",
+              "text": "Session ended with an unaddressed question about a graph",
+              "score": 1.0,
+              "importance": 0.4,
+              "timestamp": "2025-12-02T12:02:59.222052Z",
+              "metadata": {
+                "session_end": true,
+                "next_topic": "graph"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_303e174af358",
+              "type": "context",
+              "text": "Session ends with offers of further help or casual chat",
+              "score": 1.0,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T12:02:13.917126Z",
+              "metadata": {
+                "session_end": true
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 4763.06,
+      "status": "success",
+      "generated_query": "Completing the square, specifically with fractions, to solve quadratic equations; student struggling with the process, expressing frustration with fractions and the perceived lack of real-world application.",
+      "original_message": "yeah obviously."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120557_bf557c",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:05:57.975286Z",
+      "student_message": "yeah i guess. like that thing we did before with the diagrams.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": true,
+        "every_n_turns": false
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_fc3a2ae66230",
+              "type": "context",
+              "text": "Session ended with an unaddressed question about a graph",
+              "score": 1.0,
+              "importance": 0.4,
+              "timestamp": "2025-12-02T12:02:59.222052Z",
+              "metadata": {
+                "session_end": true,
+                "next_topic": "graph"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_303e174af358",
+              "type": "context",
+              "text": "Session ends with offers of further help or casual chat",
+              "score": 1.0,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T12:02:13.917126Z",
+              "metadata": {
+                "session_end": true
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 4667.3,
+      "status": "success",
+      "generated_query": "Completing the square with fractions; frustration with fractions and their real-world application; comparison to previous diagram problems.",
+      "original_message": "yeah i guess. like that thing we did before with the diagrams."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120609_ea4b45",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:06:09.351576Z",
+      "student_message": "he's good. he stole a sock yesterday and i had to chase him for 10 minutes. he thinks it's a game.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": true,
+        "every_n_turns": false
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_fc3a2ae66230",
+              "type": "context",
+              "text": "Session ended with an unaddressed question about a graph",
+              "score": 1.0,
+              "importance": 0.4,
+              "timestamp": "2025-12-02T12:02:59.222052Z",
+              "metadata": {
+                "session_end": true,
+                "next_topic": "graph"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_303e174af358",
+              "type": "context",
+              "text": "Session ends with offers of further help or casual chat",
+              "score": 1.0,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T12:02:13.917126Z",
+              "metadata": {
+                "session_end": true
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 5646.94,
+      "status": "success",
+      "generated_query": "Fraction and quadratic equation frustration, student seeks help adding fractions, mentions using diagrams previously, and expresses dislike for the topic; also discusses a unrelated issue with a pet.",
+      "original_message": "he's good. he stole a sock yesterday and i had to chase him for 10 minutes. he thinks it's a game."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120630_a10075",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:06:30.007268Z",
+      "student_message": "2.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_fc3a2ae66230",
+              "type": "context",
+              "text": "Session ended with an unaddressed question about a graph",
+              "score": 1.0,
+              "importance": 0.4,
+              "timestamp": "2025-12-02T12:02:59.222052Z",
+              "metadata": {
+                "session_end": true,
+                "next_topic": "graph"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_303e174af358",
+              "type": "context",
+              "text": "Session ends with offers of further help or casual chat",
+              "score": 1.0,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T12:02:13.917126Z",
+              "metadata": {
+                "session_end": true
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 4536.62,
+      "status": "success",
+      "generated_query": "Adding fractions and negative numbers; student frustration with math problems; connection to a previous diagram activity; mention of \"13/4\" and the expression \"x - 5/2 = sqrt(13/4)\".",
+      "original_message": "2."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120640_cfac9a",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:06:40.146381Z",
+      "student_message": "thanks. see ya.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": false
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_fc3a2ae66230",
+              "type": "context",
+              "text": "Session ended with an unaddressed question about a graph",
+              "score": 1.0,
+              "importance": 0.4,
+              "timestamp": "2025-12-02T12:02:59.222052Z",
+              "metadata": {
+                "session_end": true,
+                "next_topic": "graph"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_303e174af358",
+              "type": "context",
+              "text": "Session ends with offers of further help or casual chat",
+              "score": 1.0,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T12:02:13.917126Z",
+              "metadata": {
+                "session_end": true
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 5590.65,
+      "status": "success",
+      "generated_query": "Math problem frustration with fractions (e.g., 13/4), related to diagrams and a specific equation involving a square root, and a desire to finish the problem quickly.",
+      "original_message": "thanks. see ya."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120651_f28340",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:06:51.198687Z",
+      "student_message": "hey. yeah. whatever.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": false
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_fc3a2ae66230",
+              "type": "context",
+              "text": "Session ended with an unaddressed question about a graph",
+              "score": 1.0,
+              "importance": 0.4,
+              "timestamp": "2025-12-02T12:02:59.222052Z",
+              "metadata": {
+                "session_end": true,
+                "next_topic": "graph"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_303e174af358",
+              "type": "context",
+              "text": "Session ends with offers of further help or casual chat",
+              "score": 1.0,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T12:02:13.917126Z",
+              "metadata": {
+                "session_end": true
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 5060.2,
+      "status": "success",
+      "generated_query": "Math problem frustration; division and square roots; student's feelings about homework.",
+      "original_message": "hey. yeah. whatever."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120713_192aad",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:07:13.931505Z",
+      "student_message": "ugh. physics. i don't know. i see decimals and i just check out.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_fe9334ebee37",
+              "type": "context",
+              "text": "Student was frustrated and tired during session, then took a nap",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:06:56.014332Z",
+              "metadata": {
+                "emotion": "frustrated",
+                "session_end": true,
+                "next_topic": "general"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_fc3a2ae66230",
+              "type": "context",
+              "text": "Session ended with an unaddressed question about a graph",
+              "score": 1.0,
+              "importance": 0.4,
+              "timestamp": "2025-12-02T12:02:59.222052Z",
+              "metadata": {
+                "session_end": true,
+                "next_topic": "graph"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 5603.46,
+      "status": "success",
+      "generated_query": "Student struggling with physics problems, mentioning diagrams, math problems, and feelings of being overwhelmed by schoolwork and grades.",
+      "original_message": "ugh. physics. i don't know. i see decimals and i just check out."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120744_413fa1",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:07:44.304267Z",
+      "student_message": "$-4.9t + 19.6 = 0$.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_fe9334ebee37",
+              "type": "context",
+              "text": "Student was frustrated and tired during session, then took a nap",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:06:56.014332Z",
+              "metadata": {
+                "emotion": "frustrated",
+                "session_end": true,
+                "next_topic": "general"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_fc3a2ae66230",
+              "type": "context",
+              "text": "Session ended with an unaddressed question about a graph",
+              "score": 1.0,
+              "importance": 0.4,
+              "timestamp": "2025-12-02T12:02:59.222052Z",
+              "metadata": {
+                "session_end": true,
+                "next_topic": "graph"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 4541.85,
+      "status": "success",
+      "generated_query": "Physics problem solving, quadratic equation with the variable 't', user struggling with academics and feeling overwhelmed.",
+      "original_message": "$-4.9t + 19.6 = 0$."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_120756_de1712",
+      "session_id": "sess_20251202_115752_f30c07",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T12:07:56.381262Z",
+      "student_message": "move 19.6 over... $-4.9t = -19.6$. then divide. i don't have a calculator. this is stupid.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": false
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_fe9334ebee37",
+              "type": "context",
+              "text": "Student was frustrated and tired during session, then took a nap",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:06:56.014332Z",
+              "metadata": {
+                "emotion": "frustrated",
+                "session_end": true,
+                "next_topic": "general"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_fc3a2ae66230",
+              "type": "context",
+              "text": "Session ended with an unaddressed question about a graph",
+              "score": 1.0,
+              "importance": 0.4,
+              "timestamp": "2025-12-02T12:02:59.222052Z",
+              "metadata": {
+                "session_end": true,
+                "next_topic": "graph"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            },
+            {
+              "memory_id": "mem_1c7e1ca361ca",
+              "type": "context",
+              "text": "Session ended due to practice.",
+              "score": 1.0,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T12:02:30.612523Z",
+              "metadata": {
+                "emotion": "positive",
+                "session_end": true,
+                "next_topic": "none"
+              },
+              "session_id": "sess_20251202_115752_f30c07"
+            }
+          ]
+        }
+      },
+      "retrieval_time_ms": 5707.69,
+      "status": "success",
+      "generated_query": "Physics problem solving, quadratic equation, time (t) calculation, student struggling, need to solve equation without a calculator, feeling overwhelmed with physics and grades.",
+      "original_message": "move 19.6 over... $-4.9t = -19.6$. then divide. i don't have a calculator. this is stupid."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_154131_b246df",
+      "session_id": "sess_20251202_154104_49bb8f",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T15:41:31.875303Z",
+      "student_message": "we started it monday. i get the basic shape, the U thing. but the formulas are messing me up. specifically the discriminant part.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 2,
+          "memories": [
+            {
+              "memory_id": "mem_4fa791232421",
+              "type": "academic",
+              "text": "Wants to learn about atoms.",
+              "score": 0.819331229,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T15:34:23.480384Z",
+              "metadata": {
+                "emotion": "interested",
+                "topic": "atoms"
+              },
+              "session_id": "sess_20251202_153218_j2tovx"
+            },
+            {
+              "memory_id": "mem_495b0cde57ee",
+              "type": "academic",
+              "text": "Prefers to study chemistry instead of math.",
+              "score": 0.799905896,
+              "importance": 0.6,
+              "timestamp": "2025-12-02T15:34:23.480384Z",
+              "metadata": {
+                "emotion": "neutral",
+                "topic": "chemistry"
+              },
+              "session_id": "sess_20251202_153218_j2tovx"
+            }
+          ]
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 1,
+          "memories": [
+            {
+              "memory_id": "mem_6bec5b9659b0",
+              "type": "preference",
+              "text": "Student expresses excitement to learn.",
+              "score": 0.821015775,
+              "importance": 0.6,
+              "timestamp": "2025-12-02T15:33:14.564922Z",
+              "metadata": {
+                "category": "emotional_response",
+                "trigger": "math session start",
+                "response": "excitement"
+              },
+              "session_id": "sess_20251202_153218_j2tovx"
+            }
+          ]
+        },
+        "context": {
+          "total_found": 0,
+          "memories": []
+        }
+      },
+      "retrieval_time_ms": 3742.91,
+      "status": "success",
+      "generated_query": "student struggling with quadratic equations, specifically the discriminant, in a math class that started on Monday. The student finds the formulas and textbook explanations difficult.",
+      "original_message": "we started it monday. i get the basic shape, the U thing. but the formulas are messing me up. specifically the discriminant part."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_154158_720a9b",
+      "session_id": "sess_20251202_154104_49bb8f",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T15:41:58.313986Z",
+      "student_message": "okay, that makes sense.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 2,
+          "memories": [
+            {
+              "memory_id": "mem_4fa791232421",
+              "type": "academic",
+              "text": "Wants to learn about atoms.",
+              "score": 0.799712896,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T15:34:23.480384Z",
+              "metadata": {
+                "emotion": "interested",
+                "topic": "atoms"
+              },
+              "session_id": "sess_20251202_153218_j2tovx"
+            },
+            {
+              "memory_id": "mem_495b0cde57ee",
+              "type": "academic",
+              "text": "Prefers to study chemistry instead of math.",
+              "score": 0.770028532,
+              "importance": 0.6,
+              "timestamp": "2025-12-02T15:34:23.480384Z",
+              "metadata": {
+                "emotion": "neutral",
+                "topic": "chemistry"
+              },
+              "session_id": "sess_20251202_153218_j2tovx"
+            }
+          ]
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 1,
+          "memories": [
+            {
+              "memory_id": "mem_6bec5b9659b0",
+              "type": "preference",
+              "text": "Student expresses excitement to learn.",
+              "score": 0.763072729,
+              "importance": 0.6,
+              "timestamp": "2025-12-02T15:33:14.564922Z",
+              "metadata": {
+                "category": "emotional_response",
+                "trigger": "math session start",
+                "response": "excitement"
+              },
+              "session_id": "sess_20251202_153218_j2tovx"
+            }
+          ]
+        },
+        "context": {
+          "total_found": 0,
+          "memories": []
+        }
+      },
+      "retrieval_time_ms": 4081.69,
+      "status": "success",
+      "generated_query": "Quadratic equations, discriminant, and formulas, specifically regarding the number of real roots in a quadratic function, focusing on the user's struggle with math concepts and application of formulas.",
+      "original_message": "okay, that makes sense."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_155504_9515df",
+      "session_id": "sess_20251202_155436_2833d9",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T15:55:04.600129Z",
+      "student_message": "we started it monday. i get the basic shape, the U thing. but the formulas are messing me up. specifically the discriminant part.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 5,
+          "memories": [
+            {
+              "memory_id": "mem_18959307c873",
+              "type": "academic",
+              "text": "Working on finding real roots of a quadratic equation using the discriminant.",
+              "score": 0.872138083,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T15:41:53.082210Z",
+              "metadata": {
+                "valence": "neutral",
+                "topic": "quadratics"
+              },
+              "session_id": "sess_20251202_154104_49bb8f"
+            },
+            {
+              "memory_id": "mem_e29cd1160bea",
+              "type": "academic",
+              "text": "Understands the basic concept of U-shaped graphs, but has trouble with the discriminant formula.",
+              "score": 0.836478651,
+              "importance": 0.8,
+              "timestamp": "2025-12-02T15:41:40.756753Z",
+              "metadata": {
+                "emotion": "confused",
+                "valence": "struggle",
+                "topic": "discriminant"
+              },
+              "session_id": "sess_20251202_154104_49bb8f"
+            },
+            {
+              "memory_id": "mem_2752da897a12",
+              "type": "academic",
+              "text": "Makes mistakes about half the time when using the discriminant formula.",
+              "score": 0.809459746,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T15:41:40.756753Z",
+              "metadata": {
+                "emotion": "frustrated",
+                "valence": "struggle",
+                "topic": "discriminant"
+              },
+              "session_id": "sess_20251202_154104_49bb8f"
+            },
+            {
+              "memory_id": "mem_70eddacce36e",
+              "type": "academic",
+              "text": "Struggles with math textbook explanations, finds them overwhelming.",
+              "score": 0.809223413,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T15:41:40.756753Z",
+              "metadata": {
+                "emotion": "overwhelmed",
+                "valence": "struggle",
+                "topic": "math comprehension"
+              },
+              "session_id": "sess_20251202_154104_49bb8f"
+            },
+            {
+              "memory_id": "mem_3ef75da461a6",
+              "type": "academic",
+              "text": "Dislikes math and is dreading it.",
+              "score": 0.789961934,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T15:41:22.034906Z",
+              "metadata": {
+                "emotion": "dread",
+                "valence": "struggle",
+                "topic": "math"
+              },
+              "session_id": "sess_20251202_154104_49bb8f"
+            }
+          ]
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 2,
+          "memories": [
+            {
+              "memory_id": "mem_5efa07d2a872",
+              "type": "preference",
+              "text": "Prefers to visualize the problem.",
+              "score": 0.786258101,
+              "importance": 0.8,
+              "timestamp": "2025-12-02T15:41:53.082210Z",
+              "metadata": {
+                "category": "pacing"
+              },
+              "session_id": "sess_20251202_154104_49bb8f"
+            },
+            {
+              "memory_id": "mem_6bec5b9659b0",
+              "type": "preference",
+              "text": "Student expresses excitement to learn.",
+              "score": 0.748591363,
+              "importance": 0.6,
+              "timestamp": "2025-12-02T15:33:14.564922Z",
+              "metadata": {
+                "category": "emotional_response",
+                "trigger": "math session start",
+                "response": "excitement"
+              },
+              "session_id": "sess_20251202_153218_j2tovx"
+            }
+          ]
+        },
+        "context": {
+          "total_found": 0,
+          "memories": []
+        }
+      },
+      "retrieval_time_ms": 3411.11,
+      "status": "success",
+      "generated_query": "math tutoring quadratic equations discriminant formula difficulty",
+      "original_message": "we started it monday. i get the basic shape, the U thing. but the formulas are messing me up. specifically the discriminant part."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_160503_f0774d",
+      "session_id": "sess_20251202_160434_754f4f",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:05:03.278132Z",
+      "student_message": "we started it monday. i get the basic shape, the U thing. but the formulas are messing me up. specifically the discriminant part.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 0,
+          "memories": []
+        }
+      },
+      "retrieval_time_ms": 3668.59,
+      "status": "success",
+      "generated_query": "Student struggling with quadratic equations, specifically the discriminant formula, after starting the topic in class on Monday. Textbook explanations are unclear.",
+      "original_message": "we started it monday. i get the basic shape, the U thing. but the formulas are messing me up. specifically the discriminant part."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_160700_0421a2",
+      "session_id": "sess_20251202_160631_3051ea",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:07:00.228402Z",
+      "student_message": "we started it monday. i get the basic shape, the U thing. but the formulas are messing me up. specifically the discriminant part.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 0,
+          "memories": []
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 0,
+          "memories": []
+        }
+      },
+      "retrieval_time_ms": 3560.35,
+      "status": "success",
+      "generated_query": "student struggling with quadratic formulas, specifically the discriminant, in a math class, possibly algebra, that started on Monday. Textbook explanations are difficult to understand.",
+      "original_message": "we started it monday. i get the basic shape, the U thing. but the formulas are messing me up. specifically the discriminant part."
+    }
+  ],
+  "last_updated": "2025-12-02T16:07:00.252399Z"
+}

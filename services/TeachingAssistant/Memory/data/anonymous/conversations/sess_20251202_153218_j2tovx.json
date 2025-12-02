@@ -1,0 +1,73 @@
+{
+  "session_id": "sess_20251202_153218_j2tovx",
+  "user_id": "anonymous",
+  "start_time": "2025-12-02T15:32:18.996Z",
+  "end_time": "2025-12-02T15:34:48.570Z",
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "Hey there! Welcome back. How are you doing today? Ready to do some math?",
+      "timestamp": "2025-12-02T15:32:26.684Z"
+    },
+    {
+      "speaker": "user",
+      "text": "Yes I am excited to learn something because I am very good student.",
+      "timestamp": "2025-12-02T15:32:34.816Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "That's the spirit! I'm glad you're excited. It looks like the next question is loading up for you now. Just let me know when you see it, and we can jump in.",
+      "timestamp": "2025-12-02T15:32:43.854Z"
+    },
+    {
+      "speaker": "user",
+      "text": "Okay. first introduce yourself",
+      "timestamp": "2025-12-02T15:32:55.807Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "Of course! I'm Adam, your friendly math tutor. I'm here to help you work through any problems you have, guiding you to find the answers yourself. Think of me as someone who's here to help you understand how things work. Whenever you're ready, we can dive into the question that's on your screen.",
+      "timestamp": "2025-12-02T15:33:11.801Z"
+    },
+    {
+      "speaker": "user",
+      "text": "ఓకే బట్ కరెంట్లీ ఐ డోంట్ వాంట్ టు లన్ మ్యాథ్స్ ఐ వాంట్ టు లెర్న్ కెమిస్ట్రీ సబ్జెక్ట్",
+      "timestamp": "2025-12-02T15:33:26.221Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "I can help with chemistry too! No problem at all. Just tell me what you'd like to work on, and we can get started. Is there a specific topic or a question you have in mind?",
+      "timestamp": "2025-12-02T15:33:36.794Z"
+    },
+    {
+      "speaker": "user",
+      "text": "I want to learn about atoms.",
+      "timestamp": "2025-12-02T15:33:41.819Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "Atoms are a great place to start with chemistry! They're the basic building blocks of everything. What specifically about atoms are you interested in learning about today? We could talk about their structure, the different parts, or even how they interact with each other.",
+      "timestamp": "2025-12-02T15:33:58.409Z"
+    },
+    {
+      "speaker": "user",
+      "text": "Okay.",
+      "timestamp": "2025-12-02T15:34:12.353Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "Great! Where would you like to begin with atoms? We can start with the basic structure, the different components, or anything else you're curious about.",
+      "timestamp": "2025-12-02T15:34:22.038Z"
+    },
+    {
+      "speaker": "user",
+      "text": "Okay no no I don't want to",
+      "timestamp": "2025-12-02T15:34:39.233Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "No problem at all. We can try a different chemistry topic if you'd like, or something completely different! What subjects are you interested in right now? We can find something that you'll enjoy.",
+      "timestamp": "2025-12-02T15:34:48.568Z"
+    }
+  ]
+}

@@ -1,0 +1,2497 @@
+{
+  "retrievals": [
+    {
+      "retrieval_id": "ret_20251202_141433_5fc1ff",
+      "session_id": "sess_20251202_141413_cfldhr",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:14:33.672957Z",
+      "student_message": "<noise> Hello.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 10,
+        "memories": [
+          {
+            "memory_id": "mem_fdb7aa5d078d",
+            "type": "preference",
+            "text": "Student responds in Hindi ('नो आई डोंट नो')",
+            "score": 0.824494183,
+            "importance": 0.8,
+            "timestamp": "2025-12-01T16:00:59.367499Z",
+            "metadata": {
+              "category": "communication"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_4abb6b2f8142",
+            "type": "preference",
+            "text": "Expresses excitement to start the session",
+            "score": 0.806937397,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:50:14.077342Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "session start",
+              "response": "excited"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          },
+          {
+            "memory_id": "mem_69955718fa29",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.805967152,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:43:38.012755Z",
+            "metadata": {
+              "category": "health"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_dbd74d960153",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.805967152,
+            "importance": 0.5,
+            "timestamp": "2025-12-02T00:49:41.923072Z",
+            "metadata": {
+              "emotion": "negative"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_2f950cc22456",
+            "type": "academic",
+            "text": "Wants to learn active/passive voice.",
+            "score": 0.802984595,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:49:41.923072Z",
+            "metadata": {
+              "topic": "grammar"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_16d17eb195a6",
+            "type": "preference",
+            "text": "Expresses excitement to learn.",
+            "score": 0.802299917,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:55:34.511499Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "expectation of learning",
+              "response": "excitement"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          },
+          {
+            "memory_id": "mem_26e18598f6e9",
+            "type": "academic",
+            "text": "Struggles with basic sequencing, confused about which word comes first (egg/hand)",
+            "score": 0.79930824,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T04:09:53.233192Z",
+            "metadata": {
+              "emotion": "confusion",
+              "valence": "struggle",
+              "topic": "word_order"
+            },
+            "session_id": "sess_20251202_040725_2tvuxl"
+          },
+          {
+            "memory_id": "mem_f06c243a7455",
+            "type": "preference",
+            "text": "Prefers active/passive voice to parts of speech",
+            "score": 0.799206257,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T00:43:38.012755Z",
+            "metadata": {
+              "category": "topic_selection",
+              "trigger": "offered parts of speech",
+              "response": "rejected"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_fd2945c94942",
+            "type": "preference",
+            "text": "Excited to learn.",
+            "score": 0.798675478,
+            "importance": 0.7,
+            "timestamp": "2025-12-01T15:58:46.989897Z",
+            "metadata": {
+              "emotion": "excited",
+              "category": "emotional_response"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_0ca42ab3adf3",
+            "type": "preference",
+            "text": "Prefers active/passive voice over parts of speech",
+            "score": 0.796455741,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T00:49:41.923072Z",
+            "metadata": {
+              "category": "topic_selection",
+              "response": "active/passive voice"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          }
+        ]
+      },
+      "retrieval_time_ms": 5896.09,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_143243_2d84c3",
+      "session_id": "sess_20251202_143230_ro8pof",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:32:43.821185Z",
+      "student_message": "Hello.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 10,
+        "memories": [
+          {
+            "memory_id": "mem_fdb7aa5d078d",
+            "type": "preference",
+            "text": "Student responds in Hindi ('नो आई डोंट नो')",
+            "score": 0.804074764,
+            "importance": 0.8,
+            "timestamp": "2025-12-01T16:00:59.367499Z",
+            "metadata": {
+              "category": "communication"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_dbd74d960153",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.798180282,
+            "importance": 0.5,
+            "timestamp": "2025-12-02T00:49:41.923072Z",
+            "metadata": {
+              "emotion": "negative"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_69955718fa29",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.798180282,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:43:38.012755Z",
+            "metadata": {
+              "category": "health"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_fd2945c94942",
+            "type": "preference",
+            "text": "Excited to learn.",
+            "score": 0.794155419,
+            "importance": 0.7,
+            "timestamp": "2025-12-01T15:58:46.989897Z",
+            "metadata": {
+              "emotion": "excited",
+              "category": "emotional_response"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_5e977a97ff72",
+            "type": "personal",
+            "text": "Excited to learn",
+            "score": 0.793973684,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T00:58:57.362493Z",
+            "metadata": {
+              "emotion": "positive",
+              "category": "interest"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_4abb6b2f8142",
+            "type": "preference",
+            "text": "Expresses excitement to start the session",
+            "score": 0.792218268,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:50:14.077342Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "session start",
+              "response": "excited"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          },
+          {
+            "memory_id": "mem_e6e26dc82f81",
+            "type": "academic",
+            "text": "Interested in physics.",
+            "score": 0.790524364,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T02:08:43.827523Z",
+            "metadata": {
+              "topic": "physics"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_8418caa84854",
+            "type": "personal",
+            "text": "Excited to learn despite a headache.",
+            "score": 0.788243115,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T00:43:32.210086Z",
+            "metadata": {
+              "emotion": "excited"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_999e5542c5e9",
+            "type": "academic",
+            "text": "Interested in the topic of motion in physics.",
+            "score": 0.78374058,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T03:20:38.866254Z",
+            "metadata": {
+              "valence": "neutral",
+              "topic": "motion"
+            },
+            "session_id": "sess_20251202_021149_pb0vsb"
+          },
+          {
+            "memory_id": "mem_16d17eb195a6",
+            "type": "preference",
+            "text": "Expresses excitement to learn.",
+            "score": 0.78283143,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:55:34.511499Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "expectation of learning",
+              "response": "excitement"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          }
+        ]
+      },
+      "retrieval_time_ms": 4478.18,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_143300_b166d3",
+      "session_id": "sess_20251202_143230_ro8pof",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:33:00.913779Z",
+      "student_message": "I am good what about you",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 10,
+        "memories": [
+          {
+            "memory_id": "mem_fdb7aa5d078d",
+            "type": "preference",
+            "text": "Student responds in Hindi ('नो आई डोंट नो')",
+            "score": 0.792172909,
+            "importance": 0.8,
+            "timestamp": "2025-12-01T16:00:59.367499Z",
+            "metadata": {
+              "category": "communication"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_d4e949bae418",
+            "type": "preference",
+            "text": "Appears to prefer a direct communication style, giving explicit cues ('let me know when you're ready')",
+            "score": 0.779429495,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T03:21:02.088771Z",
+            "metadata": {
+              "category": "pacing",
+              "trigger": "completing a step",
+              "response": "let me know when you're ready to look at the next question"
+            },
+            "session_id": "sess_20251202_030220_m6hi70"
+          },
+          {
+            "memory_id": "mem_24b5408955c1",
+            "type": "preference",
+            "text": "Willing to learn despite not feeling well.",
+            "score": 0.773402214,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T00:49:35.645660Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "feeling unwell",
+              "response": "eagerness to learn"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_95298187027f",
+            "type": "context",
+            "text": "Key moments: Breakthrough: student expresses excitement to learn something new.; Struggled: student is expressing a physical ailment and a desire to learn basic grammar, indicating potential challenges or frustration with learning other subjects.; Struggled: student expresses a specific learning need (\"want to learn\") indicating a current gap in understanding.; Struggled: student explicitly states \"i don't know,\" indicating a lack of understanding.",
+            "score": 0.772813678,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T00:43:59.685517Z",
+            "metadata": {
+              "session_end": true,
+              "next_topic": "general"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_26e18598f6e9",
+            "type": "academic",
+            "text": "Struggles with basic sequencing, confused about which word comes first (egg/hand)",
+            "score": 0.771559119,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T04:09:53.233192Z",
+            "metadata": {
+              "emotion": "confusion",
+              "valence": "struggle",
+              "topic": "word_order"
+            },
+            "session_id": "sess_20251202_040725_2tvuxl"
+          },
+          {
+            "memory_id": "mem_e6e26dc82f81",
+            "type": "academic",
+            "text": "Interested in physics.",
+            "score": 0.771218896,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T02:08:43.827523Z",
+            "metadata": {
+              "topic": "physics"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_69c4a4864550",
+            "type": "context",
+            "text": "Key moments: Breakthrough: student expresses excitement to learn something new.; Struggled: student expresses a need for basic english grammar due to a headache and a desire to avoid math, indicating potential difficulty or frustration.; Struggled: student expresses a specific learning need but is likely confused or lacking understanding about the topic.; Struggled: student explicitly states they don't know, indicating a lack of understanding.",
+            "score": 0.767828882,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T00:49:48.812373Z",
+            "metadata": {
+              "session_end": true,
+              "next_topic": "general"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_5e977a97ff72",
+            "type": "personal",
+            "text": "Excited to learn",
+            "score": 0.767817378,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T00:58:57.362493Z",
+            "metadata": {
+              "emotion": "positive",
+              "category": "interest"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_dbd74d960153",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.767489374,
+            "importance": 0.5,
+            "timestamp": "2025-12-02T00:49:41.923072Z",
+            "metadata": {
+              "emotion": "negative"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_69955718fa29",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.767489374,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:43:38.012755Z",
+            "metadata": {
+              "category": "health"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1634.13,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_143324_94ec7e",
+      "session_id": "sess_20251202_143230_ro8pof",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:33:24.502448Z",
+      "student_message": "Sure I will update you.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 10,
+        "memories": [
+          {
+            "memory_id": "mem_5e977a97ff72",
+            "type": "personal",
+            "text": "Excited to learn",
+            "score": 0.791112602,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T00:58:57.362493Z",
+            "metadata": {
+              "emotion": "positive",
+              "category": "interest"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_fd2945c94942",
+            "type": "preference",
+            "text": "Excited to learn.",
+            "score": 0.790539563,
+            "importance": 0.7,
+            "timestamp": "2025-12-01T15:58:46.989897Z",
+            "metadata": {
+              "emotion": "excited",
+              "category": "emotional_response"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_d4e949bae418",
+            "type": "preference",
+            "text": "Appears to prefer a direct communication style, giving explicit cues ('let me know when you're ready')",
+            "score": 0.771607816,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T03:21:02.088771Z",
+            "metadata": {
+              "category": "pacing",
+              "trigger": "completing a step",
+              "response": "let me know when you're ready to look at the next question"
+            },
+            "session_id": "sess_20251202_030220_m6hi70"
+          },
+          {
+            "memory_id": "mem_fdb7aa5d078d",
+            "type": "preference",
+            "text": "Student responds in Hindi ('नो आई डोंट नो')",
+            "score": 0.765257359,
+            "importance": 0.8,
+            "timestamp": "2025-12-01T16:00:59.367499Z",
+            "metadata": {
+              "category": "communication"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_24b5408955c1",
+            "type": "preference",
+            "text": "Willing to learn despite not feeling well.",
+            "score": 0.76356858,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T00:49:35.645660Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "feeling unwell",
+              "response": "eagerness to learn"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_8e2abad4388e",
+            "type": "context",
+            "text": "Completed a test, screen displays completion message.",
+            "score": 0.760630906,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T03:21:02.088771Z",
+            "metadata": {
+              "emotion": "neutral",
+              "next_topic": "general"
+            },
+            "session_id": "sess_20251202_030220_m6hi70"
+          },
+          {
+            "memory_id": "mem_e6e26dc82f81",
+            "type": "academic",
+            "text": "Interested in physics.",
+            "score": 0.755647838,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T02:08:43.827523Z",
+            "metadata": {
+              "topic": "physics"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_8418caa84854",
+            "type": "personal",
+            "text": "Excited to learn despite a headache.",
+            "score": 0.755093634,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T00:43:32.210086Z",
+            "metadata": {
+              "emotion": "excited"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_999e5542c5e9",
+            "type": "academic",
+            "text": "Interested in the topic of motion in physics.",
+            "score": 0.751814663,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T03:20:38.866254Z",
+            "metadata": {
+              "valence": "neutral",
+              "topic": "motion"
+            },
+            "session_id": "sess_20251202_021149_pb0vsb"
+          },
+          {
+            "memory_id": "mem_16d17eb195a6",
+            "type": "preference",
+            "text": "Expresses excitement to learn.",
+            "score": 0.751777411,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:55:34.511499Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "expectation of learning",
+              "response": "excitement"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1847.88,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_143520_e9ed90",
+      "session_id": "sess_20251202_143230_ro8pof",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:35:20.131467Z",
+      "student_message": "Hello are you there?",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 10,
+        "memories": [
+          {
+            "memory_id": "mem_fdb7aa5d078d",
+            "type": "preference",
+            "text": "Student responds in Hindi ('नो आई डोंट नो')",
+            "score": 0.799755514,
+            "importance": 0.8,
+            "timestamp": "2025-12-01T16:00:59.367499Z",
+            "metadata": {
+              "category": "communication"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_4abb6b2f8142",
+            "type": "preference",
+            "text": "Expresses excitement to start the session",
+            "score": 0.775912762,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:50:14.077342Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "session start",
+              "response": "excited"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          },
+          {
+            "memory_id": "mem_26e18598f6e9",
+            "type": "academic",
+            "text": "Struggles with basic sequencing, confused about which word comes first (egg/hand)",
+            "score": 0.775354,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T04:09:53.233192Z",
+            "metadata": {
+              "emotion": "confusion",
+              "valence": "struggle",
+              "topic": "word_order"
+            },
+            "session_id": "sess_20251202_040725_2tvuxl"
+          },
+          {
+            "memory_id": "mem_dbd74d960153",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.772977531,
+            "importance": 0.5,
+            "timestamp": "2025-12-02T00:49:41.923072Z",
+            "metadata": {
+              "emotion": "negative"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_69955718fa29",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.772977531,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:43:38.012755Z",
+            "metadata": {
+              "category": "health"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_d4e949bae418",
+            "type": "preference",
+            "text": "Appears to prefer a direct communication style, giving explicit cues ('let me know when you're ready')",
+            "score": 0.769200444,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T03:21:02.088771Z",
+            "metadata": {
+              "category": "pacing",
+              "trigger": "completing a step",
+              "response": "let me know when you're ready to look at the next question"
+            },
+            "session_id": "sess_20251202_030220_m6hi70"
+          },
+          {
+            "memory_id": "mem_8418caa84854",
+            "type": "personal",
+            "text": "Excited to learn despite a headache.",
+            "score": 0.757213,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T00:43:32.210086Z",
+            "metadata": {
+              "emotion": "excited"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_fd2945c94942",
+            "type": "preference",
+            "text": "Excited to learn.",
+            "score": 0.757184446,
+            "importance": 0.7,
+            "timestamp": "2025-12-01T15:58:46.989897Z",
+            "metadata": {
+              "emotion": "excited",
+              "category": "emotional_response"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_e6e26dc82f81",
+            "type": "academic",
+            "text": "Interested in physics.",
+            "score": 0.756008267,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T02:08:43.827523Z",
+            "metadata": {
+              "topic": "physics"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_322c3baba6a5",
+            "type": "academic",
+            "text": "Asked about CH4 and NH4 in organic chemistry, and then about Milk of Magnesia.",
+            "score": 0.755435646,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T03:52:19.896204Z",
+            "metadata": {
+              "topic": "organic chemistry/medicinal chemistry"
+            },
+            "session_id": "sess_20251202_033557_kfraaf"
+          }
+        ]
+      },
+      "retrieval_time_ms": 7107.35,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_144648_00fe71",
+      "session_id": "sess_20251202_144626_6axrcj",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:46:48.153163Z",
+      "student_message": "No I don't want to dive in match I like physics.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 10,
+        "memories": [
+          {
+            "memory_id": "mem_e6e26dc82f81",
+            "type": "academic",
+            "text": "Interested in physics.",
+            "score": 0.840011477,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T02:08:43.827523Z",
+            "metadata": {
+              "topic": "physics"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_999e5542c5e9",
+            "type": "academic",
+            "text": "Interested in the topic of motion in physics.",
+            "score": 0.826562881,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T03:20:38.866254Z",
+            "metadata": {
+              "valence": "neutral",
+              "topic": "motion"
+            },
+            "session_id": "sess_20251202_021149_pb0vsb"
+          },
+          {
+            "memory_id": "mem_19332f7043e2",
+            "type": "academic",
+            "text": "Prefers physics over math.",
+            "score": 0.811140656,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T03:20:38.866254Z",
+            "metadata": {
+              "valence": "neutral",
+              "topic": "physics"
+            },
+            "session_id": "sess_20251202_021149_pb0vsb"
+          },
+          {
+            "memory_id": "mem_e1ef7baf8efc",
+            "type": "preference",
+            "text": "Expressed excitement to learn physics.",
+            "score": 0.776870489,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T03:20:45.465835Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "physics topic",
+              "response": "excited"
+            },
+            "session_id": "sess_20251202_021149_pb0vsb"
+          },
+          {
+            "memory_id": "mem_fdb7aa5d078d",
+            "type": "preference",
+            "text": "Student responds in Hindi ('नो आई डोंट नो')",
+            "score": 0.772150934,
+            "importance": 0.8,
+            "timestamp": "2025-12-01T16:00:59.367499Z",
+            "metadata": {
+              "category": "communication"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_fd2945c94942",
+            "type": "preference",
+            "text": "Excited to learn.",
+            "score": 0.768597901,
+            "importance": 0.7,
+            "timestamp": "2025-12-01T15:58:46.989897Z",
+            "metadata": {
+              "emotion": "excited",
+              "category": "emotional_response"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_5e977a97ff72",
+            "type": "personal",
+            "text": "Excited to learn",
+            "score": 0.763375819,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T00:58:57.362493Z",
+            "metadata": {
+              "emotion": "positive",
+              "category": "interest"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_ac55fb98fbb8",
+            "type": "preference",
+            "text": "Prefers a slow pace due to a headache.",
+            "score": 0.761532605,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T00:43:32.210617Z",
+            "metadata": {
+              "category": "pacing",
+              "trigger": "headache",
+              "response": "slow pace"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_c03a22bd3d19",
+            "type": "preference",
+            "text": "Wants to continue learning physics despite feeling unwell.",
+            "score": 0.761400044,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T03:01:21.830045Z",
+            "metadata": {
+              "emotion": "excited",
+              "category": "interest"
+            },
+            "session_id": "sess_20251202_021149_pb0vsb"
+          },
+          {
+            "memory_id": "mem_7edda3e8f429",
+            "type": "academic",
+            "text": "Finds physics and mathematics challenging; has been struggling for a week.",
+            "score": 0.760179698,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T04:08:01.918554Z",
+            "metadata": {
+              "valence": "struggle",
+              "topic": "physics and mathematics"
+            },
+            "session_id": "sess_20251202_040725_2tvuxl"
+          }
+        ]
+      },
+      "retrieval_time_ms": 4795.09,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_144701_01f72e",
+      "session_id": "sess_20251202_144626_6axrcj",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:47:01.243851Z",
+      "student_message": "I like motion in physics.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 10,
+        "memories": [
+          {
+            "memory_id": "mem_999e5542c5e9",
+            "type": "academic",
+            "text": "Interested in the topic of motion in physics.",
+            "score": 0.890477419,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T03:20:38.866254Z",
+            "metadata": {
+              "valence": "neutral",
+              "topic": "motion"
+            },
+            "session_id": "sess_20251202_021149_pb0vsb"
+          },
+          {
+            "memory_id": "mem_e6e26dc82f81",
+            "type": "academic",
+            "text": "Interested in physics.",
+            "score": 0.863928,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T02:08:43.827523Z",
+            "metadata": {
+              "topic": "physics"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_e1ef7baf8efc",
+            "type": "preference",
+            "text": "Expressed excitement to learn physics.",
+            "score": 0.813482165,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T03:20:45.465835Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "physics topic",
+              "response": "excited"
+            },
+            "session_id": "sess_20251202_021149_pb0vsb"
+          },
+          {
+            "memory_id": "mem_19332f7043e2",
+            "type": "academic",
+            "text": "Prefers physics over math.",
+            "score": 0.796787798,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T03:20:38.866254Z",
+            "metadata": {
+              "valence": "neutral",
+              "topic": "physics"
+            },
+            "session_id": "sess_20251202_021149_pb0vsb"
+          },
+          {
+            "memory_id": "mem_fd2945c94942",
+            "type": "preference",
+            "text": "Excited to learn.",
+            "score": 0.783538461,
+            "importance": 0.7,
+            "timestamp": "2025-12-01T15:58:46.989897Z",
+            "metadata": {
+              "emotion": "excited",
+              "category": "emotional_response"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_5e977a97ff72",
+            "type": "personal",
+            "text": "Excited to learn",
+            "score": 0.778070331,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T00:58:57.362493Z",
+            "metadata": {
+              "emotion": "positive",
+              "category": "interest"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_16d17eb195a6",
+            "type": "preference",
+            "text": "Expresses excitement to learn.",
+            "score": 0.77772814,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:55:34.511499Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "expectation of learning",
+              "response": "excitement"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          },
+          {
+            "memory_id": "mem_c03a22bd3d19",
+            "type": "preference",
+            "text": "Wants to continue learning physics despite feeling unwell.",
+            "score": 0.775472105,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T03:01:21.830045Z",
+            "metadata": {
+              "emotion": "excited",
+              "category": "interest"
+            },
+            "session_id": "sess_20251202_021149_pb0vsb"
+          },
+          {
+            "memory_id": "mem_fdb7aa5d078d",
+            "type": "preference",
+            "text": "Student responds in Hindi ('नो आई डोंट नो')",
+            "score": 0.774339,
+            "importance": 0.8,
+            "timestamp": "2025-12-01T16:00:59.367499Z",
+            "metadata": {
+              "category": "communication"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_322c3baba6a5",
+            "type": "academic",
+            "text": "Asked about CH4 and NH4 in organic chemistry, and then about Milk of Magnesia.",
+            "score": 0.772126734,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T03:52:19.896204Z",
+            "metadata": {
+              "topic": "organic chemistry/medicinal chemistry"
+            },
+            "session_id": "sess_20251202_033557_kfraaf"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1560.02,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_145222_3efad7",
+      "session_id": "sess_20251202_145151_55axx6",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:52:22.143111Z",
+      "student_message": "Hello Jamily",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 10,
+        "memories": [
+          {
+            "memory_id": "mem_fdb7aa5d078d",
+            "type": "preference",
+            "text": "Student responds in Hindi ('नो आई डोंट नो')",
+            "score": 0.793326855,
+            "importance": 0.8,
+            "timestamp": "2025-12-01T16:00:59.367499Z",
+            "metadata": {
+              "category": "communication"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_4abb6b2f8142",
+            "type": "preference",
+            "text": "Expresses excitement to start the session",
+            "score": 0.777325809,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:50:14.077342Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "session start",
+              "response": "excited"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          },
+          {
+            "memory_id": "mem_fd2945c94942",
+            "type": "preference",
+            "text": "Excited to learn.",
+            "score": 0.774401248,
+            "importance": 0.7,
+            "timestamp": "2025-12-01T15:58:46.989897Z",
+            "metadata": {
+              "emotion": "excited",
+              "category": "emotional_response"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_26e18598f6e9",
+            "type": "academic",
+            "text": "Struggles with basic sequencing, confused about which word comes first (egg/hand)",
+            "score": 0.774213433,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T04:09:53.233192Z",
+            "metadata": {
+              "emotion": "confusion",
+              "valence": "struggle",
+              "topic": "word_order"
+            },
+            "session_id": "sess_20251202_040725_2tvuxl"
+          },
+          {
+            "memory_id": "mem_5e977a97ff72",
+            "type": "personal",
+            "text": "Excited to learn",
+            "score": 0.7734887,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T00:58:57.362493Z",
+            "metadata": {
+              "emotion": "positive",
+              "category": "interest"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_69955718fa29",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.77325803,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:43:38.012755Z",
+            "metadata": {
+              "category": "health"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_dbd74d960153",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.77325803,
+            "importance": 0.5,
+            "timestamp": "2025-12-02T00:49:41.923072Z",
+            "metadata": {
+              "emotion": "negative"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_d4e949bae418",
+            "type": "preference",
+            "text": "Appears to prefer a direct communication style, giving explicit cues ('let me know when you're ready')",
+            "score": 0.771243274,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T03:21:02.088771Z",
+            "metadata": {
+              "category": "pacing",
+              "trigger": "completing a step",
+              "response": "let me know when you're ready to look at the next question"
+            },
+            "session_id": "sess_20251202_030220_m6hi70"
+          },
+          {
+            "memory_id": "mem_e6e26dc82f81",
+            "type": "academic",
+            "text": "Interested in physics.",
+            "score": 0.769198358,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T02:08:43.827523Z",
+            "metadata": {
+              "topic": "physics"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_16d17eb195a6",
+            "type": "preference",
+            "text": "Expresses excitement to learn.",
+            "score": 0.76738441,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:55:34.511499Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "expectation of learning",
+              "response": "excitement"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          }
+        ]
+      },
+      "retrieval_time_ms": 4488.35,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_150504_0185d8",
+      "session_id": "sess_20251202_150447_mf2bji",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:05:04.125552Z",
+      "student_message": "Yes I am excited.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 10,
+        "memories": [
+          {
+            "memory_id": "mem_fd2945c94942",
+            "type": "preference",
+            "text": "Excited to learn.",
+            "score": 0.851249337,
+            "importance": 0.7,
+            "timestamp": "2025-12-01T15:58:46.989897Z",
+            "metadata": {
+              "emotion": "excited",
+              "category": "emotional_response"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_5e977a97ff72",
+            "type": "personal",
+            "text": "Excited to learn",
+            "score": 0.842745483,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T00:58:57.362493Z",
+            "metadata": {
+              "emotion": "positive",
+              "category": "interest"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_16d17eb195a6",
+            "type": "preference",
+            "text": "Expresses excitement to learn.",
+            "score": 0.834597051,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:55:34.511499Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "expectation of learning",
+              "response": "excitement"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          },
+          {
+            "memory_id": "mem_4abb6b2f8142",
+            "type": "preference",
+            "text": "Expresses excitement to start the session",
+            "score": 0.824971139,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:50:14.077342Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "session start",
+              "response": "excited"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          },
+          {
+            "memory_id": "mem_e1ef7baf8efc",
+            "type": "preference",
+            "text": "Expressed excitement to learn physics.",
+            "score": 0.817792833,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T03:20:45.465835Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "physics topic",
+              "response": "excited"
+            },
+            "session_id": "sess_20251202_021149_pb0vsb"
+          },
+          {
+            "memory_id": "mem_8418caa84854",
+            "type": "personal",
+            "text": "Excited to learn despite a headache.",
+            "score": 0.815525,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T00:43:32.210086Z",
+            "metadata": {
+              "emotion": "excited"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_e6e26dc82f81",
+            "type": "academic",
+            "text": "Interested in physics.",
+            "score": 0.805387318,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T02:08:43.827523Z",
+            "metadata": {
+              "topic": "physics"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_c6d590a61d40",
+            "type": "preference",
+            "text": "Expresses excitement to learn despite injury.",
+            "score": 0.798301101,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T02:08:39.526861Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "offer of practice, injury",
+              "response": "positive"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_7db40d25c60b",
+            "type": "context",
+            "text": "Student felt: happy",
+            "score": 0.78823489,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T03:55:14.336301Z",
+            "metadata": {
+              "emotion": "happy",
+              "session_end": true,
+              "next_topic": "general"
+            },
+            "session_id": "sess_20251202_035257_9t0xxn"
+          },
+          {
+            "memory_id": "mem_999e5542c5e9",
+            "type": "academic",
+            "text": "Interested in the topic of motion in physics.",
+            "score": 0.785595536,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T03:20:38.866254Z",
+            "metadata": {
+              "valence": "neutral",
+              "topic": "motion"
+            },
+            "session_id": "sess_20251202_021149_pb0vsb"
+          }
+        ]
+      },
+      "retrieval_time_ms": 5283.27,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_150511_910695",
+      "session_id": "sess_20251202_150447_mf2bji",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:05:11.115266Z",
+      "student_message": "Okay.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 10,
+        "memories": [
+          {
+            "memory_id": "mem_69955718fa29",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.794431,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:43:38.012755Z",
+            "metadata": {
+              "category": "health"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_dbd74d960153",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.794431,
+            "importance": 0.5,
+            "timestamp": "2025-12-02T00:49:41.923072Z",
+            "metadata": {
+              "emotion": "negative"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_5e977a97ff72",
+            "type": "personal",
+            "text": "Excited to learn",
+            "score": 0.791535258,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T00:58:57.362493Z",
+            "metadata": {
+              "emotion": "positive",
+              "category": "interest"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_fd2945c94942",
+            "type": "preference",
+            "text": "Excited to learn.",
+            "score": 0.788306,
+            "importance": 0.7,
+            "timestamp": "2025-12-01T15:58:46.989897Z",
+            "metadata": {
+              "emotion": "excited",
+              "category": "emotional_response"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_e6e26dc82f81",
+            "type": "academic",
+            "text": "Interested in physics.",
+            "score": 0.784878075,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T02:08:43.827523Z",
+            "metadata": {
+              "topic": "physics"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_24b5408955c1",
+            "type": "preference",
+            "text": "Willing to learn despite not feeling well.",
+            "score": 0.784556448,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T00:49:35.645660Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "feeling unwell",
+              "response": "eagerness to learn"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_4abb6b2f8142",
+            "type": "preference",
+            "text": "Expresses excitement to start the session",
+            "score": 0.783683777,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:50:14.077342Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "session start",
+              "response": "excited"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          },
+          {
+            "memory_id": "mem_7db40d25c60b",
+            "type": "context",
+            "text": "Student felt: happy",
+            "score": 0.781307161,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T03:55:14.336301Z",
+            "metadata": {
+              "emotion": "happy",
+              "session_end": true,
+              "next_topic": "general"
+            },
+            "session_id": "sess_20251202_035257_9t0xxn"
+          },
+          {
+            "memory_id": "mem_d4e949bae418",
+            "type": "preference",
+            "text": "Appears to prefer a direct communication style, giving explicit cues ('let me know when you're ready')",
+            "score": 0.77913332,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T03:21:02.088771Z",
+            "metadata": {
+              "category": "pacing",
+              "trigger": "completing a step",
+              "response": "let me know when you're ready to look at the next question"
+            },
+            "session_id": "sess_20251202_030220_m6hi70"
+          },
+          {
+            "memory_id": "mem_16d17eb195a6",
+            "type": "preference",
+            "text": "Expresses excitement to learn.",
+            "score": 0.77896136,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:55:34.511499Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "expectation of learning",
+              "response": "excitement"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1363.73,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_151610_aac83b",
+      "session_id": "sess_20251202_151555_blv6xo",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:16:10.275207Z",
+      "student_message": "<noise> I am good what about you",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 10,
+        "memories": [
+          {
+            "memory_id": "mem_fdb7aa5d078d",
+            "type": "preference",
+            "text": "Student responds in Hindi ('नो आई डोंट नो')",
+            "score": 0.79884094,
+            "importance": 0.8,
+            "timestamp": "2025-12-01T16:00:59.367499Z",
+            "metadata": {
+              "category": "communication"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_e6e26dc82f81",
+            "type": "academic",
+            "text": "Interested in physics.",
+            "score": 0.792246342,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T02:08:43.827523Z",
+            "metadata": {
+              "topic": "physics"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_69955718fa29",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.792179525,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:43:38.012755Z",
+            "metadata": {
+              "category": "health"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_dbd74d960153",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.792179525,
+            "importance": 0.5,
+            "timestamp": "2025-12-02T00:49:41.923072Z",
+            "metadata": {
+              "emotion": "negative"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_fd2945c94942",
+            "type": "preference",
+            "text": "Excited to learn.",
+            "score": 0.788703501,
+            "importance": 0.7,
+            "timestamp": "2025-12-01T15:58:46.989897Z",
+            "metadata": {
+              "emotion": "excited",
+              "category": "emotional_response"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_5e977a97ff72",
+            "type": "personal",
+            "text": "Excited to learn",
+            "score": 0.788326144,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T00:58:57.362493Z",
+            "metadata": {
+              "emotion": "positive",
+              "category": "interest"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_d4e949bae418",
+            "type": "preference",
+            "text": "Appears to prefer a direct communication style, giving explicit cues ('let me know when you're ready')",
+            "score": 0.787960768,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T03:21:02.088771Z",
+            "metadata": {
+              "category": "pacing",
+              "trigger": "completing a step",
+              "response": "let me know when you're ready to look at the next question"
+            },
+            "session_id": "sess_20251202_030220_m6hi70"
+          },
+          {
+            "memory_id": "mem_f06c243a7455",
+            "type": "preference",
+            "text": "Prefers active/passive voice to parts of speech",
+            "score": 0.784929574,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T00:43:38.012755Z",
+            "metadata": {
+              "category": "topic_selection",
+              "trigger": "offered parts of speech",
+              "response": "rejected"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_0ca42ab3adf3",
+            "type": "preference",
+            "text": "Prefers active/passive voice over parts of speech",
+            "score": 0.783134401,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T00:49:41.923072Z",
+            "metadata": {
+              "category": "topic_selection",
+              "response": "active/passive voice"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_16d17eb195a6",
+            "type": "preference",
+            "text": "Expresses excitement to learn.",
+            "score": 0.782541871,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:55:34.511499Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "expectation of learning",
+              "response": "excitement"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          }
+        ]
+      },
+      "retrieval_time_ms": 4411.05,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_151620_2c7b0c",
+      "session_id": "sess_20251202_151555_blv6xo",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:16:20.472695Z",
+      "student_message": "ใน <noise>",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 10,
+        "memories": [
+          {
+            "memory_id": "mem_f06c243a7455",
+            "type": "preference",
+            "text": "Prefers active/passive voice to parts of speech",
+            "score": 0.81378746,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T00:43:38.012755Z",
+            "metadata": {
+              "category": "topic_selection",
+              "trigger": "offered parts of speech",
+              "response": "rejected"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_fdb7aa5d078d",
+            "type": "preference",
+            "text": "Student responds in Hindi ('नो आई डोंट नो')",
+            "score": 0.81276238,
+            "importance": 0.8,
+            "timestamp": "2025-12-01T16:00:59.367499Z",
+            "metadata": {
+              "category": "communication"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_4abb6b2f8142",
+            "type": "preference",
+            "text": "Expresses excitement to start the session",
+            "score": 0.811216593,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:50:14.077342Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "session start",
+              "response": "excited"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          },
+          {
+            "memory_id": "mem_0ca42ab3adf3",
+            "type": "preference",
+            "text": "Prefers active/passive voice over parts of speech",
+            "score": 0.810462236,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T00:49:41.923072Z",
+            "metadata": {
+              "category": "topic_selection",
+              "response": "active/passive voice"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_2f950cc22456",
+            "type": "academic",
+            "text": "Wants to learn active/passive voice.",
+            "score": 0.804540217,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:49:41.923072Z",
+            "metadata": {
+              "topic": "grammar"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_16d17eb195a6",
+            "type": "preference",
+            "text": "Expresses excitement to learn.",
+            "score": 0.803071618,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:55:34.511499Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "expectation of learning",
+              "response": "excitement"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          },
+          {
+            "memory_id": "mem_534c962773f2",
+            "type": "academic",
+            "text": "Wants to learn active and passive voice",
+            "score": 0.800169349,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T00:43:38.012755Z",
+            "metadata": {
+              "topic": "grammar"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_dbd74d960153",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.798935413,
+            "importance": 0.5,
+            "timestamp": "2025-12-02T00:49:41.923072Z",
+            "metadata": {
+              "emotion": "negative"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_69955718fa29",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.798935413,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:43:38.012755Z",
+            "metadata": {
+              "category": "health"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_999e5542c5e9",
+            "type": "academic",
+            "text": "Interested in the topic of motion in physics.",
+            "score": 0.798819,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T03:20:38.866254Z",
+            "metadata": {
+              "valence": "neutral",
+              "topic": "motion"
+            },
+            "session_id": "sess_20251202_021149_pb0vsb"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1397.77,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_151719_d43df5",
+      "session_id": "sess_20251202_151706_ty3q2z",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:17:19.455677Z",
+      "student_message": "Yes I am very excited to learn something.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 10,
+        "memories": [
+          {
+            "memory_id": "mem_fd2945c94942",
+            "type": "preference",
+            "text": "Excited to learn.",
+            "score": 0.911573648,
+            "importance": 0.7,
+            "timestamp": "2025-12-01T15:58:46.989897Z",
+            "metadata": {
+              "emotion": "excited",
+              "category": "emotional_response"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_5e977a97ff72",
+            "type": "personal",
+            "text": "Excited to learn",
+            "score": 0.907094121,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T00:58:57.362493Z",
+            "metadata": {
+              "emotion": "positive",
+              "category": "interest"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_16d17eb195a6",
+            "type": "preference",
+            "text": "Expresses excitement to learn.",
+            "score": 0.86378628,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:55:34.511499Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "expectation of learning",
+              "response": "excitement"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          },
+          {
+            "memory_id": "mem_8418caa84854",
+            "type": "personal",
+            "text": "Excited to learn despite a headache.",
+            "score": 0.847754478,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T00:43:32.210086Z",
+            "metadata": {
+              "emotion": "excited"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_e1ef7baf8efc",
+            "type": "preference",
+            "text": "Expressed excitement to learn physics.",
+            "score": 0.843911886,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T03:20:45.465835Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "physics topic",
+              "response": "excited"
+            },
+            "session_id": "sess_20251202_021149_pb0vsb"
+          },
+          {
+            "memory_id": "mem_e6e26dc82f81",
+            "type": "academic",
+            "text": "Interested in physics.",
+            "score": 0.821818769,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T02:08:43.827523Z",
+            "metadata": {
+              "topic": "physics"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_c6d590a61d40",
+            "type": "preference",
+            "text": "Expresses excitement to learn despite injury.",
+            "score": 0.818062246,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T02:08:39.526861Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "offer of practice, injury",
+              "response": "positive"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_25be1c697167",
+            "type": "context",
+            "text": "Student felt: excited",
+            "score": 0.814116418,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T15:12:59.840607Z",
+            "metadata": {
+              "emotion": "excited",
+              "session_end": true,
+              "next_topic": "general"
+            },
+            "session_id": "sess_20251202_151226_7u362w"
+          },
+          {
+            "memory_id": "mem_4abb6b2f8142",
+            "type": "preference",
+            "text": "Expresses excitement to start the session",
+            "score": 0.811449051,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:50:14.077342Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "session start",
+              "response": "excited"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          },
+          {
+            "memory_id": "mem_999e5542c5e9",
+            "type": "academic",
+            "text": "Interested in the topic of motion in physics.",
+            "score": 0.805083692,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T03:20:38.866254Z",
+            "metadata": {
+              "valence": "neutral",
+              "topic": "motion"
+            },
+            "session_id": "sess_20251202_021149_pb0vsb"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1482.93,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_152616_b6d4e7",
+      "session_id": "sess_20251202_152557_ljtus1",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:26:16.456234Z",
+      "student_message": "<noise>",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 10,
+        "memories": [
+          {
+            "memory_id": "mem_26e18598f6e9",
+            "type": "academic",
+            "text": "Struggles with basic sequencing, confused about which word comes first (egg/hand)",
+            "score": 0.814524293,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T04:09:53.233192Z",
+            "metadata": {
+              "emotion": "confusion",
+              "valence": "struggle",
+              "topic": "word_order"
+            },
+            "session_id": "sess_20251202_040725_2tvuxl"
+          },
+          {
+            "memory_id": "mem_f06c243a7455",
+            "type": "preference",
+            "text": "Prefers active/passive voice to parts of speech",
+            "score": 0.814160287,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T00:43:38.012755Z",
+            "metadata": {
+              "category": "topic_selection",
+              "trigger": "offered parts of speech",
+              "response": "rejected"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_0ca42ab3adf3",
+            "type": "preference",
+            "text": "Prefers active/passive voice over parts of speech",
+            "score": 0.812223434,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T00:49:41.923072Z",
+            "metadata": {
+              "category": "topic_selection",
+              "response": "active/passive voice"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_fdb7aa5d078d",
+            "type": "preference",
+            "text": "Student responds in Hindi ('नो आई डोंट नो')",
+            "score": 0.810343742,
+            "importance": 0.8,
+            "timestamp": "2025-12-01T16:00:59.367499Z",
+            "metadata": {
+              "category": "communication"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_c2f4132ee6cb",
+            "type": "academic",
+            "text": "Struggles with basic subject/verb identification.",
+            "score": 0.803216875,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T00:43:42.408107Z",
+            "metadata": {
+              "emotion": "neutral",
+              "valence": "struggle",
+              "topic": "grammar"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_08997a05801c",
+            "type": "context",
+            "text": "Key moments: Struggled: student is expressing physical discomfort, which indicates a struggle with something, possibly unrelated to the lesson.; Struggled: student is asking for help, indicating confusion about \"<noise>\".",
+            "score": 0.802586138,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T00:50:02.324144Z",
+            "metadata": {
+              "session_end": true,
+              "next_topic": "general"
+            },
+            "session_id": "sess_20251202_004340_4k7nmi"
+          },
+          {
+            "memory_id": "mem_69955718fa29",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.801900148,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:43:38.012755Z",
+            "metadata": {
+              "category": "health"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_dbd74d960153",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.801900148,
+            "importance": 0.5,
+            "timestamp": "2025-12-02T00:49:41.923072Z",
+            "metadata": {
+              "emotion": "negative"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_4abb6b2f8142",
+            "type": "preference",
+            "text": "Expresses excitement to start the session",
+            "score": 0.801652193,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:50:14.077342Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "session start",
+              "response": "excited"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          },
+          {
+            "memory_id": "mem_2f950cc22456",
+            "type": "academic",
+            "text": "Wants to learn active/passive voice.",
+            "score": 0.801468134,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:49:41.923072Z",
+            "metadata": {
+              "topic": "grammar"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          }
+        ]
+      },
+      "retrieval_time_ms": 4662.22,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_152618_1c2e1e",
+      "session_id": "sess_20251202_152557_ljtus1",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:26:18.503777Z",
+      "student_message": "I am good.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 10,
+        "memories": [
+          {
+            "memory_id": "mem_8e2abad4388e",
+            "type": "context",
+            "text": "Completed a test, screen displays completion message.",
+            "score": 0.79013133,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T03:21:02.088771Z",
+            "metadata": {
+              "emotion": "neutral",
+              "next_topic": "general"
+            },
+            "session_id": "sess_20251202_030220_m6hi70"
+          },
+          {
+            "memory_id": "mem_fdb7aa5d078d",
+            "type": "preference",
+            "text": "Student responds in Hindi ('नो आई डोंट नो')",
+            "score": 0.789127052,
+            "importance": 0.8,
+            "timestamp": "2025-12-01T16:00:59.367499Z",
+            "metadata": {
+              "category": "communication"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_24b5408955c1",
+            "type": "preference",
+            "text": "Willing to learn despite not feeling well.",
+            "score": 0.784690261,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T00:49:35.645660Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "feeling unwell",
+              "response": "eagerness to learn"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_d4e949bae418",
+            "type": "preference",
+            "text": "Appears to prefer a direct communication style, giving explicit cues ('let me know when you're ready')",
+            "score": 0.775529742,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T03:21:02.088771Z",
+            "metadata": {
+              "category": "pacing",
+              "trigger": "completing a step",
+              "response": "let me know when you're ready to look at the next question"
+            },
+            "session_id": "sess_20251202_030220_m6hi70"
+          },
+          {
+            "memory_id": "mem_fd2945c94942",
+            "type": "preference",
+            "text": "Excited to learn.",
+            "score": 0.770116508,
+            "importance": 0.7,
+            "timestamp": "2025-12-01T15:58:46.989897Z",
+            "metadata": {
+              "emotion": "excited",
+              "category": "emotional_response"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_7db40d25c60b",
+            "type": "context",
+            "text": "Student felt: happy",
+            "score": 0.768909097,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T03:55:14.336301Z",
+            "metadata": {
+              "emotion": "happy",
+              "session_end": true,
+              "next_topic": "general"
+            },
+            "session_id": "sess_20251202_035257_9t0xxn"
+          },
+          {
+            "memory_id": "mem_5e977a97ff72",
+            "type": "personal",
+            "text": "Excited to learn",
+            "score": 0.766974509,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T00:58:57.362493Z",
+            "metadata": {
+              "emotion": "positive",
+              "category": "interest"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_e6e26dc82f81",
+            "type": "academic",
+            "text": "Interested in physics.",
+            "score": 0.766027212,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T02:08:43.827523Z",
+            "metadata": {
+              "topic": "physics"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_8418caa84854",
+            "type": "personal",
+            "text": "Excited to learn despite a headache.",
+            "score": 0.762777746,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T00:43:32.210086Z",
+            "metadata": {
+              "emotion": "excited"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_1be961a54606",
+            "type": "preference",
+            "text": "Expresses excitement about learning",
+            "score": 0.756474,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T15:17:46.792006Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "start of session",
+              "response": "excited"
+            },
+            "session_id": "sess_20251202_151706_ty3q2z"
+          }
+        ]
+      },
+      "retrieval_time_ms": 2264.17,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_152633_965a78",
+      "session_id": "sess_20251202_152557_ljtus1",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:26:33.991138Z",
+      "student_message": "Okay sure.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 10,
+        "memories": [
+          {
+            "memory_id": "mem_5e977a97ff72",
+            "type": "personal",
+            "text": "Excited to learn",
+            "score": 0.802508354,
+            "importance": 0.7,
+            "timestamp": "2025-12-02T00:58:57.362493Z",
+            "metadata": {
+              "emotion": "positive",
+              "category": "interest"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_fd2945c94942",
+            "type": "preference",
+            "text": "Excited to learn.",
+            "score": 0.80021435,
+            "importance": 0.7,
+            "timestamp": "2025-12-01T15:58:46.989897Z",
+            "metadata": {
+              "emotion": "excited",
+              "category": "emotional_response"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_e6e26dc82f81",
+            "type": "academic",
+            "text": "Interested in physics.",
+            "score": 0.789287031,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T02:08:43.827523Z",
+            "metadata": {
+              "topic": "physics"
+            },
+            "session_id": "sess_20251202_005749_i3qep3"
+          },
+          {
+            "memory_id": "mem_24b5408955c1",
+            "type": "preference",
+            "text": "Willing to learn despite not feeling well.",
+            "score": 0.787450075,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T00:49:35.645660Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "feeling unwell",
+              "response": "eagerness to learn"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_16d17eb195a6",
+            "type": "preference",
+            "text": "Expresses excitement to learn.",
+            "score": 0.780817449,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:55:34.511499Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "expectation of learning",
+              "response": "excitement"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          },
+          {
+            "memory_id": "mem_4abb6b2f8142",
+            "type": "preference",
+            "text": "Expresses excitement to start the session",
+            "score": 0.780530751,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:50:14.077342Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "session start",
+              "response": "excited"
+            },
+            "session_id": "sess_20251202_004941_6ahziu"
+          },
+          {
+            "memory_id": "mem_dbd74d960153",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.779721379,
+            "importance": 0.5,
+            "timestamp": "2025-12-02T00:49:41.923072Z",
+            "metadata": {
+              "emotion": "negative"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_69955718fa29",
+            "type": "personal",
+            "text": "Has a headache",
+            "score": 0.779721379,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T00:43:38.012755Z",
+            "metadata": {
+              "category": "health"
+            },
+            "session_id": "sess_20251201_155808_em2e41"
+          },
+          {
+            "memory_id": "mem_1be961a54606",
+            "type": "preference",
+            "text": "Expresses excitement about learning",
+            "score": 0.779141128,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T15:17:46.792006Z",
+            "metadata": {
+              "category": "emotional_response",
+              "trigger": "start of session",
+              "response": "excited"
+            },
+            "session_id": "sess_20251202_151706_ty3q2z"
+          },
+          {
+            "memory_id": "mem_d4e949bae418",
+            "type": "preference",
+            "text": "Appears to prefer a direct communication style, giving explicit cues ('let me know when you're ready')",
+            "score": 0.775594831,
+            "importance": 0.6,
+            "timestamp": "2025-12-02T03:21:02.088771Z",
+            "metadata": {
+              "category": "pacing",
+              "trigger": "completing a step",
+              "response": "let me know when you're ready to look at the next question"
+            },
+            "session_id": "sess_20251202_030220_m6hi70"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1566.21,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_153239_c8357e",
+      "session_id": "sess_20251202_153218_j2tovx",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:32:39.017433Z",
+      "student_message": "Yes I am excited to learn something because I am very good student.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 0,
+        "memories": []
+      },
+      "retrieval_time_ms": 4195.42,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_153257_59789c",
+      "session_id": "sess_20251202_153218_j2tovx",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:32:57.195377Z",
+      "student_message": "Okay. first introduce yourself",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 0,
+        "memories": []
+      },
+      "retrieval_time_ms": 1384.66,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_153327_afc302",
+      "session_id": "sess_20251202_153218_j2tovx",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:33:27.682302Z",
+      "student_message": "ఓకే బట్ కరెంట్లీ ఐ డోంట్ వాంట్ టు లన్ మ్యాథ్స్ ఐ వాంట్ టు లెర్న్ కెమిస్ట్రీ సబ్జెక్ట్",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 0,
+        "memories": []
+      },
+      "retrieval_time_ms": 1456.95,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_153343_f140dc",
+      "session_id": "sess_20251202_153218_j2tovx",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:33:43.348618Z",
+      "student_message": "I want to learn about atoms.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 0,
+        "memories": []
+      },
+      "retrieval_time_ms": 1524.11,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_153413_45809b",
+      "session_id": "sess_20251202_153218_j2tovx",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:34:13.858689Z",
+      "student_message": "Okay.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 0,
+        "memories": []
+      },
+      "retrieval_time_ms": 1502.26,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_153443_3e9a7d",
+      "session_id": "sess_20251202_153218_j2tovx",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:34:43.265633Z",
+      "student_message": "Okay no no I don't want to",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 0,
+        "memories": []
+      },
+      "retrieval_time_ms": 4022.19,
+      "status": "success"
+    }
+  ],
+  "last_updated": "2025-12-02T15:34:43.282489Z"
+}

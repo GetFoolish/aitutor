@@ -1,0 +1,299 @@
+{
+  "openings": [
+    {
+      "opening_id": "opening_20251202_140605_beb9a3",
+      "session_id": "sess_20251202_140557_mttvni",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:06:05.653124Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Welcome back!",
+      "last_session_summary": "",
+      "unfinished_threads": [],
+      "personal_relevance": "Student has a favorite subject.",
+      "emotional_state_last": "neutral",
+      "suggested_opener": "Hey! What would you like to work on today?",
+      "key_moments_last": [],
+      "topics_last_session": [],
+      "personal_memories": [
+        "Student has a favorite subject.",
+        "Student has a favorite cricketer."
+      ],
+      "status": "success"
+    },
+    {
+      "opening_id": "opening_20251202_141054_907563",
+      "session_id": "sess_20251202_141047_q61p0o",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:10:54.707792Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Welcome back!",
+      "last_session_summary": "",
+      "unfinished_threads": [],
+      "personal_relevance": "Student has a favorite subject.",
+      "emotional_state_last": "neutral",
+      "suggested_opener": "Hey! What would you like to work on today?",
+      "key_moments_last": [],
+      "topics_last_session": [],
+      "personal_memories": [
+        "Student has a favorite subject.",
+        "Student has a favorite cricketer."
+      ],
+      "status": "success"
+    },
+    {
+      "opening_id": "opening_20251202_141438_020cdf",
+      "session_id": "sess_20251202_141413_cfldhr",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:14:38.002110Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Welcome back!",
+      "last_session_summary": "",
+      "unfinished_threads": [
+        "Continue with general"
+      ],
+      "personal_relevance": "Student has a favorite subject.",
+      "emotional_state_last": "neutral",
+      "suggested_opener": "Hey! What would you like to work on today?",
+      "key_moments_last": [],
+      "topics_last_session": [
+        "general"
+      ],
+      "personal_memories": [
+        "Student has a favorite subject.",
+        "Student has a favorite cricketer."
+      ],
+      "status": "success"
+    },
+    {
+      "opening_id": "opening_20251202_143530_6a2090",
+      "session_id": "sess_20251202_143230_ro8pof",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:35:30.163916Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Welcome back!",
+      "last_session_summary": "Student felt: happy",
+      "unfinished_threads": [
+        "Continue with general"
+      ],
+      "personal_relevance": "Student has a favorite subject.",
+      "emotional_state_last": "happy",
+      "suggested_opener": "Hey! What would you like to work on today?",
+      "key_moments_last": [],
+      "topics_last_session": [
+        "general"
+      ],
+      "personal_memories": [
+        "Student has a favorite subject.",
+        "Student has a favorite cricketer."
+      ],
+      "status": "success"
+    },
+    {
+      "opening_id": "opening_20251202_144704_3894ae",
+      "session_id": "sess_20251202_144626_6axrcj",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:47:04.465105Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Last time we were working through student expresses a preference for a different subject and avoidance of the current one.",
+      "last_session_summary": "Key moments: Struggled: student expresses a preference for a different subject and avoidance of the current one.",
+      "unfinished_threads": [
+        "Revisit what we struggled with",
+        "Continue with general"
+      ],
+      "personal_relevance": "Student has a favorite subject.",
+      "emotional_state_last": "neutral",
+      "suggested_opener": "Hey! Last time we were working through student expresses a preference for a different subject and avoidance of the current one.. Want to tackle what we were working on, or try something new?",
+      "key_moments_last": [
+        "Struggled: student expresses a preference for a different subject and avoidance of the current one."
+      ],
+      "topics_last_session": [
+        "general"
+      ],
+      "personal_memories": [
+        "Student has a favorite subject.",
+        "Student has a favorite cricketer."
+      ],
+      "status": "success"
+    },
+    {
+      "opening_id": "opening_20251202_145218_efed06",
+      "session_id": "sess_20251202_145151_55axx6",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T14:52:18.612171Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Welcome back!",
+      "last_session_summary": "",
+      "unfinished_threads": [
+        "Continue with general"
+      ],
+      "personal_relevance": "Prefers physics over math.",
+      "emotional_state_last": "neutral",
+      "suggested_opener": "Hey! What would you like to work on today?",
+      "key_moments_last": [],
+      "topics_last_session": [
+        "general"
+      ],
+      "personal_memories": [
+        "Prefers physics over math.",
+        "Student has a favorite subject.",
+        "Student has a favorite cricketer."
+      ],
+      "status": "success"
+    },
+    {
+      "opening_id": "opening_20251202_150252_e458a2",
+      "session_id": "sess_20251202_150243_ml6bg8",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:02:52.225357Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Welcome back!",
+      "last_session_summary": "",
+      "unfinished_threads": [
+        "Continue with general"
+      ],
+      "personal_relevance": "Prefers physics over math.",
+      "emotional_state_last": "neutral",
+      "suggested_opener": "Hey! What would you like to work on today?",
+      "key_moments_last": [],
+      "topics_last_session": [
+        "general"
+      ],
+      "personal_memories": [
+        "Prefers physics over math.",
+        "Student has a favorite subject.",
+        "Student has a favorite cricketer."
+      ],
+      "status": "success"
+    },
+    {
+      "opening_id": "opening_20251202_150513_ca6f99",
+      "session_id": "sess_20251202_150447_mf2bji",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:05:13.215698Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Welcome back!",
+      "last_session_summary": "Student felt: excited",
+      "unfinished_threads": [
+        "Continue with general"
+      ],
+      "personal_relevance": "Prefers physics over math.",
+      "emotional_state_last": "excited",
+      "suggested_opener": "Hey! Ready to keep that momentum going?",
+      "key_moments_last": [],
+      "topics_last_session": [
+        "general"
+      ],
+      "personal_memories": [
+        "Prefers physics over math.",
+        "Student has a favorite subject.",
+        "Student has a favorite cricketer."
+      ],
+      "status": "success"
+    },
+    {
+      "opening_id": "opening_20251202_151302_73bdb2",
+      "session_id": "sess_20251202_151226_7u362w",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:13:02.039339Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Welcome back!",
+      "last_session_summary": "Emotional journey: excited -> excited",
+      "unfinished_threads": [
+        "Continue with general"
+      ],
+      "personal_relevance": "Prefers physics over math.",
+      "emotional_state_last": "excited",
+      "suggested_opener": "Hey! Ready to keep that momentum going?",
+      "key_moments_last": [],
+      "topics_last_session": [
+        "general"
+      ],
+      "personal_memories": [
+        "Prefers physics over math.",
+        "Student has a favorite subject.",
+        "Student has a favorite cricketer."
+      ],
+      "status": "success"
+    },
+    {
+      "opening_id": "opening_20251202_151630_6fe894",
+      "session_id": "sess_20251202_151555_blv6xo",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:16:30.131792Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Last time we were working through student's message is incomplete and likely indicates a lack of understanding or a need for clarification.",
+      "last_session_summary": "Key moments: Struggled: student's message is incomplete and likely indicates a lack of understanding or being stuck.; Struggled: student's message is incomplete and likely indicates a lack of understanding or a need for clarification.. Student felt: happy",
+      "unfinished_threads": [
+        "Revisit what we struggled with",
+        "Continue with general"
+      ],
+      "personal_relevance": "Prefers physics over math.",
+      "emotional_state_last": "happy",
+      "suggested_opener": "Hey! Last time we were working through student's message is incomplete and likely indicates a lack of understanding or a need for clarification.. Want to tackle what we were working on, or try something new?",
+      "key_moments_last": [
+        "Struggled: student's message is incomplete and likely indicates a lack of understanding or being stuck.",
+        "Struggled: student's message is incomplete and likely indicates a lack of understanding or a need for clarification."
+      ],
+      "topics_last_session": [
+        "general"
+      ],
+      "personal_memories": [
+        "Prefers physics over math.",
+        "Student has a favorite subject.",
+        "Student has a favorite cricketer."
+      ],
+      "status": "success"
+    },
+    {
+      "opening_id": "opening_20251202_151749_a314f1",
+      "session_id": "sess_20251202_151706_ty3q2z",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:17:49.711562Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Welcome back!",
+      "last_session_summary": "Emotional journey: excited -> excited",
+      "unfinished_threads": [
+        "Continue with general"
+      ],
+      "personal_relevance": "Prefers physics over math.",
+      "emotional_state_last": "excited",
+      "suggested_opener": "Hey! Ready to keep that momentum going?",
+      "key_moments_last": [],
+      "topics_last_session": [
+        "general"
+      ],
+      "personal_memories": [
+        "Prefers physics over math.",
+        "Student has a favorite subject.",
+        "Student has a favorite cricketer."
+      ],
+      "status": "success"
+    },
+    {
+      "opening_id": "opening_20251202_152701_56c040",
+      "session_id": "sess_20251202_152557_ljtus1",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T15:27:01.022715Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Welcome back!",
+      "last_session_summary": "Student felt: happy",
+      "unfinished_threads": [
+        "Continue with general"
+      ],
+      "personal_relevance": "Prefers physics over math.",
+      "emotional_state_last": "happy",
+      "suggested_opener": "Hey! What would you like to work on today?",
+      "key_moments_last": [],
+      "topics_last_session": [
+        "general"
+      ],
+      "personal_memories": [
+        "Prefers physics over math.",
+        "Student has a favorite subject.",
+        "Student has a favorite cricketer."
+      ],
+      "status": "success"
+    }
+  ],
+  "last_updated": "2025-12-02T15:27:01.033716Z"
+}

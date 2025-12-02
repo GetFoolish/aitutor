@@ -29,10 +29,16 @@ Return only the query text, no explanations or additional text."""
 
 
 class MemoryRetriever:
-    def __init__(self, store: Optional[MemoryStore] = None):
-        self.store = store or MemoryStore()
+    def __init__(self, store: Optional[MemoryStore] = None, student_id: Optional[str] = None):
+        self.store = store or MemoryStore(student_id=student_id)
+        self.student_id = student_id or (store.student_id if store and hasattr(store, 'student_id') else None)
         self._extractor = None
         self.watcher: Optional['MemoryRetrievalWatcher'] = None
+        # Track conversation history and turn counts for real-time events
+        self._conversation_history: Dict[str, List[Dict[str, str]]] = {}
+        self._turn_counts: Dict[str, int] = {}
+        self._history_limit: int = 15
+        self._lock = threading.Lock()
 
     def _get_extractor(self) -> MemoryExtractor:
         if self._extractor is None:
@@ -266,22 +272,28 @@ class MemoryRetriever:
         return '\n\n'.join(sections)
 
     # TA-light-retrieval.json file management methods
-    def _get_ta_memory_filepath(self) -> str:
+    def _get_ta_memory_filepath(self, student_id: Optional[str] = None) -> str:
         """Get the path to TA-light-retrieval.json file."""
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        ta_dir = os.path.join(base_dir, 'data', 'memory', 'TeachingAssistant')
+        student_id = student_id or self.student_id
+        if not student_id:
+            raise ValueError("student_id is required for TA file paths")
+        ta_dir = os.path.join(base_dir, 'data', student_id, 'memory', 'TeachingAssistant')
         os.makedirs(ta_dir, exist_ok=True)
         return os.path.join(ta_dir, 'TA-light-retrieval.json')
 
-    def _get_ta_deep_memory_filepath(self) -> str:
+    def _get_ta_deep_memory_filepath(self, student_id: Optional[str] = None) -> str:
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        ta_dir = os.path.join(base_dir, 'data', 'memory', 'TeachingAssistant')
+        student_id = student_id or self.student_id
+        if not student_id:
+            raise ValueError("student_id is required for TA file paths")
+        ta_dir = os.path.join(base_dir, 'data', student_id, 'memory', 'TeachingAssistant')
         os.makedirs(ta_dir, exist_ok=True)
         return os.path.join(ta_dir, 'TA-deep-retrieval.json')
 
-    def _load_ta_memory_file(self) -> Dict[str, Any]:
+    def _load_ta_memory_file(self, student_id: Optional[str] = None) -> Dict[str, Any]:
         """Load TA-light-retrieval.json file, creating it if it doesn't exist."""
-        filepath = self._get_ta_memory_filepath()
+        filepath = self._get_ta_memory_filepath(student_id)
         
         if not os.path.exists(filepath):
             initial_data = {
@@ -314,8 +326,8 @@ class MemoryRetriever:
                 json.dump(initial_data, f, indent=2, ensure_ascii=False)
             return initial_data
 
-    def _load_ta_deep_memory_file(self) -> Dict[str, Any]:
-        filepath = self._get_ta_deep_memory_filepath()
+    def _load_ta_deep_memory_file(self, student_id: Optional[str] = None) -> Dict[str, Any]:
+        filepath = self._get_ta_deep_memory_filepath(student_id)
         
         if not os.path.exists(filepath):
             initial_data = {
@@ -348,9 +360,9 @@ class MemoryRetriever:
                 json.dump(initial_data, f, indent=2, ensure_ascii=False)
             return initial_data
 
-    def _save_ta_memory_file(self, data: Dict[str, Any]) -> None:
+    def _save_ta_memory_file(self, data: Dict[str, Any], student_id: Optional[str] = None) -> None:
         """Save data to TA-light-retrieval.json file (thread-safe)."""
-        filepath = self._get_ta_memory_filepath()
+        filepath = self._get_ta_memory_filepath(student_id)
         data['last_updated'] = datetime.utcnow().isoformat() + 'Z'
         
         try:
@@ -359,8 +371,8 @@ class MemoryRetriever:
         except IOError as e:
             raise IOError(f"Failed to save TA-light-retrieval.json: {e}")
 
-    def _save_ta_deep_memory_file(self, data: Dict[str, Any]) -> None:
-        filepath = self._get_ta_deep_memory_filepath()
+    def _save_ta_deep_memory_file(self, data: Dict[str, Any], student_id: Optional[str] = None) -> None:
+        filepath = self._get_ta_deep_memory_filepath(student_id)
         data['last_updated'] = datetime.utcnow().isoformat() + 'Z'
         
         try:
@@ -506,176 +518,7 @@ class MemoryRetriever:
             self.watcher.stop()
             self.watcher = None
 
-
-class MemoryRetrievalWatcher:
-    """
-    Watches conversation files and triggers lightweight memory retrieval
-    when new user turns are detected. Saves results to TA-light-retrieval.json.
-    """
-    
-    def __init__(
-        self,
-        retriever: MemoryRetriever,
-        conversations_path: Optional[str] = None,
-        poll_interval: float = 1.0,
-        verbose: bool = True
-    ):
-        self.retriever = retriever
-        
-        if conversations_path is None:
-            base_dir = os.path.dirname(os.path.abspath(__file__))
-            conversations_path = os.path.join(base_dir, 'data', 'conversations')
-        
-        self.conversations_path = conversations_path
-        self.poll_interval = poll_interval
-        self.verbose = verbose
-        
-        self._processed_turns: Dict[str, int] = {}
-        self._completed_sessions: Set[str] = set()
-        self._conversation_history: Dict[str, List[Dict[str, str]]] = {}
-        self._turn_counts: Dict[str, int] = {}
-        self._history_limit: int = 15
-        self._running = False
-        self._thread: Optional[threading.Thread] = None
-        self._lock = threading.Lock()
-    
-    def log(self, message: str) -> None:
-        """Log a message with timestamp."""
-        if self.verbose:
-            timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]
-            try:
-                print(f"[{timestamp}] [RETRIEVAL] {message}")
-            except UnicodeEncodeError:
-                safe_msg = message.encode('ascii', 'replace').decode('ascii')
-                print(f"[{timestamp}] [RETRIEVAL] {safe_msg}")
-    
-    def start(self) -> None:
-        """Start the watcher thread."""
-        if self._running:
-            return
-        
-        self._running = True
-        self._thread = threading.Thread(target=self._watch_loop, daemon=True)
-        self._thread.start()
-        self.log("MemoryRetrievalWatcher started")
-    
-    def stop(self) -> None:
-        """Stop the watcher thread."""
-        self._running = False
-        if self._thread:
-            self._thread.join(timeout=5.0)
-        self.log("MemoryRetrievalWatcher stopped")
-    
-    def _watch_loop(self) -> None:
-        """Main polling loop."""
-        while self._running:
-            try:
-                self._process_conversations()
-            except Exception as e:
-                self.log(f"Error in watch loop: {e}")
-            
-            time.sleep(self.poll_interval)
-    
-    def _process_conversations(self) -> None:
-        """Process all conversation files in the directory."""
-        if not os.path.exists(self.conversations_path):
-            return
-        
-        try:
-            filenames = os.listdir(self.conversations_path)
-        except OSError:
-            return
-        
-        for filename in filenames:
-            if not filename.endswith('.json'):
-                continue
-            
-            session_id = filename[:-5]
-            
-            # Skip completed sessions
-            if session_id in self._completed_sessions:
-                continue
-            
-            filepath = os.path.join(self.conversations_path, filename)
-            self._process_session(session_id, filepath)
-    
-    def _process_session(self, session_id: str, filepath: str) -> None:
-        """Process a single conversation session file."""
-        try:
-            with open(filepath, 'r', encoding='utf-8') as f:
-                session_data = json.load(f)
-        except (json.JSONDecodeError, IOError, UnicodeDecodeError) as e:
-            self.log(f"Error reading {session_id}: {e}")
-            return
-        
-        if session_data.get('end_time'):
-            if session_id not in self._completed_sessions:
-                self._completed_sessions.add(session_id)
-                with self._lock:
-                    if session_id in self._conversation_history:
-                        del self._conversation_history[session_id]
-                    if session_id in self._turn_counts:
-                        del self._turn_counts[session_id]
-            return
-        
-        turns = session_data.get('turns', [])
-        user_id = session_data.get('user_id', 'anonymous')
-        last_processed = self._processed_turns.get(session_id, -1)
-        
-        with self._lock:
-            if session_id not in self._conversation_history:
-                self._conversation_history[session_id] = []
-            if session_id not in self._turn_counts:
-                self._turn_counts[session_id] = 0
-        
-        i = last_processed + 1
-        
-        while i < len(turns):
-            turn = turns[i]
-            
-            if turn.get('speaker') == 'user':
-                user_texts = []
-                timestamps = []
-                
-                while i < len(turns) and turns[i].get('speaker') == 'user':
-                    text = turns[i].get('text', '').strip()
-                    timestamp = turns[i].get('timestamp', '')
-                    if text and text != '<noise>':
-                        user_texts.append(text)
-                        if timestamp:
-                            timestamps.append(timestamp)
-                    i += 1
-                
-                adam_text = ''
-                if i < len(turns) and turns[i].get('speaker') == 'adam':
-                    adam_text = turns[i].get('text', '').strip()
-                    i += 1
-                
-                user_text = ' '.join(user_texts)
-                user_timestamp = timestamps[0] if timestamps else datetime.utcnow().isoformat() + 'Z'
-                
-                if user_text:
-                    self._process_user_turn(session_id, user_id, user_text, user_timestamp, adam_text)
-                    
-                    with self._lock:
-                        self._conversation_history[session_id].append({
-                            "speaker": "user",
-                            "text": user_text
-                        })
-                        if adam_text:
-                            self._conversation_history[session_id].append({
-                                "speaker": "adam",
-                                "text": adam_text
-                            })
-                        
-                        if len(self._conversation_history[session_id]) > self._history_limit:
-                            self._conversation_history[session_id] = self._conversation_history[session_id][-self._history_limit:]
-            else:
-                i += 1
-        
-        self._processed_turns[session_id] = len(turns) - 1
-    
-    def _process_user_turn(
+    def on_user_turn(
         self,
         session_id: str,
         user_id: str,
@@ -683,18 +526,26 @@ class MemoryRetrievalWatcher:
         timestamp: str,
         adam_text: str = ""
     ) -> None:
+        """Handle real-time user turn event for memory retrieval."""
         try:
             preview = user_text[:50] + "..." if len(user_text) > 50 else user_text
         except:
             preview = "[text]"
         
-        self.log(f"New user turn detected: session_id={session_id}, user_id={user_id}")
-        self.log(f"Query: \"{preview}\"")
+        verbose = self.watcher.verbose if self.watcher else True
+        if verbose:
+            timestamp_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+            try:
+                print(f"[{timestamp_str}] [RETRIEVAL] New user turn (real-time): session_id={session_id}, user_id={user_id}")
+                print(f"[{timestamp_str}] [RETRIEVAL] Query: \"{preview}\"")
+            except UnicodeEncodeError:
+                safe_msg = preview.encode('ascii', 'replace').decode('ascii')
+                print(f"[{timestamp_str}] [RETRIEVAL] Query: \"{safe_msg}\"")
         
         start_time = time.time()
         
         try:
-            retrieval_results = self.retriever.light_retrieval(
+            retrieval_results = self.light_retrieval(
                 query=user_text,
                 student_id=user_id,
                 top_k=10,
@@ -702,9 +553,11 @@ class MemoryRetrievalWatcher:
             )
             retrieval_time_ms = (time.time() - start_time) * 1000
             
-            self.log(f"Found {len(retrieval_results)} memories")
+            if verbose:
+                timestamp_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                print(f"[{timestamp_str}] [RETRIEVAL] Found {len(retrieval_results)} memories")
             
-            retrieval_data = self.retriever._format_retrieval_for_ta_memory(
+            retrieval_data = self._format_retrieval_for_ta_memory(
                 retrieval_results=retrieval_results,
                 student_message=user_text,
                 user_id=user_id,
@@ -712,30 +565,57 @@ class MemoryRetrievalWatcher:
                 retrieval_time_ms=retrieval_time_ms
             )
             
-            self._save_retrieval_to_file(retrieval_data)
-            self.log(f"Saved to TA-light-retrieval.json (retrieval_id: {retrieval_data['retrieval_id']})")
+            # Save to file (for read/backup purposes only)
+            if self.watcher:
+                self.watcher._save_retrieval_to_file(retrieval_data, user_id)
+                if verbose:
+                    timestamp_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                    print(f"[{timestamp_str}] [RETRIEVAL] Saved to TA-light-retrieval.json (retrieval_id: {retrieval_data['retrieval_id']})")
             
+            # Get conversation history for deep retrieval check
             with self._lock:
-                conversation = self._conversation_history.get(session_id, []).copy()
-                turn_count = self._turn_counts.get(session_id, 0)
+                if session_id not in self._conversation_history:
+                    self._conversation_history[session_id] = []
+                if session_id not in self._turn_counts:
+                    self._turn_counts[session_id] = 0
+                
+                conversation = self._conversation_history[session_id].copy()
+                turn_count = self._turn_counts[session_id]
+                
+                # Update conversation history
+                self._conversation_history[session_id].append({
+                    "speaker": "user",
+                    "text": user_text
+                })
+                if adam_text:
+                    self._conversation_history[session_id].append({
+                        "speaker": "adam",
+                        "text": adam_text
+                    })
+                
+                # Limit history size
+                if len(self._conversation_history[session_id]) > self._history_limit:
+                    self._conversation_history[session_id] = self._conversation_history[session_id][-self._history_limit:]
+                
+                self._turn_counts[session_id] = turn_count + 1
             
-            triggers = self.retriever.should_deep_retrieve(
+            # Check for deep retrieval triggers
+            triggers = self.should_deep_retrieve(
                 current_message=user_text,
                 conversation=conversation,
                 turn_count=turn_count + 1
             )
             
-            with self._lock:
-                self._turn_counts[session_id] = turn_count + 1
-            
             if any(triggers.values()):
                 active_triggers = [k for k, v in triggers.items() if v]
-                self.log(f"Deep retrieval triggered: {', '.join(active_triggers)}")
+                if verbose:
+                    timestamp_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                    print(f"[{timestamp_str}] [RETRIEVAL] Deep retrieval triggered: {', '.join(active_triggers)}")
                 
                 deep_start_time = time.time()
                 
                 try:
-                    deep_results = self.retriever.deep_retrieval(
+                    deep_results = self.deep_retrieval(
                         query=user_text,
                         student_id=user_id,
                         triggers=triggers,
@@ -749,9 +629,11 @@ class MemoryRetrievalWatcher:
                     preferences_count = len(deep_results.get('preferences', []))
                     context_count = len(deep_results.get('context', []))
                     
-                    self.log(f"Deep found: academic={academic_count}, personal={personal_count}, preferences={preferences_count}, context={context_count}")
+                    if verbose:
+                        timestamp_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                        print(f"[{timestamp_str}] [RETRIEVAL] Deep found: academic={academic_count}, personal={personal_count}, preferences={preferences_count}, context={context_count}")
                     
-                    deep_retrieval_data = self.retriever._format_deep_retrieval_for_ta_memory(
+                    deep_retrieval_data = self._format_deep_retrieval_for_ta_memory(
                         deep_results=deep_results,
                         student_message=user_text,
                         user_id=user_id,
@@ -760,12 +642,18 @@ class MemoryRetrievalWatcher:
                         retrieval_time_ms=deep_retrieval_time_ms
                     )
                     
-                    self._save_deep_retrieval_to_file(deep_retrieval_data)
-                    self.log(f"Deep saved to TA-deep-retrieval.json (retrieval_id: {deep_retrieval_data['retrieval_id']})")
+                    # Save to file (for read/backup purposes only)
+                    if self.watcher:
+                        self.watcher._save_deep_retrieval_to_file(deep_retrieval_data, user_id)
+                        if verbose:
+                            timestamp_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                            print(f"[{timestamp_str}] [RETRIEVAL] Deep saved to TA-deep-retrieval.json (retrieval_id: {deep_retrieval_data['retrieval_id']})")
                     
                 except Exception as deep_error:
                     deep_retrieval_time_ms = (time.time() - deep_start_time) * 1000
-                    self.log(f"Error during deep retrieval: {deep_error}")
+                    if verbose:
+                        timestamp_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                        print(f"[{timestamp_str}] [RETRIEVAL] Error during deep retrieval: {deep_error}")
                     
                     error_data = {
                         "retrieval_id": f"deep_ret_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}",
@@ -794,13 +682,18 @@ class MemoryRetrievalWatcher:
                     }
                     
                     try:
-                        self._save_deep_retrieval_to_file(error_data)
+                        if self.watcher:
+                            self.watcher._save_deep_retrieval_to_file(error_data, user_id)
                     except Exception as save_error:
-                        self.log(f"Failed to save deep error to file: {save_error}")
+                        if verbose:
+                            timestamp_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                            print(f"[{timestamp_str}] [RETRIEVAL] Failed to save deep error to file: {save_error}")
             
         except Exception as e:
             retrieval_time_ms = (time.time() - start_time) * 1000
-            self.log(f"Error during retrieval: {e}")
+            if verbose:
+                timestamp_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                print(f"[{timestamp_str}] [RETRIEVAL] Error during retrieval: {e}")
             
             error_data = {
                 "retrieval_id": f"ret_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}",
@@ -823,23 +716,373 @@ class MemoryRetrievalWatcher:
             }
             
             try:
-                self._save_retrieval_to_file(error_data)
+                if self.watcher:
+                    self.watcher._save_retrieval_to_file(error_data, user_id)
             except Exception as save_error:
-                self.log(f"Failed to save error to file: {save_error}")
+                if verbose:
+                    timestamp_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                    print(f"[{timestamp_str}] [RETRIEVAL] Failed to save error to file: {save_error}")
     
-    def _save_retrieval_to_file(self, retrieval_data: Dict[str, Any]) -> None:
+    def clear_session_history(self, session_id: str) -> None:
+        """Clear conversation history for a session (called on session end)."""
+        with self._lock:
+            if session_id in self._conversation_history:
+                del self._conversation_history[session_id]
+            if session_id in self._turn_counts:
+                del self._turn_counts[session_id]
+
+
+class MemoryRetrievalWatcher:
+    """
+    COMMENTED: File polling disabled - using real-time events instead.
+    This class is kept for backward compatibility and file saving methods only.
+    Watches conversation files and triggers lightweight memory retrieval
+    when new user turns are detected. Saves results to TA-light-retrieval.json.
+    """
+    
+    def __init__(
+        self,
+        retriever: MemoryRetriever,
+        conversations_base_path: Optional[str] = None,
+        poll_interval: float = 1.0,  # COMMENTED: File polling disabled
+        verbose: bool = True
+    ):
+        self.retriever = retriever
+        
+        if conversations_base_path is None:
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            conversations_base_path = os.path.join(base_dir, 'data')
+        
+        self.conversations_base_path = conversations_base_path
+        # self.poll_interval = poll_interval  # COMMENTED: File polling disabled
+        self.verbose = verbose
+        
+        # COMMENTED: File polling tracking - kept for backward compatibility
+        # self._processed_turns: Dict[str, int] = {}
+        # self._completed_sessions: Set[str] = set()
+        # self._conversation_history: Dict[str, List[Dict[str, str]]] = {}
+        # self._turn_counts: Dict[str, int] = {}
+        # self._history_limit: int = 15
+        # self._running = False
+        # self._thread: Optional[threading.Thread] = None
+        self._lock = threading.Lock()
+    
+    def log(self, message: str) -> None:
+        """Log a message with timestamp."""
+        if self.verbose:
+            timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+            try:
+                print(f"[{timestamp}] [RETRIEVAL] {message}")
+            except UnicodeEncodeError:
+                safe_msg = message.encode('ascii', 'replace').decode('ascii')
+                print(f"[{timestamp}] [RETRIEVAL] {safe_msg}")
+    
+    # COMMENTED: File polling methods - disabled, using real-time events instead
+    # def start(self) -> None:
+    #     """Start the watcher thread."""
+    #     if self._running:
+    #         return
+    #     
+    #     self._running = True
+    #     self._thread = threading.Thread(target=self._watch_loop, daemon=True)
+    #     self._thread.start()
+    #     self.log("MemoryRetrievalWatcher started")
+    
+    def stop(self) -> None:
+        """Stop the watcher (no-op since file polling is disabled, kept for API compatibility)."""
+        # No thread to stop since we're using real-time events instead of file polling
+        if self.verbose:
+            self.log("MemoryRetrievalWatcher stop called (no-op, using real-time events)")
+    
+    # COMMENTED: File polling method - disabled, using real-time events instead
+    # def _watch_loop(self) -> None:
+    #     """Main polling loop."""
+    #     while self._running:
+    #         try:
+    #             self._process_conversations()
+    #         except Exception as e:
+    #             self.log(f"Error in watch loop: {e}")
+    #         
+    #         time.sleep(self.poll_interval)
+    #
+    # def _process_conversations(self) -> None:
+    #     """Process all conversation files in student_id folders."""
+    #     if not os.path.exists(self.conversations_base_path):
+    #         return
+    #     
+    #     try:
+    #         # Scan all student_id folders in data/
+    #         for student_id_folder in os.listdir(self.conversations_base_path):
+    #             student_path = os.path.join(self.conversations_base_path, student_id_folder)
+    #             if not os.path.isdir(student_path):
+    #                 continue
+    #             
+    #             conversations_path = os.path.join(student_path, 'conversations')
+    #             if not os.path.exists(conversations_path):
+    #                 continue
+    #             
+    #             try:
+    #                 filenames = os.listdir(conversations_path)
+    #             except OSError:
+    #                 continue
+    #             
+    #             for filename in filenames:
+    #                 if not filename.endswith('.json'):
+    #                     continue
+    #                 
+    #                 session_id = filename[:-5]
+    #                 
+    #                 # Skip completed sessions
+    #                 if session_id in self._completed_sessions:
+    #                     continue
+    #                 
+    #                 filepath = os.path.join(conversations_path, filename)
+    #                 self._process_session(session_id, filepath, student_id_folder)
+    #     except OSError:
+    #         return
+    #
+    # def _process_session(self, session_id: str, filepath: str, student_id: str) -> None:
+    #     """Process a single conversation session file."""
+    #     try:
+    #         with open(filepath, 'r', encoding='utf-8') as f:
+    #             session_data = json.load(f)
+    #     except (json.JSONDecodeError, IOError, UnicodeDecodeError) as e:
+    #         self.log(f"Error reading {session_id}: {e}")
+    #         return
+    #     
+    #     if session_data.get('end_time'):
+    #         if session_id not in self._completed_sessions:
+    #             self._completed_sessions.add(session_id)
+    #             with self._lock:
+    #                 if session_id in self._conversation_history:
+    #                     del self._conversation_history[session_id]
+    #                 if session_id in self._turn_counts:
+    #                     del self._turn_counts[session_id]
+    #         return
+    #     
+    #     turns = session_data.get('turns', [])
+    #     user_id = session_data.get('user_id', 'anonymous')
+    #     last_processed = self._processed_turns.get(session_id, -1)
+    #     
+    #     with self._lock:
+    #         if session_id not in self._conversation_history:
+    #             self._conversation_history[session_id] = []
+    #         if session_id not in self._turn_counts:
+    #             self._turn_counts[session_id] = 0
+    #     
+    #     i = last_processed + 1
+    #     
+    #     while i < len(turns):
+    #         turn = turns[i]
+    #         
+    #         if turn.get('speaker') == 'user':
+    #             user_texts = []
+    #             timestamps = []
+    #             
+    #             while i < len(turns) and turns[i].get('speaker') == 'user':
+    #                 text = turns[i].get('text', '').strip()
+    #                 timestamp = turns[i].get('timestamp', '')
+    #                 if text and text != '<noise>':
+    #                     user_texts.append(text)
+    #                     if timestamp:
+    #                         timestamps.append(timestamp)
+    #                 i += 1
+    #             
+    #             adam_text = ''
+    #             if i < len(turns) and turns[i].get('speaker') == 'adam':
+    #                 adam_text = turns[i].get('text', '').strip()
+    #                 i += 1
+    #             
+    #             user_text = ' '.join(user_texts)
+    #             user_timestamp = timestamps[0] if timestamps else datetime.utcnow().isoformat() + 'Z'
+    #             
+    #             if user_text:
+    #                 self._process_user_turn(session_id, user_id, user_text, user_timestamp, adam_text)
+    #                 
+    #                 with self._lock:
+    #                     self._conversation_history[session_id].append({
+    #                         "speaker": "user",
+    #                         "text": user_text
+    #                     })
+    #                     if adam_text:
+    #                         self._conversation_history[session_id].append({
+    #                             "speaker": "adam",
+    #                             "text": adam_text
+    #                         })
+    #                     
+    #                     if len(self._conversation_history[session_id]) > self._history_limit:
+    #                         self._conversation_history[session_id] = self._conversation_history[session_id][-self._history_limit:]
+    #         else:
+    #             i += 1
+    #     
+    #     self._processed_turns[session_id] = len(turns) - 1
+    
+    # COMMENTED: File polling method - disabled, using real-time events instead
+    # def _process_user_turn(
+    #     self,
+    #     session_id: str,
+    #     user_id: str,
+    #     user_text: str,
+    #     timestamp: str,
+    #     adam_text: str = ""
+    # ) -> None:
+    #     try:
+    #         preview = user_text[:50] + "..." if len(user_text) > 50 else user_text
+    #     except:
+    #         preview = "[text]"
+    #     
+    #     self.log(f"New user turn detected: session_id={session_id}, user_id={user_id}")
+    #     self.log(f"Query: \"{preview}\"")
+    #     
+    #     start_time = time.time()
+    #     
+    #     try:
+    #         retrieval_results = self.retriever.light_retrieval(
+    #             query=user_text,
+    #             student_id=user_id,
+    #             top_k=10,
+    #             exclude_session_id=session_id
+    #         )
+    #         retrieval_time_ms = (time.time() - start_time) * 1000
+    #         
+    #         self.log(f"Found {len(retrieval_results)} memories")
+    #         
+    #         retrieval_data = self.retriever._format_retrieval_for_ta_memory(
+    #             retrieval_results=retrieval_results,
+    #             student_message=user_text,
+    #             user_id=user_id,
+    #             session_id=session_id,
+    #             retrieval_time_ms=retrieval_time_ms
+    #         )
+    #         
+    #         self._save_retrieval_to_file(retrieval_data, user_id)
+    #         self.log(f"Saved to TA-light-retrieval.json (retrieval_id: {retrieval_data['retrieval_id']})")
+    #         
+    #         with self._lock:
+    #             conversation = self._conversation_history.get(session_id, []).copy()
+    #             turn_count = self._turn_counts.get(session_id, 0)
+    #         
+    #         triggers = self.retriever.should_deep_retrieve(
+    #             current_message=user_text,
+    #             conversation=conversation,
+    #             turn_count=turn_count + 1
+    #         )
+    #         
+    #         with self._lock:
+    #             self._turn_counts[session_id] = turn_count + 1
+    #         
+    #         if any(triggers.values()):
+    #             active_triggers = [k for k, v in triggers.items() if v]
+    #             self.log(f"Deep retrieval triggered: {', '.join(active_triggers)}")
+    #             
+    #             deep_start_time = time.time()
+    #             
+    #             try:
+    #                 deep_results = self.retriever.deep_retrieval(
+    #                     query=user_text,
+    #                     student_id=user_id,
+    #                     triggers=triggers,
+    #                     exclude_session_id=session_id,
+    #                     conversation=conversation
+    #                 )
+    #                 deep_retrieval_time_ms = (time.time() - deep_start_time) * 1000
+    #                 
+    #                 academic_count = len(deep_results.get('academic', []))
+    #                 personal_count = len(deep_results.get('personal', []))
+    #                 preferences_count = len(deep_results.get('preferences', []))
+    #                 context_count = len(deep_results.get('context', []))
+    #                 
+    #                 self.log(f"Deep found: academic={academic_count}, personal={personal_count}, preferences={preferences_count}, context={context_count}")
+    #                 
+    #                 deep_retrieval_data = self.retriever._format_deep_retrieval_for_ta_memory(
+    #                     deep_results=deep_results,
+    #                     student_message=user_text,
+    #                     user_id=user_id,
+    #                     session_id=session_id,
+    #                     triggers=triggers,
+    #                     retrieval_time_ms=deep_retrieval_time_ms
+    #                 )
+    #                 
+    #                 self._save_deep_retrieval_to_file(deep_retrieval_data, user_id)
+    #                 self.log(f"Deep saved to TA-deep-retrieval.json (retrieval_id: {deep_retrieval_data['retrieval_id']})")
+    #                 
+    #             except Exception as deep_error:
+    #                 deep_retrieval_time_ms = (time.time() - deep_start_time) * 1000
+    #                 self.log(f"Error during deep retrieval: {deep_error}")
+    #                 
+    #                 error_data = {
+    #                     "retrieval_id": f"deep_ret_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}",
+    #                     "session_id": session_id,
+    #                     "user_id": user_id,
+    #                     "timestamp": datetime.utcnow().isoformat() + 'Z',
+    #                     "student_message": user_text,
+    #                     "triggers": triggers.copy(),
+    #                     "query_embedding_generated": False,
+    #                     "pinecone_query_params": {
+    #                         "student_id": user_id,
+    #                         "academic_top_k": 5,
+    #                         "personal_top_k": 3,
+    #                         "preferences_top_k": 3,
+    #                         "context_limit": 3
+    #                     },
+    #                     "results": {
+    #                         "academic": {"total_found": 0, "memories": []},
+    #                         "personal": {"total_found": 0, "memories": []},
+    #                         "preferences": {"total_found": 0, "memories": []},
+    #                         "context": {"total_found": 0, "memories": []}
+    #                     },
+    #                     "retrieval_time_ms": round(deep_retrieval_time_ms, 2),
+    #                     "status": "error",
+    #                     "error_message": str(deep_error)
+    #                 }
+    #                 
+    #                 try:
+    #                     self._save_deep_retrieval_to_file(error_data, user_id)
+    #                 except Exception as save_error:
+    #                     self.log(f"Failed to save deep error to file: {save_error}")
+    #         
+    #     except Exception as e:
+    #         retrieval_time_ms = (time.time() - start_time) * 1000
+    #         self.log(f"Error during retrieval: {e}")
+    #         
+    #         error_data = {
+    #             "retrieval_id": f"ret_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}",
+    #             "session_id": session_id,
+    #             "user_id": user_id,
+    #             "timestamp": datetime.utcnow().isoformat() + 'Z',
+    #             "student_message": user_text,
+    #             "query_embedding_generated": False,
+    #             "pinecone_query_params": {
+    #                 "student_id": user_id,
+    #                 "top_k": 10
+    #             },
+    #             "results": {
+    #                 "total_found": 0,
+    #                 "memories": []
+    #             },
+    #             "retrieval_time_ms": round(retrieval_time_ms, 2),
+    #             "status": "error",
+    #             "error_message": str(e)
+    #         }
+    #         
+    #         try:
+    #             self._save_retrieval_to_file(error_data, user_id)
+    #         except Exception as save_error:
+    #             self.log(f"Failed to save error to file: {save_error}")
+    
+    def _save_retrieval_to_file(self, retrieval_data: Dict[str, Any], student_id: Optional[str] = None) -> None:
         """Save retrieval data to TA-light-retrieval.json file."""
         try:
-            data = self.retriever._load_ta_memory_file()
+            data = self.retriever._load_ta_memory_file(student_id)
             data['retrievals'].append(retrieval_data)
-            self.retriever._save_ta_memory_file(data)
+            self.retriever._save_ta_memory_file(data, student_id)
         except Exception as e:
             self.log(f"Failed to save retrieval to file: {e}")
 
-    def _save_deep_retrieval_to_file(self, retrieval_data: Dict[str, Any]) -> None:
+    def _save_deep_retrieval_to_file(self, retrieval_data: Dict[str, Any], student_id: Optional[str] = None) -> None:
         try:
-            data = self.retriever._load_ta_deep_memory_file()
+            data = self.retriever._load_ta_deep_memory_file(student_id)
             data['retrievals'].append(retrieval_data)
-            self.retriever._save_ta_deep_memory_file(data)
+            self.retriever._save_ta_deep_memory_file(data, student_id)
         except Exception as e:
             self.log(f"Failed to save deep retrieval to file: {e}")

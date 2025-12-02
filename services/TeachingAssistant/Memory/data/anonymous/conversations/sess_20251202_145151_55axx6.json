@@ -1,0 +1,23 @@
+{
+  "session_id": "sess_20251202_145151_55axx6",
+  "user_id": "anonymous",
+  "start_time": "2025-12-02T14:51:51.214Z",
+  "end_time": "2025-12-02T14:52:17.877Z",
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "Hey there! I'm so glad you're here. How are you doing today? Ready to dive into some math?",
+      "timestamp": "2025-12-02T14:51:59.768Z"
+    },
+    {
+      "speaker": "user",
+      "text": "Hello Jamily",
+      "timestamp": "2025-12-02T14:52:17.648Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "Hey there!",
+      "timestamp": "2025-12-02T14:52:17.874Z"
+    }
+  ]
+}

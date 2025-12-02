@@ -17,10 +17,11 @@ try {
 const PORT = process.env.PORT || 8767;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'models/gemini-2.5-flash-native-audio-preview-09-2025';
-const CONVERSATIONS_PATH = join(rootDir, 'services', 'TeachingAssistant', 'Memory', 'data', 'conversations');
+const CONVERSATIONS_BASE_PATH = join(rootDir, 'services', 'TeachingAssistant', 'Memory', 'data');
+const TEACHING_ASSISTANT_API_URL = process.env.TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
 
-if (!existsSync(CONVERSATIONS_PATH)) {
-  mkdirSync(CONVERSATIONS_PATH, { recursive: true });
+if (!existsSync(CONVERSATIONS_BASE_PATH)) {
+  mkdirSync(CONVERSATIONS_BASE_PATH, { recursive: true });
 }
 
 let SYSTEM_PROMPT = '';
@@ -29,6 +30,23 @@ try {
   console.log(`📝 System prompt loaded (${SYSTEM_PROMPT.length} characters)`);
 } catch (error) {
   console.error('⚠️  Warning: Could not load system prompt file:', error.message);
+}
+
+// Helper function to send memory events (non-blocking)
+async function sendMemoryEvent(endpoint, data) {
+  try {
+    const response = await fetch(`${TEACHING_ASSISTANT_API_URL}/memory/${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) {
+      console.error(`⚠️  Memory event failed: ${endpoint} - ${response.statusText}`);
+    }
+  } catch (error) {
+    // Silently fail - don't block conversation flow
+    console.error(`⚠️  Failed to send memory event to ${endpoint}:`, error.message);
+  }
 }
 
 class ConversationManager {
@@ -51,12 +69,25 @@ class ConversationManager {
       end_time: null,
       turns: []
     };
-    this.filepath = join(CONVERSATIONS_PATH, `${sessionId}.json`);
+    
+    // Create user_id-based path: data/{userId}/conversations/
+    const userConversationsPath = join(CONVERSATIONS_BASE_PATH, userId, 'conversations');
+    if (!existsSync(userConversationsPath)) {
+      mkdirSync(userConversationsPath, { recursive: true });
+    }
+    this.filepath = join(userConversationsPath, `${sessionId}.json`);
     this.userBuffer = '';
     this.adamBuffer = '';
     
     this._save();
-    console.log(`📝 Conversation session started: ${sessionId}`);
+    console.log(`📝 Conversation session started: ${sessionId} for user: ${userId}`);
+    
+    // Send real-time event to memory system
+    sendMemoryEvent('session/start', {
+      session_id: sessionId,
+      user_id: userId
+    });
+    
     return sessionId;
   }
 
@@ -73,27 +104,57 @@ class ConversationManager {
   flushUserTurn() {
     if (!this.session || !this.userBuffer.trim()) return;
     
+    const userText = this.userBuffer.trim();
+    const timestamp = new Date().toISOString();
+    
     this.session.turns.push({
       speaker: 'user',
-      text: this.userBuffer.trim(),
-      timestamp: new Date().toISOString()
+      text: userText,
+      timestamp: timestamp
     });
-    console.log(`🎤 User turn saved: ${this.userBuffer.trim().substring(0, 50)}...`);
+    console.log(`🎤 User turn saved: ${userText.substring(0, 50)}...`);
     this.userBuffer = '';
     this._save();
+    
+    // Send real-time event for memory retrieval (user turn only)
+    sendMemoryEvent('retrieval/user-turn', {
+      session_id: this.session.session_id,
+      user_id: this.session.user_id,
+      user_text: userText,
+      adam_text: '',  // Will be updated when Adam responds
+      timestamp: timestamp
+    });
   }
 
   flushAdamTurn() {
     if (!this.session || !this.adamBuffer.trim()) return;
     
+    const adamText = this.adamBuffer.trim();
+    const timestamp = new Date().toISOString();
+    
     this.session.turns.push({
       speaker: 'adam',
-      text: this.adamBuffer.trim(),
-      timestamp: new Date().toISOString()
+      text: adamText,
+      timestamp: timestamp
     });
-    console.log(`🤖 Adam turn saved: ${this.adamBuffer.trim().substring(0, 50)}...`);
+    console.log(`🤖 Adam turn saved: ${adamText.substring(0, 50)}...`);
     this.adamBuffer = '';
     this._save();
+    
+    // Get last user turn for memory extraction event
+    const lastUserTurn = this.session.turns
+      .slice()
+      .reverse()
+      .find(t => t.speaker === 'user');
+    
+    // Send real-time event for memory extraction (complete exchange)
+    sendMemoryEvent('turn', {
+      session_id: this.session.session_id,
+      user_id: this.session.user_id,
+      user_text: lastUserTurn?.text || '',
+      adam_text: adamText,
+      timestamp: timestamp
+    });
   }
 
   _save() {
@@ -112,11 +173,21 @@ class ConversationManager {
     this.flushUserTurn();
     this.flushAdamTurn();
     
-    this.session.end_time = new Date().toISOString();
+    const endTime = new Date().toISOString();
+    this.session.end_time = endTime;
     this._save();
     console.log(`💾 Conversation ended: ${this.filepath}`);
     
     const sessionId = this.session.session_id;
+    const userId = this.session.user_id;
+    
+    // Send real-time event
+    sendMemoryEvent('session/end', {
+      session_id: sessionId,
+      user_id: userId,
+      end_time: endTime
+    });
+    
     this.session = null;
     this.filepath = null;
     return sessionId;
@@ -144,7 +215,7 @@ server.on('upgrade', (request, socket, head) => {
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`🎓 Adam Tutor Service started on port ${PORT}`);
   console.log(`🤖 Using model: ${GEMINI_MODEL}`);
-  console.log(`📁 Conversations path: ${CONVERSATIONS_PATH}`);
+  console.log(`📁 Conversations base path: ${CONVERSATIONS_BASE_PATH}`);
   if (!GEMINI_API_KEY) {
     console.warn('⚠️  WARNING: GEMINI_API_KEY not set.');
   }

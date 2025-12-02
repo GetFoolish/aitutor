@@ -1,0 +1,385 @@
+[
+  {
+    "id": "mem_3f23bc2027fb",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Working on finding the number of real roots for a quadratic equation using the discriminant.",
+    "timestamp": "2025-12-02T11:58:48.383973Z",
+    "importance": 0.7,
+    "metadata": {
+      "valence": "neutral",
+      "topic": "quadratics"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_a20ab329625a",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Correctly interpreted negative discriminant as meaning the parabola doesn't touch the x-axis, and thus has no real roots.",
+    "timestamp": "2025-12-02T11:59:11.581048Z",
+    "importance": 0.9,
+    "metadata": {
+      "valence": "breakthrough",
+      "emotion": "confident",
+      "resolution": "correct_interpretation",
+      "topic": "discriminant and roots"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_3d25533f4829",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Correctly calculates the individual components of the discriminant.",
+    "timestamp": "2025-12-02T11:59:33.302035Z",
+    "importance": 0.8,
+    "metadata": {
+      "valence": "breakthrough",
+      "topic": "discriminant"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_3e8051c1c028",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Finds that drawing out concepts helps, as words 'jumble up'.",
+    "timestamp": "2025-12-02T12:00:47.014424Z",
+    "importance": 0.9,
+    "metadata": {
+      "valence": "breakthrough",
+      "emotion": "relief",
+      "resolution": "visual_aids",
+      "topic": "quadratics"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_0bac650c3dbb",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Understands the process of completing the square, correctly identifies that adding 9 to both sides is crucial for maintaining balance.",
+    "timestamp": "2025-12-02T12:01:52.659050Z",
+    "importance": 0.9,
+    "metadata": {
+      "valence": "breakthrough",
+      "emotion": "neutral",
+      "resolution": "correct_application",
+      "topic": "completing the square"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_cfeb612639bf",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Solid understanding of the discriminant",
+    "timestamp": "2025-12-02T12:02:13.917126Z",
+    "importance": 0.6,
+    "metadata": {
+      "valence": "neutral",
+      "topic": "discriminant"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_7ab548df773c",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Used 'airball' analogy (drawing a hoop) to solve a roots question, indicating a successful strategy.",
+    "timestamp": "2025-12-02T12:03:24.916113Z",
+    "importance": 0.9,
+    "metadata": {
+      "valence": "breakthrough",
+      "emotion": "relief",
+      "resolution": "strategy_worked",
+      "topic": "roots"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_b9c2bc3baf53",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Experienced test anxiety; specifically, palms were sweating.",
+    "timestamp": "2025-12-02T12:03:24.916113Z",
+    "importance": 0.6,
+    "metadata": {
+      "valence": "struggle",
+      "emotion": "anxious",
+      "resolution": "n/a",
+      "topic": "test_anxiety"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_88efa256e418",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Correctly identified a negative discriminant and knew to write 'no real solutions'.",
+    "timestamp": "2025-12-02T12:03:46.056645Z",
+    "importance": 0.9,
+    "metadata": {
+      "valence": "breakthrough",
+      "emotion": "confident",
+      "resolution": "correct_application",
+      "topic": "discriminant"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_781aff5ed73e",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Transitioning to Completing the Square, encountered problems with brackets.",
+    "timestamp": "2025-12-02T12:03:46.056645Z",
+    "importance": 0.7,
+    "metadata": {
+      "valence": "struggle",
+      "emotion": "neutral",
+      "resolution": "none",
+      "topic": "completing_the_square"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_a23986750ad2",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Quickly grasped the concept of +/- when isolating the solutions.",
+    "timestamp": "2025-12-02T12:04:04.390286Z",
+    "importance": 0.7,
+    "metadata": {
+      "valence": "breakthrough",
+      "emotion": "understanding",
+      "resolution": "correct_application",
+      "topic": "completing the square"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_0ba774a71745",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Struggled with negative signs in subtraction.",
+    "timestamp": "2025-12-02T12:04:20.573807Z",
+    "importance": 0.7,
+    "metadata": {
+      "valence": "struggle",
+      "topic": "solving equations"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_9b5c37918abc",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Made a connection between completing the square and factoring, understanding them as different solution methods.",
+    "timestamp": "2025-12-02T12:04:20.573807Z",
+    "importance": 0.8,
+    "metadata": {
+      "valence": "breakthrough",
+      "topic": "completing the square",
+      "emotion": "positive",
+      "resolution": "understanding_methods"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_e17b31d8f2f2",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Correctly identifies 25/4 as the value needed to complete the square.",
+    "timestamp": "2025-12-02T12:05:12.663554Z",
+    "importance": 0.6,
+    "metadata": {
+      "valence": "breakthrough",
+      "emotion": "neutral",
+      "topic": "completing the square"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_a42c70c44101",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Struggles with adding a whole number and a fraction.",
+    "timestamp": "2025-12-02T12:05:12.663554Z",
+    "importance": 0.8,
+    "metadata": {
+      "valence": "struggle",
+      "emotion": "frustration",
+      "topic": "fractions"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_8b00888eed83",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Struggles to see the real-world value of 'completing the square'.",
+    "timestamp": "2025-12-02T12:06:02.152878Z",
+    "importance": 0.8,
+    "metadata": {
+      "valence": "struggle",
+      "emotion": "disinterest",
+      "topic": "completing the square"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_106daa5ef4cf",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Successfully simplified the square root in a quadratic equation.",
+    "timestamp": "2025-12-02T12:06:24.273264Z",
+    "importance": 0.7,
+    "metadata": {
+      "valence": "breakthrough",
+      "emotion": "neutral",
+      "topic": "quadratics",
+      "resolution": "correct solution"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_3f3dd016db13",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Struggles with factoring in quadratic equations",
+    "timestamp": "2025-12-02T12:07:32.571233Z",
+    "importance": 0.9,
+    "metadata": {
+      "valence": "struggle",
+      "topic": "quadratic equations"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_98ba5f294bda",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Correctly sets up the equation  -4.9t + 19.6 = 0.",
+    "timestamp": "2025-12-02T12:07:58.059015Z",
+    "importance": 0.7,
+    "metadata": {
+      "valence": "breakthrough",
+      "emotion": "neutral",
+      "resolution": "correct_setup",
+      "topic": "quadratic_equations"
+    },
+    "session_id": "sess_20251202_115752_f30c07"
+  },
+  {
+    "id": "mem_70eddacce36e",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Struggles with math textbook explanations, finds them overwhelming.",
+    "timestamp": "2025-12-02T15:41:40.756753Z",
+    "importance": 0.9,
+    "metadata": {
+      "valence": "struggle",
+      "emotion": "overwhelmed",
+      "topic": "math comprehension"
+    },
+    "session_id": "sess_20251202_154104_49bb8f"
+  },
+  {
+    "id": "mem_2752da897a12",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Makes mistakes about half the time when using the discriminant formula.",
+    "timestamp": "2025-12-02T15:41:40.756753Z",
+    "importance": 0.7,
+    "metadata": {
+      "valence": "struggle",
+      "emotion": "frustrated",
+      "topic": "discriminant"
+    },
+    "session_id": "sess_20251202_154104_49bb8f"
+  },
+  {
+    "id": "mem_18959307c873",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Working on finding real roots of a quadratic equation using the discriminant.",
+    "timestamp": "2025-12-02T15:41:53.082210Z",
+    "importance": 0.7,
+    "metadata": {
+      "valence": "neutral",
+      "topic": "quadratics"
+    },
+    "session_id": "sess_20251202_154104_49bb8f"
+  },
+  {
+    "id": "mem_de6870fa7c16",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Struggles with math textbooks, finds the symbols and long explanations overwhelming, leading to difficulty understanding the material.",
+    "timestamp": "2025-12-02T15:55:12.958030Z",
+    "importance": 0.8,
+    "metadata": {
+      "valence": "struggle",
+      "emotion": "overwhelmed",
+      "topic": "math comprehension"
+    },
+    "session_id": "sess_20251202_155436_2833d9"
+  },
+  {
+    "id": "mem_112b87b1b2f2",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Gets the basic concept of the U-shape (parabola) but struggles with the discriminant formula and plugging in numbers.",
+    "timestamp": "2025-12-02T15:55:12.958030Z",
+    "importance": 0.9,
+    "metadata": {
+      "valence": "struggle",
+      "emotion": "confused",
+      "topic": "discriminant, quadratic equations"
+    },
+    "session_id": "sess_20251202_155436_2833d9"
+  },
+  {
+    "id": "mem_882988381317",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Dreads math",
+    "timestamp": "2025-12-02T16:06:49.248594Z",
+    "importance": 0.8,
+    "metadata": {
+      "valence": "struggle",
+      "emotion": "dread",
+      "topic": "math"
+    },
+    "session_id": "sess_20251202_160631_3051ea"
+  },
+  {
+    "id": "mem_35a4b1d19a84",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+    "timestamp": "2025-12-02T16:07:05.229364Z",
+    "importance": 0.9,
+    "metadata": {
+      "valence": "struggle",
+      "emotion": "overwhelmed",
+      "topic": "math comprehension"
+    },
+    "session_id": "sess_20251202_160631_3051ea"
+  },
+  {
+    "id": "mem_7c67c386f227",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+    "timestamp": "2025-12-02T16:07:05.229364Z",
+    "importance": 0.8,
+    "metadata": {
+      "valence": "struggle",
+      "emotion": "confused",
+      "topic": "discriminant"
+    },
+    "session_id": "sess_20251202_160631_3051ea"
+  }
+]

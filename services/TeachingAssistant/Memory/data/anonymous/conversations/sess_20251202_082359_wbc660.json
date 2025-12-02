@@ -1,0 +1,43 @@
+{
+  "session_id": "sess_20251202_082359_wbc660",
+  "user_id": "anonymous",
+  "start_time": "2025-12-02T08:23:59.282Z",
+  "end_time": "2025-12-02T08:34:00.388Z",
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "Hey there! How are you doing today? Ready to do some math together?",
+      "timestamp": "2025-12-02T08:24:06.324Z"
+    },
+    {
+      "speaker": "user",
+      "text": "Do you know my favorite subject",
+      "timestamp": "2025-12-02T08:24:20.144Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "That's a great question! I don't know it yet, but I'd love to learn! What is your favorite subject?",
+      "timestamp": "2025-12-02T08:24:27.109Z"
+    },
+    {
+      "speaker": "user",
+      "text": "who is my favorite cricketer?",
+      "timestamp": "2025-12-02T08:24:42.609Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "You've got a lot of favorites! I don't know who your favorite cricketer is yet. Tell me, who is it?",
+      "timestamp": "2025-12-02T08:24:50.111Z"
+    },
+    {
+      "speaker": "user",
+      "text": "Maybe you know",
+      "timestamp": "2025-12-02T08:25:11.873Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "If you're ready to start with some math, I'm ready to help! Just let me know what topic you'd like to work on.",
+      "timestamp": "2025-12-02T08:25:18.111Z"
+    }
+  ]
+}

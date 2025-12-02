@@ -8,7 +8,7 @@ class TeachingAssistant:
     def __init__(self):
         self.greeting_handler = GreetingHandler()
         self.inactivity_handler = InactivityHandler()
-        self.memory_retriever = MemoryRetriever()
+        self.memory_retriever: Optional[MemoryRetriever] = None
         self.current_user_id: Optional[str] = None
         self.session_active: bool = False
     
@@ -18,11 +18,20 @@ class TeachingAssistant:
         
         self.current_user_id = user_id
         self.session_active = True
+        # Create MemoryRetriever with student_id
+        self.memory_retriever = MemoryRetriever(student_id=user_id)
         self.inactivity_handler.stop_monitoring()
         self.inactivity_handler.reset()
         self.inactivity_handler.start_monitoring()
-        # Start memory retrieval watcher
-        self.memory_retriever.start_retrieval_watcher(poll_interval=1.0, verbose=True)
+        # COMMENTED: File polling disabled - using real-time events instead
+        # Create watcher instance for file saving methods only (no polling)
+        # self.memory_retriever.start_retrieval_watcher(poll_interval=1.0, verbose=True)
+        # Initialize watcher for file saving methods (but don't start polling)
+        from services.TeachingAssistant.Memory.retriever import MemoryRetrievalWatcher
+        self.memory_retriever.watcher = MemoryRetrievalWatcher(
+            retriever=self.memory_retriever,
+            verbose=True
+        )
         return self.greeting_handler.start_session(user_id)
     
     def end_session(self) -> str:
@@ -35,7 +44,9 @@ class TeachingAssistant:
         self.inactivity_handler.stop_monitoring()
         self.inactivity_handler.reset()
         # Stop memory retrieval watcher
-        self.memory_retriever.stop_retrieval_watcher()
+        if self.memory_retriever:
+            self.memory_retriever.stop_retrieval_watcher()
+            self.memory_retriever = None
         
         return self.greeting_handler.end_session(user_id)
     

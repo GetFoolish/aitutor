@@ -1,0 +1,80 @@
+{
+  "openings": [
+    {
+      "opening_id": "opening_20251202_152931_dfa2c5",
+      "session_id": "sess_20251202_152902_e4df94",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T15:29:31.234690Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Welcome back!",
+      "last_session_summary": "",
+      "unfinished_threads": [
+        "Continue with general"
+      ],
+      "personal_relevance": "Feeling overwhelmed by parents' pressure about grades",
+      "emotional_state_last": "neutral",
+      "suggested_opener": "Hey! What would you like to work on today?",
+      "key_moments_last": [],
+      "topics_last_session": [
+        "general"
+      ],
+      "personal_memories": [
+        "Feeling overwhelmed by parents' pressure about grades",
+        "Owns a dog named Max who steals socks and is a source of joy.",
+        "Won a basketball game 54-50."
+      ],
+      "status": "success"
+    },
+    {
+      "opening_id": "opening_20251202_153500_5177db",
+      "session_id": "sess_20251202_153453_0e2716",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T15:35:00.545479Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Welcome back!",
+      "last_session_summary": "",
+      "unfinished_threads": [
+        "Continue with general"
+      ],
+      "personal_relevance": "Feeling overwhelmed by parents' pressure about grades",
+      "emotional_state_last": "neutral",
+      "suggested_opener": "Hey! What would you like to work on today?",
+      "key_moments_last": [],
+      "topics_last_session": [
+        "general"
+      ],
+      "personal_memories": [
+        "Feeling overwhelmed by parents' pressure about grades",
+        "Owns a dog named Max who steals socks and is a source of joy.",
+        "Won a basketball game 54-50."
+      ],
+      "status": "success"
+    },
+    {
+      "opening_id": "opening_20251202_153519_246d79",
+      "session_id": "sess_20251202_153512_766179",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T15:35:19.378349Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Welcome back!",
+      "last_session_summary": "",
+      "unfinished_threads": [
+        "Continue with general"
+      ],
+      "personal_relevance": "Feeling overwhelmed by parents' pressure about grades",
+      "emotional_state_last": "neutral",
+      "suggested_opener": "Hey! What would you like to work on today?",
+      "key_moments_last": [],
+      "topics_last_session": [
+        "general"
+      ],
+      "personal_memories": [
+        "Feeling overwhelmed by parents' pressure about grades",
+        "Owns a dog named Max who steals socks and is a source of joy.",
+        "Won a basketball game 54-50."
+      ],
+      "status": "success"
+    }
+  ],
+  "last_updated": "2025-12-02T15:35:19.386342Z"
+}

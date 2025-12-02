@@ -8,7 +8,7 @@ import './control-tray.scss';
 import SettingsDialog from '../settings-dialog/SettingsDialog';
 
 const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
-const USER_ID = 'mongodb_test_user';
+const USER_ID = 'anonymous';
 
 export type ControlTrayProps = {
   socket: WebSocket | null;
