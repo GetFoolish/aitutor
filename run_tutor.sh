@@ -102,7 +102,7 @@ pids+=($!)
 
 # Start the Memory Watcher for real-time memory extraction
 echo "Starting Memory Watcher... Logs -> logs/memory_watcher.log"
-(cd "$SCRIPT_DIR" && "$PYTHON_BIN" -m Memory.consolidator) > "$SCRIPT_DIR/logs/memory_watcher.log" 2>&1 &
+(cd "$SCRIPT_DIR" && "$PYTHON_BIN" -m services.TeachingAssistant.Memory.consolidator) > "$SCRIPT_DIR/logs/memory_watcher.log" 2>&1 &
 pids+=($!)
 
 # Give the backend servers a moment to start

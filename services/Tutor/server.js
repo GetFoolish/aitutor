@@ -17,7 +17,7 @@ try {
 const PORT = process.env.PORT || 8767;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'models/gemini-2.5-flash-native-audio-preview-09-2025';
-const CONVERSATIONS_PATH = join(rootDir, 'data', 'conversations');
+const CONVERSATIONS_PATH = join(rootDir, 'services', 'TeachingAssistant', 'Memory', 'data', 'conversations');
 
 if (!existsSync(CONVERSATIONS_PATH)) {
   mkdirSync(CONVERSATIONS_PATH, { recursive: true });

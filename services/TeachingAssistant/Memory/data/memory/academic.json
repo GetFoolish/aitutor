@@ -1,0 +1,16 @@
+[
+  {
+    "id": "mem_3251c84db976",
+    "student_id": "anonymous",
+    "type": "academic",
+    "text": "Prefers Physics over Math.",
+    "timestamp": "2025-12-02T02:12:37.817202Z",
+    "importance": 0.7,
+    "metadata": {
+      "topic": "physics",
+      "emotion": "positive",
+      "valence": "preference"
+    },
+    "session_id": "sess_20251202_021149_pb0vsb"
+  }
+]

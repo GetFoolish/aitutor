@@ -1,0 +1,73 @@
+{
+  "session_id": "sess_20251202_021149_pb0vsb",
+  "user_id": "anonymous",
+  "start_time": "2025-12-02T02:11:49.685Z",
+  "end_time": "2025-12-02T02:14:12.974Z",
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "Hey there! How are you doing today? Ready to jump into some math?",
+      "timestamp": "2025-12-02T02:11:56.354Z"
+    },
+    {
+      "speaker": "user",
+      "text": "नो बिकॉज़ आई डोंट लाइक मैथ्स I want to go for physics.",
+      "timestamp": "2025-12-02T02:12:06.264Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "Oh, physics! That's fantastic! Physics uses a lot of the same skills as math. What part of physics are you most interested in?",
+      "timestamp": "2025-12-02T02:12:14.919Z"
+    },
+    {
+      "speaker": "user",
+      "text": "motion",
+      "timestamp": "2025-12-02T02:12:20.443Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "Motion is super interesting! It's the study of how things move. Have you been learning about things like velocity and acceleration yet?",
+      "timestamp": "2025-12-02T02:12:29.418Z"
+    },
+    {
+      "speaker": "user",
+      "text": "Yes.",
+      "timestamp": "2025-12-02T02:12:35.655Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "Great! Can you tell me a bit about what the difference between velocity and acceleration is?",
+      "timestamp": "2025-12-02T02:12:42.105Z"
+    },
+    {
+      "speaker": "user",
+      "text": "The acceleration is the acceleration and velocity is the velocity.",
+      "timestamp": "2025-12-02T02:12:53.779Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "That's true! But what specifically makes acceleration different from velocity? Think about what changes.",
+      "timestamp": "2025-12-02T02:13:02.584Z"
+    },
+    {
+      "speaker": "user",
+      "text": "You know from last one month I very bad headache.",
+      "timestamp": "2025-12-02T02:13:13.567Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "Oh no, I'm sorry to hear about that. Headaches can be really tough. If you're up for it, we can keep talking about motion, or we can take a break. What sounds good to you?",
+      "timestamp": "2025-12-02T02:13:25.270Z"
+    },
+    {
+      "speaker": "user",
+      "text": "I am excited to learn physics go ahead.",
+      "timestamp": "2025-12-02T02:13:33.450Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "Awesome! Let's get back to velocity and acceleration. You mentioned they are both acceleration and velocity respectively, which is correct. But what is the key difference in what they describe about motion? Let's think about what changes when something accelerates.",
+      "timestamp": "2025-12-02T02:13:51.541Z"
+    }
+  ]
+}

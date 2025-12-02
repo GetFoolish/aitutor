@@ -2,6 +2,7 @@ import os
 import json
 import time
 import threading
+import uuid
 from concurrent.futures import ThreadPoolExecutor
 from typing import List, Dict, Any, Optional, Set
 from datetime import datetime
@@ -16,9 +17,10 @@ _executor = ThreadPoolExecutor(max_workers=2)
 
 
 class SessionClosingCache:
-    def __init__(self, student_id: str, session_id: Optional[str] = None):
+    def __init__(self, student_id: str, session_id: Optional[str] = None, consolidator: Optional['MemoryConsolidator'] = None):
         self.student_id = student_id
         self.session_id = session_id
+        self.consolidator = consolidator
         self.cache = {
             'session_summary': '',
             'key_moments': [],
@@ -127,9 +129,39 @@ Response (one line only):"""
             summary_parts.append(f"Topics: {', '.join(topics)}")
 
         self.cache['session_summary'] = '. '.join(summary_parts) if summary_parts else ''
+        
+        if self.consolidator and self.session_id:
+            _executor.submit(self._save_closing_to_json)
+
+    def _save_closing_to_json(self) -> None:
+        if not self.consolidator or not self.session_id:
+            return
+        
+        try:
+            closing_data = self.consolidator._format_closing_for_ta_memory(
+                self, self.session_id, self.student_id, None
+            )
+            data = self.consolidator._load_ta_closing_file()
+            
+            existing_index = None
+            for i, closing in enumerate(data['closings']):
+                if closing.get('session_id') == self.session_id:
+                    existing_index = i
+                    break
+            
+            if existing_index is not None:
+                data['closings'][existing_index] = closing_data
+            else:
+                data['closings'].append(closing_data)
+            
+            self.consolidator._save_ta_closing_file(data)
+        except Exception:
+            pass
 
     def add_memory(self, memory: Memory) -> None:
         self.cache['new_memories'].append(memory)
+        if self.consolidator and self.session_id:
+            _executor.submit(self._save_closing_to_json)
 
     def get_instant_closing(self) -> Dict[str, Any]:
         return self.cache.copy()
@@ -153,7 +185,7 @@ Mention the next session hook to create continuity."""
 class OpeningContextCache:
     def __init__(self, storage_path: Optional[str] = None):
         if storage_path is None:
-            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            base_dir = os.path.dirname(os.path.abspath(__file__))
             storage_path = os.path.join(base_dir, 'data', 'memory')
 
         self.storage_path = storage_path
@@ -347,6 +379,175 @@ INSTRUCTIONS:
 class MemoryConsolidator:
     def __init__(self, store: Optional[MemoryStore] = None):
         self.store = store or MemoryStore()
+        self._closing_file_lock = threading.Lock()
+        self._opening_file_lock = threading.Lock()
+
+    def _get_ta_closing_filepath(self) -> str:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        ta_dir = os.path.join(base_dir, 'data', 'memory', 'TeachingAssistant')
+        os.makedirs(ta_dir, exist_ok=True)
+        return os.path.join(ta_dir, 'TA-closing-retrieval.json')
+
+    def _load_ta_closing_file(self) -> Dict[str, Any]:
+        filepath = self._get_ta_closing_filepath()
+        
+        if not os.path.exists(filepath):
+            initial_data = {
+                "closings": [],
+                "last_updated": None
+            }
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(initial_data, f, indent=2, ensure_ascii=False)
+            return initial_data
+        
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                if not isinstance(data, dict) or 'closings' not in data:
+                    data = {"closings": [], "last_updated": None}
+                return data
+        except (json.JSONDecodeError, IOError) as e:
+            backup_path = filepath + '.backup'
+            if os.path.exists(filepath):
+                try:
+                    os.rename(filepath, backup_path)
+                except:
+                    pass
+            
+            initial_data = {
+                "closings": [],
+                "last_updated": None
+            }
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(initial_data, f, indent=2, ensure_ascii=False)
+            return initial_data
+
+    def _save_ta_closing_file(self, data: Dict[str, Any]) -> None:
+        filepath = self._get_ta_closing_filepath()
+        data['last_updated'] = datetime.utcnow().isoformat() + 'Z'
+        
+        with self._closing_file_lock:
+            try:
+                with open(filepath, 'w', encoding='utf-8') as f:
+                    json.dump(data, f, indent=2, ensure_ascii=False)
+            except IOError as e:
+                raise IOError(f"Failed to save TA-closing-retrieval.json: {e}")
+
+    def _get_ta_opening_filepath(self) -> str:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        ta_dir = os.path.join(base_dir, 'data', 'memory', 'TeachingAssistant')
+        os.makedirs(ta_dir, exist_ok=True)
+        return os.path.join(ta_dir, 'TA-opening-retrieval.json')
+
+    def _load_ta_opening_file(self) -> Dict[str, Any]:
+        filepath = self._get_ta_opening_filepath()
+        
+        if not os.path.exists(filepath):
+            initial_data = {
+                "openings": [],
+                "last_updated": None
+            }
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(initial_data, f, indent=2, ensure_ascii=False)
+            return initial_data
+        
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                if not isinstance(data, dict) or 'openings' not in data:
+                    data = {"openings": [], "last_updated": None}
+                return data
+        except (json.JSONDecodeError, IOError) as e:
+            backup_path = filepath + '.backup'
+            if os.path.exists(filepath):
+                try:
+                    os.rename(filepath, backup_path)
+                except:
+                    pass
+            
+            initial_data = {
+                "openings": [],
+                "last_updated": None
+            }
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(initial_data, f, indent=2, ensure_ascii=False)
+            return initial_data
+
+    def _save_ta_opening_file(self, data: Dict[str, Any]) -> None:
+        filepath = self._get_ta_opening_filepath()
+        data['last_updated'] = datetime.utcnow().isoformat() + 'Z'
+        
+        with self._opening_file_lock:
+            try:
+                with open(filepath, 'w', encoding='utf-8') as f:
+                    json.dump(data, f, indent=2, ensure_ascii=False)
+            except IOError as e:
+                raise IOError(f"Failed to save TA-opening-retrieval.json: {e}")
+
+    def _format_opening_for_ta_memory(
+        self,
+        opening_context: Dict[str, Any],
+        session_id: str,
+        user_id: str,
+        generation_time_ms: float
+    ) -> Dict[str, Any]:
+        opening_id = f"opening_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}"
+        
+        return {
+            "opening_id": opening_id,
+            "session_id": session_id,
+            "user_id": user_id,
+            "timestamp": datetime.utcnow().isoformat() + 'Z',
+            "generation_time_ms": round(generation_time_ms, 2),
+            "welcome_hook": opening_context.get('welcome_hook', ''),
+            "last_session_summary": opening_context.get('last_session_summary', ''),
+            "unfinished_threads": opening_context.get('unfinished_threads', []),
+            "personal_relevance": opening_context.get('personal_relevance', ''),
+            "emotional_state_last": opening_context.get('emotional_state_last', 'neutral'),
+            "suggested_opener": opening_context.get('suggested_opener', ''),
+            "key_moments_last": opening_context.get('key_moments_last', []),
+            "topics_last_session": opening_context.get('topics_last_session', []),
+            "personal_memories": opening_context.get('personal_memories', []),
+            "status": "success"
+        }
+
+    def _format_closing_for_ta_memory(
+        self,
+        closing_cache: SessionClosingCache,
+        session_id: str,
+        user_id: str,
+        end_time: Optional[str] = None
+    ) -> Dict[str, Any]:
+        closing = closing_cache.get_instant_closing()
+        closing_id = f"closing_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}_{uuid.uuid4().hex[:6]}"
+        
+        session_duration_seconds = None
+        if closing.get('start_time') and end_time:
+            try:
+                start_str = closing['start_time'].replace('Z', '')
+                end_str = end_time.replace('Z', '')
+                start_dt = datetime.fromisoformat(start_str)
+                end_dt = datetime.fromisoformat(end_str)
+                duration = (end_dt - start_dt).total_seconds()
+                session_duration_seconds = int(duration) if duration > 0 else None
+            except:
+                pass
+        
+        return {
+            "closing_id": closing_id,
+            "session_id": session_id,
+            "user_id": user_id,
+            "timestamp": datetime.utcnow().isoformat() + 'Z',
+            "session_duration_seconds": session_duration_seconds,
+            "session_summary": closing.get('session_summary', ''),
+            "key_moments": closing.get('key_moments', []),
+            "emotional_arc": closing.get('emotional_arc', []),
+            "topics_covered": closing.get('topics_covered', []),
+            "goodbye_message": closing.get('goodbye_message', ''),
+            "next_session_hooks": closing.get('next_session_hooks', []),
+            "new_memories_count": len(closing.get('new_memories', [])),
+            "status": "success"
+        }
 
     def consolidate_session(self, student_id: str, closing_cache: SessionClosingCache) -> Dict[str, Any]:
         new_memories = closing_cache.cache['new_memories']
@@ -392,12 +593,34 @@ class MemoryConsolidator:
                 self.store.save_memory(context_memory)
 
         opening_cache = OpeningContextCache()
+        generation_start = time.time()
         opening = opening_cache.generate_opening_context(student_id, closing_cache, self.store)
+        generation_time_ms = (time.time() - generation_start) * 1000
+
+        opening_saved = False
+        try:
+            opening_data = self._format_opening_for_ta_memory(
+                opening, closing_cache.session_id or 'unknown', student_id, generation_time_ms
+            )
+            data = self._load_ta_opening_file()
+            data['openings'].append(opening_data)
+            self._save_ta_opening_file(data)
+            opening_saved = True
+        except Exception as e:
+            import traceback
+            error_msg = f"Failed to save opening retrieval for session {closing_cache.session_id}: {e}"
+            try:
+                import sys
+                print(f"[ERROR] {error_msg}", file=sys.stderr)
+                traceback.print_exc()
+            except:
+                pass
 
         return {
             'memories_saved': len(saved_ids),
             'duplicates_merged': merged_count,
             'opening_generated': True,
+            'opening_saved': opening_saved,
             'saved_ids': saved_ids
         }
 
@@ -444,7 +667,7 @@ class ConversationWatcher:
         verbose: bool = True
     ):
         if conversations_path is None:
-            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            base_dir = os.path.dirname(os.path.abspath(__file__))
             conversations_path = os.path.join(base_dir, 'data', 'conversations')
 
         self.conversations_path = conversations_path
@@ -524,12 +747,15 @@ class ConversationWatcher:
             self.log(f"Error reading {session_id}: {e}")
             return
 
+        if session_id in self._completed_sessions:
+            return
+
         turns = session_data.get('turns', [])
         user_id = session_data.get('user_id', 'anonymous')
         last_processed = self._processed_turns.get(session_id, -1)
 
         if session_id not in self._session_caches:
-            self._session_caches[session_id] = SessionClosingCache(user_id, session_id)
+            self._session_caches[session_id] = SessionClosingCache(user_id, session_id, self.consolidator)
             self.log(f"New session: {session_id} (user: {user_id})")
         
         if session_id not in self._exchange_buffers:
@@ -565,6 +791,8 @@ class ConversationWatcher:
                 if user_text:
                     exchange_id = f"{session_id}_{i}_{turn_timestamp}"
                     if exchange_id not in self._processed_exchange_ids[session_id]:
+                        with self._lock:
+                            self._processed_exchange_ids[session_id].add(exchange_id)
                         self._process_exchange(
                             session_id, user_id, user_text, adam_text, cache, exchange_id, i
                         )
@@ -574,7 +802,8 @@ class ConversationWatcher:
         self._processed_turns[session_id] = len(turns) - 1
 
         if session_data.get('end_time'):
-            self._finalize_session(session_id, user_id, cache)
+            if session_id not in self._completed_sessions:
+                self._finalize_session(session_id, user_id, cache, session_data.get('end_time'))
 
     def _process_exchange(
         self,
@@ -651,14 +880,10 @@ class ConversationWatcher:
             else:
                 self.log("No memories extracted from batch")
 
-            with self._lock:
-                for ex in exchanges:
-                    self._processed_exchange_ids[session_id].add(ex['exchange_id'])
-
         except Exception as e:
             self.log(f"Batch extraction error: {e}")
 
-    def _finalize_session(self, session_id: str, user_id: str, cache: SessionClosingCache) -> None:
+    def _finalize_session(self, session_id: str, user_id: str, cache: SessionClosingCache, end_time: Optional[str] = None) -> None:
         self.log(f"Session ended: {session_id}")
 
         with self._lock:
@@ -672,17 +897,75 @@ class ConversationWatcher:
 
         try:
             result = self.consolidator.consolidate_session(user_id, cache)
-            self.log(f"Consolidated: {result['memories_saved']} saved, {result['duplicates_merged']} merged")
+            opening_status = "saved" if result.get('opening_saved', False) else "failed"
+            self.log(f"Consolidated: {result['memories_saved']} saved, {result['duplicates_merged']} merged, opening {opening_status}")
         except Exception as e:
             self.log(f"Consolidation error: {e}")
+
+        try:
+            closing_data = self.consolidator._format_closing_for_ta_memory(
+                cache, session_id, user_id, end_time
+            )
+            data = self.consolidator._load_ta_closing_file()
+            
+            existing_index = None
+            for i, closing in enumerate(data['closings']):
+                if closing.get('session_id') == session_id:
+                    existing_index = i
+                    break
+            
+            if existing_index is not None:
+                data['closings'][existing_index] = closing_data
+            else:
+                data['closings'].append(closing_data)
+            
+            self.consolidator._save_ta_closing_file(data)
+            
+            key_moments_count = len(closing_data.get('key_moments', []))
+            emotional_arc_count = len(closing_data.get('emotional_arc', []))
+            topics_count = len(closing_data.get('topics_covered', []))
+            duration = closing_data.get('session_duration_seconds')
+            
+            duration_str = f"{duration} seconds" if duration else "unknown"
+            self.log(f"Closing updated: key_moments={key_moments_count}, emotional_arc={emotional_arc_count}, topics={topics_count}, duration={duration_str}")
+            self.log(f"Updated TA-closing-retrieval.json (closing_id: {closing_data['closing_id']})")
+        except Exception as e:
+            self.log(f"Error saving closing data: {e}")
+
+        try:
+            opening_cache = OpeningContextCache()
+            opening_context = opening_cache.get_opening(user_id)
+            if opening_context:
+                opening_data = self.consolidator._format_opening_for_ta_memory(
+                    opening_context, session_id, user_id, 0.0
+                )
+                data = self.consolidator._load_ta_opening_file()
+                
+                existing_index = None
+                for i, opening_record in enumerate(data['openings']):
+                    if opening_record.get('session_id') == session_id:
+                        existing_index = i
+                        break
+                
+                if existing_index is not None:
+                    data['openings'][existing_index] = opening_data
+                else:
+                    data['openings'].append(opening_data)
+                
+                self.consolidator._save_ta_opening_file(data)
+                self.log(f"Updated TA-opening-retrieval.json (opening_id: {opening_data['opening_id']})")
+            else:
+                self.log(f"Warning: No opening context found for user {user_id} after consolidation")
+        except Exception as e:
+            self.log(f"Error saving opening data: {e}")
 
         self._completed_sessions.add(session_id)
 
         with self._lock:
-        if session_id in self._session_caches:
-            del self._session_caches[session_id]
-        if session_id in self._processed_turns:
-            del self._processed_turns[session_id]
+            if session_id in self._session_caches:
+                del self._session_caches[session_id]
+            if session_id in self._processed_turns:
+                del self._processed_turns[session_id]
             if session_id in self._exchange_buffers:
                 del self._exchange_buffers[session_id]
             if session_id in self._user_turn_counts:
@@ -726,7 +1009,7 @@ class ConversationWatcher:
                 if session_id not in self._processed_exchange_ids:
                     self._processed_exchange_ids[session_id] = set()
 
-                cache = SessionClosingCache(user_id, session_id)
+                cache = SessionClosingCache(user_id, session_id, self.consolidator)
 
                 i = 0
                 while i < len(turns):
@@ -751,6 +1034,8 @@ class ConversationWatcher:
                         if user_text:
                             exchange_id = f"{session_id}_{i}_{turn_timestamp}"
                             if exchange_id not in self._processed_exchange_ids[session_id]:
+                                with self._lock:
+                                    self._processed_exchange_ids[session_id].add(exchange_id)
                                 self._process_exchange(
                                     session_id, user_id, user_text, adam_text, cache, exchange_id, i
                                 )
@@ -765,6 +1050,29 @@ class ConversationWatcher:
                         )
 
                 self.consolidator.consolidate_session(user_id, cache)
+                
+                end_time = session_data.get('end_time')
+                try:
+                    closing_data = self.consolidator._format_closing_for_ta_memory(
+                        cache, session_id, user_id, end_time
+                    )
+                    data = self.consolidator._load_ta_closing_file()
+                    
+                    existing_index = None
+                    for i, closing in enumerate(data['closings']):
+                        if closing.get('session_id') == session_id:
+                            existing_index = i
+                            break
+                    
+                    if existing_index is not None:
+                        data['closings'][existing_index] = closing_data
+                    else:
+                        data['closings'].append(closing_data)
+                    
+                    self.consolidator._save_ta_closing_file(data)
+                except Exception as e:
+                    self.log(f"Error saving closing data for {session_id}: {e}")
+                
                 results['memories_extracted'] += len(cache.cache['new_memories'])
                 results['sessions_processed'] += 1
 

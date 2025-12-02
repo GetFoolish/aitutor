@@ -1,13 +1,7 @@
-import time
-import sys
-import os
 from typing import Optional, Dict, Any
 from .greeting_handler import GreetingHandler
 from .inactivity_handler import InactivityHandler
-
-# Add parent directory to path for Memory module import
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-from Memory import MemoryRetriever
+from .Memory import MemoryRetriever
 
 
 class TeachingAssistant:

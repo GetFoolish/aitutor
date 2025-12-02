@@ -1,0 +1,789 @@
+{
+  "retrievals": [
+    {
+      "retrieval_id": "deep_ret_20251202_005824_33f186",
+      "session_id": "sess_20251202_005749_i3qep3",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T00:58:24.968918Z",
+      "student_message": "<noise> I am not good because from past today last finger is broken.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": false
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 5,
+          "memories": [
+            {
+              "memory_id": "mem_c6d2269a6743",
+              "type": "academic",
+              "text": "Struggles with writing; acknowledges having 'very bad' handwriting.",
+              "score": 0.790526,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T00:55:12.901195Z",
+              "metadata": {
+                "emotion": "unspecified",
+                "valence": "struggle",
+                "topic": "writing"
+              },
+              "session_id": "sess_20251202_004941_6ahziu"
+            },
+            {
+              "memory_id": "mem_c2f4132ee6cb",
+              "type": "academic",
+              "text": "Struggles with basic subject/verb identification.",
+              "score": 0.784979105,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T00:43:42.408107Z",
+              "metadata": {
+                "emotion": "neutral",
+                "valence": "struggle",
+                "topic": "grammar"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_62adabef122d",
+              "type": "academic",
+              "text": "Wants to learn basic English grammar due to a headache.",
+              "score": 0.767906785,
+              "importance": 0.6,
+              "timestamp": "2025-12-01T15:59:54.691333Z",
+              "metadata": {
+                "emotion": "neutral",
+                "topic": "English grammar"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_534c962773f2",
+              "type": "academic",
+              "text": "Wants to learn active and passive voice",
+              "score": 0.757934511,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T00:43:38.012755Z",
+              "metadata": {
+                "topic": "grammar"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_2f950cc22456",
+              "type": "academic",
+              "text": "Wants to learn active/passive voice.",
+              "score": 0.75636977,
+              "importance": 0.6,
+              "timestamp": "2025-12-02T00:49:41.923072Z",
+              "metadata": {
+                "topic": "grammar"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            }
+          ]
+        },
+        "personal": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_dbd74d960153",
+              "type": "personal",
+              "text": "Has a headache",
+              "score": 0.814140916,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T00:49:41.923072Z",
+              "metadata": {
+                "emotion": "negative"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_69955718fa29",
+              "type": "personal",
+              "text": "Has a headache",
+              "score": 0.814140916,
+              "importance": 0.6,
+              "timestamp": "2025-12-02T00:43:38.012755Z",
+              "metadata": {
+                "category": "health"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_331bd2454215",
+              "type": "personal",
+              "text": "Experiencing a headache for the past two days.",
+              "score": 0.811436415,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T00:49:35.645660Z",
+              "metadata": {
+                "emotion": "pain"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            }
+          ]
+        },
+        "preferences": {
+          "total_found": 5,
+          "memories": [
+            {
+              "memory_id": "mem_24b5408955c1",
+              "type": "preference",
+              "text": "Willing to learn despite not feeling well.",
+              "score": 0.790989816,
+              "importance": 0.8,
+              "timestamp": "2025-12-02T00:49:35.645660Z",
+              "metadata": {
+                "category": "emotional_response",
+                "trigger": "feeling unwell",
+                "response": "eagerness to learn"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_ac55fb98fbb8",
+              "type": "preference",
+              "text": "Prefers a slow pace due to a headache.",
+              "score": 0.772789538,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T00:43:32.210617Z",
+              "metadata": {
+                "category": "pacing",
+                "trigger": "headache",
+                "response": "slow pace"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_fdb7aa5d078d",
+              "type": "preference",
+              "text": "Student responds in Hindi ('नो आई डोंट नो')",
+              "score": 0.761490107,
+              "importance": 0.8,
+              "timestamp": "2025-12-01T16:00:59.367499Z",
+              "metadata": {
+                "category": "communication"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_fd2945c94942",
+              "type": "preference",
+              "text": "Excited to learn.",
+              "score": 0.756442964,
+              "importance": 0.7,
+              "timestamp": "2025-12-01T15:58:46.989897Z",
+              "metadata": {
+                "emotion": "excited",
+                "category": "emotional_response"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_4abb6b2f8142",
+              "type": "preference",
+              "text": "Expresses excitement to start the session",
+              "score": 0.747323692,
+              "importance": 0.6,
+              "timestamp": "2025-12-02T00:50:14.077342Z",
+              "metadata": {
+                "category": "emotional_response",
+                "trigger": "session start",
+                "response": "excited"
+              },
+              "session_id": "sess_20251202_004941_6ahziu"
+            }
+          ]
+        },
+        "context": {
+          "total_found": 0,
+          "memories": []
+        }
+      },
+      "retrieval_time_ms": 5613.0,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_005915_88c932",
+      "session_id": "sess_20251202_005749_i3qep3",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T00:59:15.592453Z",
+      "student_message": "No but I am excited to learn something.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": false
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 5,
+          "memories": [
+            {
+              "memory_id": "mem_c2f4132ee6cb",
+              "type": "academic",
+              "text": "Struggles with basic subject/verb identification.",
+              "score": 0.7768085,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T00:43:42.408107Z",
+              "metadata": {
+                "emotion": "neutral",
+                "valence": "struggle",
+                "topic": "grammar"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_c6d2269a6743",
+              "type": "academic",
+              "text": "Struggles with writing; acknowledges having 'very bad' handwriting.",
+              "score": 0.763637543,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T00:55:12.901195Z",
+              "metadata": {
+                "emotion": "unspecified",
+                "valence": "struggle",
+                "topic": "writing"
+              },
+              "session_id": "sess_20251202_004941_6ahziu"
+            },
+            {
+              "memory_id": "mem_62adabef122d",
+              "type": "academic",
+              "text": "Wants to learn basic English grammar due to a headache.",
+              "score": 0.762387693,
+              "importance": 0.6,
+              "timestamp": "2025-12-01T15:59:54.691333Z",
+              "metadata": {
+                "emotion": "neutral",
+                "topic": "English grammar"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_534c962773f2",
+              "type": "academic",
+              "text": "Wants to learn active and passive voice",
+              "score": 0.743328691,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T00:43:38.012755Z",
+              "metadata": {
+                "topic": "grammar"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_2f950cc22456",
+              "type": "academic",
+              "text": "Wants to learn active/passive voice.",
+              "score": 0.741303563,
+              "importance": 0.6,
+              "timestamp": "2025-12-02T00:49:41.923072Z",
+              "metadata": {
+                "topic": "grammar"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            }
+          ]
+        },
+        "personal": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_8418caa84854",
+              "type": "personal",
+              "text": "Excited to learn despite a headache.",
+              "score": 0.795830667,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T00:43:32.210086Z",
+              "metadata": {
+                "emotion": "excited"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_dd0847c95eeb",
+              "type": "personal",
+              "text": "Experiencing significant stomach pain.",
+              "score": 0.767174542,
+              "importance": 0.8,
+              "timestamp": "2025-12-02T00:49:54.646506Z",
+              "metadata": {
+                "emotion": "pain",
+                "category": "health"
+              },
+              "session_id": "sess_20251202_004340_4k7nmi"
+            },
+            {
+              "memory_id": "mem_dbd74d960153",
+              "type": "personal",
+              "text": "Has a headache",
+              "score": 0.750085056,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T00:49:41.923072Z",
+              "metadata": {
+                "emotion": "negative"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            }
+          ]
+        },
+        "preferences": {
+          "total_found": 4,
+          "memories": [
+            {
+              "memory_id": "mem_24b5408955c1",
+              "type": "preference",
+              "text": "Willing to learn despite not feeling well.",
+              "score": 0.804709733,
+              "importance": 0.8,
+              "timestamp": "2025-12-02T00:49:35.645660Z",
+              "metadata": {
+                "category": "emotional_response",
+                "trigger": "feeling unwell",
+                "response": "eagerness to learn"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_fdb7aa5d078d",
+              "type": "preference",
+              "text": "Student responds in Hindi ('नो आई डोंट नो')",
+              "score": 0.783789575,
+              "importance": 0.8,
+              "timestamp": "2025-12-01T16:00:59.367499Z",
+              "metadata": {
+                "category": "communication"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_16d17eb195a6",
+              "type": "preference",
+              "text": "Expresses excitement to learn.",
+              "score": 0.768346071,
+              "importance": 0.6,
+              "timestamp": "2025-12-02T00:55:34.511499Z",
+              "metadata": {
+                "category": "emotional_response",
+                "trigger": "expectation of learning",
+                "response": "excitement"
+              },
+              "session_id": "sess_20251202_004941_6ahziu"
+            },
+            {
+              "memory_id": "mem_fd2945c94942",
+              "type": "preference",
+              "text": "Excited to learn.",
+              "score": 0.750012696,
+              "importance": 0.7,
+              "timestamp": "2025-12-01T15:58:46.989897Z",
+              "metadata": {
+                "emotion": "excited",
+                "category": "emotional_response"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            }
+          ]
+        },
+        "context": {
+          "total_found": 0,
+          "memories": []
+        }
+      },
+      "retrieval_time_ms": 19067.88,
+      "status": "success",
+      "generated_query": "student injury difficulty learning",
+      "original_message": "No but I am excited to learn something."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_021320_b8a3db",
+      "session_id": "sess_20251202_021149_pb0vsb",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T02:13:20.513643Z",
+      "student_message": "You know from last one month I very bad headache.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 5,
+          "memories": [
+            {
+              "memory_id": "mem_e6e26dc82f81",
+              "type": "academic",
+              "text": "Interested in physics.",
+              "score": 0.817988753,
+              "importance": 0.6,
+              "timestamp": "2025-12-02T02:08:43.827523Z",
+              "metadata": {
+                "topic": "physics"
+              },
+              "session_id": "sess_20251202_005749_i3qep3"
+            },
+            {
+              "memory_id": "mem_62adabef122d",
+              "type": "academic",
+              "text": "Wants to learn basic English grammar due to a headache.",
+              "score": 0.817753732,
+              "importance": 0.6,
+              "timestamp": "2025-12-01T15:59:54.691333Z",
+              "metadata": {
+                "emotion": "neutral",
+                "topic": "English grammar"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_c2f4132ee6cb",
+              "type": "academic",
+              "text": "Struggles with basic subject/verb identification.",
+              "score": 0.780028164,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T00:43:42.408107Z",
+              "metadata": {
+                "emotion": "neutral",
+                "valence": "struggle",
+                "topic": "grammar"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_534c962773f2",
+              "type": "academic",
+              "text": "Wants to learn active and passive voice",
+              "score": 0.759936094,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T00:43:38.012755Z",
+              "metadata": {
+                "topic": "grammar"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_2f950cc22456",
+              "type": "academic",
+              "text": "Wants to learn active/passive voice.",
+              "score": 0.757349849,
+              "importance": 0.6,
+              "timestamp": "2025-12-02T00:49:41.923072Z",
+              "metadata": {
+                "topic": "grammar"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            }
+          ]
+        },
+        "personal": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_8418caa84854",
+              "type": "personal",
+              "text": "Excited to learn despite a headache.",
+              "score": 0.830869436,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T00:43:32.210086Z",
+              "metadata": {
+                "emotion": "excited"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_dbd74d960153",
+              "type": "personal",
+              "text": "Has a headache",
+              "score": 0.826146,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T00:49:41.923072Z",
+              "metadata": {
+                "emotion": "negative"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_69955718fa29",
+              "type": "personal",
+              "text": "Has a headache",
+              "score": 0.826146,
+              "importance": 0.6,
+              "timestamp": "2025-12-02T00:43:38.012755Z",
+              "metadata": {
+                "category": "health"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            }
+          ]
+        },
+        "preferences": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_ac55fb98fbb8",
+              "type": "preference",
+              "text": "Prefers a slow pace due to a headache.",
+              "score": 0.810650289,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T00:43:32.210617Z",
+              "metadata": {
+                "category": "pacing",
+                "trigger": "headache",
+                "response": "slow pace"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_fdb7aa5d078d",
+              "type": "preference",
+              "text": "Student responds in Hindi ('नो आई डोंट नो')",
+              "score": 0.794675589,
+              "importance": 0.8,
+              "timestamp": "2025-12-01T16:00:59.367499Z",
+              "metadata": {
+                "category": "communication"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_c6d590a61d40",
+              "type": "preference",
+              "text": "Expresses excitement to learn despite injury.",
+              "score": 0.789156258,
+              "importance": 0.8,
+              "timestamp": "2025-12-02T02:08:39.526861Z",
+              "metadata": {
+                "category": "emotional_response",
+                "trigger": "offer of practice, injury",
+                "response": "positive"
+              },
+              "session_id": "sess_20251202_005749_i3qep3"
+            }
+          ]
+        },
+        "context": {
+          "total_found": 0,
+          "memories": []
+        }
+      },
+      "retrieval_time_ms": 4175.91,
+      "status": "success",
+      "generated_query": "student physics motion acceleration velocity headache",
+      "original_message": "You know from last one month I very bad headache."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_021339_fe6fee",
+      "session_id": "sess_20251202_021149_pb0vsb",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T02:13:39.039821Z",
+      "student_message": "I am excited to learn physics go ahead.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": false
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "anonymous",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 5,
+          "memories": [
+            {
+              "memory_id": "mem_e6e26dc82f81",
+              "type": "academic",
+              "text": "Interested in physics.",
+              "score": 0.886688173,
+              "importance": 0.6,
+              "timestamp": "2025-12-02T02:08:43.827523Z",
+              "metadata": {
+                "topic": "physics"
+              },
+              "session_id": "sess_20251202_005749_i3qep3"
+            },
+            {
+              "memory_id": "mem_62adabef122d",
+              "type": "academic",
+              "text": "Wants to learn basic English grammar due to a headache.",
+              "score": 0.823882699,
+              "importance": 0.6,
+              "timestamp": "2025-12-01T15:59:54.691333Z",
+              "metadata": {
+                "emotion": "neutral",
+                "topic": "English grammar"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_c2f4132ee6cb",
+              "type": "academic",
+              "text": "Struggles with basic subject/verb identification.",
+              "score": 0.806827188,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T00:43:42.408107Z",
+              "metadata": {
+                "emotion": "neutral",
+                "valence": "struggle",
+                "topic": "grammar"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_534c962773f2",
+              "type": "academic",
+              "text": "Wants to learn active and passive voice",
+              "score": 0.804596186,
+              "importance": 0.7,
+              "timestamp": "2025-12-02T00:43:38.012755Z",
+              "metadata": {
+                "topic": "grammar"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_2f950cc22456",
+              "type": "academic",
+              "text": "Wants to learn active/passive voice.",
+              "score": 0.795583785,
+              "importance": 0.6,
+              "timestamp": "2025-12-02T00:49:41.923072Z",
+              "metadata": {
+                "topic": "grammar"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            }
+          ]
+        },
+        "personal": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_8418caa84854",
+              "type": "personal",
+              "text": "Excited to learn despite a headache.",
+              "score": 0.858847499,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T00:43:32.210086Z",
+              "metadata": {
+                "emotion": "excited"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_dbd74d960153",
+              "type": "personal",
+              "text": "Has a headache",
+              "score": 0.840621531,
+              "importance": 0.5,
+              "timestamp": "2025-12-02T00:49:41.923072Z",
+              "metadata": {
+                "emotion": "negative"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_69955718fa29",
+              "type": "personal",
+              "text": "Has a headache",
+              "score": 0.840621531,
+              "importance": 0.6,
+              "timestamp": "2025-12-02T00:43:38.012755Z",
+              "metadata": {
+                "category": "health"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            }
+          ]
+        },
+        "preferences": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_fd2945c94942",
+              "type": "preference",
+              "text": "Excited to learn.",
+              "score": 0.832258821,
+              "importance": 0.7,
+              "timestamp": "2025-12-01T15:58:46.989897Z",
+              "metadata": {
+                "emotion": "excited",
+                "category": "emotional_response"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            },
+            {
+              "memory_id": "mem_16d17eb195a6",
+              "type": "preference",
+              "text": "Expresses excitement to learn.",
+              "score": 0.823672354,
+              "importance": 0.6,
+              "timestamp": "2025-12-02T00:55:34.511499Z",
+              "metadata": {
+                "category": "emotional_response",
+                "trigger": "expectation of learning",
+                "response": "excitement"
+              },
+              "session_id": "sess_20251202_004941_6ahziu"
+            },
+            {
+              "memory_id": "mem_24b5408955c1",
+              "type": "preference",
+              "text": "Willing to learn despite not feeling well.",
+              "score": 0.814321578,
+              "importance": 0.8,
+              "timestamp": "2025-12-02T00:49:35.645660Z",
+              "metadata": {
+                "category": "emotional_response",
+                "trigger": "feeling unwell",
+                "response": "eagerness to learn"
+              },
+              "session_id": "sess_20251201_155808_em2e41"
+            }
+          ]
+        },
+        "context": {
+          "total_found": 0,
+          "memories": []
+        }
+      },
+      "retrieval_time_ms": 3870.88,
+      "status": "success",
+      "generated_query": "Physics and motion concepts, student's interest in physics, and health concerns (headache).",
+      "original_message": "I am excited to learn physics go ahead."
+    }
+  ],
+  "last_updated": "2025-12-02T02:13:39.040822Z"
+}

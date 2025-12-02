@@ -27,7 +27,7 @@ def _get_pinecone_index():
 class MemoryStore:
     def __init__(self, storage_path: Optional[str] = None):
         if storage_path is None:
-            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            base_dir = os.path.dirname(os.path.abspath(__file__))
             storage_path = os.path.join(base_dir, 'data', 'memory')
 
         self.storage_path = storage_path
@@ -199,7 +199,7 @@ class MemoryStore:
                 if isinstance(value, dict) and any(op in value for op in ["$eq", "$ne", "$gt", "$gte", "$lt", "$lte", "$in", "$nin"]):
                     filter_dict[key] = value
                 else:
-                filter_dict[key] = {"$eq": value}
+                   filter_dict[key] = {"$eq": value}
         
         if exclude_session_id:
             filter_dict["session_id"] = {"$ne": exclude_session_id}

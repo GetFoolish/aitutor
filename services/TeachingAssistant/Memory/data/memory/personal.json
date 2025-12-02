@@ -1,0 +1,15 @@
+[
+  {
+    "id": "mem_6cb0611ff70c",
+    "student_id": "anonymous",
+    "type": "personal",
+    "text": "Has been experiencing a bad headache for the last month.",
+    "timestamp": "2025-12-02T02:13:36.174687Z",
+    "importance": 0.8,
+    "metadata": {
+      "category": "health",
+      "emotion": "negative"
+    },
+    "session_id": "sess_20251202_021149_pb0vsb"
+  }
+]

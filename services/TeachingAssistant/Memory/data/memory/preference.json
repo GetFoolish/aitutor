@@ -1,0 +1,15 @@
+[
+  {
+    "id": "mem_7a78f3a14d29",
+    "student_id": "anonymous",
+    "type": "preference",
+    "text": "Expresses excitement to learn physics.",
+    "timestamp": "2025-12-02T02:13:36.174687Z",
+    "importance": 0.6,
+    "metadata": {
+      "category": "emotional_response",
+      "emotion": "excited"
+    },
+    "session_id": "sess_20251202_021149_pb0vsb"
+  }
+]

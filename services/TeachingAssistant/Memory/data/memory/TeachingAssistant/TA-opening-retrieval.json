@@ -1,0 +1,79 @@
+{
+  "openings": [
+    {
+      "opening_id": "opening_20251202_005541_9935fd",
+      "session_id": "sess_20251202_004941_6ahziu",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T00:55:41.455940Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Last time we were working through student expresses excitement but doesn't know what to do, indicating confusion.",
+      "last_session_summary": "Key moments: Struggled: student is struggling with language and sentence construction, possibly indicating difficulty with the material.; Struggled: student expresses confusion about a technical issue.; Struggled: student expresses excitement but doesn't know what to do, indicating confusion.. Emotional journey: excited -> confused",
+      "unfinished_threads": [
+        "Revisit what we struggled with",
+        "Continue with general"
+      ],
+      "personal_relevance": "",
+      "emotional_state_last": "confused",
+      "suggested_opener": "Hey! Last time we were working through student expresses excitement but doesn't know what to do, indicating confusion.. Let's take a fresh look at things today - sometimes a break helps!",
+      "key_moments_last": [
+        "Struggled: student is struggling with language and sentence construction, possibly indicating difficulty with the material.",
+        "Struggled: student expresses confusion about a technical issue.",
+        "Struggled: student expresses excitement but doesn't know what to do, indicating confusion."
+      ],
+      "topics_last_session": [
+        "general"
+      ],
+      "personal_memories": [],
+      "status": "success"
+    },
+    {
+      "opening_id": "opening_20251202_005708_48496f",
+      "session_id": "sess_20251202_005531_l7x649",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T00:57:08.949766Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Welcome back!",
+      "last_session_summary": "",
+      "unfinished_threads": [
+        "Continue with general"
+      ],
+      "personal_relevance": "",
+      "emotional_state_last": "neutral",
+      "suggested_opener": "Hey! What would you like to work on today?",
+      "key_moments_last": [],
+      "topics_last_session": [
+        "general"
+      ],
+      "personal_memories": [],
+      "status": "success"
+    },
+    {
+      "opening_id": "opening_20251202_020848_d987d2",
+      "session_id": "sess_20251202_005749_i3qep3",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T02:08:48.227991Z",
+      "generation_time_ms": 0.0,
+      "welcome_hook": "Last time we were working through student is interrupted mid-sentence, possibly indicating difficulty.",
+      "last_session_summary": "Key moments: Struggled: the student is having difficulty communicating their thoughts due to language barriers or technical issues.; Struggled: student is interrupted mid-sentence, possibly indicating difficulty.. Student felt: excited",
+      "unfinished_threads": [
+        "Revisit what we struggled with",
+        "Continue with general"
+      ],
+      "personal_relevance": "Student has a broken finger.",
+      "emotional_state_last": "excited",
+      "suggested_opener": "Hey! Last time we were working through student is interrupted mid-sentence, possibly indicating difficulty.. Ready to keep that momentum going?",
+      "key_moments_last": [
+        "Struggled: the student is having difficulty communicating their thoughts due to language barriers or technical issues.",
+        "Struggled: student is interrupted mid-sentence, possibly indicating difficulty."
+      ],
+      "topics_last_session": [
+        "general"
+      ],
+      "personal_memories": [
+        "Student has a broken finger."
+      ],
+      "status": "success"
+    }
+  ],
+  "last_updated": "2025-12-02T02:08:48.243006Z"
+}

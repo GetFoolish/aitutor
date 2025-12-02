@@ -1,0 +1,124 @@
+{
+  "closings": [
+    {
+      "closing_id": "closing_20251202_005541_fa6aa2",
+      "session_id": "sess_20251202_004941_6ahziu",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T00:55:41.445773Z",
+      "session_duration_seconds": null,
+      "session_summary": "Key moments: Struggled: student is struggling with language and sentence construction, possibly indicating difficulty with the material.; Struggled: student expresses confusion about a technical issue.; Struggled: student expresses excitement but doesn't know what to do, indicating confusion.. Emotional journey: excited -> confused",
+      "key_moments": [
+        "Struggled: student is struggling with language and sentence construction, possibly indicating difficulty with the material.",
+        "Struggled: student expresses confusion about a technical issue.",
+        "Struggled: student expresses excitement but doesn't know what to do, indicating confusion."
+      ],
+      "emotional_arc": [
+        "excited",
+        "confused"
+      ],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "We'll pick this up next time - you're closer than you think!",
+      "next_session_hooks": [
+        "Revisit what we struggled with",
+        "Continue with general"
+      ],
+      "new_memories_count": 2,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_005711_db30c6",
+      "session_id": "sess_20251202_005531_l7x649",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T00:57:11.112505Z",
+      "session_duration_seconds": null,
+      "session_summary": "",
+      "key_moments": [],
+      "emotional_arc": [],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Good session! See you next time.",
+      "next_session_hooks": [
+        "Continue with general"
+      ],
+      "new_memories_count": 1,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_020848_55902e",
+      "session_id": "sess_20251202_005749_i3qep3",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T02:08:48.195979Z",
+      "session_duration_seconds": null,
+      "session_summary": "Key moments: Struggled: the student is having difficulty communicating their thoughts due to language barriers or technical issues.; Struggled: student is interrupted mid-sentence, possibly indicating difficulty.",
+      "key_moments": [
+        "Struggled: the student is having difficulty communicating their thoughts due to language barriers or technical issues.",
+        "Struggled: student is interrupted mid-sentence, possibly indicating difficulty."
+      ],
+      "emotional_arc": [
+        "excited"
+      ],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Great work today! Can't wait to build on this next time.",
+      "next_session_hooks": [
+        "Revisit what we struggled with",
+        "Continue with general"
+      ],
+      "new_memories_count": 3,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_021054_45f800",
+      "session_id": "sess_20251202_020845_c0mhzq",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T02:10:54.507811Z",
+      "session_duration_seconds": null,
+      "session_summary": "Key moments: Struggled: student indicates a difficult period, likely related to feeling unwell.",
+      "key_moments": [
+        "Struggled: student indicates a difficult period, likely related to feeling unwell."
+      ],
+      "emotional_arc": [],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Good session! See you next time.",
+      "next_session_hooks": [
+        "Revisit what we struggled with",
+        "Continue with general"
+      ],
+      "new_memories_count": 0,
+      "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_021337_49100c",
+      "session_id": "sess_20251202_021149_pb0vsb",
+      "user_id": "anonymous",
+      "timestamp": "2025-12-02T02:13:37.355770Z",
+      "session_duration_seconds": null,
+      "session_summary": "Key moments: Struggled: student expresses dislike for math and a desire to switch fields.; Struggled: student is stating definitions without understanding the relationship between acceleration and velocity.; Struggled: student expresses physical discomfort (headache) likely related to confusion or frustration with the material.",
+      "key_moments": [
+        "Struggled: student expresses dislike for math and a desire to switch fields.",
+        "Struggled: student is stating definitions without understanding the relationship between acceleration and velocity.",
+        "Struggled: student expresses physical discomfort (headache) likely related to confusion or frustration with the material."
+      ],
+      "emotional_arc": [
+        "excited"
+      ],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Great work today! Can't wait to build on this next time.",
+      "next_session_hooks": [
+        "Revisit what we struggled with",
+        "Continue with general"
+      ],
+      "new_memories_count": 3,
+      "status": "success"
+    }
+  ],
+  "last_updated": "2025-12-02T02:13:37.369324Z"
+}

@@ -268,13 +268,13 @@ class MemoryRetriever:
     # TA-light-retrieval.json file management methods
     def _get_ta_memory_filepath(self) -> str:
         """Get the path to TA-light-retrieval.json file."""
-        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        base_dir = os.path.dirname(os.path.abspath(__file__))
         ta_dir = os.path.join(base_dir, 'data', 'memory', 'TeachingAssistant')
         os.makedirs(ta_dir, exist_ok=True)
         return os.path.join(ta_dir, 'TA-light-retrieval.json')
 
     def _get_ta_deep_memory_filepath(self) -> str:
-        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        base_dir = os.path.dirname(os.path.abspath(__file__))
         ta_dir = os.path.join(base_dir, 'data', 'memory', 'TeachingAssistant')
         os.makedirs(ta_dir, exist_ok=True)
         return os.path.join(ta_dir, 'TA-deep-retrieval.json')
@@ -523,7 +523,7 @@ class MemoryRetrievalWatcher:
         self.retriever = retriever
         
         if conversations_path is None:
-            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            base_dir = os.path.dirname(os.path.abspath(__file__))
             conversations_path = os.path.join(base_dir, 'data', 'conversations')
         
         self.conversations_path = conversations_path

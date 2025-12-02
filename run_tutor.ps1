@@ -137,7 +137,7 @@ $processes += $proc
 
 # Start the Memory Watcher for real-time memory extraction
 Write-Host "Starting Memory Watcher... Logs -> logs/memory_watcher.log"
-$proc = Start-Process -FilePath "cmd" -ArgumentList "/c", "chcp 65001 >nul && `"$PYTHON_BIN`" -m Memory.consolidator 2>&1" -WorkingDirectory $SCRIPT_DIR -NoNewWindow -PassThru -RedirectStandardOutput "$SCRIPT_DIR\logs\memory_watcher.log"
+$proc = Start-Process -FilePath "cmd" -ArgumentList "/c", "chcp 65001 >nul && `"$PYTHON_BIN`" -m services.TeachingAssistant.Memory.consolidator 2>&1" -WorkingDirectory $SCRIPT_DIR -NoNewWindow -PassThru -RedirectStandardOutput "$SCRIPT_DIR\logs\memory_watcher.log"
 $processes += $proc
 
 # Give the backend servers a moment to start

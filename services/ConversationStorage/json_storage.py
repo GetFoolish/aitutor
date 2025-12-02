@@ -8,7 +8,7 @@ class JsonStorage:
     def __init__(self, storage_path=None):
         if storage_path is None:
             base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-            storage_path = os.path.join(base_dir, 'data', 'conversations')
+            storage_path = os.path.join(base_dir, 'services', 'TeachingAssistant', 'Memory', 'data', 'conversations')
         
         self.storage_path = storage_path
         os.makedirs(self.storage_path, exist_ok=True)
@@ -40,6 +40,7 @@ class JsonStorage:
             if filename.endswith('.json'):
                 sessions.append(filename[:-5])
         return sorted(sessions, reverse=True)
+
 
 
 
