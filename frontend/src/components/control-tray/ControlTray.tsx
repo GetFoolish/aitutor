@@ -5,7 +5,6 @@ import { useLiveAPIContext } from "../../contexts/LiveAPIContext";
 import { useMediaCapture } from "../../hooks/useMediaCapture";
 import { AudioRecorder } from "../../lib/audio-recorder";
 import AudioPulse from "../audio-pulse/AudioPulse";
-import "./control-tray.scss";
 import SettingsDialog from "../settings-dialog/SettingsDialog";
 import {
   useRecordConversationTurn,

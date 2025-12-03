@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import "./logger.scss";
-
 import cn from "classnames";
 import { memo, ReactNode, useMemo, lazy, Suspense } from "react";
 import { useLoggerStore } from "../../lib/store-logger";

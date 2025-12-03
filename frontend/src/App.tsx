@@ -15,7 +15,6 @@
  */
 
 import { useRef, useState, useEffect } from "react";
-import "./App.scss";
 import { LiveAPIProvider } from "./contexts/LiveAPIContext";
 import SidePanel from "./components/side-panel/SidePanel";
 import GradingSidebar from "./components/grading-sidebar/GradingSidebar";
