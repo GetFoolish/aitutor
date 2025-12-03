@@ -1,0 +1,18 @@
+{
+  "session_id": "sess_20251203_131422_mw4u4h",
+  "user_id": "anonymous",
+  "start_time": "2025-12-03T13:14:22.787Z",
+  "end_time": "2025-12-03T13:14:45.388Z",
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "Hey there! How are you doing today? Ready to dive into some math?",
+      "timestamp": "2025-12-03T13:14:29.505Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "It looks like our time for today is up. Thanks for stopping by! Keep practicing, and I'm excited to see you next time. Have a great rest of your day!",
+      "timestamp": "2025-12-03T13:14:43.813Z"
+    }
+  ]
+}

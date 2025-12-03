@@ -1,56 +1,29 @@
 [
   {
-    "id": "mem_e2a86ed78b9b",
+    "id": "mem_90c90913fdb6",
     "student_id": "anonymous",
     "type": "context",
-    "text": "Key moments: Struggled: student's message is incomplete and likely indicates a lack of understanding or being stuck.; Struggled: student's message is incomplete and likely indicates a lack of understanding or a need for clarification.. Student felt: happy",
-    "timestamp": "2025-12-02T15:16:28.092616Z",
+    "text": "Key moments: Struggled: student expresses a desire to resume studying chemistry after a break, indicating potential difficulty.; Struggled: student is expressing a desire to learn about a topic but the message is grammatically incorrect, potentially indicating confusion.; Struggled: student is asking for basic information and clarification, indicating a lack of understanding.; Struggled: student is requesting basic explanation, indicating a lack of understanding.; Struggled: student expresses confusion and a desire to abandon the current approach.; Struggled: student expresses confusion and a desire to abandon the current approach.",
+    "timestamp": "2025-12-03T13:12:02.871957Z",
     "importance": 0.8,
     "metadata": {
       "session_end": true,
-      "emotion": "happy",
       "next_topic": "general"
     },
-    "session_id": "sess_20251202_151555_blv6xo"
+    "session_id": "sess_20251203_130853_k08en9"
   },
   {
-    "id": "mem_3555f19e9422",
+    "id": "mem_036d3f31651f",
     "student_id": "anonymous",
     "type": "context",
-    "text": "Student felt: excited",
-    "timestamp": "2025-12-02T15:17:48.700064Z",
-    "importance": 0.8,
-    "metadata": {
-      "session_end": true,
-      "emotion": "excited",
-      "next_topic": "general"
-    },
-    "session_id": "sess_20251202_151706_ty3q2z"
-  },
-  {
-    "id": "mem_d7673d8e2a14",
-    "student_id": "anonymous",
-    "type": "context",
-    "text": "Session ended early",
-    "timestamp": "2025-12-02T15:17:46.792006Z",
-    "importance": 0.5,
-    "metadata": {
-      "session_end": true,
-      "emotion": "positive"
-    },
-    "session_id": "sess_20251202_151706_ty3q2z"
-  },
-  {
-    "id": "mem_b79ac30bd118",
-    "student_id": "anonymous",
-    "type": "context",
-    "text": "Student joined the session despite technical difficulties.",
-    "timestamp": "2025-12-02T15:26:58.631866Z",
+    "text": "The session ended without addressing the student's interest in helium.",
+    "timestamp": "2025-12-03T13:12:01.726594Z",
     "importance": 0.6,
     "metadata": {
       "session_end": true,
-      "emotion": "appreciative"
+      "emotion": "unfulfilled",
+      "next_topic": "chemistry"
     },
-    "session_id": "sess_20251202_152557_ljtus1"
+    "session_id": "sess_20251203_130853_k08en9"
   }
 ]

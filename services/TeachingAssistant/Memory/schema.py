@@ -49,10 +49,3 @@ class Memory(BaseModel):
         if isinstance(data.get('type'), str):
             data['type'] = MemoryType(data['type'])
         return cls(**data)
-
-
-class ExtractedMemory(BaseModel):
-    type: MemoryType
-    text: str
-    importance: float = 0.5
-    metadata: Dict[str, Any] = Field(default_factory=dict)

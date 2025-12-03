@@ -206,20 +206,9 @@ class OpeningContextCache:
         return {}
 
     def _save_cache(self, cache: Dict[str, Any]) -> None:
-        with open(self.cache_file, 'w', encoding='utf-8') as f:
-            json.dump(cache, f, indent=2, ensure_ascii=False)
-
-    def store_opening(self, student_id: str, opening_context: Dict[str, Any]) -> None:
-        cache = self._load_cache()
-        cache[student_id] = {
-            **opening_context,
-            'generated_at': datetime.utcnow().isoformat() + 'Z'
-        }
-        self._save_cache(cache)
-
-    def get_opening(self, student_id: str) -> Optional[Dict[str, Any]]:
-        cache = self._load_cache()
-        return cache.get(student_id)
+        # Disabled: No longer saving to .opening_cache.json
+        # Opening context is saved to TA-opening-retrieval.json instead
+        pass
 
     def generate_opening_context(
         self,
@@ -286,8 +275,6 @@ class OpeningContextCache:
             )
         }
 
-        self.store_opening(student_id, opening_context)
-
         return opening_context
 
     def _generate_opener(
@@ -329,55 +316,6 @@ class OpeningContextCache:
             opener += "What would you like to work on today?"
 
         return opener.strip()
-
-    def build_opening_prompt(self, student_id: str) -> Optional[str]:
-        """Build a prompt injection for the LLM at session start."""
-        opening = self.get_opening(student_id)
-        if not opening:
-            return None
-
-        # Format personal memories if available
-        personal_context = ""
-        if opening.get('personal_memories'):
-            personal_context = "\n".join(f"  - {m}" for m in opening['personal_memories'])
-        else:
-            personal_context = opening.get('personal_relevance', 'None')
-
-        # Format key moments
-        key_moments = ""
-        if opening.get('key_moments_last'):
-            key_moments = "\n".join(f"  - {m}" for m in opening['key_moments_last'])
-        else:
-            key_moments = "None"
-
-        return f"""=== RETURNING STUDENT - SESSION CONTEXT ===
-
-LAST SESSION SUMMARY:
-{opening.get('last_session_summary', 'No previous session data')}
-
-EMOTIONAL STATE (when they left): {opening.get('emotional_state_last', 'unknown')}
-
-KEY MOMENTS FROM LAST SESSION:
-{key_moments}
-
-UNFINISHED THREADS TO CONTINUE:
-{', '.join(opening.get('unfinished_threads', [])) or 'None - start fresh'}
-
-PERSONAL DETAILS YOU KNOW:
-{personal_context}
-
-SUGGESTED OPENER (use naturally, don't read verbatim):
-"{opening.get('suggested_opener', 'Welcome back!')}"
-
-INSTRUCTIONS:
-- Greet them warmly, acknowledging you remember them
-- Reference last session ONLY if it feels natural
-- If they struggled last time, be encouraging
-- If they had a breakthrough, build on that excitement
-- Use personal details subtly (don't say "I remember you said...")
-- Let them guide what they want to work on today
-
-=== END SESSION CONTEXT ==="""
 
 
 class MemoryConsolidator:
@@ -674,7 +612,7 @@ class ConversationWatcher:
     def __init__(
         self,
         conversations_base_path: Optional[str] = None,
-        poll_interval: float = 2.0,  # COMMENTED: File polling disabled - kept for backward compatibility
+        poll_interval: float = 2.0,
         verbose: bool = True
     ):
         if conversations_base_path is None:
@@ -682,11 +620,8 @@ class ConversationWatcher:
             conversations_base_path = os.path.join(base_dir, 'data')
 
         self.conversations_base_path = conversations_base_path
-        # self.poll_interval = poll_interval  # COMMENTED: File polling disabled
         self.verbose = verbose
 
-        # COMMENTED: File polling tracking - kept for backward compatibility
-        # Note: _processed_turns initialized for cleanup compatibility even though file polling is disabled
         self._processed_turns: Dict[str, int] = {}
         self._session_caches: Dict[str, SessionClosingCache] = {}
         self._completed_sessions: Set[str] = set()
@@ -695,15 +630,9 @@ class ConversationWatcher:
         self._processed_exchange_ids: Dict[str, Set[str]] = {}
         self._batch_size: int = 3
 
-        # Store per student_id will be created dynamically
         self._student_stores: Dict[str, MemoryStore] = {}
         self.extractor = MemoryExtractor()
-        # Consolidator will be created per student_id
         self._student_consolidators: Dict[str, MemoryConsolidator] = {}
-
-        # COMMENTED: File polling thread management - kept for backward compatibility
-        # self._running = False
-        # self._thread: Optional[threading.Thread] = None
         self._lock = threading.Lock()
 
     def log(self, message: str) -> None:
@@ -714,31 +643,6 @@ class ConversationWatcher:
             except UnicodeEncodeError:
                 safe_msg = message.encode('ascii', 'replace').decode('ascii')
                 print(f"[{timestamp}] [MEMORY] {safe_msg}")
-
-    # COMMENTED: File polling methods - disabled, using real-time events instead
-    # def start(self) -> None:
-    #     if self._running:
-    #         return
-    #
-    #     self._running = True
-    #     self._thread = threading.Thread(target=self._watch_loop, daemon=True)
-    #     self._thread.start()
-    #     self.log("ConversationWatcher started")
-    #
-    # def stop(self) -> None:
-    #     self._running = False
-    #     if self._thread:
-    #         self._thread.join(timeout=5.0)
-    #     self.log("ConversationWatcher stopped")
-    #
-    # def _watch_loop(self) -> None:
-    #     while self._running:
-    #         try:
-    #             self._process_conversations()
-    #         except Exception as e:
-    #             self.log(f"Error in watch loop: {e}")
-    #
-    #         time.sleep(self.poll_interval)
 
     def _get_student_store(self, student_id: str) -> MemoryStore:
         """Get or create MemoryStore for a specific student_id."""
@@ -752,108 +656,6 @@ class ConversationWatcher:
             store = self._get_student_store(student_id)
             self._student_consolidators[student_id] = MemoryConsolidator(store, student_id=student_id)
         return self._student_consolidators[student_id]
-
-    # COMMENTED: File polling methods - disabled, using real-time events instead
-    # def _process_conversations(self) -> None:
-    #     if not os.path.exists(self.conversations_base_path):
-    #         return
-    #
-    #     # Scan all student_id folders in data/
-    #     for student_id_folder in os.listdir(self.conversations_base_path):
-    #         student_path = os.path.join(self.conversations_base_path, student_id_folder)
-    #         if not os.path.isdir(student_path):
-    #             continue
-    #         
-    #         conversations_path = os.path.join(student_path, 'conversations')
-    #         if not os.path.exists(conversations_path):
-    #             continue
-    #
-    #         for filename in os.listdir(conversations_path):
-    #             if not filename.endswith('.json'):
-    #                 continue
-    #
-    #             session_id = filename[:-5]
-    #
-    #             if session_id in self._completed_sessions:
-    #                 continue
-    #
-    #             filepath = os.path.join(conversations_path, filename)
-    #             self._process_session(session_id, filepath, student_id_folder)
-    #
-    # def _process_session(self, session_id: str, filepath: str, student_id: str) -> None:
-    #     try:
-    #         with open(filepath, 'r', encoding='utf-8') as f:
-    #             session_data = json.load(f)
-    #     except (json.JSONDecodeError, IOError, UnicodeDecodeError) as e:
-    #         self.log(f"Error reading {session_id}: {e}")
-    #         return
-    #
-    #     if session_id in self._completed_sessions:
-    #         return
-    #
-    #     turns = session_data.get('turns', [])
-    #     # Use student_id from folder path, fallback to user_id from JSON
-    #     user_id = session_data.get('user_id', student_id)
-    #     # Ensure we use the folder's student_id (more reliable)
-    #     if user_id != student_id:
-    #         user_id = student_id
-    #     
-    #     last_processed = self._processed_turns.get(session_id, -1)
-    #
-    #     # Get student-specific consolidator
-    #     consolidator = self._get_student_consolidator(user_id)
-    #     
-    #     if session_id not in self._session_caches:
-    #         self._session_caches[session_id] = SessionClosingCache(user_id, session_id, consolidator)
-    #         self.log(f"New session: {session_id} (user: {user_id})")
-    #     
-    #     if session_id not in self._exchange_buffers:
-    #         self._exchange_buffers[session_id] = []
-    #     if session_id not in self._user_turn_counts:
-    #         self._user_turn_counts[session_id] = 0
-    #     if session_id not in self._processed_exchange_ids:
-    #         self._processed_exchange_ids[session_id] = set()
-    #
-    #     cache = self._session_caches[session_id]
-    #
-    #     i = last_processed + 1
-    #
-    #     while i < len(turns):
-    #         turn = turns[i]
-    #
-    #         if turn.get('speaker') == 'user':
-    #             user_texts = []
-    #             turn_timestamp = turn.get('timestamp', datetime.utcnow().isoformat() + 'Z')
-    #             while i < len(turns) and turns[i].get('speaker') == 'user':
-    #                 text = turns[i].get('text', '').strip()
-    #                 if text and text != '<noise>':
-    #                     user_texts.append(text)
-    #                 i += 1
-    #
-    #             adam_text = ''
-    #             if i < len(turns) and turns[i].get('speaker') == 'adam':
-    #                 adam_text = turns[i].get('text', '')
-    #                 i += 1
-    #
-    #             user_text = ' '.join(user_texts)
-    #
-    #             if user_text:
-    #                 exchange_id = f"{session_id}_{i}_{turn_timestamp}"
-    #                 if exchange_id not in self._processed_exchange_ids[session_id]:
-    #                     with self._lock:
-    #                         self._processed_exchange_ids[session_id].add(exchange_id)
-    #                     self._process_exchange(
-    #                         session_id, user_id, user_text, adam_text, cache, exchange_id, i
-    #                     )
-    #         else:
-    #             i += 1
-    #
-    #     self._processed_turns[session_id] = len(turns) - 1
-    #
-    #     if session_data.get('end_time'):
-    #         if session_id not in self._completed_sessions:
-    #             consolidator = self._get_student_consolidator(user_id)
-    #             self._finalize_session(session_id, user_id, cache, session_data.get('end_time'), consolidator)
 
     def _process_exchange(
         self,
@@ -995,34 +797,7 @@ class ConversationWatcher:
             # Re-raise to ensure the error is visible to the API endpoint
             raise
 
-        try:
-            opening_cache = OpeningContextCache(student_id=user_id)
-            opening_context = opening_cache.get_opening(user_id)
-            if opening_context:
-                opening_data = consolidator._format_opening_for_ta_memory(
-                    opening_context, session_id, user_id, 0.0
-                )
-                data = consolidator._load_ta_opening_file()
-                
-                existing_index = None
-                for i, opening_record in enumerate(data['openings']):
-                    if opening_record.get('session_id') == session_id:
-                        existing_index = i
-                        break
-                
-                if existing_index is not None:
-                    data['openings'][existing_index] = opening_data
-                else:
-                    data['openings'].append(opening_data)
-                
-                consolidator._save_ta_opening_file(data)
-                self.log(f"Updated TA-opening-retrieval.json (opening_id: {opening_data['opening_id']})")
-            else:
-                self.log(f"Warning: No opening context found for user {user_id} after consolidation")
-        except Exception as e:
-            self.log(f"Error saving opening data: {e}")
-            self.log(f"Traceback: {traceback.format_exc()}")
-            # Don't re-raise opening errors as they're not critical
+        # Note: Opening context is already saved in consolidate_session(), no need to save again here
 
         self._completed_sessions.add(session_id)
 
@@ -1084,167 +859,3 @@ class ConversationWatcher:
         cache = self._session_caches[session_id]
         consolidator = self._get_student_consolidator(user_id)
         self._finalize_session(session_id, user_id, cache, end_time, consolidator)
-
-    def process_existing_sessions(self) -> Dict[str, Any]:
-        results = {
-            'sessions_processed': 0,
-            'memories_extracted': 0,
-            'errors': []
-        }
-
-        if not os.path.exists(self.conversations_base_path):
-            return results
-
-        # Scan all student_id folders
-        for student_id_folder in os.listdir(self.conversations_base_path):
-            student_path = os.path.join(self.conversations_base_path, student_id_folder)
-            if not os.path.isdir(student_path):
-                continue
-            
-            conversations_path = os.path.join(student_path, 'conversations')
-            if not os.path.exists(conversations_path):
-                continue
-
-            for filename in sorted(os.listdir(conversations_path)):
-                if not filename.endswith('.json'):
-                    continue
-
-                session_id = filename[:-5]
-                filepath = os.path.join(conversations_path, filename)
-
-                try:
-                    with open(filepath, 'r', encoding='utf-8') as f:
-                        session_data = json.load(f)
-
-                    if not session_data.get('end_time'):
-                        continue
-
-                    user_id = session_data.get('user_id', student_id_folder)
-                    # Use folder's student_id (more reliable)
-                    if user_id != student_id_folder:
-                        user_id = student_id_folder
-                    turns = session_data.get('turns', [])
-
-                    self.log(f"Processing session: {session_id} for user: {user_id}")
-
-                    if session_id not in self._exchange_buffers:
-                        self._exchange_buffers[session_id] = []
-                    if session_id not in self._user_turn_counts:
-                        self._user_turn_counts[session_id] = 0
-                    if session_id not in self._processed_exchange_ids:
-                        self._processed_exchange_ids[session_id] = set()
-
-                    # Get student-specific consolidator
-                    consolidator = self._get_student_consolidator(user_id)
-                    cache = SessionClosingCache(user_id, session_id, consolidator)
-
-                    i = 0
-                    while i < len(turns):
-                        turn = turns[i]
-
-                        if turn.get('speaker') == 'user':
-                            user_texts = []
-                            turn_timestamp = turn.get('timestamp', datetime.utcnow().isoformat() + 'Z')
-                            while i < len(turns) and turns[i].get('speaker') == 'user':
-                                text = turns[i].get('text', '').strip()
-                                if text and text != '<noise>':
-                                    user_texts.append(text)
-                                i += 1
-
-                            adam_text = ''
-                            if i < len(turns) and turns[i].get('speaker') == 'adam':
-                                adam_text = turns[i].get('text', '')
-                                i += 1
-
-                            user_text = ' '.join(user_texts)
-
-                            if user_text:
-                                exchange_id = f"{session_id}_{i}_{turn_timestamp}"
-                                if exchange_id not in self._processed_exchange_ids[session_id]:
-                                    with self._lock:
-                                        self._processed_exchange_ids[session_id].add(exchange_id)
-                                    self._process_exchange(
-                                        session_id, user_id, user_text, adam_text, cache, exchange_id, i
-                                    )
-                        else:
-                            i += 1
-
-                    with self._lock:
-                        remaining_exchanges = self._exchange_buffers.get(session_id, [])
-                        if remaining_exchanges:
-                            self._extract_and_save_memories_batch(
-                                session_id, user_id, remaining_exchanges, cache
-                            )
-
-                    consolidator.consolidate_session(user_id, cache)
-                    
-                    end_time = session_data.get('end_time')
-                    try:
-                        closing_data = consolidator._format_closing_for_ta_memory(
-                            cache, session_id, user_id, end_time
-                        )
-                        data = consolidator._load_ta_closing_file()
-                        
-                        existing_index = None
-                        for i, closing in enumerate(data['closings']):
-                            if closing.get('session_id') == session_id:
-                                existing_index = i
-                                break
-                        
-                        if existing_index is not None:
-                            data['closings'][existing_index] = closing_data
-                        else:
-                            data['closings'].append(closing_data)
-                        
-                        consolidator._save_ta_closing_file(data)
-                    except Exception as e:
-                        self.log(f"Error saving closing data for {session_id}: {e}")
-                    
-                    results['memories_extracted'] += len(cache.cache['new_memories'])
-                    results['sessions_processed'] += 1
-
-                    with self._lock:
-                        if session_id in self._exchange_buffers:
-                            del self._exchange_buffers[session_id]
-                        if session_id in self._user_turn_counts:
-                            del self._user_turn_counts[session_id]
-                        if session_id in self._processed_exchange_ids:
-                            del self._processed_exchange_ids[session_id]
-
-                except Exception as e:
-                    results['errors'].append(f"{session_id}: {str(e)}")
-                    self.log(f"Error processing {session_id}: {e}")
-
-        return results
-
-
-# COMMENTED: File polling watcher function - disabled, using real-time events instead
-# def run_memory_watcher():
-#     print("=" * 60)
-#     print("Memory Watcher - Starting")
-#     print("=" * 60)
-#
-#     watcher = ConversationWatcher(verbose=True)
-#
-#     print("\nProcessing existing sessions...")
-#     results = watcher.process_existing_sessions()
-#     print(f"Processed {results['sessions_processed']} sessions")
-#     print(f"Extracted {results['memories_extracted']} memories")
-#     if results['errors']:
-#         print(f"Errors: {len(results['errors'])}")
-#
-#     print("\nWatching for new conversations...")
-#     print("Press Ctrl+C to stop.\n")
-#
-#     watcher.start()
-#
-#     try:
-#         while True:
-#             time.sleep(1)
-#     except KeyboardInterrupt:
-#         print("\nShutting down...")
-#         watcher.stop()
-#
-#
-# if __name__ == "__main__":
-#     run_memory_watcher()

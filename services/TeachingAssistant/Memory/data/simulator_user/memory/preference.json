@@ -164,5 +164,19 @@
       "category": "pacing"
     },
     "session_id": "sess_20251202_154104_49bb8f"
+  },
+  {
+    "id": "mem_78f65decb55b",
+    "student_id": "simulator_user",
+    "type": "preference",
+    "text": "Prefers to visualize the problem.",
+    "timestamp": "2025-12-02T16:59:22.745320Z",
+    "importance": 0.8,
+    "metadata": {
+      "category": "pacing",
+      "trigger": "equation presented",
+      "response": "visualizing"
+    },
+    "session_id": "sess_20251202_165833_6cd5d1"
   }
 ]

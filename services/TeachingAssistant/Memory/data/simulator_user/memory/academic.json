@@ -381,5 +381,130 @@
       "topic": "discriminant"
     },
     "session_id": "sess_20251202_160631_3051ea"
+  },
+  {
+    "id": "mem_d1dfddb211d7",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Dreads math",
+    "timestamp": "2025-12-02T16:58:50.011309Z",
+    "importance": 0.8,
+    "metadata": {
+      "valence": "struggle",
+      "emotion": "dread",
+      "topic": "math"
+    },
+    "session_id": "sess_20251202_165833_6cd5d1"
+  },
+  {
+    "id": "mem_bafa0b60ab4a",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+    "timestamp": "2025-12-02T16:59:10.100491Z",
+    "importance": 0.8,
+    "metadata": {
+      "valence": "struggle",
+      "emotion": "overwhelmed",
+      "topic": "math comprehension"
+    },
+    "session_id": "sess_20251202_165833_6cd5d1"
+  },
+  {
+    "id": "mem_263b5eaa0350",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Understands the basic concept of the U-shaped graph but struggles with the formulas, specifically the discriminant.",
+    "timestamp": "2025-12-02T16:59:10.100491Z",
+    "importance": 0.9,
+    "metadata": {
+      "valence": "struggle",
+      "emotion": "confused",
+      "topic": "discriminant"
+    },
+    "session_id": "sess_20251202_165833_6cd5d1"
+  },
+  {
+    "id": "mem_318a776a765b",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Makes mistakes about half the time when applying the discriminant formula.",
+    "timestamp": "2025-12-02T16:59:10.100491Z",
+    "importance": 0.8,
+    "metadata": {
+      "valence": "struggle",
+      "emotion": "unsure",
+      "topic": "discriminant"
+    },
+    "session_id": "sess_20251202_165833_6cd5d1"
+  },
+  {
+    "id": "mem_bfef5099b254",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Struggling with the process of using the discriminant to solve for real roots in a quadratic equation.",
+    "timestamp": "2025-12-02T16:59:22.745320Z",
+    "importance": 0.9,
+    "metadata": {
+      "valence": "struggle",
+      "emotion": "neutral",
+      "topic": "quadratics"
+    },
+    "session_id": "sess_20251202_165833_6cd5d1"
+  },
+  {
+    "id": "mem_781a28915d24",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Correctly understands that a negative discriminant means the parabola doesn't intersect the x-axis.",
+    "timestamp": "2025-12-02T16:59:40.757843Z",
+    "importance": 0.7,
+    "metadata": {
+      "valence": "breakthrough",
+      "emotion": "neutral",
+      "topic": "discriminant"
+    },
+    "session_id": "sess_20251202_165833_6cd5d1"
+  },
+  {
+    "id": "mem_ccf41f89e276",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Needs further explanation on *why* a negative discriminant results in no real roots.",
+    "timestamp": "2025-12-02T16:59:40.757843Z",
+    "importance": 0.8,
+    "metadata": {
+      "valence": "struggle",
+      "emotion": "neutral",
+      "resolution": "explanation_needed",
+      "topic": "discriminant"
+    },
+    "session_id": "sess_20251202_165833_6cd5d1"
+  },
+  {
+    "id": "mem_223d4a31fc27",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Successfully substituted values into the discriminant formula.",
+    "timestamp": "2025-12-02T16:59:57.639266Z",
+    "importance": 0.7,
+    "metadata": {
+      "valence": "breakthrough",
+      "topic": "discriminant"
+    },
+    "session_id": "sess_20251202_165833_6cd5d1"
+  },
+  {
+    "id": "mem_9b5e64d0e2fa",
+    "student_id": "simulator_user",
+    "type": "academic",
+    "text": "Demonstrated understanding of order of operations.",
+    "timestamp": "2025-12-02T16:59:57.639266Z",
+    "importance": 0.7,
+    "metadata": {
+      "valence": "breakthrough",
+      "topic": "discriminant"
+    },
+    "session_id": "sess_20251202_165833_6cd5d1"
   }
 ]

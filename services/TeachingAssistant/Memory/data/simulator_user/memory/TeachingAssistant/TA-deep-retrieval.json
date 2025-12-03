@@ -2551,7 +2551,265 @@
       "status": "success",
       "generated_query": "student struggling with quadratic formulas, specifically the discriminant, in a math class, possibly algebra, that started on Monday. Textbook explanations are difficult to understand.",
       "original_message": "we started it monday. i get the basic shape, the U thing. but the formulas are messing me up. specifically the discriminant part."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_165901_f1836a",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:59:01.117026Z",
+      "student_message": "we started it monday. i get the basic shape, the U thing. but the formulas are messing me up. specifically the discriminant part.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_7c67c386f227",
+              "type": "academic",
+              "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+              "score": 0.870835543,
+              "importance": 0.8,
+              "timestamp": "2025-12-02T16:07:05.229364Z",
+              "metadata": {
+                "emotion": "confused",
+                "valence": "struggle",
+                "topic": "discriminant"
+              },
+              "session_id": "sess_20251202_160631_3051ea"
+            },
+            {
+              "memory_id": "mem_882988381317",
+              "type": "academic",
+              "text": "Dreads math",
+              "score": 0.842724085,
+              "importance": 0.8,
+              "timestamp": "2025-12-02T16:06:49.248594Z",
+              "metadata": {
+                "emotion": "dread",
+                "valence": "struggle",
+                "topic": "math"
+              },
+              "session_id": "sess_20251202_160631_3051ea"
+            },
+            {
+              "memory_id": "mem_35a4b1d19a84",
+              "type": "academic",
+              "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+              "score": 0.832307398,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T16:07:05.229364Z",
+              "metadata": {
+                "emotion": "overwhelmed",
+                "valence": "struggle",
+                "topic": "math comprehension"
+              },
+              "session_id": "sess_20251202_160631_3051ea"
+            }
+          ]
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 0,
+          "memories": []
+        }
+      },
+      "retrieval_time_ms": 3642.54,
+      "status": "success",
+      "generated_query": "Student struggling with quadratic equations, specifically the discriminant formula, after starting the topic in math class on Monday.",
+      "original_message": "we started it monday. i get the basic shape, the U thing. but the formulas are messing me up. specifically the discriminant part."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_165928_35cb69",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:59:28.068867Z",
+      "student_message": "okay, that makes sense.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": true,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_7c67c386f227",
+              "type": "academic",
+              "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+              "score": 0.901361644,
+              "importance": 0.8,
+              "timestamp": "2025-12-02T16:07:05.229364Z",
+              "metadata": {
+                "emotion": "confused",
+                "valence": "struggle",
+                "topic": "discriminant"
+              },
+              "session_id": "sess_20251202_160631_3051ea"
+            },
+            {
+              "memory_id": "mem_35a4b1d19a84",
+              "type": "academic",
+              "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+              "score": 0.848596,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T16:07:05.229364Z",
+              "metadata": {
+                "emotion": "overwhelmed",
+                "valence": "struggle",
+                "topic": "math comprehension"
+              },
+              "session_id": "sess_20251202_160631_3051ea"
+            },
+            {
+              "memory_id": "mem_882988381317",
+              "type": "academic",
+              "text": "Dreads math",
+              "score": 0.847233772,
+              "importance": 0.8,
+              "timestamp": "2025-12-02T16:06:49.248594Z",
+              "metadata": {
+                "emotion": "dread",
+                "valence": "struggle",
+                "topic": "math"
+              },
+              "session_id": "sess_20251202_160631_3051ea"
+            }
+          ]
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 0,
+          "memories": []
+        }
+      },
+      "retrieval_time_ms": 4270.85,
+      "status": "success",
+      "generated_query": "Quadratic equations, discriminant, real roots, struggling with formulas, understanding the shape/U-shape, student having difficulty with math concepts.",
+      "original_message": "okay, that makes sense."
+    },
+    {
+      "retrieval_id": "deep_ret_20251202_165954_ae3753",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:59:54.570730Z",
+      "student_message": "4 squared is 16. and then... 4 times 1 times 5 is 20. so 16 - 20.",
+      "triggers": {
+        "topic_change": false,
+        "emotional_cue": false,
+        "explicit_reference": false,
+        "every_n_turns": true
+      },
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "academic_top_k": 5,
+        "personal_top_k": 3,
+        "preferences_top_k": 3,
+        "context_limit": 3
+      },
+      "results": {
+        "academic": {
+          "total_found": 3,
+          "memories": [
+            {
+              "memory_id": "mem_7c67c386f227",
+              "type": "academic",
+              "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+              "score": 0.858887196,
+              "importance": 0.8,
+              "timestamp": "2025-12-02T16:07:05.229364Z",
+              "metadata": {
+                "emotion": "confused",
+                "valence": "struggle",
+                "topic": "discriminant"
+              },
+              "session_id": "sess_20251202_160631_3051ea"
+            },
+            {
+              "memory_id": "mem_882988381317",
+              "type": "academic",
+              "text": "Dreads math",
+              "score": 0.837958157,
+              "importance": 0.8,
+              "timestamp": "2025-12-02T16:06:49.248594Z",
+              "metadata": {
+                "emotion": "dread",
+                "valence": "struggle",
+                "topic": "math"
+              },
+              "session_id": "sess_20251202_160631_3051ea"
+            },
+            {
+              "memory_id": "mem_35a4b1d19a84",
+              "type": "academic",
+              "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+              "score": 0.788420916,
+              "importance": 0.9,
+              "timestamp": "2025-12-02T16:07:05.229364Z",
+              "metadata": {
+                "emotion": "overwhelmed",
+                "valence": "struggle",
+                "topic": "math comprehension"
+              },
+              "session_id": "sess_20251202_160631_3051ea"
+            }
+          ]
+        },
+        "personal": {
+          "total_found": 0,
+          "memories": []
+        },
+        "preferences": {
+          "total_found": 0,
+          "memories": []
+        },
+        "context": {
+          "total_found": 0,
+          "memories": []
+        }
+      },
+      "retrieval_time_ms": 3647.05,
+      "status": "success",
+      "generated_query": "Discriminant of a quadratic equation, specifically determining the number of real roots. Using the formula and applying it to an example: $y = x^2 + 4x + 5$.",
+      "original_message": "4 squared is 16. and then... 4 times 1 times 5 is 20. so 16 - 20."
     }
   ],
-  "last_updated": "2025-12-02T16:07:00.252399Z"
+  "last_updated": "2025-12-02T16:59:54.590259Z"
 }

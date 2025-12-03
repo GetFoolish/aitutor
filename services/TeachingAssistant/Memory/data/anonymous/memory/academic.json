@@ -1,28 +1,29 @@
 [
   {
-    "id": "mem_5be7421768aa",
+    "id": "mem_2e2c61e74096",
     "student_id": "anonymous",
     "type": "academic",
-    "text": "Prefers physics over math, specifically motion.",
-    "timestamp": "2025-12-02T14:47:04.799331Z",
+    "text": "Previously studied chemistry and wants to continue with that subject.",
+    "timestamp": "2025-12-03T13:09:37.751073Z",
     "importance": 0.9,
     "metadata": {
-      "topic": "physics",
-      "emotion": "excited"
+      "topic": "chemistry",
+      "valence": "neutral"
     },
-    "session_id": "sess_20251202_144626_6axrcj"
+    "session_id": "sess_20251203_130853_k08en9"
   },
   {
-    "id": "mem_4fa791232421",
+    "id": "mem_1b863421a801",
     "student_id": "anonymous",
     "type": "academic",
-    "text": "Wants to learn about atoms.",
-    "timestamp": "2025-12-02T15:34:23.480384Z",
-    "importance": 0.7,
+    "text": "Student wants to discuss helium atom in chemistry",
+    "timestamp": "2025-12-03T13:11:13.074522Z",
+    "importance": 0.9,
     "metadata": {
-      "topic": "atoms",
+      "topic": "helium atom",
+      "valence": "neutral",
       "emotion": "interested"
     },
-    "session_id": "sess_20251202_153218_j2tovx"
+    "session_id": "sess_20251203_130853_k08en9"
   }
 ]

@@ -107,16 +107,22 @@ class MemoryStore:
         if not memories:
             return []
 
-        texts = [m.text for m in memories]
+        # Deduplicate memories by ID (keep last occurrence to handle any updates)
+        seen_ids = {}
+        for mem in memories:
+            seen_ids[mem.id] = mem
+        unique_memories = list(seen_ids.values())
+
+        texts = [m.text for m in unique_memories]
         from .embeddings import get_embeddings_batch
         embeddings = get_embeddings_batch(texts)
 
-        mem_embeddings = dict(zip([m.id for m in memories], embeddings))
+        mem_embeddings = dict(zip([m.id for m in unique_memories], embeddings))
 
         index = self._get_index()
         by_namespace: Dict[str, List[Dict]] = {}
 
-        for mem in memories:
+        for mem in unique_memories:
             ns = mem.type.value
             if ns not in by_namespace:
                 by_namespace[ns] = []
@@ -133,7 +139,7 @@ class MemoryStore:
             index.upsert(vectors=vectors, namespace=ns)
 
         by_type: Dict[MemoryType, List[Memory]] = {}
-        for mem in memories:
+        for mem in unique_memories:
             if mem.type not in by_type:
                 by_type[mem.type] = []
             by_type[mem.type].append(mem)
@@ -152,14 +158,6 @@ class MemoryStore:
                 self._save_file(mem_type, existing)
 
         return ids
-
-    def get_memory(self, memory_id: str) -> Optional[Memory]:
-        for mem_type in MemoryType:
-            memories = self._load_file(mem_type)
-            for m in memories:
-                if m.get('id') == memory_id:
-                    return Memory.from_dict(m)
-        return None
 
     def get_memories_by_student(
         self,

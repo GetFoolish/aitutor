@@ -325,7 +325,41 @@
       ],
       "new_memories_count": 3,
       "status": "success"
+    },
+    {
+      "closing_id": "closing_20251202_170000_58b413",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T17:00:00.068270Z",
+      "session_duration_seconds": null,
+      "session_summary": "Key moments: Struggled: student expresses ambivalence, suggesting potential difficulty or uncertainty.; Struggled: student expresses dread and dislike of the subject.; Struggled: student expresses frustration and difficulty understanding the material.; Struggled: student is confused by the formulas, specifically the discriminant.; Struggled: student expresses frustration with consistently getting the problem wrong.; Struggled: student is likely confused about how to determine the number of real roots of a quadratic equation.; Struggled: student is likely confused about the concept of something \"not hitting the ground.\"; Breakthrough: student demonstrates understanding of the relationship between a negative answer and a line's intersection with the x-axis.; Struggled: student is likely providing answers without demonstrating understanding of the underlying concepts.; Struggled: student is likely attempting to solve a quadratic equation or a related problem and is unsure of the next step or the meaning of the expression.; Struggled: student is likely struggling with order of operations or the problem itself.",
+      "key_moments": [
+        "Struggled: student expresses ambivalence, suggesting potential difficulty or uncertainty.",
+        "Struggled: student expresses dread and dislike of the subject.",
+        "Struggled: student expresses frustration and difficulty understanding the material.",
+        "Struggled: student is confused by the formulas, specifically the discriminant.",
+        "Struggled: student expresses frustration with consistently getting the problem wrong.",
+        "Struggled: student is likely confused about how to determine the number of real roots of a quadratic equation.",
+        "Struggled: student is likely confused about the concept of something \"not hitting the ground.\"",
+        "Breakthrough: student demonstrates understanding of the relationship between a negative answer and a line's intersection with the x-axis.",
+        "Struggled: student is likely providing answers without demonstrating understanding of the underlying concepts.",
+        "Struggled: student is likely attempting to solve a quadratic equation or a related problem and is unsure of the next step or the meaning of the expression.",
+        "Struggled: student is likely struggling with order of operations or the problem itself."
+      ],
+      "emotional_arc": [
+        "excited"
+      ],
+      "topics_covered": [
+        "general"
+      ],
+      "goodbye_message": "Great work today! Can't wait to build on this next time.",
+      "next_session_hooks": [
+        "Revisit what we struggled with",
+        "Continue with general"
+      ],
+      "new_memories_count": 10,
+      "status": "success"
     }
   ],
-  "last_updated": "2025-12-02T16:07:06.049025Z"
+  "last_updated": "2025-12-02T17:00:00.081332Z"
 }

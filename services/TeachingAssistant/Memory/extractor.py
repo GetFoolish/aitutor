@@ -5,7 +5,7 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime
 from dotenv import load_dotenv
 
-from .schema import Memory, MemoryType, ExtractedMemory
+from .schema import Memory, MemoryType
 
 load_dotenv()
 

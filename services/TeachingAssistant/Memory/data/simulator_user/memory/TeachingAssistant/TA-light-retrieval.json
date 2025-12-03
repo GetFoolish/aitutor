@@ -4590,7 +4590,983 @@
       },
       "retrieval_time_ms": 1315.6,
       "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_165837_0d82f0",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:58:37.754801Z",
+      "student_message": ".",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 3,
+        "memories": [
+          {
+            "memory_id": "mem_7c67c386f227",
+            "type": "academic",
+            "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+            "score": 0.829334378,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "confused",
+              "valence": "struggle",
+              "topic": "discriminant"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_882988381317",
+            "type": "academic",
+            "text": "Dreads math",
+            "score": 0.812537551,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:06:49.248594Z",
+            "metadata": {
+              "emotion": "dread",
+              "valence": "struggle",
+              "topic": "math"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_35a4b1d19a84",
+            "type": "academic",
+            "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+            "score": 0.805913,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "overwhelmed",
+              "valence": "struggle",
+              "topic": "math comprehension"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          }
+        ]
+      },
+      "retrieval_time_ms": 4120.58,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_165841_aba99b",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:58:41.513790Z",
+      "student_message": "hey. uh, i'm okay i guess.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 3,
+        "memories": [
+          {
+            "memory_id": "mem_882988381317",
+            "type": "academic",
+            "text": "Dreads math",
+            "score": 0.768198848,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:06:49.248594Z",
+            "metadata": {
+              "emotion": "dread",
+              "valence": "struggle",
+              "topic": "math"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_7c67c386f227",
+            "type": "academic",
+            "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+            "score": 0.746525764,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "confused",
+              "valence": "struggle",
+              "topic": "discriminant"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_35a4b1d19a84",
+            "type": "academic",
+            "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+            "score": 0.693489313,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "overwhelmed",
+              "valence": "struggle",
+              "topic": "math comprehension"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1413.46,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_165846_845fad",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:58:46.937424Z",
+      "student_message": "kinda. math is just... not my thing. i'm dreading this a little bit to be honest.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 3,
+        "memories": [
+          {
+            "memory_id": "mem_882988381317",
+            "type": "academic",
+            "text": "Dreads math",
+            "score": 0.839851,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:06:49.248594Z",
+            "metadata": {
+              "emotion": "dread",
+              "valence": "struggle",
+              "topic": "math"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_7c67c386f227",
+            "type": "academic",
+            "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+            "score": 0.812670231,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "confused",
+              "valence": "struggle",
+              "topic": "discriminant"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_35a4b1d19a84",
+            "type": "academic",
+            "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+            "score": 0.789735258,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "overwhelmed",
+              "valence": "struggle",
+              "topic": "math comprehension"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1542.04,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_165852_d588c2",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:58:52.581855Z",
+      "student_message": "it's just a lot of symbols. and the textbook explains things in these huge paragraphs. i read it and my brain just shuts off.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 3,
+        "memories": [
+          {
+            "memory_id": "mem_35a4b1d19a84",
+            "type": "academic",
+            "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+            "score": 0.837211549,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "overwhelmed",
+              "valence": "struggle",
+              "topic": "math comprehension"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_7c67c386f227",
+            "type": "academic",
+            "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+            "score": 0.801044524,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "confused",
+              "valence": "struggle",
+              "topic": "discriminant"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_882988381317",
+            "type": "academic",
+            "text": "Dreads math",
+            "score": 0.79693526,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:06:49.248594Z",
+            "metadata": {
+              "emotion": "dread",
+              "valence": "struggle",
+              "topic": "math"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          }
+        ]
+      },
+      "retrieval_time_ms": 2528.89,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_165857_a03cc7",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:58:57.451091Z",
+      "student_message": "we started it monday. i get the basic shape, the U thing. but the formulas are messing me up. specifically the discriminant part.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 3,
+        "memories": [
+          {
+            "memory_id": "mem_7c67c386f227",
+            "type": "academic",
+            "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+            "score": 0.890992343,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "confused",
+              "valence": "struggle",
+              "topic": "discriminant"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_882988381317",
+            "type": "academic",
+            "text": "Dreads math",
+            "score": 0.821028769,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:06:49.248594Z",
+            "metadata": {
+              "emotion": "dread",
+              "valence": "struggle",
+              "topic": "math"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_35a4b1d19a84",
+            "type": "academic",
+            "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+            "score": 0.810161114,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "overwhelmed",
+              "valence": "struggle",
+              "topic": "math comprehension"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1451.74,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_165905_343d70",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:59:05.709192Z",
+      "student_message": "yeah that one. i just plug numbers in and get it wrong half the time.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 3,
+        "memories": [
+          {
+            "memory_id": "mem_882988381317",
+            "type": "academic",
+            "text": "Dreads math",
+            "score": 0.816136181,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:06:49.248594Z",
+            "metadata": {
+              "emotion": "dread",
+              "valence": "struggle",
+              "topic": "math"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_7c67c386f227",
+            "type": "academic",
+            "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+            "score": 0.812656105,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "confused",
+              "valence": "struggle",
+              "topic": "discriminant"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_35a4b1d19a84",
+            "type": "academic",
+            "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+            "score": 0.773444593,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "overwhelmed",
+              "valence": "struggle",
+              "topic": "math comprehension"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1407.72,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_165910_9d4c43",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:59:10.590543Z",
+      "student_message": "yeah, $y = x^2 + 4x + 5$. the question asks 'how many real roots' or something.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 3,
+        "memories": [
+          {
+            "memory_id": "mem_882988381317",
+            "type": "academic",
+            "text": "Dreads math",
+            "score": 0.830429,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:06:49.248594Z",
+            "metadata": {
+              "emotion": "dread",
+              "valence": "struggle",
+              "topic": "math"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_7c67c386f227",
+            "type": "academic",
+            "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+            "score": 0.80757308,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "confused",
+              "valence": "struggle",
+              "topic": "discriminant"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_35a4b1d19a84",
+            "type": "academic",
+            "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+            "score": 0.769027591,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "overwhelmed",
+              "valence": "struggle",
+              "topic": "math comprehension"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1368.72,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_165915_e84f80",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:59:15.409596Z",
+      "student_message": "okay. i'm picturing it.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 3,
+        "memories": [
+          {
+            "memory_id": "mem_882988381317",
+            "type": "academic",
+            "text": "Dreads math",
+            "score": 0.784775853,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:06:49.248594Z",
+            "metadata": {
+              "emotion": "dread",
+              "valence": "struggle",
+              "topic": "math"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_7c67c386f227",
+            "type": "academic",
+            "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+            "score": 0.754414856,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "confused",
+              "valence": "struggle",
+              "topic": "discriminant"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_35a4b1d19a84",
+            "type": "academic",
+            "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+            "score": 0.715699136,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "overwhelmed",
+              "valence": "struggle",
+              "topic": "math comprehension"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1525.09,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_165920_48e9b8",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:59:20.143422Z",
+      "student_message": "yeah.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 3,
+        "memories": [
+          {
+            "memory_id": "mem_882988381317",
+            "type": "academic",
+            "text": "Dreads math",
+            "score": 0.780950665,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:06:49.248594Z",
+            "metadata": {
+              "emotion": "dread",
+              "valence": "struggle",
+              "topic": "math"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_7c67c386f227",
+            "type": "academic",
+            "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+            "score": 0.77046448,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "confused",
+              "valence": "struggle",
+              "topic": "discriminant"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_35a4b1d19a84",
+            "type": "academic",
+            "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+            "score": 0.717762411,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "overwhelmed",
+              "valence": "struggle",
+              "topic": "math comprehension"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1661.32,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_165923_e478a0",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:59:23.770345Z",
+      "student_message": "okay, that makes sense.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 3,
+        "memories": [
+          {
+            "memory_id": "mem_882988381317",
+            "type": "academic",
+            "text": "Dreads math",
+            "score": 0.766222537,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:06:49.248594Z",
+            "metadata": {
+              "emotion": "dread",
+              "valence": "struggle",
+              "topic": "math"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_7c67c386f227",
+            "type": "academic",
+            "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+            "score": 0.747419238,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "confused",
+              "valence": "struggle",
+              "topic": "discriminant"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_35a4b1d19a84",
+            "type": "academic",
+            "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+            "score": 0.705705,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "overwhelmed",
+              "valence": "struggle",
+              "topic": "math comprehension"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1353.66,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_165932_5ec64a",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:59:32.371537Z",
+      "student_message": "then it never hits the ground.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 3,
+        "memories": [
+          {
+            "memory_id": "mem_882988381317",
+            "type": "academic",
+            "text": "Dreads math",
+            "score": 0.771288812,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:06:49.248594Z",
+            "metadata": {
+              "emotion": "dread",
+              "valence": "struggle",
+              "topic": "math"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_7c67c386f227",
+            "type": "academic",
+            "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+            "score": 0.736293435,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "confused",
+              "valence": "struggle",
+              "topic": "discriminant"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_35a4b1d19a84",
+            "type": "academic",
+            "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+            "score": 0.691116571,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "overwhelmed",
+              "valence": "struggle",
+              "topic": "math comprehension"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1339.46,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_165937_991128",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:59:37.117248Z",
+      "student_message": "oh. so negative answer means it doesn't touch the line?",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 3,
+        "memories": [
+          {
+            "memory_id": "mem_7c67c386f227",
+            "type": "academic",
+            "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+            "score": 0.790568531,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "confused",
+              "valence": "struggle",
+              "topic": "discriminant"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_882988381317",
+            "type": "academic",
+            "text": "Dreads math",
+            "score": 0.78180033,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:06:49.248594Z",
+            "metadata": {
+              "emotion": "dread",
+              "valence": "struggle",
+              "topic": "math"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_35a4b1d19a84",
+            "type": "academic",
+            "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+            "score": 0.749509752,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "overwhelmed",
+              "valence": "struggle",
+              "topic": "math comprehension"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1453.23,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_165941_14f3c4",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:59:41.817349Z",
+      "student_message": "a is 1. b is 4. c is 5.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 3,
+        "memories": [
+          {
+            "memory_id": "mem_882988381317",
+            "type": "academic",
+            "text": "Dreads math",
+            "score": 0.805187,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:06:49.248594Z",
+            "metadata": {
+              "emotion": "dread",
+              "valence": "struggle",
+              "topic": "math"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_7c67c386f227",
+            "type": "academic",
+            "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+            "score": 0.799136162,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "confused",
+              "valence": "struggle",
+              "topic": "discriminant"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_35a4b1d19a84",
+            "type": "academic",
+            "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+            "score": 0.764564574,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "overwhelmed",
+              "valence": "struggle",
+              "topic": "math comprehension"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1568.9,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_165946_4f3c93",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:59:46.356349Z",
+      "student_message": "so $4^2 - 4(1)(5)$?",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 3,
+        "memories": [
+          {
+            "memory_id": "mem_882988381317",
+            "type": "academic",
+            "text": "Dreads math",
+            "score": 0.827429652,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:06:49.248594Z",
+            "metadata": {
+              "emotion": "dread",
+              "valence": "struggle",
+              "topic": "math"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_7c67c386f227",
+            "type": "academic",
+            "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+            "score": 0.822934389,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "confused",
+              "valence": "struggle",
+              "topic": "discriminant"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_35a4b1d19a84",
+            "type": "academic",
+            "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+            "score": 0.781351745,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "overwhelmed",
+              "valence": "struggle",
+              "topic": "math comprehension"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1402.24,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_165950_0d8c1d",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:59:50.897127Z",
+      "student_message": "4 squared is 16. and then... 4 times 1 times 5 is 20. so 16 - 20.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 3,
+        "memories": [
+          {
+            "memory_id": "mem_882988381317",
+            "type": "academic",
+            "text": "Dreads math",
+            "score": 0.834565759,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:06:49.248594Z",
+            "metadata": {
+              "emotion": "dread",
+              "valence": "struggle",
+              "topic": "math"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_7c67c386f227",
+            "type": "academic",
+            "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+            "score": 0.796377778,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "confused",
+              "valence": "struggle",
+              "topic": "discriminant"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_35a4b1d19a84",
+            "type": "academic",
+            "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+            "score": 0.761769474,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "overwhelmed",
+              "valence": "struggle",
+              "topic": "math comprehension"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1502.77,
+      "status": "success"
+    },
+    {
+      "retrieval_id": "ret_20251202_165959_1cb092",
+      "session_id": "sess_20251202_165833_6cd5d1",
+      "user_id": "simulator_user",
+      "timestamp": "2025-12-02T16:59:59.030285Z",
+      "student_message": "-4.",
+      "query_embedding_generated": true,
+      "pinecone_query_params": {
+        "student_id": "simulator_user",
+        "top_k": 10
+      },
+      "results": {
+        "total_found": 3,
+        "memories": [
+          {
+            "memory_id": "mem_882988381317",
+            "type": "academic",
+            "text": "Dreads math",
+            "score": 0.811884522,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:06:49.248594Z",
+            "metadata": {
+              "emotion": "dread",
+              "valence": "struggle",
+              "topic": "math"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_7c67c386f227",
+            "type": "academic",
+            "text": "Understands the basic 'U' shape of quadratics, but struggles with formulas, specifically the discriminant.",
+            "score": 0.800143719,
+            "importance": 0.8,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "confused",
+              "valence": "struggle",
+              "topic": "discriminant"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          },
+          {
+            "memory_id": "mem_35a4b1d19a84",
+            "type": "academic",
+            "text": "Struggles with math textbooks due to complex symbols and long explanations, leading to difficulty understanding the material.",
+            "score": 0.766765118,
+            "importance": 0.9,
+            "timestamp": "2025-12-02T16:07:05.229364Z",
+            "metadata": {
+              "emotion": "overwhelmed",
+              "valence": "struggle",
+              "topic": "math comprehension"
+            },
+            "session_id": "sess_20251202_160631_3051ea"
+          }
+        ]
+      },
+      "retrieval_time_ms": 1465.42,
+      "status": "success"
     }
   ],
-  "last_updated": "2025-12-02T16:06:56.660541Z"
+  "last_updated": "2025-12-02T16:59:59.046920Z"
 }
