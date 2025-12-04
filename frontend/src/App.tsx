@@ -26,6 +26,7 @@ import QuestionDisplay from "./components/question-display/QuestionDisplay";
 import ControlTray from "./components/control-tray/ControlTray";
 import FloatingControlPanel from "./components/floating-control-panel/FloatingControlPanel";
 import Scratchpad from "./components/scratchpad/Scratchpad";
+import BackgroundShapes from "./components/background-shapes/BackgroundShapes";
 import { ThemeProvider } from "./components/theme/theme-provier";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -127,12 +128,13 @@ function App() {
               currentSkill={currentSkill}
             />
             <main style={{
-              marginRight: isSidebarOpen ? "320px" : "0",
-              marginLeft: isGradingSidebarOpen ? "320px" : "48px",
+              marginRight: isSidebarOpen ? "260px" : "0",
+              marginLeft: isGradingSidebarOpen ? "260px" : "40px",
               transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
             }}>
               <div className="main-app-area">
                 <div className="question-panel">
+                  <BackgroundShapes />
                   <ScratchpadCapture socket={commandSocket}>
                     <QuestionDisplay onSkillChange={setCurrentSkill} />
                     {isScratchpadOpen && (

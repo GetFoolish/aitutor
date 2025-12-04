@@ -43,20 +43,20 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
     const { theme, setTheme } = useTheme();
 
     return (
-        <header className="fixed top-0 left-0 right-0 h-[56px] md:h-[56px] bg-white dark:bg-neutral-900 border-b-[4px] md:border-b-[5px] border-black dark:border-white z-40 flex items-center justify-between px-3 md:px-6 shadow-[0_6px_0_0_rgba(0,0,0,1)] dark:shadow-[0_6px_0_0_rgba(255,255,255,0.3)]">
+        <header className="fixed top-0 left-0 right-0 h-[44px] lg:h-[48px] bg-[#FFFDF5] dark:bg-[#000000] border-b-[3px] lg:border-b-[4px] border-black dark:border-white z-40 flex items-center justify-between px-2 md:px-4 lg:px-5 shadow-[0_2px_0_0_rgba(0,0,0,1)] lg:shadow-[0_2px_0_0_rgba(0,0,0,1)] dark:shadow-[0_2px_0_0_rgba(255,255,255,0.3)]">
             {/* Left side - AI Tutor Logo */}
-            <div className="flex items-center gap-2 md:gap-3 group cursor-pointer">
-                <div className="relative flex items-center justify-center w-9 h-9 md:w-10 md:h-10 border-[3px] border-black dark:border-white bg-[#FFE500] group-hover:translate-x-1 group-hover:translate-y-1 transition-transform duration-100">
-                    <span className="material-symbols-outlined text-lg md:text-xl text-black group-hover:rotate-12 transition-transform duration-300 font-black">
+            <div className="flex items-center gap-1.5 md:gap-2 group cursor-pointer">
+                <div className="relative flex items-center justify-center w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 border-[2px] lg:border-[3px] border-black dark:border-white bg-[#FFD93D] group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform duration-100">
+                    <span className="material-symbols-outlined text-base md:text-lg text-black group-hover:rotate-12 transition-transform duration-300 font-black">
                         smart_toy
                     </span>
                 </div>
                 <div className="flex flex-col">
-                    <h1 className="text-base md:text-lg font-black text-black dark:text-white uppercase tracking-tight leading-none">
+                    <h1 className="text-sm md:text-base lg:text-base font-black text-black dark:text-white uppercase tracking-tight leading-none">
                         AI TUTOR
                     </h1>
-                    <span className="text-[8px] md:text-[9px] font-bold text-black tracking-wider uppercase flex items-center gap-1 bg-[#00F0FF] px-1.5 md:px-2 py-0.5 border-[1.5px] md:border-2 border-black dark:border-white -ml-1">
-                        <Sparkles className="w-2 h-2 md:w-2.5 md:h-2.5" />
+                    <span className="text-[7px] md:text-[8px] lg:text-[8px] font-bold text-black tracking-wider uppercase flex items-center gap-0.5 md:gap-1 bg-[#C4B5FD] px-1 md:px-1.5 py-0.5 border-[1.5px] border-black dark:border-white -ml-0.5 md:-ml-1">
+                        <Sparkles className="w-1.5 h-1.5 md:w-2 md:h-2" />
                         <span className="hidden sm:inline">INTERACTIVE</span>
                         <span className="sm:hidden">AI</span>
                     </span>
@@ -64,22 +64,22 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
             </div>
 
             {/* Right side - Actions */}
-            <div className="flex items-center gap-2 md:gap-3">
+            <div className="flex items-center gap-1.5 md:gap-2">
                 <Button
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="w-8 h-8 md:w-9 md:h-9 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-800 hover:bg-[#ADFF2F] dark:hover:bg-[#ADFF2F] hover:translate-x-1 hover:translate-y-1 hover:shadow-none shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 text-black dark:text-white dark:hover:text-black"
+                    className="w-7 h-7 md:w-8 md:h-8 lg:w-8 lg:h-8 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 text-black dark:text-white dark:hover:text-black"
                     onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 >
-                    <Sun className="h-[1rem] w-[1rem] md:h-[1.1rem] md:w-[1.1rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                    <Moon className="absolute h-[1rem] w-[1rem] md:h-[1.1rem] md:w-[1.1rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                    <Sun className="h-[0.9rem] w-[0.9rem] md:h-[1rem] md:w-[1rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                    <Moon className="absolute h-[0.9rem] w-[0.9rem] md:h-[1rem] md:w-[1rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                     <span className="sr-only">Toggle theme</span>
                 </Button>
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="relative h-8 w-8 md:h-9 md:w-9 p-0 border-[2px] md:border-[3px] border-black dark:border-white bg-[#FF006E] hover:bg-[#FF006E] hover:translate-x-1 hover:translate-y-1 hover:shadow-none shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] transition-all duration-100">
+                        <Button variant="ghost" className="relative h-7 w-7 md:h-8 md:w-8 lg:h-8 lg:w-8 p-0 border-[2px] border-black dark:border-white bg-[#FF6B6B] hover:bg-[#FF6B6B] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100">
                             <Avatar className="h-full w-full border-none">
                                 <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
                                 <AvatarFallback className="bg-transparent text-white font-black text-xs">CN</AvatarFallback>
@@ -107,7 +107,7 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-red-600 dark:text-red-400 focus:text-red-600 dark:focus:text-red-400">
+                        <DropdownMenuItem className="text-[#FF6B6B] focus:text-[#FF6B6B]">
                             <LogOut className="mr-2 h-4 w-4" />
                             <span>Log out</span>
                         </DropdownMenuItem>
@@ -118,13 +118,13 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="w-8 h-8 md:w-9 md:h-9 border-[2px] md:border-[3px] border-black dark:border-white bg-[#FFE500] hover:bg-[#FFE500] hover:translate-x-1 hover:translate-y-1 hover:shadow-none shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 text-black"
+                    className="w-7 h-7 md:w-8 md:h-8 lg:w-8 lg:h-8 border-[2px] border-black dark:border-white bg-[#FFD93D] hover:bg-[#FFD93D] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 text-black"
                     onClick={onToggleSidebar}
                 >
                     {sidebarOpen ? (
-                        <RiSidebarFoldLine className="w-4 h-4 md:w-5 md:h-5 font-black" />
+                        <RiSidebarFoldLine className="w-4 h-4 lg:w-[1.1rem] lg:h-[1.1rem] font-black" />
                     ) : (
-                        <RiSidebarUnfoldLine className="w-4 h-4 md:w-5 md:h-5 font-black" />
+                        <RiSidebarUnfoldLine className="w-4 h-4 lg:w-[1.1rem] lg:h-[1.1rem] font-black" />
                     )}
                 </Button>
             </div>

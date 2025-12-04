@@ -1,20 +1,24 @@
 :root {
-  // Neo-Brutalism Color Palette
+  // Web 1.0 Neo-Brutalism Color Palette
   --neo-black: #000000;
   --neo-white: #FFFFFF;
-  --neo-yellow: #FFE500;
-  --neo-cyan: #00F0FF;
-  --neo-pink: #FF006E;
-  --neo-lime: #ADFF2F;
-  --neo-bg: #F5F5F5;
-  --neo-orange: #FF6B35;
+  --neo-yellow: #FFD93D; // Vivid Yellow
+  --neo-red: #FF6B6B; // Hot Red
+  --neo-violet: #C4B5FD; // Soft Violet
+  --neo-bg: #FFFDF5; // Cream background (aged paper)
+
+  // Legacy color mappings for backward compatibility
+  --neo-cyan: #C4B5FD; // Map cyan to violet
+  --neo-pink: #FF6B6B; // Map pink to red
+  --neo-lime: #FFD93D; // Map lime to yellow
+  --neo-orange: #FF6B6B; // Map orange to red
 
   // Neo-Brutalism Borders & Shadows
   --neo-border-width: 5px;
   --neo-border: 5px solid var(--neo-black);
-  --neo-shadow: 8px 8px 0 var(--neo-black);
-  --neo-shadow-hover: 12px 12px 0 var(--neo-black);
-  --neo-shadow-small: 4px 4px 0 var(--neo-black);
+  --neo-shadow: 3px 3px 0 var(--neo-black);
+  --neo-shadow-hover: 4px 4px 0 var(--neo-black);
+  --neo-shadow-small: 2px 2px 0 var(--neo-black);
 
   // Legacy variables (keeping for compatibility)
   --text: var(--neo-black);
@@ -74,23 +78,28 @@ body {
   font-family: "Space Mono", monospace;
   background: var(--neo-bg);
   color: var(--neo-black);
-  font-size: 14px; // Smaller base font size
+  font-size: 11px; // Much smaller base for better fit
+  font-weight: 700; // Bold typography for Web 1.0 aesthetic
 
-  // Responsive scaling
-  @media (min-width: 1920px) {
-    font-size: 16px; // Larger screens
+  // Responsive scaling - only increase on very large screens
+  @media (min-width: 2560px) {
+    font-size: 14px; // 4K displays
   }
 
-  @media (max-width: 1440px) {
-    font-size: 13px;
+  @media (min-width: 1920px) {
+    font-size: 13px; // Full HD
+  }
+
+  @media (min-width: 1440px) and (max-width: 1919px) {
+    font-size: 12px; // Standard large laptop
   }
 
   @media (max-width: 1024px) {
-    font-size: 12px; // Tablets
+    font-size: 11px; // Tablets
   }
 
   @media (max-width: 768px) {
-    font-size: 11px; // Mobile
+    font-size: 10px; // Mobile
   }
 }
 
@@ -154,18 +163,19 @@ body {
 .streaming-console {
   color: var(--neo-black);
   display: flex;
-  height: calc(100vh - 56px);
+  height: calc(100vh - 48px); // Reduced from 56px
   width: 100vw;
-  margin-top: 56px;
+  margin-top: 48px; // Reduced from 56px
   position: relative;
   background: var(--neo-bg);
 
   // Responsive layout
   @media (max-width: 768px) {
     flex-direction: column;
-    height: calc(100vh - 50px);
-    margin-top: 50px;
+    height: calc(100vh - 44px); // Reduced from 50px
+    margin-top: 44px;
   }
+}
 
   a,
   a:visited,
@@ -227,62 +237,18 @@ body {
     justify-content: flex-start;
     height: 100vh;
     overflow: hidden;
+    background: var(--neo-bg);
 
-    // Neo-brutalist geometric background
+    // SVG dot pattern background
     &::before {
       content: '';
       position: absolute;
       inset: 0;
       z-index: 0;
-      background: var(--neo-bg);
       pointer-events: none;
-    }
-
-    // Geometric shapes
-    &::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      background-image:
-        linear-gradient(var(--neo-yellow), var(--neo-yellow)),
-        radial-gradient(circle, var(--neo-cyan) 60%, transparent 60%),
-        linear-gradient(var(--neo-pink), var(--neo-pink)),
-        linear-gradient(135deg, var(--neo-lime) 50%, transparent 50%),
-        linear-gradient(var(--neo-orange), var(--neo-orange)),
-        repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 49px,
-          rgba(0, 0, 0, 0.03) 49px,
-          rgba(0, 0, 0, 0.03) 50px
-        ),
-        repeating-linear-gradient(
-          90deg,
-          transparent,
-          transparent 49px,
-          rgba(0, 0, 0, 0.03) 49px,
-          rgba(0, 0, 0, 0.03) 50px
-        );
-      background-size:
-        120px 120px,
-        150px 150px,
-        100px 100px,
-        180px 180px,
-        60px 60px,
-        50px 50px,
-        50px 50px;
-      background-position:
-        -30px -30px,
-        calc(100% + 30px) -40px,
-        -20px calc(100% + 20px),
-        calc(100% + 40px) calc(100% + 40px),
-        60% 30%,
-        0 0,
-        0 0;
-      background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, repeat, repeat;
-      opacity: 0.15;
+      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23000000' opacity='0.50'/%3E%3C/svg%3E");
+      background-size: 20px 20px;
+      background-repeat: repeat;
     }
 
     // Ensure content is above background
@@ -294,12 +260,10 @@ body {
 
   // Dark mode for question panel background
   :global(.dark) .question-panel {
-    &::before {
-      background: #0a0a0a;
-    }
+    background: #0a0a0a;
 
-    &::after {
-      opacity: 0.08;
+    &::before {
+      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23FFFFFF' opacity='0.08'/%3E%3C/svg%3E");
     }
   }
 
@@ -324,7 +288,6 @@ body {
     height: 50%;
     overflow-y: auto;
   }
-}
 
 /* video player */
 .stream {

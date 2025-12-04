@@ -207,20 +207,20 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
     return (
         <div className="framework-perseus relative flex min-h-screen w-full items-center justify-center py-4 md:py-6 px-3 md:px-4">
             {/* Neo-Brutalism Card */}
-            <Card className="relative flex w-full max-w-4xl md:max-w-5xl h-auto md:h-[550px] lg:h-[600px] flex-col border-[4px] md:border-[5px] border-black dark:border-white shadow-[6px_6px_0_0_rgba(0,0,0,1)] md:shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[6px_6px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[8px_8px_0_0_rgba(255,255,255,0.3)] bg-white dark:bg-neutral-900 overflow-hidden transition-all duration-200">
+            <Card className="relative flex w-full max-w-4xl md:max-w-5xl h-auto md:h-[550px] lg:h-[600px] flex-col border-[4px] md:border-[5px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] bg-[#FFFDF5] dark:bg-[#000000] overflow-hidden transition-all duration-200">
                 {/* Progress bar at top */}
-                <div className="absolute top-0 left-0 right-0 h-2 md:h-3 bg-gray-200 dark:bg-neutral-700 border-b-[2px] md:border-b-[3px] border-black dark:border-white">
+                <div className="absolute top-0 left-0 right-0 h-2 md:h-3 bg-[#FFFDF5] dark:bg-[#000000] border-b-[2px] md:border-b-[3px] border-black dark:border-white">
                     <div
-                        className="h-full bg-[#00F0FF] transition-all duration-500 ease-out"
+                        className="h-full bg-[#C4B5FD] transition-all duration-500 ease-out"
                         style={{ width: `${progressPercentage}%` }}
                     />
                 </div>
 
-                <CardHeader className="space-y-2 pt-6 md:pt-7 px-4 md:px-6 border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#FFE500]">
+                <CardHeader className="space-y-2 pt-6 md:pt-7 px-4 md:px-6 border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#FFD93D]">
                     <div className="flex items-start justify-between gap-3 md:gap-4 flex-wrap">
                         <div className="space-y-1.5 flex-1">
                             <div className="flex items-center gap-2 md:gap-3">
-                                <div className="p-1.5 md:p-2 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-900">
+                                <div className="p-1.5 md:p-2 border-[2px] md:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]">
                                     <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-black dark:text-white font-bold" />
                                 </div>
                                 <CardTitle className="text-lg md:text-xl font-black text-black uppercase tracking-tight">
@@ -241,10 +241,10 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                                             Progress
                                         </div>
                                         <div className="text-xs md:text-sm font-black text-black">
-                                            Q <span className="text-[#FF006E]">{item + 1}</span>/{perseusItems.length}
+                                            Q <span className="text-[#FF6B6B]">{item + 1}</span>/{perseusItems.length}
                                         </div>
                                     </div>
-                                    <div className="px-3 md:px-4 py-2 md:py-3 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-800 shadow-[3px_3px_0_0_rgba(0,0,0,1)] md:shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)]">
+                                    <div className="px-3 md:px-4 py-2 md:py-3 border-[2px] md:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]">
                                         <div className="text-xl md:text-2xl font-black text-black dark:text-white">
                                             {Math.round(progressPercentage)}%
                                         </div>
@@ -255,14 +255,14 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                     </div>
                 </CardHeader>
 
-                <CardContent className="flex-1 overflow-hidden px-4 md:px-6 bg-white dark:bg-neutral-900">
+                <CardContent className="flex-1 overflow-hidden px-4 md:px-6 bg-[#FFFDF5] dark:bg-[#000000]">
                     <div
                         ref={scrollContainerRef}
                         className="relative h-full w-full overflow-auto scrollbar-thin scrollbar-thumb-black dark:scrollbar-thumb-white scrollbar-track-transparent"
                     >
                         {endOfTest ? (
                             <div className="flex h-full items-center justify-center px-3 md:px-4 py-4 md:py-6 text-center">
-                                <div className="max-w-sm md:max-w-md border-[4px] md:border-[5px] border-black dark:border-white bg-[#ADFF2F] px-6 md:px-8 py-8 md:py-10 shadow-[6px_6px_0_0_rgba(0,0,0,1)] md:shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[6px_6px_0_0_rgba(255,255,255,0.3)]">
+                                <div className="max-w-sm md:max-w-md border-[4px] md:border-[5px] border-black dark:border-white bg-[#4ADE80] px-6 md:px-8 py-8 md:py-10 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]">
                                     <div className="text-4xl md:text-6xl mb-3 md:mb-4">🎉</div>
                                     <p className="text-xl md:text-2xl font-black text-black uppercase mb-2 tracking-tight">
                                         Congratulations!
@@ -279,7 +279,7 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                             <div className="flex h-full flex-col items-center justify-center gap-3 md:gap-4">
                                 <div className="relative w-12 h-12 md:w-16 md:h-16">
                                     <div className="absolute inset-0 border-[3px] md:border-[4px] border-black dark:border-white"></div>
-                                    <div className="absolute inset-0 border-[3px] md:border-[4px] border-transparent border-t-[#00F0FF] animate-spin"></div>
+                                    <div className="absolute inset-0 border-[3px] md:border-[4px] border-transparent border-t-[#C4B5FD] animate-spin"></div>
                                 </div>
                                 <p className="text-xs md:text-sm font-black uppercase text-black dark:text-white tracking-wider animate-pulse">
                                     Loading questions...
@@ -287,7 +287,7 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                             </div>
                         ) : perseusItems.length > 0 ? (
                             <div className="space-y-4 md:space-y-6 py-3 md:py-4">
-                                <div className="border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 p-4 md:p-5 lg:p-6 shadow-[4px_4px_0_0_rgba(0,0,0,1)] md:shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[6px_6px_0_0_rgba(255,255,255,0.3)]">
+                                <div className="border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 p-4 md:p-5 lg:p-6 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]">
                                     <PerseusI18nContextProvider locale="en" strings={mockStrings}>
                                         <RenderStateRoot>
                                             <ServerItemRenderer
@@ -318,7 +318,7 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                                             : 'translate-y-4 opacity-0'
                                             }`}
                                     >
-                                        <div className={`flex items-center gap-2 md:gap-3 px-4 md:px-5 py-3 md:py-4 border-[3px] md:border-[4px] border-black dark:border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] md:shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[6px_6px_0_0_rgba(255,255,255,0.3)] ${score?.correct
+                                        <div className={`flex items-center gap-2 md:gap-3 px-4 md:px-5 py-3 md:py-4 border-[3px] md:border-[4px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] ${score?.correct
                                             ? "bg-[#ADFF2F]"
                                             : "bg-[#FF006E]"
                                             }`}>
@@ -343,7 +343,7 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                             </div>
                         ) : (
                             <div className="flex h-full items-center justify-center">
-                                <div className="text-center space-y-2 md:space-y-3 border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 p-6 md:p-8 shadow-[4px_4px_0_0_rgba(0,0,0,1)] md:shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)]">
+                                <div className="text-center space-y-2 md:space-y-3 border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 p-6 md:p-8 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]">
                                     <div className="text-3xl md:text-4xl mb-1 md:mb-2">📝</div>
                                     <p className="text-xs md:text-sm font-black uppercase text-black dark:text-white tracking-wider">
                                         No questions available.
@@ -357,24 +357,22 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                 <CardFooter className="flex justify-end gap-2 md:gap-3 px-4 md:px-6 pb-4 md:pb-5 pt-3 md:pt-4 border-t-[3px] md:border-t-[4px] border-black dark:border-white bg-white dark:bg-neutral-900">
                     <Button
                         type="button"
+                        size="sm"
+                        onClick={handleSubmit}
+                        disabled={isLoading || endOfTest || perseusItems.length === 0}
+                        className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-[#C4B5FD] hover:bg-[#C4B5FD] text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:hover:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
+                    >
+                        Submit
+                    </Button>
+                    <Button
+                        type="button"
                         variant="outline"
                         size="sm"
                         onClick={handleNext}
                         disabled={isLoading || endOfTest || perseusItems.length === 0}
-                        className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-800 hover:bg-[#FFE500] dark:hover:bg-[#FFE500] text-black dark:text-white dark:hover:text-black font-black uppercase tracking-wide shadow-[3px_3px_0_0_rgba(0,0,0,1)] md:shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-8 md:h-9 px-3 md:px-4"
+                        className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-800 hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
                     >
-                        <span className="hidden sm:inline">Next Question →</span>
-                        <span className="sm:hidden">Next →</span>
-                    </Button>
-                    <Button
-                        type="button"
-                        size="sm"
-                        onClick={handleSubmit}
-                        disabled={isLoading || endOfTest || perseusItems.length === 0}
-                        className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-[#00F0FF] hover:bg-[#00F0FF] text-black font-black uppercase tracking-wide shadow-[3px_3px_0_0_rgba(0,0,0,1)] md:shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] md:hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] md:dark:hover:shadow-[6px_6px_0_0_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-8 md:h-9 px-3 md:px-4"
-                    >
-                        <span className="hidden sm:inline">✓ Submit Answer</span>
-                        <span className="sm:hidden">✓ Submit</span>
+                        Next →
                     </Button>
                 </CardFooter>
             </Card>

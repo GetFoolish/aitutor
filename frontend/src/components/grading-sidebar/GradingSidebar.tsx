@@ -132,22 +132,22 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
     return (
         <div
             className={cn(
-                "fixed top-[56px] left-0 flex flex-col border-r-[4px] md:border-r-[5px] border-black dark:border-white bg-white dark:bg-neutral-900 transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) z-50 will-change-transform shadow-[6px_0_0_0_rgba(0,0,0,1)] dark:shadow-[6px_0_0_0_rgba(255,255,255,0.3)]",
-                "h-[calc(100vh-56px)]",
-                open ? "w-[280px] md:w-[320px]" : "w-[48px]",
+                "fixed top-[44px] lg:top-[48px] left-0 flex flex-col border-r-[3px] lg:border-r-[4px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) z-50 will-change-transform shadow-[2px_0_0_0_rgba(0,0,0,1)] lg:shadow-[2px_0_0_0_rgba(0,0,0,1)] dark:shadow-[2px_0_0_0_rgba(255,255,255,0.3)]",
+                "h-[calc(100vh-44px)] lg:h-[calc(100vh-48px)]",
+                open ? "w-[240px] lg:w-[260px]" : "w-[40px]",
                 "max-md:hidden" // Hide on mobile
             )}
         >
             <header className={cn(
-                "flex items-center h-[56px] border-b-[3px] md:border-b-[4px] border-black dark:border-white shrink-0 overflow-hidden transition-all duration-300 bg-[#FF006E]",
-                open ? "justify-between px-4 md:px-6" : "justify-center"
+                "flex items-center h-[44px] lg:h-[48px] border-b-[3px] border-black dark:border-white shrink-0 overflow-hidden transition-all duration-300 bg-[#FF6B6B]",
+                open ? "justify-between px-3 lg:px-4" : "justify-center"
             )}>
                 {open ? (
-                    <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left-4 duration-300">
-                        <div className="p-2 border-[3px] border-black dark:border-white bg-white dark:bg-neutral-900">
-                            <GraduationCap className="w-5 h-5 text-black dark:text-white font-bold" />
+                    <div className="flex items-center gap-2 lg:gap-2.5 animate-in fade-in slide-in-from-left-4 duration-300">
+                        <div className="p-1.5 lg:p-2 border-[2px] lg:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]">
+                            <GraduationCap className="w-4 h-4 lg:w-4 lg:h-4 text-black dark:text-white font-bold" />
                         </div>
-                        <h2 className="text-lg font-black text-white whitespace-nowrap uppercase tracking-tight">
+                        <h2 className="text-xs lg:text-sm font-black text-white whitespace-nowrap uppercase tracking-tight">
                             GRADING & SKILLS
                         </h2>
                     </div>
@@ -156,7 +156,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                         variant="ghost"
                         size="icon"
                         onClick={onToggle}
-                        className="w-12 h-12 border-[3px] border-black dark:border-white bg-white dark:bg-neutral-900 hover:bg-[#FFE500] dark:hover:bg-[#FFE500] transition-colors shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1"
+                        className="w-9 h-9 lg:w-10 lg:h-10 border-[2px] lg:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] transition-colors shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
                     >
                         <GraduationCap className="w-6 h-6 text-black dark:text-white dark:hover:text-black font-bold" />
                     </Button>
@@ -167,7 +167,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                         variant="ghost"
                         size="icon"
                         onClick={onToggle}
-                        className="w-10 h-10 border-[3px] border-black dark:border-white bg-white dark:bg-neutral-900 hover:bg-[#FFE500] dark:hover:bg-[#FFE500] text-black dark:text-white dark:hover:text-black transition-all shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1"
+                        className="w-10 h-10 border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1"
                     >
                         <ChevronLeft className="w-5 h-5 font-bold" />
                     </Button>
@@ -209,44 +209,44 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                                         className="border-none"
                                     >
                                         <div className={cn(
-                                            "border-[4px] border-black dark:border-white transition-all duration-200 shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.2)]",
-                                            isPracticed ? "bg-white dark:bg-neutral-800" : "bg-gray-200 dark:bg-neutral-900",
-                                            isPracticed && "hover:shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0_0_rgba(255,255,255,0.3)] hover:translate-x-[-2px] hover:translate-y-[-2px]",
+                                            "border-[4px] border-black dark:border-white transition-all duration-200 shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.2)]",
+                                            isPracticed ? "bg-[#FFFDF5] dark:bg-[#000000]" : "bg-[#FFFDF5] dark:bg-[#000000]",
+                                            isPracticed && "hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] hover:translate-x-[-2px] hover:translate-y-[-2px]",
                                             !isPracticed && "opacity-60"
                                         )}>
                                             <AccordionTrigger className="hover:no-underline px-4 py-3 [&>svg]:hidden cursor-pointer group">
                                                 <div className="flex flex-col gap-2 w-full">
                                                     <div className="flex items-center justify-between w-full">
                                                         <span className={cn(
-                                                            "font-black text-base text-left uppercase tracking-tight",
-                                                            isPracticed ? "text-black dark:text-white" : "text-gray-500 dark:text-gray-500"
+                                                            "font-black text-sm text-left uppercase tracking-tight",
+                                                            isPracticed ? "text-black dark:text-white" : "text-black/50 dark:text-white/50"
                                                         )}>
                                                             {formatSkillName(skillName)}
                                                         </span>
                                                         <div className={cn(
-                                                            "px-3 py-1 border-[3px] border-black dark:border-white text-xs font-black uppercase",
-                                                            strengthColor === "gray" && "bg-gray-300 dark:bg-gray-700 text-black dark:text-white",
-                                                            strengthColor === "emerald" && "bg-[#ADFF2F] text-black",
-                                                            strengthColor === "green" && "bg-[#ADFF2F] text-black",
-                                                            strengthColor === "yellow" && "bg-[#FFE500] text-black",
-                                                            strengthColor === "orange" && "bg-[#FF6B35] text-white",
-                                                            strengthColor === "red" && "bg-[#FF006E] text-white"
+                                                            "px-2.5 py-0.5 border-[2px] border-black dark:border-white text-[10px] font-black uppercase",
+                                                            strengthColor === "gray" && "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white",
+                                                            strengthColor === "emerald" && "bg-[#4ADE80] text-black",
+                                                            strengthColor === "green" && "bg-[#4ADE80] text-black",
+                                                            strengthColor === "yellow" && "bg-[#FFD93D] text-black",
+                                                            strengthColor === "orange" && "bg-[#FF6B6B] text-white",
+                                                            strengthColor === "red" && "bg-[#FF6B6B] text-white"
                                                         )}>
                                                             {strength.toFixed(1)}
                                                         </div>
                                                     </div>
 
                                                     {/* Progress bar */}
-                                                    <div className="w-full bg-gray-300 dark:bg-neutral-700 border-[2px] border-black dark:border-white h-3 overflow-hidden">
+                                                    <div className="w-full bg-[#FFFDF5] dark:bg-[#000000] border-[2px] border-black dark:border-white h-3 overflow-hidden">
                                                         <div
                                                             className={cn(
                                                                 "h-full transition-all duration-300",
-                                                                strengthColor === "gray" && "bg-gray-500 dark:bg-gray-600",
-                                                                strengthColor === "emerald" && "bg-[#ADFF2F]",
-                                                                strengthColor === "green" && "bg-[#ADFF2F]",
-                                                                strengthColor === "yellow" && "bg-[#FFE500]",
-                                                                strengthColor === "orange" && "bg-[#FF6B35]",
-                                                                strengthColor === "red" && "bg-[#FF006E]"
+                                                                strengthColor === "gray" && "bg-black/30 dark:bg-white/30",
+                                                                strengthColor === "emerald" && "bg-[#4ADE80]",
+                                                                strengthColor === "green" && "bg-[#4ADE80]",
+                                                                strengthColor === "yellow" && "bg-[#FFD93D]",
+                                                                strengthColor === "orange" && "bg-[#FF6B6B]",
+                                                                strengthColor === "red" && "bg-[#FF6B6B]"
                                                             )}
                                                             style={{ width: `${normalizedStrength}%` }}
                                                         />
@@ -258,76 +258,80 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                                                     <div className="grid grid-cols-2 gap-3">
                                                         {/* Accuracy Card */}
                                                         <div className={cn(
-                                                            "p-3 border-[3px] border-black dark:border-white shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.2)]",
+                                                            "aspect-square p-2.5 border-[3px] border-black dark:border-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.2)] flex flex-col",
                                                             isPracticed
-                                                                ? "bg-[#FF006E] dark:bg-[#FF006E]"
-                                                                : "bg-gray-200 dark:bg-gray-800"
+                                                                ? "bg-[#FF6B6B] dark:bg-[#FF6B6B]"
+                                                                : "bg-[#FFFDF5] dark:bg-[#000000] opacity-60"
                                                         )}>
-                                                            <div className="flex items-center gap-2 mb-2">
+                                                            <div className="flex items-center gap-1.5 mb-1">
                                                                 <Target className={cn(
-                                                                    "w-4 h-4 font-bold",
-                                                                    isPracticed ? "text-white" : "text-gray-500 dark:text-gray-600"
+                                                                    "w-3.5 h-3.5 font-bold flex-shrink-0",
+                                                                    isPracticed ? "text-white" : "text-black dark:text-white"
                                                                 )} />
                                                                 <span className={cn(
-                                                                    "text-xs font-black uppercase",
-                                                                    isPracticed ? "text-white" : "text-gray-600 dark:text-gray-500"
+                                                                    "text-[9px] font-black uppercase leading-none",
+                                                                    isPracticed ? "text-white" : "text-black dark:text-white"
                                                                 )}>Accuracy</span>
                                                             </div>
-                                                            <div className={cn(
-                                                                "text-3xl font-black",
-                                                                isPracticed ? "text-white" : "text-gray-600 dark:text-gray-500"
-                                                            )}>
-                                                                {accuracyPercent}%
-                                                            </div>
-                                                            <div className={cn(
-                                                                "text-xs mt-1 font-bold",
-                                                                isPracticed ? "text-white" : "text-gray-500 dark:text-gray-600"
-                                                            )}>
-                                                                {stats.correct_count}/{stats.practice_count} correct
+                                                            <div className="flex-1 flex flex-col justify-center">
+                                                                <div className={cn(
+                                                                    "text-2xl font-black leading-none",
+                                                                    isPracticed ? "text-white" : "text-black dark:text-white"
+                                                                )}>
+                                                                    {accuracyPercent}%
+                                                                </div>
+                                                                <div className={cn(
+                                                                    "text-[9px] mt-1 font-bold",
+                                                                    isPracticed ? "text-white" : "text-black dark:text-white"
+                                                                )}>
+                                                                    {stats.correct_count}/{stats.practice_count} correct
+                                                                </div>
                                                             </div>
                                                         </div>
 
                                                         {/* Practice Count Card */}
                                                         <div className={cn(
-                                                            "p-3 border-[3px] border-black dark:border-white shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.2)]",
+                                                            "aspect-square p-2.5 border-[3px] border-black dark:border-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.2)] flex flex-col",
                                                             isPracticed
-                                                                ? "bg-[#00F0FF] dark:bg-[#00F0FF]"
-                                                                : "bg-gray-200 dark:bg-gray-800"
+                                                                ? "bg-[#C4B5FD] dark:bg-[#C4B5FD]"
+                                                                : "bg-[#FFFDF5] dark:bg-[#000000] opacity-60"
                                                         )}>
-                                                            <div className="flex items-center gap-2 mb-2">
+                                                            <div className="flex items-center gap-1.5 mb-1">
                                                                 <TrendingUp className={cn(
-                                                                    "w-4 h-4 font-bold",
-                                                                    isPracticed ? "text-black" : "text-gray-500 dark:text-gray-600"
+                                                                    "w-3.5 h-3.5 font-bold flex-shrink-0",
+                                                                    isPracticed ? "text-black" : "text-black dark:text-white"
                                                                 )} />
                                                                 <span className={cn(
-                                                                    "text-xs font-black uppercase",
-                                                                    isPracticed ? "text-black" : "text-gray-600 dark:text-gray-500"
+                                                                    "text-[9px] font-black uppercase leading-none",
+                                                                    isPracticed ? "text-black" : "text-black dark:text-white"
                                                                 )}>Practice</span>
                                                             </div>
-                                                            <div className={cn(
-                                                                "text-3xl font-black",
-                                                                isPracticed ? "text-black" : "text-gray-600 dark:text-gray-500"
-                                                            )}>
-                                                                {stats.practice_count}
-                                                            </div>
-                                                            <div className={cn(
-                                                                "text-xs mt-1 font-bold",
-                                                                isPracticed ? "text-black" : "text-gray-500 dark:text-gray-600"
-                                                            )}>
-                                                                total attempts
+                                                            <div className="flex-1 flex flex-col justify-center">
+                                                                <div className={cn(
+                                                                    "text-2xl font-black leading-none",
+                                                                    isPracticed ? "text-black" : "text-black dark:text-white"
+                                                                )}>
+                                                                    {stats.practice_count}
+                                                                </div>
+                                                                <div className={cn(
+                                                                    "text-[9px] mt-1 font-bold",
+                                                                    isPracticed ? "text-black" : "text-black dark:text-white"
+                                                                )}>
+                                                                    total attempts
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
 
                                                     {/* Last Practice */}
-                                                    <div className="mt-3 bg-white dark:bg-neutral-800 p-3 border-[3px] border-black dark:border-white">
+                                                    <div className="mt-2 bg-[#FFFDF5] dark:bg-[#000000] p-2.5 border-[3px] border-black dark:border-white">
                                                         <div className={cn(
                                                             "flex items-center gap-2 text-xs font-bold",
-                                                            isPracticed ? "text-black dark:text-white" : "text-gray-500 dark:text-gray-600"
+                                                            isPracticed ? "text-black dark:text-white" : "text-black/50 dark:text-white/50"
                                                         )}>
-                                                            <Clock className="w-4 h-4 font-bold" />
-                                                            <span className="font-black uppercase">Last:</span>
-                                                            <span className="ml-auto">{formatTime(stats.last_practice_time)}</span>
+                                                            <Clock className="w-3.5 h-3.5 font-bold flex-shrink-0" />
+                                                            <span className="font-black uppercase text-[9px]">Last Practice:</span>
+                                                            <span className="ml-auto text-[9px]">{formatTime(stats.last_practice_time)}</span>
                                                         </div>
                                                     </div>
                                                 </div>
