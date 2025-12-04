@@ -29,10 +29,12 @@ conversation_watcher = ConversationWatcher(verbose=True)
 
 class StartSessionRequest(BaseModel):
     user_id: str
+    session_id: Optional[str] = None
 
 
 class EndSessionRequest(BaseModel):
     interrupt_audio: bool = True
+    session_id: Optional[str] = None
 
 
 class QuestionAnsweredRequest(BaseModel):
@@ -80,7 +82,7 @@ def health_check():
 @app.post("/session/start", response_model=PromptResponse)
 def start_session(request: StartSessionRequest):
     try:
-        prompt = ta.start_session(request.user_id)
+        prompt = ta.start_session(request.user_id, request.session_id)
         session_info = ta.get_session_info()
         return PromptResponse(prompt=prompt, session_info=session_info)
     except Exception as e:
@@ -90,7 +92,22 @@ def start_session(request: StartSessionRequest):
 @app.post("/session/end", response_model=PromptResponse)
 def end_session(request: Optional[EndSessionRequest] = Body(None)):
     try:
-        prompt = ta.end_session()
+        # Try to get session_id from request, or from conversation_watcher, or from ta
+        session_id = None
+        if request and request.session_id:
+            session_id = request.session_id
+        elif ta.current_session_id:
+            session_id = ta.current_session_id
+        else:
+            # Try to get the most recent session_id from conversation_watcher
+            try:
+                if hasattr(conversation_watcher, '_session_caches') and conversation_watcher._session_caches:
+                    # Get the most recent session_id
+                    session_id = list(conversation_watcher._session_caches.keys())[-1] if conversation_watcher._session_caches else None
+            except:
+                pass
+        
+        prompt = ta.end_session(session_id)
         if not prompt:
             raise HTTPException(status_code=400, detail="No active session to end")
         
@@ -150,6 +167,10 @@ def memory_session_start(request: SessionStartRequest):
                 verbose=True
             )
             ta.current_user_id = request.user_id
+        
+        # Sync session_id to TeachingAssistant if session is active
+        if ta.session_active and ta.current_user_id == request.user_id:
+            ta.current_session_id = request.session_id
         
         conversation_watcher.on_session_start(request.session_id, request.user_id)
         return {"status": "ok", "session_id": request.session_id}
