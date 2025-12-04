@@ -39,6 +39,10 @@ class MemoryRetriever:
         self._turn_counts: Dict[str, int] = {}
         self._history_limit: int = 15
         self._lock = threading.Lock()
+        
+        # Track retrieval results and injected memories per session
+        self._session_retrievals: Dict[str, Dict[str, Any]] = {}  # session_id -> {light: [...], deep: {...}, last_turn: int}
+        self._injected_memory_ids: Dict[str, Set[str]] = {}  # session_id -> set of memory IDs already injected
 
     def _get_extractor(self) -> MemoryExtractor:
         if self._extractor is None:
@@ -535,6 +539,16 @@ class MemoryRetriever:
         
         start_time = time.time()
         
+        # Get conversation history and turn count first (before retrieval)
+        with self._lock:
+            if session_id not in self._conversation_history:
+                self._conversation_history[session_id] = []
+            if session_id not in self._turn_counts:
+                self._turn_counts[session_id] = 0
+            
+            conversation = self._conversation_history[session_id].copy()
+            turn_count = self._turn_counts[session_id]
+        
         try:
             retrieval_results = self.light_retrieval(
                 query=user_text,
@@ -556,6 +570,39 @@ class MemoryRetriever:
                 retrieval_time_ms=retrieval_time_ms
             )
             
+            # Store light retrieval results in memory
+            # Only overwrite if previous results were already injected
+            with self._lock:
+                if session_id not in self._session_retrievals:
+                    self._session_retrievals[session_id] = {
+                        'light': [],
+                        'deep': None,
+                        'last_turn': 0
+                    }
+                
+                # Check if previous results were already injected
+                previous_light = self._session_retrievals[session_id].get('light', [])
+                injected_ids = self._injected_memory_ids.get(session_id, set())
+                
+                # Check if all previous light results were injected
+                previous_all_injected = True
+                if previous_light:
+                    for result in previous_light:
+                        mem = result.get('memory')
+                        if mem and mem.id not in injected_ids:
+                            previous_all_injected = False
+                            break
+                
+                # Only update if previous was injected, or if this is first retrieval
+                if previous_all_injected or not previous_light:
+                    self._session_retrievals[session_id]['light'] = retrieval_results
+                    self._session_retrievals[session_id]['last_turn'] = turn_count + 1
+                else:
+                    # Keep previous results until they're injected
+                    if verbose:
+                        timestamp_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                        print(f"[{timestamp_str}] [RETRIEVAL] Keeping previous retrieval results (not yet injected)")
+            
             # Save to file (for read/backup purposes only)
             if self.watcher:
                 self.watcher._save_retrieval_to_file(retrieval_data, user_id)
@@ -563,15 +610,8 @@ class MemoryRetriever:
                     timestamp_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
                     print(f"[{timestamp_str}] [RETRIEVAL] Saved to TA-light-retrieval.json (retrieval_id: {retrieval_data['retrieval_id']})")
             
-            # Get conversation history for deep retrieval check
+            # Update conversation history for next turn
             with self._lock:
-                if session_id not in self._conversation_history:
-                    self._conversation_history[session_id] = []
-                if session_id not in self._turn_counts:
-                    self._turn_counts[session_id] = 0
-                
-                conversation = self._conversation_history[session_id].copy()
-                turn_count = self._turn_counts[session_id]
                 
                 # Update conversation history
                 self._conversation_history[session_id].append({
@@ -632,6 +672,42 @@ class MemoryRetriever:
                         triggers=triggers,
                         retrieval_time_ms=deep_retrieval_time_ms
                     )
+                    
+                    # Store deep retrieval results in memory
+                    # Only overwrite if previous results were already injected
+                    with self._lock:
+                        if session_id not in self._session_retrievals:
+                            self._session_retrievals[session_id] = {
+                                'light': [],
+                                'deep': None,
+                                'last_turn': 0
+                            }
+                        
+                        # Check if previous deep results were already injected
+                        previous_deep = self._session_retrievals[session_id].get('deep')
+                        injected_ids = self._injected_memory_ids.get(session_id, set())
+                        
+                        # Check if all previous deep results were injected
+                        previous_deep_injected = True
+                        if previous_deep:
+                            for category in ['academic', 'personal', 'preferences', 'context']:
+                                if category in previous_deep:
+                                    for result in previous_deep[category]:
+                                        mem = result.get('memory')
+                                        if mem and mem.id not in injected_ids:
+                                            previous_deep_injected = False
+                                            break
+                                    if not previous_deep_injected:
+                                        break
+                        
+                        # Only update if previous was injected, or if this is first deep retrieval
+                        if previous_deep_injected or previous_deep is None:
+                            self._session_retrievals[session_id]['deep'] = deep_results
+                        else:
+                            # Keep previous results until they're injected
+                            if verbose:
+                                timestamp_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                                print(f"[{timestamp_str}] [RETRIEVAL] Keeping previous deep retrieval results (not yet injected)")
                     
                     # Save to file (for read/backup purposes only)
                     if self.watcher:
@@ -721,6 +797,148 @@ class MemoryRetriever:
                 del self._conversation_history[session_id]
             if session_id in self._turn_counts:
                 del self._turn_counts[session_id]
+            if session_id in self._session_retrievals:
+                del self._session_retrievals[session_id]
+            if session_id in self._injected_memory_ids:
+                del self._injected_memory_ids[session_id]
+    
+    def get_memory_injection(self, session_id: str) -> Optional[str]:
+        """
+        Get formatted memory injection text for the current session.
+        Returns None if no new memories to inject.
+        Uses triple curly braces format for silent injection.
+        """
+        if not session_id:
+            return None
+        
+        verbose = self.watcher.verbose if self.watcher else True
+        
+        with self._lock:
+            if session_id not in self._session_retrievals:
+                if verbose:
+                    timestamp_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                    print(f"[{timestamp_str}] [INJECTION] No stored retrievals for session {session_id}")
+                return None
+            
+            if session_id not in self._injected_memory_ids:
+                self._injected_memory_ids[session_id] = set()
+            
+            retrievals = self._session_retrievals[session_id]
+            injected_ids = self._injected_memory_ids[session_id]
+            
+            # Collect all memories (light + deep) that haven't been injected
+            memories_to_inject = []
+            
+            # Process light retrieval results
+            light_count = 0
+            if retrievals.get('light'):
+                for result in retrievals['light']:
+                    mem = result.get('memory')
+                    if mem and mem.id not in injected_ids:
+                        memories_to_inject.append({
+                            'memory': mem,
+                            'score': result.get('score', 0.0),
+                            'type': 'light'
+                        })
+                        light_count += 1
+            
+            # Process deep retrieval results
+            deep_count = 0
+            deep_results = retrievals.get('deep')
+            if deep_results is not None:
+                for category in ['academic', 'personal', 'preferences', 'context']:
+                    if category in deep_results:
+                        for result in deep_results[category]:
+                            mem = result.get('memory')
+                            if mem and mem.id not in injected_ids:
+                                # Check if already added from light retrieval
+                                if mem.id not in {m['memory'].id for m in memories_to_inject}:
+                                    memories_to_inject.append({
+                                        'memory': mem,
+                                        'score': result.get('score', 0.0),
+                                        'type': 'deep',
+                                        'category': category
+                                    })
+                                    deep_count += 1
+            
+            if not memories_to_inject:
+                if verbose:
+                    timestamp_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                    total_light = len(retrievals.get('light', []))
+                    # Handle case where deep is None (no deep retrieval yet)
+                    deep_results = retrievals.get('deep')
+                    if deep_results is None:
+                        total_deep = 0
+                    else:
+                        total_deep = sum(len(deep_results.get(cat, [])) for cat in ['academic', 'personal', 'preferences', 'context'])
+                    print(f"[{timestamp_str}] [INJECTION] All memories already injected (light: {total_light}, deep: {total_deep}, injected: {len(injected_ids)})")
+                return None
+            
+            if verbose:
+                timestamp_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                print(f"[{timestamp_str}] [INJECTION] Found {len(memories_to_inject)} new memories to inject (light: {light_count}, deep: {deep_count})")
+            
+            # Format memories for injection
+            formatted_memories = self._format_memories_for_injection(memories_to_inject)
+            
+            # Mark these memories as injected
+            for mem_data in memories_to_inject:
+                injected_ids.add(mem_data['memory'].id)
+            
+            # Wrap in triple curly braces format for silent injection
+            # This format tells the model to use the memories without mentioning them
+            injection_text = f"""{{{{
+FOR THIS NEXT RESPONSE ONLY, USE THESE RELEVANT MEMORIES TO GUIDE YOUR RESPONSE. DO NOT MENTION THESE MEMORIES EXPLICITLY IN YOUR PUBLIC RESPONSE. TREAT THESE AS INTERNAL CONTEXT ONLY:
+
+{formatted_memories}
+
+Use these memories naturally to personalize your response. Do not reference them directly or say "I remember" or "based on our previous conversation". Just use the information naturally as if you already know it.
+}}}}"""
+            
+            if verbose:
+                timestamp_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+                print(f"[{timestamp_str}] [INJECTION] Formatted injection text ({len(injection_text)} chars)")
+            
+            return injection_text
+    
+    def _format_memories_for_injection(self, memories: List[Dict[str, Any]]) -> str:
+        """Format memories for injection into prompt."""
+        if not memories:
+            return "No relevant memories."
+        
+        # Group by type for better organization
+        by_type = {}
+        for mem_data in memories:
+            mem = mem_data['memory']
+            mem_type = mem.type.value
+            if mem_type not in by_type:
+                by_type[mem_type] = []
+            by_type[mem_type].append(mem_data)
+        
+        sections = []
+        
+        # Format each type
+        type_labels = {
+            'academic': 'Academic Memories',
+            'personal': 'Personal Memories',
+            'preference': 'Learning Preferences',
+            'context': 'Recent Context'
+        }
+        
+        for mem_type, mem_list in by_type.items():
+            label = type_labels.get(mem_type, mem_type.title())
+            lines = []
+            for mem_data in mem_list[:5]:  # Limit to top 5 per type
+                mem = mem_data['memory']
+                emotion_str = f" (emotion: {mem.metadata.get('emotion')})" if mem.metadata.get('emotion') else ""
+                lines.append(f"- {mem.text}{emotion_str}")
+            if lines:
+                sections.append(f"{label}:\n" + "\n".join(lines))
+        
+        if not sections:
+            return "No relevant memories."
+        
+        return "\n\n".join(sections)
 
 
 class MemoryRetrievalWatcher:

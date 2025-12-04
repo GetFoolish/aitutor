@@ -69,9 +69,15 @@ class MemorySessionEndRequest(BaseModel):
 class UserTurnRequest(BaseModel):
     session_id: str
     user_id: str
-    user_text: str
+    user_text: str = ""  # Optional - if empty, just get stored injection
     timestamp: str
     adam_text: str = ""
+
+
+class MemoryInjectionResponse(BaseModel):
+    status: str
+    session_id: str
+    injection_text: Optional[str] = None
 
 
 @app.get("/health")
@@ -210,9 +216,9 @@ def memory_session_end(request: MemorySessionEndRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/memory/retrieval/user-turn")
+@app.post("/memory/retrieval/user-turn", response_model=MemoryInjectionResponse)
 def memory_retrieval_user_turn(request: UserTurnRequest):
-    """Handle real-time user turn event for memory retrieval."""
+    """Handle real-time user turn event for memory retrieval and return injection text."""
     try:
         # Initialize memory retriever if not already initialized for this user
         if not ta.memory_retriever or ta.current_user_id != request.user_id:
@@ -224,15 +230,55 @@ def memory_retrieval_user_turn(request: UserTurnRequest):
             )
             ta.current_user_id = request.user_id
         
-        ta.memory_retriever.on_user_turn(
+        # Sync session_id if session is active
+        if ta.session_active and ta.current_user_id == request.user_id:
+            ta.current_session_id = request.session_id
+        
+        # Only trigger retrieval if user_text is provided and not empty
+        if request.user_text and request.user_text.strip():
+            # Call TeachingAssistant's on_user_turn method (triggers retrieval and stores in memory)
+            try:
+                ta.on_user_turn(
+                    session_id=request.session_id,
+                    user_id=request.user_id,
+                    user_text=request.user_text,
+                    timestamp=request.timestamp,
+                    adam_text=request.adam_text
+                )
+            except Exception as e:
+                print(f"[INJECTION] API: Error during retrieval: {e}")
+                import traceback
+                traceback.print_exc()
+            
+            # During retrieval phase, DON'T get injection text yet
+            # Just trigger retrieval and return None - injection will happen later
+            injection_text = None
+        else:
+            # Only get injection when user_text is empty (injection request phase)
+            # This happens when injectMemoriesForNextTurn() calls with empty user_text
+            injection_text = None
+            try:
+                injection_text = ta.get_memory_injection(request.session_id)
+            except Exception as e:
+                print(f"[INJECTION] API: Error getting injection: {e}")
+                import traceback
+                traceback.print_exc()
+        
+        # Log injection status
+        if injection_text:
+            print(f"[INJECTION] API: Returning injection text ({len(injection_text)} chars) for session {request.session_id}")
+        else:
+            print(f"[INJECTION] API: No injection text available for session {request.session_id}")
+        
+        return MemoryInjectionResponse(
+            status="ok",
             session_id=request.session_id,
-            user_id=request.user_id,
-            user_text=request.user_text,
-            timestamp=request.timestamp,
-            adam_text=request.adam_text
+            injection_text=injection_text
         )
-        return {"status": "ok", "session_id": request.session_id}
     except Exception as e:
+        import traceback
+        error_detail = f"{str(e)}\n{traceback.format_exc()}"
+        print(f"[INJECTION] API Error: {error_detail}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

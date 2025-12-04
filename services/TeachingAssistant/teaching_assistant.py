@@ -25,9 +25,6 @@ class TeachingAssistant:
         self.inactivity_handler.stop_monitoring()
         self.inactivity_handler.reset()
         self.inactivity_handler.start_monitoring()
-        # COMMENTED: File polling disabled - using real-time events instead
-        # Create watcher instance for file saving methods only (no polling)
-        # self.memory_retriever.start_retrieval_watcher(poll_interval=1.0, verbose=True)
         # Initialize watcher for file saving methods (but don't start polling)
         from services.TeachingAssistant.Memory.retriever import MemoryRetrievalWatcher
         self.memory_retriever.watcher = MemoryRetrievalWatcher(
@@ -50,9 +47,11 @@ class TeachingAssistant:
         self.current_session_id = None
         self.inactivity_handler.stop_monitoring()
         self.inactivity_handler.reset()
-        # Stop memory retrieval watcher
+        # Stop memory retrieval watcher and clear session data
         if self.memory_retriever:
             self.memory_retriever.stop_retrieval_watcher()
+            if session_id_to_clear:
+                self.memory_retriever.clear_session_history(session_id_to_clear)
             self.memory_retriever = None
         
         return self.greeting_handler.end_session(user_id, end_session_id)
@@ -77,4 +76,55 @@ class TeachingAssistant:
         stats['session_id'] = self.current_session_id
         stats['session_active'] = self.session_active
         return stats
+    
+    def on_user_turn(
+        self,
+        session_id: str,
+        user_id: str,
+        user_text: str,
+        timestamp: str,
+        adam_text: str = ""
+    ) -> None:
+        """
+        Called when user finishes speaking (user turn event).
+        This triggers memory retrieval for injection.
+        
+        Args:
+            session_id: Current session ID
+            user_id: User ID
+            user_text: The text the user just spoke
+            timestamp: Timestamp of the user turn
+            adam_text: Optional Adam text if available
+        """
+        if not self.session_active:
+            return
+        
+        # Trigger memory retrieval (stores results in memory)
+        if self.memory_retriever:
+            self.memory_retriever.on_user_turn(
+                session_id=session_id,
+                user_id=user_id,
+                user_text=user_text,
+                timestamp=timestamp,
+                adam_text=adam_text
+            )
+    
+    def get_memory_injection(self, session_id: str) -> Optional[str]:
+        """
+        Get formatted memory injection text for the current session.
+        Returns None if no new memories to inject.
+        """
+        if not self.session_active:
+            return None
+        
+        if not self.memory_retriever:
+            return None
+        
+        try:
+            return self.memory_retriever.get_memory_injection(session_id)
+        except Exception as e:
+            print(f"[INJECTION] Error in get_memory_injection: {e}")
+            import traceback
+            traceback.print_exc()
+            return None
 
