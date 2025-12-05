@@ -174,8 +174,13 @@ def memory_session_start(request: SessionStartRequest):
             )
             ta.current_user_id = request.user_id
         
-        # Sync session_id to TeachingAssistant if session is active
-        if ta.session_active and ta.current_user_id == request.user_id:
+        # Activate session for memory processing (required for on_user_turn to work)
+        # This allows TA-light and TA-deep retrieval to function properly
+        if not ta.session_active:
+            ta.session_active = True
+        
+        # Sync session_id
+        if ta.current_user_id == request.user_id:
             ta.current_session_id = request.session_id
         
         conversation_watcher.on_session_start(request.session_id, request.user_id)

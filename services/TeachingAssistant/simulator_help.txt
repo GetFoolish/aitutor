@@ -1,0 +1,169 @@
+================================================================================
+                    AI TUTOR CONVERSATION SIMULATOR
+                            User Guide
+================================================================================
+
+OVERVIEW
+--------
+The Conversation Simulator processes sample conversation files and integrates
+with the Teaching Assistant memory system. It simulates conversations between
+a student and AI tutor "Adam" without requiring a live LLM connection.
+
+All text is read from JSON files in Memory_Brief/sample_conversations_for_testing/
+and memory events are sent to the Teaching Assistant API for processing.
+
+PREREQUISITES
+-------------
+1. Teaching Assistant API must be running on http://localhost:8002 
+    - so start api.py file saperatly first
+    Command: 
+        python services/TeachingAssistant/api.py
+
+2. Sample conversation files must exist in:
+   Memory_Brief/sample_conversations_for_testing/
+3. Required files:
+   - session_1_intro.md
+   - session_2_post_test.md
+   - session_3_emotional.md
+   - session_4_deep_personal_connection.md
+   - session_5_testing_sentient_feel.md
+
+MODES
+-----
+
+Mode 1: AUTOMATIC
+-----------------
+Description: Automatically processes all conversation files sequentially.
+            - Reads both Adam and User text from JSON files
+            - Processes all turns automatically
+            - Waits between files (default: 60 seconds)
+            - No user interaction required
+
+Command:
+    python services/TeachingAssistant/Simulator.py --mode automatic
+
+With options:
+    python services/TeachingAssistant/Simulator.py --mode automatic --delay 120 --user-id student_001
+
+Use Case: Testing memory system with full conversation sessions automatically
+
+
+Mode 2: INTERACTIVE MIXED
+-------------------------------
+Description: Adam from JSON, User from terminal OR JSON (flexible).
+            - Adam: From JSON files
+            - User: Shows JSON text as suggestion
+            - Press Enter to use JSON text, or type your own response
+            - Type 'quit' or 'exit' to end session
+
+Command:
+    python services/TeachingAssistant/Simulator.py --mode interactive_mixed
+
+With options:
+    python services/TeachingAssistant/Simulator.py --mode interactive_mixed --user-id my_user
+
+Use Case: Mix of automatic (JSON) and custom (terminal) responses for flexible testing
+
+
+COMMAND-LINE OPTIONS
+--------------------
+
+--mode {automatic,interactive_mixed}
+    Simulation mode to run
+    Default: automatic
+
+--user-id USER_ID
+    User ID for the simulation
+    Default: simulator_user
+
+--delay SECONDS
+    Delay in seconds between files in automatic mode
+    Default: 60
+
+--api-url URL
+    Teaching Assistant API URL
+    Default: http://localhost:8002
+
+
+EXAMPLES
+--------
+
+# Run automatic mode with default settings
+python services/TeachingAssistant/Simulator.py
+
+# Run automatic mode with 2-minute delay between files
+python services/TeachingAssistant/Simulator.py --mode automatic --delay 120
+
+# Run interactive mixed mode (Enter for JSON, or type custom)
+python services/TeachingAssistant/Simulator.py --mode interactive_mixed
+
+# Run interactive mixed mode with custom user ID
+python services/TeachingAssistant/Simulator.py --mode interactive_mixed --user-id student_001
+
+# Full example with all options
+python services/TeachingAssistant/Simulator.py --mode automatic --user-id test_user --delay 90 --api-url http://localhost:8002
+
+
+MEMORY INTEGRATION
+------------------
+The simulator integrates with the Teaching Assistant memory system:
+
+1. Session Start: Sends session/start event
+2. User Turn: Sends retrieval/user-turn event (triggers TA-light retrieval)
+3. Turn Complete: Sends turn event (triggers memory extraction)
+4. Session End: Sends session/end event (triggers memory consolidation)
+
+Memory Files Created:
+- TA-light-retrieval.json: Light retrieval results (every turn)
+- TA-deep-retrieval.json: Deep retrieval results (every 3 turns)
+- TA-closing-retrieval.json: Session closing summaries
+- academic.json: Academic memories
+- personal.json: Personal memories
+- preference.json: Preference memories
+- context.json: Context memories
+
+Location: services/TeachingAssistant/Memory/data/{user_id}/memory/
+
+
+TROUBLESHOOTING
+---------------
+
+Problem: "Connection refused" or "All connection attempts failed"
+Solution: Make sure Teaching Assistant API is running on the correct port
+    Check: http://localhost:8002 is accessible
+    Start API: python services/TeachingAssistant/api.py
+
+Problem: "File not found" errors
+Solution: Verify conversation files exist in:
+    Memory_Brief/sample_conversations_for_testing/
+
+Problem: No TA-light or TA-deep files created
+Solution: 
+    1. Check API is running and session/start was successful
+    2. Verify memory retriever is initialized
+    3. Check terminal for [RETRIEVAL] logs
+
+Problem: Memory events failing
+Solution:
+    1. Check API URL is correct (--api-url option)
+    2. Verify API is responding
+    3. Check network connectivity
+
+
+QUICK START
+-----------
+
+1. Start Teaching Assistant API:
+   python services/TeachingAssistant/api.py
+
+2. In another terminal, run simulator:
+   python services/TeachingAssistant/Simulator.py --mode automatic
+
+3. Monitor terminal output for:
+   - [RETRIEVAL] logs (TA-light/TA-deep working)
+   - [MEMORY] logs (memory extraction working)
+   - ✅ Success messages
+
+4. Check memory files in:
+   services/TeachingAssistant/Memory/data/{user_id}/memory/
+

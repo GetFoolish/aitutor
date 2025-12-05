@@ -96,7 +96,9 @@ class TeachingAssistant:
             timestamp: Timestamp of the user turn
             adam_text: Optional Adam text if available
         """
-        if not self.session_active:
+        # Allow retrieval if session is active OR if memory_retriever exists
+        # This ensures TA-light and TA-deep retrieval work even in simulator mode
+        if not self.session_active and not self.memory_retriever:
             return
         
         # Trigger memory retrieval (stores results in memory)

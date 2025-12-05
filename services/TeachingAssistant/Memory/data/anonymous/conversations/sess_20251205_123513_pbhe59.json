@@ -1,0 +1,78 @@
+{
+  "session_id": "sess_20251205_123513_pbhe59",
+  "user_id": "anonymous",
+  "start_time": "2025-12-05T12:35:13.696Z",
+  "end_time": "2025-12-05T12:37:47.429Z",
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "Hey there! Welcome to our tutoring session. How are you feeling today? Ready to do some math?",
+      "timestamp": "2025-12-05T12:35:21.061Z"
+    },
+    {
+      "speaker": "user",
+      "text": "Now I want to go with chemistry subject.",
+      "timestamp": "2025-12-05T12:35:30.354Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "great! Chemistry is a really interesting subject. What part of chemistry would you like to work on today?That sounds",
+      "timestamp": "2025-12-05T12:35:36.993Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "It looks like we've talked about atoms before. Would you like to dive a little deeper into how they work?",
+      "timestamp": "2025-12-05T12:35:44.568Z"
+    },
+    {
+      "speaker": "user",
+      "text": "Yes I want to go on it chemistry subject in deeper.",
+      "timestamp": "2025-12-05T12:36:11.413Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "can explore the different parts of an atom and howPerfect! We they all fit together. How does that sound?",
+      "timestamp": "2025-12-05T12:36:17.893Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "Alright, let's start with the basic building blocks of atoms. What are some of the main particles you can think of that make up an atom?",
+      "timestamp": "2025-12-05T12:36:27.791Z"
+    },
+    {
+      "speaker": "user",
+      "text": "I don't know.",
+      "timestamp": "2025-12-05T12:36:45.337Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "at all! Think about what you might find in the center of an atom, its nucleus, and what might orbit around it, like planets around the sun.No problem",
+      "timestamp": "2025-12-05T12:36:55.533Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "Inside the nucleus, we have protons which have a positive charge, and neutrons, which have no charge. Orbiting the nucleus are the electrons, which have a negative charge. Does that make sense so far?",
+      "timestamp": "2025-12-05T12:37:11.455Z"
+    },
+    {
+      "speaker": "user",
+      "text": "<noise> Yes.",
+      "timestamp": "2025-12-05T12:37:18.470Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "we have protons, neutrons, and electrons. Now,Great! So which of these particles determines the atomic number of an atom?",
+      "timestamp": "2025-12-05T12:37:27.995Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "It's the number of protons! The number of protons is what makes an atom that specific element. For example, an atom with 1 proton is hydrogen, and an atom with 2 protons is helium. Does that make sense?",
+      "timestamp": "2025-12-05T12:37:45.631Z"
+    },
+    {
+      "speaker": "adam",
+      "text": "You did great work",
+      "timestamp": "2025-12-05T12:37:47.428Z"
+    }
+  ]
+}

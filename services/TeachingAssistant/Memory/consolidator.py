@@ -243,7 +243,7 @@ class OpeningContextCache:
         pass
 
     def generate_opening_context(
-        self,
+            self,
         student_id: str,
         closing_cache: SessionClosingCache,
         store: Optional[MemoryStore] = None

@@ -1,16 +1,1 @@
-[
-  {
-    "id": "mem_f28face8e4a1",
-    "student_id": "anonymous",
-    "type": "preference",
-    "text": "Expresses a strong desire to discuss helium, indicating a specific interest in chemistry.",
-    "timestamp": "2025-12-03T13:12:01.725594Z",
-    "importance": 0.8,
-    "metadata": {
-      "category": "interest",
-      "trigger": "waiting for math question",
-      "response": "wants to discuss helium"
-    },
-    "session_id": "sess_20251203_130853_k08en9"
-  }
-]
+[]
