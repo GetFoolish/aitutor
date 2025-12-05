@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { authAPI } from '../../lib/auth-api';
 import SignupForm from './SignupForm';
+import BackgroundShapes from '../background-shapes/BackgroundShapes';
 import './auth.scss';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
@@ -79,11 +80,42 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
 
   return (
     <div className="auth-container">
+      <BackgroundShapes />
       <div className="auth-card">
+        {/* Logo Badge */}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          gap: '12px', 
+          marginBottom: '24px' 
+        }}>
+          <div style={{
+            width: '56px',
+            height: '56px',
+            border: '4px solid #000000',
+            background: '#FFD93D',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '4px 4px 0px 0px #000000',
+            transform: 'rotate(-2deg)'
+          }}>
+            <span className="material-symbols-outlined" style={{ 
+              fontSize: '32px', 
+              color: '#000000',
+              fontWeight: 900
+            }}>
+              smart_toy
+            </span>
+          </div>
+        </div>
+        
         <h1>Welcome to AI Tutor</h1>
         <p>Sign in with your Google account to get started</p>
+        
         <button className="google-sign-in-button" onClick={handleGoogleLogin}>
-          <svg width="18" height="18" viewBox="0 0 18 18">
+          <svg width="20" height="20" viewBox="0 0 18 18" style={{ flexShrink: 0 }}>
             <path
               fill="#4285F4"
               d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"
@@ -116,8 +148,21 @@ const GoogleSignIn: React.FC<GoogleSignInProps> = ({ onAuthSuccess }) => {
   if (!GOOGLE_CLIENT_ID) {
     return (
       <div className="auth-container">
+        <BackgroundShapes />
         <div className="auth-card">
-          <p>Error: Google Client ID not configured</p>
+          <div style={{
+            padding: '16px 20px',
+            background: '#FF6B6B',
+            border: '4px solid #000000',
+            color: '#FFFFFF',
+            fontSize: '14px',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            boxShadow: '4px 4px 0px 0px #000000'
+          }}>
+            Error: Google Client ID not configured
+          </div>
         </div>
       </div>
     );

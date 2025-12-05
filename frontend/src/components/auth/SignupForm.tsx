@@ -3,6 +3,7 @@
  */
 import React, { useState } from 'react';
 import { authAPI } from '../../lib/auth-api';
+import BackgroundShapes from '../background-shapes/BackgroundShapes';
 import './auth.scss';
 
 interface SignupFormProps {
@@ -41,7 +42,37 @@ const SignupForm: React.FC<SignupFormProps> = ({ setupToken, googleUser, onCompl
 
   return (
     <div className="auth-container">
+      <BackgroundShapes />
       <div className="auth-card">
+        {/* Logo Badge */}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          gap: '12px', 
+          marginBottom: '24px' 
+        }}>
+          <div style={{
+            width: '56px',
+            height: '56px',
+            border: '4px solid #000000',
+            background: '#C4B5FD',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '4px 4px 0px 0px #000000',
+            transform: 'rotate(2deg)'
+          }}>
+            <span className="material-symbols-outlined" style={{ 
+              fontSize: '32px', 
+              color: '#000000',
+              fontWeight: 900
+            }}>
+              person_add
+            </span>
+          </div>
+        </div>
+        
         <h1>Complete Your Profile</h1>
         <p>Welcome! Please tell us a bit about yourself to get started.</p>
 
