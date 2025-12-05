@@ -95,29 +95,55 @@ Response (one line only):"""
         moments = self.cache['key_moments']
         topics = self.cache['topics_covered']
 
-        if arc:
-            last_emotion = arc[-1]
-            if last_emotion in ['frustrated', 'confused']:
-                self.cache['goodbye_message'] = "We'll pick this up next time - you're closer than you think!"
-            elif last_emotion == 'excited':
-                self.cache['goodbye_message'] = "Great work today! Can't wait to build on this next time."
-            elif last_emotion == 'tired':
-                self.cache['goodbye_message'] = "Good effort today! Get some rest and we'll continue fresh next time."
-            else:
-                self.cache['goodbye_message'] = "Nice session! See you next time."
-        else:
+        # Generate goodbye message using LLM
+        try:
+            extractor = self._get_extractor()
+            last_emotion = arc[-1] if arc else 'neutral'
+            moments_summary = '; '.join(moments[-3:]) if moments else 'none'
+            topics_summary = ', '.join(topics[-3:]) if topics else 'none'
+            
+            goodbye_prompt = f"""Generate a warm, encouraging goodbye message for a tutoring session.
+
+Context:
+- Last emotion: {last_emotion}
+- Key moments: {moments_summary}
+- Topics covered: {topics_summary}
+
+Return ONLY a brief, natural goodbye message (1-2 sentences). Be encouraging and personalized based on the context."""
+
+            model = extractor._get_model()
+            response = model.generate_content(goodbye_prompt)
+            self.cache['goodbye_message'] = response.text.strip()
+        except Exception as e:
+            # Fallback to simple message if LLM fails
             self.cache['goodbye_message'] = "Good session! See you next time."
 
+        # Generate next session hooks using LLM
         hooks = []
-        if moments:
-            last_moment = moments[-1]
-            if 'Breakthrough' in last_moment:
-                hooks.append("Build on today's breakthrough")
-            elif 'Struggled' in last_moment:
-                hooks.append("Revisit what we struggled with")
+        try:
+            extractor = self._get_extractor()
+            moments_summary = '; '.join(moments[-2:]) if moments else 'none'
+            topics_summary = ', '.join(topics[-2:]) if topics else 'none'
+            last_emotion = arc[-1] if arc else 'neutral'
+            
+            hooks_prompt = f"""Generate 1-2 brief next session hooks (suggestions for what to continue next time).
 
-        if topics:
-            hooks.append(f"Continue with {topics[-1]}")
+Context:
+- Recent key moments: {moments_summary}
+- Topics covered: {topics_summary}
+- Last emotion: {last_emotion}
+
+Return ONLY a comma-separated list of 1-2 brief hooks (e.g., "Build on today's breakthrough, Continue with quadratics"). If no meaningful context, return empty."""
+
+            model = extractor._get_model()
+            response = model.generate_content(hooks_prompt)
+            hooks_text = response.text.strip()
+            if hooks_text and hooks_text.lower() != 'none' and hooks_text.lower() != 'empty':
+                hooks = [h.strip() for h in hooks_text.split(',') if h.strip()]
+        except Exception as e:
+            # Fallback to simple hooks if LLM fails
+            if topics and topics != ['general']:
+                hooks.append(f"Continue with {topics[-1]}")
 
         self.cache['next_session_hooks'] = hooks
 
@@ -195,6 +221,12 @@ class OpeningContextCache:
         self.student_id = student_id
         self.cache_file = os.path.join(storage_path, '.opening_cache.json')
         os.makedirs(storage_path, exist_ok=True)
+        self._extractor = None
+
+    def _get_extractor(self) -> MemoryExtractor:
+        if self._extractor is None:
+            self._extractor = MemoryExtractor()
+        return self._extractor
 
     def _load_cache(self) -> Dict[str, Any]:
         if os.path.exists(self.cache_file):
@@ -227,23 +259,30 @@ class OpeningContextCache:
                 personal_memories = [p.text for p in personal]
                 personal_relevance = personal[0].text
 
-        # Build welcome hook from key moments
+        # Build welcome hook using LLM for natural generation
         welcome_hook = ""
-        if closing['key_moments']:
-            last_moment = closing['key_moments'][-1]
-            if 'Breakthrough' in last_moment:
-                # Extract what the breakthrough was about
-                desc = last_moment.replace('Breakthrough:', '').strip()
-                welcome_hook = f"Last time you had a breakthrough - {desc}"
-            elif 'Struggled' in last_moment:
-                desc = last_moment.replace('Struggled:', '').strip()
-                welcome_hook = f"Last time we were working through {desc}"
+        try:
+            extractor = self._get_extractor()
+            key_moments = '; '.join(closing['key_moments'][-2:]) if closing.get('key_moments') else 'none'
+            topics = ', '.join(closing['topics_covered'][-2:]) if closing.get('topics_covered') and closing['topics_covered'] != ['general'] else 'none'
+            
+            hook_prompt = f"""Generate a brief, natural welcome hook for starting a new tutoring session.
 
-        # Add topic context if no key moment
-        if not welcome_hook and closing['topics_covered']:
-            topic = closing['topics_covered'][-1]
-            if topic != 'general':
-                welcome_hook = f"Last time we were working on {topic}"
+Context:
+- Recent key moments: {key_moments}
+- Topics covered: {topics}
+
+Return ONLY a brief, engaging hook (1 sentence) that references the last session naturally. If no meaningful context, return "Welcome back!"."""
+
+            model = extractor._get_model()
+            response = model.generate_content(hook_prompt)
+            welcome_hook = response.text.strip()
+        except Exception as e:
+            # Fallback to simple hook if LLM fails
+            if closing.get('topics_covered') and closing['topics_covered'] != ['general']:
+                welcome_hook = f"Last time we were working on {closing['topics_covered'][-1]}"
+            else:
+                welcome_hook = "Welcome back!"
 
         emotional_state = closing['emotional_arc'][-1] if closing['emotional_arc'] else 'neutral'
 
@@ -284,38 +323,32 @@ class OpeningContextCache:
         emotional_state: str,
         closing: Dict[str, Any]
     ) -> str:
-        """Generate a natural, contextual opener for the next session."""
+        """Generate a natural, contextual opener for the next session using LLM."""
         
-        # Start with greeting
-        opener = "Hey! "
-        
-        # Add personal touch if available (but phrase it naturally)
-        if personal_relevance:
-            # Check if it's a question-worthy personal detail
-            if any(word in personal_relevance.lower() for word in ['headache', 'sick', 'tired', 'stressed']):
-                opener += f"Hope you're feeling better - you mentioned {personal_relevance.lower()}. "
-            elif any(word in personal_relevance.lower() for word in ['game', 'match', 'practice', 'basketball', 'soccer']):
-                opener += f"How did things go? "
-        
-        # Reference last session naturally
-        if welcome_hook and welcome_hook != "Welcome back!":
-            opener += welcome_hook + ". "
+        try:
+            extractor = self._get_extractor()
+            hooks = ', '.join(closing.get('next_session_hooks', [])) if closing.get('next_session_hooks') else 'none'
+            key_moments = '; '.join(closing.get('key_moments', [])[-2:]) if closing.get('key_moments') else 'none'
+            
+            opener_prompt = f"""Generate a natural, warm opening message for a tutoring session.
 
-        # Add appropriate call to action based on emotional state
-        if emotional_state == 'excited':
-            opener += "Ready to keep that momentum going?"
-        elif emotional_state in ['frustrated', 'confused']:
-            opener += "Let's take a fresh look at things today - sometimes a break helps!"
-        elif closing.get('next_session_hooks'):
-            hooks = closing['next_session_hooks']
-            if 'Revisit what we struggled with' in hooks:
-                opener += "Want to tackle what we were working on, or try something new?"
-            else:
-                opener += "What would you like to work on today?"
-        else:
-            opener += "What would you like to work on today?"
+Context:
+- Welcome hook: {welcome_hook if welcome_hook != 'Welcome back!' else 'none'}
+- Personal relevance: {personal_relevance if personal_relevance else 'none'}
+- Last emotional state: {emotional_state}
+- Next session hooks: {hooks}
+- Recent key moments: {key_moments}
 
-        return opener.strip()
+Return ONLY a brief, conversational opener (1-2 sentences). Reference context naturally if relevant. End with asking what they'd like to work on."""
+
+            model = extractor._get_model()
+            response = model.generate_content(opener_prompt)
+            return response.text.strip()
+        except Exception as e:
+            # Fallback to simple opener if LLM fails
+            if welcome_hook and welcome_hook != "Welcome back!":
+                return f"Hey! {welcome_hook}. What would you like to work on today?"
+            return "Hey! What would you like to work on today?"
 
 
 class MemoryConsolidator:
