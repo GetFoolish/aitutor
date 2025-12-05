@@ -8,7 +8,7 @@ from datetime import datetime
 
 from .schema import Memory, MemoryType
 from .vector_store import MemoryStore
-from .extractor import detect_topic_shift, has_past_reference, MemoryExtractor
+from .extractor import MemoryExtractor
 
 QUERY_GENERATION_PROMPT = """Analyze the recent conversation between a student and AI tutor. Generate a concise search query that captures the main topics and context being discussed.
 
@@ -171,17 +171,9 @@ class MemoryRetriever:
         conversation: List[Dict[str, str]],
         turn_count: int = 0
     ) -> Dict[str, bool]:
-        try:
-            extractor = self._get_extractor()
-            emotion = extractor.detect_emotion(current_message)
-        except:
-            emotion = None
-
+        # Only trigger deep retrieval every 3 turns
         triggers = {
-            'topic_change': detect_topic_shift(conversation),
-            'emotional_cue': emotion is not None,
-            'explicit_reference': has_past_reference(current_message),
-            'every_n_turns': turn_count > 0 and turn_count % 5 == 0
+            'every_n_turns': turn_count > 0 and turn_count % 3 == 0
         }
 
         return triggers
@@ -204,7 +196,8 @@ class MemoryRetriever:
 
         triggers = self.should_deep_retrieve(student_message, conversation, turn_count)
 
-        if any(triggers.values()):
+        # Only trigger deep retrieval every 3 turns
+        if triggers.get('every_n_turns', False):
             deep_results = self.deep_retrieval(
                 student_message, 
                 student_id, 
@@ -630,18 +623,17 @@ class MemoryRetriever:
                 
                 self._turn_counts[session_id] = turn_count + 1
             
-            # Check for deep retrieval triggers
+            # Check for deep retrieval triggers (only every 3 turns)
             triggers = self.should_deep_retrieve(
                 current_message=user_text,
                 conversation=conversation,
                 turn_count=turn_count + 1
             )
             
-            if any(triggers.values()):
-                active_triggers = [k for k, v in triggers.items() if v]
+            if triggers.get('every_n_turns', False):
                 if verbose:
                     timestamp_str = datetime.now().strftime("%H:%M:%S.%f")[:-3]
-                    print(f"[{timestamp_str}] [RETRIEVAL] Deep retrieval triggered: {', '.join(active_triggers)}")
+                    print(f"[{timestamp_str}] [RETRIEVAL] Deep retrieval triggered: every_n_turns (turn {turn_count + 1})")
                 
                 deep_start_time = time.time()
                 

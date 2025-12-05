@@ -144,47 +144,44 @@ class MemoryExtractor:
         return []
 
     def detect_emotion(self, text: str) -> Optional[str]:
-        text_lower = text.lower()
+        """
+        Detect emotion in student text using LLM.
+        Returns one of: 'frustrated', 'confused', 'excited', 'anxious', 'tired', 'happy'
+        Returns None if no clear emotion is detected.
+        """
+        if not text or not text.strip():
+            return None
+        
+        emotion_prompt = """Analyze the student's emotional state. Return ONE word: frustrated, confused, excited, anxious, tired, happy, or none.
 
-        emotion_keywords = {
-            'frustrated': ['frustrated', 'annoying', 'ugh', 'hate', 'stupid', 'dont get it', "don't get it"],
-            'confused': ['confused', 'lost', 'what?', 'huh', "don't understand", 'dont understand', 'makes no sense'],
-            'excited': ['excited', 'awesome', 'cool', 'yes!', 'got it', 'makes sense', 'oh!', 'finally'],
-            'anxious': ['anxious', 'nervous', 'worried', 'stressed', 'scared', 'test', 'exam'],
-            'tired': ['tired', 'exhausted', 'sleepy', 'long day', 'worn out'],
-            'happy': ['happy', 'great', 'good', 'thanks', 'helpful', ':)', 'yay']
-        }
+Student: {text}""".format(text=text.strip())
 
-        for emotion, keywords in emotion_keywords.items():
-            for keyword in keywords:
-                if keyword in text_lower:
-                    return emotion
-
-        return None
-
-
-def detect_topic_shift(conversation: List[Dict[str, str]]) -> bool:
-    if len(conversation) < 4:
-        return False
-
-    recent_text = ' '.join([
-        turn.get('text', '') for turn in conversation[-4:]
-    ]).lower()
-
-    shift_indicators = [
-        'let\'s move on', 'next topic', 'something else', 'different question',
-        'change of topic', 'by the way', 'anyway', 'moving on'
-    ]
-
-    return any(indicator in recent_text for indicator in shift_indicators)
-
-
-def has_past_reference(text: str) -> bool:
-    text_lower = text.lower()
-
-    past_indicators = [
-        'like before', 'like last time', 'remember when', 'we did',
-        'you said', 'you mentioned', 'earlier', 'yesterday', 'last session', 'last week'
-    ]
-
-    return any(indicator in text_lower for indicator in past_indicators)
+        try:
+            model = self._get_model()
+            response = model.generate_content(emotion_prompt)
+            emotion = response.text.strip().lower()
+            
+            # Map LLM response to valid emotion categories
+            valid_emotions = ['frustrated', 'confused', 'excited', 'anxious', 'tired', 'happy']
+            
+            # Check if response contains any valid emotion
+            for valid_emotion in valid_emotions:
+                if valid_emotion in emotion:
+                    return valid_emotion
+            
+            # If response is "none" or doesn't match, return None
+            if 'none' in emotion or not emotion:
+                return None
+            
+            # Fallback: try to extract first valid emotion word from response
+            words = emotion.split()
+            for word in words:
+                if word in valid_emotions:
+                    return word
+            
+            return None
+            
+        except Exception as e:
+            # Silently fail - don't break the flow if emotion detection fails
+            print(f"Emotion detection error: {e}")
+            return None
