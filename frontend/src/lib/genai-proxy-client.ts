@@ -16,6 +16,10 @@ import {
 import { StreamingLog } from "../types";
 import { base64ToArrayBuffer } from "./utils";
 import { difference } from "lodash";
+import { jwtUtils } from "./jwt-utils";
+
+// Get tutor WebSocket URL from environment
+const TUTOR_WS_URL = import.meta.env.VITE_TUTOR_WS || 'ws://localhost:8767';
 
 /**
  * Event types that can be emitted by the proxy client.
@@ -88,18 +92,19 @@ export class GenAIProxyClient extends EventEmitter<LiveClientEventTypes> {
     this._status = "connecting";
     this.config = config;
 
-    // Connect to backend (use environment variable with fallback for local dev)
-    const tutorWsUrl = import.meta.env.VITE_TUTOR_WS || "ws://localhost:8767";
-    
-    // Get JWT token from localStorage
-    const token = localStorage.getItem('jwt_token');
+    // Get JWT token for authentication
+    const token = jwtUtils.getToken();
     if (!token) {
-      throw new Error('No authentication token found');
+      console.error("No JWT token available for WebSocket connection");
+      this._status = "disconnected";
+      const errorEvent = new ErrorEvent("error", { message: "Authentication required" });
+      this.emit("error", errorEvent);
+      return false;
     }
-    
-    // Add token to WebSocket URL
-    const wsUrlWithToken = `${tutorWsUrl}?token=${encodeURIComponent(token)}`;
-    this.ws = new WebSocket(wsUrlWithToken);
+
+    // Connect to local backend with JWT token in query parameter
+    const wsUrl = `${TUTOR_WS_URL}?token=${encodeURIComponent(token)}`;
+    this.ws = new WebSocket(wsUrl);
 
     this.ws.onopen = () => {
       console.log("Connected to Tutor backend");
@@ -261,10 +266,10 @@ export class GenAIProxyClient extends EventEmitter<LiveClientEventTypes> {
       hasAudio && hasVideo
         ? "audio + video"
         : hasAudio
-        ? "audio"
-        : hasVideo
-        ? "video"
-        : "unknown";
+          ? "audio"
+          : hasVideo
+            ? "video"
+            : "unknown";
     this.log(`client.realtimeInput`, message);
   }
 
@@ -306,4 +311,3 @@ export class GenAIProxyClient extends EventEmitter<LiveClientEventTypes> {
     });
   }
 }
-

@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import Select from "react-select";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useLiveAPIContext } from "../../contexts/LiveAPIContext";
 
 const voiceOptions = [
@@ -13,18 +20,14 @@ const voiceOptions = [
 export default function VoiceSelector() {
   const { config, setConfig } = useLiveAPIContext();
 
+  const [selected, setSelected] = useState<string>("Puck");
+
   useEffect(() => {
     const voiceName =
       config.speechConfig?.voiceConfig?.prebuiltVoiceConfig?.voiceName ||
       "Atari02";
-    const voiceOption = { value: voiceName, label: voiceName };
-    setSelectedOption(voiceOption);
+    setSelected(voiceName);
   }, [config]);
-
-  const [selectedOption, setSelectedOption] = useState<{
-    value: string;
-    label: string;
-  } | null>(voiceOptions[5]);
 
   const updateConfig = useCallback(
     (voiceName: string) => {
@@ -43,40 +46,26 @@ export default function VoiceSelector() {
   );
 
   return (
-    <div className="select-group">
-      <label htmlFor="voice-selector">Voice</label>
+    <div className="select-group space-y-1">
+      <Label htmlFor="voice-selector">Voice</Label>
       <Select
-        id="voice-selector"
-        className="react-select"
-        classNamePrefix="react-select"
-        styles={{
-          control: (baseStyles) => ({
-            ...baseStyles,
-            background: "var(--Neutral-15)",
-            color: "var(--Neutral-90)",
-            minHeight: "33px",
-            maxHeight: "33px",
-            border: 0,
-          }),
-          option: (styles, { isFocused, isSelected }) => ({
-            ...styles,
-            backgroundColor: isFocused
-              ? "var(--Neutral-30)"
-              : isSelected
-              ? "var(--Neutral-20)"
-              : undefined,
-          }),
+        value={selected}
+        onValueChange={(value) => {
+          setSelected(value);
+          updateConfig(value);
         }}
-        value={selectedOption}
-        defaultValue={selectedOption}
-        options={voiceOptions}
-        onChange={(e) => {
-          setSelectedOption(e);
-          if (e) {
-            updateConfig(e.value);
-          }
-        }}
-      />
+      >
+        <SelectTrigger id="voice-selector">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {voiceOptions.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }

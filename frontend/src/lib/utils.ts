@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+import { twMerge } from "tailwind-merge";
+import { type ClassValue, clsx } from "clsx";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
 export type GetAudioContextOptions = AudioContextOptions & {
   id?: string;
 };
@@ -21,7 +28,7 @@ export type GetAudioContextOptions = AudioContextOptions & {
 const map: Map<string, AudioContext> = new Map();
 
 export const audioContext: (
-  options?: GetAudioContextOptions
+  options?: GetAudioContextOptions,
 ) => Promise<AudioContext> = (() => {
   const didInteract = new Promise((res) => {
     window.addEventListener("pointerdown", res, { once: true });

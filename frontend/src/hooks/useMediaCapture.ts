@@ -201,4 +201,3 @@ export const useMediaCapture = ({ onCameraFrame, onScreenFrame }: UseMediaCaptur
     toggleScreen
   };
 };
-

@@ -26,7 +26,7 @@ interface StoreLoggerState {
 }
 
 export const useLoggerStore = create<StoreLoggerState>((set, get) => ({
-  maxLogs: 100,
+  maxLogs: 50,
   logs: [], //mockLogs,
   log: ({ date, type, message }: StreamingLog) => {
     set((state) => {
