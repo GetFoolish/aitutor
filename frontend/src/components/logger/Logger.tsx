@@ -17,10 +17,9 @@
 import "./logger.scss";
 
 import cn from "classnames";
-import { memo, ReactNode } from "react";
+import { memo, ReactNode, useMemo, lazy, Suspense } from "react";
 import { useLoggerStore } from "../../lib/store-logger";
-import SyntaxHighlighter from "react-syntax-highlighter";
-import { vs2015 as dark } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { VariableSizeList as List } from "react-window";
 import {
   ClientContentLog as ClientContentLogType,
   StreamingLog,
@@ -33,6 +32,10 @@ import {
   LiveServerToolCallCancellation,
   Part,
 } from "@google/genai";
+
+// Lazy load SyntaxHighlighter for better initial performance
+const SyntaxHighlighter = lazy(() => import("react-syntax-highlighter"));
+import { vs2015 as dark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 const formatTime = (d: Date) => d.toLocaleTimeString().slice(0, -3);
 
@@ -97,12 +100,14 @@ const RenderPart = memo(({ part }: { part: Part }) => {
     return (
       <div className="part part-executableCode">
         <h5>executableCode: {part.executableCode.language}</h5>
-        <SyntaxHighlighter
-          language={part.executableCode!.language!.toLowerCase()}
-          style={dark}
-        >
-          {part.executableCode!.code!}
-        </SyntaxHighlighter>
+        <Suspense fallback={<div>Loading...</div>}>
+          <SyntaxHighlighter
+            language={part.executableCode!.language!.toLowerCase()}
+            style={dark}
+          >
+            {part.executableCode!.code!}
+          </SyntaxHighlighter>
+        </Suspense>
       </div>
     );
   }
@@ -110,9 +115,11 @@ const RenderPart = memo(({ part }: { part: Part }) => {
     return (
       <div className="part part-codeExecutionResult">
         <h5>codeExecutionResult: {part.codeExecutionResult!.outcome}</h5>
-        <SyntaxHighlighter language="json" style={dark}>
-          {tryParseCodeExecutionResult(part.codeExecutionResult!.output!)}
-        </SyntaxHighlighter>
+        <Suspense fallback={<div>Loading...</div>}>
+          <SyntaxHighlighter language="json" style={dark}>
+            {tryParseCodeExecutionResult(part.codeExecutionResult!.output!)}
+          </SyntaxHighlighter>
+        </Suspense>
       </div>
     );
   }
@@ -149,9 +156,11 @@ const ToolCallLog = memo(({ message }: Message) => {
       {toolCall.functionCalls?.map((fc, i) => (
         <div key={fc.id} className="part part-functioncall">
           <h5>Function call: {fc.name}</h5>
-          <SyntaxHighlighter language="json" style={dark}>
-            {JSON.stringify(fc, null, "  ")}
-          </SyntaxHighlighter>
+          <Suspense fallback={<div>Loading...</div>}>
+            <SyntaxHighlighter language="json" style={dark}>
+              {JSON.stringify(fc, null, "  ")}
+            </SyntaxHighlighter>
+          </Suspense>
         </div>
       ))}
     </div>
@@ -180,9 +189,11 @@ const ToolResponseLog = memo(
       {(message as LiveClientToolResponse).functionResponses?.map((fc) => (
         <div key={`tool-response-${fc.id}`} className="part">
           <h5>Function Response: {fc.id}</h5>
-          <SyntaxHighlighter language="json" style={dark}>
-            {JSON.stringify(fc.response, null, "  ")}
-          </SyntaxHighlighter>
+          <Suspense fallback={<div>Loading...</div>}>
+            <SyntaxHighlighter language="json" style={dark}>
+              {JSON.stringify(fc.response, null, "  ")}
+            </SyntaxHighlighter>
+          </Suspense>
         </div>
       ))}
     </div>
@@ -263,17 +274,47 @@ const component = (log: StreamingLog) => {
 export default function Logger({ filter = "none" }: LoggerProps) {
   const { logs } = useLoggerStore();
 
-  const filterFn = filters[filter];
+  // Memoize filtered logs to avoid recalculating on every render
+  const filteredLogs = useMemo(() => {
+    const filterFn = filters[filter];
+    return logs.filter(filterFn);
+  }, [logs, filter]);
+
+  // Virtualized row renderer
+  const Row = memo(({ index, style }: { index: number; style: React.CSSProperties }) => {
+    const log = filteredLogs[index];
+    return (
+      <div style={style}>
+        <LogEntry MessageComponent={component(log)} log={log} key={index} />
+      </div>
+    );
+  });
+
+  // Estimate row height (can be refined for better accuracy)
+  const getItemSize = (index: number) => {
+    const log = filteredLogs[index];
+    // Simple heuristic: plain text logs are shorter, rich logs are taller
+    if (typeof log.message === "string") {
+      return 40;
+    }
+    return 120; // Rich log entries
+  };
 
   return (
     <div className="logger">
-      <ul className="logger-list">
-        {logs.filter(filterFn).map((log, key) => {
-          return (
-            <LogEntry MessageComponent={component(log)} log={log} key={key} />
-          );
-        })}
-      </ul>
+      {filteredLogs.length > 0 ? (
+        <List
+          height={600} // Adjust based on your layout
+          itemCount={filteredLogs.length}
+          itemSize={getItemSize}
+          width="100%"
+          className="logger-list"
+        >
+          {Row}
+        </List>
+      ) : (
+        <div className="logger-empty">No logs to display</div>
+      )}
     </div>
   );
 }

@@ -1,5 +1,27 @@
 :root {
-  --text: white;
+  // Web 1.0 Neo-Brutalism Color Palette
+  --neo-black: #000000;
+  --neo-white: #FFFFFF;
+  --neo-yellow: #FFD93D; // Vivid Yellow
+  --neo-red: #FF6B6B; // Hot Red
+  --neo-violet: #C4B5FD; // Soft Violet
+  --neo-bg: #FFFDF5; // Cream background (aged paper)
+
+  // Legacy color mappings for backward compatibility
+  --neo-cyan: #C4B5FD; // Map cyan to violet
+  --neo-pink: #FF6B6B; // Map pink to red
+  --neo-lime: #FFD93D; // Map lime to yellow
+  --neo-orange: #FF6B6B; // Map orange to red
+
+  // Neo-Brutalism Borders & Shadows
+  --neo-border-width: 5px;
+  --neo-border: 5px solid var(--neo-black);
+  --neo-shadow: 3px 3px 0 var(--neo-black);
+  --neo-shadow-hover: 4px 4px 0 var(--neo-black);
+  --neo-shadow-small: 2px 2px 0 var(--neo-black);
+
+  // Legacy variables (keeping for compatibility)
+  --text: var(--neo-black);
   --gray-200: #b4b8bb;
   --gray-300: #80868b;
   --gray-500: #5f6368;
@@ -8,28 +30,27 @@
   --gray-800: #171717;
   --gray-900: #111111;
   --gray-1000: #0a0a0a;
-  --border-stroke: #444444;
-  --accent-blue: rgb(161, 228, 242);
+  --border-stroke: var(--neo-black);
+  --accent-blue: var(--neo-cyan);
   --accent-blue-active-bg: #001233;
-  --accent-blue-active: #98beff;
-  --accent-blue-headers: #448dff;
-  --accent-green: rgb(168, 218, 181);
+  --accent-blue-active: var(--neo-cyan);
+  --accent-blue-headers: var(--neo-cyan);
+  --accent-green: var(--neo-lime);
 
   --midnight-blue: rgb(0, 18, 51);
-  --blue-30: #99beff;
+  --blue-30: var(--neo-cyan);
 
-  --accent-red: #ff4600;
+  --accent-red: var(--neo-pink);
 
-  --background: var(--gray-900);
   --color: var(--text);
 
-  scrollbar-color: var(--gray-600) var(--gray-900);
+  scrollbar-color: var(--neo-black) var(--neo-bg);
   scrollbar-width: thin;
 
   --font-family: "Space Mono", monospace;
 
-  /* */
-  --Neutral-00: #000;
+  /* Neutral palette mapped to neo-brutalism */
+  --Neutral-00: var(--neo-black);
   --Neutral-5: #181a1b;
   --Neutral-10: #1c1f21;
   --Neutral-15: #232729;
@@ -40,22 +61,46 @@
   --Neutral-80: #c3c6c7;
   --Neutral-90: #e1e2e3;
 
-  --Green-500: #0d9c53;
+  --Green-500: var(--neo-lime);
   --Green-700: #025022;
 
-  --Blue-400: #80c1ff;
-  --Blue-500: #1f94ff;
+  --Blue-400: var(--neo-cyan);
+  --Blue-500: var(--neo-cyan);
   --Blue-800: #0f3557;
 
-  --Red-400: #ff9c7a;
-  --Red-500: #ff4600;
-  --Red-600: #e03c00;
+  --Red-400: var(--neo-pink);
+  --Red-500: var(--neo-pink);
+  --Red-600: var(--neo-pink);
   --Red-700: #bd3000;
 }
 
 body {
   font-family: "Space Mono", monospace;
-  background: var(--Neutral-30);
+  background: var(--neo-bg);
+  color: var(--neo-black);
+  font-size: 11px; // Much smaller base for better fit
+  font-weight: 700; // Bold typography for Web 1.0 aesthetic
+
+  // Responsive scaling - only increase on very large screens
+  @media (min-width: 2560px) {
+    font-size: 14px; // 4K displays
+  }
+
+  @media (min-width: 1920px) {
+    font-size: 13px; // Full HD
+  }
+
+  @media (min-width: 1440px) and (max-width: 1919px) {
+    font-size: 12px; // Standard large laptop
+  }
+
+  @media (max-width: 1024px) {
+    font-size: 11px; // Tablets
+  }
+
+  @media (max-width: 768px) {
+    font-size: 10px; // Mobile
+  }
 }
 
 .material-symbols-outlined {
@@ -116,16 +161,26 @@ body {
 }
 
 .streaming-console {
-  background: lightgreen;
-  color: var(--gray-300);
+  color: var(--neo-black);
   display: flex;
-  height: 100vh;
+  height: calc(100vh - 48px); // Reduced from 56px
   width: 100vw;
+  margin-top: 48px; // Reduced from 56px
+  position: relative;
+  background: var(--neo-bg);
+
+  // Responsive layout
+  @media (max-width: 768px) {
+    flex-direction: column;
+    height: calc(100vh - 44px); // Reduced from 50px
+    margin-top: 44px;
+  }
+}
 
   a,
   a:visited,
   a:active {
-    color: var(--gray-300);
+    color: var(--neo-black);
   }
 
   .disabled {
@@ -143,9 +198,16 @@ body {
     align-items: center;
     justify-content: center;
     flex-grow: 1;
-    gap: 1rem;
-    max-width: 100%;
+    gap: 0.75rem;
+    width: 100%;
     overflow: hidden;
+    transition: margin-right 300ms ease-in-out, margin-left 300ms ease-in-out;
+    background: var(--neo-bg);
+
+    @media (max-width: 768px) {
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
   }
 
   .main-app-area {
@@ -154,17 +216,56 @@ body {
     align-items: center;
     justify-content: center;
     width: 100%;
+    padding: 16px;
+
+    @media (max-width: 1024px) {
+      padding: 12px;
+    }
+
+    @media (max-width: 768px) {
+      padding: 8px;
+      flex-direction: column;
+    }
   }
 
-.question-panel {
-  position: relative;
-  display: flex;
-  flex: 2;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start; /* push content towards top */
-  height: 100vh;
-}
+  .question-panel {
+    position: relative;
+    display: flex;
+    flex: 2;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--neo-bg);
+
+    // SVG dot pattern background
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23000000' opacity='0.50'/%3E%3C/svg%3E");
+      background-size: 20px 20px;
+      background-repeat: repeat;
+    }
+
+    // Ensure content is above background
+    > * {
+      position: relative;
+      z-index: 1;
+    }
+  }
+
+  // Dark mode for question panel background
+  :global(.dark) .question-panel {
+    background: #0a0a0a;
+
+    &::before {
+      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23FFFFFF' opacity='0.08'/%3E%3C/svg%3E");
+    }
+  }
 
   .media-mixer-display {
     display: flex;
@@ -176,11 +277,9 @@ body {
   }
 
   .media-mixer-display {
-    border-left: 1px solid var(--border-stroke);
+    border-left: 5px solid var(--neo-black);
     transition: all 0.3s ease-in-out;
   }
-
-  
 
   .function-call {
     position: absolute;
@@ -189,7 +288,6 @@ body {
     height: 50%;
     overflow-y: auto;
   }
-}
 
 /* video player */
 .stream {

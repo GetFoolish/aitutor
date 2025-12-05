@@ -1,0 +1,18 @@
+.background-shapes {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    color: #000000;
+  
+    svg {
+      pointer-events: none;
+    }
+  }
+  
+  // Dark mode - change stroke color to white
+  :global(.dark) .background-shapes {
+    color: #ffffff;
+  }
+  

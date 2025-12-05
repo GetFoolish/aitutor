@@ -1,4 +1,4 @@
-FROM node:18-alpine as builder
+FROM node:22-alpine as builder
 
 WORKDIR /app
 ARG VITE_DASH_API_URL
@@ -48,4 +48,3 @@ RUN echo 'server { \
 EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]
-

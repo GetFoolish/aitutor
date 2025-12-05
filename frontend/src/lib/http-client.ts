@@ -62,3 +62,4 @@ export const httpClient = {
     return this.fetch(url, { ...options, method: 'DELETE' });
   },
 };
+

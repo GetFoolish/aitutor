@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import './question-display.scss';
+import React from 'react';
 import RendererComponent from "../question-widget-renderer/RendererComponent";
 
-const QuestionDisplay: React.FC = () => {
-  
+interface QuestionDisplayProps {
+  onSkillChange?: (skill: string) => void;
+}
+
+const QuestionDisplay: React.FC<QuestionDisplayProps> = ({ onSkillChange }) => {
   return (
-    <div className="question-display" style={{width: '100%', height: '100%'}}>
-      <h2 className="question-title">Here's your next question:</h2>
-      <div className="perseus-content" id="perseus-capture-area">
-        <RendererComponent />
+    <div className="w-full h-full flex flex-col items-center justify-center bg-transparent">
+      <div className="w-full h-full" id="perseus-capture-area">
+        <RendererComponent onSkillChange={onSkillChange} />
       </div>
     </div>
   );

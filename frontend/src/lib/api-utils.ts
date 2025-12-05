@@ -11,9 +11,9 @@ export const apiUtils = {
   async authenticatedFetch(url: string, options: RequestInit = {}): Promise<Response> {
     const token = jwtUtils.getToken();
 
-    const headers = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     };
 
     if (token) {
@@ -55,3 +55,4 @@ export const apiUtils = {
     });
   },
 };
+

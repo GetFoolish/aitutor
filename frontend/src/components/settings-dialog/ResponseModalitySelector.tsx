@@ -1,5 +1,12 @@
 import { useCallback, useState } from "react";
-import Select from "react-select";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useLiveAPIContext } from "../../contexts/LiveAPIContext";
 import { Modality } from "@google/genai";
 
@@ -11,10 +18,7 @@ const responseOptions = [
 export default function ResponseModalitySelector() {
   const { config, setConfig } = useLiveAPIContext();
 
-  const [selectedOption, setSelectedOption] = useState<{
-    value: string;
-    label: string;
-  } | null>(responseOptions[0]);
+  const [value, setValue] = useState<"audio" | "text">("audio");
 
   const updateConfig = useCallback(
     (modality: "audio" | "text") => {
@@ -29,39 +33,28 @@ export default function ResponseModalitySelector() {
   );
 
   return (
-    <div className="select-group">
-      <label htmlFor="response-modality-selector">Response modality</label>
+    <div className="select-group space-y-1">
+      <Label htmlFor="response-modality-selector">Response modality</Label>
       <Select
-        id="response-modality-selector"
-        className="react-select"
-        classNamePrefix="react-select"
-        styles={{
-          control: (baseStyles) => ({
-            ...baseStyles,
-            background: "var(--Neutral-15)",
-            color: "var(--Neutral-90)",
-            minHeight: "33px",
-            maxHeight: "33px",
-            border: 0,
-          }),
-          option: (styles, { isFocused, isSelected }) => ({
-            ...styles,
-            backgroundColor: isFocused
-              ? "var(--Neutral-30)"
-              : isSelected
-              ? "var(--Neutral-20)"
-              : undefined,
-          }),
-        }}
-        defaultValue={selectedOption}
-        options={responseOptions}
-        onChange={(e) => {
-          setSelectedOption(e);
-          if (e && (e.value === "audio" || e.value === "text")) {
-            updateConfig(e.value);
+        value={value}
+        onValueChange={(nextValue) => {
+          if (nextValue === "audio" || nextValue === "text") {
+            setValue(nextValue);
+            updateConfig(nextValue);
           }
         }}
-      />
+      >
+        <SelectTrigger id="response-modality-selector">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {responseOptions.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 }
