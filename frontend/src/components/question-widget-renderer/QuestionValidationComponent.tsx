@@ -20,9 +20,20 @@ function QuestionValidationComponent() {
     const [itemMetadata, setItemMetadata] = useState<{ source_question_id?: string } | undefined>();
     const { id } = useParams<{id:string}>();
     const history = useHistory();
+    const [hintsVisible, setHintsVisible] = useState(0);
 
+    const showNextHint = () => {
+        if (perseusItem && perseusItem.hints) {
+            setHintsVisible(perseusItem.hints.length);
+        }
+    };
+
+    const hideLastHint = () => {
+        setHintsVisible(0);
+    };
     const fetchQuestion = (questionId?: string, updateRoute: boolean = false) => {
         setLoading(true);
+        setHintsVisible(0);
         const url = questionId 
             ? `http://localhost:8001/api/get-question-for-validation?question_id=${questionId}`
             : `http://localhost:8001/api/get-question-for-validation`;
@@ -161,10 +172,26 @@ function QuestionValidationComponent() {
                                                     stack: [],
                                                 }}
                                                 showSolutions="none"
-                                                hintsVisible={0}
+                                                hintsVisible={hintsVisible}
                                                 reviewMode={false}
                                             />
                                         </PerseusI18nContextProvider>
+                                        <div className="flex gap-2 mt-4">
+                                            <button
+                                                onClick={showNextHint}
+                                                className="bg-gray-200 rounded p-2"
+                                                disabled={!perseusItem || !perseusItem.hints || hintsVisible === perseusItem.hints.length}
+                                            >
+                                                Show All Hints
+                                            </button>
+                                            <button
+                                                onClick={hideLastHint}
+                                                className="bg-gray-200 rounded p-2"
+                                                disabled={hintsVisible === 0}
+                                            >
+                                                Hide All Hints
+                                            </button>
+                                        </div>
                                     </div>
                                 ) : (
                                     <p>Loading...</p>

@@ -3,11 +3,15 @@ const path = require("path");
 const genAI = require("@google/genai");
 const axios = require("axios"); // Add axios for API calls
 const { BlobServiceClient } = require("@azure/storage-blob");
-const sharp = require("sharp"); // Added sharp for post-process resizing
+const sharp = require("sharp"); 
+const dotenv = require("dotenv");
 
-const blobService = BlobServiceClient.fromConnectionString(
+dotenv.config();
+const UPLOAD_TO_AZURE = false;
+
+const blobService = UPLOAD_TO_AZURE ? BlobServiceClient.fromConnectionString(
   process.env.AZURE_STORAGE_CONNECTION_STRING
-);
+) : null;
 
 
 const folderPath = "./filtered_files";
@@ -115,15 +119,15 @@ async function replaceImageUrlsWithGeneratedImages(
             // Generate image
             const buffer = await generateImageWithGemini(prompt);
 
-            // Upload to Azure
+            // Upload to Azure or save locally
             const blobName = `${Date.now()}-${Math.random()}.png`;
-            const azureUrl = await uploadBufferToAzure(
+            const newUrl = await uploadOrSaveImage(
               containerName,
               blobName,
               buffer
             );
 
-            contentStr = contentStr.split(url).join(azureUrl);
+            contentStr = contentStr.split(url).join(newUrl);
           }
         }
 
@@ -141,13 +145,13 @@ async function replaceImageUrlsWithGeneratedImages(
           const buffer = await generateImageWithGemini(altText);
 
           const blobName = `${Date.now()}-${Math.random()}.png`;
-          const azureUrl = await uploadBufferToAzure(
+          const newUrl = await uploadOrSaveImage(
             containerName,
             blobName,
             buffer
           );
 
-          contentStr = contentStr.replace(graphieUrl, azureUrl);
+          contentStr = contentStr.replace(graphieUrl, newUrl);
         }
 
         newObj[key] = contentStr;
@@ -155,21 +159,21 @@ async function replaceImageUrlsWithGeneratedImages(
       } else if (key === "backgroundImage" && obj[key].url && obj.alt) {
         const buffer = await generateImageWithGemini(obj.alt);
         const blobName = `${Date.now()}-${Math.random()}.png`;
-        const azureUrl = await uploadBufferToAzure(
+        const newUrl = await uploadOrSaveImage(
           containerName,
           blobName,
           buffer
         );
-        newObj[key] = { ...obj[key], url: azureUrl };
+        newObj[key] = { ...obj[key], url: newUrl };
       } else if (key === "imageUrl" && obj.imageAlt) {
         const buffer = await generateImageWithGemini(obj.imageAlt);
         const blobName = `${Date.now()}-${Math.random()}.png`;
-        const azureUrl = await uploadBufferToAzure(
+        const newUrl = await uploadOrSaveImage(
           containerName,
           blobName,
           buffer
         );
-        newObj[key] = azureUrl;
+        newObj[key] = newUrl;
       } else {
         newObj[key] = await replaceImageUrlsWithGeneratedImages(
           obj[key],
@@ -350,19 +354,32 @@ async function generateImageWithGemini(promptText) {
   }
 }
 
-// Upload buffer to Azure
-async function uploadBufferToAzure(containerName, blobName, buffer) {
-  try {
-    const containerClient = blobService.getContainerClient(containerName);
-    if (!(await containerClient.exists())) await containerClient.create();
+// Upload buffer to Azure or save locally
+async function uploadOrSaveImage(containerName, blobName, buffer) {
+  if (UPLOAD_TO_AZURE) {
+    try {
+      const containerClient = blobService.getContainerClient(containerName);
+      if (!(await containerClient.exists())) await containerClient.create();
 
-    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-    await blockBlobClient.uploadData(buffer, {
-      blobHTTPHeaders: { blobContentType: "image/png" },
-    });
-    return blockBlobClient.url;
-  } catch (err) {
-    throw new Error(`Azure upload failed: ${err.message}`);
+      const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+      await blockBlobClient.uploadData(buffer, {
+        blobHTTPHeaders: { blobContentType: "image/png" },
+      });
+      return blockBlobClient.url;
+    } catch (err) {
+      throw new Error(`Azure upload failed: ${err.message}`);
+    }
+  } else {
+    // Save locally
+    const assetsPath = path.resolve(__dirname, '..', 'frontend', 'public', 'assets');
+    if (!fs.existsSync(assetsPath)) {
+      fs.mkdirSync(assetsPath, { recursive: true });
+    }
+    const localFilePath = path.join(assetsPath, blobName);
+    fs.writeFileSync(localFilePath, buffer);
+    
+    // Return the relative path, consistent with the python script
+    return `/assets/${blobName}`;
   }
 }
 
