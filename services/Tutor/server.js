@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import { WebSocketServer } from 'ws';
 import http from 'http';
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
+import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import dotenv from 'dotenv';
@@ -17,12 +17,6 @@ try {
 const PORT = process.env.PORT || 8767;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'models/gemini-2.5-flash-native-audio-preview-09-2025';
-const CONVERSATIONS_BASE_PATH = join(rootDir, 'services', 'TeachingAssistant', 'Memory', 'data');
-const TEACHING_ASSISTANT_API_URL = process.env.TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
-
-if (!existsSync(CONVERSATIONS_BASE_PATH)) {
-  mkdirSync(CONVERSATIONS_BASE_PATH, { recursive: true });
-}
 
 let SYSTEM_PROMPT = '';
 try {
@@ -32,316 +26,395 @@ try {
   console.error('⚠️  Warning: Could not load system prompt file:', error.message);
 }
 
-// Helper function to send memory events (non-blocking)
-async function sendMemoryEvent(endpoint, data) {
-  try {
-    const response = await fetch(`${TEACHING_ASSISTANT_API_URL}/memory/${endpoint}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    if (!response.ok) {
-      console.error(`⚠️  Memory event failed: ${endpoint} - ${response.statusText}`);
-    }
-  } catch (error) {
-    // Silently fail - don't block conversation flow
-    console.error(`⚠️  Failed to send memory event to ${endpoint}:`, error.message);
-  }
+const activeSessions = new Map();
+const teachingAssistantClients = new Set();
+
+function generateSessionId() {
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substring(2, 11);
+  return `sess_${timestamp}_${random}`;
 }
 
-// Helper function to trigger memory retrieval (blocking)
-async function triggerMemoryRetrieval(sessionId, userId, userText, timestamp, adamText = '') {
-  try {
-    const response = await fetch(`${TEACHING_ASSISTANT_API_URL}/memory/retrieval/user-turn`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        session_id: sessionId,
-        user_id: userId,
-        user_text: userText,
-        timestamp: timestamp,
-        adam_text: adamText
-      })
-    });
-    
-    if (!response.ok) {
-      console.error(`⚠️  Memory retrieval request failed: ${response.statusText}`);
+function createSession(sessionId, userId, geminiSession, clientWs) {
+  activeSessions.set(sessionId, {
+    sessionId,
+    userId,
+    geminiSession,
+    clientWs,
+    startTime: new Date(),
+    lastActivity: new Date(),
+    transcriptions: {
+      user: {
+        current: '',
+        complete: [],
+        lastComplete: null
+      },
+      adam: {
+        current: '',
+        complete: [],
+        lastComplete: null
+      }
     }
-  } catch (error) {
-    // Silently fail - don't block conversation flow
-    console.error(`⚠️  Failed to trigger memory retrieval:`, error.message);
-  }
+  });
 }
 
-// Helper function to get memory injection (blocking, returns injection text)
-async function getMemoryInjection(sessionId, userId, userText = '', timestamp = '', adamText = '') {
-  try {
-    const response = await fetch(`${TEACHING_ASSISTANT_API_URL}/memory/retrieval/user-turn`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        session_id: sessionId,
-        user_id: userId,
-        user_text: userText,  // Empty means just get stored injection
-        timestamp: timestamp || new Date().toISOString(),
-        adam_text: adamText
-      })
-    });
-    
-    if (!response.ok) {
-      let errorText = '';
-      try {
-        errorText = await response.text();
-      } catch (e) {
-        errorText = 'Unable to read error response';
-      }
-      console.error(`⚠️  Memory injection request failed: ${response.status} ${response.statusText}`);
-      if (errorText && errorText.length > 0) {
-        console.error(`⚠️  Error details: ${errorText.substring(0, 300)}`);
-      }
-      return null;
+function getSession(sessionId) {
+  return activeSessions.get(sessionId) || null;
+}
+
+function removeSession(sessionId) {
+  activeSessions.delete(sessionId);
+}
+
+function getSessionByClientWs(clientWs) {
+  for (const [sessionId, session] of activeSessions.entries()) {
+    if (session.clientWs === clientWs) {
+      return session;
     }
-    
-    const data = await response.json();
-    return data.injection_text || null;
-  } catch (error) {
-    // Silently fail - don't block conversation flow
-    console.error(`⚠️  Failed to get memory injection:`, error.message);
-    if (error.stack) {
-      console.error(`⚠️  Stack:`, error.stack);
-    }
+  }
+  return null;
+}
+
+function extractTranscriptions(geminiMessage) {
+  if (!geminiMessage || !geminiMessage.serverContent) {
     return null;
   }
+
+  const content = geminiMessage.serverContent;
+  const result = {
+    user: null,
+    adam: null,
+    turnComplete: false,
+    interrupted: false
+  };
+
+
+  if (content.inputTranscription) {
+    const transcription = content.inputTranscription;
+    if (transcription.text !== undefined) {
+      result.user = {
+        text: transcription.text || '',
+        isComplete: transcription.isComplete !== false,
+        timestamp: new Date()
+      };
+    }
+  }
+
+  // According to official Gemini docs: config uses outputAudioTranscription, but data field is outputTranscription
+  if (content.outputTranscription) {
+    const transcription = content.outputTranscription;
+    if (transcription.text !== undefined) {
+      result.adam = {
+        text: transcription.text || '',
+        isComplete: transcription.isComplete !== false,
+        timestamp: new Date()
+      };
+    }
+  }
+
+  if (content.modelTurn && content.modelTurn.parts) {
+    const textParts = content.modelTurn.parts
+      .filter(part => part.text)
+      .map(part => part.text)
+      .join('');
+
+    if (textParts && !result.adam) {
+      result.adam = {
+        text: textParts,
+        isComplete: content.turnComplete || false,
+        timestamp: new Date()
+      };
+    }
+  }
+
+  if (content.turnComplete) {
+    result.turnComplete = true;
+  }
+
+  if (content.interrupted) {
+    result.interrupted = true;
+  }
+
+  return (result.user || result.adam || result.turnComplete || result.interrupted) ? result : null;
 }
 
-class ConversationManager {
-  constructor() {
-    this.session = null;
-    this.filepath = null;
-    this.userBuffer = '';
-    this.adamBuffer = '';
+function storeTranscriptions(session, transcriptions) {
+  if (!session || !session.transcriptions || !transcriptions) {
+    return;
   }
 
-  startSession(userId = 'anonymous') {
-    const timestamp = new Date();
-    const randomSuffix = Math.random().toString(36).substring(2, 8);
-    const sessionId = `sess_${timestamp.toISOString().slice(0, 19).replace(/[-:T]/g, '').replace(/(\d{8})(\d{6})/, '$1_$2')}_${randomSuffix}`;
-    
-    this.session = {
-      session_id: sessionId,
-      user_id: userId,
-      start_time: timestamp.toISOString(),
-      end_time: null,
-      turns: []
-    };
-    
-    // Create user_id-based path: data/{userId}/conversations/
-    const userConversationsPath = join(CONVERSATIONS_BASE_PATH, userId, 'conversations');
-    if (!existsSync(userConversationsPath)) {
-      mkdirSync(userConversationsPath, { recursive: true });
-    }
-    this.filepath = join(userConversationsPath, `${sessionId}.json`);
-    this.userBuffer = '';
-    this.adamBuffer = '';
-    
-    this._save();
-    console.log(`📝 Conversation session started: ${sessionId} for user: ${userId}`);
-    
-    // Send real-time event to memory system
-    sendMemoryEvent('session/start', {
-      session_id: sessionId,
-      user_id: userId
-    });
-    
-    return sessionId;
-  }
+  let userTextBroadcast = null;
+  let adamTextBroadcast = null;
 
-  appendUserChunk(text) {
-    if (!this.session || !text) return;
-    this.userBuffer += text;
-  }
-
-  appendAdamChunk(text) {
-    if (!this.session || !text) return;
-    this.adamBuffer += text;
-  }
-
-  async flushUserTurn() {
-    if (!this.session || !this.userBuffer.trim()) return null;
-    
-    const userText = this.userBuffer.trim();
-    const timestamp = new Date().toISOString();
-    
-    this.session.turns.push({
-      speaker: 'user',
-      text: userText,
-      timestamp: timestamp
-    });
-    console.log(`🎤 User turn saved: ${userText.substring(0, 50)}...`);
-    this.userBuffer = '';
-    this._save();
-    
-    // Trigger memory retrieval (stores results in memory for later injection)
-    // Don't inject yet - wait until Adam stops speaking
-    await triggerMemoryRetrieval(
-      this.session.session_id,
-      this.session.user_id,
-      userText,
-      timestamp,
-      ''  // adam_text will be empty at this point
-    );
-    
-    return { userText, timestamp };
-  }
-
-  async injectMemoriesForNextTurn(geminiSession) {
-    if (!this.session || !geminiSession) {
-      console.log(`⚠️  [INJECTION] Cannot inject: missing session or geminiSession`);
-      return;
-    }
-    
-    console.log(`💉 [INJECTION] Attempting to inject memories for session ${this.session.session_id}`);
-    
-    try {
-      // Small delay to ensure retrieval from flushUserTurn() has completed
-      await new Promise(resolve => setTimeout(resolve, 200)); // 200ms delay
-      
-      // Get memory injection from stored retrieval results (no new retrieval, just get stored)
-      const injectionText = await getMemoryInjection(
-        this.session.session_id,
-        this.session.user_id,
-        '',  // Empty user_text means just get stored injection
-        new Date().toISOString(),
-        this.adamBuffer.trim()  // Use Adam's last response if available
-      );
-      
-      // If injection text exists, send it to Gemini (after Adam stops, before next user turn)
-      if (injectionText) {
-        console.log(`💉 [INJECTION] Injecting memory context after Adam stopped (${injectionText.length} chars)`);
-        
-        // Send injection as a user message - Gemini will process it as context
-        // The triple curly braces format tells Gemini to use it silently
-        try {
-          geminiSession.sendClientContent({
-            turns: [{
-              role: 'user',
-              parts: [{ text: injectionText }]
-            }],
-            turnComplete: true
-          });
-          console.log(`✅ [INJECTION] Memory injection sent successfully to Gemini`);
-        } catch (sendError) {
-          console.error(`⚠️  [INJECTION] Failed to send to Gemini:`, sendError.message);
-          throw sendError;
-        }
-      } else {
-        console.log(`ℹ️  [INJECTION] No injection text returned (all memories may already be injected or retrieval not complete)`);
+  if (transcriptions.user) {
+    const userTrans = transcriptions.user;
+    if (userTrans.isComplete) {
+      if (session.transcriptions.user.current) {
+        const finalText = session.transcriptions.user.current + userTrans.text;
+        const completeTrans = {
+          text: finalText.trim(),
+          timestamp: userTrans.timestamp
+        };
+        session.transcriptions.user.complete.push(completeTrans);
+        session.transcriptions.user.lastComplete = completeTrans;
+        session.transcriptions.user.current = '';
+        userTextBroadcast = completeTrans;
+      } else if (userTrans.text) {
+        const completeTrans = {
+          text: userTrans.text.trim(),
+          timestamp: userTrans.timestamp
+        };
+        session.transcriptions.user.complete.push(completeTrans);
+        session.transcriptions.user.lastComplete = completeTrans;
+        userTextBroadcast = completeTrans;
       }
-    } catch (error) {
-      console.error(`⚠️  [INJECTION] Failed to inject memory:`, error.message);
-      if (error.stack) {
-        console.error(`⚠️  [INJECTION] Error stack:`, error.stack);
+    } else if (userTrans.text) {
+      session.transcriptions.user.current += userTrans.text;
+    }
+  }
+
+  if (transcriptions.adam) {
+    const adamTrans = transcriptions.adam;
+    if (adamTrans.isComplete) {
+      if (session.transcriptions.adam.current) {
+        const finalText = session.transcriptions.adam.current + adamTrans.text;
+        const completeTrans = {
+          text: finalText.trim(),
+          timestamp: adamTrans.timestamp
+        };
+        session.transcriptions.adam.complete.push(completeTrans);
+        session.transcriptions.adam.lastComplete = completeTrans;
+        session.transcriptions.adam.current = '';
+        adamTextBroadcast = completeTrans;
+      } else if (adamTrans.text) {
+        const completeTrans = {
+          text: adamTrans.text.trim(),
+          timestamp: adamTrans.timestamp
+        };
+        session.transcriptions.adam.complete.push(completeTrans);
+        session.transcriptions.adam.lastComplete = completeTrans;
+        adamTextBroadcast = completeTrans;
       }
+    } else if (adamTrans.text) {
+      session.transcriptions.adam.current += adamTrans.text;
     }
   }
 
-  flushAdamTurn() {
-    if (!this.session || !this.adamBuffer.trim()) return;
-    
-    const adamText = this.adamBuffer.trim();
-    const timestamp = new Date().toISOString();
-    
-    this.session.turns.push({
-      speaker: 'adam',
-      text: adamText,
-      timestamp: timestamp
-    });
-    console.log(`🤖 Adam turn saved: ${adamText.substring(0, 50)}...`);
-    this.adamBuffer = '';
-    this._save();
-    
-    // Get last user turn for memory extraction event
-    const lastUserTurn = this.session.turns
-      .slice()
-      .reverse()
-      .find(t => t.speaker === 'user');
-    
-    // Send real-time event for memory extraction (complete exchange)
-    sendMemoryEvent('turn', {
-      session_id: this.session.session_id,
-      user_id: this.session.user_id,
-      user_text: lastUserTurn?.text || '',
-      adam_text: adamText,
-      timestamp: timestamp
-    });
-  }
+  if (transcriptions.turnComplete || transcriptions.interrupted) {
+    if (session.transcriptions.user.current) {
+      const completeTrans = {
+        text: session.transcriptions.user.current.trim(),
+        timestamp: new Date()
+      };
+      if (completeTrans.text) {
+        session.transcriptions.user.complete.push(completeTrans);
+        session.transcriptions.user.lastComplete = completeTrans;
+        userTextBroadcast = completeTrans;
+      }
+      session.transcriptions.user.current = '';
+    }
 
-  _save() {
-    if (!this.session || !this.filepath) return;
-    try {
-      writeFileSync(this.filepath, JSON.stringify(this.session, null, 2), 'utf-8');
-    } catch (error) {
-      console.error('❌ Failed to save conversation:', error.message);
+    if (session.transcriptions.adam.current) {
+      const completeTrans = {
+        text: session.transcriptions.adam.current.trim(),
+        timestamp: new Date()
+      };
+      if (completeTrans.text) {
+        session.transcriptions.adam.complete.push(completeTrans);
+        session.transcriptions.adam.lastComplete = completeTrans;
+        adamTextBroadcast = completeTrans;
+      }
+      session.transcriptions.adam.current = '';
     }
   }
 
-  async endSession() {
-    if (!this.session) return null;
-    
-    // Flush any remaining buffers
-    await this.flushUserTurn();
-    this.flushAdamTurn();
-    
-    const endTime = new Date().toISOString();
-    this.session.end_time = endTime;
-    this._save();
-    console.log(`💾 Conversation ended: ${this.filepath}`);
-    
-    const sessionId = this.session.session_id;
-    const userId = this.session.user_id;
-    
-    // Send real-time event
-    sendMemoryEvent('session/end', {
-      session_id: sessionId,
-      user_id: userId,
-      end_time: endTime
+  if (userTextBroadcast) {
+    broadcastToTeachingAssistant({
+      type: 'text',
+      data: {
+        session_id: session.sessionId,
+        user_id: session.userId,
+        text: userTextBroadcast.text,
+        speaker: 'user',
+        is_complete: true,
+        timestamp: userTextBroadcast.timestamp.toISOString()
+      }
     });
-    
-    this.session = null;
-    this.filepath = null;
-    return sessionId;
+  }
+
+  if (adamTextBroadcast) {
+    broadcastToTeachingAssistant({
+      type: 'text',
+      data: {
+        session_id: session.sessionId,
+        user_id: session.userId,
+        text: adamTextBroadcast.text,
+        speaker: 'adam',
+        is_complete: true,
+        interrupted: transcriptions.interrupted || false,
+        timestamp: adamTextBroadcast.timestamp.toISOString()
+      }
+    });
   }
 }
 
-const server = http.createServer((req, res) => {
-  if (req.method === 'GET' && (req.url === '/' || req.url === '/health')) {
+function broadcastToTeachingAssistant(event) {
+  if (teachingAssistantClients.size === 0) {
+    return;
+  }
+
+  const message = JSON.stringify(event);
+  const deadClients = [];
+
+  for (const client of teachingAssistantClients) {
+    if (client.readyState === 1) {
+      try {
+        client.send(message);
+      } catch (error) {
+        deadClients.push(client);
+      }
+    } else {
+      deadClients.push(client);
+    }
+  }
+
+  deadClients.forEach(client => teachingAssistantClients.delete(client));
+}
+
+function parseJSONBody(req) {
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        resolve(JSON.parse(body));
+      } catch (error) {
+        reject(new Error('Invalid JSON'));
+      }
+    });
+    req.on('error', reject);
+  });
+}
+
+const server = http.createServer(async (req, res) => {
+  const urlPath = req.url?.split('?')[0] || '/';
+
+  if (req.method === 'GET' && (urlPath === '/' || urlPath === '/health')) {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('OK');
     return;
   }
+
+  if (req.method === 'OPTIONS') {
+    res.writeHead(200, {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    });
+    res.end();
+    return;
+  }
+
+  if (req.method === 'POST' && urlPath === '/send_message_to_adam') {
+    try {
+      const body = await parseJSONBody(req);
+      const { session_id, user_id, message } = body;
+
+      if (!session_id) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'session_id is required' }));
+        return;
+      }
+
+      if (!message) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'message is required' }));
+        return;
+      }
+
+      const session = getSession(session_id);
+      if (!session) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Session not found' }));
+        return;
+      }
+
+      if (user_id && session.userId !== user_id) {
+        res.writeHead(403, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'User ID mismatch' }));
+        return;
+      }
+
+      try {
+        session.geminiSession.sendClientContent({
+          turns: [{
+            role: 'user',
+            parts: [{ text: message }]
+          }],
+          turnComplete: true
+        });
+
+        session.lastActivity = new Date();
+
+        console.log(`✅ Injected to session ${session_id}`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          status: 'sent',
+          session_id: session_id
+        }));
+      } catch (geminiError) {
+        console.error(`❌ Injection failed: ${session_id}`);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+          error: 'Failed to send message to Gemini',
+          details: geminiError.message
+        }));
+      }
+    } catch (error) {
+      console.error(`❌ Injection error: ${error.message}`);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Internal server error' }));
+    }
+    return;
+  }
+
   res.writeHead(404, { 'Content-Type': 'text/plain' });
   res.end('Not Found');
 });
 
 const wss = new WebSocketServer({ noServer: true });
+const taWss = new WebSocketServer({ noServer: true });
 
 server.on('upgrade', (request, socket, head) => {
-  wss.handleUpgrade(request, socket, head, (ws) => {
-    wss.emit('connection', ws, request);
-  });
+  const urlPath = new URL(request.url, `http://${request.headers.host}`).pathname;
+
+  if (urlPath === '/ta') {
+    taWss.handleUpgrade(request, socket, head, (ws) => {
+      taWss.emit('connection', ws, request);
+    });
+  } else {
+    wss.handleUpgrade(request, socket, head, (ws) => {
+      wss.emit('connection', ws, request);
+    });
+  }
 });
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`🎓 Adam Tutor Service started on port ${PORT}`);
   console.log(`🤖 Using model: ${GEMINI_MODEL}`);
-  console.log(`📁 Conversations base path: ${CONVERSATIONS_BASE_PATH}`);
   if (!GEMINI_API_KEY) {
     console.warn('⚠️  WARNING: GEMINI_API_KEY not set.');
   }
 });
 
 server.on('error', (error) => {
-  console.error('❌ Server error:', error);
+  if (error.code === 'EADDRINUSE') {
+    console.error(`❌ Port ${PORT} is already in use`);
+  } else {
+    console.error('❌ Server error:', error);
+  }
   process.exit(1);
 });
 
@@ -350,7 +423,6 @@ wss.on('connection', (clientWs) => {
   
   let geminiSession = null;
   let geminiClient = null;
-  const conversationManager = new ConversationManager();
 
   clientWs.on('message', async (data) => {
     try {
@@ -362,7 +434,13 @@ wss.on('connection', (clientWs) => {
           return;
         }
         
-        const { config } = message;
+        const { config, user_id } = message;
+        const sessionId = generateSessionId();
+        const userId = user_id || 'anonymous';
+        
+        clientWs.sessionId = sessionId;
+        clientWs.userId = userId;
+        
         geminiClient = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
         
         const fullConfig = {
@@ -375,8 +453,6 @@ wss.on('connection', (clientWs) => {
         console.log(`🔗 Connecting to Gemini model: ${GEMINI_MODEL}`);
         
         try {
-          conversationManager.startSession(message.userId || 'anonymous');
-          
           geminiSession = await geminiClient.live.connect({
             model: GEMINI_MODEL,
             config: fullConfig,
@@ -386,37 +462,15 @@ wss.on('connection', (clientWs) => {
                 clientWs.send(JSON.stringify({ type: 'open' }));
               },
               onmessage: async (geminiMessage) => {
-                if (geminiMessage.serverContent) {
-                  // Buffer user input transcription chunks
-                  if (geminiMessage.serverContent.inputTranscription?.text) {
-                    conversationManager.appendUserChunk(geminiMessage.serverContent.inputTranscription.text);
-                  }
-                  
-                  // When Adam starts speaking, flush the user buffer first
-                  if (geminiMessage.serverContent.outputTranscription?.text) {
-                    // Flush user turn before Adam's response (user finished speaking)
-                    await conversationManager.flushUserTurn();
-                    conversationManager.appendAdamChunk(geminiMessage.serverContent.outputTranscription.text);
-                  }
-                  
-                  // On turn complete (Adam stops speaking), inject memories for next user turn
-                  if (geminiMessage.serverContent.turnComplete) {
-                    console.log(`🛑 [INJECTION] Adam turn complete - triggering memory injection`);
-                    conversationManager.flushAdamTurn();
-                    // Inject memories after Adam stops speaking (user's turn is coming)
-                    await conversationManager.injectMemoriesForNextTurn(geminiSession);
-                  }
-                  
-                  // On interrupted (user started speaking), flush adam buffer and inject memories
-                  if (geminiMessage.serverContent.interrupted) {
-                    console.log(`🛑 [INJECTION] Adam interrupted - triggering memory injection`);
-                    conversationManager.flushAdamTurn();
-                    // Inject memories after Adam stops speaking (user's turn is coming)
-                    await conversationManager.injectMemoriesForNextTurn(geminiSession);
+                clientWs.send(JSON.stringify({ type: 'message', data: geminiMessage }));
+
+                const transcriptions = extractTranscriptions(geminiMessage);
+                if (transcriptions) {
+                  const session = getSessionByClientWs(clientWs);
+                  if (session) {
+                    storeTranscriptions(session, transcriptions);
                   }
                 }
-                
-                clientWs.send(JSON.stringify({ type: 'message', data: geminiMessage }));
               },
               onerror: (error) => {
                 console.error('❌ Gemini error:', error.message);
@@ -424,9 +478,24 @@ wss.on('connection', (clientWs) => {
               },
               onclose: async (event) => {
                 console.log(`🔌 Gemini connection closed: ${event.reason || 'Unknown reason'}`);
-                await conversationManager.endSession();
                 clientWs.send(JSON.stringify({ type: 'close', reason: event.reason }));
               }
+            }
+          });
+          
+          createSession(sessionId, userId, geminiSession, clientWs);
+          clientWs.send(JSON.stringify({
+            type: 'session_created',
+            session_id: sessionId,
+            user_id: userId
+          }));
+
+          broadcastToTeachingAssistant({
+            type: 'session_start',
+            data: {
+              session_id: sessionId,
+              user_id: userId,
+              timestamp: new Date().toISOString()
             }
           });
           
@@ -439,7 +508,6 @@ wss.on('connection', (clientWs) => {
       
       else if (message.type === 'disconnect') {
         if (geminiSession) {
-          await conversationManager.endSession();
           geminiSession.close();
           geminiSession = null;
           console.log('🔌 Gemini session closed');
@@ -475,7 +543,23 @@ wss.on('connection', (clientWs) => {
 
   clientWs.on('close', async () => {
     console.log('🔌 Frontend client disconnected');
-    await conversationManager.endSession();
+    
+    const sessionId = clientWs.sessionId;
+    const userId = clientWs.userId;
+    
+    if (sessionId) {
+      broadcastToTeachingAssistant({
+        type: 'session_end',
+        data: {
+          session_id: sessionId,
+          user_id: userId || 'anonymous',
+          timestamp: new Date().toISOString()
+        }
+      });
+      
+      removeSession(sessionId);
+    }
+    
     if (geminiSession) {
       geminiSession.close();
       geminiSession = null;
@@ -489,13 +573,28 @@ wss.on('connection', (clientWs) => {
 
 const shutdown = () => {
   console.log('\n🛑 Shutting down Adam Tutor Service...');
-  wss.close(() => {
-    server.close(() => {
-      console.log('✅ Server closed');
-      process.exit(0);
+  taWss.close(() => {
+    wss.close(() => {
+      server.close(() => {
+        console.log('✅ Server closed');
+        process.exit(0);
+      });
     });
   });
 };
+
+taWss.on('connection', (taWs) => {
+  teachingAssistantClients.add(taWs);
+
+  taWs.on('close', () => {
+    teachingAssistantClients.delete(taWs);
+  });
+
+  taWs.on('error', (error) => {
+    console.error('❌ TeachingAssistant WebSocket error:', error);
+    teachingAssistantClients.delete(taWs);
+  });
+});
 
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);

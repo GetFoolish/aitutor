@@ -1,132 +1,216 @@
-from typing import Optional, Dict, Any
+import asyncio
+import time
+import logging
+from typing import Optional, Dict
+from .core.context import SessionState
+from .core.context_manager import ContextManager
+from .core.event_processor import EventProcessor
+from .handlers.event_handler import WebSocketEventHandler
+from .handlers.queue_manager import EventQueueManager
+from .handlers.injection_manager import InjectionManager
+from .skills_manager import SkillsManager
+from .Memory.vector_store import MemoryStore
+from .Memory.retriever import MemoryRetriever
+from .Memory.extractor import MemoryExtractor
+from .Memory.consolidator import MemoryConsolidator, SessionClosingCache
+from .Memory import get_memory_data_dir
 from .greeting_handler import GreetingHandler
-from .inactivity_handler import InactivityHandler
-from .Memory import MemoryRetriever
+from .skills.memory_retrieval_skill import MemoryRetrievalSkill
+
+logger = logging.getLogger(__name__)
 
 
 class TeachingAssistant:
-    def __init__(self):
+    def __init__(self, server_url: str = "ws://localhost:8767/ta", tutor_server_url: Optional[str] = None):
+        self.queue_manager = EventQueueManager()
+        self.context_manager = ContextManager()
+        self.injection_manager = InjectionManager(tutor_server_url)
+        self.event_handler = WebSocketEventHandler(self.queue_manager, server_url)
+        self.skills_manager = SkillsManager()
+        self.event_processor = EventProcessor(self.context_manager, self.skills_manager)
+        self.session_state = SessionState()
+        self.running = False
+        
+        self.memory_store = MemoryStore()
+        self.memory_extractor = MemoryExtractor()
+        self.memory_consolidator = MemoryConsolidator(self.memory_store, self.memory_extractor)
         self.greeting_handler = GreetingHandler()
-        self.inactivity_handler = InactivityHandler()
-        self.memory_retriever: Optional[MemoryRetriever] = None
-        self.current_user_id: Optional[str] = None
-        self.current_session_id: Optional[str] = None
-        self.session_active: bool = False
-    
-    def start_session(self, user_id: str, session_id: Optional[str] = None) -> str:
-        if self.session_active:
-            self.end_session()
         
-        self.current_user_id = user_id
-        self.current_session_id = session_id
-        self.session_active = True
-        # Create MemoryRetriever with student_id
-        self.memory_retriever = MemoryRetriever(student_id=user_id)
-        self.inactivity_handler.stop_monitoring()
-        self.inactivity_handler.reset()
-        self.inactivity_handler.start_monitoring()
-        # Initialize watcher for file saving methods (but don't start polling)
-        from services.TeachingAssistant.Memory.retriever import MemoryRetrievalWatcher
-        self.memory_retriever.watcher = MemoryRetrievalWatcher(
-            retriever=self.memory_retriever,
-            verbose=True
-        )
-        return self.greeting_handler.start_session(user_id, session_id)
-    
-    def end_session(self, session_id: Optional[str] = None) -> str:
-        if not self.session_active or not self.current_user_id:
-            return ""
+        self.memory_retrievers: Dict[str, MemoryRetriever] = {}
+        self.closing_caches: Dict[str, SessionClosingCache] = {}
         
-        user_id = self.current_user_id
-        # Use provided session_id or fallback to tracked session_id
-        end_session_id = session_id or self.current_session_id
+        memory_skill = MemoryRetrievalSkill(memory_retriever=None)
+        self.skills_manager.register_skill(memory_skill)
+
+    async def start(self, user_id: str, session_id: str) -> Optional[str]:
+        self.session_state.start_session(session_id, user_id, time.time())
+        self.context_manager.create_context(session_id, user_id, time.time())
         
-        self.session_active = False
-        self.current_user_id = None
-        session_id_to_clear = self.current_session_id
-        self.current_session_id = None
-        self.inactivity_handler.stop_monitoring()
-        self.inactivity_handler.reset()
-        # Stop memory retrieval watcher and clear session data
-        if self.memory_retriever:
-            self.memory_retriever.stop_retrieval_watcher()
-            if session_id_to_clear:
-                self.memory_retriever.clear_session_history(session_id_to_clear)
-            self.memory_retriever = None
+        memory_retriever = MemoryRetriever(self.memory_store)
+        self.memory_retrievers[session_id] = memory_retriever
         
-        return self.greeting_handler.end_session(user_id, end_session_id)
-    
-    def record_question_answered(self, question_id: str, is_correct: bool):
-        if self.session_active:
-            self.greeting_handler.record_question(question_id, is_correct)
-            self.inactivity_handler.record_question_submission()
-    
-    def record_conversation_turn(self):
-        if self.session_active:
-            self.inactivity_handler.record_conversation_turn()
-    
-    def get_inactivity_prompt(self) -> Optional[str]:
-        if self.session_active:
-            return self.inactivity_handler.get_pending_prompt()
-        return None
-    
-    def get_session_info(self) -> Dict[str, Any]:
-        stats = self.greeting_handler.get_session_stats()
-        stats['user_id'] = self.current_user_id
-        stats['session_id'] = self.current_session_id
-        stats['session_active'] = self.session_active
-        return stats
-    
-    def on_user_turn(
-        self,
-        session_id: str,
-        user_id: str,
-        user_text: str,
-        timestamp: str,
-        adam_text: str = ""
-    ) -> None:
-        """
-        Called when user finishes speaking (user turn event).
-        This triggers memory retrieval for injection.
+        closing_cache = SessionClosingCache(session_id, user_id)
+        self.closing_caches[session_id] = closing_cache
         
-        Args:
-            session_id: Current session ID
-            user_id: User ID
-            user_text: The text the user just spoke
-            timestamp: Timestamp of the user turn
-            adam_text: Optional Adam text if available
-        """
-        # Allow retrieval if session is active OR if memory_retriever exists
-        # This ensures TA-light and TA-deep retrieval work even in simulator mode
-        if not self.session_active and not self.memory_retriever:
-            return
+        for skill in self.skills_manager.skills:
+            if isinstance(skill, MemoryRetrievalSkill):
+                skill.memory_retriever = memory_retriever
         
-        # Trigger memory retrieval (stores results in memory)
-        if self.memory_retriever:
-            self.memory_retriever.on_user_turn(
-                session_id=session_id,
-                user_id=user_id,
-                user_text=user_text,
-                timestamp=timestamp,
-                adam_text=adam_text
-            )
+        greeting = self.greeting_handler.start_session(user_id, session_id)
+        return greeting
+
+    async def ongoing(self):
+        while self.running:
+            events = self.queue_manager.dequeue_batch(max_batch_size=10)
+            
+            if events:
+                for event in events:
+                    if event.type == 'session_start':
+                        await self._handle_session_start(event)
+                        continue
+                    elif event.type == 'session_end':
+                        await self._handle_session_end(event)
+                        continue
+                    
+                    # Process all other events (text, audio, video, etc.)
+                    self.context_manager.update_from_event(event)
+                    
+                    # Extract memories in real-time when we have complete exchanges
+                    context = self.context_manager.get_context(event.session_id)
+                    closing_cache = self.closing_caches.get(event.session_id)
+                    
+                    if event.type == 'text' and event.data.get('is_complete'):
+                        speaker = event.data.get('speaker')
+                        text = event.data.get('text', '')
+                        
+                        if context and closing_cache:
+                            # When we get Adam's response, we have a complete exchange (user + Adam)
+                            if speaker == 'adam' and context.last_user_text:
+                                logger.info(f"💬 Complete exchange detected - session: {event.session_id}")
+                                closing_cache.update_after_exchange(
+                                    student_text=context.last_user_text,
+                                    ai_text=text,
+                                    topic=event.data.get('topic', 'general'),
+                                    extractor=self.memory_extractor,
+                                    store=self.memory_store
+                                )
+                            # When we get user text, check if we have previous Adam text for exchange
+                            elif speaker == 'user' and context.last_adam_text:
+                                logger.info(f"💬 Complete exchange detected - session: {event.session_id}")
+                                closing_cache.update_after_exchange(
+                                    student_text=text,
+                                    ai_text=context.last_adam_text,
+                                    topic=event.data.get('topic', 'general'),
+                                    extractor=self.memory_extractor,
+                                    store=self.memory_store
+                                )
+                    
+                    injections = self.event_processor.process_event(event)
+                    
+                    for injection in injections:
+                        await self.injection_manager.send_to_adam(
+                            injection,
+                            event.session_id,
+                            event.user_id
+                        )
+            else:
+                for session_id, session_data in self.session_state.sessions.items():
+                    if not session_data.get('ended', False):
+                        context = self.context_manager.get_context(session_id)
+                        if context:
+                            injections = self.skills_manager.execute_skills(context)
+                            for injection in injections:
+                                await self.injection_manager.send_to_adam(
+                                    injection,
+                                    session_id,
+                                    session_data['user_id']
+                                )
+            
+            await asyncio.sleep(0.1)
+
+    async def end(self, user_id: str, session_id: str) -> Optional[str]:
+        remaining_events = self.queue_manager.dequeue_batch(max_batch_size=100)
+        for event in remaining_events:
+            if event.session_id == session_id:
+                self.context_manager.update_from_event(event)
+        
+        # Save conversation to file before consolidating
+        context = self.context_manager.get_context(session_id)
+        if context:
+            self._save_conversation(user_id, session_id, context)
+        
+        closing_cache = self.closing_caches.get(session_id)
+        if closing_cache:
+            self.memory_consolidator.consolidate_session(user_id, session_id, closing_cache)
+            del self.closing_caches[session_id]
+        
+        memory_retriever = self.memory_retrievers.get(session_id)
+        if memory_retriever:
+            memory_retriever.clear_session(session_id)
+            del self.memory_retrievers[session_id]
+        
+        self.context_manager.clear_context(session_id)
+        self.session_state.end_session(session_id)
+        
+        closing = self.greeting_handler.end_session(user_id, session_id)
+        return closing
     
-    def get_memory_injection(self, session_id: str) -> Optional[str]:
-        """
-        Get formatted memory injection text for the current session.
-        Returns None if no new memories to inject.
-        """
-        if not self.session_active:
-            return None
-        
-        if not self.memory_retriever:
-            return None
+    def _save_conversation(self, user_id: str, session_id: str, context):
+        """Save conversation transcriptions to JSON file"""
+        import json
+        from datetime import datetime
         
         try:
-            return self.memory_retriever.get_memory_injection(session_id)
+            data_dir = get_memory_data_dir(user_id) / "conversations"
+            data_dir.mkdir(parents=True, exist_ok=True)
+            
+            file_path = data_dir / f"{session_id}.json"
+            conversation_data = {
+                "session_id": session_id,
+                "user_id": user_id,
+                "start_time": datetime.fromtimestamp(context.start_time).isoformat(),
+                "end_time": datetime.now().isoformat(),
+                "turn_count": context.turn_count,
+                "turns": context.conversation_turns
+            }
+            
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(conversation_data, f, indent=2, ensure_ascii=False)
+            
+            logger.info(f"💾 Saved conversation to {file_path} ({len(context.conversation_turns)} turns)")
         except Exception as e:
-            print(f"[INJECTION] Error in get_memory_injection: {e}")
-            import traceback
-            traceback.print_exc()
-            return None
+            logger.error(f"❌ Error saving conversation: {e}", exc_info=True)
+
+    async def _handle_session_start(self, event):
+        greeting = await self.start(event.user_id, event.session_id)
+        if greeting:
+            await self.injection_manager.send_to_adam(
+                greeting,
+                event.session_id,
+                event.user_id
+            )
+
+    async def _handle_session_end(self, event):
+        session_data = self.session_state.sessions.get(event.session_id)
+        if session_data:
+            closing = await self.end(session_data['user_id'], event.session_id)
+            if closing:
+                await self.injection_manager.send_to_adam(
+                    closing,
+                    event.session_id,
+                    event.user_id
+                )
+
+    async def run(self):
+        self.running = True
+        await self.event_handler.connect()
+        await asyncio.gather(
+            self.event_handler.listen(),
+            self.ongoing()
+        )
+
+    async def stop(self):
+        self.running = False
+        await self.event_handler.disconnect()
+        await self.injection_manager.close()
 
