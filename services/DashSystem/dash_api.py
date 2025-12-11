@@ -27,7 +27,15 @@ from services.DashSystem.dash_system import DASHSystem, Question
 from shared.auth_middleware import get_current_user
 
 app = FastAPI()
-dash_system = DASHSystem()
+
+# Initialize DASH system with error handling
+try:
+    dash_system = DASHSystem()
+    logger.info("[DASH_API] DASH system initialized successfully")
+except Exception as e:
+    logger.error(f"[DASH_API] Failed to initialize DASH system: {e}")
+    logger.warning("[DASH_API] Service will start but question endpoints may fail")
+    dash_system = None
 
 # Configure CORS - allow all origins
 app.add_middleware(
@@ -258,6 +266,17 @@ def load_perseus_items_from_dir(directory: str, limit: Optional[int] = None) -> 
         return random.sample(all_items, limit)
     return all_items
 
+@app.get("/health")
+def health_check():
+    """Health check endpoint"""
+    routes = [route.path for route in app.routes]
+    return {
+        "status": "healthy", 
+        "service": "DASH API",
+        "dash_system_initialized": dash_system is not None,
+        "registered_routes": routes
+    }
+
 @app.get("/api/questions/{sample_size}", response_model=List[PerseusQuestion])
 def get_questions_with_dash_intelligence(request: Request, sample_size: int):
     """
@@ -268,6 +287,10 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
         request: FastAPI request object (for JWT extraction)
         sample_size: Number of questions to return
     """
+    if dash_system is None:
+        logger.error("[DASH_API] DASH system not initialized")
+        raise HTTPException(status_code=503, detail="DASH system not available. Please check server logs.")
+    
     # Get user_id from JWT token
     user_id = get_current_user(request)
     

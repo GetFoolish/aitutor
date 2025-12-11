@@ -9,6 +9,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, JSONResponse
 from pydantic import BaseModel
 from typing import Optional
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))

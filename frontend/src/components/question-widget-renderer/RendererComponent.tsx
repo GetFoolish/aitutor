@@ -51,8 +51,11 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
     // Fetch questions using apiUtils with JWT authentication
     useEffect(() => {
         const fetchQuestions = async () => {
-            if (!jwtUtils.getToken()) {
+            const token = jwtUtils.getToken();
+            if (!token) {
                 setIsLoading(false);
+                setIsError(true);
+                setError(new Error('You must be logged in to fetch questions. Please log in first.'));
                 return;
             }
 
@@ -64,7 +67,18 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                 const response = await apiUtils.get(`${DASH_API_URL}/api/questions/16`);
                 
                 if (!response.ok) {
-                    throw new Error(`Failed to fetch questions: ${response.status}`);
+                    // Try to get error details from response
+                    let errorMessage = `Failed to fetch questions: ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        if (errorData.detail) {
+                            errorMessage = errorData.detail;
+                        }
+                    } catch {
+                        // If response is not JSON, use status text
+                        errorMessage = `Failed to fetch questions: ${response.status} ${response.statusText}`;
+                    }
+                    throw new Error(errorMessage);
                 }
 
                 const data = await response.json();

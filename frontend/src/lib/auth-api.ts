@@ -36,7 +36,14 @@ class AuthAPI {
   async getGoogleAuthUrl(): Promise<{ authorization_url: string; state: string }> {
     const response = await fetch(`${AUTH_SERVICE_URL}/auth/google`);
     if (!response.ok) {
-      throw new Error('Failed to get Google auth URL');
+      let errorMessage = 'Failed to get Google auth URL';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.detail || errorData.message || errorMessage;
+      } catch (e) {
+        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      }
+      throw new Error(errorMessage);
     }
     return response.json();
   }

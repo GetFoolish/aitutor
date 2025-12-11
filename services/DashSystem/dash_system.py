@@ -8,6 +8,9 @@ from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
+# Add the project root to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
 from managers.user_manager import UserManager, UserProfile, SkillState
 
 # Configure logging

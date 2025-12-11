@@ -17,8 +17,11 @@
 import { RiSidebarFoldLine, RiSidebarUnfoldLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import cn from "classnames";
-import { Sparkles, Moon, Sun, User, Settings, LogOut } from "lucide-react";
+import { Sparkles, Moon, Sun, User, Settings, LogOut, GraduationCap } from "lucide-react";
 import { useTheme } from "../theme/theme-provier";
+import { useHistory } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import { toast } from "sonner";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -41,11 +44,13 @@ interface HeaderProps {
 
 export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
     const { theme, setTheme } = useTheme();
+    const history = useHistory();
+    const { user, logout } = useAuth();
 
     return (
         <header className="fixed top-0 left-0 right-0 h-[44px] lg:h-[48px] bg-[#FFFDF5] dark:bg-[#000000] border-b-[3px] lg:border-b-[4px] border-black dark:border-white z-40 flex items-center justify-between px-2 md:px-4 lg:px-5 shadow-[0_2px_0_0_rgba(0,0,0,1)] lg:shadow-[0_2px_0_0_rgba(0,0,0,1)] dark:shadow-[0_2px_0_0_rgba(255,255,255,0.3)]">
             {/* Left side - AI Tutor Logo */}
-            <div className="flex items-center gap-1.5 md:gap-2 group cursor-pointer">
+            <div className="flex items-center gap-1.5 md:gap-2 group cursor-pointer" onClick={() => history.push('/')}>
                 <div className="relative flex items-center justify-center w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 border-[2px] lg:border-[3px] border-black dark:border-white bg-[#FFD93D] group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform duration-100">
                     <span className="material-symbols-outlined text-base md:text-lg text-black group-hover:rotate-12 transition-transform duration-300 font-black">
                         smart_toy
@@ -89,25 +94,53 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
                     <DropdownMenuContent className="w-48 md:w-56" align="end" forceMount>
                         <DropdownMenuLabel className="font-normal">
                             <div className="flex flex-col space-y-1">
-                                <p className="text-sm font-medium leading-none">User</p>
+                                <p className="text-sm font-medium leading-none">{user?.name || "User"}</p>
                                 <p className="text-xs leading-none text-muted-foreground">
-                                    user@example.com
+                                    {user?.email || "user@example.com"}
                                 </p>
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem 
+                                onClick={() => {
+                                    toast.info("Account page coming soon!", {
+                                        description: `Logged in as ${user?.email || "user"}`,
+                                    });
+                                }}
+                            >
                                 <User className="mr-2 h-4 w-4" />
                                 <span>Account</span>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem 
+                                onClick={() => {
+                                    toast.info("Settings page coming soon!", {
+                                        description: "Settings will be available here.",
+                                    });
+                                }}
+                            >
                                 <Settings className="mr-2 h-4 w-4" />
                                 <span>Settings</span>
                             </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => history.push('/onboarding')}>
+                                <GraduationCap className="mr-2 h-4 w-4" />
+                                <span>Onboarding</span>
+                            </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-[#FF6B6B] focus:text-[#FF6B6B]">
+                        <DropdownMenuItem 
+                            className="text-[#FF6B6B] focus:text-[#FF6B6B]"
+                            onClick={async () => {
+                                try {
+                                    await logout();
+                                    toast.success("Logged out successfully");
+                                    history.push('/login');
+                                } catch (error) {
+                                    console.error("Logout error:", error);
+                                    toast.error("Failed to log out. Please try again.");
+                                }
+                            }}
+                        >
                             <LogOut className="mr-2 h-4 w-4" />
                             <span>Log out</span>
                         </DropdownMenuItem>

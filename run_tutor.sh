@@ -123,6 +123,11 @@ echo "Starting Auth Service API server... Logs -> logs/auth_service.log"
 (cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/AuthService/auth_api.py) > "$SCRIPT_DIR/logs/auth_service.log" 2>&1 &
 pids+=($!)
 
+# Start the Onboarding Service API server in the background
+echo "Starting Onboarding Service API server... Logs -> logs/onboarding_service.log"
+(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/OnboardingService/onboarding_api.py) > "$SCRIPT_DIR/logs/onboarding_service.log" 2>&1 &
+pids+=($!)
+
 # Give the backend servers a moment to start
 echo "Waiting for backend services to initialize..."
 sleep 3
@@ -133,6 +138,7 @@ DASH_API_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/DashSystem/dash_ap
 SHERLOCKED_API_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/SherlockEDApi/run_backend.py" 2>/dev/null | grep -o '[0-9]*' || echo "8001")
 TEACHING_ASSISTANT_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/TeachingAssistant/api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8002")
 AUTH_SERVICE_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/AuthService/auth_api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8003")
+ONBOARDING_SERVICE_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/OnboardingService/onboarding_api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8004")
 
 # Start the Node.js frontend in the background
 echo "Starting Node.js frontend... Logs -> logs/frontend.log"
@@ -144,6 +150,7 @@ echo ""
 echo "📡 Service URLs:"
 echo "  🌐 Frontend:           http://localhost:$FRONTEND_PORT"
 echo "  🔐 Auth Service:       http://localhost:$AUTH_SERVICE_PORT"
+echo "  🎯 Onboarding Service:  http://localhost:$ONBOARDING_SERVICE_PORT"
 echo "  🔧 DASH API:           http://localhost:$DASH_API_PORT"
 echo "  🕵️  SherlockED API:     http://localhost:$SHERLOCKED_API_PORT"
 echo "  👨‍🏫 TeachingAssistant:  http://localhost:$TEACHING_ASSISTANT_PORT"
