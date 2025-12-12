@@ -5,7 +5,6 @@ import logging
 from .schema import MemoryType
 from .vector_store import MemoryStore
 from .extractor import MemoryExtractor
-from . import get_memory_data_dir
 
 logger = logging.getLogger(__name__)
 
@@ -108,24 +107,33 @@ class MemoryConsolidator:
         }
 
     def _save_closing(self, user_id: str, closing_cache: SessionClosingCache):
-        data_dir = get_memory_data_dir(user_id) / "memory" / "TeachingAssistant"
-        data_dir.mkdir(parents=True, exist_ok=True)
+        data_dir = f"Memory/data/{user_id}/memory/TeachingAssistant"
+        os.makedirs(data_dir, exist_ok=True)
         
-        file_path = data_dir / "TA-closing-retrieval.json"
+        file_path = f"{data_dir}/TA-closing-retrieval.json"
+        
+        # Convert Memory objects to dicts for JSON serialization
+        cache_copy = closing_cache.cache.copy()
+        if "new_memories" in cache_copy:
+            cache_copy["new_memories"] = [
+                memory.to_dict() if hasattr(memory, 'to_dict') else memory
+                for memory in cache_copy["new_memories"]
+            ]
+        
         closing_data = {
             "session_id": closing_cache.session_id,
             "timestamp": time.time(),
-            **closing_cache.cache
+            **cache_copy
         }
         
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(closing_data, f, indent=2, ensure_ascii=False)
 
     def _save_opening(self, user_id: str, opening_context: dict):
-        data_dir = get_memory_data_dir(user_id) / "memory" / "TeachingAssistant"
-        data_dir.mkdir(parents=True, exist_ok=True)
+        data_dir = f"Memory/data/{user_id}/memory/TeachingAssistant"
+        os.makedirs(data_dir, exist_ok=True)
         
-        file_path = data_dir / "TA-opening-retrieval.json"
+        file_path = f"{data_dir}/TA-opening-retrieval.json"
         opening_data = {
             "timestamp": time.time(),
             **opening_context
@@ -133,4 +141,3 @@ class MemoryConsolidator:
         
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(opening_data, f, indent=2, ensure_ascii=False)
-

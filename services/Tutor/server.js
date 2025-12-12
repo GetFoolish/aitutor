@@ -5,6 +5,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import dotenv from 'dotenv';
+import crypto from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -29,6 +30,57 @@ try {
 const activeSessions = new Map();
 const teachingAssistantClients = new Set();
 
+// Message sequencing and tracking
+let messageSequenceCounter = 0;
+const messageStats = {
+  totalSent: 0,
+  totalFailed: 0,
+  totalDropped: 0
+};
+
+function generateMessageId() {
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substring(2, 11);
+  return `msg_${timestamp}_${++messageSequenceCounter}_${random}`;
+}
+
+// Session locks for synchronization
+const sessionLocks = new Map();
+
+function getSessionLock(sessionId) {
+  if (!sessionLocks.has(sessionId)) {
+    sessionLocks.set(sessionId, { locked: false, processing: false });
+  }
+  return sessionLocks.get(sessionId);
+}
+
+async function acquireSessionLock(sessionId) {
+  const lock = getSessionLock(sessionId);
+  const maxWait = 1000; // 1 second max wait
+  const startTime = Date.now();
+  
+  while (lock.locked && (Date.now() - startTime) < maxWait) {
+    await new Promise(resolve => setTimeout(resolve, 10));
+  }
+  
+  if (lock.locked) {
+    console.warn(`⚠️ Timeout waiting for session lock: ${sessionId}`);
+    return false;
+  }
+  
+  lock.locked = true;
+  lock.processing = true;
+  return true;
+}
+
+function releaseSessionLock(sessionId) {
+  const lock = sessionLocks.get(sessionId);
+  if (lock) {
+    lock.locked = false;
+    lock.processing = false;
+  }
+}
+
 function generateSessionId() {
   const timestamp = Date.now();
   const random = Math.random().toString(36).substring(2, 11);
@@ -43,16 +95,19 @@ function createSession(sessionId, userId, geminiSession, clientWs) {
     clientWs,
     startTime: new Date(),
     lastActivity: new Date(),
+    lastSpeaker: null,
     transcriptions: {
       user: {
         current: '',
         complete: [],
-        lastComplete: null
+        lastComplete: null,
+        firstChunkTime: null
       },
       adam: {
         current: '',
         complete: [],
-        lastComplete: null
+        lastComplete: null,
+        firstChunkTime: null
       }
     }
   });
@@ -88,197 +143,194 @@ function extractTranscriptions(geminiMessage) {
     interrupted: false
   };
 
-
-  if (content.inputTranscription) {
-    const transcription = content.inputTranscription;
-    if (transcription.text !== undefined) {
-      result.user = {
-        text: transcription.text || '',
-        isComplete: transcription.isComplete !== false,
-        timestamp: new Date()
-      };
-    }
+  if (content.inputTranscription && content.inputTranscription.text !== undefined) {
+    result.user = {
+      text: content.inputTranscription.text || '',
+      timestamp: new Date()
+    };
   }
 
-  // According to official Gemini docs: config uses outputAudioTranscription, but data field is outputTranscription
-  if (content.outputTranscription) {
-    const transcription = content.outputTranscription;
-    if (transcription.text !== undefined) {
-      result.adam = {
-        text: transcription.text || '',
-        isComplete: transcription.isComplete !== false,
-        timestamp: new Date()
-      };
-    }
+  if (content.outputTranscription && content.outputTranscription.text !== undefined) {
+    result.adam = {
+      text: content.outputTranscription.text || '',
+      timestamp: new Date()
+    };
   }
 
-  if (content.modelTurn && content.modelTurn.parts) {
-    const textParts = content.modelTurn.parts
-      .filter(part => part.text)
-      .map(part => part.text)
-      .join('');
-
-    if (textParts && !result.adam) {
-      result.adam = {
-        text: textParts,
-        isComplete: content.turnComplete || false,
-        timestamp: new Date()
-      };
-    }
-  }
-
-  if (content.turnComplete) {
+  if (content.turnComplete === true) {
     result.turnComplete = true;
   }
 
-  if (content.interrupted) {
+  if (content.interrupted === true) {
     result.interrupted = true;
   }
 
   return (result.user || result.adam || result.turnComplete || result.interrupted) ? result : null;
 }
 
-function storeTranscriptions(session, transcriptions) {
+async function storeTranscriptions(session, transcriptions) {
   if (!session || !session.transcriptions || !transcriptions) {
     return;
   }
 
-  let userTextBroadcast = null;
-  let adamTextBroadcast = null;
+  const lockAcquired = await acquireSessionLock(session.sessionId);
+  if (!lockAcquired) {
+    console.error(`❌ Failed to acquire lock for session ${session.sessionId}, skipping transcription`);
+    return;
+  }
 
-  if (transcriptions.user) {
-    const userTrans = transcriptions.user;
-    if (userTrans.isComplete) {
-      if (session.transcriptions.user.current) {
-        const finalText = session.transcriptions.user.current + userTrans.text;
-        const completeTrans = {
-          text: finalText.trim(),
-          timestamp: userTrans.timestamp
-        };
-        session.transcriptions.user.complete.push(completeTrans);
-        session.transcriptions.user.lastComplete = completeTrans;
+  try {
+    const now = new Date();
+    const timestamp = now.toISOString();
+    const timeMs = now.getTime();
+    
+    if (transcriptions.user && transcriptions.user.text) {
+      if (!session.transcriptions.user.firstChunkTime) {
+        session.transcriptions.user.firstChunkTime = timeMs;
+      }
+      session.transcriptions.user.current += transcriptions.user.text;
+      console.log(`📝 [${timestamp}] User transcription chunk: "${transcriptions.user.text.substring(0, 50)}${transcriptions.user.text.length > 50 ? '...' : ''}" (accumulated: ${session.transcriptions.user.current.length} chars, first chunk at: ${session.transcriptions.user.firstChunkTime})`);
+    }
+
+    if (transcriptions.adam && transcriptions.adam.text) {
+      if (!session.transcriptions.adam.firstChunkTime) {
+        session.transcriptions.adam.firstChunkTime = timeMs;
+      }
+      session.transcriptions.adam.current += transcriptions.adam.text;
+      console.log(`📝 [${timestamp}] Adam transcription chunk: "${transcriptions.adam.text.substring(0, 50)}${transcriptions.adam.text.length > 50 ? '...' : ''}" (accumulated: ${session.transcriptions.adam.current.length} chars, first chunk at: ${session.transcriptions.adam.firstChunkTime})`);
+    }
+
+    if (transcriptions.turnComplete || transcriptions.interrupted) {
+      const turnCompleteTime = timeMs;
+      console.log(`✅ [${timestamp}] Turn complete detected (turnComplete timestamp: ${turnCompleteTime}) - broadcasting accumulated turns IMMEDIATELY`);
+      
+      if (session.transcriptions.user.current.trim()) {
+        const completeUserText = session.transcriptions.user.current.trim();
+        const firstChunkTime = session.transcriptions.user.firstChunkTime || turnCompleteTime;
+        const timeDiff = turnCompleteTime - firstChunkTime;
+        
+        console.log(`📤 [${timestamp}] Broadcasting USER turn (${completeUserText.length} chars, first chunk: ${firstChunkTime}, turnComplete: ${turnCompleteTime}, delay: ${timeDiff}ms): "${completeUserText.substring(0, 100)}${completeUserText.length > 100 ? '...' : ''}"`);
+        
+        broadcastToTeachingAssistant({
+          type: 'text',
+          data: {
+            session_id: session.sessionId,
+            user_id: session.userId,
+            text: completeUserText,
+            speaker: 'user',
+            timestamp: timestamp
+          }
+        });
+        
+        session.transcriptions.user.complete.push({
+          text: completeUserText,
+          timestamp: now
+        });
+        session.transcriptions.user.lastComplete = session.transcriptions.user.complete[session.transcriptions.user.complete.length - 1];
         session.transcriptions.user.current = '';
-        userTextBroadcast = completeTrans;
-      } else if (userTrans.text) {
-        const completeTrans = {
-          text: userTrans.text.trim(),
-          timestamp: userTrans.timestamp
-        };
-        session.transcriptions.user.complete.push(completeTrans);
-        session.transcriptions.user.lastComplete = completeTrans;
-        userTextBroadcast = completeTrans;
+        session.transcriptions.user.firstChunkTime = null;
+        session.lastSpeaker = 'user';
       }
-    } else if (userTrans.text) {
-      session.transcriptions.user.current += userTrans.text;
-    }
-  }
 
-  if (transcriptions.adam) {
-    const adamTrans = transcriptions.adam;
-    if (adamTrans.isComplete) {
-      if (session.transcriptions.adam.current) {
-        const finalText = session.transcriptions.adam.current + adamTrans.text;
-        const completeTrans = {
-          text: finalText.trim(),
-          timestamp: adamTrans.timestamp
-        };
-        session.transcriptions.adam.complete.push(completeTrans);
-        session.transcriptions.adam.lastComplete = completeTrans;
+      if (session.transcriptions.adam.current.trim()) {
+        const completeAdamText = session.transcriptions.adam.current.trim();
+        const firstChunkTime = session.transcriptions.adam.firstChunkTime || turnCompleteTime;
+        const timeDiff = turnCompleteTime - firstChunkTime;
+        
+        console.log(`📤 [${timestamp}] Broadcasting ADAM turn (${completeAdamText.length} chars, first chunk: ${firstChunkTime}, turnComplete: ${turnCompleteTime}, delay: ${timeDiff}ms): "${completeAdamText.substring(0, 100)}${completeAdamText.length > 100 ? '...' : ''}"`);
+        
+        broadcastToTeachingAssistant({
+          type: 'text',
+          data: {
+            session_id: session.sessionId,
+            user_id: session.userId,
+            text: completeAdamText,
+            speaker: 'adam',
+            interrupted: transcriptions.interrupted || false,
+            timestamp: timestamp
+          }
+        });
+        
+        session.transcriptions.adam.complete.push({
+          text: completeAdamText,
+          timestamp: now
+        });
+        session.transcriptions.adam.lastComplete = session.transcriptions.adam.complete[session.transcriptions.adam.complete.length - 1];
         session.transcriptions.adam.current = '';
-        adamTextBroadcast = completeTrans;
-      } else if (adamTrans.text) {
-        const completeTrans = {
-          text: adamTrans.text.trim(),
-          timestamp: adamTrans.timestamp
-        };
-        session.transcriptions.adam.complete.push(completeTrans);
-        session.transcriptions.adam.lastComplete = completeTrans;
-        adamTextBroadcast = completeTrans;
+        session.transcriptions.adam.firstChunkTime = null;
+        session.lastSpeaker = 'adam';
       }
-    } else if (adamTrans.text) {
-      session.transcriptions.adam.current += adamTrans.text;
     }
-  }
-
-  if (transcriptions.turnComplete || transcriptions.interrupted) {
-    if (session.transcriptions.user.current) {
-      const completeTrans = {
-        text: session.transcriptions.user.current.trim(),
-        timestamp: new Date()
-      };
-      if (completeTrans.text) {
-        session.transcriptions.user.complete.push(completeTrans);
-        session.transcriptions.user.lastComplete = completeTrans;
-        userTextBroadcast = completeTrans;
-      }
-      session.transcriptions.user.current = '';
-    }
-
-    if (session.transcriptions.adam.current) {
-      const completeTrans = {
-        text: session.transcriptions.adam.current.trim(),
-        timestamp: new Date()
-      };
-      if (completeTrans.text) {
-        session.transcriptions.adam.complete.push(completeTrans);
-        session.transcriptions.adam.lastComplete = completeTrans;
-        adamTextBroadcast = completeTrans;
-      }
-      session.transcriptions.adam.current = '';
-    }
-  }
-
-  if (userTextBroadcast) {
-    broadcastToTeachingAssistant({
-      type: 'text',
-      data: {
-        session_id: session.sessionId,
-        user_id: session.userId,
-        text: userTextBroadcast.text,
-        speaker: 'user',
-        is_complete: true,
-        timestamp: userTextBroadcast.timestamp.toISOString()
-      }
-    });
-  }
-
-  if (adamTextBroadcast) {
-    broadcastToTeachingAssistant({
-      type: 'text',
-      data: {
-        session_id: session.sessionId,
-        user_id: session.userId,
-        text: adamTextBroadcast.text,
-        speaker: 'adam',
-        is_complete: true,
-        interrupted: transcriptions.interrupted || false,
-        timestamp: adamTextBroadcast.timestamp.toISOString()
-      }
-    });
+  } finally {
+    releaseSessionLock(session.sessionId);
   }
 }
 
 function broadcastToTeachingAssistant(event) {
   if (teachingAssistantClients.size === 0) {
+    console.warn('⚠️ No TeachingAssistant clients connected, message not sent');
+    messageStats.totalDropped++;
     return;
   }
 
-  const message = JSON.stringify(event);
+  const messageId = generateMessageId();
+  const sequence = messageSequenceCounter;
+  const enrichedEvent = {
+    ...event,
+    message_id: messageId,
+    sequence: sequence,
+    server_timestamp: new Date().toISOString()
+  };
+
+  let message;
+  try {
+    const messageWithoutChecksum = JSON.stringify(enrichedEvent);
+    const checksum = crypto.createHash('sha256').update(messageWithoutChecksum).digest('hex');
+    enrichedEvent.checksum = checksum;
+    message = JSON.stringify(enrichedEvent);
+  } catch (error) {
+    console.error(`❌ Failed to serialize message ${messageId}:`, error);
+    messageStats.totalFailed++;
+    return;
+  }
+
   const deadClients = [];
+  let successCount = 0;
+  let failureCount = 0;
 
   for (const client of teachingAssistantClients) {
     if (client.readyState === 1) {
       try {
         client.send(message);
+        successCount++;
       } catch (error) {
+        console.error(`❌ Failed to send message ${messageId} (seq: ${sequence}) to client:`, error.message);
         deadClients.push(client);
+        failureCount++;
       }
     } else {
       deadClients.push(client);
+      failureCount++;
     }
   }
 
   deadClients.forEach(client => teachingAssistantClients.delete(client));
+  
+  messageStats.totalSent += successCount;
+  messageStats.totalFailed += failureCount;
+  
+  if (successCount > 0) {
+    console.log(`📤 Broadcast message ${messageId} (seq: ${sequence}, type: ${event.type}) - Success: ${successCount}, Failed: ${failureCount}`);
+  }
+  
+  if (failureCount > 0) {
+    console.warn(`⚠️ Message ${messageId} failed to reach ${failureCount} client(s)`);
+  }
+  
+  if (event.type === 'text' && event.data?.text) {
+    const textPreview = event.data.text.substring(0, 50);
+    console.log(`   └─ Text preview: "${textPreview}${event.data.text.length > 50 ? '...' : ''}"`);
+  }
 }
 
 function parseJSONBody(req) {

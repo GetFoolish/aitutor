@@ -1,8 +1,6 @@
 import os
 import json
 from typing import Optional
-from pathlib import Path
-from .Memory import get_memory_data_dir
 
 class GreetingHandler:
     def __init__(self):
@@ -41,15 +39,15 @@ class GreetingHandler:
         return "Thank you for the session! See you next time."
 
     def _load_opening(self, user_id: str) -> Optional[dict]:
-        file_path = get_memory_data_dir(user_id) / "memory" / "TeachingAssistant" / "TA-opening-retrieval.json"
-        if file_path.exists():
+        file_path = f"Memory/data/{user_id}/memory/TeachingAssistant/TA-opening-retrieval.json"
+        if os.path.exists(file_path):
             with open(file_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         return None
 
     def _load_closing(self, user_id: str, session_id: str) -> Optional[dict]:
-        file_path = get_memory_data_dir(user_id) / "memory" / "TeachingAssistant" / "TA-closing-retrieval.json"
-        if file_path.exists():
+        file_path = f"Memory/data/{user_id}/memory/TeachingAssistant/TA-closing-retrieval.json"
+        if os.path.exists(file_path):
             with open(file_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 if data.get("session_id") == session_id:

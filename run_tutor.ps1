@@ -4,11 +4,62 @@
 # Get the directory where the script is located
 $SCRIPT_DIR = $PSScriptRoot
 
-# Clean up old logs and create a fresh logs directory
-if (Test-Path "$SCRIPT_DIR\logs") {
-    Remove-Item -Path "$SCRIPT_DIR\logs" -Recurse -Force
+# Function to kill processes using specific ports
+function Kill-ProcessOnPort {
+    param([int]$Port)
+    $connections = Get-NetTCPConnection -LocalPort $Port -ErrorAction SilentlyContinue
+    foreach ($conn in $connections) {
+        $processId = $conn.OwningProcess
+        if ($processId) {
+            Write-Host "Killing process $processId using port $Port"
+            Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue
+            Start-Sleep -Milliseconds 500
+        }
+    }
 }
-New-Item -ItemType Directory -Path "$SCRIPT_DIR\logs" -Force | Out-Null
+
+# Kill any existing processes using our ports
+Write-Host "Checking for existing processes on ports..."
+Kill-ProcessOnPort -Port 8767  # Tutor service
+Kill-ProcessOnPort -Port 8000  # DASH API
+Kill-ProcessOnPort -Port 8001  # SherlockED API
+Kill-ProcessOnPort -Port 8002  # TeachingAssistant API
+Kill-ProcessOnPort -Port 8765  # MediaMixer
+Kill-ProcessOnPort -Port 3000  # Frontend
+
+# Wait a moment for processes to fully terminate
+Start-Sleep -Seconds 2
+
+# Clean up old logs - try to delete, but don't fail if locked
+if (Test-Path "$SCRIPT_DIR\logs") {
+    try {
+        # Try to delete individual log files first
+        Get-ChildItem -Path "$SCRIPT_DIR\logs" -File | ForEach-Object {
+            try {
+                Remove-Item $_.FullName -Force -ErrorAction Stop
+            } catch {
+                Write-Host "Warning: Could not delete $($_.Name) - it may be locked. Will truncate instead."
+                # Truncate the file instead
+                "" | Out-File $_.FullName -Force -ErrorAction SilentlyContinue
+            }
+        }
+        # Try to remove empty directories
+        Get-ChildItem -Path "$SCRIPT_DIR\logs" -Directory | ForEach-Object {
+            try {
+                Remove-Item $_.FullName -Recurse -Force -ErrorAction Stop
+            } catch {
+                Write-Host "Warning: Could not delete directory $($_.Name)"
+            }
+        }
+    } catch {
+        Write-Host "Warning: Could not fully clean logs directory. Continuing anyway..."
+    }
+}
+
+# Ensure logs directory exists
+if (-not (Test-Path "$SCRIPT_DIR\logs")) {
+    New-Item -ItemType Directory -Path "$SCRIPT_DIR\logs" -Force | Out-Null
+}
 
 # Detect Python environment
 $PYTHON_BIN = $null
@@ -127,6 +178,13 @@ $processes += $proc
 
 # Start the Tutor service (Node.js backend for Gemini Live API)
 Write-Host "Starting Tutor service (Adam)... Logs -> logs/tutor.log"
+# Check if port 8767 is still in use
+$port8767 = Get-NetTCPConnection -LocalPort 8767 -ErrorAction SilentlyContinue
+if ($port8767) {
+    Write-Host "Warning: Port 8767 is still in use. Attempting to kill process..."
+    Kill-ProcessOnPort -Port 8767
+    Start-Sleep -Seconds 1
+}
 $proc = Start-Process -FilePath "cmd" -ArgumentList "/c", "node server.js 2>&1" -WorkingDirectory "$SCRIPT_DIR\services\Tutor" -NoNewWindow -PassThru -RedirectStandardOutput "$SCRIPT_DIR\logs\tutor.log"
 $processes += $proc
 

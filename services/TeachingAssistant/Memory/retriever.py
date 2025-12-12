@@ -4,7 +4,6 @@ import time
 from typing import Dict, List, Set, Optional
 from .schema import Memory, MemoryType
 from .vector_store import MemoryStore
-from . import get_memory_data_dir
 
 class MemoryRetriever:
     def __init__(self, store: MemoryStore):
@@ -75,7 +74,7 @@ class MemoryRetriever:
     def get_memory_injection(self, session_id: str) -> Optional[str]:
         if session_id not in self._session_retrievals:
             return None
-        
+            
         retrievals = self._session_retrievals[session_id]
         injected_ids = self._injected_memory_ids[session_id]
         
@@ -92,10 +91,10 @@ class MemoryRetriever:
                 if mem_id not in injected_ids:
                     memories_to_inject.append(result)
                     injected_ids.add(mem_id)
-            
-            if not memories_to_inject:
-                return None
-            
+        
+        if not memories_to_inject:
+            return None
+        
         memories_by_type = {}
         for result in memories_to_inject:
             mem_type = result["memory"].type.value
@@ -130,17 +129,17 @@ Use these memories naturally to personalize your response. Do not reference them
         return injection_text
     
     def _save_retrieval(self, session_id: str, user_id: str, retrieval_type: str, results: List[dict]):
-        data_dir = get_memory_data_dir(user_id) / "memory" / "TeachingAssistant"
-        data_dir.mkdir(parents=True, exist_ok=True)
+        data_dir = f"Memory/data/{user_id}/memory/TeachingAssistant"
+        os.makedirs(data_dir, exist_ok=True)
         
-        file_path = data_dir / f"TA-{retrieval_type}-retrieval.json"
+        file_path = f"{data_dir}/TA-{retrieval_type}-retrieval.json"
         retrievals = []
-        if file_path.exists():
+        if os.path.exists(file_path):
             with open(file_path, 'r', encoding='utf-8') as f:
                 retrievals = json.load(f)
         
         retrieval_data = {
-                "session_id": session_id,
+            "session_id": session_id,
             "timestamp": time.time(),
             "results": [{"memory": r["memory"].to_dict(), "score": r["score"]} for r in results]
         }
@@ -150,12 +149,12 @@ Use these memories naturally to personalize your response. Do not reference them
             json.dump(retrievals, f, indent=2, ensure_ascii=False)
 
     def clear_session(self, session_id: str):
-            if session_id in self._conversation_history:
-                del self._conversation_history[session_id]
-            if session_id in self._turn_counts:
-                del self._turn_counts[session_id]
-            if session_id in self._session_retrievals:
-                del self._session_retrievals[session_id]
-            if session_id in self._injected_memory_ids:
-                del self._injected_memory_ids[session_id]
+        if session_id in self._conversation_history:
+            del self._conversation_history[session_id]
+        if session_id in self._turn_counts:
+            del self._turn_counts[session_id]
+        if session_id in self._session_retrievals:
+            del self._session_retrievals[session_id]
+        if session_id in self._injected_memory_ids:
+            del self._injected_memory_ids[session_id]
     

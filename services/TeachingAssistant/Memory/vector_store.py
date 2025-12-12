@@ -1,12 +1,13 @@
 import os
 import json
 import logging
+import time
+import re
 from typing import List, Optional, Dict
-from pinecone import Pinecone
+from pinecone import Pinecone, ServerlessSpec
 from dotenv import load_dotenv
 from .schema import Memory, MemoryType
 from .embeddings import get_embeddings_batch
-from . import get_memory_data_dir
 
 load_dotenv()
 
@@ -14,10 +15,108 @@ logger = logging.getLogger(__name__)
 
 
 class MemoryStore:
-    def __init__(self, index_name: str = None):
+    def __init__(self, user_id: str = None, index_name: str = None):
+        """
+        Initialize MemoryStore with user-specific index.
+        
+        Args:
+            user_id: User ID to create/get index named "memory_{user_id}"
+            index_name: Optional override for index name (for backward compatibility)
+        """
         self.pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-        self.index_name = index_name or os.getenv("PINECONE_INDEX_NAME", "aitutor-memories")
+        
+        # Determine index name: user_id-based or provided or env or default
+        if user_id:
+            # Sanitize user_id for Pinecone index name (must be lowercase alphanumeric with hyphens only)
+            sanitized_user_id = self._sanitize_index_name(user_id)
+            self.index_name = f"memory-{sanitized_user_id}"
+            logger.info(f"📦 Using user-specific index: {self.index_name} (from user_id: {user_id})")
+        elif index_name:
+            self.index_name = index_name
+            logger.info(f"📦 Using provided index: {self.index_name}")
+        else:
+            # Fallback to env or default (for backward compatibility)
+            self.index_name = os.getenv("PINECONE_INDEX_NAME", "aitutor-memories")
+            logger.info(f"📦 Using default index: {self.index_name}")
+        
+        # Check if index exists, create if not
+        self._ensure_index_exists()
+        
         self.index = self.pc.Index(self.index_name)
+    
+    def _sanitize_index_name(self, user_id: str) -> str:
+        """
+        Sanitize user_id to be valid for Pinecone index names.
+        Pinecone index names must be lowercase alphanumeric characters or hyphens (-).
+        Underscores are NOT allowed, so we replace them with hyphens.
+        """
+        # Convert to lowercase and replace invalid characters (including underscores) with hyphens
+        sanitized = re.sub(r'[^a-z0-9-]', '-', user_id.lower())
+        # Replace underscores with hyphens (Pinecone doesn't allow underscores)
+        sanitized = sanitized.replace('_', '-')
+        # Remove consecutive hyphens
+        sanitized = re.sub(r'-+', '-', sanitized)
+        # Remove leading/trailing hyphens
+        sanitized = sanitized.strip('-')
+        # Ensure it's not empty
+        if not sanitized:
+            sanitized = "anonymous"
+        return sanitized
+    
+    def _ensure_index_exists(self):
+        """Check if index exists, create it if it doesn't."""
+        try:
+            existing_indexes = [idx.name for idx in self.pc.list_indexes()]
+            
+            if self.index_name not in existing_indexes:
+                logger.info(f"📦 Index '{self.index_name}' not found. Creating new index for user...")
+                
+                # Get embedding dimension from env or default to 1024
+                dimension = int(os.getenv("EMBEDDING_DIMENSION", "1024"))
+                
+                # Get cloud and region from env or use defaults
+                cloud = os.getenv("PINECONE_CLOUD", "aws")  # "aws" or "gcp"
+                region = os.getenv("PINECONE_REGION", "us-east-1")
+                
+                self.pc.create_index(
+                    name=self.index_name,
+                    dimension=dimension,
+                    metric="cosine",
+                    spec=ServerlessSpec(
+                        cloud=cloud,
+                        region=region
+                    )
+                )
+                
+                # Wait for index to be ready
+                logger.info(f"⏳ Waiting for index '{self.index_name}' to be ready...")
+                max_wait_time = 300  # 5 minutes max wait
+                start_time = time.time()
+                
+                while True:
+                    try:
+                        index_info = self.pc.describe_index(self.index_name)
+                        if index_info.status.get('ready', False):
+                            logger.info(f"✅ Index '{self.index_name}' is ready!")
+                            break
+                        
+                        elapsed = time.time() - start_time
+                        if elapsed > max_wait_time:
+                            raise TimeoutError(f"Index '{self.index_name}' did not become ready within {max_wait_time} seconds")
+                        
+                        time.sleep(2)
+                    except Exception as e:
+                        elapsed = time.time() - start_time
+                        if elapsed > max_wait_time:
+                            raise TimeoutError(f"Error waiting for index: {e}")
+                        logger.warning(f"⚠️ Waiting for index... ({e})")
+                        time.sleep(2)
+            else:
+                logger.info(f"✅ Index '{self.index_name}' already exists - using existing index")
+                
+        except Exception as e:
+            logger.error(f"❌ Error checking/creating index: {e}", exc_info=True)
+            raise
 
     def save_memory(self, memory: Memory):
         logger.info(f"💾 Saving single memory: {memory.type.value} - {memory.text[:50]}...")
@@ -28,10 +127,10 @@ class MemoryStore:
                     "id": memory.id,
                     "values": embedding,
                     "metadata": {
-            "student_id": memory.student_id,
-            "type": memory.type.value,
-            "text": memory.text,
-            "importance": memory.importance,
+                        "student_id": memory.student_id,
+                        "type": memory.type.value,
+                        "text": memory.text,
+                        "importance": memory.importance,
                         "timestamp": memory.timestamp.isoformat(),
                         "session_id": memory.session_id,
                         **memory.metadata
@@ -127,16 +226,27 @@ class MemoryStore:
         return results[:top_k]
 
     def _save_to_local(self, memory: Memory):
-        data_dir = get_memory_data_dir(memory.student_id) / "memory"
-        data_dir.mkdir(parents=True, exist_ok=True)
+        data_dir = f"Memory/data/{memory.student_id}/memory"
+        os.makedirs(data_dir, exist_ok=True)
         
-        file_path = data_dir / f"{memory.type.value}.json"
+        file_path = f"{data_dir}/{memory.type.value}.json"
         memories = []
-        if file_path.exists():
+        if os.path.exists(file_path):
             with open(file_path, 'r', encoding='utf-8') as f:
                 memories = json.load(f)
         
-        memories.append(memory.to_dict())
+        # Check for duplicate memory ID before appending
+        memory_dict = memory.to_dict()
+        existing_ids = {m.get('id') for m in memories if isinstance(m, dict)}
+        
+        if memory_dict['id'] not in existing_ids:
+            memories.append(memory_dict)
+        else:
+            # Update existing memory instead of duplicating
+            for i, m in enumerate(memories):
+                if isinstance(m, dict) and m.get('id') == memory_dict['id']:
+                    memories[i] = memory_dict
+                    break
         
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(memories, f, indent=2, ensure_ascii=False)
