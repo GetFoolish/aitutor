@@ -33,7 +33,7 @@ class SessionClosingCache:
     def clear_closing_cache(self):
         """Clear closing cache file at the start of a new session."""
         try:
-            data_dir = f"Memory/data/{self.user_id}/memory/TeachingAssistant"
+            data_dir = f"services/TeachingAssistant/Memory/data/{self.user_id}/memory/TeachingAssistant"
             file_path = f"{data_dir}/TA-closing-retrieval.json"
             
             # Check if file exists
@@ -306,7 +306,7 @@ Return ONLY the JSON array, nothing else."""
     def _save_closing_realtime(self):
         """Save closing cache to JSON file in real-time (called after each regeneration)."""
         try:
-            data_dir = f"Memory/data/{self.user_id}/memory/TeachingAssistant"
+            data_dir = f"services/TeachingAssistant/Memory/data/{self.user_id}/memory/TeachingAssistant"
             os.makedirs(data_dir, exist_ok=True)
             
             file_path = f"{data_dir}/TA-closing-retrieval.json"
@@ -358,6 +358,10 @@ class MemoryConsolidator:
         """Generate personalized opening context for next session using LLM."""
         import google.generativeai as genai
         
+        # Initialize model locally for this method to ensure it's available
+        # This fixes UnboundLocalError if first block is skipped but later blocks run
+        model = genai.GenerativeModel("gemini-2.0-flash-lite")
+        
         # Get personal memories for relevance
         personal_memories = self.store.search(
             query="personal information about student",
@@ -391,7 +395,6 @@ Create a brief (1-2 sentences), friendly welcome that references their last sess
 Return ONLY the welcome message, nothing else."""
 
             try:
-                model = genai.GenerativeModel("gemini-2.0-flash-lite")
                 response = model.generate_content(welcome_hook_prompt)
                 welcome_hook = response.text.strip()
             except Exception as e:
@@ -465,7 +468,7 @@ Return ONLY the opener, nothing else."""
         }
 
     def _save_closing(self, user_id: str, closing_cache: SessionClosingCache):
-        data_dir = f"Memory/data/{user_id}/memory/TeachingAssistant"
+        data_dir = f"services/TeachingAssistant/Memory/data/{user_id}/memory/TeachingAssistant"
         os.makedirs(data_dir, exist_ok=True)
         
         file_path = f"{data_dir}/TA-closing-retrieval.json"
@@ -488,7 +491,7 @@ Return ONLY the opener, nothing else."""
             json.dump(closing_data, f, indent=2, ensure_ascii=False)
 
     def _save_opening(self, user_id: str, opening_context: dict):
-        data_dir = f"Memory/data/{user_id}/memory/TeachingAssistant"
+        data_dir = f"services/TeachingAssistant/Memory/data/{user_id}/memory/TeachingAssistant"
         os.makedirs(data_dir, exist_ok=True)
         
         file_path = f"{data_dir}/TA-opening-retrieval.json"

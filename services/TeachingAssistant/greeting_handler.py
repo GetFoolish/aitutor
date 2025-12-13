@@ -13,10 +13,14 @@ class GreetingHandler:
         self._clear_opening_cache(user_id)
         
         if opening:
-            welcome = opening.get("welcome_hook", "Welcome back!")
+            welcome = opening.get("welcome_hook", "")
             last_summary = opening.get("last_session_summary", "")
             unfinished = opening.get("unfinished_threads", [])
             personal = opening.get("personal_relevance", [])
+            
+            # If welcome_hook is empty (LLM failed or cleared), use fallback
+            if not welcome:
+                return "Hello! How can I help you today?"
             
             greeting_parts = [welcome]
             if last_summary:
@@ -43,14 +47,14 @@ class GreetingHandler:
         return "Thank you for the session! See you next time."
 
     def _load_opening(self, user_id: str) -> Optional[dict]:
-        file_path = f"Memory/data/{user_id}/memory/TeachingAssistant/TA-opening-retrieval.json"
+        file_path = f"services/TeachingAssistant/Memory/data/{user_id}/memory/TeachingAssistant/TA-opening-retrieval.json"
         if os.path.exists(file_path):
             with open(file_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         return None
 
     def _load_closing(self, user_id: str, session_id: str) -> Optional[dict]:
-        file_path = f"Memory/data/{user_id}/memory/TeachingAssistant/TA-closing-retrieval.json"
+        file_path = f"services/TeachingAssistant/Memory/data/{user_id}/memory/TeachingAssistant/TA-closing-retrieval.json"
         if os.path.exists(file_path):
             with open(file_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
@@ -61,8 +65,11 @@ class GreetingHandler:
     def _clear_opening_cache(self, user_id: str):
         """Clear opening cache after it's been used for greeting."""
         import time
+        import logging
+        logger = logging.getLogger(__name__)
+        
         try:
-            file_path = f"Memory/data/{user_id}/memory/TeachingAssistant/TA-opening-retrieval.json"
+            file_path = f"services/TeachingAssistant/Memory/data/{user_id}/memory/TeachingAssistant/TA-opening-retrieval.json"
             if os.path.exists(file_path):
                 # Initialize with empty structure
                 opening_data = {
@@ -78,8 +85,8 @@ class GreetingHandler:
                 with open(file_path, 'w', encoding='utf-8') as f:
                     json.dump(opening_data, f, indent=2, ensure_ascii=False)
                 
-                print(f"🧹 Cleared opening cache after use for user: {user_id}")
+                logger.info(f"💾 Cleared opening cache after use for user: {user_id}")
         except Exception as e:
-            print(f"❌ Error clearing opening cache: {e}")
+            logger.error(f"❌ Error clearing opening cache: {e}")
 
 

@@ -263,7 +263,7 @@ class MemoryStore:
         return final_results
 
     def _save_to_local(self, memory: Memory):
-        data_dir = f"Memory/data/{memory.student_id}/memory"
+        data_dir = f"services/TeachingAssistant/Memory/data/{memory.student_id}/memory"
         os.makedirs(data_dir, exist_ok=True)
         
         file_path = f"{data_dir}/{memory.type.value}.json"

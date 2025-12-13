@@ -104,7 +104,7 @@ class ContextManager:
         logger = logging.getLogger(__name__)
         
         try:
-            data_dir = f"Memory/data/{context.user_id}/conversations"
+            data_dir = f"services/TeachingAssistant/Memory/data/{context.user_id}/conversations"
             os.makedirs(data_dir, exist_ok=True)
             
             file_path = f"{data_dir}/{context.session_id}.json"

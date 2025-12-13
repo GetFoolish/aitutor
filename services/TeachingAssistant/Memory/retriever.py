@@ -149,7 +149,7 @@ Use these memories naturally to personalize your response. Do not reference them
         import logging
         logger = logging.getLogger(__name__)
         
-        data_dir = f"Memory/data/{user_id}/memory/TeachingAssistant"
+        data_dir = f"services/TeachingAssistant/Memory/data/{user_id}/memory/TeachingAssistant"
         os.makedirs(data_dir, exist_ok=True)
         
         file_path = f"{data_dir}/TA-{retrieval_type}-retrieval.json"

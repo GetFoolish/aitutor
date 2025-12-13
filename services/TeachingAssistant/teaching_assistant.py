@@ -230,7 +230,7 @@ class TeachingAssistant:
         from datetime import datetime
         
         try:
-            data_dir = f"Memory/data/{user_id}/conversations"
+            data_dir = f"services/TeachingAssistant/Memory/data/{user_id}/conversations"
             os.makedirs(data_dir, exist_ok=True)
             
             file_path = f"{data_dir}/{session_id}.json"
