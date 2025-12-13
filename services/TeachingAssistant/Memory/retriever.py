@@ -15,6 +15,9 @@ class MemoryRetriever:
 
     def on_user_turn(self, session_id: str, user_id: str, user_text: str, 
                      timestamp: float, adam_text: str = ""):
+        import logging
+        logger = logging.getLogger(__name__)
+        
         if session_id not in self._conversation_history:
             self._conversation_history[session_id] = []
             self._turn_counts[session_id] = 0
@@ -37,6 +40,8 @@ class MemoryRetriever:
         if len(self._conversation_history[session_id]) > 15:
             self._conversation_history[session_id] = self._conversation_history[session_id][-15:]
 
+        logger.info(f"🔍 Starting TA-light retrieval for session {session_id}, user_id: {user_id}, query: {user_text[:50]}...")
+        logger.info(f"   Using MemoryStore with index: {self.store.index_name}")
         light_results = self.store.search(
             query=user_text,
             student_id=user_id,
@@ -44,6 +49,7 @@ class MemoryRetriever:
             exclude_session_id=session_id
         )
         self._session_retrievals[session_id]["light"] = light_results
+        logger.info(f"✅ TA-light retrieval found {len(light_results)} memories")
         self._save_retrieval(session_id, user_id, "light", light_results)
 
         current_time = time.time()
@@ -53,11 +59,19 @@ class MemoryRetriever:
             self._session_retrievals[session_id]["last_deep_time"] = current_time
 
     def _do_deep_retrieval(self, session_id: str, user_id: str):
+        import logging
+        logger = logging.getLogger(__name__)
+        
         history = self._conversation_history.get(session_id, [])
         recent_turns = history[-10:] if len(history) >= 10 else history
         conversation_text = " ".join([turn["text"] for turn in recent_turns])
         
+        logger.info(f"🔍 Starting TA-deep retrieval for session {session_id} (3+ minutes since last deep retrieval)")
+        logger.info(f"   Using MemoryStore with index: {self.store.index_name}")
+        logger.info(f"   Conversation context: {conversation_text[:100]}...")
+        
         deep_results = {}
+        total_results = 0
         for mem_type in MemoryType:
             results = self.store.search(
                 query=conversation_text,
@@ -67,8 +81,10 @@ class MemoryRetriever:
                 exclude_session_id=session_id
             )
             deep_results[mem_type.value] = results
+            total_results += len(results)
         
         self._session_retrievals[session_id]["deep"] = deep_results
+        logger.info(f"✅ TA-deep retrieval found {total_results} memories across all types")
         self._save_retrieval(session_id, user_id, "deep", deep_results)
     
     def get_memory_injection(self, session_id: str) -> Optional[str]:
@@ -91,10 +107,10 @@ class MemoryRetriever:
                 if mem_id not in injected_ids:
                     memories_to_inject.append(result)
                     injected_ids.add(mem_id)
-        
+            
         if not memories_to_inject:
-            return None
-        
+                return None
+            
         memories_by_type = {}
         for result in memories_to_inject:
             mem_type = result["memory"].type.value
@@ -128,25 +144,50 @@ Use these memories naturally to personalize your response. Do not reference them
         
         return injection_text
     
-    def _save_retrieval(self, session_id: str, user_id: str, retrieval_type: str, results: List[dict]):
+    def _save_retrieval(self, session_id: str, user_id: str, retrieval_type: str, results):
+        """Save retrieval results to JSON file. Handles both list (light) and dict (deep) results."""
+        import logging
+        logger = logging.getLogger(__name__)
+        
         data_dir = f"Memory/data/{user_id}/memory/TeachingAssistant"
         os.makedirs(data_dir, exist_ok=True)
         
         file_path = f"{data_dir}/TA-{retrieval_type}-retrieval.json"
         retrievals = []
         if os.path.exists(file_path):
-            with open(file_path, 'r', encoding='utf-8') as f:
-                retrievals = json.load(f)
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    retrievals = json.load(f)
+            except (json.JSONDecodeError, ValueError):
+                logger.warning(f"⚠️ Could not parse {file_path}, starting fresh")
+                retrievals = []
+        
+        # Handle different result formats: list (light) or dict (deep)
+        if isinstance(results, list):
+            # Light retrieval: results is a list of dicts with "memory" and "score"
+            results_data = [{"memory": r["memory"].to_dict(), "score": r["score"]} for r in results]
+        elif isinstance(results, dict):
+            # Deep retrieval: results is a dict of {memory_type: [results]}
+            results_data = {}
+            for mem_type, mem_results in results.items():
+                results_data[mem_type] = [{"memory": r["memory"].to_dict(), "score": r["score"]} for r in mem_results]
+        else:
+            logger.error(f"❌ Unknown results format: {type(results)}")
+            results_data = []
         
         retrieval_data = {
             "session_id": session_id,
             "timestamp": time.time(),
-            "results": [{"memory": r["memory"].to_dict(), "score": r["score"]} for r in results]
+            "results": results_data
         }
         retrievals.append(retrieval_data)
         
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(retrievals, f, indent=2, ensure_ascii=False)
+        try:
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(retrievals, f, indent=2, ensure_ascii=False)
+            logger.info(f"💾 Saved {retrieval_type} retrieval to {file_path} ({len(results) if isinstance(results, list) else sum(len(v) for v in results.values()) if isinstance(results, dict) else 0} results)")
+        except Exception as e:
+            logger.error(f"❌ Error saving {retrieval_type} retrieval: {e}", exc_info=True)
 
     def clear_session(self, session_id: str):
         if session_id in self._conversation_history:

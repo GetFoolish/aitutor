@@ -197,6 +197,8 @@ class MemoryStore:
                top_k: int = 10, exclude_session_id: Optional[str] = None) -> List[Dict]:
         from .embeddings import get_query_embedding
         
+        logger.info(f"🔍 Searching in index: {self.index_name} for student_id: {student_id}, query: {query[:50]}...")
+        
         query_embedding = get_query_embedding(query)
         filter_dict = {"student_id": {"$eq": student_id}}
         
@@ -204,26 +206,61 @@ class MemoryStore:
             filter_dict["session_id"] = {"$ne": exclude_session_id}
 
         namespaces = [mem_type.value] if mem_type else [mt.value for mt in MemoryType]
+        logger.info(f"   Searching namespaces: {namespaces}, top_k: {top_k}, filter: {filter_dict}")
 
         results = []
         for namespace in namespaces:
-            response = self.index.query(
-                    vector=query_embedding,
-                    top_k=top_k,
-                namespace=namespace,
-                filter=filter_dict
-                )
-            for match in response.matches:
-                # Skip matches with missing metadata
-                if not match.metadata:
-                    continue
-                results.append({
-                    "memory": Memory.from_dict(match.metadata),
-                    "score": match.score
-                })
+            try:
+                response = self.index.query(
+                        vector=query_embedding,
+                        top_k=top_k,
+                        namespace=namespace,
+                        filter=filter_dict,
+                        include_metadata=True
+                    )
+                logger.info(f"   Namespace '{namespace}': Found {len(response.matches)} matches")
+                for i, match in enumerate(response.matches):
+                    # Skip matches with missing metadata
+                    if not match.metadata:
+                        logger.warning(f"   Match {i} in namespace '{namespace}' has no metadata, skipping")
+                        continue
+                    
+                    try:
+                        # Reconstruct metadata structure for Memory.from_dict()
+                        # Pinecone stores flattened metadata (emotion, valence, etc. at top level)
+                        # But Memory.from_dict() expects nested structure with 'metadata' dict
+                        metadata_dict = match.metadata.copy()
+                        
+                        # Extract nested metadata fields (emotion, valence, category, topic, etc.)
+                        # These are stored at top level in Pinecone but should be in nested 'metadata' dict
+                        nested_metadata = {}
+                        memory_fields = {'id', 'type', 'text', 'importance', 'student_id', 'session_id', 'timestamp'}
+                        
+                        for key, value in list(metadata_dict.items()):
+                            if key not in memory_fields:
+                                nested_metadata[key] = value
+                                metadata_dict.pop(key)
+                        
+                        # Add nested metadata dict
+                        metadata_dict['metadata'] = nested_metadata
+                        
+                        memory = Memory.from_dict(metadata_dict)
+                        results.append({
+                            "memory": memory,
+                            "score": match.score
+                        })
+                        logger.debug(f"   ✅ Converted match {i}: {memory.text[:50]}... (score: {match.score:.3f})")
+                    except Exception as e:
+                        logger.error(f"   ❌ Error converting match {i} in namespace '{namespace}': {e}", exc_info=True)
+                        logger.error(f"   Metadata keys: {list(match.metadata.keys())}")
+                        continue
+            except Exception as e:
+                logger.error(f"❌ Error searching namespace '{namespace}' in index '{self.index_name}': {e}", exc_info=True)
 
         results.sort(key=lambda x: x["score"], reverse=True)
-        return results[:top_k]
+        final_results = results[:top_k]
+        logger.info(f"✅ Search complete: Returning {len(final_results)} results from index '{self.index_name}'")
+        return final_results
 
     def _save_to_local(self, memory: Memory):
         data_dir = f"Memory/data/{memory.student_id}/memory"

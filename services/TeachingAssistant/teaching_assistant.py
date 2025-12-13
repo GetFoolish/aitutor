@@ -108,25 +108,41 @@ class TeachingAssistant:
                         
                         context = self.context_manager.get_context(event.session_id)
                         closing_cache = self.closing_caches.get(event.session_id)
+                        memory_retriever = self.memory_retrievers.get(event.session_id)
                         
-                        if speaker == 'user' and context and closing_cache and text:
+                        if speaker == 'user' and context and text:
                             user_text = text
                             adam_text = context.last_adam_text or ""
-                            logger.info(f"💬 Triggering memory extraction (non-blocking) - session: {event.session_id}, text length: {len(user_text)}")
                             
-                            asyncio.create_task(self._extract_memories_async(
-                                closing_cache=closing_cache,
-                                user_text=user_text,
-                                adam_text=adam_text,
-                                topic=event.data.get('topic', 'general'),
-                                session_id=event.session_id
-                            ))
+                            # Trigger TA-light retrieval (every user turn) - non-blocking
+                            if memory_retriever:
+                                logger.info(f"🔍 Triggering TA-light retrieval (non-blocking) - session: {event.session_id}, query: {user_text[:50]}...")
+                                asyncio.create_task(self._trigger_memory_retrieval_async(
+                                    memory_retriever=memory_retriever,
+                                    session_id=event.session_id,
+                                    user_id=event.user_id,
+                                    user_text=user_text,
+                                    timestamp=event.timestamp,
+                                    adam_text=adam_text
+                                ))
+                            
+                            # Trigger memory extraction (non-blocking)
+                            if closing_cache:
+                                logger.info(f"💬 Triggering memory extraction (non-blocking) - session: {event.session_id}, text length: {len(user_text)}")
+                                asyncio.create_task(self._extract_memories_async(
+                                    closing_cache=closing_cache,
+                                    user_text=user_text,
+                                    adam_text=adam_text,
+                                    topic=event.data.get('topic', 'general'),
+                                    session_id=event.session_id
+                                ))
                     
+                    # Process other skills (memory injection happens after async retrieval completes)
                     injections = self.event_processor.process_event(event)
                     
                     for injection in injections:
                         if injection:
-                            logger.info(f"💉 Sending injection to Adam (event-based) - session: {event.session_id}, reason: event processing, message preview: {injection[:100]}...")
+                            logger.info(f"💉 Sending injection to Adam (skill-based) - session: {event.session_id}, reason: skill execution, message preview: {injection[:100]}...")
                             await self.injection_manager.send_to_adam(
                                 injection,
                                 event.session_id,
@@ -268,6 +284,35 @@ class TeachingAssistant:
             self.event_handler.listen(),
             self.ongoing()
         )
+
+    async def _trigger_memory_retrieval_async(self, memory_retriever: MemoryRetriever, session_id: str, 
+                                               user_id: str, user_text: str, timestamp: float, adam_text: str):
+        """Trigger memory retrieval (TA-light and TA-deep) asynchronously and inject memories after completion"""
+        try:
+            # Run memory retrieval in executor to avoid blocking (Pinecone queries can be slow)
+            loop = asyncio.get_event_loop()
+            await loop.run_in_executor(
+                None,
+                memory_retriever.on_user_turn,
+                session_id,
+                user_id,
+                user_text,
+                timestamp,
+                adam_text
+            )
+            logger.info(f"✅ Memory retrieval completed for session: {session_id}")
+            
+            # After retrieval completes, get injection and send it
+            injection_text = memory_retriever.get_memory_injection(session_id)
+            if injection_text:
+                logger.info(f"💉 Sending injection to Adam (retrieval-based) - session: {session_id}, reason: memory retrieval completed, message preview: {injection_text[:100]}...")
+                await self.injection_manager.send_to_adam(
+                    injection_text,
+                    session_id,
+                    user_id
+                )
+        except Exception as e:
+            logger.error(f"❌ Error in async memory retrieval: {e}", exc_info=True)
 
     async def _extract_memories_async(self, closing_cache, user_text: str, adam_text: str, topic: str, session_id: str):
         """Extract memories asynchronously without blocking the event loop"""
