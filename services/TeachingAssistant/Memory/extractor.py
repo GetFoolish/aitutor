@@ -1,7 +1,7 @@
 import os
 import json
 import logging
-from typing import List, Optional
+from typing import List, Optional, Dict
 import google.generativeai as genai
 from dotenv import load_dotenv
 from .schema import Memory, MemoryType
@@ -86,6 +86,99 @@ IMPORTANT: Extract memories of ALL 4 types if present. Don't limit to just one t
         except Exception as e:
             logger.error(f"❌ Error extracting memories: {type(e).__name__}: {e}", exc_info=True)
             return []
+    
+    def extract_memories_batch(self, exchanges: List[Dict], student_id: str, session_id: str) -> List[Memory]:
+        """
+        Extract memories from multiple exchanges in a single batch.
+        
+        Args:
+            exchanges: List of dicts with keys 'student_text', 'ai_text', 'topic'
+            student_id: Student ID
+            session_id: Session ID
+            
+        Returns:
+            List of Memory objects extracted from all exchanges
+        """
+        if not exchanges:
+            logger.warning("⚠️ extract_memories_batch called with empty exchanges list")
+            return []
+        
+        logger.info(f"🔍 Extracting memories from batch of {len(exchanges)} exchanges for session {session_id}")
+        
+        # Build the exchanges text for the prompt
+        exchanges_text = ""
+        for i, exchange in enumerate(exchanges, 1):
+            exchanges_text += f"\n--- Exchange {i} ---\n"
+            exchanges_text += f"Student: {exchange['student_text']}\n"
+            exchanges_text += f"AI: {exchange['ai_text']}\n"
+            exchanges_text += f"Topic: {exchange['topic']}\n"
+        
+        prompt = f"""Extract memorable details from these {len(exchanges)} conversation exchanges. Extract ALL types of memories that are worth remembering:
+- ACADEMIC: Learning progress, concepts understood, mistakes made, skills demonstrated
+- PERSONAL: Personal information shared, family, hobbies, interests, background
+- PREFERENCE: Learning style, communication preferences, what they like/dislike
+- CONTEXT: Conversation context, session-specific details, ongoing topics
+
+Return only genuinely useful information as JSON array. Return empty array if nothing worth remembering.
+
+{exchanges_text}
+
+Return JSON array with format (extract multiple memories if applicable):
+[
+  {{
+    "type": "academic|personal|preference|context",
+    "text": "memorable detail",
+    "importance": 0.0-1.0,
+    "metadata": {{
+      "emotion": "frustrated|confused|excited|anxious|tired|happy",
+      "valence": "positive|negative|neutral",
+      "category": "category name",
+      "topic": "topic name"
+    }}
+  }}
+]
+
+IMPORTANT: Extract memories of ALL 4 types if present. Don't limit to just one type."""
+
+        try:
+            response = self.model.generate_content(prompt)
+            text = response.text.strip()
+            if text.startswith("```json"):
+                text = text[7:]
+            if text.endswith("```"):
+                text = text[:-3]
+            text = text.strip()
+            data = json.loads(text)
+            memories = []
+            for item in data:
+                memory = Memory(
+                    type=MemoryType(item.get("type", "academic")),
+                    text=item.get("text", ""),
+                    importance=float(item.get("importance", 0.5)),
+                    student_id=student_id,
+                    session_id=session_id,
+                    metadata=item.get("metadata", {})
+                )
+                memories.append(memory)
+            
+            memory_types = [m.type.value for m in memories]
+            type_counts = {}
+            for mt in memory_types:
+                type_counts[mt] = type_counts.get(mt, 0) + 1
+            
+            if len(memories) > 0:
+                logger.info(f"✅ Extracted {len(memories)} memories from {len(exchanges)} exchanges: {type_counts}")
+            else:
+                logger.info(f"ℹ️ No memories extracted from {len(exchanges)} exchanges")
+            return memories
+        except json.JSONDecodeError as e:
+            logger.error(f"❌ JSON decode error in batch memory extraction: {e}")
+            logger.error(f"Response text: {text[:500] if 'text' in locals() else 'N/A'}")
+            return []
+        except Exception as e:
+            logger.error(f"❌ Error extracting memories from batch: {type(e).__name__}: {e}", exc_info=True)
+            return []
+
 
     def detect_emotion(self, text: str) -> Optional[str]:
         valid_emotions = ["frustrated", "confused", "excited", "anxious", "tired", "happy"]
