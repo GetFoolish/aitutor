@@ -23,6 +23,7 @@ class MemoryRetriever:
             self._turn_counts[session_id] = 0
             self._session_retrievals[session_id] = {"light": [], "deep": {}}
             self._injected_memory_ids[session_id] = set()
+            self._session_retrievals[session_id]["last_deep_time"] = time.time()
 
         self._turn_counts[session_id] += 1
         self._conversation_history[session_id].append({
@@ -90,7 +91,7 @@ class MemoryRetriever:
     def get_memory_injection(self, session_id: str) -> Optional[str]:
         if session_id not in self._session_retrievals:
             return None
-            
+        
         retrievals = self._session_retrievals[session_id]
         injected_ids = self._injected_memory_ids[session_id]
         
@@ -107,10 +108,10 @@ class MemoryRetriever:
                 if mem_id not in injected_ids:
                     memories_to_inject.append(result)
                     injected_ids.add(mem_id)
-            
+        
         if not memories_to_inject:
-                return None
-            
+            return None
+        
         memories_by_type = {}
         for result in memories_to_inject:
             mem_type = result["memory"].type.value

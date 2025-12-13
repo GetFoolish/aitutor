@@ -212,19 +212,19 @@ class MemoryStore:
         for namespace in namespaces:
             try:
                 response = self.index.query(
-                        vector=query_embedding,
-                        top_k=top_k,
-                        namespace=namespace,
-                        filter=filter_dict,
-                        include_metadata=True
-                    )
+                    vector=query_embedding,
+                    top_k=top_k,
+                    namespace=namespace,
+                    filter=filter_dict,
+                    include_metadata=True
+                )
                 logger.info(f"   Namespace '{namespace}': Found {len(response.matches)} matches")
                 for i, match in enumerate(response.matches):
                     # Skip matches with missing metadata
                     if not match.metadata:
                         logger.warning(f"   Match {i} in namespace '{namespace}' has no metadata, skipping")
                         continue
-                    
+
                     try:
                         # Reconstruct metadata structure for Memory.from_dict()
                         # Pinecone stores flattened metadata (emotion, valence, etc. at top level)

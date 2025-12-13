@@ -86,7 +86,7 @@ IMPORTANT: Extract memories of ALL 4 types if present. Don't limit to just one t
         except Exception as e:
             logger.error(f"❌ Error extracting memories: {type(e).__name__}: {e}", exc_info=True)
             return []
-    
+
     def extract_memories_batch(self, exchanges: List[Dict], student_id: str, session_id: str) -> List[Memory]:
         """
         Extract memories from multiple exchanges in a single batch.
@@ -102,7 +102,7 @@ IMPORTANT: Extract memories of ALL 4 types if present. Don't limit to just one t
         if not exchanges:
             logger.warning("⚠️ extract_memories_batch called with empty exchanges list")
             return []
-        
+
         logger.info(f"🔍 Extracting memories from batch of {len(exchanges)} exchanges for session {session_id}")
         
         # Build the exchanges text for the prompt
@@ -192,5 +192,53 @@ Text: {text}"""
             return emotion if emotion in valid_emotions else None
         except Exception as e:
             logger.warning(f"Error detecting emotion: {e}")
+            return None
+
+    def detect_key_moments(self, student_text: str, ai_text: str, topic: str) -> Optional[str]:
+        """Detect key moments (breakthroughs, struggles, important events) using LLM."""
+        prompt = f"""Analyze this conversation exchange for key moments: breakthroughs, struggles, important learning events, or significant realizations.
+
+Student: {student_text}
+AI: {ai_text}
+Topic: {topic}
+
+If there's a key moment (breakthrough, struggle, important event), return a brief descriptive sentence (max 15 words).
+Examples:
+- "Breakthrough on discriminant with visual diagram"
+- "Struggled with word problems - gets lost in text"
+- "Connected quadratic formula to graph shape"
+
+If no key moment, return "None".
+Return ONLY the moment description or "None", nothing else."""
+
+        try:
+            response = self.model.generate_content(prompt)
+            moment = response.text.strip()
+            return moment if moment.lower() != "none" and len(moment) > 0 else None
+        except Exception as e:
+            logger.warning(f"Error detecting key moment: {e}")
+            return None
+            
+    def detect_unfinished_topics(self, student_text: str, ai_text: str) -> Optional[str]:
+        """Detect if a topic was started but not completed."""
+        prompt = f"""Analyze if this exchange indicates an unfinished topic or conversation thread that should continue next session.
+
+Student: {student_text}
+AI: {ai_text}
+
+Look for patterns like: "started X", "we'll continue", "next time", "ran out of time", incomplete explanations, or topics mentioned but not fully explored.
+
+If there's an unfinished topic, return a brief description (max 20 words) of what was started.
+Example: "Started completing the square but ran out of time"
+
+If nothing unfinished, return "None".
+Return ONLY the unfinished topic description or "None", nothing else."""
+
+        try:
+            response = self.model.generate_content(prompt)
+            topic = response.text.strip()
+            return topic if topic.lower() != "none" and len(topic) > 0 else None
+        except Exception as e:
+            logger.warning(f"Error detecting unfinished topic: {e}")
             return None
 

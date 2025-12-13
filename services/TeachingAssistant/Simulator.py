@@ -4,17 +4,51 @@ import json
 import asyncio
 import traceback
 import argparse
+import hashlib
 from pathlib import Path
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Set
 from dotenv import load_dotenv
-import httpx
+import websockets
+import logging
+
+# Suppress websockets library errors for HTTP requests (expected behavior)
+websockets_logger = logging.getLogger('websockets.server')
+websockets_logger.setLevel(logging.CRITICAL)  # Suppress all websockets logging
+
+# Patch traceback and sys.excepthook to suppress HTTP POST handshake errors
+_original_print_exception = traceback.print_exception
+_original_excepthook = sys.excepthook
+
+def _filtered_print_exception(exc_type, exc_value, exc_traceback, file=None, chain=True):
+    """Filter out websockets HTTP POST handshake errors"""
+    if exc_type is websockets.exceptions.InvalidMessage:
+        error_msg = str(exc_value)
+        if "did not receive a valid HTTP request" in error_msg or "unsupported HTTP method" in error_msg:
+            # Suppress these errors - they're expected for HTTP POST requests
+            return
+    # Call original for all other exceptions
+    _original_print_exception(exc_type, exc_value, exc_traceback, file, chain)
+
+def _filtered_excepthook(exc_type, exc_value, exc_traceback):
+    """Filter out websockets HTTP POST handshake errors from sys.excepthook"""
+    if exc_type is websockets.exceptions.InvalidMessage:
+        error_msg = str(exc_value)
+        if "did not receive a valid HTTP request" in error_msg or "unsupported HTTP method" in error_msg:
+            # Suppress these errors - they're expected for HTTP POST requests
+            return
+    # Call original for all other exceptions
+    _original_excepthook(exc_type, exc_value, exc_traceback)
+
+# Apply the patches
+traceback.print_exception = _filtered_print_exception
+sys.excepthook = _filtered_excepthook
 
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 load_dotenv()
 
-TEACHING_ASSISTANT_API_URL = os.getenv("TEACHING_ASSISTANT_API_URL", "http://localhost:8002")
+SIMULATOR_WS_PORT = int(os.getenv("SIMULATOR_WS_PORT", "8767"))
 SAMPLE_CONVERSATIONS_PATH = project_root / "Memory_Brief" / "sample_conversations_for_testing"
 SESSION_FILES = [
     "session_1_intro.md",
@@ -28,42 +62,83 @@ SESSION_FILES = [
 MODE_AUTOMATIC = "automatic"
 MODE_INTERACTIVE_MIXED = "interactive_mixed"
 
-async def send_memory_event(endpoint: str, data: dict, api_url: str = None, max_retries: int = 2):
-    url = api_url or TEACHING_ASSISTANT_API_URL
-    for attempt in range(max_retries + 1):
+# Message sequencing (same as server.js)
+message_sequence_counter = 0
+
+def generate_message_id():
+    """Generate unique message ID (same format as server.js)"""
+    global message_sequence_counter
+    timestamp = int(datetime.utcnow().timestamp() * 1000)
+    random = os.urandom(4).hex()
+    message_sequence_counter += 1
+    return f"msg_{timestamp}_{message_sequence_counter}_{random}"
+
+async def broadcast_to_teaching_assistant(event: dict, clients: Set):
+    """Broadcast event to all connected TeachingAssistant clients (same format as server.js)"""
+    global message_sequence_counter
+    
+    if not clients:
+        print("⚠️  No TeachingAssistant clients connected, message not sent")
+        return
+    
+    # Generate message_id (this increments message_sequence_counter)
+    message_id = generate_message_id()
+    # Sequence uses the value after increment (same as server.js: sequence = messageSequenceCounter after generateMessageId)
+    sequence = message_sequence_counter
+    
+    enriched_event = {
+        **event,
+        "message_id": message_id,
+        "sequence": sequence,
+        "server_timestamp": datetime.utcnow().isoformat() + "Z"
+    }
+    
+    # Calculate checksum (same as server.js - JavaScript JSON.stringify default format)
+    try:
+        # Match JavaScript JSON.stringify default: separators=(', ', ': ')
+        message_without_checksum = json.dumps(enriched_event, separators=(', ', ': '), ensure_ascii=False, sort_keys=False)
+        checksum = hashlib.sha256(message_without_checksum.encode('utf-8')).digest().hex()
+        enriched_event["checksum"] = checksum
+        message = json.dumps(enriched_event, separators=(', ', ': '), ensure_ascii=False, sort_keys=False)
+    except Exception as error:
+        print(f"❌ Failed to serialize message {message_id}: {error}")
+        return
+    
+    dead_clients = []
+    success_count = 0
+    failure_count = 0
+    
+    async def send_to_client(client):
         try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                response = await client.post(f"{url}/memory/{endpoint}", json=data)
-                if response.is_success:
-                    if attempt > 0:
-                        print(f"✅ Memory event succeeded on retry {attempt + 1}: {endpoint}")
-                    return True
-                else:
-                    error_msg = f"⚠️  Memory event failed: {endpoint} - HTTP {response.status_code}"
-                    if attempt < max_retries:
-                        print(f"{error_msg}, retrying...")
-                        await asyncio.sleep(2)
-                        continue
-                    else:
-                        print(f"{error_msg} (no more retries)")
-                        return False
-        except httpx.TimeoutException:
-            if attempt < max_retries:
-                print(f"⏳ Memory event timeout (attempt {attempt + 1}/{max_retries + 1}): {endpoint}, retrying in 2s...")
-                await asyncio.sleep(2)
-                continue
-            else:
-                print(f"❌ Memory event timeout after {max_retries + 1} attempts: {endpoint}")
-                return False
-        except Exception as e:
-            if attempt < max_retries:
-                print(f"⚠️  Memory event error (attempt {attempt + 1}/{max_retries + 1}): {endpoint} - {e}, retrying...")
-                await asyncio.sleep(1)
-                continue
-            else:
-                print(f"❌ Failed to send memory event after {max_retries + 1} attempts: {endpoint} - {e}")
-                return False
-    return False
+            await client.send(message)
+            return True
+        except Exception as error:
+            print(f"❌ Failed to send message {message_id} (seq: {sequence}) to client: {error}")
+            return False
+    
+    for client in clients:
+        try:
+            # Try to send message (non-blocking) - this will fail if connection is closed
+            asyncio.create_task(send_to_client(client))
+            success_count += 1
+        except Exception as error:
+            # Connection is likely closed or invalid
+            print(f"❌ Failed to queue message {message_id} (seq: {sequence}) to client: {error}")
+            dead_clients.append(client)
+            failure_count += 1
+    
+    for client in dead_clients:
+        clients.discard(client)
+    
+    if success_count > 0:
+        event_type = event.get('type', 'unknown')
+        print(f"📤 Broadcast message {message_id} (seq: {sequence}, type: {event_type}) - Success: {success_count}, Failed: {failure_count}")
+        
+        # Log text preview (same as server.js)
+        if event_type == 'text' and event.get('data', {}).get('text'):
+            text = event['data']['text']
+            text_preview = text[:50] + ('...' if len(text) > 50 else '')
+            print(f"   └─ Text preview: \"{text_preview}\"")
 
 class ConversationStorage:
     def __init__(self, user_id: str = "simulator_user"):
@@ -149,7 +224,6 @@ def parse_conversation_file(filepath: Path) -> List[Dict[str, str]]:
                     speaker = data.get("speaker", "")
                     text = data.get("text", "")
                     if speaker and text:
-                        # Normalize speaker names: "AI" -> "AI", "Student" -> "Student"
                         if speaker == "AI":
                             turns.append({"speaker": "AI", "text": text})
                         elif speaker == "Student":
@@ -171,73 +245,166 @@ async def read_user_input(prompt: str = "") -> str:
 
 class AutomatedSimulator:
     def __init__(self, user_id: str = "simulator_user", conversations_path: Path = None, 
-                 session_files: list[str] = None, memory_api_url: str = None, mode: str = MODE_AUTOMATIC,
+                 session_files: list[str] = None, ws_port: int = None, mode: str = MODE_AUTOMATIC,
                  delay_between_files: int = 60):
         self.user_id = user_id
         self.conversation_storage = ConversationStorage(user_id=user_id)
         self.conversations_path = conversations_path or SAMPLE_CONVERSATIONS_PATH
         self.session_files = session_files or SESSION_FILES
-        self.memory_api_url = memory_api_url or TEACHING_ASSISTANT_API_URL
+        self.ws_port = ws_port or SIMULATOR_WS_PORT
         self.mode = mode
         self.delay_between_files = delay_between_files
-        self.previous_adam_text = ""  # Track previous Adam response for conversation history
+        self.previous_adam_text = ""
+        self.ta_clients: Set[websockets.WebSocketServerProtocol] = set()
+        self.ws_server = None
+
+    async def handle_ta_connection(self, websocket, *args):
+        """Handle TeachingAssistant WebSocket connection - compatible with different websockets versions"""
+        # Extract path from arguments or websocket object
+        path = None
+        
+        # Try to get path from arguments first
+        if args and len(args) > 0:
+            path = args[0]
+        
+        # If not in arguments, try to get from websocket object
+        if path is None:
+            try:
+                if hasattr(websocket, 'path'):
+                    path = websocket.path
+                elif hasattr(websocket, 'request') and hasattr(websocket.request, 'path'):
+                    path = websocket.request.path
+                elif hasattr(websocket, 'request_headers'):
+                    path = getattr(websocket, 'path', '/')
+            except Exception:
+                path = '/'
+        
+        # Default fallback
+        if path is None:
+            path = '/'
+        
+        # Only accept connections to /ta path
+        if path != "/ta":
+            print(f"⚠️  Rejected connection to path: {path} (expected /ta)")
+            try:
+                await websocket.close(code=1008, reason="Path must be /ta")
+            except Exception:
+                pass
+            return
+        
+        self.ta_clients.add(websocket)
+        print(f"✅ TeachingAssistant client connected (total: {len(self.ta_clients)})")
+        try:
+            # Keep connection alive by listening for messages (even if we don't process them)
+            # This prevents the connection from closing immediately
+            async for message in websocket:
+                # TeachingAssistant doesn't send messages to simulator, but we need to listen
+                # to keep the connection alive. Just ignore any messages received.
+                pass
+        except websockets.exceptions.ConnectionClosed:
+            # Connection closed normally
+            pass
+        except Exception as e:
+            print(f"⚠️  WebSocket connection error: {e}")
+        finally:
+            self.ta_clients.discard(websocket)
+            print(f"🔌 TeachingAssistant client disconnected (remaining: {len(self.ta_clients)})")
+
+    async def start_websocket_server(self):
+        """Start WebSocket server for TeachingAssistant to connect"""
+        print(f"🌐 Starting WebSocket server on ws://localhost:{self.ws_port}/ta")
+        
+        # Start WebSocket server
+        # Note: HTTP POST requests (injection attempts) will cause handshake errors
+        # These are expected and can be ignored - the simulator doesn't need to handle injections
+        self.ws_server = await websockets.serve(
+            self.handle_ta_connection,
+            "localhost",
+            self.ws_port
+        )
+        
+        print(f"✅ WebSocket server started on ws://localhost:{self.ws_port}/ta")
+        print(f"⚠️  Note: HTTP POST errors (injection attempts) are expected and can be ignored")
+        if self.ws_port == 8767:
+            print(f"   TeachingAssistant will connect automatically (default port matches)")
+        else:
+            print(f"   Configure TeachingAssistant with TUTOR_WS_URL=ws://localhost:{self.ws_port}/ta")
+
+    async def stop_websocket_server(self):
+        """Stop WebSocket server"""
+        if self.ws_server:
+            self.ws_server.close()
+            await self.ws_server.wait_closed()
+        print("🔌 WebSocket server stopped")
 
     async def process_turn(self, user_text: str, adam_text: str):
-        """Process a single conversation turn: send memory events and update storage"""
+        """Process a single conversation turn: send WebSocket events (same format as server.js)"""
         # Add user text to storage
         self.conversation_storage.add_user_text(user_text)
         user_timestamp = self.conversation_storage.flush_user_turn()
         
-        # Send retrieval/user-turn event (triggers memory retrieval - TA-light and TA-deep)
-        # Pass previous Adam text to maintain conversation history context
+        # Send user text event (same format as server.js)
         if user_timestamp and self.conversation_storage.session:
-            await send_memory_event('retrieval/user-turn', {
-                "session_id": self.conversation_storage.session["session_id"],
-                "user_id": self.user_id,
-                "user_text": user_text,
-                "adam_text": self.previous_adam_text,  # Pass previous Adam text for conversation context
-                "timestamp": user_timestamp
-            }, api_url=self.memory_api_url)
+            session_id = self.conversation_storage.session["session_id"]
+            await broadcast_to_teaching_assistant({
+                "type": "text",
+                "data": {
+                    "session_id": session_id,
+                    "user_id": self.user_id,
+                    "text": user_text,
+                    "speaker": "user",
+                    "timestamp": user_timestamp
+                }
+            }, self.ta_clients)
         
-        # Longer delay for memory processing (TA-light and TA-deep retrieval)
-        # This ensures the retrieval completes before we continue
+        # Wait for memory processing
         await asyncio.sleep(2)
         
         # Add Adam text to storage
         self.conversation_storage.add_adam_text(adam_text)
         adam_timestamp = self.conversation_storage.flush_adam_turn()
         
-        # Update previous Adam text for next turn's conversation history
+        # Update previous Adam text for next turn
         self.previous_adam_text = adam_text
         
-        # Send turn event (complete conversation turn)
-        if adam_timestamp and self.conversation_storage.last_user_turn_text:
-            await send_memory_event('turn', {
-                "session_id": self.conversation_storage.session["session_id"],
-                "user_id": self.user_id,
-                "user_text": self.conversation_storage.last_user_turn_text,
-                "adam_text": adam_text,
-                "timestamp": adam_timestamp
-            }, api_url=self.memory_api_url)
+        # Send Adam text event (same format as server.js)
+        if adam_timestamp and self.conversation_storage.session:
+            session_id = self.conversation_storage.session["session_id"]
+            await broadcast_to_teaching_assistant({
+                "type": "text",
+                "data": {
+                    "session_id": session_id,
+                    "user_id": self.user_id,
+                    "text": adam_text,
+                    "speaker": "adam",
+                    "interrupted": False,
+                    "timestamp": adam_timestamp
+                }
+            }, self.ta_clients)
         
         # Small delay between turns
         await asyncio.sleep(1)
 
     async def run_automatic_mode(self):
         """Mode 1: Automatic - Process all files sequentially with delay between files"""
-        # Reset previous Adam text for new session
         self.previous_adam_text = ""
         session_id = self.conversation_storage.start_session()
-        await send_memory_event('session/start', {
-            "session_id": session_id,
-            "user_id": self.user_id
-        }, api_url=self.memory_api_url)
+        
+        # Send session_start event (same format as server.js)
+        await broadcast_to_teaching_assistant({
+            "type": "session_start",
+            "data": {
+                "session_id": session_id,
+                "user_id": self.user_id,
+                "timestamp": datetime.utcnow().isoformat() + "Z"
+            }
+        }, self.ta_clients)
         
         print("\n" + "="*60)
         print("Mode: AUTOMATIC - Processing files sequentially")
         print(f"Processing {len(self.session_files)} session files")
         print(f"Delay between files: {self.delay_between_files} seconds")
-        print(f"Memory API: {TEACHING_ASSISTANT_API_URL}")
+        print(f"WebSocket server: ws://localhost:{self.ws_port}/ta")
         print("="*60 + "\n")
         
         for file_idx, session_file in enumerate(self.session_files, 1):
@@ -255,31 +422,25 @@ class AutomatedSimulator:
                 continue
             
             # Group turns into pairs (User, Adam)
-            # Conversation format: alternates between AI and Student
-            # A turn is: User speaks, then Adam responds
             turn_pairs = []
             i = 0
             
-            # Skip initial AI message if conversation starts with AI (it's just greeting)
-            # We'll pair Student messages with the following AI responses
+            # Skip initial AI message if conversation starts with AI
             if turns and turns[0]["speaker"] == "AI":
-                i = 1  # Skip first AI message, start from first Student message
+                i = 1
             
             # Process turns: Student message pairs with next AI message
             while i < len(turns):
                 if turns[i]["speaker"] == "Student":
                     user_text = turns[i]["text"]
-                    # Look for next AI message as Adam's response
                     if i + 1 < len(turns) and turns[i + 1]["speaker"] == "AI":
                         adam_text = turns[i + 1]["text"]
                         turn_pairs.append((user_text, adam_text))
                         i += 2
                     else:
-                        # Student message without AI response, use empty Adam text
                         turn_pairs.append((user_text, ""))
                         i += 1
                 elif turns[i]["speaker"] == "AI":
-                    # Unpaired AI message (shouldn't happen after skipping first), skip it
                     i += 1
                 else:
                     i += 1
@@ -310,28 +471,36 @@ class AutomatedSimulator:
         end_time = datetime.utcnow().isoformat() + "Z"
         session_id = self.conversation_storage.end_session()
         if session_id:
-            await send_memory_event('session/end', {
-                "session_id": session_id,
-                "user_id": self.user_id,
-                "end_time": end_time
-            }, api_url=self.memory_api_url)
+            await broadcast_to_teaching_assistant({
+                "type": "session_end",
+                "data": {
+                    "session_id": session_id,
+                    "user_id": self.user_id,
+                    "timestamp": end_time
+                }
+            }, self.ta_clients)
         
         print("\n✅ Automatic simulation completed successfully!")
         print(f"💾 Memory data stored in: services/TeachingAssistant/Memory/data/{self.user_id}/")
 
     async def run_interactive_mode_mixed(self):
         """Mode 2MIXED: Interactive - Adam from JSON, User from terminal OR JSON (Enter to use JSON)"""
-        # Reset previous Adam text for new session
         self.previous_adam_text = ""
         session_id = self.conversation_storage.start_session()
-        await send_memory_event('session/start', {
-            "session_id": session_id,
-            "user_id": self.user_id
-        }, api_url=self.memory_api_url)
+        
+        # Send session_start event
+        await broadcast_to_teaching_assistant({
+            "type": "session_start",
+            "data": {
+                "session_id": session_id,
+                "user_id": self.user_id,
+                "timestamp": datetime.utcnow().isoformat() + "Z"
+            }
+        }, self.ta_clients)
         
         print("\n" + "="*60)
         print("Mode: INTERACTIVE MIXED - Adam from JSON, User from Terminal or JSON")
-        print(f"Memory API: {TEACHING_ASSISTANT_API_URL}")
+        print(f"WebSocket server: ws://localhost:{self.ws_port}/ta")
         print("="*60 + "\n")
         print("Instructions:")
         print("- Adam's responses will come from the conversation files")
@@ -357,11 +526,9 @@ class AutomatedSimulator:
             turn_pairs = []
             i = 0
             
-            # Skip initial AI message if conversation starts with AI
             if turns and turns[0]["speaker"] == "AI":
                 i = 1
             
-            # Process turns: Student message pairs with next AI message
             while i < len(turns):
                 if turns[i]["speaker"] == "Student":
                     user_text = turns[i]["text"]
@@ -419,11 +586,14 @@ class AutomatedSimulator:
         end_time = datetime.utcnow().isoformat() + "Z"
         session_id = self.conversation_storage.end_session()
         if session_id:
-            await send_memory_event('session/end', {
-                "session_id": session_id,
-                "user_id": self.user_id,
-                "end_time": end_time
-            }, api_url=self.memory_api_url)
+            await broadcast_to_teaching_assistant({
+                "type": "session_end",
+                "data": {
+                    "session_id": session_id,
+                    "user_id": self.user_id,
+                    "timestamp": end_time
+                }
+            }, self.ta_clients)
         
         print("\n✅ Interactive mixed mode completed!")
         print(f"💾 Memory data stored in: services/TeachingAssistant/Memory/data/{self.user_id}/")
@@ -431,6 +601,36 @@ class AutomatedSimulator:
     async def run_simulation(self):
         """Main simulation runner - routes to appropriate mode"""
         try:
+            # Start WebSocket server
+            await self.start_websocket_server()
+            
+            # Wait for TeachingAssistant to connect (with timeout)
+            print("\n⏳ Waiting for TeachingAssistant to connect...")
+            if self.ws_port == 8767:
+                print("   (TeachingAssistant should connect automatically - default port matches)")
+            else:
+                print(f"   (Make sure TeachingAssistant is configured with TUTOR_WS_URL=ws://localhost:{self.ws_port}/ta)")
+            print("   (Start TeachingAssistant: python services/TeachingAssistant/api.py)")
+            
+            max_wait_time = 30  # Wait up to 30 seconds
+            wait_interval = 1
+            waited = 0
+            
+            while not self.ta_clients and waited < max_wait_time:
+                await asyncio.sleep(wait_interval)
+                waited += wait_interval
+                if waited % 5 == 0:
+                    print(f"   Still waiting... ({waited}s/{max_wait_time}s)")
+            
+            if not self.ta_clients:
+                print(f"⚠️  Warning: No TeachingAssistant clients connected after {max_wait_time} seconds.")
+                print("   Continuing anyway, but events will not be processed.")
+                if self.ws_port != 8767:
+                    print(f"   Make sure TeachingAssistant is configured with TUTOR_WS_URL=ws://localhost:{self.ws_port}/ta")
+            else:
+                print("✅ TeachingAssistant connected! Starting simulation...")
+            
+            # Run the simulation
             if self.mode == MODE_AUTOMATIC:
                 await self.run_automatic_mode()
             elif self.mode == MODE_INTERACTIVE_MIXED:
@@ -448,20 +648,24 @@ class AutomatedSimulator:
                 end_time = datetime.utcnow().isoformat() + "Z"
                 session_id = self.conversation_storage.end_session()
                 if session_id:
-                    await send_memory_event('session/end', {
-                        "session_id": session_id,
-                        "user_id": self.user_id,
-                        "end_time": end_time
-                    }, api_url=self.memory_api_url)
+                    await broadcast_to_teaching_assistant({
+                        "type": "session_end",
+                        "data": {
+                            "session_id": session_id,
+                            "user_id": self.user_id,
+                            "timestamp": end_time
+                        }
+                    }, self.ta_clients)
+            await self.stop_websocket_server()
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="AI Tutor Conversation Simulator")
+    parser = argparse.ArgumentParser(description="AI Tutor Conversation Simulator (WebSocket-based)")
     parser.add_argument(
         "--mode",
         type=str,
         choices=[MODE_AUTOMATIC, MODE_INTERACTIVE_MIXED],
         default=MODE_AUTOMATIC,
-        help=f"Simulation mode: {MODE_AUTOMATIC} (automatic), {MODE_INTERACTIVE_MIXED} (Adam from JSON, User from terminal OR JSON - Enter to use JSON, type to use custom)"
+        help=f"Simulation mode: {MODE_AUTOMATIC} (automatic), {MODE_INTERACTIVE_MIXED} (Adam from JSON, User from terminal OR JSON)"
     )
     parser.add_argument(
         "--user-id",
@@ -476,10 +680,10 @@ if __name__ == "__main__":
         help="Delay in seconds between files in automatic mode (default: 60)"
     )
     parser.add_argument(
-        "--api-url",
-        type=str,
+        "--ws-port",
+        type=int,
         default=None,
-        help=f"Teaching Assistant API URL (default: {TEACHING_ASSISTANT_API_URL})"
+        help=f"WebSocket server port (default: {SIMULATOR_WS_PORT})"
     )
     
     args = parser.parse_args()
@@ -488,7 +692,7 @@ if __name__ == "__main__":
         user_id=args.user_id,
         mode=args.mode,
         delay_between_files=args.delay,
-        memory_api_url=args.api_url
+        ws_port=args.ws_port
     )
     
     asyncio.run(simulator.run_simulation())

@@ -19,6 +19,7 @@ class SessionClosingCache:
             "new_memories": [],
             "emotional_arc": [],
             "key_moments": [],
+            "unfinished_topics": [],
             "topics_covered": [],
             "session_summary": "",
             "goodbye_message": "",
@@ -45,6 +46,7 @@ class SessionClosingCache:
                     "new_memories": [],
                     "emotional_arc": [],
                     "key_moments": [],
+                    "unfinished_topics": [],
                     "topics_covered": [],
                     "session_summary": "",
                     "goodbye_message": "",
@@ -70,16 +72,19 @@ class SessionClosingCache:
         if emotion:
             self.cache["emotional_arc"].append(emotion)
 
-        # Track key moments
-        if "struggle" in student_text.lower() or "difficult" in student_text.lower():
-            self.cache["key_moments"].append("struggle")
-        if "understand" in student_text.lower() or "got it" in student_text.lower():
-            self.cache["key_moments"].append("breakthrough")
+        # Detect key moments using LLM
+        key_moment = extractor.detect_key_moments(student_text, ai_text, topic)
+        if key_moment:
+            self.cache["key_moments"].append(key_moment)
+
+        # Detect unfinished topics
+        unfinished_topic = extractor.detect_unfinished_topics(student_text, ai_text)
+        if unfinished_topic:
+            self.cache["unfinished_topics"].append(unfinished_topic)
 
         # Track topics
-        if topic:
-            if topic not in self.cache["topics_covered"]:
-                self.cache["topics_covered"].append(topic)
+        if topic and topic not in self.cache["topics_covered"]:
+            self.cache["topics_covered"].append(topic)
 
         # Buffer the exchange
         if student_text and ai_text:
@@ -126,29 +131,11 @@ class SessionClosingCache:
             self.exchange_buffer.clear()
             logger.info("🧹 Cleared exchange buffer")
             
-            # Trigger regeneration after each batch of 3 exchanges (async, non-blocking)
+            # Trigger regeneration after each batch of 3 exchanges (non-blocking in thread)
             logger.info("🔄 Triggering closing cache regeneration (after 3 exchanges)...")
-            import asyncio
             import threading
-            try:
-                # Try to get the running loop
-                try:
-                    loop = asyncio.get_running_loop()
-                    asyncio.create_task(self._regenerate_closing(extractor))
-                except RuntimeError:
-                    # No running loop - create and run in a new thread
-                    def run_async():
-                        new_loop = asyncio.new_event_loop()
-                        asyncio.set_event_loop(new_loop)
-                        try:
-                            new_loop.run_until_complete(self._regenerate_closing(extractor))
-                        finally:
-                            new_loop.close()
-                    
-                    thread = threading.Thread(target=run_async, daemon=True)
-                    thread.start()
-            except Exception as e:
-                logger.error(f"❌ Error creating regeneration task: {e}", exc_info=True)
+            thread = threading.Thread(target=self._regenerate_closing_sync, args=(extractor,), daemon=True)
+            thread.start()
             
         except Exception as e:
             logger.error(f"❌ Error processing exchange batch: {e}", exc_info=True)
@@ -167,39 +154,27 @@ class SessionClosingCache:
         
         # Final regeneration at session end (sync to ensure completion)
         logger.info("🔄 Final closing cache regeneration at session end...")
-        import asyncio
-        try:
-            # Run synchronously to ensure completion before session ends
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                # If loop is running, create task and wait
-                task = asyncio.create_task(self._regenerate_closing(extractor))
-                # Note: This won't block if loop is already running
-            else:
-                # If no loop, run synchronously
-                loop.run_until_complete(self._regenerate_closing(extractor))
-        except Exception as e:
-            logger.error(f"❌ Error in final regeneration: {e}", exc_info=True)
+        self._regenerate_closing_sync(extractor)
     
-    async def _regenerate_closing(self, extractor: MemoryExtractor):
-        """Regenerate closing cache content using LLM (runs in background after every 3 exchanges)."""
+    def _regenerate_closing_sync(self, extractor: MemoryExtractor):
+        """Regenerate closing cache content using LLM (runs in thread, non-blocking)."""
         logger.info("🔄 Starting closing cache regeneration...")
         
         try:
             # Generate session summary
-            summary = await self._generate_session_summary()
+            summary = self._generate_session_summary_sync()
             if summary:
                 self.cache["session_summary"] = summary
                 logger.info(f"✅ Generated session_summary: {summary[:100]}...")
             
             # Generate goodbye message
-            goodbye = await self._generate_goodbye_message()
+            goodbye = self._generate_goodbye_message_sync()
             if goodbye:
                 self.cache["goodbye_message"] = goodbye
                 logger.info(f"✅ Generated goodbye_message: {goodbye[:100]}...")
             
             # Generate next session hooks
-            hooks = await self._generate_next_session_hooks()
+            hooks = self._generate_next_session_hooks_sync()
             if hooks:
                 self.cache["next_session_hooks"] = hooks
                 logger.info(f"✅ Generated next_session_hooks: {hooks}")
@@ -210,10 +185,10 @@ class SessionClosingCache:
             self._save_closing_realtime()
             
         except Exception as e:
-            logger.error(f"❌ Error in _regenerate_closing: {e}", exc_info=True)
+            logger.error(f"❌ Error in _regenerate_closing_sync: {e}", exc_info=True)
     
-    async def _generate_session_summary(self) -> str:
-        """Generate session summary using LLM."""
+    def _generate_session_summary_sync(self) -> str:
+        """Generate session summary using LLM (synchronous)."""
         import google.generativeai as genai
         
         topics = ', '.join(self.cache["topics_covered"]) if self.cache["topics_covered"] else "general topics"
@@ -231,14 +206,14 @@ Return ONLY the summary, nothing else."""
         
         try:
             model = genai.GenerativeModel("gemini-2.0-flash-lite")
-            response = await model.generate_content_async(prompt)
+            response = model.generate_content(prompt)
             return response.text.strip()
         except Exception as e:
             logger.error(f"❌ Error generating session_summary: {e}")
-            return ""  # No fallback - return empty on failure
+            return ""
     
-    async def _generate_goodbye_message(self) -> str:
-        """Generate goodbye message based on emotional state using LLM."""
+    def _generate_goodbye_message_sync(self) -> str:
+        """Generate goodbye message based on emotional state using LLM (synchronous)."""
         import google.generativeai as genai
         
         current_emotion = self.cache["emotional_arc"][-1] if self.cache["emotional_arc"] else "neutral"
@@ -260,48 +235,78 @@ Return ONLY the goodbye message, nothing else."""
         
         try:
             model = genai.GenerativeModel("gemini-2.0-flash-lite")
-            response = await model.generate_content_async(prompt)
+            response = model.generate_content(prompt)
             return response.text.strip()
         except Exception as e:
             logger.error(f"❌ Error generating goodbye_message: {e}")
-            return ""  # No fallback - return empty on failure
+            return ""
     
-    async def _generate_next_session_hooks(self) -> list:
-        """Generate next session hooks using LLM."""
+    def _generate_next_session_hooks_sync(self) -> list:
+        """Generate next session hooks based on unfinished topics and key moments."""
         import google.generativeai as genai
         
-        summary = self.cache.get("session_summary", "")
-        moments = ', '.join(self.cache["key_moments"]) if self.cache["key_moments"] else "None"
-        topics = ', '.join(self.cache["topics_covered"]) if self.cache["topics_covered"] else "general topics"
+        unfinished = self.cache.get("unfinished_topics", [])
+        moments = self.cache.get("key_moments", [])
         
-        prompt = f"""Based on this tutoring session, suggest 2-3 specific topics or questions to explore in the next session.
+        # Base hooks on actual unfinished topics first
+        if unfinished:
+            hooks = unfinished[:3]
+            # Enhance with LLM if needed for better phrasing
+            if len(hooks) < 3 and moments:
+                summary = self.cache.get("session_summary", "")
+                prompt = f"""Based on unfinished topics and key moments, suggest 1-2 additional specific continuation topics.
 
+Unfinished topics: {', '.join(unfinished)}
+Key moments: {', '.join(moments[-3:]) if moments else 'None'}
 Session summary: {summary if summary else 'Session in progress'}
-Key moments: {moments}
-Topics covered: {topics}
 
-Return as a JSON array of strings. Each should be:
-- Specific and actionable
-- Natural continuation from this session
-- Phrased as a topic or question
-
-Example: ["Continue practicing completing the square", "Explore how discriminant relates to graph shape", "Review word problem strategies"]
+Return as JSON array of strings. Each should be specific and actionable.
+Example: ["Continue practicing completing the square", "Explore how discriminant relates to graph shape"]
 
 Return ONLY the JSON array, nothing else."""
+                try:
+                    model = genai.GenerativeModel("gemini-2.0-flash-lite")
+                    response = model.generate_content(prompt)
+                    text = response.text.strip()
+                    if text.startswith("```json"):
+                        text = text[7:]
+                    if text.endswith("```"):
+                        text = text[:-3]
+                    text = text.strip()
+                    additional = json.loads(text)
+                    hooks.extend(additional[:3 - len(hooks)])
+                except Exception:
+                    pass
+            return hooks[:3]
         
-        try:
-            model = genai.GenerativeModel("gemini-2.0-flash-lite")
-            response = await model.generate_content_async(prompt)
-            text = response.text.strip()
-            if text.startswith("```json"):
-                text = text[7:]
-            if text.endswith("```"):
-                text = text[:-3]
-            text = text.strip()
-            return json.loads(text)
-        except Exception as e:
-            logger.error(f"❌ Error generating next_session_hooks: {e}")
-            return []  # No fallback - return empty on failure
+        # Fallback: generate from key moments if no unfinished topics
+        if moments:
+            summary = self.cache.get("session_summary", "")
+            topics = ', '.join(self.cache.get("topics_covered", [])) or "general topics"
+            prompt = f"""Based on key moments from this session, suggest 2-3 specific continuation topics.
+
+Key moments: {', '.join(moments)}
+Session summary: {summary if summary else 'Session in progress'}
+Topics covered: {topics}
+
+Return as JSON array of strings. Each should be specific and actionable.
+Example: ["Continue practicing completing the square", "Explore how discriminant relates to graph shape"]
+
+Return ONLY the JSON array, nothing else."""
+            try:
+                model = genai.GenerativeModel("gemini-2.0-flash-lite")
+                response = model.generate_content(prompt)
+                text = response.text.strip()
+                if text.startswith("```json"):
+                    text = text[7:]
+                if text.endswith("```"):
+                    text = text[:-3]
+                text = text.strip()
+                return json.loads(text)
+            except Exception as e:
+                logger.error(f"❌ Error generating next_session_hooks: {e}")
+        
+        return []
     
     def _save_closing_realtime(self):
         """Save closing cache to JSON file in real-time (called after each regeneration)."""
@@ -345,7 +350,7 @@ class MemoryConsolidator:
         closing_cache.flush_remaining_exchanges(self.extractor, self.store)
         
         # Note: Memories are already saved in real-time batches, no need to save again
-        logger.info(f"ℹ️ All memories already saved in real-time batches")
+        logger.info("ℹ️ All memories already saved in real-time batches")
 
         logger.info(f"📊 Session stats - Emotions: {len(closing_cache.cache['emotional_arc'])}, Key moments: {len(closing_cache.cache['key_moments'])}, Topics: {len(closing_cache.cache['topics_covered'])}")
         
@@ -354,44 +359,81 @@ class MemoryConsolidator:
         self._save_opening(user_id, opening_context)
         logger.info(f"✅ Session consolidation complete for {session_id}")
 
-    def _generate_opening_context(self, user_id: str, closing_cache: SessionClosingCache) -> dict:
-        """Generate personalized opening context for next session using LLM."""
+    def _generate_personal_relevance(self, user_id: str) -> str:
+        """Generate time-contextual personal relevance string."""
         import google.generativeai as genai
+        from datetime import datetime
         
-        # Initialize model locally for this method to ensure it's available
-        # This fixes UnboundLocalError if first block is skipped but later blocks run
-        model = genai.GenerativeModel("gemini-2.0-flash-lite")
-        
-        # Get personal memories for relevance
         personal_memories = self.store.search(
-            query="personal information about student",
+            query="personal information about student schedule hobbies recurring events",
             student_id=user_id,
             mem_type=MemoryType.PERSONAL,
             top_k=5
         )
         
+        if not personal_memories:
+            return ""
+        
+        now = datetime.now()
+        day_name = now.strftime("%A")
+        time_context = "morning" if now.hour < 12 else "afternoon" if now.hour < 17 else "evening"
+        personal_texts = [m["memory"].text for m in personal_memories[:3]]
+        
+        prompt = f"""Generate a brief, time-contextual personal relevance string (max 20 words) for a tutoring session.
+
+Current day: {day_name}
+Time of day: {time_context}
+Personal memories: {', '.join(personal_texts)}
+
+Create a natural, contextual string that references their personal life relevant to NOW.
+Examples:
+- "It's Friday - basketball game today?"
+- "Ready for another week of learning?"
+- "How's your week going?"
+
+If no time-specific relevance, return empty string.
+Return ONLY the relevance string or empty string, nothing else."""
+
+        try:
+            model = genai.GenerativeModel("gemini-2.0-flash-lite")
+            response = model.generate_content(prompt)
+            relevance = response.text.strip()
+            return relevance if relevance and len(relevance) > 0 else ""
+        except Exception as e:
+            logger.error(f"❌ Error generating personal_relevance: {e}")
+            return ""
+
+    def _generate_opening_context(self, user_id: str, closing_cache: SessionClosingCache) -> dict:
+        """Generate personalized opening context for next session using LLM."""
+        import google.generativeai as genai
+        
+        model = genai.GenerativeModel("gemini-2.0-flash-lite")
+        
         # Extract data from closing cache
         session_summary = closing_cache.cache.get("session_summary", "")
         emotional_arc = closing_cache.cache.get("emotional_arc", [])
         key_moments = closing_cache.cache.get("key_moments", [])
-        topics_covered = closing_cache.cache.get("topics_covered", [])
-        next_session_hooks = closing_cache.cache.get("next_session_hooks", [])
+        unfinished_topics = closing_cache.cache.get("unfinished_topics", [])
         
         emotional_state_last = emotional_arc[-1] if emotional_arc else "neutral"
-        personal_relevance_list = [m["memory"].text for m in personal_memories[:3]]
         
-        # Generate welcome_hook using LLM
-        # Only generate if we have session data, otherwise skip
-        if session_summary or key_moments or topics_covered:
-            welcome_hook_prompt = f"""Generate a warm, natural welcome message for a student returning to their next tutoring session.
+        # Generate time-contextual personal relevance
+        personal_relevance = self._generate_personal_relevance(user_id)
+        
+        # Generate welcome_hook - reference specific achievements
+        welcome_hook = ""
+        if session_summary or key_moments:
+            achievement = key_moments[-1] if key_moments else ""
+            welcome_hook_prompt = f"""Generate a warm, natural welcome message (1-2 sentences) that references a specific achievement from last session.
 
-Last session summary: {session_summary if session_summary else 'Session completed'}
+Last session summary: {session_summary if session_summary else 'Previous session'}
+Key achievement: {achievement if achievement else 'Session completed'}
 Emotional state when they left: {emotional_state_last}
-Key moments: {', '.join(key_moments) if key_moments else 'None'}
-Topics covered: {', '.join(topics_covered) if topics_covered else 'general topics'}
-Personal context: {', '.join(personal_relevance_list) if personal_relevance_list else 'None'}
 
-Create a brief (1-2 sentences), friendly welcome that references their last session naturally. Don't be overly formal.
+Reference the specific achievement naturally. Examples:
+- "Last time you cracked the discriminant - ready to build on that?"
+- "You had that breakthrough with visual diagrams - let's keep that momentum going!"
+
 Return ONLY the welcome message, nothing else."""
 
             try:
@@ -399,53 +441,22 @@ Return ONLY the welcome message, nothing else."""
                 welcome_hook = response.text.strip()
             except Exception as e:
                 logger.error(f"❌ Error generating welcome_hook: {e}")
-                welcome_hook = ""  # No fallback
-        else:
-            welcome_hook = ""  # No data to generate from
         
-        # Generate unfinished_threads from next_session_hooks and key_moments
-        unfinished_threads = []
-        if next_session_hooks:
-            unfinished_threads.extend(next_session_hooks[:3])
+        # Use actual unfinished topics from closing cache
+        unfinished_threads = unfinished_topics[:3] if unfinished_topics else []
         
-        # If no hooks and we have session data, generate from key moments
-        if not unfinished_threads and (key_moments or topics_covered):
-            unfinished_prompt = f"""Based on this tutoring session, suggest 2-3 specific questions or topics to explore in the next session.
-
-Session summary: {session_summary if session_summary else 'Session completed'}
-Key moments: {', '.join(key_moments) if key_moments else 'None'}
-Topics covered: {', '.join(topics_covered) if topics_covered else 'general topics'}
-
-Return as a JSON array of strings. Each should be a specific, actionable question or topic.
-Example: ["Could we review the quadratic formula and practice more examples?", "Let's explore how to apply this concept to word problems."]
-
-Return ONLY the JSON array, nothing else."""
-
-            try:
-                response = model.generate_content(unfinished_prompt)
-                text = response.text.strip()
-                if text.startswith("```json"):
-                    text = text[7:]
-                if text.endswith("```"):
-                    text = text[:-3]
-                text = text.strip()
-                unfinished_threads = json.loads(text)
-            except Exception as e:
-                logger.error(f"❌ Error generating unfinished_threads: {e}")
-                unfinished_threads = []  # No fallback
-        
-        # Generate suggested_opener using LLM
-        # Only generate if we have session data
-        if session_summary or personal_relevance_list or unfinished_threads:
-            opener_prompt = f"""Generate a natural, conversational opening line for an AI tutor to start the next session with this student.
+        # Generate suggested_opener
+        suggested_opener = ""
+        if session_summary or personal_relevance or unfinished_threads:
+            opener_prompt = f"""Generate a natural, conversational opening line (1-2 sentences) for an AI tutor.
 
 Last session: {session_summary if session_summary else 'Previous session completed'}
 Emotional state: {emotional_state_last}
-Personal context: {', '.join(personal_relevance_list) if personal_relevance_list else 'None'}
+Personal context: {personal_relevance if personal_relevance else 'None'}
 Unfinished topics: {', '.join(unfinished_threads[:2]) if unfinished_threads else 'None'}
 
-Create a warm, natural conversation starter (1-2 sentences) that feels genuine and personal. Reference their last session or personal life if relevant.
-Don't be overly formal or robotic. Sound like a friendly tutor who remembers them.
+Create a warm, natural conversation starter that feels genuine. Reference last session or personal life if relevant.
+Sound like a friendly tutor who remembers them.
 
 Return ONLY the opener, nothing else."""
 
@@ -454,15 +465,12 @@ Return ONLY the opener, nothing else."""
                 suggested_opener = response.text.strip()
             except Exception as e:
                 logger.error(f"❌ Error generating suggested_opener: {e}")
-                suggested_opener = ""  # No fallback
-        else:
-            suggested_opener = ""  # No data to generate from
         
         return {
             "welcome_hook": welcome_hook,
             "last_session_summary": session_summary,
             "unfinished_threads": unfinished_threads,
-            "personal_relevance": personal_relevance_list,
+            "personal_relevance": personal_relevance,
             "emotional_state_last": emotional_state_last,
             "suggested_opener": suggested_opener
         }
