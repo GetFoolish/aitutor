@@ -1,0 +1,112 @@
+{
+  "answerArea": {
+    "calculator": false,
+    "chi2Table": false,
+    "periodicTable": false,
+    "tTable": false,
+    "zTable": false
+  },
+  "hints": [
+    {
+      "content": "Let's visualize to help us solve.",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    },
+    {
+      "content": "There are $\\blueD2$ groups of $\\maroonD{4}$.\n\n\n\n[[\u2603 image 1]]\n\n",
+      "images": {},
+      "replace": false,
+      "widgets": {
+        "image 1": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "A 256x256 pixel image showing two distinct groups of objects. Each group contains 4 identical, vibrantly colored, red apples. The first group of 4 apples is clearly encircled with a solid blue line and labeled with the number '4'. The second group of 4 apples is also clearly encircled with a solid blue line and labeled with the number '4'. The overall composition is clean, brightly lit, and easy to understand, illustrating two sets of four. The background is a soft, light-colored surface to highlight the apples and circles.",
+            "backgroundImage": {
+              "height": 288,
+              "url": "/assets/1765633757633-0.1279211179970675.png",
+              "width": 320
+            },
+            "box": [
+              320,
+              288
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 2,
+            "minor": 0
+          }
+        }
+      }
+    },
+    {
+      "content": "$\\blueD{2} \\times \\maroonD{4} = \\underbrace{\\maroonD{4} + \\maroonD{4}}_{\\blueD{2}\\maroonD{\\text{ fours}}} = \\purpleD{8}$",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    },
+    {
+      "content": "$\\Large\\purpleD{8}=\\blueD{2}\\times\\maroonD{4}$",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    }
+  ],
+  "itemDataVersion": {
+    "major": 2,
+    "minor": 0
+  },
+  "question": {
+    "content": "**Compute the product.**\n\n[[\u2603 numeric-input 1]] ${}=\\Large\\blueD{2}\\times\\maroonD{4}{}$ ",
+    "images": {},
+    "widgets": {
+      "numeric-input 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "answers": [
+            {
+              "maxError": 0,
+              "message": "",
+              "simplify": true,
+              "status": "correct",
+              "strict": false,
+              "value": 8
+            }
+          ],
+          "coefficient": false,
+          "labelText": "",
+          "multipleNumberInput": false,
+          "rightAlign": false,
+          "size": "normal",
+          "static": false
+        },
+        "static": false,
+        "type": "numeric-input",
+        "version": {
+          "major": 2,
+          "minor": 0
+        }
+      }
+    }
+  },
+  "status": "pending_approval",
+  "human_approved": false
+}

@@ -1,5 +1,5 @@
 from math import e 
-from fastapi import APIRouter, Request, HTTPException, BackgroundTasks
+from fastapi import APIRouter, Request, HTTPException, BackgroundTasks, WebSocket
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 import json
@@ -13,7 +13,9 @@ from datetime import datetime
 from pydantic import BaseModel, Field, field_validator
 from beanie.operators import LTE, GT
 from app.utils.khan_questions_loader import load_questions 
+from app.agent.question_generator_agent import generate_new_questions
 from app.database.models import GeneratedQuestionDocument, QuestionDocument
+from app.utils.websocket_manager import manager
 
 router = APIRouter()
 
@@ -43,6 +45,9 @@ class ProjectionWithID(BaseModel):
     @field_validator("id", mode="before")
     def convert_objectid(cls, v):
         return str(v) if isinstance(v, ObjectId) else v
+    
+class GenerateQuestionsRequest(BaseModel):
+    limit: int = Field(default=5, ge=1, le=100)
 
 
 # endpoint to get questions 
@@ -330,3 +335,23 @@ async def reject_question(question_id: str):
         return JSONResponse(content={"message": "Question rejected and deleted successfully"}, status_code=200)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to reject question: {e}")
+    
+@router.post("/generate-new-questions")
+async def generate_new_questions_api(
+    payload: GenerateQuestionsRequest,
+    background_tasks: BackgroundTasks):
+    """Endpoint to trigger background task for generating new questions from Khan Academy"""
+    background_tasks.add_task(generate_new_questions,payload.limit)
+    return JSONResponse(content={"message": "Question generation started in background"}, status_code=202)
+
+@router.websocket("/ws/question-generation-status")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            # You can handle incoming messages here if needed
+    except Exception as e:
+        print(f"WebSocket Error: {e}")
+    finally:
+        manager.disconnect(websocket)

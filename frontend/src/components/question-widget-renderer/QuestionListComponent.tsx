@@ -13,18 +13,43 @@ interface QuestionItem {
     }>;
 }
 
+interface GenerationStatus {
+    status: string;
+    current?: number;
+    total?: number;
+    message?: string;
+}
+
 function QuestionListComponent() {
     const [questions, setQuestions] = useState<QuestionItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [sortBy, setSortBy] = useState<"created_at" | "generated_count">("created_at");
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+    const [questionLimit, setQuestionLimit] = useState<number>(1);
+    const [generationStatus, setGenerationStatus] = useState<GenerationStatus | null>(null);
     const history = useHistory();
     const location = useLocation<{ recentAction?: string; questionId?: string }>();
     const [actionMessage, setActionMessage] = useState<string | null>(null);
 
     useEffect(() => {
+        const ws = new WebSocket(`${import.meta.env.VITE_WS_BASE_URL}/question-generation-status`);
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            setGenerationStatus(data);
+            if (data.status === "done") {
+                fetchQuestions();
+            }
+        };
+        return () => {
+            ws.close();
+        };
+    }, []);
+    console.log("Generation Status:", generationStatus);
+
+    useEffect(() => {
         fetchQuestions();
     }, [sortBy, sortOrder]);
+
 
     // Refresh when component mounts or when navigating back from validation page
     useEffect(() => {
@@ -77,7 +102,7 @@ function QuestionListComponent() {
         setLoading(true);
         try {
             const response = await fetch(
-                `http://localhost:8001/api/get-questions-pending-approval?sort_by=${sortBy}&order=${sortOrder}`
+                `${import.meta.env.VITE_API_BASE_URL}/get-questions-pending-approval?sort_by=${sortBy}&order=${sortOrder}`
             );
             const data = await response.json();
             setQuestions(data);
@@ -87,6 +112,21 @@ function QuestionListComponent() {
             setLoading(false);
         }
     };
+
+    const generateNewQuestions = async () => {
+        try {
+            await fetch(`${import.meta.env.VITE_API_BASE_URL}/generate-new-questions`, {
+                method: "POST",
+                body: JSON.stringify({ limit: questionLimit }),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+        } catch (error) {
+            console.error("Failed to generate new questions:", error);
+        }
+    };
+
 
     const handleQuestionClick = (questionId: string) => {
         history.push(`/admin/question-validation/${questionId}`);
@@ -108,34 +148,63 @@ function QuestionListComponent() {
             <div className="w-full max-w-6xl bg-white rounded-lg shadow-lg p-6">
                 {/* Sort Controls */}
                 <div className="flex gap-4 mb-4 items-center">
-                    <label className="font-semibold">Sort by:</label>
-                    <select
-                        value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value as "created_at" | "generated_count")}
-                        className="border rounded px-3 py-1"
-                    >
-                        <option value="created_at">Generation Time</option>
-                        <option value="generated_count">Generated Count</option>
-                    </select>
-                    
-                    <label className="font-semibold ml-4">Order:</label>
-                    <select
-                        value={sortOrder}
-                        onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
-                        className="border rounded px-3 py-1"
-                    >
-                        <option value="desc">Descending</option>
-                        <option value="asc">Ascending</option>
-                    </select>
-                    
-                    <button
-                        onClick={fetchQuestions}
-                        className="ml-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                    >
-                        Refresh
-                    </button>
+                    <div>
+                        <label className="font-semibold">Sort by:</label>
+                        <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value as "created_at" | "generated_count")}
+                            className="border rounded px-3 py-1"
+                        >
+                            <option value="created_at">Generation Time</option>
+                            <option value="generated_count">Generated Count</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="font-semibold ml-4">Order:</label>
+                        <select
+                            value={sortOrder}
+                            onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
+                            className="border rounded px-3 py-1"
+                        >
+                            <option value="desc">Descending</option>
+                            <option value="asc">Ascending</option>
+                        </select>
+                    </div>
+                    <div className="ml-auto flex items-center gap-4">
+                        <button
+                            onClick={fetchQuestions}
+                            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                        >
+                            Refresh
+                        </button>
+                        <div className="flex items-center gap-2">
+                            <input type="number" className="w-[60px] p-1 border rounded" min={1} onChange={(e) => setQuestionLimit(Number(e.target.value))} value={questionLimit}/>
+                            <button
+                                onClick={generateNewQuestions}
+                                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                                disabled={generationStatus && generationStatus.status !== 'done'}
+                            >
+                                Generate New
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
+                {generationStatus && generationStatus.status !== 'done' && (
+                    <div className="mb-4">
+                        <div className="font-semibold">Generation Progress:</div>
+                        <div className="relative pt-1">
+                            <div className="overflow-hidden h-4 mb-4 text-xs flex rounded bg-green-200">
+                                <div style={{ width: `${(generationStatus.current / generationStatus.total) * 100}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-green-500">
+                                </div>
+                            </div>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                            {generationStatus.status}... {generationStatus.current}/{generationStatus.total}
+                        </p>
+                    </div>
+                )}
+                
                 {loading ? (
                     <div className="text-center py-8">Loading...</div>
                 ) : questions.length === 0 ? (

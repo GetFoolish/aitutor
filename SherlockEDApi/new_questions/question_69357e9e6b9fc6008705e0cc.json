@@ -1,0 +1,83 @@
+{
+  "answerArea": {
+    "calculator": false,
+    "chi2Table": false,
+    "periodicTable": false,
+    "tTable": false,
+    "zTable": false
+  },
+  "hints": [
+    {
+      "content": "This rectangle is split into $4$ equal-sized pieces, or fourths. There are $2$ pieces shaded.  \n\n![](/assets/1765639935621-0.7918308226694798.png)\n\nThe rectangle has **two fourths** of the shape shaded.  ",
+      "images": {
+        "web+graphie://cdn.kastatic.org/ka-perseus-graphie/3aba3765ad89caade726110da4160a48b060302e": {
+          "height": 256,
+          "width": 256,
+          "alt": "A clear, educational illustration of a horizontal rectangle, precisely segmented into four identical vertical parts. The first two sections on the left are distinctly shaded in a light grey tone, representing the 'shaded' portion. The remaining two sections on the right are unshaded, appearing white. All lines are sharp and distinct. The image, which measures 256x256 pixels, is presented on a plain background to maximize focus on the fractional concept."
+        }
+      },
+      "replace": false,
+      "widgets": {}
+    },
+    {
+      "content": "We can describe the rectangle as **two fourths**.",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    }
+  ],
+  "itemDataVersion": {
+    "major": 2,
+    "minor": 0
+  },
+  "question": {
+    "content": "This rectangle is divided into $4$ equal-sized sections.\n\n![](/assets/1765639951358-0.712336144911725.png)\n\n**What fraction of the rectangle is shaded?**\n\n[[\u2603 radio 1]]\n\n",
+    "images": {
+      "web+graphie://cdn.kastatic.org/ka-perseus-graphie/3aba3765ad89caade726110da4160a48b060302e": {
+        "height": 256,
+        "width": 256,
+        "alt": "A simple, clean geometric representation of a horizontal rectangle, precisely divided into four equal vertical sections. Two of these sections, specifically the left two sections, are uniformly shaded with a light grey color. The unshaded sections are pure white. The overall image size is 256x256 pixels, with crisp lines and clear boundaries for each section, presented against a plain white background, designed for clarity in illustrating fractions."
+      }
+    },
+    "widgets": {
+      "radio 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "choices": [
+            {
+              "content": "One fourth",
+              "correct": false,
+              "id": "c3f1d2e5-a8b7-4c09-8d6f-2e4a1b0c3d5e"
+            },
+            {
+              "content": "Two fourths",
+              "correct": true,
+              "id": "e0f8b1a3-c7d9-4e2f-b5a1-7c9d0f3a4b6c"
+            },
+            {
+              "content": "Four halves",
+              "correct": false,
+              "isNoneOfTheAbove": false,
+              "id": "a2c4e6f8-1b3d-5e7c-9f0a-2b4d6e8f1c3d"
+            }
+          ],
+          "countChoices": false,
+          "deselectEnabled": false,
+          "displayCount": null,
+          "hasNoneOfTheAbove": false,
+          "multipleSelect": false,
+          "randomize": true
+        },
+        "static": false,
+        "type": "radio",
+        "version": {
+          "major": 2,
+          "minor": 0
+        }
+      }
+    }
+  },
+  "status": "pending_approval",
+  "human_approved": false
+}
