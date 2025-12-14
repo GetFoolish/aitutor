@@ -93,13 +93,13 @@ async def broadcast_to_teaching_assistant(event: dict, clients: Set):
         "server_timestamp": datetime.utcnow().isoformat() + "Z"
     }
     
-    # Calculate checksum (same as server.js - JavaScript JSON.stringify default format)
+    # Calculate checksum (must match context.py validator format)
     try:
-        # Match JavaScript JSON.stringify default: separators=(', ', ': ')
-        message_without_checksum = json.dumps(enriched_event, separators=(', ', ': '), ensure_ascii=False, sort_keys=False)
+        # Match context.py validator: separators=(',', ':') - no spaces
+        message_without_checksum = json.dumps(enriched_event, separators=(',', ':'), ensure_ascii=False, sort_keys=False)
         checksum = hashlib.sha256(message_without_checksum.encode('utf-8')).digest().hex()
         enriched_event["checksum"] = checksum
-        message = json.dumps(enriched_event, separators=(', ', ': '), ensure_ascii=False, sort_keys=False)
+        message = json.dumps(enriched_event, separators=(',', ':'), ensure_ascii=False, sort_keys=False)
     except Exception as error:
         print(f"❌ Failed to serialize message {message_id}: {error}")
         return
@@ -337,6 +337,28 @@ class AutomatedSimulator:
             await self.ws_server.wait_closed()
         print("🔌 WebSocket server stopped")
 
+    async def _end_session_for_file(self, session_id: str):
+        """Helper method to end a session and wait for Pinecone indexing"""
+        if not session_id:
+            return
+        
+        print("\n💾 Ending session...")
+        end_time = datetime.utcnow().isoformat() + "Z"
+        ended_session_id = self.conversation_storage.end_session()
+        if ended_session_id:
+            await broadcast_to_teaching_assistant({
+                "type": "session_end",
+                "data": {
+                    "session_id": ended_session_id,
+                    "user_id": self.user_id,
+                    "timestamp": end_time
+                }
+            }, self.ta_clients)
+            
+            # Wait for Pinecone to index memories before starting next session
+            print("\n⏳ Waiting 5 seconds for Pinecone to index memories...")
+            await asyncio.sleep(5)
+
     async def process_turn(self, user_text: str, adam_text: str):
         """Process a single conversation turn: send WebSocket events (same format as server.js)"""
         # Add user text to storage
@@ -388,17 +410,6 @@ class AutomatedSimulator:
     async def run_automatic_mode(self):
         """Mode 1: Automatic - Process all files sequentially with delay between files"""
         self.previous_adam_text = ""
-        session_id = self.conversation_storage.start_session()
-        
-        # Send session_start event (same format as server.js)
-        await broadcast_to_teaching_assistant({
-            "type": "session_start",
-            "data": {
-                "session_id": session_id,
-                "user_id": self.user_id,
-                "timestamp": datetime.utcnow().isoformat() + "Z"
-            }
-        }, self.ta_clients)
         
         print("\n" + "="*60)
         print("Mode: AUTOMATIC - Processing files sequentially")
@@ -408,9 +419,23 @@ class AutomatedSimulator:
         print("="*60 + "\n")
         
         for file_idx, session_file in enumerate(self.session_files, 1):
+            # Start a NEW session for each file
+            session_id = self.conversation_storage.start_session()
+            
+            # Send session_start event (same format as server.js)
+            await broadcast_to_teaching_assistant({
+                "type": "session_start",
+                "data": {
+                    "session_id": session_id,
+                    "user_id": self.user_id,
+                    "timestamp": datetime.utcnow().isoformat() + "Z"
+                }
+            }, self.ta_clients)
+            
             filepath = self.conversations_path / session_file
             if not filepath.exists():
                 print(f"⚠️  Skipping {session_file} - file not found")
+                await self._end_session_for_file(session_id)
                 continue
             
             print(f"\n📂 Processing file {file_idx}/{len(self.session_files)}: {session_file}")
@@ -419,6 +444,7 @@ class AutomatedSimulator:
             turns = parse_conversation_file(filepath)
             if not turns:
                 print(f"⚠️  No turns found in {session_file}")
+                await self._end_session_for_file(session_id)
                 continue
             
             # Group turns into pairs (User, Adam)
@@ -447,6 +473,7 @@ class AutomatedSimulator:
             
             if not turn_pairs:
                 print(f"⚠️  No valid turn pairs found in {session_file}")
+                await self._end_session_for_file(session_id)
                 continue
             
             print(f"Found {len(turn_pairs)} conversation turns\n")
@@ -461,24 +488,13 @@ class AutomatedSimulator:
             print(f"\n✅ Completed: {session_file}")
             print("-" * 60)
             
+            # End session for this file
+            await self._end_session_for_file(session_id)
+            
             # Wait before processing next file (except for last file)
             if file_idx < len(self.session_files):
                 print(f"\n⏳ Waiting {self.delay_between_files} seconds before next file...")
                 await asyncio.sleep(self.delay_between_files)
-        
-        # End session
-        print("\n💾 Ending session...")
-        end_time = datetime.utcnow().isoformat() + "Z"
-        session_id = self.conversation_storage.end_session()
-        if session_id:
-            await broadcast_to_teaching_assistant({
-                "type": "session_end",
-                "data": {
-                    "session_id": session_id,
-                    "user_id": self.user_id,
-                    "timestamp": end_time
-                }
-            }, self.ta_clients)
         
         print("\n✅ Automatic simulation completed successfully!")
         print(f"💾 Memory data stored in: services/TeachingAssistant/Memory/data/{self.user_id}/")
@@ -486,17 +502,6 @@ class AutomatedSimulator:
     async def run_interactive_mode_mixed(self):
         """Mode 2MIXED: Interactive - Adam from JSON, User from terminal OR JSON (Enter to use JSON)"""
         self.previous_adam_text = ""
-        session_id = self.conversation_storage.start_session()
-        
-        # Send session_start event
-        await broadcast_to_teaching_assistant({
-            "type": "session_start",
-            "data": {
-                "session_id": session_id,
-                "user_id": self.user_id,
-                "timestamp": datetime.utcnow().isoformat() + "Z"
-            }
-        }, self.ta_clients)
         
         print("\n" + "="*60)
         print("Mode: INTERACTIVE MIXED - Adam from JSON, User from Terminal or JSON")
@@ -509,9 +514,23 @@ class AutomatedSimulator:
         print("- Type 'quit' or 'exit' to end the session\n")
         
         for file_idx, session_file in enumerate(self.session_files, 1):
+            # Start a NEW session for each file
+            session_id = self.conversation_storage.start_session()
+            
+            # Send session_start event
+            await broadcast_to_teaching_assistant({
+                "type": "session_start",
+                "data": {
+                    "session_id": session_id,
+                    "user_id": self.user_id,
+                    "timestamp": datetime.utcnow().isoformat() + "Z"
+                }
+            }, self.ta_clients)
+            
             filepath = self.conversations_path / session_file
             if not filepath.exists():
                 print(f"⚠️  Skipping {session_file} - file not found")
+                await self._end_session_for_file(session_id)
                 continue
             
             print(f"\n📂 Processing file {file_idx}/{len(self.session_files)}: {session_file}")
@@ -520,6 +539,7 @@ class AutomatedSimulator:
             turns = parse_conversation_file(filepath)
             if not turns:
                 print(f"⚠️  No turns found in {session_file}")
+                await self._end_session_for_file(session_id)
                 continue
             
             # Group turns into pairs (User, Adam)
@@ -546,6 +566,7 @@ class AutomatedSimulator:
             
             if not turn_pairs:
                 print(f"⚠️  No valid turn pairs found in {session_file}")
+                await self._end_session_for_file(session_id)
                 continue
             
             print(f"Found {len(turn_pairs)} conversation turns\n")
@@ -560,7 +581,8 @@ class AutomatedSimulator:
                 
                 if user_input.lower().strip() in ['quit', 'exit', 'q']:
                     print("\n👋 Ending session...")
-                    break
+                    await self._end_session_for_file(session_id)
+                    return
                 
                 # If empty input (just Enter), use JSON text; otherwise use typed text
                 if not user_input.strip():
@@ -575,25 +597,14 @@ class AutomatedSimulator:
             print(f"\n✅ Completed: {session_file}")
             print("-" * 60)
             
+            # End session for this file
+            await self._end_session_for_file(session_id)
+            
             # Ask if user wants to continue to next file
             if file_idx < len(self.session_files):
                 continue_choice = await read_user_input("\nContinue to next file? (y/n): ")
                 if continue_choice.lower().strip() not in ['y', 'yes']:
                     break
-        
-        # End session
-        print("\n💾 Ending session...")
-        end_time = datetime.utcnow().isoformat() + "Z"
-        session_id = self.conversation_storage.end_session()
-        if session_id:
-            await broadcast_to_teaching_assistant({
-                "type": "session_end",
-                "data": {
-                    "session_id": session_id,
-                    "user_id": self.user_id,
-                    "timestamp": end_time
-                }
-            }, self.ta_clients)
         
         print("\n✅ Interactive mixed mode completed!")
         print(f"💾 Memory data stored in: services/TeachingAssistant/Memory/data/{self.user_id}/")

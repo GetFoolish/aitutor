@@ -122,6 +122,9 @@ class MemoryStore:
         logger.info(f"💾 Saving single memory: {memory.type.value} - {memory.text[:50]}...")
         try:
             embedding = get_embeddings_batch([memory.text])[0]
+            # Filter out None/null values from metadata (Pinecone doesn't accept null values)
+            clean_metadata = {k: v for k, v in memory.metadata.items() if v is not None}
+            
             self.index.upsert(
                 vectors=[{
                     "id": memory.id,
@@ -133,7 +136,7 @@ class MemoryStore:
                         "importance": memory.importance,
                         "timestamp": memory.timestamp.isoformat(),
                         "session_id": memory.session_id,
-                        **memory.metadata
+                        **clean_metadata
                     }
                 }],
                 namespace=memory.type.value
@@ -165,19 +168,24 @@ class MemoryStore:
             try:
                 embeddings = get_embeddings_batch(texts)
 
-                vectors = [{
-                    "id": mem.id,
-                    "values": emb,
-                    "metadata": {
-                        "student_id": mem.student_id,
-                        "type": mem.type.value,
-                        "text": mem.text,
-                        "importance": mem.importance,
-                        "timestamp": mem.timestamp.isoformat(),
-                        "session_id": mem.session_id,
-                        **mem.metadata
-                    }
-                } for mem, emb in zip(mems, embeddings)]
+                vectors = []
+                for mem, emb in zip(mems, embeddings):
+                    # Filter out None/null values from metadata (Pinecone doesn't accept null values)
+                    clean_metadata = {k: v for k, v in mem.metadata.items() if v is not None}
+                    
+                    vectors.append({
+                        "id": mem.id,
+                        "values": emb,
+                        "metadata": {
+                            "student_id": mem.student_id,
+                            "type": mem.type.value,
+                            "text": mem.text,
+                            "importance": mem.importance,
+                            "timestamp": mem.timestamp.isoformat(),
+                            "session_id": mem.session_id,
+                            **clean_metadata
+                        }
+                    })
 
                 self.index.upsert(vectors=vectors, namespace=mem_type.value)
                 logger.info(f"✅ Saved {len(vectors)} vectors to Pinecone (namespace: {mem_type.value})")
