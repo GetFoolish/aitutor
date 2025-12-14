@@ -1,0 +1,3729 @@
+{
+  "session_id": "sess_20251214_072714_f540ac",
+  "timestamp": 1765697667.465895,
+  "new_memories": [
+    {
+      "id": "6fc495c5-534c-4a26-b3f4-8a5f1936e67c",
+      "type": "personal",
+      "text": "Student expresses dislike of math.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:27:27.292492",
+      "metadata": {
+        "emotion": "anxious",
+        "valence": "negative",
+        "category": "attitude",
+        "topic": "math"
+      }
+    },
+    {
+      "id": "416813bd-1f3b-432f-95f3-28d387dc1a87",
+      "type": "preference",
+      "text": "Student dislikes the way the textbook explains things (huge paragraphs).",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:27:27.292849",
+      "metadata": {
+        "emotion": "frustrated",
+        "valence": "negative",
+        "category": "learning style",
+        "topic": "textbooks"
+      }
+    },
+    {
+      "id": "60e45982-d344-45be-8fa5-dee33a05e3eb",
+      "type": "academic",
+      "text": "Student understands the basic shape of quadratics (the U thing) but struggles with formulas, specifically the discriminant.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:27:27.292949",
+      "metadata": {
+        "emotion": "confused",
+        "valence": "negative",
+        "category": "concepts",
+        "topic": "quadratics, discriminant"
+      }
+    },
+    {
+      "id": "9f08ade1-637b-42b3-afa6-09b5b00a1bf4",
+      "type": "context",
+      "text": "The student started the quadratics topic on Monday.",
+      "importance": 0.5,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:27:27.293030",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "session details",
+        "topic": "quadratics"
+      }
+    },
+    {
+      "id": "819e5889-5a9c-455d-b109-45efe1bbcc54",
+      "type": "personal",
+      "text": "Student expresses dislike for math.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:27:30.622844",
+      "metadata": {
+        "emotion": "anxious",
+        "valence": "negative",
+        "category": "attitude",
+        "topic": "math"
+      }
+    },
+    {
+      "id": "013c5331-0c3e-46e2-9913-7b2048ce2e34",
+      "type": "preference",
+      "text": "Student finds textbook explanations overwhelming and prefers simpler explanations.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:27:30.622868",
+      "metadata": {
+        "emotion": "confused",
+        "valence": "negative",
+        "category": "learning style",
+        "topic": "quadratic equations"
+      }
+    },
+    {
+      "id": "a694b326-4530-4f35-b512-28254ac34cb1",
+      "type": "academic",
+      "text": "Student is familiar with the basic shape of quadratics (the U-shape) but struggles with the formulas, particularly the discriminant.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:27:30.622877",
+      "metadata": {
+        "emotion": "confused",
+        "valence": "negative",
+        "category": "understanding",
+        "topic": "quadratic equations"
+      }
+    },
+    {
+      "id": "8696565a-fa8a-4190-b8d4-e071a4e28ac3",
+      "type": "context",
+      "text": "Student started studying quadratic equations on Monday.",
+      "importance": 0.5,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:27:30.622888",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "session details",
+        "topic": "quadratic equations"
+      }
+    },
+    {
+      "id": "e9c6c7a2-85ba-4ee2-8c49-4752963d69ee",
+      "type": "academic",
+      "text": "Student struggles with plugging numbers into the discriminant formula, leading to frequent errors.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:27:30.622896",
+      "metadata": {
+        "emotion": "frustrated",
+        "valence": "negative",
+        "category": "skill gap",
+        "topic": "discriminant"
+      }
+    },
+    {
+      "id": "339e551a-cb85-4cd0-8938-89d0c28e259f",
+      "type": "academic",
+      "text": "Student demonstrates understanding by picturing the U-shape (parabola) and its roots.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:27:41.814911",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Roots of a Parabola"
+      }
+    },
+    {
+      "id": "3519a634-d697-4b07-9754-dd8981f1cd0f",
+      "type": "academic",
+      "text": "Student understands the concept of roots as points where the parabola intersects the x-axis.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:27:41.814992",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Roots of a Parabola"
+      }
+    },
+    {
+      "id": "c809db6d-fd0a-4eca-bfe8-cc0ae49e9df4",
+      "type": "context",
+      "text": "The conversation focuses on explaining the concept of roots in the context of a parabola.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:27:41.815021",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "General Math",
+        "topic": "Roots of a Parabola"
+      }
+    },
+    {
+      "id": "3f96071b-3e2e-4e27-9cbf-111491fc1bba",
+      "type": "academic",
+      "text": "Understood that a negative discriminant in a quadratic equation means the parabola doesn't intersect the x-axis (no real roots).",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:27:52.452849",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "algebra",
+        "topic": "quadratic equations"
+      }
+    },
+    {
+      "id": "d7ba4b2d-0cf5-4fd9-8956-8d20c25ec867",
+      "type": "academic",
+      "text": "Correctly identified the coefficients (a, b, c) of a quadratic equation.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:27:52.452861",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "algebra",
+        "topic": "quadratic equations"
+      }
+    },
+    {
+      "id": "556bf5c4-daea-4385-b43b-d8637809acaf",
+      "type": "context",
+      "text": "The conversation focused on the concept of quadratic equations and their roots.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:27:52.452865",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "general",
+        "topic": "quadratic equations"
+      }
+    },
+    {
+      "id": "1053426e-c0e8-4705-b8ea-ec585b3fc59c",
+      "type": "academic",
+      "text": "Student demonstrates understanding of the relationship between the discriminant and the number of roots of a quadratic equation (negative discriminant = no roots).",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:27:54.504286",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "edefdb18-a818-43e0-bf72-aeb9d255e9bc",
+      "type": "academic",
+      "text": "Student correctly identifies coefficients a, b, and c in a quadratic equation.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:27:54.504301",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "68350db4-ffd8-4df2-a9e7-7b3137fdd16e",
+      "type": "academic",
+      "text": "Student demonstrates the ability to set up the discriminant calculation.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:27:54.504308",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "e72c5904-28e4-404b-a4df-473b764c406e",
+      "type": "academic",
+      "text": "Student correctly calculated the intermediate steps of an unknown math problem (4 squared, 4 times 1 times 5, and the subtraction).",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:03.856890",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "Math",
+        "topic": "General math problem"
+      }
+    },
+    {
+      "id": "c7d904a4-6151-45b9-af6c-21ae2ea6f2f8",
+      "type": "academic",
+      "text": "The student has reached a negative number.",
+      "importance": 0.5,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:03.856916",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Math",
+        "topic": "General math problem"
+      }
+    },
+    {
+      "id": "38f007fa-4d8e-410d-abd4-2cc819051fa9",
+      "type": "context",
+      "text": "The student is working on a math problem involving calculations and likely subtraction, as evidenced by the phrase \"16 - 20\".",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:03.856920",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Math",
+        "topic": "General math problem"
+      }
+    },
+    {
+      "id": "37bb8f5e-3840-4c3c-a160-00c5d6649154",
+      "type": "personal",
+      "text": "The student plays basketball.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:13.309833",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "hobbies",
+        "topic": "basketball"
+      }
+    },
+    {
+      "id": "98a8f055-e86a-46e7-8a19-a2a0410a1a96",
+      "type": "academic",
+      "text": "The student remembers concepts better when related to basketball (e.g., imaginary roots).",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:13.309844",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "learning style",
+        "topic": "imaginary roots"
+      }
+    },
+    {
+      "id": "7f893c4b-9366-403c-aa4b-4802320745b9",
+      "type": "context",
+      "text": "The student's comment is in the context of discussing 'imaginary roots'.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:13.309848",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "math",
+        "topic": "imaginary roots"
+      }
+    },
+    {
+      "id": "de20126e-915a-4848-848c-50bdcfde18f7",
+      "type": "personal",
+      "text": "The student plays point guard and has a game this Friday.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:13.309853",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "sports",
+        "topic": "basketball"
+      }
+    },
+    {
+      "id": "33e524b7-c570-49c2-9e07-8cc081a30ab9",
+      "type": "personal",
+      "text": "The student experiences nervousness before games and tests.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:13.309857",
+      "metadata": {
+        "emotion": "anxious",
+        "valence": "negative",
+        "category": "personality",
+        "topic": "stress"
+      }
+    },
+    {
+      "id": "bff6203c-ff02-44c8-9b22-5b30a41d6b64",
+      "type": "personal",
+      "text": "Student plays basketball.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:16.335933",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "hobbies",
+        "topic": "sports"
+      }
+    },
+    {
+      "id": "afcb0d1d-ca63-4a92-ae25-4113de0d05ca",
+      "type": "personal",
+      "text": "Student plays point guard and has a big game Friday.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:16.335972",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "hobbies",
+        "topic": "sports"
+      }
+    },
+    {
+      "id": "49bf189d-f595-4c81-b520-be87fca8220e",
+      "type": "personal",
+      "text": "Student gets nervous before games and tests.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:16.335979",
+      "metadata": {
+        "emotion": "anxious",
+        "valence": "negative",
+        "category": "personal",
+        "topic": "stress"
+      }
+    },
+    {
+      "id": "9419da44-9aa3-497c-a6d9-43f6a2c957f4",
+      "type": "context",
+      "text": "Student has a math test Friday morning, coinciding with the basketball game.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:16.335987",
+      "metadata": {
+        "emotion": "anxious",
+        "valence": "negative",
+        "category": "session details",
+        "topic": "stress"
+      }
+    },
+    {
+      "id": "fe631b09-ce28-479e-be6a-d16cae35ef41",
+      "type": "academic",
+      "text": "Student struggles with understanding 'imaginary roots' until related to a basketball analogy.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:16.335993",
+      "metadata": {
+        "emotion": "confused",
+        "valence": "negative",
+        "category": "concepts",
+        "topic": "imaginary roots"
+      }
+    },
+    {
+      "id": "1a0787ab-661e-40de-8ed5-cb13f19f148f",
+      "type": "preference",
+      "text": "Student prefers drawing things out, and visual representations over words.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:28.279062",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "learning style",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "c08553aa-79dd-4e6c-b6c1-1905e4a565bd",
+      "type": "academic",
+      "text": "Student used a visual analogy (basketball airball) to understand the abstract concept of $b^2-4ac < 0$.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:28.279081",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "math",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "97286ae4-0428-4a3a-9204-a86c286ef6b4",
+      "type": "personal",
+      "text": "Student has a dog named Max.",
+      "importance": 0.3,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:28.279088",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "pet",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "af00b7ee-93cf-43a3-b1cb-ac5e47a3de28",
+      "type": "preference",
+      "text": "Student is distracted by their dog barking. The AI will switch to visuals to accommodate.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:28.279094",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "communication",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "3e3feaf0-9313-4427-9667-52c37be90cdc",
+      "type": "preference",
+      "text": "Student prefers visual aids over written explanations (\"drawing it out helps. the words just jumble up for me.\")",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:31.683045",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "learning style",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "b4dfb779-41fe-46c9-9f56-497ce4ac24b3",
+      "type": "academic",
+      "text": "Student successfully used a visual analogy (basketball airball) to understand the concept of $b^2-4ac < 0$.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:31.683457",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "concept understanding",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "40c7c05a-67c9-40a6-a639-f3fd0fbd8393",
+      "type": "preference",
+      "text": "Student prefers diagrams and graphs over paragraphs.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:31.683518",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "learning style",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "56473243-633c-41fe-85ac-63e148c8a42e",
+      "type": "personal",
+      "text": "Student has a dog named Max.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:31.683625",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "pet ownership",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "d98245fe-417c-4439-8c7f-cb0f71dea6f9",
+      "type": "personal",
+      "text": "Max is a golden retriever.",
+      "importance": 0.5,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:31.683655",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "pet information",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "85835f4b-7aae-4bc2-b7f3-b41f6a1cc6b4",
+      "type": "academic",
+      "text": "The student is learning about completing the square to solve quadratic equations.  The specific example is $x^2 + 6x + 5 = 0$.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:42.726815",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Algebra",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "8b2178ef-0386-4717-9403-103fe992522b",
+      "type": "context",
+      "text": "The conversation is focused on solving a quadratic equation by completing the square.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:42.726869",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Algebra",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "69f894a0-7110-4382-b543-5ae285571b7d",
+      "type": "academic",
+      "text": "The student correctly identified half of 6 is 3, demonstrating basic arithmetic understanding.",
+      "importance": 0.5,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:52.623189",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "arithmetic",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "048144b3-b617-41f1-b406-9ab2e689cc1e",
+      "type": "academic",
+      "text": "Student correctly answered 9. Then student showed understanding of completing the square. ",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:52.625507",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "algebra",
+        "topic": "completing the square"
+      }
+    },
+    {
+      "id": "41c6a274-8713-4263-af0b-4dfc29528280",
+      "type": "academic",
+      "text": "The student understands the principle of adding a number to both sides of an equation to maintain balance.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:52.625538",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "algebra",
+        "topic": "completing the square"
+      }
+    },
+    {
+      "id": "40d117c1-c903-4ae0-8945-ea4b52b0dae1",
+      "type": "context",
+      "text": "The conversation involves practicing and understanding how to complete the square in algebra.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:52.625546",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "algebra",
+        "topic": "completing the square"
+      }
+    },
+    {
+      "id": "91d5fff1-5586-42c8-b13a-a4986c91a18b",
+      "type": "academic",
+      "text": "Student demonstrates understanding of basic algebraic manipulation by adding 9 to both sides of the equation.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:55.161378",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "6a2be437-3338-429f-9350-06dc7225da99",
+      "type": "academic",
+      "text": "Student correctly calculates half of 6 and uses it in the context of completing the square.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:55.161462",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "9b5772c9-72c4-4611-b8d9-53c32b8473fb",
+      "type": "context",
+      "text": "The student is working on completing the square, specifically focusing on the steps involved in manipulating the equation.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:28:55.161482",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Algebra",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "cc1cd5d1-040b-47e4-8b1b-325af2fe2297",
+      "type": "academic",
+      "text": "Understood the concept of completing the square, specifically how to rewrite an expression ($x^2 + 6x + 9$) as a squared term $(x + 3)^2$.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:04.623050",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "04077c2c-4ecc-4257-bc4a-874b5e33dc2b",
+      "type": "academic",
+      "text": "Identified the 'half' number (3) in the process of completing the square.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:04.623061",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Algebra",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "283cc520-e951-4357-9cbd-4e524fdc0b6a",
+      "type": "context",
+      "text": "Conversation focused on completing the square.",
+      "importance": 0.5,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:04.623066",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Algebra",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "b00914c4-5b2b-4896-b513-ff26e2abf2bb",
+      "type": "academic",
+      "text": "Student demonstrates understanding of completing the square and how it relates to solving equations.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:08.810862",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "e63f6d57-a796-40ae-8cde-e66947f01d48",
+      "type": "academic",
+      "text": "The left side ($x^2 + 6x + 9$) can now be written as $(x + 3)^2$.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:08.810883",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Algebra",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "3bb40f1b-a311-4413-9e26-f0107d3af5e9",
+      "type": "academic",
+      "text": "Student questioning the steps in solving the equation.",
+      "importance": 0.5,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:08.810886",
+      "metadata": {
+        "emotion": "confused",
+        "valence": "negative",
+        "category": "Algebra",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "da916ce8-6853-496d-ae17-b30fb716fa61",
+      "type": "academic",
+      "text": "The 'half' number, or 3, is key to the process.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:08.810888",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Algebra",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "fab82728-b1ed-4182-b9fe-cc4fe7d05534",
+      "type": "academic",
+      "text": "The student acknowledges they see the process.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:08.810891",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "ed380422-3a8a-42b0-9de4-f61a4f252bc6",
+      "type": "academic",
+      "text": "Understanding that taking the square root can eliminate the square exponent.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:08.810894",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "d07e2802-07cb-4a2b-a9f5-a9504fe709ee",
+      "type": "academic",
+      "text": "Negative discriminant = Airball.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:24.790615",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Math concept",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "11e6b74b-4a28-437c-a0de-8c84efd59c31",
+      "type": "context",
+      "text": "The student is likely involved in both math tests and basketball games.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:24.790625",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Extracurricular activities",
+        "topic": "Student's schedule"
+      }
+    },
+    {
+      "id": "ad5adf65-2d9d-4e0f-aa39-6a249cb117e5",
+      "type": "personal",
+      "text": "The student had a double-header Friday: math test and basketball game.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:24.790628",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Extracurricular activities",
+        "topic": "Student's schedule"
+      }
+    },
+    {
+      "id": "a9b09d58-d0cd-471e-9e9a-a12b95b8f7ae",
+      "type": "context",
+      "text": "Practice was brutal because coach was running the student hard.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:24.790631",
+      "metadata": {
+        "emotion": "tired",
+        "valence": "negative",
+        "category": "Basketball Practice",
+        "topic": "Practice intensity"
+      }
+    },
+    {
+      "id": "83e0eac1-adc7-4ea9-b342-12432ea2f6c7",
+      "type": "academic",
+      "text": "Negative discriminant = Airball",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:28.545866",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Math",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "bfbefd20-adfb-4592-9d09-2c0b06e5935b",
+      "type": "context",
+      "text": "Student has basketball practice",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:28.545894",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Extracurriculars",
+        "topic": "Basketball"
+      }
+    },
+    {
+      "id": "572e554d-3690-4c29-886f-d6cab299e5a7",
+      "type": "personal",
+      "text": "Student had a double-header Friday: math test and basketball game.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:28.545923",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Academic & Extracurriculars",
+        "topic": "School & Basketball"
+      }
+    },
+    {
+      "id": "c909e192-9411-41e4-99dd-b20c7a0289e9",
+      "type": "personal",
+      "text": "Student's basketball team won 54-50.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:28.545928",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "Extracurriculars",
+        "topic": "Basketball"
+      }
+    },
+    {
+      "id": "7ead7aec-5727-4a03-bc55-2e97efc289ac",
+      "type": "context",
+      "text": "Student is tired from practice",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:28.545933",
+      "metadata": {
+        "emotion": "tired",
+        "valence": "negative",
+        "category": "Extracurriculars",
+        "topic": "Basketball"
+      }
+    },
+    {
+      "id": "f71156d5-cb00-403d-ae08-8ebf443594df",
+      "type": "context",
+      "text": "Coach running the basketball team hard during practice.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:28.545939",
+      "metadata": {
+        "emotion": "tired",
+        "valence": "negative",
+        "category": "Extracurriculars",
+        "topic": "Basketball"
+      }
+    },
+    {
+      "id": "59a609bc-4160-4df6-a99f-960b60bfb458",
+      "type": "academic",
+      "text": "Remembered the 'airball thing' (presumably a visual/mnemonic technique) to recall information about roots.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:40.142389",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "3b51808b-76f8-44d6-8c08-bb15191b9ef4",
+      "type": "academic",
+      "text": "Correctly applied knowledge of negative discriminant leading to 'no real solutions'.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:40.142434",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "5a682100-8272-43a2-bf79-ea08c6355c27",
+      "type": "academic",
+      "text": "Successfully utilized a learned tool or technique (airball thing) during a test situation.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:40.142443",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Test-Taking Strategies",
+        "topic": "Confidence"
+      }
+    },
+    {
+      "id": "3bd1f9b9-02c6-4eb6-bf26-18e2e96b9c31",
+      "type": "context",
+      "text": "Student felt anxious during a question about roots.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:40.142451",
+      "metadata": {
+        "emotion": "anxious",
+        "valence": "negative",
+        "category": "Test-Taking Experiences",
+        "topic": "Roots and Equations"
+      }
+    },
+    {
+      "id": "aa166f36-755f-4e0f-b83d-70a16dc4c272",
+      "type": "academic",
+      "text": "Remembered the 'airball thing' (likely a mnemonic or visual aid) to solve a roots question.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:44.093140",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "problem-solving",
+        "topic": "roots, quadratic equations"
+      }
+    },
+    {
+      "id": "5ab811d4-1937-4bee-8164-cde7c719a90b",
+      "type": "academic",
+      "text": "Correctly applied knowledge of the discriminant (negative value = no real solutions).",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:44.093210",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "understanding",
+        "topic": "discriminant, quadratic equations"
+      }
+    },
+    {
+      "id": "f0d33c05-13d6-4fb5-9b55-5bed44d0494b",
+      "type": "context",
+      "text": "Discussing quadratic equations and problem-solving.",
+      "importance": 0.5,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:44.093224",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "session context",
+        "topic": "quadratic equations"
+      }
+    },
+    {
+      "id": "ea93ce74-11e0-4ab9-a00c-b4c34749d818",
+      "type": "context",
+      "text": "Previous session was interrupted during a 'completing the square' problem.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:44.093231",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "session context",
+        "topic": "completing the square"
+      }
+    },
+    {
+      "id": "c2ac88af-ce10-4fae-9d26-9f2deb0433b0",
+      "type": "academic",
+      "text": "Familiarity with 'completing the square' and its elements.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:44.093236",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "prior knowledge",
+        "topic": "completing the square"
+      }
+    },
+    {
+      "id": "1615a5d1-b2f8-4e3a-b13b-08f34e164069",
+      "type": "preference",
+      "text": "The student indicates tiredness from practice and wants a 'steady pace'.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:44.093247",
+      "metadata": {
+        "emotion": "tired",
+        "valence": "neutral",
+        "category": "learning style",
+        "topic": "pace of learning"
+      }
+    },
+    {
+      "id": "11d98562-d8dd-4671-9e32-9024b65aeb20",
+      "type": "academic",
+      "text": "Student demonstrates understanding of square roots of squares by simplifying $(x+3)^2$ to $x+3$.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:55.601821",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Square Roots"
+      }
+    },
+    {
+      "id": "f9b61d69-8a0b-4d0f-b70e-2b77d2339848",
+      "type": "academic",
+      "text": "Student demonstrates understanding of the concept of both positive and negative square roots.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:55.601836",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Square Roots"
+      }
+    },
+    {
+      "id": "2bb8a2bb-f7d5-4e53-bc44-dca329a86566",
+      "type": "academic",
+      "text": "The AI references the discriminant graph. Student implicitly demonstrates lack of knowledge of the discriminant",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:55.601841",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Algebra",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "9e0c8e98-405b-4e38-a067-ec8b8f26f64a",
+      "type": "academic",
+      "text": "Student correctly solves for x in the first simplified equation, arriving at x = -1",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:55.601847",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Solving Equations"
+      }
+    },
+    {
+      "id": "5b59159b-3a59-45ad-8d4c-33e4dfa10720",
+      "type": "context",
+      "text": "The session involves working through square root problems and relates to the discriminant.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:55.601851",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Session Overview",
+        "topic": "Square Root and Equation Solving"
+      }
+    },
+    {
+      "id": "70b8352f-c588-4906-ac0c-3ee3f73569bc",
+      "type": "academic",
+      "text": "Student demonstrates understanding of square roots and applying the positive/negative rule (plus and minus).",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:58.041700",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Square Roots"
+      }
+    },
+    {
+      "id": "a212e9c0-61ed-4300-9f51-dcf797874497",
+      "type": "academic",
+      "text": "Student correctly solves for x in the first equation, showing progress.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:58.041952",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Solving Equations"
+      }
+    },
+    {
+      "id": "6ca8c167-8c12-45e0-ae4c-7e1a72123258",
+      "type": "academic",
+      "text": "Student struggles with subtraction, making an error in calculating the second solution.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:58.048074",
+      "metadata": {
+        "emotion": "confused",
+        "valence": "negative",
+        "category": "Algebra",
+        "topic": "Solving Equations"
+      }
+    },
+    {
+      "id": "85224b4b-ad26-4f16-b889-dd48db5a80e3",
+      "type": "context",
+      "text": "The student is working through a problem involving square roots and solving equations.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:29:58.051161",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Problem Solving",
+        "topic": "Square Root Equations"
+      }
+    },
+    {
+      "id": "7d77f31c-9aca-48a2-806b-b50836b52d6d",
+      "type": "academic",
+      "text": "The student is learning to solve quadratic equations, transitioning from simpler forms to more complex ones like  $x^2 - 5x + 3 = 0$.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:10.834249",
+      "metadata": {
+        "category": "Algebra",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "56064cff-9709-4fc7-989e-681725bb9052",
+      "type": "academic",
+      "text": "The student correctly calculates half of 5 as 2.5.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:10.834265",
+      "metadata": {
+        "category": "Arithmetic",
+        "topic": "Basic Calculation"
+      }
+    },
+    {
+      "id": "4ee3fed0-faa6-43a5-aee0-c5c172399f3c",
+      "type": "preference",
+      "text": "The student dislikes fractions and prefers decimals.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:10.834270",
+      "metadata": {
+        "category": "Learning Style",
+        "topic": "Fractions vs. Decimals",
+        "emotion": "negative",
+        "valence": "negative"
+      }
+    },
+    {
+      "id": "d29072d5-9a1d-4bec-81e4-9c1a209ffb30",
+      "type": "context",
+      "text": "The session involves solving quadratic equations using the quadratic formula, and the student's preference for decimals over fractions has been revealed.",
+      "importance": 0.5,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:10.834274",
+      "metadata": {
+        "topic": "Quadratic Equations",
+        "category": "Algebra"
+      }
+    },
+    {
+      "id": "65f2998b-b031-4f21-81a3-cd855006b7e1",
+      "type": "academic",
+      "text": "Student is learning about completing the square.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:14.065809",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Algebra",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "79dcd028-37c9-448c-bef7-cecc64578e7f",
+      "type": "academic",
+      "text": "Student correctly performs a step in completing the square (moving a constant to the right side of the equation).",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:14.065817",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "6a0a87ad-5cb6-45d9-addf-f9cb7cd77053",
+      "type": "preference",
+      "text": "Student dislikes fractions and prefers decimals.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:14.065823",
+      "metadata": {
+        "emotion": "negative",
+        "valence": "negative",
+        "category": "Learning Style",
+        "topic": "Fractions vs Decimals"
+      }
+    },
+    {
+      "id": "93064fd1-5b4b-4a0c-84a5-cccc0ccdb873",
+      "type": "academic",
+      "text": "Student understands how to square a fraction.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:14.065828",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Fraction Arithmetic"
+      }
+    },
+    {
+      "id": "c6a769dc-4911-46fa-ab42-9238e91b6a59",
+      "type": "academic",
+      "text": "Student can correctly calculate half of 5.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:14.065830",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "Arithmetic",
+        "topic": "Basic Calculation"
+      }
+    },
+    {
+      "id": "83c814a0-b794-491e-b82c-26779c860cd8",
+      "type": "academic",
+      "text": "Student struggles with adding a negative integer and a fraction, specifically in the context of completing the square. Demonstrates lack of fluency in fraction operations.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:25.774907",
+      "metadata": {
+        "emotion": "confused",
+        "valence": "negative",
+        "category": "Algebra",
+        "topic": "Completing the Square, Fraction Arithmetic"
+      }
+    },
+    {
+      "id": "4f149393-7e09-4bd6-82fd-8e351112a4d6",
+      "type": "academic",
+      "text": "Student arrives at the correct answer (13/4) after being prompted to think of -3 as a fraction.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:25.774939",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Algebra",
+        "topic": "Fraction Arithmetic"
+      }
+    },
+    {
+      "id": "581d8027-78d6-441e-87ee-2e9bcf46aea0",
+      "type": "preference",
+      "text": "Student expresses frustration with fraction addition.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:25.774945",
+      "metadata": {
+        "emotion": "frustrated",
+        "valence": "negative",
+        "category": "Learning Preferences",
+        "topic": "Fraction Arithmetic"
+      }
+    },
+    {
+      "id": "29b0a321-0a9a-4822-9f54-205c9c19bd64",
+      "type": "context",
+      "text": "The conversation revolves around the algebraic technique of 'completing the square' and relies on basic fraction arithmetic.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:25.774948",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Session Context",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "253c585a-478b-479f-9234-f2f0ee91be67",
+      "type": "academic",
+      "text": "Student struggling with adding a whole number to a fraction and completing the square. Specifically, understands the $(x - 5/2)^2$ part.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:28.733131",
+      "metadata": {
+        "emotion": "confused",
+        "valence": "negative",
+        "category": "Algebra",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "93090f23-ec4e-4cc1-a76e-bbe5ddb7f772",
+      "type": "preference",
+      "text": "Student expresses frustration and a preference for using a calculator, disliking the current method.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:28.733143",
+      "metadata": {
+        "emotion": "frustrated",
+        "valence": "negative",
+        "category": "Learning Preference",
+        "topic": "Math"
+      }
+    },
+    {
+      "id": "f368682f-9461-476d-a18d-0d487170cae7",
+      "type": "academic",
+      "text": "Student successfully converts -3 to -12/4.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:28.733147",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Arithmetic",
+        "topic": "Fractions"
+      }
+    },
+    {
+      "id": "129cd81c-f857-4824-8d8f-07a11f5251a6",
+      "type": "context",
+      "text": "The student is working on a math problem involving fractions and completing the square.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:28.733150",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Math Practice",
+        "topic": "Completing the Square"
+      }
+    },
+    {
+      "id": "c66a1edc-d580-4fc8-aad9-e2e4bc369bbf",
+      "type": "academic",
+      "text": "Student understands the analogy between math reps and free throw practice for test performance.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:40.565815",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "Math Concepts",
+        "topic": "Test Preparation"
+      }
+    },
+    {
+      "id": "861d0dd2-2b30-4bfc-84df-c8ed6163ee98",
+      "type": "context",
+      "text": "Conversation refers to previous work with diagrams.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:40.565838",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Session Specifics",
+        "topic": "Diagrams"
+      }
+    },
+    {
+      "id": "69a081b9-40c0-4376-90ce-d56738c1b9cb",
+      "type": "academic",
+      "text": "The student visualized an airball during the previous session.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:40.565844",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "negative",
+        "category": "Visualization",
+        "topic": "Previous Session"
+      }
+    },
+    {
+      "id": "0e95088d-48ee-41a3-8aaa-98547b0a228f",
+      "type": "personal",
+      "text": "The student has a pet named Max who stole a sock.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:40.565857",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Pets",
+        "topic": "Max"
+      }
+    },
+    {
+      "id": "49b23537-06c8-44de-b1aa-e2e4fc5b4245",
+      "type": "academic",
+      "text": "The student understands the concept of practice (like free throws) applying to math problems and test anxiety.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:43.802188",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Math Practice/Test Anxiety",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "a6f54325-e3cf-4944-9d5c-c59bf49ab255",
+      "type": "personal",
+      "text": "The student has a pet named Max who is a dog that steals socks.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:43.802238",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Pet Ownership",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "69bbe22d-709a-4d20-bda2-a230a1326478",
+      "type": "preference",
+      "text": "Student wants to quickly finish the problem to take a nap.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:43.802248",
+      "metadata": {
+        "emotion": "tired",
+        "valence": "negative",
+        "category": "Learning Pace",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "24197e60-33a9-4e8b-87d6-bf2e1efeeee6",
+      "type": "context",
+      "text": "The conversation involves math practice, test anxiety, and the student's dog, Max.",
+      "importance": 0.5,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:30:43.802255",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Session overview",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "42426c93-3a34-427a-9305-7cd378d1c902",
+      "type": "personal",
+      "text": "Student mentions feeling overwhelmed due to pressure from parents about grades.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:09.972446",
+      "metadata": {
+        "emotion": "anxious",
+        "valence": "negative",
+        "category": "family",
+        "topic": "grades/pressure"
+      }
+    },
+    {
+      "id": "efdf26de-deb7-4f4b-ac4c-0497cc7e311f",
+      "type": "preference",
+      "text": "Student expresses a desire to 'get this over with,' indicating a preference for a more direct, less emotionally involved approach.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:09.972458",
+      "metadata": {
+        "emotion": "tired",
+        "valence": "negative",
+        "category": "learning style",
+        "topic": "engagement"
+      }
+    },
+    {
+      "id": "bea569ba-ca88-41a2-82f8-2d0154e9ed0d",
+      "type": "academic",
+      "text": "Student struggles with physics, specifically with decimals, indicating a potential area of difficulty or lack of understanding.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:09.972466",
+      "metadata": {
+        "emotion": "frustrated",
+        "valence": "negative",
+        "category": "physics",
+        "topic": "decimals"
+      }
+    },
+    {
+      "id": "4182ec88-d973-446e-ad76-33c13903a40c",
+      "type": "context",
+      "text": "The conversation shifts to a physics problem involving a rocket's trajectory. This is session-specific detail.",
+      "importance": 0.5,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:09.972474",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "physics",
+        "topic": "rocket trajectory"
+      }
+    },
+    {
+      "id": "bd02bbce-8c0e-4e05-98c4-fca1d613b0ae",
+      "type": "personal",
+      "text": "Parents are putting pressure on grades, leading to feeling overwhelmed.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:13.370534",
+      "metadata": {
+        "emotion": "anxious",
+        "valence": "negative",
+        "category": "family",
+        "topic": "stress"
+      }
+    },
+    {
+      "id": "4387d010-f1be-4b5d-a83e-f164f4465aae",
+      "type": "preference",
+      "text": "Prefers to get work done quickly to alleviate the feeling of pressure.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:13.370560",
+      "metadata": {
+        "emotion": "tired",
+        "valence": "negative",
+        "category": "learning style",
+        "topic": "work habits"
+      }
+    },
+    {
+      "id": "d83a2000-b792-4427-8c2e-3a7fa8171c05",
+      "type": "academic",
+      "text": "Struggles with physics, specifically when decimals are involved.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:13.370566",
+      "metadata": {
+        "emotion": "confused",
+        "valence": "negative",
+        "category": "physics",
+        "topic": "decimals"
+      }
+    },
+    {
+      "id": "8409ad2e-e4ba-4847-8b9d-efdc1fb97f1b",
+      "type": "context",
+      "text": "Working on a physics problem involving a rocket's trajectory ($h = -4.9t^2 + 19.6t$).",
+      "importance": 0.5,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:13.370572",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "physics",
+        "topic": "rocket trajectory"
+      }
+    },
+    {
+      "id": "e6a4114e-4747-4a8d-ba3e-326110be6c3b",
+      "type": "academic",
+      "text": "The student demonstrated understanding of factoring and identifying common factors in a quadratic equation.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:24.330930",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Algebra",
+        "topic": "Factoring quadratic equations"
+      }
+    },
+    {
+      "id": "73183f21-cc1b-4f90-b1d6-26b573145391",
+      "type": "academic",
+      "text": "The student understands the Zero Product Property.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:24.331049",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Algebra",
+        "topic": "Zero Product Property"
+      }
+    },
+    {
+      "id": "6d7a4045-6db1-48f6-a76c-71390fc57af3",
+      "type": "context",
+      "text": "The student is working through the steps of solving a quadratic equation by factoring.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:24.331160",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Problem Solving",
+        "topic": "Solving quadratic equations"
+      }
+    },
+    {
+      "id": "c524f539-febc-4c0c-88b5-20ba260f5cd5",
+      "type": "academic",
+      "text": "Student demonstrates understanding of factoring by recognizing the common factor 't'.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:29.793532",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Algebra",
+        "topic": "Factoring Equations"
+      }
+    },
+    {
+      "id": "967a2339-6b16-4dc5-8f8a-5516aacefe55",
+      "type": "academic",
+      "text": "Student correctly factors out the 't' from the equation.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:29.794576",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Algebra",
+        "topic": "Factoring Equations"
+      }
+    },
+    {
+      "id": "c967d09c-d150-478c-9e8f-81a0310b5e15",
+      "type": "academic",
+      "text": "Student correctly identifies the next step: either t=0 OR the other factor = 0",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:29.794584",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Algebra",
+        "topic": "Factoring Equations"
+      }
+    },
+    {
+      "id": "6247f8ee-cf1d-4e7f-a466-0a4279017fd7",
+      "type": "academic",
+      "text": "Student correctly isolates t by moving the constant and dividing.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:29.794590",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Algebra",
+        "topic": "Solving Equations"
+      }
+    },
+    {
+      "id": "43703623-4b0e-4597-8269-e22c362a4658",
+      "type": "personal",
+      "text": "Student expresses frustration with the problem, mentioning lack of a calculator.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:29.794610",
+      "metadata": {
+        "emotion": "frustrated",
+        "valence": "negative",
+        "category": "Personal",
+        "topic": "Problem-solving challenges"
+      }
+    },
+    {
+      "id": "dac029ed-51d7-443f-bfe8-b7e22fbda680",
+      "type": "preference",
+      "text": "Student seems to prefer not using a calculator.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:29.794617",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Learning Style",
+        "topic": "Calculator usage"
+      }
+    },
+    {
+      "id": "8b37b5d3-9b6a-4150-b4dd-6faff592a488",
+      "type": "context",
+      "text": "The student is working through solving a quadratic equation related to physics (launch and landing time).",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:29.794637",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Physics/Algebra",
+        "topic": "Projectile Motion"
+      }
+    },
+    {
+      "id": "963e78c5-43a1-4a4d-b1c7-68c3c21ca88e",
+      "type": "context",
+      "text": "The conversation involves a math problem described as an 'alley-oop', with $t=0$ representing the pass, the vertex the highest point of the ball, and the second answer the dunk.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:43.231036",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "problem solving",
+        "topic": "math problem"
+      }
+    },
+    {
+      "id": "caeeebe6-03c9-49a2-acdf-133106e3e826",
+      "type": "academic",
+      "text": "The problem utilizes the concept of a vertex representing the highest point in a trajectory.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:43.231099",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "math concept",
+        "topic": "vertex"
+      }
+    },
+    {
+      "id": "a1eb737b-6b89-4e3f-8e8a-aa54f0b971f2",
+      "type": "preference",
+      "text": "The AI uses a basketball analogy to explain a math concept.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:43.231116",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "learning style",
+        "topic": "analogy"
+      }
+    },
+    {
+      "id": "8da634c6-8a00-4fdf-9460-aafdd6f377f2",
+      "type": "personal",
+      "text": "The student mentioned a chaotic home environment with a barking dog (Max) and yelling from their mom.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:47.226831",
+      "metadata": {
+        "emotion": "anxious",
+        "valence": "negative",
+        "category": "home environment",
+        "topic": "personal life"
+      }
+    },
+    {
+      "id": "0e00c831-c7e5-49ad-a5e3-67d497b236fe",
+      "type": "preference",
+      "text": "The student displayed potential frustration or difficulty focusing, as evidenced by 'sorry for snapping'.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:47.226863",
+      "metadata": {
+        "emotion": "frustrated",
+        "valence": "negative",
+        "category": "communication style",
+        "topic": "emotional state"
+      }
+    },
+    {
+      "id": "e3feed96-a25c-4e23-910e-b0b4215f2aa9",
+      "type": "academic",
+      "text": "The problem was described using basketball terminology: 'alley-oop', 'pass', 'vertex', and 'dunk', potentially indicating a preference for applying math concepts to a familiar context and a degree of understanding of the problem by associating it with a sport.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:47.226868",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "problem-solving",
+        "topic": "math concepts"
+      }
+    },
+    {
+      "id": "43c4877c-92a7-4e40-a146-55081b6ad041",
+      "type": "context",
+      "text": "The student appeared to be working on a math problem involving a projectile (ball) with t=0 representing the pass, and needing to calculate the time of the dunk.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:47.226872",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "math",
+        "topic": "time of flight"
+      }
+    },
+    {
+      "id": "e9af458c-306d-4675-b04f-f82ae38640e4",
+      "type": "academic",
+      "text": "Understood the concept of hang time in a projectile motion problem.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:58.846635",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Physics",
+        "topic": "Projectile Motion"
+      }
+    },
+    {
+      "id": "6ea8c80d-e5b3-4060-a079-e2662875ffa3",
+      "type": "academic",
+      "text": "Identified the vertex of a parabola as the maximum height in the given context (sports).",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:58.846705",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Parabola, Vertex"
+      }
+    },
+    {
+      "id": "34971a56-4f95-49c9-aa80-230bba5e4034",
+      "type": "preference",
+      "text": "Prefers to apply mathematical concepts within a sports context.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:58.846716",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Learning Style",
+        "topic": "Contextual Learning"
+      }
+    },
+    {
+      "id": "cf6b3e53-841d-4bdb-973c-a7f153e41361",
+      "type": "context",
+      "text": "The student is working on a projectile motion problem in a sports context (shooting a ball).",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:31:58.846723",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Session Specifics",
+        "topic": "Projectile Motion"
+      }
+    },
+    {
+      "id": "f13395e3-6f19-46c6-be5f-8f59f4a3c2fd",
+      "type": "academic",
+      "text": "Student demonstrates understanding that the vertex represents the max height.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:02.069019",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "d2167a96-9aa7-437d-b925-c119c225f5a7",
+      "type": "academic",
+      "text": "Student correctly identifies a and b in the quadratic equation.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:02.069068",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "6d93f8f0-1d7b-4563-8980-348b91ed6e93",
+      "type": "academic",
+      "text": "Student is able to set up $-b / 2a$ correctly.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:02.069079",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "4ac1c962-3d51-4c22-93b1-ec4ce795a6d2",
+      "type": "preference",
+      "text": "Student responds well to using a sports context.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:02.069089",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Learning Style",
+        "topic": "Contextualization"
+      }
+    },
+    {
+      "id": "034ab7dc-7021-41cc-902c-27334391190d",
+      "type": "context",
+      "text": "The student is working on a quadratic equation problem that relates to sports (specifically a ball's trajectory).",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:02.069096",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Mathematics",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "7421fc8b-aefa-4fd7-bb4b-4e7b4641f335",
+      "type": "academic",
+      "text": "Student correctly substituted a value into a quadratic equation and performed basic arithmetic.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:15.471151",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Evaluating expressions"
+      }
+    },
+    {
+      "id": "35da3ee4-b877-47be-b083-eb0c54c0f2f8",
+      "type": "academic",
+      "text": "Student demonstrated understanding of plugging a value back into the equation.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:15.471177",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Evaluating expressions"
+      }
+    },
+    {
+      "id": "2d2099fc-58ed-4126-af4a-dff707f3bed3",
+      "type": "context",
+      "text": "Student is working on a math problem, likely related to algebra.",
+      "importance": 0.4,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:15.471203",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Session overview",
+        "topic": "General math problem-solving"
+      }
+    },
+    {
+      "id": "2e8652af-07ab-42d4-bbeb-5b1db35a2d37",
+      "type": "academic",
+      "text": "Student made a calculation error, adding units incorrectly.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:15.471210",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "negative",
+        "category": "Mathematics",
+        "topic": "Units"
+      }
+    },
+    {
+      "id": "adc7ce0a-898a-494d-bc66-efb81408db1b",
+      "type": "context",
+      "text": "Student is still working on math problems.",
+      "importance": 0.4,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:15.471217",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Session overview",
+        "topic": "General math problem-solving"
+      }
+    },
+    {
+      "id": "78e4e834-051c-4ebf-85d8-389e8ad556f4",
+      "type": "preference",
+      "text": "Student finds that recognizing patterns helps them.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:15.471286",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Learning style",
+        "topic": "Pattern recognition"
+      }
+    },
+    {
+      "id": "87fb1daf-49df-4bfe-99f8-2e14db7244a9",
+      "type": "academic",
+      "text": "Student successfully recognized a pattern or solved a problem that improved their understanding.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:15.471322",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Mathematics",
+        "topic": "Problem solving"
+      }
+    },
+    {
+      "id": "46479f19-240b-49ca-89b8-1d660e151990",
+      "type": "context",
+      "text": "Student's understanding seems to be improving.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:15.471333",
+      "metadata": {
+        "emotion": "positive",
+        "valence": "positive",
+        "category": "Session overview",
+        "topic": "General math problem-solving"
+      }
+    },
+    {
+      "id": "8c9bbb9a-8c41-4ebd-9ed0-f418527c7b8c",
+      "type": "academic",
+      "text": "Student correctly substituted a value into a quadratic expression: $-(2)^2 + 4(2) + 2$.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:18.437789",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "c3171089-187a-490b-a9c4-46f9a1acf0c3",
+      "type": "academic",
+      "text": "Student demonstrates understanding of plugging a value back into an equation.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:18.437808",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "f1b59ae3-3f81-4794-a19f-972d00a2c55f",
+      "type": "academic",
+      "text": "Student makes an error in units, initially unsure if the answer is feet or meters (likely related to context of quadratic equation application).",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:18.437811",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Units",
+        "topic": "Quadratic Equation Application"
+      }
+    },
+    {
+      "id": "c12c982a-ffe8-4702-b767-88654d4ea307",
+      "type": "academic",
+      "text": "Student identifies the pattern that helps.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:18.437814",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Problem Solving",
+        "topic": "Identifying Patterns"
+      }
+    },
+    {
+      "id": "0e61b142-deac-4e5a-ae3b-ff4f763aeac1",
+      "type": "preference",
+      "text": "The student feels better after catching the pattern.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:18.437817",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Learning Style",
+        "topic": "Pattern Recognition"
+      }
+    },
+    {
+      "id": "42bbaa53-f54c-4a6d-b2ef-54938c63f41f",
+      "type": "personal",
+      "text": "The AI encourages the student with a 'pat for Max'. Implies the student owns a pet.",
+      "importance": 0.3,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:18.437820",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Personal",
+        "topic": "Pets"
+      }
+    },
+    {
+      "id": "d15686a9-a4c2-4416-b7ac-10b0d3371739",
+      "type": "context",
+      "text": "The student expressed some frustration earlier which the student recovered from, indicating a challenge encountered during the session.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:18.437822",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "General",
+        "topic": "Problem-solving"
+      }
+    },
+    {
+      "id": "9302ab2a-dd5b-4c8f-802c-3faa052fcf5c",
+      "type": "personal",
+      "text": "Max finally stopped eating my socks.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:31.594536",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "pet",
+        "topic": "pet behavior"
+      }
+    },
+    {
+      "id": "2b6312d6-02d3-4fa6-8ba0-5228592f5c65",
+      "type": "personal",
+      "text": "feeling awake today",
+      "importance": 0.4,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:31.594551",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "mood",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "815e9485-7656-4f18-bbc8-b327ff11f7fb",
+      "type": "academic",
+      "text": "ready to level up to Systems of Equations?",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:31.594555",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "mathematics",
+        "topic": "Systems of Equations"
+      }
+    },
+    {
+      "id": "1dd53a7d-1f4c-4f5c-a046-cb560049a7cf",
+      "type": "academic",
+      "text": "like where two lines cross on a graph?",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:31.594558",
+      "metadata": {
+        "emotion": "curious",
+        "valence": "neutral",
+        "category": "mathematics",
+        "topic": "Systems of Equations"
+      }
+    },
+    {
+      "id": "0ebf5c46-05dd-4629-a778-4cc7c0d2dea7",
+      "type": "academic",
+      "text": "So, a 'system' just means looking at two or more equations at the same time and finding where they agree. Where they intersect.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:31.594562",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "mathematics",
+        "topic": "Systems of Equations"
+      }
+    },
+    {
+      "id": "e8643545-7aeb-4eb4-a0f5-f6a24ea4eb77",
+      "type": "context",
+      "text": "The session focuses on Systems of Equations.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:31.594565",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "mathematics",
+        "topic": "Systems of Equations"
+      }
+    },
+    {
+      "id": "091c5ba8-6a28-4701-982a-9c10184c6a8e",
+      "type": "personal",
+      "text": "Max finally stopped eating Alex's socks.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:34.503803",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "pet",
+        "topic": "pet behavior"
+      }
+    },
+    {
+      "id": "925bfd12-7e0b-4442-865f-41b47ee3201e",
+      "type": "personal",
+      "text": "Alex is feeling awake today.",
+      "importance": 0.4,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:34.503815",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "mood",
+        "topic": "state of mind"
+      }
+    },
+    {
+      "id": "59ab3fa2-b21e-4a60-b05b-ac9bc492569d",
+      "type": "academic",
+      "text": "Alex is learning about Systems of Equations.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:34.503821",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "math",
+        "topic": "Systems of Equations"
+      }
+    },
+    {
+      "id": "89d4271a-453a-41c5-bc31-3663862f6a71",
+      "type": "academic",
+      "text": "Alex understands that a system of equations refers to where two or more equations intersect on a graph.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:34.503826",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "math",
+        "topic": "Systems of Equations"
+      }
+    },
+    {
+      "id": "590278bd-f6b5-4c66-86f7-43e7d00cc3e4",
+      "type": "academic",
+      "text": "Alex understands that the solution to a system of equations is the point where the equations intersect.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:34.503830",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "math",
+        "topic": "Systems of Equations"
+      }
+    },
+    {
+      "id": "6960d0aa-e671-4591-928d-16b48eb38a33",
+      "type": "context",
+      "text": "The session is focused on explaining the concept of systems of equations.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:34.503836",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "lesson structure",
+        "topic": "Systems of Equations"
+      }
+    },
+    {
+      "id": "0b9873b2-74fd-43f3-8379-51337306d28a",
+      "type": "personal",
+      "text": "The student loves space stuff and watches SpaceX launches.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:45.375120",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "hobbies",
+        "topic": "space"
+      }
+    },
+    {
+      "id": "ec686fb0-8f4c-4827-9c2d-817d1da48ffd",
+      "type": "context",
+      "text": "The conversation involves applying mathematical concepts to space travel, previously mentioned by the student.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:45.375444",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "conversation_flow",
+        "topic": "space travel"
+      }
+    },
+    {
+      "id": "0b6df60a-ed58-4faf-b2c9-7a2e3e57a07c",
+      "type": "personal",
+      "text": "The student has an interest in engineering, possibly aerospace.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:55.461592",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "Interests",
+        "topic": "Career aspirations"
+      }
+    },
+    {
+      "id": "4b554164-2b06-49f2-9b0c-b7b1c29f37b6",
+      "type": "personal",
+      "text": "The student's father prefers the student to focus on business due to perceived difficulties in math.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:55.461690",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Family influence",
+        "topic": "Career guidance"
+      }
+    },
+    {
+      "id": "5cf6dfe6-31cb-4aa9-a4e5-b08437839f10",
+      "type": "academic",
+      "text": "The AI assesses the student as having a 'visual brain', which is important for engineering.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:55.461697",
+      "metadata": {
+        "emotion": "positive",
+        "valence": "positive",
+        "category": "Skills/Abilities",
+        "topic": "Engineering aptitude"
+      }
+    },
+    {
+      "id": "c3276f6f-5340-4a35-a155-d275655113d0",
+      "type": "academic",
+      "text": "The student expressed that the method to land the rover is 'so cool'.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:55.461702",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "Understanding",
+        "topic": "Mars rover landing"
+      }
+    },
+    {
+      "id": "5ffe7226-b851-4e75-a2a3-5a36281d4480",
+      "type": "academic",
+      "text": "The student understands the application of solving systems of equations to land a rover.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:59.374493",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "Math application",
+        "topic": "Systems of equations"
+      }
+    },
+    {
+      "id": "008cb849-a039-4663-9b72-c317d59d2470",
+      "type": "personal",
+      "text": "The student has an interest in engineering, possibly aerospace.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:59.374537",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "Interests",
+        "topic": "Career aspirations"
+      }
+    },
+    {
+      "id": "db2052fe-f4ba-4ed8-8692-f5a0db08e60d",
+      "type": "personal",
+      "text": "The student's father wants them to focus on business due to perceived weakness in math.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:59.374544",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Family influence",
+        "topic": "Career aspirations"
+      }
+    },
+    {
+      "id": "841f08b0-36ea-4fd0-8255-652bd87859d7",
+      "type": "academic",
+      "text": "The student has difficulty memorizing textbook definitions but processes math visually and translates concepts into real-world examples.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:59.374549",
+      "metadata": {
+        "emotion": "confused",
+        "valence": "negative",
+        "category": "Learning style",
+        "topic": "Math comprehension"
+      }
+    },
+    {
+      "id": "978684fa-1388-46d9-b6cb-03bb1d542e14",
+      "type": "preference",
+      "text": "The student seems to learn better through visualization and real-world examples rather than rote memorization.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:59.374554",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Learning style",
+        "topic": "Learning preferences"
+      }
+    },
+    {
+      "id": "8b2b9a89-1edf-47b0-83a0-36394703bd80",
+      "type": "context",
+      "text": "The student's ability to grasp the concepts and apply them to real-world scenarios has been demonstrated over three weeks.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:32:59.374566",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Session context",
+        "topic": "Learning progress"
+      }
+    },
+    {
+      "id": "4a22ed12-9d8e-4c60-98c0-965e97459a60",
+      "type": "academic",
+      "text": "Student is learning to solve quadratic equations by setting two equations equal and then rearranging to equal zero (e.g., $x^2 = 2x + 3$ becomes $x^2 - 2x - 3 = 0$).",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:10.675008",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Algebra",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "2c600da6-de53-443f-b1dd-d95e587f89d3",
+      "type": "academic",
+      "text": "Student correctly identifies the next step after setting the equations equal: subtracting the terms to set the equation to zero.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:10.675028",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "d56f04fb-6f02-4af4-9e05-7f745a0c88ce",
+      "type": "academic",
+      "text": "Student attempting to factor a quadratic equation.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:10.675035",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Algebra",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "b83f7799-f63b-452d-a7c5-414ddfbd447b",
+      "type": "context",
+      "text": "The conversation is focused on solving a quadratic equation arising from the intersection of a parabola (rocket path) and a line (laser beam).",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:10.675040",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Problem Solving",
+        "topic": "Intersecting Equations"
+      }
+    },
+    {
+      "id": "b5bcbb65-4571-46ee-8d95-a49d6900e442",
+      "type": "academic",
+      "text": "Student has completed some orbital mechanics problems.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:23.162980",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "orbital mechanics",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "dc928df7-0168-4b4a-9e1a-4231a7f42a24",
+      "type": "personal",
+      "text": "Student's dad is an accountant and likes numbers.",
+      "importance": 0.5,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:23.163260",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "family",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "51be01e9-9c23-4410-9017-1aee33084a88",
+      "type": "personal",
+      "text": "Student is interested in engineering.",
+      "importance": 0.5,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:23.163267",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "interests",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "86236efc-909d-46f2-a1fe-77267c7ce540",
+      "type": "preference",
+      "text": "Student finds the current session interesting.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:23.163273",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "engagement",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "bc0bb864-7a71-4d0d-801e-4cf7a86de7fb",
+      "type": "preference",
+      "text": "Student previously experienced frustration.",
+      "importance": 0.4,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:23.163279",
+      "metadata": {
+        "emotion": "frustrated",
+        "valence": "negative",
+        "category": "previous experience",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "2860a0aa-514b-4643-8857-d23032f6124f",
+      "type": "context",
+      "text": "The session involves calculating intercepts, possibly related to getting to Mars.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:23.163316",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "session activity",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "e9d16fb1-2556-47b6-8d76-301352ae11dd",
+      "type": "preference",
+      "text": "Student previously disliked math and now finds it cool.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:23.163351",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "attitude towards subject",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "2e9d78cb-adaf-4834-b844-169e2bbd2086",
+      "type": "context",
+      "text": "Student is discussing their academic load and sports practice.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:36.816131",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Session Overview",
+        "topic": "General"
+      }
+    },
+    {
+      "id": "d98d8d0f-3558-436a-9a82-e2e68f331f9e",
+      "type": "personal",
+      "text": "Student is on a sports team and experiencing a tough practice regime.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:36.816145",
+      "metadata": {
+        "emotion": "tired",
+        "valence": "negative",
+        "category": "Extracurriculars",
+        "topic": "Sports Practice"
+      }
+    },
+    {
+      "id": "f8d45fd6-dcd8-42a7-9126-1f03c55cebde",
+      "type": "context",
+      "text": "The student has a quiz in history and a homework check in math today. They seem to have a lighter academic load than usual.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:36.816151",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Session Overview",
+        "topic": "Academic Load"
+      }
+    },
+    {
+      "id": "299bdac6-b225-4bcf-a93a-a9ceb40eb3c1",
+      "type": "context",
+      "text": "Student has a home game and did great work.",
+      "importance": 0.5,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:36.816155",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "Session Overview",
+        "topic": "General"
+      }
+    },
+    {
+      "id": "6c58994c-ea19-4704-8d5e-e299395d39f2",
+      "type": "context",
+      "text": "Student is discussing upcoming home game.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:40.229180",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "sports",
+        "topic": "basketball"
+      }
+    },
+    {
+      "id": "9d63ac5a-65e7-4358-ae16-8b69be39abb3",
+      "type": "context",
+      "text": "Student has a quiz in history and homework check in math.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:40.229239",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "academics",
+        "topic": "school workload"
+      }
+    },
+    {
+      "id": "28e6025c-e8f0-411d-be9b-2217ef3f5bee",
+      "type": "context",
+      "text": "Student is experiencing tough practice with the basketball team.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:40.229249",
+      "metadata": {
+        "emotion": "tired",
+        "valence": "negative",
+        "category": "sports",
+        "topic": "basketball practice"
+      }
+    },
+    {
+      "id": "cdfbd5e4-8130-42c1-a87f-ee33e87818ca",
+      "type": "personal",
+      "text": "Student plays basketball.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:40.229278",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "hobbies",
+        "topic": "basketball"
+      }
+    },
+    {
+      "id": "78842ed3-181d-4914-b3e3-ca0b8a2f36cb",
+      "type": "preference",
+      "text": "Student dislikes comparisons between basketball and math.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:40.229285",
+      "metadata": {
+        "emotion": "negative",
+        "valence": "negative",
+        "category": "preferences",
+        "topic": "basketball vs math"
+      }
+    },
+    {
+      "id": "da00707f-0c05-4501-bcec-0946d975c1a5",
+      "type": "academic",
+      "text": "AI uses 'completing the square' as an analogy to practice.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:40.229291",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "math",
+        "topic": "completing the square"
+      }
+    },
+    {
+      "id": "e2eea311-4ed3-43cd-8610-fafe115eb4dc",
+      "type": "academic",
+      "text": "Student struggles with fractions.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:51.234807",
+      "metadata": {
+        "emotion": "frustrated",
+        "valence": "negative",
+        "category": "Math",
+        "topic": "Fractions"
+      }
+    },
+    {
+      "id": "2a644d38-068c-4f5b-b47a-2b07e43514cc",
+      "type": "personal",
+      "text": "Student has a dog named Max.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:51.235029",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Pets",
+        "topic": "Dog"
+      }
+    },
+    {
+      "id": "c1356197-2075-4e99-9c9f-26120c1e1657",
+      "type": "context",
+      "text": "Student and AI discussed fractions in a previous session where the student was tired.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:51.235045",
+      "metadata": {
+        "emotion": "tired",
+        "valence": "negative",
+        "category": "Review",
+        "topic": "Previous Session"
+      }
+    },
+    {
+      "id": "e24fb3c0-f49a-4ce5-8313-07806bdd3221",
+      "type": "academic",
+      "text": "The student struggles with fractions.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:56.393723",
+      "metadata": {
+        "emotion": "frustrated",
+        "valence": "negative",
+        "category": "Math Skills",
+        "topic": "Fractions"
+      }
+    },
+    {
+      "id": "62c552ab-d96e-4b6e-9882-35c19b09014b",
+      "type": "personal",
+      "text": "The student has a dog named Max.",
+      "importance": 0.5,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:56.393802",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Pets",
+        "topic": "Max"
+      }
+    },
+    {
+      "id": "7df0d1e5-b3d8-46ee-aae1-a43c55d7b651",
+      "type": "context",
+      "text": "The student was tired during a previous session where they worked on adding fractions like 25/4.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:56.393815",
+      "metadata": {
+        "emotion": "tired",
+        "valence": "negative",
+        "category": "Session History",
+        "topic": "Fractions"
+      }
+    },
+    {
+      "id": "b8c64da2-1067-409a-b00e-2b9424166bd2",
+      "type": "personal",
+      "text": "Max sleeps on the student's head.",
+      "importance": 0.3,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:56.393821",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Pets",
+        "topic": "Max"
+      }
+    },
+    {
+      "id": "63152869-b84f-4579-b36d-5df8be8d6551",
+      "type": "context",
+      "text": "The student promised to nap after a previous session.",
+      "importance": 0.3,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:56.393827",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Session History",
+        "topic": "General"
+      }
+    },
+    {
+      "id": "ffb95127-e756-43eb-9aa4-fddb1af3a85a",
+      "type": "academic",
+      "text": "The problem involves parabolas and space.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:56.393833",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "Math Problems",
+        "topic": "Parabolas, Space"
+      }
+    },
+    {
+      "id": "69b33329-b016-4231-b52e-4ffd971d7a96",
+      "type": "preference",
+      "text": "The student likes Space and Parabolas.",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:56.393838",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "Interests",
+        "topic": "Space, Parabolas"
+      }
+    },
+    {
+      "id": "857f1970-8c7d-4bf8-8a88-91ade9b6ad94",
+      "type": "context",
+      "text": "The current problem is related to a laser problem and intersections from a previous session.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:33:56.393843",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Session History",
+        "topic": "Math Problems"
+      }
+    },
+    {
+      "id": "09bda64d-6eb3-4dfe-9045-3384bdbbb028",
+      "type": "academic",
+      "text": "Student demonstrates understanding of quadratic equations, attempting to solve $x(x-4) = 0$ by factoring. Implicitly understands roots/solutions.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:34:11.191948",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "Quadratic Equations"
+      }
+    },
+    {
+      "id": "17a1c44c-1b69-40f1-b0a8-bca664d4fb58",
+      "type": "context",
+      "text": "The student and AI are discussing a physics problem related to the trajectory of a projectile, likely a rover. The student appears to understand the connection between the intersection points of a parabolic path and the ground.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:34:11.191978",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Physics",
+        "topic": "Projectile Motion"
+      }
+    },
+    {
+      "id": "4f49dc9b-2b1a-4f94-884b-deac46c17ed7",
+      "type": "academic",
+      "text": "Student correctly identifies the x-intercepts of the quadratic function and relates it to a physical crash point, showing a good understanding.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:34:11.191984",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "positive",
+        "category": "Physics",
+        "topic": "Projectile Motion"
+      }
+    },
+    {
+      "id": "bdffc4c7-4a95-4edb-95d0-d8d5c5b3f76b",
+      "type": "academic",
+      "text": "Student grapples with the impact of a coefficient change (6x).",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:34:11.191989",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Physics",
+        "topic": "Projectile Motion"
+      }
+    },
+    {
+      "id": "88654770-8572-46a8-a4da-0744466062a5",
+      "type": "context",
+      "text": "The student and AI are discussing a potential engineering problem with a rover's flight path, with the goal of increasing the height reached by the rover.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:34:11.191994",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Physics",
+        "topic": "Projectile Motion"
+      }
+    },
+    {
+      "id": "c751b6af-15e0-4fb8-b720-3833159356fa",
+      "type": "academic",
+      "text": "Student implicitly understands the relationship between the coefficient of the x term in the quadratic and height.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:34:11.191999",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Physics",
+        "topic": "Projectile Motion"
+      }
+    },
+    {
+      "id": "075c07f4-f7e3-4711-ab29-b33b0393ae1d",
+      "type": "academic",
+      "text": "Student correctly solves a quadratic equation, demonstrating understanding of algebraic factoring.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:34:14.886109",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "factoring"
+      }
+    },
+    {
+      "id": "c3372d07-980a-4d93-afa4-d88f10597fda",
+      "type": "academic",
+      "text": "Student correctly identifies the intersection points of a parabola, linking them to a physical scenario (launch and crash).",
+      "importance": 0.9,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:34:14.886129",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Algebra",
+        "topic": "parabolas, intersections"
+      }
+    },
+    {
+      "id": "cde25200-d4e4-4b99-9737-5ba8386729b2",
+      "type": "academic",
+      "text": "Student demonstrates understanding of how a coefficient in a quadratic equation affects the height of the projectile in a physics context.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:34:14.886133",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "Physics, Algebra",
+        "topic": "projectile motion, quadratic equations"
+      }
+    },
+    {
+      "id": "4e0e3250-f3ba-42ca-9aa1-562d9de01929",
+      "type": "personal",
+      "text": "Student shared notes from previous session with someone and received positive feedback.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:34:14.886137",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "Social",
+        "topic": "sharing knowledge"
+      }
+    },
+    {
+      "id": "ab525c78-605c-4ad8-aecb-bc8f6df0da13",
+      "type": "personal",
+      "text": "Student likely has a father who might be knowledgeable about aerospace engineering.",
+      "importance": 0.5,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:34:14.886139",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Family",
+        "topic": "Aerospace engineering"
+      }
+    },
+    {
+      "id": "e6e72aac-676d-4f3f-b140-dccc005aadfd",
+      "type": "context",
+      "text": "The student is working on a problem related to Mars rover and launch trajectories, as evidenced by references to height and potential 'crashes'.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:34:14.886143",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "Session Specifics",
+        "topic": "Mars rover, trajectory"
+      }
+    },
+    {
+      "id": "af8ee449-56df-4774-8620-a1d2a6bf5c27",
+      "type": "academic",
+      "text": "Calculating rover crashes indicates significant learning progress.",
+      "importance": 0.8,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:34:24.254389",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "problem-solving",
+        "topic": "rover crashes"
+      }
+    },
+    {
+      "id": "d02f19bf-f85e-47eb-93aa-c6ae8f92f1fa",
+      "type": "personal",
+      "text": "Student named Alex is playing a game tonight.",
+      "importance": 0.6,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:34:24.254526",
+      "metadata": {
+        "emotion": "excited",
+        "valence": "positive",
+        "category": "activity",
+        "topic": "game"
+      }
+    },
+    {
+      "id": "0034fee2-28e6-42aa-89e5-fd6d4ad4df8e",
+      "type": "preference",
+      "text": "The student appreciates helpful assistance.",
+      "importance": 0.3,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:34:24.254535",
+      "metadata": {
+        "emotion": "happy",
+        "valence": "positive",
+        "category": "communication",
+        "topic": "helpfulness"
+      }
+    },
+    {
+      "id": "ac7b2d15-9e22-49d2-9eaa-6dd455d8a378",
+      "type": "context",
+      "text": "The student is working on calculations.",
+      "importance": 0.7,
+      "student_id": "simulator_user",
+      "session_id": "sess_20251214_072714_f540ac",
+      "timestamp": "2025-12-14T02:34:24.254554",
+      "metadata": {
+        "emotion": "neutral",
+        "valence": "neutral",
+        "category": "activity",
+        "topic": "calculations"
+      }
+    }
+  ],
+  "emotional_arc": [
+    "anxious",
+    "confused",
+    "confused",
+    "frustrated",
+    "confused",
+    "confused",
+    "confused",
+    "confused",
+    "confused",
+    "happy",
+    "excited",
+    "anxious",
+    "anxious",
+    "anxious",
+    "confused",
+    "frustrated",
+    "confused",
+    "confused",
+    "confused",
+    "confused",
+    "confused",
+    "confused",
+    "confused",
+    "anxious",
+    "tired",
+    "frustrated",
+    "excited",
+    "anxious",
+    "excited",
+    "happy",
+    "happy",
+    "confused",
+    "confused",
+    "confused",
+    "confused",
+    "confused",
+    "frustrated",
+    "confused",
+    "confused",
+    "frustrated",
+    "confused",
+    "confused",
+    "frustrated",
+    "frustrated",
+    "happy",
+    "tired",
+    "confused",
+    "anxious",
+    "tired",
+    "frustrated",
+    "confused",
+    "confused",
+    "confused",
+    "frustrated",
+    "frustrated",
+    "tired",
+    "frustrated",
+    "happy",
+    "confused",
+    "confused",
+    "confused",
+    "confused",
+    "happy",
+    "happy",
+    "happy",
+    "excited",
+    "confused",
+    "anxious",
+    "confused",
+    "frustrated",
+    "excited",
+    "confused",
+    "excited",
+    "anxious",
+    "confused",
+    "confused",
+    "confused",
+    "confused",
+    "excited",
+    "happy",
+    "excited",
+    "frustrated",
+    "frustrated",
+    "happy",
+    "confused",
+    "confused",
+    "confused",
+    "confused",
+    "happy",
+    "happy"
+  ],
+  "key_moments": [
+    "Struggled with math - admits dread and lack of interest.",
+    "Struggled with overwhelming symbols and dense textbook explanations.",
+    "Struggled with discriminant formulas.",
+    "Struggled with plugging in numbers.",
+    "Connected roots to the x-axis visually.",
+    "Breakthrough on understanding the connection between negative answers and the graph.",
+    "Connected imaginary roots to missed basketball shots.",
+    "Struggled with nervousness before games and tests.",
+    "Breakthrough on converting abstract concept to visual analogy.",
+    "Breakthrough on recognizing perfect square trinomial.",
+    "Breakthrough: Student realizes the expression to complete the square.",
+    "Struggled with practice after a demanding day.",
+    "Struggled with test anxiety before receiving results.",
+    "Breakthrough using a visual aid to recall a concept.",
+    "Breakthrough on identifying negative discriminant.",
+    "Huge win: Student successfully utilized the tool.",
+    "Breakthrough on positive and negative values.",
+    "Breakthrough on understanding two possible equations.",
+    "\"Realized completing the square yields the same roots as factoring.\"",
+    "Struggled with preference for decimals over fractions.",
+    "Breakthrough on fraction squaring method.",
+    "Struggled with adding a whole number and a fraction.",
+    "Connected math reps to free throw practice.",
+    "Struggled with parental pressure and feeling overwhelmed by grades.",
+    "Struggled with decimals and word problems - gets overwhelmed.",
+    "Realized height at ground is zero.",
+    "Struggles with calculation, expresses frustration.",
+    "Realization of a simpler calculation using multiplication.",
+    "Struggled with information overload - student feels overwhelmed.",
+    "Connected abstract symbols to a real-world, visual example.",
+    "Max sensing stress in the house.",
+    "Breakthrough in understanding the answer's simplicity.",
+    "\"Student correctly identifies vertex as the maximum height.\"",
+    "Struggled with unit conversion; needs to apply context.",
+    "Breakthrough on pattern recognition; feels better about the problem.",
+    "Connected new math concept to student's interest in space travel.",
+    "Breakthrough recognizing systems of equations' application in space travel.",
+    "Realization of core concept similarity: Rocket Equation and Mars Equation.",
+    "Breakthrough: Student realizes their learning style differs, not indicative of being \"dumb.\"",
+    "Breakthrough on visualizing the rocket path for easier understanding.",
+    "Struggled with identifying the correct sum.",
+    "Breakthrough on seeing the engineering application and potential interest from family.",
+    "Struggled with the intensity of practice, specifically running until vomiting.",
+    "\"Student corrected themselves after using a Freudian slip related to fractions.\"",
+    "Breakthrough on crash location understanding.",
+    "Breakthrough on recognizing calculus application.",
+    "Significant praise from an accountant, leading to a feeling of accomplishment."
+  ],
+  "unfinished_topics": [
+    "Started discussing the student's struggles with understanding math symbols and textbook explanations.",
+    "Quadratic formula, specifically the discriminant, causing difficulty.",
+    "The student struggles with plugging numbers into a formula, specifically the discriminant.",
+    "Asked to analyze the number of real roots of a quadratic equation and its relevance.",
+    "Discussing the trajectory of a ball, including the scenario of \"the floor is lava\".",
+    "Started identifying coefficients (a, b, and c) in a quadratic equation.",
+    "Calculating the discriminant with specific values for a, b, and c.",
+    "Calculating an expression involving squares, multiplication, and subtraction, but the process is not fully explained.",
+    "Calculating the result of -4.",
+    "Started using an analogy to explain negative numbers.",
+    "Mentioned a big basketball game and their role as point guard.",
+    "The student's nervousness before games and tests.",
+    "Started discussing a dog's behavior, specifically guarding versus seeking attention.",
+    "Started completing the square on the quadratic equation.",
+    "Started solving the quadratic equation by isolating the constant term.",
+    "Analyzing a coefficient in a math problem.",
+    "Started explaining the \"magic number\" concept for completing the square.",
+    "Calculating the square of a number, likely to solve a math problem.",
+    "Simplifying the right side of an equation.",
+    "Mentioned a previous number and potentially its context (the 'half' number).",
+    "Started explaining the process of completing the square, specifically focusing on the term in the bracket.",
+    "Finding the value of x by undoing the square in the equation (x + 3)^2 = 4.",
+    "Solving a math problem (square root) was interrupted.",
+    "The double-header (math test and basketball game).",
+    "The Friday game.",
+    "The math test.",
+    "Did the negative discriminant help the student solve the problem?",
+    "Started completing the square.",
+    "Took the square root of both sides of an equation to solve for x.",
+    "Started a math problem involving square roots.",
+    "Discriminant and its relation to the number of solutions to a quadratic equation.",
+    "Started outlining the solution to an absolute value equation with two cases.",
+    "Started a math problem set on subtraction.",
+    "Started quadratic equations using the quadratic formula after introducing it as an alternative to factoring.",
+    "Started completing the square.",
+    "Discussed fractions vs. decimals, specifically relating to algebra.",
+    "Calculating the area ratio of squares using fractions, leading to a fraction squared example.",
+    "Adding a negative number and a fraction, and completing the square.",
+    "Fraction addition with negative numbers.",
+    "Started a fraction arithmetic problem.",
+    "Max's well-being and how he handled the weekend.",
+    "Solved for x, but the process of solving and related concepts were not fully explored.",
+    "Calculating the square root of 4 in relation to the square root of 13/4.",
+    "Solved for x, likely in a quadratic equation, but didn't explicitly finish the problem.",
+    "Calculating the solution to an equation.",
+    "Feeling overwhelmed by parents about grades.",
+    "Pressure from home.",
+    "Started a physics word problem about a rocket's trajectory.",
+    "The student's question about \"zero?\" and the AI's response about height and hitting the ground indicates a geometry problem involving projectile motion that has not been completed.",
+    "Identifying common factors in an equation.",
+    "Started solving the equation $-4.9t + 19.6 = 0$ by applying the zero-product property.",
+    "Solving for the landing time of a projectile after finding the launch time.",
+    "Think about the rocket.",
+    "The AI was interrupted before finding when the dunk happens, completing a problem.",
+    "The dog's behavior in relation to the student's stress.",
+    "Finding the vertex and maximum height of a quadratic function, but not fully explored.",
+    "Finding the actual height of something after plugging a value back into an equation.",
+    "Started discussing units of measurement (feet vs. meters) related to the sum of 4 + 2.",
+    "Discussing the number of intersections in a Linear-Quadratic system.",
+    "Discussing what happens if something \"just grazes the bottom.\"",
+    "Started discussing a math problem involving a zero, airball, and a line relative to the letter \"U\".",
+    "Mentioned how math being learned is used in space travel, but didn't explain the connection.",
+    "The conversation started describing the math behind landing a rover on Mars, specifically the intersection of orbital paths.",
+    "Discussed the core concept of engineering related to aerospace, particularly the Mars Equation and Rocket Equation, without further elaboration.",
+    "The student's feelings about their grades, their dad's wishes, and their perceived math ability.",
+    "The student's feelings about memorization and perceived lack of intelligence.",
+    "Solving the quadratic equation formed by setting the two equations equal.",
+    "Solving a quadratic equation.",
+    "Factoring a quadratic expression.",
+    "Started solving a quadratic equation given its roots.",
+    "The student's difficulty with practice and the coach's methods.",
+    "Comparing basketball and math, specifically \"completing the square\".",
+    "Discussing the student's struggles with fractions and a past session involving them.",
+    "Started discussing Max's behavior and the absence of mailman-related barking.",
+    "Started reviewing a laser problem and transitioned to a rover/parabola problem.",
+    "Started solving a quadratic equation.",
+    "Started solving a quadratic equation by factoring.",
+    "Started analyzing if the projectile clears the hill, but the solution is not complete.",
+    "Started exploring how to alter the flight height of a rover based on an equation and how to fix an \"engineering disaster.\"",
+    "Mentioning the Mars problem to the father, as suggested by the AI, is an unfinished topic.",
+    "The student's feelings about the praise from the accountant."
+  ],
+  "topics_covered": [
+    "general"
+  ],
+  "session_summary": "The student overcame significant math anxiety and confusion across various concepts, from algebra to calculus, achieving numerous breakthroughs through visual aids, real-world connections, and recognizing their unique learning style, ultimately experiencing a positive emotional shift from frustration to excitement and confidence.",
+  "goodbye_message": "It was wonderful seeing you so happy today – especially after those breakthroughs! Keep up the fantastic work; I'm genuinely excited to see where your understanding takes you.",
+  "next_session_hooks": [
+    "Started discussing the student's struggles with understanding math symbols and textbook explanations.",
+    "Quadratic formula, specifically the discriminant, causing difficulty.",
+    "The student struggles with plugging numbers into a formula, specifically the discriminant."
+  ]
+}

@@ -15,11 +15,31 @@ from services.TeachingAssistant.teaching_assistant import TeachingAssistant
 
 load_dotenv()
 
+# Setup logging to both console and file
+log_dir = root_dir / "logs"
+log_dir.mkdir(exist_ok=True)
+log_file = log_dir / "teaching_assistant.log"
+
+# Create formatters and handlers
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# Console handler
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(formatter)
+
+# File handler
+file_handler = logging.FileHandler(log_file, mode='a', encoding='utf-8')
+file_handler.setLevel(logging.INFO)
+file_handler.setFormatter(formatter)
+
+# Configure root logger to capture all loggers
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    handlers=[console_handler, file_handler]
 )
 logger = logging.getLogger(__name__)
+logger.info(f"📝 Logging to: {log_file}")
 
 ta_instance: TeachingAssistant = None
 background_task: asyncio.Task = None

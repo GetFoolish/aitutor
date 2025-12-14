@@ -1,0 +1,602 @@
+[
+  {
+    "id": "6fc495c5-534c-4a26-b3f4-8a5f1936e67c",
+    "type": "personal",
+    "text": "Student expresses dislike of math.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:27:27.292492",
+    "metadata": {
+      "emotion": "anxious",
+      "valence": "negative",
+      "category": "attitude",
+      "topic": "math"
+    }
+  },
+  {
+    "id": "819e5889-5a9c-455d-b109-45efe1bbcc54",
+    "type": "personal",
+    "text": "Student expresses dislike for math.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:27:30.622844",
+    "metadata": {
+      "emotion": "anxious",
+      "valence": "negative",
+      "category": "attitude",
+      "topic": "math"
+    }
+  },
+  {
+    "id": "37bb8f5e-3840-4c3c-a160-00c5d6649154",
+    "type": "personal",
+    "text": "The student plays basketball.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:28:13.309833",
+    "metadata": {
+      "emotion": "neutral",
+      "valence": "neutral",
+      "category": "hobbies",
+      "topic": "basketball"
+    }
+  },
+  {
+    "id": "de20126e-915a-4848-848c-50bdcfde18f7",
+    "type": "personal",
+    "text": "The student plays point guard and has a game this Friday.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:28:13.309853",
+    "metadata": {
+      "emotion": "excited",
+      "valence": "positive",
+      "category": "sports",
+      "topic": "basketball"
+    }
+  },
+  {
+    "id": "33e524b7-c570-49c2-9e07-8cc081a30ab9",
+    "type": "personal",
+    "text": "The student experiences nervousness before games and tests.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:28:13.309857",
+    "metadata": {
+      "emotion": "anxious",
+      "valence": "negative",
+      "category": "personality",
+      "topic": "stress"
+    }
+  },
+  {
+    "id": "bff6203c-ff02-44c8-9b22-5b30a41d6b64",
+    "type": "personal",
+    "text": "Student plays basketball.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:28:16.335933",
+    "metadata": {
+      "emotion": "neutral",
+      "valence": "neutral",
+      "category": "hobbies",
+      "topic": "sports"
+    }
+  },
+  {
+    "id": "afcb0d1d-ca63-4a92-ae25-4113de0d05ca",
+    "type": "personal",
+    "text": "Student plays point guard and has a big game Friday.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:28:16.335972",
+    "metadata": {
+      "emotion": "excited",
+      "valence": "positive",
+      "category": "hobbies",
+      "topic": "sports"
+    }
+  },
+  {
+    "id": "49bf189d-f595-4c81-b520-be87fca8220e",
+    "type": "personal",
+    "text": "Student gets nervous before games and tests.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:28:16.335979",
+    "metadata": {
+      "emotion": "anxious",
+      "valence": "negative",
+      "category": "personal",
+      "topic": "stress"
+    }
+  },
+  {
+    "id": "97286ae4-0428-4a3a-9204-a86c286ef6b4",
+    "type": "personal",
+    "text": "Student has a dog named Max.",
+    "importance": 0.3,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:28:28.279088",
+    "metadata": {
+      "emotion": "neutral",
+      "valence": "neutral",
+      "category": "pet",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "56473243-633c-41fe-85ac-63e148c8a42e",
+    "type": "personal",
+    "text": "Student has a dog named Max.",
+    "importance": 0.6,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:28:31.683625",
+    "metadata": {
+      "emotion": "neutral",
+      "valence": "neutral",
+      "category": "pet ownership",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "d98245fe-417c-4439-8c7f-cb0f71dea6f9",
+    "type": "personal",
+    "text": "Max is a golden retriever.",
+    "importance": 0.5,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:28:31.683655",
+    "metadata": {
+      "emotion": "neutral",
+      "valence": "neutral",
+      "category": "pet information",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "ad5adf65-2d9d-4e0f-aa39-6a249cb117e5",
+    "type": "personal",
+    "text": "The student had a double-header Friday: math test and basketball game.",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:29:24.790628",
+    "metadata": {
+      "emotion": "neutral",
+      "valence": "neutral",
+      "category": "Extracurricular activities",
+      "topic": "Student's schedule"
+    }
+  },
+  {
+    "id": "572e554d-3690-4c29-886f-d6cab299e5a7",
+    "type": "personal",
+    "text": "Student had a double-header Friday: math test and basketball game.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:29:28.545923",
+    "metadata": {
+      "emotion": "neutral",
+      "valence": "neutral",
+      "category": "Academic & Extracurriculars",
+      "topic": "School & Basketball"
+    }
+  },
+  {
+    "id": "c909e192-9411-41e4-99dd-b20c7a0289e9",
+    "type": "personal",
+    "text": "Student's basketball team won 54-50.",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:29:28.545928",
+    "metadata": {
+      "emotion": "excited",
+      "valence": "positive",
+      "category": "Extracurriculars",
+      "topic": "Basketball"
+    }
+  },
+  {
+    "id": "0e95088d-48ee-41a3-8aaa-98547b0a228f",
+    "type": "personal",
+    "text": "The student has a pet named Max who stole a sock.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:30:40.565857",
+    "metadata": {
+      "emotion": "happy",
+      "valence": "positive",
+      "category": "Pets",
+      "topic": "Max"
+    }
+  },
+  {
+    "id": "a6f54325-e3cf-4944-9d5c-c59bf49ab255",
+    "type": "personal",
+    "text": "The student has a pet named Max who is a dog that steals socks.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:30:43.802238",
+    "metadata": {
+      "emotion": "happy",
+      "valence": "positive",
+      "category": "Pet Ownership",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "42426c93-3a34-427a-9305-7cd378d1c902",
+    "type": "personal",
+    "text": "Student mentions feeling overwhelmed due to pressure from parents about grades.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:31:09.972446",
+    "metadata": {
+      "emotion": "anxious",
+      "valence": "negative",
+      "category": "family",
+      "topic": "grades/pressure"
+    }
+  },
+  {
+    "id": "bd02bbce-8c0e-4e05-98c4-fca1d613b0ae",
+    "type": "personal",
+    "text": "Parents are putting pressure on grades, leading to feeling overwhelmed.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:31:13.370534",
+    "metadata": {
+      "emotion": "anxious",
+      "valence": "negative",
+      "category": "family",
+      "topic": "stress"
+    }
+  },
+  {
+    "id": "43703623-4b0e-4597-8269-e22c362a4658",
+    "type": "personal",
+    "text": "Student expresses frustration with the problem, mentioning lack of a calculator.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:31:29.794610",
+    "metadata": {
+      "emotion": "frustrated",
+      "valence": "negative",
+      "category": "Personal",
+      "topic": "Problem-solving challenges"
+    }
+  },
+  {
+    "id": "8da634c6-8a00-4fdf-9460-aafdd6f377f2",
+    "type": "personal",
+    "text": "The student mentioned a chaotic home environment with a barking dog (Max) and yelling from their mom.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:31:47.226831",
+    "metadata": {
+      "emotion": "anxious",
+      "valence": "negative",
+      "category": "home environment",
+      "topic": "personal life"
+    }
+  },
+  {
+    "id": "42bbaa53-f54c-4a6d-b2ef-54938c63f41f",
+    "type": "personal",
+    "text": "The AI encourages the student with a 'pat for Max'. Implies the student owns a pet.",
+    "importance": 0.3,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:32:18.437820",
+    "metadata": {
+      "emotion": "happy",
+      "valence": "positive",
+      "category": "Personal",
+      "topic": "Pets"
+    }
+  },
+  {
+    "id": "9302ab2a-dd5b-4c8f-802c-3faa052fcf5c",
+    "type": "personal",
+    "text": "Max finally stopped eating my socks.",
+    "importance": 0.6,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:32:31.594536",
+    "metadata": {
+      "emotion": "happy",
+      "valence": "positive",
+      "category": "pet",
+      "topic": "pet behavior"
+    }
+  },
+  {
+    "id": "2b6312d6-02d3-4fa6-8ba0-5228592f5c65",
+    "type": "personal",
+    "text": "feeling awake today",
+    "importance": 0.4,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:32:31.594551",
+    "metadata": {
+      "emotion": "happy",
+      "valence": "positive",
+      "category": "mood",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "091c5ba8-6a28-4701-982a-9c10184c6a8e",
+    "type": "personal",
+    "text": "Max finally stopped eating Alex's socks.",
+    "importance": 0.6,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:32:34.503803",
+    "metadata": {
+      "emotion": "happy",
+      "valence": "positive",
+      "category": "pet",
+      "topic": "pet behavior"
+    }
+  },
+  {
+    "id": "925bfd12-7e0b-4442-865f-41b47ee3201e",
+    "type": "personal",
+    "text": "Alex is feeling awake today.",
+    "importance": 0.4,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:32:34.503815",
+    "metadata": {
+      "emotion": "excited",
+      "valence": "positive",
+      "category": "mood",
+      "topic": "state of mind"
+    }
+  },
+  {
+    "id": "0b9873b2-74fd-43f3-8379-51337306d28a",
+    "type": "personal",
+    "text": "The student loves space stuff and watches SpaceX launches.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:32:45.375120",
+    "metadata": {
+      "emotion": "excited",
+      "valence": "positive",
+      "category": "hobbies",
+      "topic": "space"
+    }
+  },
+  {
+    "id": "0b6df60a-ed58-4faf-b2c9-7a2e3e57a07c",
+    "type": "personal",
+    "text": "The student has an interest in engineering, possibly aerospace.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:32:55.461592",
+    "metadata": {
+      "emotion": "excited",
+      "valence": "positive",
+      "category": "Interests",
+      "topic": "Career aspirations"
+    }
+  },
+  {
+    "id": "4b554164-2b06-49f2-9b0c-b7b1c29f37b6",
+    "type": "personal",
+    "text": "The student's father prefers the student to focus on business due to perceived difficulties in math.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:32:55.461690",
+    "metadata": {
+      "emotion": "neutral",
+      "valence": "neutral",
+      "category": "Family influence",
+      "topic": "Career guidance"
+    }
+  },
+  {
+    "id": "008cb849-a039-4663-9b72-c317d59d2470",
+    "type": "personal",
+    "text": "The student has an interest in engineering, possibly aerospace.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:32:59.374537",
+    "metadata": {
+      "emotion": "excited",
+      "valence": "positive",
+      "category": "Interests",
+      "topic": "Career aspirations"
+    }
+  },
+  {
+    "id": "db2052fe-f4ba-4ed8-8692-f5a0db08e60d",
+    "type": "personal",
+    "text": "The student's father wants them to focus on business due to perceived weakness in math.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:32:59.374544",
+    "metadata": {
+      "emotion": "neutral",
+      "valence": "neutral",
+      "category": "Family influence",
+      "topic": "Career aspirations"
+    }
+  },
+  {
+    "id": "dc928df7-0168-4b4a-9e1a-4231a7f42a24",
+    "type": "personal",
+    "text": "Student's dad is an accountant and likes numbers.",
+    "importance": 0.5,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:33:23.163260",
+    "metadata": {
+      "emotion": "excited",
+      "valence": "positive",
+      "category": "family",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "51be01e9-9c23-4410-9017-1aee33084a88",
+    "type": "personal",
+    "text": "Student is interested in engineering.",
+    "importance": 0.5,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:33:23.163267",
+    "metadata": {
+      "emotion": "excited",
+      "valence": "positive",
+      "category": "interests",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "d98d8d0f-3558-436a-9a82-e2e68f331f9e",
+    "type": "personal",
+    "text": "Student is on a sports team and experiencing a tough practice regime.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:33:36.816145",
+    "metadata": {
+      "emotion": "tired",
+      "valence": "negative",
+      "category": "Extracurriculars",
+      "topic": "Sports Practice"
+    }
+  },
+  {
+    "id": "cdfbd5e4-8130-42c1-a87f-ee33e87818ca",
+    "type": "personal",
+    "text": "Student plays basketball.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:33:40.229278",
+    "metadata": {
+      "emotion": "neutral",
+      "valence": "neutral",
+      "category": "hobbies",
+      "topic": "basketball"
+    }
+  },
+  {
+    "id": "2a644d38-068c-4f5b-b47a-2b07e43514cc",
+    "type": "personal",
+    "text": "Student has a dog named Max.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:33:51.235029",
+    "metadata": {
+      "emotion": "happy",
+      "valence": "positive",
+      "category": "Pets",
+      "topic": "Dog"
+    }
+  },
+  {
+    "id": "62c552ab-d96e-4b6e-9882-35c19b09014b",
+    "type": "personal",
+    "text": "The student has a dog named Max.",
+    "importance": 0.5,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:33:56.393802",
+    "metadata": {
+      "emotion": "happy",
+      "valence": "positive",
+      "category": "Pets",
+      "topic": "Max"
+    }
+  },
+  {
+    "id": "b8c64da2-1067-409a-b00e-2b9424166bd2",
+    "type": "personal",
+    "text": "Max sleeps on the student's head.",
+    "importance": 0.3,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:33:56.393821",
+    "metadata": {
+      "emotion": "happy",
+      "valence": "positive",
+      "category": "Pets",
+      "topic": "Max"
+    }
+  },
+  {
+    "id": "4e0e3250-f3ba-42ca-9aa1-562d9de01929",
+    "type": "personal",
+    "text": "Student shared notes from previous session with someone and received positive feedback.",
+    "importance": 0.6,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:34:14.886137",
+    "metadata": {
+      "emotion": "happy",
+      "valence": "positive",
+      "category": "Social",
+      "topic": "sharing knowledge"
+    }
+  },
+  {
+    "id": "ab525c78-605c-4ad8-aecb-bc8f6df0da13",
+    "type": "personal",
+    "text": "Student likely has a father who might be knowledgeable about aerospace engineering.",
+    "importance": 0.5,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:34:14.886139",
+    "metadata": {
+      "emotion": "neutral",
+      "valence": "neutral",
+      "category": "Family",
+      "topic": "Aerospace engineering"
+    }
+  },
+  {
+    "id": "d02f19bf-f85e-47eb-93aa-c6ae8f92f1fa",
+    "type": "personal",
+    "text": "Student named Alex is playing a game tonight.",
+    "importance": 0.6,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:34:24.254526",
+    "metadata": {
+      "emotion": "excited",
+      "valence": "positive",
+      "category": "activity",
+      "topic": "game"
+    }
+  }
+]

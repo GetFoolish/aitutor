@@ -102,9 +102,9 @@ class TeachingAssistant:
                         event_timestamp = event.data.get('timestamp', '')
                         
                         if speaker == 'user':
-                            logger.info(f"✅ Received USER turn at {event_timestamp} (length: {len(text)} chars)")
+                            logger.info(f"\n{'='*60}\n📨 USER: {text}\n{'='*60}")
                         elif speaker == 'adam':
-                            logger.info(f"✅ Received ADAM turn at {event_timestamp} (length: {len(text)} chars)")
+                            logger.info(f"\n{'='*60}\n🤖 ADAM: {text}\n{'='*60}")
                         
                         context = self.context_manager.get_context(event.session_id)
                         closing_cache = self.closing_caches.get(event.session_id)
@@ -305,7 +305,7 @@ class TeachingAssistant:
             # After retrieval completes, get injection and send it
             injection_text = memory_retriever.get_memory_injection(session_id)
             if injection_text:
-                logger.info(f"💉 Sending injection to Adam (retrieval-based) - session: {session_id}, reason: memory retrieval completed, message preview: {injection_text[:100]}...")
+                logger.info(f"\n{'='*60}\n💉 INJECTION TO TUTOR:\n{injection_text}\n{'='*60}")
                 await self.injection_manager.send_to_adam(
                     injection_text,
                     session_id,

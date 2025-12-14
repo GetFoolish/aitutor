@@ -165,9 +165,12 @@ IMPORTANT: Extract memories of ALL 4 types if present. Don't limit to just one t
             type_counts = {}
             for mt in memory_types:
                 type_counts[mt] = type_counts.get(mt, 0) + 1
-            
+
             if len(memories) > 0:
-                logger.info(f"✅ Extracted {len(memories)} memories from {len(exchanges)} exchanges: {type_counts}")
+                logger.info(f"\n{'='*60}\n🧠 MEMORIES CREATED ({len(memories)} total):")
+                for m in memories:
+                    logger.info(f"   [{m.type.value.upper()}] {m.text}")
+                logger.info(f"{'='*60}")
             else:
                 logger.info(f"ℹ️ No memories extracted from {len(exchanges)} exchanges")
             return memories

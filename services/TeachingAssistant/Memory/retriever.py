@@ -50,7 +50,15 @@ class MemoryRetriever:
             exclude_session_id=session_id
         )
         self._session_retrievals[session_id]["light"] = light_results
-        logger.info(f"✅ TA-light retrieval found {len(light_results)} memories")
+        if light_results:
+            logger.info(f"\n{'='*60}\n🔎 MEMORIES RETRIEVED ({len(light_results)} total):")
+            for r in light_results[:5]:  # Show top 5
+                logger.info(f"   [{r['memory'].type.value.upper()}] (score: {r['score']:.2f}) {r['memory'].text}")
+            if len(light_results) > 5:
+                logger.info(f"   ... and {len(light_results) - 5} more")
+            logger.info(f"{'='*60}")
+        else:
+            logger.info(f"🔎 No memories retrieved for this query")
         self._save_retrieval(session_id, user_id, "light", light_results)
 
         current_time = time.time()

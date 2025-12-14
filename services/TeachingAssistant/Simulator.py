@@ -685,14 +685,39 @@ if __name__ == "__main__":
         default=None,
         help=f"WebSocket server port (default: {SIMULATOR_WS_PORT})"
     )
-    
+    parser.add_argument(
+        "--clean",
+        action="store_true",
+        help="Clear all existing memories (Pinecone + local) for the user before starting simulation"
+    )
+
     args = parser.parse_args()
-    
+
+    # Handle --clean flag before starting simulation
+    if args.clean:
+        print(f"\n🧹 Cleaning all memories for user: {args.user_id}")
+        print("=" * 60)
+
+        # Import and initialize MemoryStore to clear data
+        from services.TeachingAssistant.Memory.vector_store import MemoryStore
+
+        try:
+            store = MemoryStore(user_id=args.user_id)
+            success = store.clear_all_memories(args.user_id)
+            if success:
+                print(f"✅ Successfully cleared all memories for user: {args.user_id}")
+            else:
+                print(f"⚠️ Some errors occurred while clearing memories")
+        except Exception as e:
+            print(f"❌ Error clearing memories: {e}")
+
+        print("=" * 60 + "\n")
+
     simulator = AutomatedSimulator(
         user_id=args.user_id,
         mode=args.mode,
         delay_between_files=args.delay,
         ws_port=args.ws_port
     )
-    
+
     asyncio.run(simulator.run_simulation())

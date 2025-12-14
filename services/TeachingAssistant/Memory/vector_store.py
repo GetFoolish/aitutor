@@ -287,5 +287,52 @@ class MemoryStore:
         
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(memories, f, indent=2, ensure_ascii=False)
-        
+
+    def clear_all_memories(self, user_id: str) -> bool:
+        """
+        Clear all memories for a user from both Pinecone and local storage.
+
+        Args:
+            user_id: User ID whose memories should be cleared
+
+        Returns:
+            True if successful, False otherwise
+        """
+        import shutil
+
+        logger.info(f"🧹 Clearing all memories for user: {user_id}")
+
+        # Clear Pinecone - delete all vectors in all namespaces
+        try:
+            for mem_type in MemoryType:
+                namespace = mem_type.value
+                try:
+                    # Delete all vectors in namespace by using delete with filter
+                    self.index.delete(
+                        filter={"student_id": {"$eq": user_id}},
+                        namespace=namespace
+                    )
+                    logger.info(f"   ✅ Cleared Pinecone namespace: {namespace}")
+                except Exception as e:
+                    logger.warning(f"   ⚠️ Error clearing namespace {namespace}: {e}")
+            logger.info(f"✅ Cleared all Pinecone data for user: {user_id}")
+        except Exception as e:
+            logger.error(f"❌ Error clearing Pinecone data: {e}", exc_info=True)
+            return False
+
+        # Clear local storage
+        try:
+            local_data_dir = f"services/TeachingAssistant/Memory/data/{user_id}"
+            if os.path.exists(local_data_dir):
+                shutil.rmtree(local_data_dir)
+                logger.info(f"✅ Cleared local data directory: {local_data_dir}")
+            else:
+                logger.info(f"ℹ️ No local data directory found for user: {user_id}")
+        except Exception as e:
+            logger.error(f"❌ Error clearing local data: {e}", exc_info=True)
+            return False
+
+        logger.info(f"🧹 Successfully cleared all memories for user: {user_id}")
+        return True
+
 

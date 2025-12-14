@@ -1,0 +1,422 @@
+[
+  {
+    "id": "416813bd-1f3b-432f-95f3-28d387dc1a87",
+    "type": "preference",
+    "text": "Student dislikes the way the textbook explains things (huge paragraphs).",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:27:27.292849",
+    "metadata": {
+      "emotion": "frustrated",
+      "valence": "negative",
+      "category": "learning style",
+      "topic": "textbooks"
+    }
+  },
+  {
+    "id": "013c5331-0c3e-46e2-9913-7b2048ce2e34",
+    "type": "preference",
+    "text": "Student finds textbook explanations overwhelming and prefers simpler explanations.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:27:30.622868",
+    "metadata": {
+      "emotion": "confused",
+      "valence": "negative",
+      "category": "learning style",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "1a0787ab-661e-40de-8ed5-cb13f19f148f",
+    "type": "preference",
+    "text": "Student prefers drawing things out, and visual representations over words.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:28:28.279062",
+    "metadata": {
+      "emotion": "neutral",
+      "valence": "positive",
+      "category": "learning style",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "af00b7ee-93cf-43a3-b1cb-ac5e47a3de28",
+    "type": "preference",
+    "text": "Student is distracted by their dog barking. The AI will switch to visuals to accommodate.",
+    "importance": 0.6,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:28:28.279094",
+    "metadata": {
+      "emotion": "neutral",
+      "valence": "neutral",
+      "category": "communication",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "3e3feaf0-9313-4427-9667-52c37be90cdc",
+    "type": "preference",
+    "text": "Student prefers visual aids over written explanations (\"drawing it out helps. the words just jumble up for me.\")",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:28:31.683045",
+    "metadata": {
+      "emotion": "neutral",
+      "valence": "positive",
+      "category": "learning style",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "40c7c05a-67c9-40a6-a639-f3fd0fbd8393",
+    "type": "preference",
+    "text": "Student prefers diagrams and graphs over paragraphs.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:28:31.683518",
+    "metadata": {
+      "emotion": "neutral",
+      "valence": "positive",
+      "category": "learning style",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "1615a5d1-b2f8-4e3a-b13b-08f34e164069",
+    "type": "preference",
+    "text": "The student indicates tiredness from practice and wants a 'steady pace'.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:29:44.093247",
+    "metadata": {
+      "emotion": "tired",
+      "valence": "neutral",
+      "category": "learning style",
+      "topic": "pace of learning"
+    }
+  },
+  {
+    "id": "4ee3fed0-faa6-43a5-aee0-c5c172399f3c",
+    "type": "preference",
+    "text": "The student dislikes fractions and prefers decimals.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:30:10.834270",
+    "metadata": {
+      "category": "Learning Style",
+      "topic": "Fractions vs. Decimals",
+      "emotion": "negative",
+      "valence": "negative"
+    }
+  },
+  {
+    "id": "6a0a87ad-5cb6-45d9-addf-f9cb7cd77053",
+    "type": "preference",
+    "text": "Student dislikes fractions and prefers decimals.",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:30:14.065823",
+    "metadata": {
+      "emotion": "negative",
+      "valence": "negative",
+      "category": "Learning Style",
+      "topic": "Fractions vs Decimals"
+    }
+  },
+  {
+    "id": "581d8027-78d6-441e-87ee-2e9bcf46aea0",
+    "type": "preference",
+    "text": "Student expresses frustration with fraction addition.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:30:25.774945",
+    "metadata": {
+      "emotion": "frustrated",
+      "valence": "negative",
+      "category": "Learning Preferences",
+      "topic": "Fraction Arithmetic"
+    }
+  },
+  {
+    "id": "93090f23-ec4e-4cc1-a76e-bbe5ddb7f772",
+    "type": "preference",
+    "text": "Student expresses frustration and a preference for using a calculator, disliking the current method.",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:30:28.733143",
+    "metadata": {
+      "emotion": "frustrated",
+      "valence": "negative",
+      "category": "Learning Preference",
+      "topic": "Math"
+    }
+  },
+  {
+    "id": "69bbe22d-709a-4d20-bda2-a230a1326478",
+    "type": "preference",
+    "text": "Student wants to quickly finish the problem to take a nap.",
+    "importance": 0.6,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:30:43.802248",
+    "metadata": {
+      "emotion": "tired",
+      "valence": "negative",
+      "category": "Learning Pace",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "efdf26de-deb7-4f4b-ac4c-0497cc7e311f",
+    "type": "preference",
+    "text": "Student expresses a desire to 'get this over with,' indicating a preference for a more direct, less emotionally involved approach.",
+    "importance": 0.6,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:31:09.972458",
+    "metadata": {
+      "emotion": "tired",
+      "valence": "negative",
+      "category": "learning style",
+      "topic": "engagement"
+    }
+  },
+  {
+    "id": "4387d010-f1be-4b5d-a83e-f164f4465aae",
+    "type": "preference",
+    "text": "Prefers to get work done quickly to alleviate the feeling of pressure.",
+    "importance": 0.6,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:31:13.370560",
+    "metadata": {
+      "emotion": "tired",
+      "valence": "negative",
+      "category": "learning style",
+      "topic": "work habits"
+    }
+  },
+  {
+    "id": "dac029ed-51d7-443f-bfe8-b7e22fbda680",
+    "type": "preference",
+    "text": "Student seems to prefer not using a calculator.",
+    "importance": 0.6,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:31:29.794617",
+    "metadata": {
+      "emotion": "neutral",
+      "valence": "neutral",
+      "category": "Learning Style",
+      "topic": "Calculator usage"
+    }
+  },
+  {
+    "id": "a1eb737b-6b89-4e3f-8e8a-aa54f0b971f2",
+    "type": "preference",
+    "text": "The AI uses a basketball analogy to explain a math concept.",
+    "importance": 0.6,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:31:43.231116",
+    "metadata": {
+      "emotion": "neutral",
+      "valence": "positive",
+      "category": "learning style",
+      "topic": "analogy"
+    }
+  },
+  {
+    "id": "0e00c831-c7e5-49ad-a5e3-67d497b236fe",
+    "type": "preference",
+    "text": "The student displayed potential frustration or difficulty focusing, as evidenced by 'sorry for snapping'.",
+    "importance": 0.6,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:31:47.226863",
+    "metadata": {
+      "emotion": "frustrated",
+      "valence": "negative",
+      "category": "communication style",
+      "topic": "emotional state"
+    }
+  },
+  {
+    "id": "34971a56-4f95-49c9-aa80-230bba5e4034",
+    "type": "preference",
+    "text": "Prefers to apply mathematical concepts within a sports context.",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:31:58.846716",
+    "metadata": {
+      "emotion": "happy",
+      "valence": "positive",
+      "category": "Learning Style",
+      "topic": "Contextual Learning"
+    }
+  },
+  {
+    "id": "4ac1c962-3d51-4c22-93b1-ec4ce795a6d2",
+    "type": "preference",
+    "text": "Student responds well to using a sports context.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:32:02.069089",
+    "metadata": {
+      "emotion": "happy",
+      "valence": "positive",
+      "category": "Learning Style",
+      "topic": "Contextualization"
+    }
+  },
+  {
+    "id": "78e4e834-051c-4ebf-85d8-389e8ad556f4",
+    "type": "preference",
+    "text": "Student finds that recognizing patterns helps them.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:32:15.471286",
+    "metadata": {
+      "emotion": "happy",
+      "valence": "positive",
+      "category": "Learning style",
+      "topic": "Pattern recognition"
+    }
+  },
+  {
+    "id": "0e61b142-deac-4e5a-ae3b-ff4f763aeac1",
+    "type": "preference",
+    "text": "The student feels better after catching the pattern.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:32:18.437817",
+    "metadata": {
+      "emotion": "happy",
+      "valence": "positive",
+      "category": "Learning Style",
+      "topic": "Pattern Recognition"
+    }
+  },
+  {
+    "id": "978684fa-1388-46d9-b6cb-03bb1d542e14",
+    "type": "preference",
+    "text": "The student seems to learn better through visualization and real-world examples rather than rote memorization.",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:32:59.374554",
+    "metadata": {
+      "emotion": "neutral",
+      "valence": "neutral",
+      "category": "Learning style",
+      "topic": "Learning preferences"
+    }
+  },
+  {
+    "id": "86236efc-909d-46f2-a1fe-77267c7ce540",
+    "type": "preference",
+    "text": "Student finds the current session interesting.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:33:23.163273",
+    "metadata": {
+      "emotion": "excited",
+      "valence": "positive",
+      "category": "engagement",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "bc0bb864-7a71-4d0d-801e-4cf7a86de7fb",
+    "type": "preference",
+    "text": "Student previously experienced frustration.",
+    "importance": 0.4,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:33:23.163279",
+    "metadata": {
+      "emotion": "frustrated",
+      "valence": "negative",
+      "category": "previous experience",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "e9d16fb1-2556-47b6-8d76-301352ae11dd",
+    "type": "preference",
+    "text": "Student previously disliked math and now finds it cool.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:33:23.163351",
+    "metadata": {
+      "emotion": "excited",
+      "valence": "positive",
+      "category": "attitude towards subject",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "78842ed3-181d-4914-b3e3-ca0b8a2f36cb",
+    "type": "preference",
+    "text": "Student dislikes comparisons between basketball and math.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:33:40.229285",
+    "metadata": {
+      "emotion": "negative",
+      "valence": "negative",
+      "category": "preferences",
+      "topic": "basketball vs math"
+    }
+  },
+  {
+    "id": "69b33329-b016-4231-b52e-4ffd971d7a96",
+    "type": "preference",
+    "text": "The student likes Space and Parabolas.",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:33:56.393838",
+    "metadata": {
+      "emotion": "excited",
+      "valence": "positive",
+      "category": "Interests",
+      "topic": "Space, Parabolas"
+    }
+  },
+  {
+    "id": "0034fee2-28e6-42aa-89e5-fd6d4ad4df8e",
+    "type": "preference",
+    "text": "The student appreciates helpful assistance.",
+    "importance": 0.3,
+    "student_id": "simulator_user",
+    "session_id": "sess_20251214_072714_f540ac",
+    "timestamp": "2025-12-14T02:34:24.254535",
+    "metadata": {
+      "emotion": "happy",
+      "valence": "positive",
+      "category": "communication",
+      "topic": "helpfulness"
+    }
+  }
+]
