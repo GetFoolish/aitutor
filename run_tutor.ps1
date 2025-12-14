@@ -18,13 +18,34 @@ function Kill-ProcessOnPort {
     }
 }
 
+# Load environment variables from .env file if it exists
+if (Test-Path "$SCRIPT_DIR\.env") {
+    Write-Host "Loading environment variables from .env file..."
+    Get-Content "$SCRIPT_DIR\.env" | ForEach-Object {
+        if ($_ -match '^\s*#') { return }  # Skip comments
+        if ($_ -match '^\s*$') { return }  # Skip empty lines
+        if ($_ -match '^\s*([^=]+)=(.*)$') {
+            $key = $matches[1].Trim()
+            $value = $matches[2].Trim()
+            # Remove quotes from value if present
+            $value = $value -replace '^["'']|["'']$', ''
+            [Environment]::SetEnvironmentVariable($key, $value, "Process")
+            Write-Host "  Loaded: $key"
+        }
+    }
+    Write-Host "[OK] Environment variables loaded from .env"
+} else {
+    Write-Host "[WARNING] No .env file found. Using default values."
+    Write-Host "   Create a .env file with your MongoDB Atlas URI and other config."
+}
+
 # Kill any existing processes using our ports
 Write-Host "Checking for existing processes on ports..."
 Kill-ProcessOnPort -Port 8767  # Tutor service
 Kill-ProcessOnPort -Port 8000  # DASH API
 Kill-ProcessOnPort -Port 8001  # SherlockED API
 Kill-ProcessOnPort -Port 8002  # TeachingAssistant API
-Kill-ProcessOnPort -Port 8765  # MediaMixer
+Kill-ProcessOnPort -Port 8003  # Auth Service
 Kill-ProcessOnPort -Port 3000  # Frontend
 
 # Wait a moment for processes to fully terminate
@@ -161,11 +182,6 @@ $null = Register-EngineEvent PowerShell.Exiting -Action { Cleanup }
 # Also handle Ctrl+C directly
 $Host.UI.RawUI.WindowTitle = "AI Tutor - Press Ctrl+C to stop"
 
-# Start the Python backend in the background
-Write-Host "Starting Python backend... Logs -> logs/mediamixer.log"
-$proc = Start-Process -FilePath "cmd" -ArgumentList "/c", "`"$PYTHON_BIN`" services\MediaMixer\media_mixer.py 2>&1" -WorkingDirectory $SCRIPT_DIR -NoNewWindow -PassThru -RedirectStandardOutput "$SCRIPT_DIR\logs\mediamixer.log"
-$processes += $proc
-
 # Start the FastAPI server in the background
 Write-Host "Starting DASH API server... Logs -> logs/dash_api.log"
 $proc = Start-Process -FilePath "cmd" -ArgumentList "/c", "`"$PYTHON_BIN`" services\DashSystem\dash_api.py 2>&1" -WorkingDirectory $SCRIPT_DIR -NoNewWindow -PassThru -RedirectStandardOutput "$SCRIPT_DIR\logs\dash_api.log"
@@ -193,6 +209,11 @@ Write-Host "Starting TeachingAssistant API server... Logs -> logs/teaching_assis
 $proc = Start-Process -FilePath "cmd" -ArgumentList "/c", "`"$PYTHON_BIN`" services\TeachingAssistant\api.py 2>&1" -WorkingDirectory $SCRIPT_DIR -NoNewWindow -PassThru -RedirectStandardOutput "$SCRIPT_DIR\logs\teaching_assistant.log"
 $processes += $proc
 
+# Start the Auth Service API server in the background
+Write-Host "Starting Auth Service API server... Logs -> logs/auth_service.log"
+$proc = Start-Process -FilePath "cmd" -ArgumentList "/c", "`"$PYTHON_BIN`" services\AuthService\auth_api.py 2>&1" -WorkingDirectory $SCRIPT_DIR -NoNewWindow -PassThru -RedirectStandardOutput "$SCRIPT_DIR\logs\auth_service.log"
+$processes += $proc
+
 # Give the backend servers a moment to start
 Write-Host "Waiting for backend services to initialize..."
 Start-Sleep -Seconds 3
@@ -202,7 +223,7 @@ $FRONTEND_PORT = "3000"
 $DASH_API_PORT = "8000"
 $SHERLOCKED_API_PORT = "8001"
 $TEACHING_ASSISTANT_PORT = "8002"
-$MEDIAMIXER_PORT = "8765"
+$AUTH_SERVICE_PORT = "8003"
 
 # Extract frontend port from vite.config.ts
 if (Test-Path "$SCRIPT_DIR\frontend\vite.config.ts") {
@@ -212,40 +233,37 @@ if (Test-Path "$SCRIPT_DIR\frontend\vite.config.ts") {
     }
 }
 
-# Extract DASH API port
+# Extract DASH API port (matching bash script pattern: PORT", [0-9]*)
 if (Test-Path "$SCRIPT_DIR\services\DashSystem\dash_api.py") {
     $content = Get-Content "$SCRIPT_DIR\services\DashSystem\dash_api.py" -Raw
-    if ($content -match 'port\s*=\s*(\d+)') {
+    if ($content -match 'PORT",\s*(\d+)') {
         $DASH_API_PORT = $matches[1]
     }
 }
 
-# Extract SherlockED API port
+# Extract SherlockED API port (matching bash script pattern: PORT", [0-9]*)
 if (Test-Path "$SCRIPT_DIR\services\SherlockEDApi\run_backend.py") {
     $content = Get-Content "$SCRIPT_DIR\services\SherlockEDApi\run_backend.py" -Raw
-    if ($content -match 'port\s*=\s*(\d+)') {
+    if ($content -match 'PORT",\s*(\d+)') {
         $SHERLOCKED_API_PORT = $matches[1]
     }
 }
 
-# Extract TeachingAssistant port
+# Extract TeachingAssistant port (matching bash script pattern: PORT", [0-9]*)
 if (Test-Path "$SCRIPT_DIR\services\TeachingAssistant\api.py") {
     $content = Get-Content "$SCRIPT_DIR\services\TeachingAssistant\api.py" -Raw
-    if ($content -match 'port\s*=\s*(\d+)') {
+    if ($content -match 'PORT",\s*(\d+)') {
         $TEACHING_ASSISTANT_PORT = $matches[1]
     }
 }
 
-# Extract MediaMixer port
-if (Test-Path "$SCRIPT_DIR\services\MediaMixer\media_mixer.py") {
-    $content = Get-Content "$SCRIPT_DIR\services\MediaMixer\media_mixer.py" -Raw
-    if ($content -match "PORT'\s*,\s*(\d+)") {
-        $MEDIAMIXER_PORT = $matches[1]
+# Extract Auth Service port (matching bash script pattern: PORT", [0-9]*)
+if (Test-Path "$SCRIPT_DIR\services\AuthService\auth_api.py") {
+    $content = Get-Content "$SCRIPT_DIR\services\AuthService\auth_api.py" -Raw
+    if ($content -match 'PORT",\s*(\d+)') {
+        $AUTH_SERVICE_PORT = $matches[1]
     }
 }
-
-$MEDIAMIXER_COMMAND_PORT = $MEDIAMIXER_PORT
-$MEDIAMIXER_VIDEO_PORT = $MEDIAMIXER_PORT
 
 # Start the Node.js frontend in the background
 Write-Host "Starting Node.js frontend... Logs -> logs/frontend.log"
@@ -257,13 +275,11 @@ Write-Host "Tutor is running with the following PIDs: $($pids -join ', ')"
 Write-Host ""
 Write-Host "Service URLs:"
 Write-Host "  Frontend:           http://localhost:$FRONTEND_PORT"
+Write-Host "  Auth Service:       http://localhost:$AUTH_SERVICE_PORT"
 Write-Host "  DASH API:           http://localhost:$DASH_API_PORT"
 Write-Host "  SherlockED API:     http://localhost:$SHERLOCKED_API_PORT"
 Write-Host "  TeachingAssistant:  http://localhost:$TEACHING_ASSISTANT_PORT"
 Write-Host "  Tutor Service:      ws://localhost:8767"
-Write-Host "  Tutor TA WebSocket: ws://localhost:8767/ta"
-Write-Host "  MediaMixer Command: ws://localhost:$MEDIAMIXER_COMMAND_PORT/command"
-Write-Host "  MediaMixer Video:   ws://localhost:$MEDIAMIXER_VIDEO_PORT/video"
 Write-Host ""
 Write-Host "Press Ctrl+C to stop."
 Write-Host "You can view the logs for each service in the logs directory."
@@ -278,7 +294,7 @@ try {
             Write-Host "Warning: Some processes have exited unexpectedly"
             foreach ($proc in $exited) {
                 $procId = $proc.Id
-                Write-Host ('  Process ' + $procId + ' has exited')
+                Write-Host "  Process $procId has exited"
             }
         }
     }
