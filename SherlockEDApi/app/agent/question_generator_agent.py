@@ -7,6 +7,8 @@ import io
 import random
 import re
 import asyncio
+import logging
+from logging.handlers import RotatingFileHandler
 from typing import Optional, Dict, Any
 from dotenv import load_dotenv
 from PIL import Image
@@ -19,6 +21,45 @@ from google.genai import types
 
 # Load environment variables
 load_dotenv()
+
+# ✅ Setup Logging
+LOG_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../', 'logs'))
+os.makedirs(LOG_DIR, exist_ok=True)
+LOG_FILE = os.path.join(LOG_DIR, 'questionbankgenerator.log')
+
+# Create logger
+logger = logging.getLogger('question_generator')
+logger.setLevel(logging.INFO)
+
+# Create rotating file handler (max 10MB per file, keep 5 backup files)
+file_handler = RotatingFileHandler(
+    LOG_FILE,
+    maxBytes=10 * 1024 * 1024,  # 10MB
+    backupCount=5,
+    encoding='utf-8'
+)
+file_handler.setLevel(logging.INFO)
+
+# Create console handler for backward compatibility
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+
+# Create formatter
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+file_handler.setFormatter(formatter)
+console_handler.setFormatter(formatter)
+
+# Add handlers to logger
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
+
+logger.info("="*80)
+logger.info("Question Generator Agent Started")
+logger.info(f"Log file: {LOG_FILE}")
+logger.info("="*80)
 
 # Configuration
 UPLOAD_TO_AZURE = False
@@ -40,14 +81,15 @@ if UPLOAD_TO_AZURE and AZURE_CONNECTION_STRING:
     try:
         blob_service_client = BlobServiceClient.from_connection_string(AZURE_CONNECTION_STRING)
     except Exception as e:
-        print(f"Error connecting to Azure: {e}")
+        logger.error(f"Error connecting to Azure: {e}")
 
 # Initialize New GenAI Client
 client = None
 if GOOGLE_API_KEY:
     client = genai.Client(api_key=GOOGLE_API_KEY)
+    logger.info("Google GenAI Client initialized successfully")
 else:
-    print("⚠️ Warning: GOOGLE_API_KEY not found in .env file")
+    logger.warning("GOOGLE_API_KEY not found in .env file")
 
 # Folders
 OUTPUT_FOLDER = "./new_questions"
@@ -163,11 +205,11 @@ def generate_image_with_gemini(prompt_text: str) -> bytes:
                     image.save(output_buffer, format="PNG")
                     return output_buffer.getvalue()
 
-        print("⚠️ No inline image data found in response.")
+        logger.warning("No inline image data found in response")
         return create_placeholder_image()
 
     except Exception as e:
-        print(f"⚠️ Gemini Image Gen failed: {e}")
+        logger.error(f"Gemini Image Gen failed: {e}")
         return create_placeholder_image()
 
 def replace_image_urls_with_generated_images(obj: Any, container_name: str = "inventory") -> Any:
@@ -238,7 +280,7 @@ def replace_image_urls_with_generated_images(obj: Any, container_name: str = "in
 
 def fetch_question_from_api() -> Optional[Dict]:
     try:
-        print("Fetching question from API...")
+        logger.info("Fetching question from API...")
         response = requests.get(GET_QUESTION_URL)
         if response.status_code == 200:
             question = response.json()
@@ -246,22 +288,23 @@ def fetch_question_from_api() -> Optional[Dict]:
                 source_question_id = question.get("_id")
                 if "_id" in question:
                     del question["_id"]
-                print(f"Fetched question ID: {source_question_id}")
+                logger.info(f"Fetched question ID: {source_question_id}")
                 return {"sourceQuestionId": source_question_id, "questionData": question}
+        logger.warning(f"Failed to fetch question, status code: {response.status_code}")
         return None
     except Exception as e:
-        print(f"Failed to fetch: {e}")
+        logger.error(f"Failed to fetch question: {e}", exc_info=True)
         return None
 
 def save_question_to_api(source_question_id, generated_data):
     try:
         url = f"{SAVE_QUESTION_URL}/{source_question_id}"
-        print(f"Saving generated question ID: {source_question_id}")
+        logger.info(f"Saving generated question ID: {source_question_id}")
         headers = {"Content-Type": "application/json"}
         response = requests.post(url, json=generated_data, headers=headers)
-        print(f"✅ Question saved. Status: {response.status_code}")
+        logger.info(f"Question saved successfully. Status: {response.status_code}")
     except Exception as e:
-        print(f"Failed to save: {e}")
+        logger.error(f"Failed to save question: {e}", exc_info=True)
 
 def process_question_from_api(fetched_question):
     source_question_id = fetched_question["sourceQuestionId"]
@@ -271,14 +314,14 @@ def process_question_from_api(fetched_question):
         question_json = json.dumps(question_data, indent=2)
         prompt = PROMPT_TEMPLATE.replace("{{json}}", question_json)
 
-        print("Generating new question text...")
+        logger.info("Generating new question text with AI...")
         response_text = generate_json_with_ai(prompt)
-        
+
         cleaned = response_text.replace("```json", "").replace("```", "").strip()
 
         try:
             parsed = json.loads(cleaned)
-            print("Generated valid JSON. Processing images...")
+            logger.info("Generated valid JSON. Processing images...")
 
             new_data = replace_image_urls_with_generated_images(parsed)
 
@@ -291,41 +334,49 @@ def process_question_from_api(fetched_question):
             output_path = os.path.join(OUTPUT_FOLDER, f"question_{source_question_id}.json")
             with open(output_path, "w") as f:
                 json.dump(new_data, f, indent=2)
-            print(f"Local backup saved: {output_path}")
+            logger.info(f"Local backup saved: {output_path}")
 
         except json.JSONDecodeError as e:
-            print(f"Invalid JSON: {e}")
+            logger.error(f"Invalid JSON response: {e}")
 
     except Exception as err:
-        print(f"Error: {err}")
+        logger.error(f"Error processing question: {err}", exc_info=True)
 
 async def generate_new_questions(limit: int = 0):
     env_limit = int(os.getenv("MAX_QUESTIONS", 1))
     max_questions = limit if limit > 0 else env_limit
     processed = 0
+
+    logger.info(f"Starting question generation batch. Max questions: {max_questions}")
     await manager.broadcast({"status": "starting", "total": max_questions})
+
     while processed < max_questions:
-        print(f"\n▶️ Fetching question {processed + 1} of {max_questions}")
+        logger.info(f"Fetching question {processed + 1} of {max_questions}")
         await manager.broadcast({"status": "fetching", "current": processed + 1, "total": max_questions})
+
         fetched_question = await asyncio.to_thread(fetch_question_from_api)
         if not fetched_question or not fetched_question.get("questionData"):
-            print("❌ No more questions.")
+            logger.warning("No more questions available to process")
             await manager.broadcast({"status": "done", "message": "No more questions to process."})
             break
+
         question_json = json.dumps(fetched_question["questionData"])
         if "https" in question_json or "web+" in question_json:
-            print("✔️ Valid question found...")
+            logger.info(f"Valid question found. Processing question {processed + 1}...")
             await manager.broadcast({"status": "processing", "current": processed + 1, "total": max_questions})
             await asyncio.to_thread(process_question_from_api, fetched_question)
             processed += 1
+            logger.info(f"Successfully processed question {processed}/{max_questions}")
             await manager.broadcast({"status": "processed", "current": processed, "total": max_questions})
         else:
-            print("⚠️ Invalid question, skipping...")
+            logger.warning("Invalid question (no images/URLs), skipping...")
             await manager.broadcast({"status": "skipping", "current": processed + 1, "total": max_questions})
             await asyncio.sleep(REQUEST_DELAY_SECONDS)
             continue
+
         await asyncio.sleep(REQUEST_DELAY_SECONDS)
-    print(f"\n🎉 DONE! Processed {processed} questions.")
+
+    logger.info(f"Question generation batch completed! Processed {processed}/{max_questions} questions")
     await manager.broadcast({"status": "done", "processed": processed, "total": max_questions})
 
 if __name__ == "__main__":
