@@ -63,7 +63,8 @@ function App() {
     toggleCamera,
     toggleScreen,
     cameraVideoRef,
-    screenVideoRef
+    screenVideoRef,
+    stopAllMedia
   } = useMediaCapture({});
 
   // MediaMixer hook for local video mixing - uses state from useMediaCapture
@@ -168,6 +169,7 @@ function App() {
                         screenEnabled={screenEnabled}
                         onToggleCamera={toggleCamera}
                         onToggleScreen={toggleScreen}
+                        stopAllMedia={stopAllMedia}
                         mediaMixerCanvasRef={mediaMixer.canvasRef}
                         autoStartWhenReady={questionsReady}
                       />

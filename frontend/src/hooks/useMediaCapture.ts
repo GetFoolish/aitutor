@@ -39,6 +39,7 @@ export const useMediaCapture = ({ onCameraFrame, onScreenFrame }: UseMediaCaptur
       cameraStreamRef.current.getTracks().forEach(track => track.stop());
       cameraStreamRef.current = null;
     }
+    setCameraEnabled(false);
     console.log('Camera stopped');
   }, []);
 
@@ -48,6 +49,7 @@ export const useMediaCapture = ({ onCameraFrame, onScreenFrame }: UseMediaCaptur
       screenStreamRef.current.getTracks().forEach(track => track.stop());
       screenStreamRef.current = null;
     }
+    setScreenEnabled(false);
     console.log('Screen share stopped');
   }, []);
 
@@ -194,6 +196,12 @@ export const useMediaCapture = ({ onCameraFrame, onScreenFrame }: UseMediaCaptur
     }
   }, [startScreen, stopScreen]);
 
+  // Convenience function to stop all media
+  const stopAllMedia = useCallback(() => {
+    stopCamera();
+    stopScreen();
+  }, [stopCamera, stopScreen]);
+
   // Expose video refs for direct consumption by MediaMixer
   return {
     cameraEnabled,
@@ -201,6 +209,9 @@ export const useMediaCapture = ({ onCameraFrame, onScreenFrame }: UseMediaCaptur
     toggleCamera,
     toggleScreen,
     cameraVideoRef,
-    screenVideoRef
+    screenVideoRef,
+    stopCamera,
+    stopScreen,
+    stopAllMedia
   };
 };

@@ -69,6 +69,7 @@ export type FloatingControlPanelProps = {
   screenEnabled: boolean;
   onToggleCamera: (enabled: boolean) => void;
   onToggleScreen: (enabled: boolean) => void;
+  stopAllMedia: () => void;
   // MediaMixer canvas ref for display
   mediaMixerCanvasRef: RefObject<HTMLCanvasElement>;
   // Auto-start session when questions are ready
@@ -86,6 +87,7 @@ function FloatingControlPanel({
   screenEnabled,
   onToggleCamera,
   onToggleScreen,
+  stopAllMedia,
   mediaMixerCanvasRef,
   autoStartWhenReady = false,
 }: FloatingControlPanelProps) {
@@ -448,6 +450,10 @@ function FloatingControlPanel({
 
       disconnect();
       setIsPaused(false); // Reset pause state on disconnect
+      
+      // Stop all media streams when session ends
+      stopAllMedia();
+      setMuted(true); // Ensure mic is muted after disconnect
     } else {
       // Handle connect with TeachingAssistant session start
       let setupCompleteReceived = false;
@@ -803,12 +809,14 @@ function FloatingControlPanel({
             <div className="w-7 h-[2px] bg-black dark:bg-white my-0.5" />
 
             <button
-              onClick={handleMute}
+              onClick={() => connected && handleMute()}
+              disabled={!connected}
               className={cn(
                 "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
                 muted
                   ? "bg-[#FF6B6B] text-white"
                   : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
+                !connected && "opacity-50 cursor-not-allowed"
               )}
               title={muted ? "Unmute" : "Mute"}
             >
@@ -821,12 +829,14 @@ function FloatingControlPanel({
 
             {supportsVideo && (
               <button
-                onClick={() => onToggleCamera(!cameraEnabled)}
+                onClick={() => connected && onToggleCamera(!cameraEnabled)}
+                disabled={!connected}
                 className={cn(
                   "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
                   cameraEnabled
                     ? "bg-[#C4B5FD] text-black"
                     : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
+                  !connected && "opacity-50 cursor-not-allowed"
                 )}
                 title="Toggle Camera"
               >
@@ -840,12 +850,14 @@ function FloatingControlPanel({
 
             {supportsVideo && (
               <button
-                onClick={() => onToggleScreen(!screenEnabled)}
+                onClick={() => connected && onToggleScreen(!screenEnabled)}
+                disabled={!connected}
                 className={cn(
                   "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
                   screenEnabled
                     ? "bg-[#FFD93D] text-black"
                     : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
+                  !connected && "opacity-50 cursor-not-allowed"
                 )}
                 title="Share Screen"
               >
@@ -912,12 +924,13 @@ function FloatingControlPanel({
           <div className="flex flex-col gap-1.5 md:gap-2">
             {/* Audio Control */}
             <div
-              onClick={handleMute}
+              onClick={() => connected && handleMute()}
               className={cn(
-                "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 group cursor-pointer shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
+                "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 group shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
                 !muted
                   ? "bg-[#FFFDF5] dark:bg-[#000000]"
                   : "bg-[#FF6B6B]",
+                connected ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
               )}
             >
               <div className="flex items-center gap-1.5 md:gap-2 min-w-0 flex-1 pr-2 md:pr-3">
@@ -980,12 +993,13 @@ function FloatingControlPanel({
             {/* Camera Control */}
             {supportsVideo && (
               <div
-                onClick={() => onToggleCamera(!cameraEnabled)}
+                onClick={() => connected && onToggleCamera(!cameraEnabled)}
                 className={cn(
-                  "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 cursor-pointer shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
+                  "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
                   cameraEnabled
                     ? "bg-[#C4B5FD]"
                     : "bg-[#FFFDF5] dark:bg-[#000000]",
+                  connected ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
                 )}
               >
                 <div className="flex items-center gap-1.5 md:gap-2">
@@ -1010,13 +1024,15 @@ function FloatingControlPanel({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    onToggleCamera(!cameraEnabled);
+                    if (connected) onToggleCamera(!cameraEnabled);
                   }}
+                  disabled={!connected}
                   className={cn(
                     "text-[9px] md:text-[10px] font-black px-2 md:px-3 py-1 md:py-1.5 transition-all border-[2px] border-black dark:border-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none uppercase",
                     cameraEnabled
                       ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
                       : "bg-[#C4B5FD] text-black",
+                    !connected && "opacity-50 cursor-not-allowed"
                   )}
                 >
                   {cameraEnabled ? "Off" : "On"}
@@ -1027,12 +1043,13 @@ function FloatingControlPanel({
             {/* Screen Share Control */}
             {supportsVideo && (
               <div
-                onClick={() => onToggleScreen(!screenEnabled)}
+                onClick={() => connected && onToggleScreen(!screenEnabled)}
                 className={cn(
-                  "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 cursor-pointer shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
+                  "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
                   screenEnabled
                     ? "bg-[#FFD93D]"
                     : "bg-[#FFFDF5] dark:bg-[#000000]",
+                  connected ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
                 )}
               >
                 <div className="flex items-center gap-1.5 md:gap-2">
@@ -1057,13 +1074,15 @@ function FloatingControlPanel({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    onToggleScreen(!screenEnabled);
+                    if (connected) onToggleScreen(!screenEnabled);
                   }}
+                  disabled={!connected}
                   className={cn(
                     "text-[9px] md:text-[10px] font-black px-2 md:px-3 py-1 md:py-1.5 transition-all border-[2px] border-black dark:border-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none uppercase",
                     screenEnabled
                       ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
                       : "bg-[#FFD93D] text-black",
+                    !connected && "opacity-50 cursor-not-allowed"
                   )}
                 >
                   {screenEnabled ? "Stop" : "Share"}
