@@ -49,6 +49,8 @@ import {
   Home,
   X,
   Eye,
+  Pause,
+  Play,
 } from "lucide-react";
 
 const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
@@ -95,6 +97,7 @@ function FloatingControlPanel({
   const [selectedAudioDevice, setSelectedAudioDevice] = useState<string>("");
   const [audioRecorder] = useState(() => new AudioRecorder());
   const [muted, setMuted] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [activeVideoStream] = useState<MediaStream | null>(null);
   const [sharedMediaOpen, setSharedMediaOpen] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
@@ -444,6 +447,7 @@ function FloatingControlPanel({
       }
 
       disconnect();
+      setIsPaused(false); // Reset pause state on disconnect
     } else {
       // Handle connect with TeachingAssistant session start
       let setupCompleteReceived = false;
@@ -633,6 +637,19 @@ function FloatingControlPanel({
     setMuted(!muted);
   }, [muted]);
 
+  const handlePause = useCallback(() => {
+    if (isPaused) {
+      // Resume: Unmute microphone
+      setMuted(false);
+      setIsPaused(false);
+    } else {
+      // Pause: Interrupt audio and mute microphone
+      interruptAudio();
+      setMuted(true);
+      setIsPaused(true);
+    }
+  }, [isPaused, interruptAudio]);
+
   // Simplified drag end handler for Framer Motion
   const handleDragEnd = useCallback(() => {
     // Recalculate popover position after drag ends
@@ -742,7 +759,7 @@ function FloatingControlPanel({
               <Home className="w-4 h-4 font-bold" />
             </button>
 
-            {/* Start/End Session Button */}
+            {/* Start/Stop Session Button */}
             <button
               onClick={handleConnect}
               className={cn(
@@ -751,10 +768,10 @@ function FloatingControlPanel({
                   ? "bg-[#FF6B6B] hover:bg-[#FF6B6B] text-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)]"
                   : "bg-[#4ADE80] hover:bg-[#4ADE80] text-black shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)]",
               )}
-              title={connected ? "End Session" : "Start Session"}
+              title={connected ? "Stop Session" : "Start Session"}
             >
               {connected ? (
-                <div className="w-3 h-3 bg-white border-2 border-black" />
+                <StopCircle className="w-5 h-5" />
               ) : (
                 <PlayCircle className="w-5 h-5" />
               )}
@@ -762,6 +779,26 @@ function FloatingControlPanel({
                 <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#FFD93D] border-2 border-black animate-pulse" />
               )}
             </button>
+
+            {/* Pause/Resume Button (only show when connected) */}
+            {connected && (
+              <button
+                onClick={handlePause}
+                className={cn(
+                  "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
+                  isPaused
+                    ? "bg-[#4ADE80] text-black" // Green for Resume
+                    : "bg-[#FFD93D] text-black" // Yellow for Pause
+                )}
+                title={isPaused ? "Resume Session" : "Pause Session"}
+              >
+                {isPaused ? (
+                  <Play className="w-3.5 h-3.5 font-bold" />
+                ) : (
+                  <Pause className="w-3.5 h-3.5 font-bold" />
+                )}
+              </button>
+            )}
 
             <div className="w-7 h-[2px] bg-black dark:bg-white my-0.5" />
 
@@ -1034,28 +1071,49 @@ function FloatingControlPanel({
               </div>
             )}
 
-            {/* Main Action Button */}
-            <button
-              onClick={handleConnect}
-              className={cn(
-                "w-full py-2.5 md:py-3 font-black text-black transition-all transform active:translate-x-1 active:translate-y-1 active:shadow-none flex items-center justify-center gap-2 mt-1 border-[2px] md:border-[3px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] uppercase text-[10px] md:text-xs",
-                connected
-                  ? "bg-[#FF6B6B] hover:bg-[#FF6B6B]"
-                  : "bg-[#4ADE80] hover:bg-[#4ADE80]",
-              )}
-            >
-              {connected ? (
-                <>
-                  <div className="w-3 h-3 bg-white border-2 border-black" />
-                  End Session
-                </>
-              ) : (
-                <>
-                  <PlayCircle className="w-4 h-4 md:w-5 md:h-5" />
-                  Start Session
-                </>
-              )}
-            </button>
+            {/* Main Action Buttons */}
+            {connected ? (
+              // When connected: Show Pause and Stop buttons
+              <div className="flex gap-1.5 md:gap-2 mt-1">
+                <button
+                  onClick={handlePause}
+                  className={cn(
+                    "flex-1 py-2.5 md:py-3 font-black transition-all transform active:translate-x-1 active:translate-y-1 active:shadow-none flex items-center justify-center gap-2 border-[2px] md:border-[3px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] uppercase text-[10px] md:text-xs",
+                    isPaused 
+                      ? "bg-[#4ADE80] text-black hover:bg-[#4ADE80]" // Green when paused (showing Resume)
+                      : "bg-[#FFD93D] text-black hover:bg-[#FFD93D]" // Yellow when active (showing Pause)
+                  )}
+                >
+                  {isPaused ? (
+                    <>
+                      <Play className="w-4 h-4 md:w-5 md:h-5" />
+                      Resume
+                    </>
+                  ) : (
+                    <>
+                      <Pause className="w-4 h-4 md:w-5 md:h-5" />
+                      Pause
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={handleConnect}
+                  className="flex-1 py-2.5 md:py-3 font-black text-white transition-all transform active:translate-x-1 active:translate-y-1 active:shadow-none flex items-center justify-center gap-2 border-[2px] md:border-[3px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] uppercase text-[10px] md:text-xs bg-[#FF6B6B] hover:bg-[#FF6B6B]"
+                >
+                  <StopCircle className="w-4 h-4 md:w-5 md:h-5" />
+                  Stop
+                </button>
+              </div>
+            ) : (
+              // When disconnected: Show Start Session button
+              <button
+                onClick={handleConnect}
+                className="w-full py-2.5 md:py-3 font-black text-black transition-all transform active:translate-x-1 active:translate-y-1 active:shadow-none flex items-center justify-center gap-2 mt-1 border-[2px] md:border-[3px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] uppercase text-[10px] md:text-xs bg-[#4ADE80] hover:bg-[#4ADE80]"
+              >
+                <PlayCircle className="w-4 h-4 md:w-5 md:h-5" />
+                Start Session
+              </button>
+            )}
 
             {/* Bottom Actions */}
             <div className="grid grid-cols-4 gap-1.5 md:gap-2 pt-2 md:pt-3 border-t-[2px] border-black dark:border-white">

@@ -22,7 +22,7 @@ import AuthGuard from "./components/auth/AuthGuard";
 import Header from "./components/header/Header";
 import BackgroundShapes from "./components/background-shapes/BackgroundShapes";
 import QuestionDisplay from "./components/question-display/QuestionDisplay";
-import Scratchpad from "./components/scratchpad/Scratchpad";
+import Scratchpad, { ScratchpadRef } from "./components/scratchpad/Scratchpad";
 import { ThemeProvider } from "./components/theme/theme-provier";
 import { HintProvider } from "./contexts/HintContext";
 import { Toaster } from "@/components/ui/sonner";
@@ -44,6 +44,7 @@ function App() {
   const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
   const [mixerStream, setMixerStream] = useState<MediaStream | null>(null);
   const mixerVideoRef = useRef<HTMLVideoElement>(null);
+  const scratchpadRef = useRef<ScratchpadRef>(null);
   const [isScratchpadOpen, setScratchpadOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isGradingSidebarOpen, setIsGradingSidebarOpen] = useState(false);
@@ -137,16 +138,19 @@ function App() {
                     <div className="main-app-area">
                       <div className="question-panel">
                         <BackgroundShapes />
-                        <ScratchpadCapture onFrameCaptured={(canvas) => {
-                          mediaMixer.updateScratchpadFrame(canvas);
-                        }}>
+                        <ScratchpadCapture 
+                          onFrameCaptured={(canvas: HTMLCanvasElement) => {
+                            mediaMixer.updateScratchpadFrame(canvas);
+                          }}
+                          scratchpadRef={scratchpadRef}
+                        >
                           <QuestionDisplay 
                             onSkillChange={setCurrentSkill}
                             onQuestionsLoaded={() => setQuestionsReady(true)}
                           />
                           {isScratchpadOpen && (
                             <div className="scratchpad-container">
-                              <Scratchpad />
+                              <Scratchpad ref={scratchpadRef} />
                             </div>
                           )}
                         </ScratchpadCapture>

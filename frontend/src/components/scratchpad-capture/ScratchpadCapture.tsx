@@ -4,9 +4,10 @@ import * as htmlToImage from 'html-to-image';
 interface ScratchpadCaptureProps {
   children: ReactNode;
   onFrameCaptured: (canvas: HTMLCanvasElement) => void;
+  scratchpadRef?: React.RefObject<{ getCanvas: () => HTMLCanvasElement | null }>;
 }
 
-const ScratchpadCapture: React.FC<ScratchpadCaptureProps> = ({ children, onFrameCaptured }) => {
+const ScratchpadCapture: React.FC<ScratchpadCaptureProps> = ({ children, onFrameCaptured, scratchpadRef }) => {
   const captureRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,6 +25,33 @@ const ScratchpadCapture: React.FC<ScratchpadCaptureProps> = ({ children, onFrame
       isCapturing = true;
       lastCaptureTime = now;
 
+      // Priority 1: Check if scratchpad canvas is available
+      const scratchpadCanvas = scratchpadRef?.current?.getCanvas();
+      if (scratchpadCanvas) {
+        try {
+          // Resize scratchpad canvas to 1280×720 section size
+          const resizedCanvas = document.createElement('canvas');
+          resizedCanvas.width = 1280;
+          resizedCanvas.height = 720;
+          const resizedCtx = resizedCanvas.getContext('2d');
+
+          if (resizedCtx) {
+            // Fill with white background
+            resizedCtx.fillStyle = 'white';
+            resizedCtx.fillRect(0, 0, 1280, 720);
+            // Draw scratchpad canvas, maintaining aspect ratio or filling
+            resizedCtx.drawImage(scratchpadCanvas, 0, 0, 1280, 720);
+            onFrameCaptured(resizedCanvas);
+          }
+        } catch (error) {
+          console.error('Error capturing scratchpad canvas:', error);
+        } finally {
+          isCapturing = false;
+        }
+        return;
+      }
+
+      // Priority 2: Fallback to question content (original behavior)
       const questionContent = document.querySelector('#question-content-container') as HTMLElement;
 
       if (questionContent) {
@@ -94,7 +122,7 @@ const ScratchpadCapture: React.FC<ScratchpadCaptureProps> = ({ children, onFrame
         clearInterval(intervalId);
       }
     };
-  }, [onFrameCaptured]);
+  }, [onFrameCaptured, scratchpadRef]);
 
   useEffect(() => {
     if (captureRef.current) {
