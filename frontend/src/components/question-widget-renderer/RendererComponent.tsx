@@ -19,24 +19,27 @@ import { PerseusI18nContextProvider } from "../../package/perseus/src/components
 import { mockStrings } from "../../package/perseus/src/strings";
 import { KEScore } from "@khanacademy/perseus-core";
 import { toast } from "sonner";
-import { CheckCircle2, XCircle, Sparkles } from "lucide-react";
+import { CheckCircle2, XCircle, Sparkles, X } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useHint } from "../../contexts/HintContext";
 import { apiUtils } from "../../lib/api-utils";
 import { jwtUtils } from "../../lib/jwt-utils";
 import HintDisplay from "../hint-display/HintDisplay";
 import HintButton from "../hint-button/HintButton";
+import { useAnswerSound } from "../../hooks/useAnswerSound";
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
 
 interface RendererComponentProps {
     onSkillChange?: (skill: string) => void;
+    onQuestionsLoaded?: () => void;
 }
 
-const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
+const RendererComponent = ({ onSkillChange, onQuestionsLoaded }: RendererComponentProps) => {
     const { user } = useAuth();
     const { setTotalHints, setCurrentHintIndex, showHints, setShowHints } = useHint();
+    const { playCorrectSound, playWrongSound } = useAnswerSound();
     const queryClient = useQueryClient();
     const [perseusItems, setPerseusItems] = useState<PerseusItem[]>([]);
     const [item, setItem] = useState(0);
@@ -133,11 +136,15 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                 setError(err instanceof Error ? err : new Error('Unknown error'));
             } finally {
                 setIsLoading(false);
+                // Notify parent that questions are loaded
+                if (onQuestionsLoaded) {
+                    onQuestionsLoaded();
+                }
             }
         };
 
         fetchQuestions();
-    }, [user_id]);
+    }, [user_id, onQuestionsLoaded]);
 
     // Fetch questions using apiUtils with JWT authentication
     useEffect(() => {
@@ -174,13 +181,23 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
         }
     }, [onSkillChange]);
 
-    // Trigger feedback animation and auto-scroll
+    // Trigger feedback animation and auto-dismiss after 2 seconds
     useEffect(() => {
         if (isAnswered) {
             setShowFeedback(false);
             // Slight delay before showing to trigger animation
-            const timer = setTimeout(() => setShowFeedback(true), 50);
-            return () => clearTimeout(timer);
+            const showTimer = setTimeout(() => setShowFeedback(true), 50);
+            
+            // Auto-hide after 2 seconds (2000ms + 50ms initial delay)
+            const hideTimer = setTimeout(() => {
+                setShowFeedback(false);
+                setIsAnswered(false);
+            }, 2050);
+            
+            return () => {
+                clearTimeout(showTimer);
+                clearTimeout(hideTimer);
+            };
         }
     }, [isAnswered]);
 
@@ -297,6 +314,14 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
             // Display score to user
             setIsAnswered(true);
             setScore(keScore);
+            
+            // Play sound based on result
+            if (keScore.correct) {
+                playCorrectSound();
+            } else {
+                playWrongSound();
+            }
+            
             console.log("Score:", keScore);
 
             // Record question answer with TeachingAssistant
@@ -468,11 +493,11 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                                 )}
 
                                 {/* Neo-Brutalist feedback */}
-                                {isAnswered && (
+                                {isAnswered && showFeedback && (
                                     <div
                                         className="fixed top-[60px] lg:top-[64px] left-1/2 transform -translate-x-1/2 z-[200] animate-in slide-in-from-top-4 duration-300"
                                     >
-                                        <div className={`flex items-center gap-2 md:gap-3 px-5 md:px-6 py-3 md:py-4 border-[3px] md:border-[4px] border-black dark:border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] md:shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] ${score?.correct
+                                        <div className={`flex items-center gap-2 md:gap-3 px-5 md:px-6 py-3 md:py-4 border-[3px] md:border-[4px] border-black dark:border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] md:shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] relative ${score?.correct
                                             ? "bg-[#ADFF2F]"
                                             : "bg-[#FF006E]"
                                             }`}>
@@ -491,6 +516,18 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                                                 }`}>
                                                 {score?.correct ? "🎯 Correct!" : "📚 Not quite!"}
                                             </span>
+                                            
+                                            {/* Manual Close Button */}
+                                            <button
+                                                onClick={() => {
+                                                    setShowFeedback(false);
+                                                    setIsAnswered(false);
+                                                }}
+                                                className={`ml-2 p-1 hover:bg-black/10 dark:hover:bg-white/10 transition-colors rounded border-[2px] border-black dark:border-white ${score?.correct ? 'text-black' : 'text-white'}`}
+                                                aria-label="Close feedback"
+                                            >
+                                                <X className="w-4 h-4 md:w-5 md:h-5 font-bold" />
+                                            </button>
                                         </div>
                                     </div>
                                 )}

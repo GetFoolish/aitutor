@@ -48,6 +48,7 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isGradingSidebarOpen, setIsGradingSidebarOpen] = useState(false);
   const [currentSkill, setCurrentSkill] = useState<string | null>(null);
+  const [questionsReady, setQuestionsReady] = useState(false);
 
   // Ref to hold mediaMixer instance for use in callbacks
   const mediaMixerRef = useRef<any>(null);
@@ -139,7 +140,10 @@ function App() {
                         <ScratchpadCapture onFrameCaptured={(canvas) => {
                           mediaMixer.updateScratchpadFrame(canvas);
                         }}>
-                          <QuestionDisplay onSkillChange={setCurrentSkill} />
+                          <QuestionDisplay 
+                            onSkillChange={setCurrentSkill}
+                            onQuestionsLoaded={() => setQuestionsReady(true)}
+                          />
                           {isScratchpadOpen && (
                             <div className="scratchpad-container">
                               <Scratchpad />
@@ -161,6 +165,7 @@ function App() {
                         onToggleCamera={toggleCamera}
                         onToggleScreen={toggleScreen}
                         mediaMixerCanvasRef={mediaMixer.canvasRef}
+                        autoStartWhenReady={questionsReady}
                       />
                     </div>
                   </main>

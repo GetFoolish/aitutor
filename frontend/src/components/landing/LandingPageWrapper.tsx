@@ -1,44 +1,41 @@
 /**
  * Landing Page Wrapper
- * Displays the neo-brutalism landing page
+ * Randomly selects and displays one of the available landing pages
+ * Selection is persisted in localStorage for consistent user experience
  */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import LandingPage1 from './LandingPage1';
 import LandingPageNeo from './LandingPageNeo';
-
-// Commented out old landing page imports for future use
-// import LandingPage1 from './LandingPage1';
-// import LandingPage2 from './LandingPage2';
-// import LandingPage3 from './LandingPage3';
-// import LandingPage4 from './LandingPage4';
-// import LandingPage5 from './LandingPage5';
-// import LandingPage6 from './LandingPage6';
-// import LandingPage7 from './LandingPage7';
-// import LandingPage8 from './LandingPage8';
-// import LandingPage9 from './LandingPage9';
-// import LandingPage10 from './LandingPage10';
 
 const LandingPageWrapper: React.FC = () => {
   const history = useHistory();
   const { isAuthenticated, isLoading } = useAuth();
+  const [selectedPage, setSelectedPage] = useState<number | null>(null);
 
-  // Commented out random landing page selection logic
-  // const [selectedPage, setSelectedPage] = useState<number | null>(null);
+  // Get random landing page (persist across sessions with localStorage)
+  const getRandomLandingPage = (): number => {
+    // Check localStorage first (persist across sessions)
+    const stored = localStorage.getItem('landingPageIndex');
+    if (stored) {
+      const storedNum = parseInt(stored, 10);
+      // Validate stored value is within range (1-2 available pages)
+      if (storedNum >= 1 && storedNum <= 2) {
+        return storedNum;
+      }
+    }
+    
+    // Generate random number 1-2 (only 2 pages available)
+    const randomIndex = Math.floor(Math.random() * 2) + 1;
+    localStorage.setItem('landingPageIndex', randomIndex.toString());
+    return randomIndex;
+  };
 
-  // Get random landing page (persist for session) - COMMENTED OUT
-  // const getRandomLandingPage = (): number => {
-  //   // Check sessionStorage first (persist for session)
-  //   const stored = sessionStorage.getItem('landingPageIndex');
-  //   if (stored) {
-  //     return parseInt(stored, 10);
-  //   }
-  //   
-  //   // Generate random number 1-10
-  //   const randomIndex = Math.floor(Math.random() * 10) + 1;
-  //   sessionStorage.setItem('landingPageIndex', randomIndex.toString());
-  //   return randomIndex;
-  // };
+  useEffect(() => {
+    // Set random page on mount
+    setSelectedPage(getRandomLandingPage());
+  }, []);
 
   useEffect(() => {
     // If authenticated, redirect to app
@@ -48,8 +45,8 @@ const LandingPageWrapper: React.FC = () => {
     }
   }, [isAuthenticated, isLoading, history]);
 
-  // Show loading while checking authentication
-  if (isLoading) {
+  // Show loading while checking authentication or selecting page
+  if (isLoading || selectedPage === null) {
     return (
       <div style={{
         display: 'flex',
@@ -68,33 +65,15 @@ const LandingPageWrapper: React.FC = () => {
     history.push('/app/login');
   };
 
-  // Commented out switch statement for old random selection
-  // switch (selectedPage) {
-  //   case 1:
-  //     return <LandingPage1 onGetStarted={handleGetStarted} />;
-  //   case 2:
-  //     return <LandingPage2 onGetStarted={handleGetStarted} />;
-  //   case 3:
-  //     return <LandingPage3 onGetStarted={handleGetStarted} />;
-  //   case 4:
-  //     return <LandingPage4 onGetStarted={handleGetStarted} />;
-  //   case 5:
-  //     return <LandingPage5 onGetStarted={handleGetStarted} />;
-  //   case 6:
-  //     return <LandingPage6 onGetStarted={handleGetStarted} />;
-  //   case 7:
-  //     return <LandingPage7 onGetStarted={handleGetStarted} />;
-  //   case 8:
-  //     return <LandingPage8 onGetStarted={handleGetStarted} />;
-  //   case 9:
-  //     return <LandingPage9 onGetStarted={handleGetStarted} />;
-  //   case 10:
-  //     return <LandingPage10 onGetStarted={handleGetStarted} />;
-  //   default:
-  //     return <LandingPage1 onGetStarted={handleGetStarted} />;
-  // }
-
-  return <LandingPageNeo onGetStarted={handleGetStarted} />;
+  // Render appropriate landing page based on random selection
+  switch (selectedPage) {
+    case 1:
+      return <LandingPage1 onGetStarted={handleGetStarted} />;
+    case 2:
+      return <LandingPageNeo onGetStarted={handleGetStarted} />;
+    default:
+      return <LandingPageNeo onGetStarted={handleGetStarted} />;
+  }
 };
 
 export default LandingPageWrapper;

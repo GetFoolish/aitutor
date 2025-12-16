@@ -270,10 +270,10 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                                                 <div className="flex flex-col gap-2 w-full">
                                                     <div className="flex items-center justify-between w-full">
                                                         <span className={cn(
-                                                            "font-black text-sm text-left uppercase tracking-tight",
+                                                            "font-black text-sm text-left tracking-tight",
                                                             isPracticed ? "text-black dark:text-white" : "text-black/50 dark:text-white/50"
                                                         )}>
-                                                            {stats.name.toUpperCase()}
+                                                            {formatSkillName(stats.name)}
                                                         </span>
                                                         <div className={cn(
                                                             "px-2.5 py-0.5 border-[2px] border-black dark:border-white text-[10px] font-black uppercase",

@@ -69,6 +69,8 @@ export type FloatingControlPanelProps = {
   onToggleScreen: (enabled: boolean) => void;
   // MediaMixer canvas ref for display
   mediaMixerCanvasRef: RefObject<HTMLCanvasElement>;
+  // Auto-start session when questions are ready
+  autoStartWhenReady?: boolean;
 };
 
 function FloatingControlPanel({
@@ -83,6 +85,7 @@ function FloatingControlPanel({
   onToggleCamera,
   onToggleScreen,
   mediaMixerCanvasRef,
+  autoStartWhenReady = false,
 }: FloatingControlPanelProps) {
   const { client, connected, connect, disconnect, interruptAudio } = useTutorContext();
   const { theme } = useTheme();
@@ -106,6 +109,7 @@ function FloatingControlPanel({
     error: string | null;
   }>({ isConnected: true, error: null }); // Default to connected since it's frontend-based now
   const turnCompleteRef = useRef(false);
+  const hasAutoStartedRef = useRef(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Dark mode detection for logo
@@ -549,6 +553,20 @@ function FloatingControlPanel({
       }
     }
   }, [connected, connect, disconnect, client, interruptAudio]);
+
+  // Auto-start session when questions are ready (only once)
+  useEffect(() => {
+    if (autoStartWhenReady && !connected && !hasAutoStartedRef.current) {
+      hasAutoStartedRef.current = true; // Mark as auto-started to prevent restart loop
+      
+      // Small delay to ensure everything is mounted
+      const timer = setTimeout(() => {
+        handleConnect();
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [autoStartWhenReady, connected, handleConnect]);
 
   const [verticalAlign, setVerticalAlign] = useState<"top" | "bottom">("top");
 

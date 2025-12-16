@@ -27,6 +27,7 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 
 const LoginPage = lazy(() => import("./components/auth/LoginPage"));
 const LandingPageWrapper = lazy(() => import("./components/landing/LandingPageWrapper"));
+const DynamicLandingPage = lazy(() => import("./components/landing/DynamicLandingPage"));
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
@@ -147,6 +148,7 @@ root.render(
               <Switch>
                 <Route path="/app/auth/setup" component={LoginPage} />
                 <Route path="/app/login" component={LoginPage} />
+                <Route path="/landing/:id" component={DynamicLandingPage} /> {/* Dynamic landing page routes */}
                 <Route path="/app" exact component={LandingPageOrApp} />
                 <Route path="/app" component={App} />
                 <Route path="/" exact component={LandingPageOrApp} />
