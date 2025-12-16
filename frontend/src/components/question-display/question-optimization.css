@@ -1,0 +1,81 @@
+/* Optimize question pane font sizes and spacing to reduce overall size */
+
+/* Reduce container padding */
+#question-content-container {
+    /* Reduced from p-4 md:p-5 lg:p-6 (16px/20px/24px) to 12px/16px */
+    padding: 12px 16px !important;
+}
+
+/* Reduce Perseus paragraph font sizes */
+#question-content-container .framework-perseus div.paragraph {
+    font-size: 15px !important; /* Reduced from 18px */
+    line-height: 20px !important; /* Reduced from 22px */
+    margin: 16px 0px !important; /* Reduced from 22px */
+}
+
+/* Reduce main renderer paragraph sizes */
+#question-content-container .framework-perseus.perseus-article:not(.perseus-mobile) .perseus-renderer > .paragraph {
+    font-size: 17px !important; /* Reduced from 20px */
+    line-height: 24px !important; /* Reduced from 30px */
+}
+
+#question-content-container .framework-perseus.perseus-article:not(.perseus-mobile) .perseus-renderer > .paragraph .paragraph {
+    font-size: 17px !important; /* Reduced from 20px */
+    line-height: 24px !important; /* Reduced from 30px */
+    margin-bottom: 20px !important; /* Reduced from 32px */
+    margin-top: 0;
+}
+
+/* Reduce passage font sizes */
+#question-content-container .framework-perseus .perseus-widget-passage-container .perseus-widget-passage .passage-title div.paragraph {
+    font-size: 17px !important; /* Reduced from 20px */
+    line-height: 20px !important; /* Reduced from 22px */
+}
+
+#question-content-container .framework-perseus .perseus-widget-passage-container .perseus-widget-passage > .passage-text div.paragraph {
+    font-size: 14px !important; /* Reduced from 16px */
+    line-height: 18px !important; /* Reduced from 20px */
+}
+
+/* Reduce pre/code font sizes */
+#question-content-container .framework-perseus pre {
+    font-size: 14px !important; /* Reduced from 18px */
+    padding: 12px !important; /* Reduced from 16px */
+}
+
+/* Reduce widget container font sizes */
+#question-content-container .framework-perseus.perseus-article:not(.perseus-mobile) .perseus-widget-container:not(.perseus-widget__definition) {
+    font-size: 13px !important; /* Reduced from 14px */
+    line-height: 18px !important; /* Reduced from 19.6px */
+}
+
+/* Reduce heading sizes within question content */
+#question-content-container .framework-perseus h1 {
+    font-size: 20px !important; /* Reduced from default larger sizes */
+    line-height: 24px !important;
+    margin: 16px 0 !important;
+}
+
+#question-content-container .framework-perseus h2 {
+    font-size: 18px !important;
+    line-height: 22px !important;
+    margin: 14px 0 !important;
+}
+
+#question-content-container .framework-perseus h3 {
+    font-size: 16px !important;
+    line-height: 20px !important;
+    margin: 12px 0 !important;
+}
+
+/* Reduce spacing in lists */
+#question-content-container .framework-perseus ul,
+#question-content-container .framework-perseus ol {
+    margin: 12px 0 !important; /* Reduced from default larger margins */
+    padding-left: 24px !important; /* Reduced from default */
+}
+
+#question-content-container .framework-perseus li {
+    margin: 6px 0 !important; /* Reduced spacing between list items */
+    line-height: 20px !important;
+}
