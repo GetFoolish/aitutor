@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import LandingPage1 from './LandingPage1';
-import LandingPageNeo from './LandingPageNeo';
+import LandingPageNeo from './LandingPage2';
 
 const LandingPageWrapper: React.FC = () => {
   const history = useHistory();

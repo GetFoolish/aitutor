@@ -2,8 +2,6 @@
   "compilerOptions": {
     "types": [
       "node",
-      "react",
-      "react-dom",
       "jest",
       "lodash",
       "react-syntax-highlighter"
@@ -22,7 +20,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,

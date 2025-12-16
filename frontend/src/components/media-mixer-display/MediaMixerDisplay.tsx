@@ -156,10 +156,10 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
   }, [canvasRef]);
 
   return (
-    <div className="flex flex-col w-full h-full bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white overflow-hidden transition-colors duration-300 p-0 m-0">
+    <div className="flex flex-col w-full h-full bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white overflow-hidden transition-colors duration-300">
       <div 
         ref={containerRef}
-        className="flex flex-col w-full h-full min-h-[500px] md:min-h-[500px] bg-[#FFFDF5] dark:bg-[#000000] relative overflow-hidden group transition-colors duration-300 p-0 m-0"
+        className="flex flex-col w-full h-full min-h-[500px] md:min-h-[500px] bg-[#FFFDF5] dark:bg-[#000000] relative overflow-hidden group transition-colors duration-300"
       >
         {error && (
           <div className="text-sm text-center p-4 border-[3px] border-black dark:border-white bg-[#FF006E] text-white max-w-[90%] shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] z-20 absolute">
@@ -181,7 +181,15 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
           <canvas
             ref={displayCanvasRef}
             style={{ 
-              display: 'block'
+              display: 'block',
+              objectFit: 'cover',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              margin: 0,
+              padding: 0,
             }}
           />
         )}

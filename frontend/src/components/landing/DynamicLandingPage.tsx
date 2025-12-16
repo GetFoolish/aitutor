@@ -6,7 +6,7 @@
 import React from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import LandingPage1 from './LandingPage1';
-import LandingPageNeo from './LandingPageNeo';
+import LandingPageNeo from './LandingPage2';
 
 const DynamicLandingPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
