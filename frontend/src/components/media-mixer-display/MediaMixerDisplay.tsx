@@ -33,8 +33,8 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
 
   // Mirror the MediaMixer canvas to the display canvas
   useEffect(() => {
-    // Function to calculate optimal canvas size maintaining aspect ratio
-    // Uses "cover" behavior: fills entire container, maintains aspect ratio, may crop edges
+    // Function to calculate canvas size maintaining aspect ratio
+    // Uses "contain" behavior: shows full content, maintains aspect ratio, fits within container
     const calculateCanvasSize = (
       sourceWidth: number,
       sourceHeight: number,
@@ -51,15 +51,15 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
       let displayWidth: number;
       let displayHeight: number;
 
-      // Fill entire container while maintaining aspect ratio (cover behavior - fills all space, may crop)
+      // Show full content while maintaining aspect ratio (contain behavior - shows all content, fits within container)
       if (sourceAspect > containerAspect) {
-        // Source is wider than container - fit to height (fills height, may crop left/right)
-        displayHeight = containerHeight;
-        displayWidth = containerHeight * sourceAspect;
-      } else {
-        // Source is taller than container - fit to width (fills width, may crop top/bottom)
+        // Source is wider than container - fit to width (shows full width, may have letterboxing top/bottom)
         displayWidth = containerWidth;
         displayHeight = containerWidth / sourceAspect;
+      } else {
+        // Source is taller than container - fit to height (shows full height, may have letterboxing left/right)
+        displayHeight = containerHeight;
+        displayWidth = containerHeight * sourceAspect;
       }
 
       return { width: displayWidth, height: displayHeight };
@@ -93,8 +93,8 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
           containerRect.height
         );
         
-        // Set CSS size for display (fills container completely, maintains aspect ratio)
-        // Position absolutely to fill container with no white space
+        // Set CSS size for display (shows full content, maintains aspect ratio, fits within container)
+        // Position absolutely to center in container, ensuring full content is visible
         displayCanvas.style.width = `${width}px`;
         displayCanvas.style.height = `${height}px`;
         displayCanvas.style.position = 'absolute';
@@ -104,7 +104,7 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
         displayCanvas.style.display = 'block';
         displayCanvas.style.margin = '0';
         displayCanvas.style.padding = '0';
-        displayCanvas.style.objectFit = 'cover';
+        displayCanvas.style.objectFit = 'contain';
       }
     };
 
@@ -156,10 +156,10 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
   }, [canvasRef]);
 
   return (
-    <div className="flex flex-col w-full h-full bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white overflow-hidden transition-colors duration-300">
+    <div className="flex flex-col w-full h-full bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white overflow-hidden transition-colors duration-300 p-0 m-0">
       <div 
         ref={containerRef}
-        className="flex flex-col w-full h-full min-h-[500px] md:min-h-[500px] bg-[#FFFDF5] dark:bg-[#000000] relative overflow-hidden group transition-colors duration-300"
+        className="flex flex-col w-full h-full bg-[#FFFDF5] dark:bg-[#000000] relative overflow-hidden group transition-colors duration-300 p-0 m-0"
       >
         {error && (
           <div className="text-sm text-center p-4 border-[3px] border-black dark:border-white bg-[#FF006E] text-white max-w-[90%] shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] z-20 absolute">
@@ -182,12 +182,11 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
             ref={displayCanvasRef}
             style={{ 
               display: 'block',
-              objectFit: 'cover',
+              objectFit: 'contain',
               position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
               margin: 0,
               padding: 0,
             }}

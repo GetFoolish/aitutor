@@ -116,6 +116,64 @@ function FloatingControlPanel({
   const turnCompleteRef = useRef(false);
   const hasAutoStartedRef = useRef(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [popoverHeight, setPopoverHeight] = useState<number | null>(null);
+  const popoverHeaderRef = useRef<HTMLDivElement>(null);
+
+  // Calculate popover height based on canvas dimensions
+  useEffect(() => {
+    if (!sharedMediaOpen) {
+      return;
+    }
+
+    const calculatePopoverHeight = () => {
+      const canvas = mediaMixerCanvasRef.current;
+      const header = popoverHeaderRef.current;
+      
+      // Get header height dynamically
+      const headerHeight = header ? header.getBoundingClientRect().height : 56;
+      
+      // Determine popover width based on screen size
+      const isMobile = window.innerWidth < 768;
+      const popoverWidth = isMobile ? 320 : 360;
+      
+      if (!canvas || canvas.width === 0 || canvas.height === 0) {
+        // Default fallback: canvas is 1280x2160, aspect ratio 1.6875
+        const canvasAspectRatio = 2160 / 1280; // 1.6875
+        const contentHeight = popoverWidth * canvasAspectRatio;
+        return contentHeight + headerHeight;
+      }
+
+      // Calculate based on actual canvas dimensions
+      const canvasAspectRatio = canvas.height / canvas.width;
+      const contentHeight = popoverWidth * canvasAspectRatio;
+      return contentHeight + headerHeight;
+    };
+
+    const updateHeight = () => {
+      const height = calculatePopoverHeight();
+      setPopoverHeight(height);
+    };
+
+    // Initial calculation with a small delay to ensure DOM is ready
+    const timeoutId = setTimeout(updateHeight, 100);
+
+    // Watch for canvas dimension changes
+    const checkCanvas = setInterval(() => {
+      const canvas = mediaMixerCanvasRef.current;
+      if (canvas && canvas.width > 0 && canvas.height > 0) {
+        updateHeight();
+      }
+    }, 500);
+
+    // Watch for window resize
+    window.addEventListener('resize', updateHeight);
+
+    return () => {
+      clearTimeout(timeoutId);
+      clearInterval(checkCanvas);
+      window.removeEventListener('resize', updateHeight);
+    };
+  }, [mediaMixerCanvasRef, sharedMediaOpen]);
 
   // Dark mode detection for logo
   useEffect(() => {
@@ -1205,15 +1263,18 @@ function FloatingControlPanel({
         {sharedMediaOpen && (
           <div
             className={cn(
-              "absolute w-[320px] md:w-[360px] h-auto flex flex-col bg-white dark:bg-[#000000] border-[3px] md:border-[4px] border-black dark:border-white rounded-xl md:rounded-2xl shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] overflow-hidden z-[1001]",
+              "absolute w-[320px] md:w-[360px] flex flex-col bg-white dark:bg-[#000000] border-[3px] md:border-[4px] border-black dark:border-white rounded-xl md:rounded-2xl shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] overflow-hidden z-[1001]",
               isAnimatingOut ? "animate-popover-out" : "animate-popover-in",
               popoverPosition === "right"
                 ? "left-full ml-4 md:ml-6"
                 : "right-full mr-4 md:mr-6",
               verticalAlign === "bottom" ? "bottom-0" : "top-0",
             )}
+            style={{
+              height: popoverHeight ? `${popoverHeight}px` : 'auto',
+            }}
           >
-            <div className="flex items-center justify-between p-3 md:p-3.5 border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#FFE500]">
+            <div ref={popoverHeaderRef} className="flex items-center justify-between p-3 md:p-3.5 border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#FFE500]">
               <div className="flex items-center gap-2 md:gap-3">
                 <div className="p-1.5 md:p-2 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-[#000000]">
                   <ImageIcon className="w-4 h-4 md:w-5 md:h-5 text-black dark:text-white font-bold" />
