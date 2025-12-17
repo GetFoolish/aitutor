@@ -4,7 +4,10 @@ import * as htmlToImage from 'html-to-image';
 interface ScratchpadCaptureProps {
   children: ReactNode;
   onFrameCaptured: (canvas: HTMLCanvasElement) => void;
-  scratchpadRef?: React.RefObject<{ getCanvas: () => HTMLCanvasElement | null }>;
+  scratchpadRef?: React.RefObject<{ 
+    getCanvas: () => HTMLCanvasElement | null;
+    exportCanvas?: () => Promise<HTMLCanvasElement | null>;  // Support for tldraw/Excalidraw
+  }>;
 }
 
 const ScratchpadCapture: React.FC<ScratchpadCaptureProps> = ({ children, onFrameCaptured, scratchpadRef }) => {
@@ -15,7 +18,7 @@ const ScratchpadCapture: React.FC<ScratchpadCaptureProps> = ({ children, onFrame
     let isCapturing = false;
     let lastCaptureTime = 0;
 
-    const captureFrame = () => {
+    const captureFrame = async () => {  // Make async for tldraw exportCanvas
       // Skip if already capturing or too soon since last capture
       const now = Date.now();
       if (isCapturing || (now - lastCaptureTime < 4500)) {
@@ -25,10 +28,20 @@ const ScratchpadCapture: React.FC<ScratchpadCaptureProps> = ({ children, onFrame
       isCapturing = true;
       lastCaptureTime = now;
 
-      // Priority 1: Check if scratchpad canvas is available
-      const scratchpadCanvas = scratchpadRef?.current?.getCanvas();
-      if (scratchpadCanvas) {
-        try {
+      try {
+        // Priority 1: Check if scratchpad has exportCanvas method (tldraw/Excalidraw)
+        if (scratchpadRef?.current?.exportCanvas) {
+          const canvas = await scratchpadRef.current.exportCanvas();
+          if (canvas) {
+            // Canvas is already 1280x720 from exportCanvas
+            onFrameCaptured(canvas);
+            return;
+          }
+        }
+
+        // Priority 2: Check if scratchpad canvas is available (old react-canvas-draw)
+        const scratchpadCanvas = scratchpadRef?.current?.getCanvas();
+        if (scratchpadCanvas) {
           // Resize scratchpad canvas to 1280×720 section size
           const resizedCanvas = document.createElement('canvas');
           resizedCanvas.width = 1280;
@@ -43,61 +56,48 @@ const ScratchpadCapture: React.FC<ScratchpadCaptureProps> = ({ children, onFrame
             resizedCtx.drawImage(scratchpadCanvas, 0, 0, 1280, 720);
             onFrameCaptured(resizedCanvas);
           }
-        } catch (error) {
-          console.error('Error capturing scratchpad canvas:', error);
-        } finally {
-          isCapturing = false;
+          return;
         }
-        return;
-      }
 
-      // Priority 2: Fallback to question content (original behavior)
-      const questionContent = document.querySelector('#question-content-container') as HTMLElement;
+        // Priority 3: Fallback to question content (original behavior)
+        const questionContent = document.querySelector('#question-content-container') as HTMLElement;
 
-      if (questionContent) {
-        htmlToImage.toCanvas(questionContent, {
-          quality: 0.7,  // Reduced quality for better performance
-          skipFonts: true,
-          pixelRatio: 1.0,  // Reduced to 1x for much better performance
-          cacheBust: false,  // Don't bust cache for better performance
-        })
-          .then((canvas) => {
-            // Resize canvas to 1280×720 section size
-            // We create a new canvas here because html-to-image gives us a new one anyway.
-            // Ideally we'd reuse a canvas for resizing to avoid GC, but let's keep it simple for now as it's 1 FPS.
-            // Optimization: Reuse a single canvas for resizing if this becomes a bottleneck.
-            const resizedCanvas = document.createElement('canvas');
-            resizedCanvas.width = 1280;
-            resizedCanvas.height = 720;
-            const resizedCtx = resizedCanvas.getContext('2d');
-
-            if (resizedCtx) {
-              resizedCtx.drawImage(canvas, 0, 0, 1280, 720);
-              // Pass the canvas directly instead of ImageData
-              onFrameCaptured(resizedCanvas);
-            }
-          })
-          .catch(error => {
-            console.error('html-to-image failed:', error);
-          })
-          .finally(() => {
-            isCapturing = false;
+        if (questionContent) {
+          const canvas = await htmlToImage.toCanvas(questionContent, {
+            quality: 0.7,  // Reduced quality for better performance
+            skipFonts: true,
+            pixelRatio: 1.0,  // Reduced to 1x for much better performance
+            cacheBust: false,  // Don't bust cache for better performance
           });
-      } else {
-        // Create error message on a canvas
-        const canvas = document.createElement('canvas');
-        canvas.width = 1280;
-        canvas.height = 720;
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.fillStyle = 'white';
-          ctx.fillRect(0, 0, 1280, 720);
-          ctx.fillStyle = 'red';
-          ctx.font = '24px Arial';
-          ctx.fillText('ERROR: #question-content-container not found!', 50, 100);
 
-          onFrameCaptured(canvas);
+          // Resize canvas to 1280×720 section size
+          const resizedCanvas = document.createElement('canvas');
+          resizedCanvas.width = 1280;
+          resizedCanvas.height = 720;
+          const resizedCtx = resizedCanvas.getContext('2d');
+
+          if (resizedCtx) {
+            resizedCtx.drawImage(canvas, 0, 0, 1280, 720);
+            onFrameCaptured(resizedCanvas);
+          }
+        } else {
+          // Create error message on a canvas
+          const canvas = document.createElement('canvas');
+          canvas.width = 1280;
+          canvas.height = 720;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, 1280, 720);
+            ctx.fillStyle = 'red';
+            ctx.font = '24px Arial';
+            ctx.fillText('ERROR: #question-content-container not found!', 50, 100);
+            onFrameCaptured(canvas);
+          }
         }
+      } catch (error) {
+        console.error('Error capturing frame:', error);
+      } finally {
         isCapturing = false;
       }
     };
