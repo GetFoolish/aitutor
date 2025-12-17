@@ -119,6 +119,8 @@ async def get_questions_pending_approval(sort_by: str = "created_at", order: str
                     "_id": gen_id,
                     "created_at": gen_data.get("created_at"),
                     "generation_cost": gen_data.get("generation_cost"),
+                    "cost_breakdown": gen_data.get("cost_breakdown"),
+                    "tokens_used": gen_data.get("tokens_used"),
                 })
         
         # Only include questions that have pending (non-approved) generated items

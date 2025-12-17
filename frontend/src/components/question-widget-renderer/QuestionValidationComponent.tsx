@@ -124,7 +124,15 @@ function QuestionValidationComponent() {
 
     return (
         <div className="bg-[#f0f0f0] min-h-[100vh] h-fit w-[100vw] flex flex-col items-center">
-            <h1 className="text-center font-bold m-4">Question Validation</h1>
+            <div className="w-full flex items-center justify-center relative">
+                <button
+                    onClick={() => history.push("/admin/question-validation")}
+                    className="absolute left-6 top-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2"
+                >
+                    ← Back to List
+                </button>
+                <h1 className="text-center font-bold m-4">Question Validation</h1>
+            </div>
             <div className="flex w-[100vw] justify-between items-start relative p-6">
                 <div className="w-[84vw] text-black border rounded-2xl p-4 bg-white mb-4">
                     <div className="framework-perseus">

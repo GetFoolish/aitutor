@@ -1,6 +1,26 @@
 import { useState, useEffect } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 
+interface CostBreakdown {
+    text_generation: {
+        model: string;
+        cost: number;
+        input_cost: number;
+        output_cost: number;
+    };
+    image_generation: {
+        model: string;
+        cost: number;
+        images_count: number;
+    };
+}
+
+interface TokensUsed {
+    input_tokens: number;
+    output_tokens: number;
+    total_tokens: number;
+}
+
 interface QuestionItem {
     _id: string;
     source: string;
@@ -10,6 +30,8 @@ interface QuestionItem {
         _id: string;
         created_at: string;
         generation_cost?: number;
+        cost_breakdown?: CostBreakdown;
+        tokens_used?: TokensUsed;
     }>;
 }
 
@@ -30,6 +52,8 @@ function QuestionListComponent() {
     const history = useHistory();
     const location = useLocation<{ recentAction?: string; questionId?: string }>();
     const [actionMessage, setActionMessage] = useState<string | null>(null);
+    const [showCostModal, setShowCostModal] = useState(false);
+    const [selectedQuestion, setSelectedQuestion] = useState<QuestionItem | null>(null);
 
     useEffect(() => {
         const ws = new WebSocket(`${import.meta.env.VITE_WS_BASE_URL}/question-generation-status`);
@@ -137,6 +161,12 @@ function QuestionListComponent() {
         return date.toLocaleString();
     };
 
+    const handleCostBreakdownClick = (e: React.MouseEvent, question: QuestionItem) => {
+        e.stopPropagation(); // Prevent navigation to validation page
+        setSelectedQuestion(question);
+        setShowCostModal(true);
+    };
+
     return (
         <div className="bg-[#f0f0f0] min-h-[100vh] h-fit w-[100vw] flex flex-col items-center p-6">
             <h1 className="text-center font-bold m-4 text-2xl">Questions Pending Approval</h1>
@@ -232,8 +262,14 @@ function QuestionListComponent() {
                                             <div>Created: {question.created_at ? formatDate(question.created_at) : "N/A"}</div>
                                             <div>Pending Approvals: {question.generated_count ?? 0}</div>
                                             {question.generated.length > 0 && question.generated[0].generation_cost && (
-                                                <div>
-                                                    Total Cost: ${question.generated.reduce((sum, g) => sum + (g.generation_cost || 0), 0).toFixed(4)}
+                                                <div className="flex items-center gap-2">
+                                                    <span>Total Cost: ${question.generated.reduce((sum, g) => sum + (g.generation_cost || 0), 0).toFixed(4)}</span>
+                                                    <button
+                                                        onClick={(e) => handleCostBreakdownClick(e, question)}
+                                                        className="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                                                    >
+                                                        Cost Breakdown
+                                                    </button>
                                                 </div>
                                             )}
                                         </div>
@@ -247,6 +283,131 @@ function QuestionListComponent() {
                     </div>
                 )}
             </div>
+
+            {/* Cost Breakdown Modal */}
+            {showCostModal && selectedQuestion && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]" onClick={() => setShowCostModal(false)}>
+                    <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-bold">Cost Breakdown</h2>
+                            <button
+                                onClick={() => setShowCostModal(false)}
+                                className="text-gray-500 hover:text-gray-700 text-2xl"
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            {selectedQuestion.generated.map((gen, index) => {
+                                const totalCost = gen.generation_cost || 0;
+                                const breakdown = gen.cost_breakdown;
+                                const tokens = gen.tokens_used;
+
+                                return (
+                                    <div key={gen._id} className="border rounded-lg p-4">
+                                        <h3 className="font-semibold mb-3">
+                                            Generated Question #{index + 1}
+                                        </h3>
+                                        <div className="text-sm space-y-2">
+                                            <div className="flex justify-between">
+                                                <span className="font-medium">Total Cost:</span>
+                                                <span className="font-bold text-green-600">${totalCost.toFixed(6)}</span>
+                                            </div>
+
+                                            {breakdown && (
+                                                <>
+                                                    <hr className="my-2" />
+                                                    <div className="space-y-3">
+                                                        {/* Text Generation */}
+                                                        <div className="bg-blue-50 p-3 rounded">
+                                                            <div className="font-semibold text-blue-800 mb-2">Text Generation</div>
+                                                            <div className="space-y-1 text-xs">
+                                                                <div className="flex justify-between">
+                                                                    <span>Model:</span>
+                                                                    <span className="font-mono">{breakdown.text_generation.model}</span>
+                                                                </div>
+                                                                <div className="flex justify-between">
+                                                                    <span>Input Cost:</span>
+                                                                    <span>${breakdown.text_generation.input_cost.toFixed(6)}</span>
+                                                                </div>
+                                                                <div className="flex justify-between">
+                                                                    <span>Output Cost:</span>
+                                                                    <span>${breakdown.text_generation.output_cost.toFixed(6)}</span>
+                                                                </div>
+                                                                <div className="flex justify-between font-semibold">
+                                                                    <span>Subtotal:</span>
+                                                                    <span>${breakdown.text_generation.cost.toFixed(6)}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Image Generation */}
+                                                        <div className="bg-purple-50 p-3 rounded">
+                                                            <div className="font-semibold text-purple-800 mb-2">Image Generation</div>
+                                                            <div className="space-y-1 text-xs">
+                                                                <div className="flex justify-between">
+                                                                    <span>Model:</span>
+                                                                    <span className="font-mono">{breakdown.image_generation.model}</span>
+                                                                </div>
+                                                                <div className="flex justify-between">
+                                                                    <span>Images Generated:</span>
+                                                                    <span>{breakdown.image_generation.images_count}</span>
+                                                                </div>
+                                                                <div className="flex justify-between font-semibold">
+                                                                    <span>Subtotal:</span>
+                                                                    <span>${breakdown.image_generation.cost.toFixed(6)}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Token Usage */}
+                                                        {tokens && (
+                                                            <div className="bg-gray-50 p-3 rounded">
+                                                                <div className="font-semibold text-gray-800 mb-2">Token Usage</div>
+                                                                <div className="space-y-1 text-xs">
+                                                                    <div className="flex justify-between">
+                                                                        <span>Input Tokens:</span>
+                                                                        <span className="font-mono">{tokens.input_tokens.toLocaleString()}</span>
+                                                                    </div>
+                                                                    <div className="flex justify-between">
+                                                                        <span>Output Tokens:</span>
+                                                                        <span className="font-mono">{tokens.output_tokens.toLocaleString()}</span>
+                                                                    </div>
+                                                                    <div className="flex justify-between font-semibold">
+                                                                        <span>Total Tokens:</span>
+                                                                        <span className="font-mono">{tokens.total_tokens.toLocaleString()}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </>
+                                            )}
+
+                                            {!breakdown && (
+                                                <div className="text-gray-500 italic text-center py-2">
+                                                    No detailed breakdown available
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+
+                            {/* Total Summary */}
+                            <div className="border-t-2 pt-4 mt-4">
+                                <div className="flex justify-between items-center text-lg font-bold">
+                                    <span>Grand Total ({selectedQuestion.generated.length} questions):</span>
+                                    <span className="text-green-600">
+                                        ${selectedQuestion.generated.reduce((sum, g) => sum + (g.generation_cost || 0), 0).toFixed(6)}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
