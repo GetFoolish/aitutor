@@ -1,9 +1,10 @@
 import React, { useState, useImperativeHandle, forwardRef, useCallback, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Tldraw, Editor, TLUiOverrides } from 'tldraw';
+import { Tldraw, Editor, TLUiOverrides, TLComponents } from 'tldraw';
 import 'tldraw/tldraw.css';
 import { Button } from "@/components/ui/button";
-import { X, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Slider } from "@/components/ui/slider";
+import { X, Trash2 } from 'lucide-react';
 import cn from 'classnames';
 
 export interface TldrawCanvasRef {
@@ -64,17 +65,21 @@ const TldrawCanvas = forwardRef<TldrawCanvasRef, TldrawCanvasProps>((props, ref)
       }
 
       // Export the canvas to blob using editor.toImage (tldraw v4 API)
-      const blob = await editor.toImage({
+      // toImage requires shape IDs as first parameter
+      const result = await editor.toImage(Array.from(shapeIds), {
         format: 'png',
         quality: 1,
         background: true,
         scale: 1,
       });
 
-      if (!blob) {
-        console.warn('Failed to export tldraw canvas');
+      if (!result || !result.blob) {
+        console.warn('❌ Failed to export tldraw canvas');
         return null;
       }
+      
+      const blob = result.blob;
+      console.log('✅ Tldraw canvas exported successfully, blob size:', blob.size);
 
       // Convert blob to canvas
       return new Promise((resolve) => {
@@ -99,13 +104,17 @@ const TldrawCanvas = forwardRef<TldrawCanvasRef, TldrawCanvasProps>((props, ref)
           }
           
           canvasRef.current = canvas;
+          console.log('✅ Canvas converted and ready for Adam:', canvas.width, 'x', canvas.height);
           resolve(canvas);
         };
-        img.onerror = () => resolve(null);
+        img.onerror = () => {
+          console.error('❌ Failed to load image from blob');
+          resolve(null);
+        };
         img.src = URL.createObjectURL(blob);
       });
     } catch (error) {
-      console.error('Error exporting tldraw canvas:', error);
+      console.error('❌ Error exporting tldraw canvas:', error);
       return null;
     }
   }, [editor]);
@@ -119,9 +128,9 @@ const TldrawCanvas = forwardRef<TldrawCanvasRef, TldrawCanvasProps>((props, ref)
     }
   }, [editor]);
 
-  // Toggle canvas opacity to see question better
-  const toggleOpacity = useCallback(() => {
-    setCanvasOpacity(prev => prev === 0.95 ? 0.7 : 0.95);
+  // Handle opacity slider change
+  const handleOpacityChange = useCallback((value: number[]) => {
+    setCanvasOpacity(value[0] / 100); // Convert 0-100 to 0-1
   }, []);
 
   // Expose methods to parent
@@ -130,6 +139,12 @@ const TldrawCanvas = forwardRef<TldrawCanvasRef, TldrawCanvasProps>((props, ref)
     clear: clearCanvas,
     exportCanvas: exportCanvas
   }));
+
+  // Hide unwanted UI components
+  const components: Partial<TLComponents> = {
+    PageMenu: null, // Hide pagination
+    MainMenu: null, // Hide file/export menu
+  };
 
   // Custom UI overrides to match your theme
   const uiOverrides: TLUiOverrides = {
@@ -165,25 +180,20 @@ const TldrawCanvas = forwardRef<TldrawCanvasRef, TldrawCanvasProps>((props, ref)
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
-          {/* Opacity Toggle */}
-          <Button
-            onClick={toggleOpacity}
-            className={cn(
-              "h-9 px-3 text-xs font-black uppercase transition-all",
-              "border-[3px] border-black bg-white text-black",
-              "hover:bg-[#C4B5FD] hover:translate-x-0.5 hover:translate-y-0.5",
-              "shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-none"
-            )}
-            type="button"
-            title="Toggle canvas transparency"
-          >
-            {canvasOpacity === 0.95 ? (
-              <><Eye className="w-4 h-4 mr-1" /> See Through</>
-            ) : (
-              <><EyeOff className="w-4 h-4 mr-1" /> Less See</>
-            )}
-          </Button>
+        <div className="flex items-center gap-3">
+          {/* Opacity Slider */}
+          <div className="flex items-center gap-2 px-3 py-2 border-[3px] border-black bg-white dark:bg-[#000000] shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+            <span className="text-xs font-black text-black dark:text-white whitespace-nowrap">Opacity:</span>
+            <Slider
+              value={[canvasOpacity * 100]}
+              onValueChange={handleOpacityChange}
+              min={50}
+              max={100}
+              step={5}
+              className="w-24"
+            />
+            <span className="text-xs font-bold text-black dark:text-white w-8">{Math.round(canvasOpacity * 100)}%</span>
+          </div>
 
           <Button
             onClick={clearCanvas}
@@ -228,6 +238,7 @@ const TldrawCanvas = forwardRef<TldrawCanvasRef, TldrawCanvasProps>((props, ref)
         <Tldraw
           onMount={setEditor}
           overrides={uiOverrides}
+          components={components}
           inferDarkMode={false}
           forceMobile={false}
         />
