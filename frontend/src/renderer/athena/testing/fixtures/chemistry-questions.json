@@ -1,0 +1,167 @@
+{
+  "questions": [
+    {
+      "id": "chem-balance-1",
+      "title": "Balancing Chemical Equations",
+      "subject": "Chemistry",
+      "topic": "Chemical Reactions",
+      "perseusFormat": {
+        "question": {
+          "content": "Balance the following chemical equation:\n\n$$\\ce{H2 + O2 -> H2O}$$\n\nWhat coefficient goes in front of $\\ce{H2}$? [[☃ numeric-input 1]]\n\nWhat coefficient goes in front of $\\ce{H2O}$? [[☃ numeric-input 2]]",
+          "widgets": {
+            "numeric-input 1": {
+              "type": "numeric-input",
+              "graded": true,
+              "options": {
+                "answers": [{ "value": 2, "status": "correct" }],
+                "size": "small"
+              },
+              "version": { "major": 0, "minor": 0 }
+            },
+            "numeric-input 2": {
+              "type": "numeric-input",
+              "graded": true,
+              "options": {
+                "answers": [{ "value": 2, "status": "correct" }],
+                "size": "small"
+              },
+              "version": { "major": 0, "minor": 0 }
+            }
+          },
+          "images": {}
+        },
+        "hints": [
+          {
+            "content": "Count atoms on each side:\n- Left: 2 H, 2 O\n- Right: 2 H, 1 O\n\nOxygen is unbalanced.",
+            "widgets": {},
+            "images": {}
+          },
+          {
+            "content": "Put a 2 in front of $\\ce{H2O}$:\n$$\\ce{H2 + O2 -> 2H2O}$$\n\nNow: Left: 2 H, 2 O | Right: 4 H, 2 O",
+            "widgets": {},
+            "images": {}
+          },
+          {
+            "content": "Put a 2 in front of $\\ce{H2}$:\n$$\\ce{2H2 + O2 -> 2H2O}$$\n\nBalanced! Left: 4 H, 2 O | Right: 4 H, 2 O",
+            "widgets": {},
+            "images": {}
+          }
+        ],
+        "answerArea": { "type": "multiple" }
+      }
+    },
+    {
+      "id": "chem-molar-mass-1",
+      "title": "Calculating Molar Mass",
+      "subject": "Chemistry",
+      "topic": "Stoichiometry",
+      "perseusFormat": {
+        "question": {
+          "content": "Calculate the molar mass of water ($\\ce{H2O}$).\n\nGiven:\n- Atomic mass of H = $\\pu{1.008 g/mol}$\n- Atomic mass of O = $\\pu{16.00 g/mol}$\n\nMolar mass of $\\ce{H2O}$ = [[☃ numeric-input 1]] $\\pu{g/mol}$",
+          "widgets": {
+            "numeric-input 1": {
+              "type": "numeric-input",
+              "graded": true,
+              "options": {
+                "answers": [
+                  { "value": 18.016, "status": "correct", "maxError": 0.01 },
+                  { "value": 18.02, "status": "correct", "maxError": 0.01 },
+                  { "value": 18, "status": "correct", "maxError": 0.1 }
+                ],
+                "size": "normal"
+              },
+              "version": { "major": 0, "minor": 0 }
+            }
+          },
+          "images": {}
+        },
+        "hints": [
+          {
+            "content": "Water ($\\ce{H2O}$) contains:\n- 2 hydrogen atoms\n- 1 oxygen atom",
+            "widgets": {},
+            "images": {}
+          },
+          {
+            "content": "Molar mass = (2 × 1.008) + (1 × 16.00)\n           = 2.016 + 16.00\n           = $\\pu{18.016 g/mol}$",
+            "widgets": {},
+            "images": {}
+          }
+        ],
+        "answerArea": { "type": "single" }
+      }
+    },
+    {
+      "id": "chem-periodic-table-1",
+      "title": "Periodic Table Groups",
+      "subject": "Chemistry",
+      "topic": "Periodic Table",
+      "perseusFormat": {
+        "question": {
+          "content": "Which element is a noble gas?\n\n[[☃ radio 1]]",
+          "widgets": {
+            "radio 1": {
+              "type": "radio",
+              "graded": true,
+              "options": {
+                "choices": [
+                  { "content": "$\\ce{Ne}$ (Neon)", "correct": true },
+                  { "content": "$\\ce{Na}$ (Sodium)", "correct": false },
+                  { "content": "$\\ce{Cl}$ (Chlorine)", "correct": false },
+                  { "content": "$\\ce{Fe}$ (Iron)", "correct": false }
+                ],
+                "randomize": true
+              },
+              "version": { "major": 0, "minor": 0 }
+            }
+          },
+          "images": {}
+        },
+        "hints": [
+          {
+            "content": "Noble gases are in Group 18 (the far right column) of the periodic table.\n\nThey have full outer electron shells and are very stable.",
+            "widgets": {},
+            "images": {}
+          }
+        ],
+        "answerArea": { "type": "single" }
+      }
+    },
+    {
+      "id": "chem-acid-base-1",
+      "title": "Acid-Base Reactions",
+      "subject": "Chemistry",
+      "topic": "Acids and Bases",
+      "perseusFormat": {
+        "question": {
+          "content": "Complete the neutralization reaction:\n\n$$\\ce{HCl + NaOH -> ? + H2O}$$\n\nWhat salt is formed? [[☃ dropdown 1]]",
+          "widgets": {
+            "dropdown 1": {
+              "type": "dropdown",
+              "graded": true,
+              "options": {
+                "choices": ["NaCl", "NaH", "ClOH", "HNa"],
+                "placeholder": "Select the salt",
+                "correct": 0
+              },
+              "version": { "major": 0, "minor": 0 }
+            }
+          },
+          "images": {}
+        },
+        "hints": [
+          {
+            "content": "In a neutralization reaction:\n$$\\ce{Acid + Base -> Salt + Water}$$",
+            "widgets": {},
+            "images": {}
+          },
+          {
+            "content": "The salt is formed from:\n- The cation from the base ($\\ce{Na+}$)\n- The anion from the acid ($\\ce{Cl-}$)\n\nSo: $\\ce{NaCl}$ (sodium chloride, or table salt!)",
+            "widgets": {},
+            "images": {}
+          }
+        ],
+        "answerArea": { "type": "single" }
+      }
+    }
+  ]
+}

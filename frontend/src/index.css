@@ -7,11 +7,67 @@
 
 body {
   margin: 0;
-  font-family:
-    'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: #F7F7F7;
+}
+
+/* Brilliant.org Typography System */
+.brilliant-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #64748B;
+  font-weight: 600;
+}
+
+.brilliant-question-stem {
+  font-size: 1.35rem;
+  line-height: 1.4;
+  font-weight: 600;
+  color: #1F2933;
+}
+
+@media (min-width: 768px) {
+  .brilliant-question-stem {
+    font-size: 1.5rem;
+  }
+}
+
+.brilliant-option-text {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #374151;
+}
+
+@media (min-width: 768px) {
+  .brilliant-option-text {
+    font-size: 1.05rem;
+  }
+}
+
+.brilliant-progress-text {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #64748B;
+}
+
+@media (min-width: 768px) {
+  .brilliant-progress-text {
+    font-size: 0.875rem;
+  }
+}
+
+.brilliant-feedback-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.brilliant-btn-text {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 code {
@@ -418,6 +474,50 @@ a[target="lint-help-window"] {
   --spacing: 0.25rem;
 }
 
+/* ============================================
+   BRILLIANT.ORG DESIGN TOKENS
+   ============================================ */
+:root {
+  /* Brilliant Color Palette */
+  --brilliant-bg-page: #F7F7F7;
+  --brilliant-bg-card: #FFFFFF;
+  --brilliant-accent: #20B46A;
+  --brilliant-accent-dark: #0A7745;
+  --brilliant-accent-disabled: #CDEAD9;
+  --brilliant-accent-disabled-border: #A2C9B7;
+
+  /* Feedback Colors */
+  --brilliant-correct-bg: #D7FFB8;
+  --brilliant-correct-text: #1F6B3A;
+  --brilliant-incorrect-bg: #FFDFE0;
+  --brilliant-incorrect-text: #9C1C28;
+
+  /* Selection Colors */
+  --brilliant-selected-border: #2F7BF6;
+  --brilliant-selected-bg: #E8F1FF;
+  --brilliant-selected-bar: #2F7BF6;
+
+  /* Neutral Colors */
+  --brilliant-border-neutral: #E0E0E0;
+  --brilliant-text-main: #1F2933;
+  --brilliant-text-dark: #111827;
+  --brilliant-text-muted: #64748B;
+
+  /* Correct/Incorrect Option States */
+  --brilliant-option-correct-border: #20B46A;
+  --brilliant-option-correct-bg: #E7FBEF;
+  --brilliant-option-incorrect-border: #FF8A9A;
+  --brilliant-option-incorrect-bg: #FFDFE0;
+
+  /* Hint Colors */
+  --brilliant-hint-bg: #F3F4FF;
+  --brilliant-hint-text: #2F7BF6;
+
+  /* Explanation Colors */
+  --brilliant-explanation-bg: #F9FAFB;
+  --brilliant-explanation-border: #E5E7EB;
+}
+
 .dark {
   --background: oklch(0.2077 0.0398 265.7549);
   --foreground: oklch(0.9288 0.0126 255.5078);
@@ -627,6 +727,76 @@ a[target="lint-help-window"] {
       opacity: 0;
       transform: scale(0.95) translateY(10px);
     }
+  }
+}
+
+/* ============================================
+   BRILLIANT.ORG ANIMATIONS
+   ============================================ */
+@layer utilities {
+  /* Feedback banner fade-in-up animation */
+  .animate-fadeInUp {
+    animation: fadeInUp 180ms ease-out forwards;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Card entrance animation */
+  .animate-cardIn {
+    animation: cardIn 200ms ease-out forwards;
+  }
+
+  @keyframes cardIn {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Card exit animation */
+  .animate-cardOut {
+    animation: cardOut 150ms ease-in forwards;
+  }
+
+  @keyframes cardOut {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+  }
+
+  /* Option hover lift (only on hover-capable devices) */
+  @media (hover: hover) {
+    .brilliant-option-hover:hover:not(:disabled):not([data-disabled="true"]) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  /* 3D button press effect */
+  .brilliant-btn-3d {
+    transition: transform 75ms ease-out, box-shadow 75ms ease-out;
+  }
+
+  .brilliant-btn-3d:active:not(:disabled) {
+    transform: translateY(2px);
   }
 }
 

@@ -35,7 +35,17 @@ const GradingSidebar = lazy(() => import("./components/grading-sidebar/GradingSi
 const ScratchpadCapture = lazy(() => import("./components/scratchpad-capture/ScratchpadCapture"));
 const FloatingControlPanel = lazy(() => import("./components/floating-control-panel/FloatingControlPanel"));
 
+// New Athena-based QuestionPane (lazy loaded)
+const QuestionPane = lazy(() => import("./components/question-pane/QuestionPane"));
+
 function App() {
+  // Check URL parameters for renderer mode
+  // Use ?renderer=athena to use the new Athena-based QuestionPane
+  // Use ?renderer=perseus (default) to use the original Perseus-based QuestionDisplay
+  const urlParams = new URLSearchParams(window.location.search);
+  const rendererMode = urlParams.get('renderer') || 'perseus';
+  const useAthena = rendererMode === 'athena';
+
   // this video reference is used for displaying the active stream, whether that is the webcam or screen capture
   // feel free to style as you see fit
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -139,7 +149,14 @@ function App() {
                         <ScratchpadCapture onFrameCaptured={(canvas) => {
                           mediaMixer.updateScratchpadFrame(canvas);
                         }}>
-                          <QuestionDisplay onSkillChange={setCurrentSkill} />
+                          {/* Conditionally render Athena or Perseus based on URL param */}
+                          {/* Access via ?renderer=athena for new Athena-based renderer */}
+                          {/* Access via ?renderer=perseus (default) for original Perseus */}
+                          {useAthena ? (
+                            <QuestionPane />
+                          ) : (
+                            <QuestionDisplay onSkillChange={setCurrentSkill} />
+                          )}
                           {isScratchpadOpen && (
                             <div className="scratchpad-container">
                               <Scratchpad />

@@ -1,0 +1,1253 @@
+/**
+ * Athena Content Renderer Styles
+ *
+ * Minimal base styles that work with Tailwind CSS.
+ * These provide structure while allowing customization.
+ */
+
+/* ============================================================================
+   DUOLINGO-STYLE FONTS
+   ============================================================================ */
+
+/* Import clean, rounded fonts similar to Duolingo */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
+
+/* ============================================================================
+   ANIMATIONS
+   ============================================================================ */
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================================
+   BASE RENDERER
+   ============================================================================ */
+
+.athena-renderer {
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 500;
+  line-height: 1.6;
+  color: #3c3c3c;
+  font-size: 18px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.athena-content {
+  outline: none;
+}
+
+.athena-question {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #4b4b4b;
+}
+
+/* ============================================================================
+   THEME VARIANTS
+   ============================================================================ */
+
+.athena-theme-light {
+  --athena-bg: #ffffff;
+  --athena-text: #1a1a1a;
+  --athena-border: #e5e5e5;
+  --athena-primary: #6366f1;
+  --athena-success: #22c55e;
+  --athena-error: #ef4444;
+  --athena-muted: #6b7280;
+}
+
+.athena-theme-dark {
+  --athena-bg: #1a1a1a;
+  --athena-text: #f5f5f5;
+  --athena-border: #404040;
+  --athena-primary: #818cf8;
+  --athena-success: #4ade80;
+  --athena-error: #f87171;
+  --athena-muted: #9ca3af;
+}
+
+.athena-theme-high-contrast {
+  --athena-bg: #000000;
+  --athena-text: #ffffff;
+  --athena-border: #ffffff;
+  --athena-primary: #ffff00;
+  --athena-success: #00ff00;
+  --athena-error: #ff0000;
+  --athena-muted: #cccccc;
+}
+
+/* ============================================================================
+   LOADING & ERROR STATES
+   ============================================================================ */
+
+.athena-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  gap: 1rem;
+}
+
+.athena-loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid var(--athena-border, #e5e5e5);
+  border-top-color: var(--athena-primary, #6366f1);
+  border-radius: 50%;
+  animation: athena-spin 0.8s linear infinite;
+}
+
+@keyframes athena-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.athena-loading-text {
+  color: var(--athena-muted, #6b7280);
+  font-size: 0.875rem;
+}
+
+.athena-error {
+  padding: 1rem;
+  border: 2px solid var(--athena-error, #ef4444);
+  border-radius: 0.5rem;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.athena-error h4 {
+  margin: 0 0 0.5rem 0;
+  color: var(--athena-error, #ef4444);
+}
+
+.athena-error p {
+  margin: 0;
+  color: var(--athena-muted, #6b7280);
+}
+
+/* ============================================================================
+   TEXT CONTENT
+   ============================================================================ */
+
+.athena-text {
+  white-space: pre-wrap;
+}
+
+.athena-text strong {
+  font-weight: 700;
+}
+
+.athena-text em {
+  font-style: italic;
+}
+
+.athena-text code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875em;
+  padding: 0.125rem 0.25rem;
+  background-color: var(--athena-border, #e5e5e5);
+  border-radius: 0.25rem;
+}
+
+/* ============================================================================
+   WIDGET BASE STYLES
+   ============================================================================ */
+
+.athena-widget {
+  margin: 0.5rem 0;
+}
+
+.athena-widget-inline {
+  display: inline-block;
+  margin: 0;
+  vertical-align: middle;
+}
+
+/* Expression widget inline alignment */
+.athena-widget-inline .athena-expression-input {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.athena-widget-inline .athena-expression-input-row {
+  display: inline-flex;
+}
+
+/* Ensure widget wrapper doesn't break text flow when inline */
+.athena-widget-inline .athena-widget-wrapper {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.athena-widget-placeholder {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px dashed var(--athena-border, #e5e5e5);
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--athena-muted, #6b7280);
+}
+
+.athena-widget-type {
+  font-weight: 600;
+}
+
+.athena-widget-error {
+  color: var(--athena-error, #ef4444);
+  font-style: italic;
+}
+
+/* ============================================================================
+   RADIO WIDGET - DUOLINGO STYLE
+   ============================================================================ */
+
+.athena-radio-widget {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.athena-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.athena-radio-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  border: 2px solid #e5e5e5;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background-color: #ffffff;
+  box-shadow: 0 2px 0 #e5e5e5;
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 600;
+}
+
+.athena-radio-choice:hover {
+  border-color: #1cb0f6;
+  background-color: #ddf4ff;
+  box-shadow: 0 2px 0 #1899d6;
+}
+
+.athena-radio-choice--selected {
+  border-color: #1cb0f6;
+  background-color: #ddf4ff;
+  box-shadow: 0 2px 0 #1899d6;
+}
+
+.athena-radio-choice--correct {
+  border-color: #58cc02;
+  background-color: #d7ffb8;
+  box-shadow: 0 2px 0 #46a302;
+}
+
+.athena-radio-choice--incorrect {
+  border-color: #ff4b4b;
+  background-color: #ffdfe0;
+  box-shadow: 0 2px 0 #ea2b2b;
+}
+
+.athena-radio-choice--missed-correct {
+  border-color: #ffc800;
+  background-color: #fff4d4;
+  box-shadow: 0 2px 0 #e5b300;
+}
+
+.athena-radio-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  flex: 1;
+}
+
+.athena-radio-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.athena-radio-indicator {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--athena-muted, #6b7280);
+  margin-top: 0.125rem;
+}
+
+.athena-radio-choice--selected .athena-radio-indicator {
+  color: var(--athena-primary, #6366f1);
+}
+
+.athena-radio-choice input[type="radio"],
+.athena-radio-choice input[type="checkbox"] {
+  margin-top: 0.125rem;
+  accent-color: var(--athena-primary, #6366f1);
+}
+
+.athena-radio-content {
+  flex: 1;
+  line-height: 1.5;
+}
+
+.athena-radio-status {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.athena-radio-status .correct-icon {
+  color: var(--athena-success, #22c55e);
+}
+
+.athena-radio-status .incorrect-icon {
+  color: var(--athena-error, #ef4444);
+}
+
+.athena-radio-status .missed-icon {
+  color: var(--athena-warning, #f59e0b);
+}
+
+.athena-radio-clue {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(239, 68, 68, 0.1);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: var(--athena-error, #ef4444);
+}
+
+.athena-radio-nota-indicator {
+  font-size: 0.75rem;
+  color: var(--athena-muted, #6b7280);
+  margin-left: 0.5rem;
+}
+
+/* ============================================================================
+   NUMERIC INPUT WIDGET - DUOLINGO STYLE
+   ============================================================================ */
+
+.athena-widget-numeric-input {
+  display: inline-flex;
+  align-items: center;
+  margin: 0.25rem 0;
+}
+
+.athena-numeric-input-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.athena-numeric-input-field {
+  padding: 10px 16px;
+  border: 2px solid #e5e5e5;
+  border-radius: 12px;
+  font-size: 1.125rem;
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 600;
+  width: auto;
+  min-width: 80px;
+  max-width: 200px;
+  transition: all 0.15s ease;
+  background-color: #f7f7f7;
+  text-align: center;
+  box-shadow: 0 2px 0 #e5e5e5;
+  /* Prevent text truncation */
+  text-overflow: clip;
+  overflow: visible;
+}
+
+.athena-numeric-input-field:focus {
+  outline: none;
+  border-color: #1cb0f6;
+  box-shadow: 0 2px 0 #1899d6;
+  background-color: #ffffff;
+}
+
+.athena-numeric-input-field.correct {
+  border-color: #58cc02;
+  background-color: #d7ffb8;
+  box-shadow: 0 2px 0 #46a302;
+}
+
+.athena-numeric-input-field.incorrect {
+  border-color: #ff4b4b;
+  background-color: #ffdfe0;
+  box-shadow: 0 2px 0 #ea2b2b;
+}
+
+.athena-numeric-input-field.validation-error {
+  border-color: #f59e0b;
+  background-color: #fef3c7;
+  box-shadow: 0 2px 0 #d97706;
+}
+
+.athena-numeric-input-hint {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.athena-numeric-input-validation {
+  font-size: 0.8125rem;
+  color: #dc2626;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.athena-numeric-input-field:disabled {
+  background-color: var(--athena-border, #e5e5e5);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.athena-numeric-input-coefficient {
+  font-size: 1rem;
+  color: var(--athena-muted, #6b7280);
+  margin-right: 0.25rem;
+}
+
+.athena-numeric-input-correct-answer {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--athena-success, #22c55e);
+  font-weight: 500;
+}
+
+/* Legacy class names for compatibility */
+.athena-numeric-input-widget {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.athena-input-label {
+  font-size: 0.875rem;
+  color: var(--athena-muted, #6b7280);
+}
+
+.athena-numeric-input {
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--athena-border, #e5e5e5);
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  width: 12ch;
+  transition: border-color 0.15s ease;
+}
+
+.athena-numeric-input:focus {
+  outline: none;
+  border-color: var(--athena-primary, #6366f1);
+}
+
+.athena-numeric-input--small {
+  width: 8ch;
+  font-size: 0.875rem;
+  padding: 0.375rem 0.5rem;
+}
+
+.athena-numeric-input:disabled {
+  background-color: var(--athena-border, #e5e5e5);
+  cursor: not-allowed;
+}
+
+/* ============================================================================
+   EXPRESSION WIDGET
+   ============================================================================ */
+
+.athena-expression-widget {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.athena-expression-input {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  vertical-align: middle;
+}
+
+.athena-expression-input-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  vertical-align: middle;
+}
+
+.athena-expression-input-field {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--athena-border, #e5e5e5);
+  border-radius: 0.375rem;
+  font-size: 1.125rem;
+  min-width: 12ch;
+  min-height: 2rem;
+  transition: border-color 0.15s ease;
+  background-color: var(--athena-surface, #ffffff);
+  display: inline-flex;
+  align-items: center;
+}
+
+.athena-expression-input-field:focus-within {
+  border-color: var(--athena-primary, #6366f1);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* MathQuill wrapper styling */
+.athena-mathquill-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  min-height: 1.5em;
+}
+
+.athena-mathquill-field {
+  width: 100%;
+  min-height: 1.5em;
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+
+/* MathQuill specific overrides for better alignment */
+.athena-mathquill-field .mq-editable-field {
+  min-height: 1.5em;
+  line-height: 1.5;
+}
+
+.athena-mathquill-field .mq-root-block {
+  padding: 0;
+  margin: 0;
+  vertical-align: middle;
+}
+
+.athena-mathquill-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 0.25rem;
+  transform: translateY(-50%);
+  color: var(--athena-muted, #6b7280);
+  pointer-events: none;
+  opacity: 0.6;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+/* MathQuill library overrides for proper alignment */
+.athena-expression-input .mq-editable-field {
+  border: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.athena-expression-input .mq-math-mode {
+  font-family: 'KaTeX_Main', 'Times New Roman', serif !important;
+  vertical-align: middle;
+}
+
+.athena-expression-input .mq-cursor {
+  border-left-color: var(--athena-primary, #6366f1);
+}
+
+/* Fix for empty MathQuill field height */
+.athena-mathquill-field:empty,
+.athena-mathquill-field .mq-root-block:empty::after {
+  content: '';
+  min-height: 1.5em;
+  display: inline-block;
+}
+
+/* Keypad toggle button */
+.athena-expression-keypad-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.5rem;
+  border: 2px solid var(--athena-border, #e5e5e5);
+  border-radius: 0.375rem;
+  background-color: var(--athena-surface, #ffffff);
+  color: var(--athena-muted, #6b7280);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.athena-expression-keypad-toggle:hover {
+  border-color: var(--athena-primary, #6366f1);
+  color: var(--athena-primary, #6366f1);
+}
+
+.athena-expression-keypad-toggle.active {
+  background-color: var(--athena-primary, #6366f1);
+  border-color: var(--athena-primary, #6366f1);
+  color: white;
+}
+
+/* Math keypad styling */
+.athena-math-keypad {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: var(--athena-surface-secondary, #f5f5f5);
+  border: 1px solid var(--athena-border, #e5e5e5);
+  border-radius: 0.5rem;
+}
+
+.athena-math-keypad-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.athena-math-keypad-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--athena-border, #e5e5e5);
+  border-radius: 0.25rem;
+  background-color: var(--athena-surface, #ffffff);
+  color: var(--athena-text, #1f2937);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.athena-math-keypad-button:hover {
+  background-color: var(--athena-primary, #6366f1);
+  border-color: var(--athena-primary, #6366f1);
+  color: white;
+}
+
+.athena-math-keypad-button:active {
+  transform: scale(0.95);
+}
+
+.athena-math-keypad-button.action {
+  background-color: var(--athena-surface-secondary, #f5f5f5);
+  color: var(--athena-muted, #6b7280);
+}
+
+.athena-math-keypad-button.action:hover {
+  background-color: var(--athena-error, #ef4444);
+  border-color: var(--athena-error, #ef4444);
+  color: white;
+}
+
+.athena-expression-hint {
+  font-size: 0.75rem;
+  color: var(--athena-muted, #6b7280);
+}
+
+.athena-expression-correct-answer {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background-color: rgba(34, 197, 94, 0.1);
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.athena-expression-correct-label {
+  color: var(--athena-success, #22c55e);
+  font-weight: 500;
+}
+
+.athena-expression-correct-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* ============================================================================
+   DROPDOWN WIDGET
+   ============================================================================ */
+
+.athena-widget-dropdown {
+  display: inline;
+  margin: 0;
+  vertical-align: middle;
+}
+
+.athena-dropdown-container {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  vertical-align: middle;
+}
+
+.athena-dropdown-select {
+  padding: 8px 32px 8px 12px;
+  border: 2px solid #e5e5e5;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 600;
+  background-color: #f7f7f7;
+  cursor: pointer;
+  appearance: none;
+  min-width: 140px;
+  box-shadow: 0 2px 0 #e5e5e5;
+  transition: all 0.15s ease;
+}
+
+.athena-dropdown-select:focus {
+  outline: none;
+  border-color: #1cb0f6;
+  box-shadow: 0 2px 0 #1899d6;
+  background-color: #ffffff;
+}
+
+.athena-dropdown-select.correct {
+  border-color: #58cc02;
+  background-color: #d7ffb8;
+  box-shadow: 0 2px 0 #46a302;
+}
+
+.athena-dropdown-select.incorrect {
+  border-color: #ff4b4b;
+  background-color: #ffdfe0;
+  box-shadow: 0 2px 0 #ea2b2b;
+}
+
+.athena-dropdown-chevron {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #6b7280;
+}
+
+.athena-dropdown-widget {
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  border: 2px solid var(--athena-border, #e5e5e5);
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  background-color: var(--athena-bg, #ffffff);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M3 4.5L6 7.5L9 4.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+}
+
+.athena-dropdown-widget:focus {
+  outline: none;
+  border-color: var(--athena-primary, #6366f1);
+}
+
+/* ============================================================================
+   IMAGE WIDGET
+   ============================================================================ */
+
+.athena-image-widget {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.athena-image-figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.athena-image-container {
+  position: relative;
+  display: inline-block;
+  cursor: zoom-in;
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+.athena-image-container.zoomed {
+  cursor: zoom-out;
+}
+
+.athena-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.375rem;
+  display: block;
+  transition: transform 0.2s ease;
+}
+
+.athena-image.loading {
+  opacity: 0.5;
+}
+
+.athena-image-loading,
+.athena-image-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--athena-surface-secondary, #f5f5f5);
+  border-radius: 0.375rem;
+  color: var(--athena-muted, #6b7280);
+  gap: 0.5rem;
+}
+
+.athena-image-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--athena-border, #e5e5e5);
+  border-top-color: var(--athena-primary, #6366f1);
+  border-radius: 50%;
+  animation: athena-spin 0.8s linear infinite;
+}
+
+@keyframes athena-spin {
+  to { transform: rotate(360deg); }
+}
+
+.athena-image-placeholder {
+  padding: 2rem;
+  text-align: center;
+  background-color: var(--athena-surface-secondary, #f5f5f5);
+  border-radius: 0.375rem;
+  color: var(--athena-muted, #6b7280);
+}
+
+.athena-image-zoom-hint {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  padding: 0.25rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 0.25rem;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.athena-image-container:hover .athena-image-zoom-hint {
+  opacity: 1;
+}
+
+.athena-image-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.athena-image-overlay-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+.athena-image-zoomed {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+}
+
+.athena-image-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.athena-image-caption {
+  font-size: 0.875rem;
+  color: var(--athena-muted, #6b7280);
+  text-align: center;
+  font-style: italic;
+}
+
+.athena-image-labels {
+  position: relative;
+}
+
+.athena-image-label {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+}
+
+/* ============================================================================
+   HINTS
+   ============================================================================ */
+
+.athena-hints {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 2px solid var(--athena-border, #e5e5e5);
+}
+
+.athena-hints-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--athena-muted, #6b7280);
+}
+
+.athena-hint {
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  background-color: rgba(99, 102, 241, 0.05);
+  border-left: 3px solid var(--athena-primary, #6366f1);
+  border-radius: 0 0.375rem 0.375rem 0;
+}
+
+.athena-hint-number {
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+/* ============================================================================
+   MATH RENDERING (KaTeX)
+   ============================================================================ */
+
+.athena-math {
+  font-family: KaTeX_Main, 'Times New Roman', serif;
+}
+
+.athena-math-display {
+  display: block;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.athena-math-inline {
+  display: inline;
+}
+
+.athena-math-error {
+  color: var(--athena-error, #ef4444);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875rem;
+  background-color: rgba(239, 68, 68, 0.1);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+}
+
+/* Ensure KaTeX display math has proper spacing */
+.athena-text .katex-display {
+  margin: 1rem 0;
+}
+
+/* ============================================================================
+   EQUATION TABLES (for aligned equations like Area = x + y)
+   ============================================================================ */
+
+.athena-equation-table {
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 1.125rem;
+}
+
+.athena-equation-table td {
+  padding: 6px 10px;
+  vertical-align: middle;
+  border: none;
+  background: transparent;
+}
+
+/* First column (labels like "Area") - right align */
+.athena-equation-table td:first-child {
+  text-align: right;
+  font-weight: 600;
+  padding-right: 4px;
+}
+
+/* Second column (= sign) - center */
+.athena-equation-table td:nth-child(2) {
+  text-align: center;
+  padding: 6px 4px;
+}
+
+/* Equation table with input fields */
+.athena-equation-table .athena-widget {
+  display: inline-flex;
+  margin: 0;
+}
+
+.athena-equation-table .athena-numeric-input-container {
+  display: inline-flex;
+}
+
+.athena-equation-table .athena-numeric-input-field {
+  width: 60px;
+  min-width: 50px;
+  text-align: center;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  padding: 8px 12px;
+  border: 2px solid #e5e5e5;
+  border-radius: 12px;
+  background: #f7f7f7;
+  box-shadow: 0 2px 0 #e5e5e5;
+}
+
+.athena-equation-table .athena-numeric-input-field:focus {
+  border-color: #1cb0f6;
+  box-shadow: 0 2px 0 #1899d6;
+  outline: none;
+}
+
+/* Standard markdown tables */
+.athena-table {
+  border-collapse: collapse;
+  margin: 1rem 0;
+  width: auto;
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.athena-table th,
+.athena-table td {
+  padding: 10px 16px;
+  border: 1px solid #e5e5e5;
+  text-align: left;
+}
+
+.athena-table th {
+  background-color: #f7f7f7;
+  font-weight: 700;
+}
+
+.athena-table tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+/* Style images in radio choices */
+.athena-choice-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0.5rem 0;
+  border-radius: 0.25rem;
+}
+
+/* ============================================================================
+   CODE BLOCKS
+   ============================================================================ */
+
+.athena-code-block {
+  margin: 1rem 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.athena-code-block pre {
+  margin: 0;
+  padding: 1rem;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.athena-code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: var(--athena-border, #e5e5e5);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* ============================================================================
+   ACCESSIBILITY
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .athena-loading-spinner {
+    animation: none;
+  }
+
+  .athena-radio-choice,
+  .athena-numeric-input,
+  .athena-expression-input,
+  .athena-dropdown-widget {
+    transition: none;
+  }
+}
+
+/* Focus visible styles */
+.athena-radio-choice:focus-within {
+  outline: 2px solid var(--athena-primary, #6366f1);
+  outline-offset: 2px;
+}
+
+/* Skip link for keyboard navigation */
+.athena-skip-link {
+  position: absolute;
+  left: -9999px;
+  z-index: 999;
+  padding: 0.5rem 1rem;
+  background-color: var(--athena-primary, #6366f1);
+  color: white;
+  text-decoration: none;
+}
+
+.athena-skip-link:focus {
+  left: 0;
+}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+
+@media (max-width: 640px) {
+  .athena-radio-choice {
+    padding: 0.625rem 0.75rem;
+  }
+
+  .athena-numeric-input {
+    width: 100%;
+    max-width: 16ch;
+  }
+
+  .athena-expression-input {
+    width: 100%;
+  }
+}
+
+/* ============================================================================
+   GRAPHIE IMAGES
+   ============================================================================ */
+
+.graphie-image-container {
+  position: relative;
+  display: block;
+  max-width: 100%;
+}
+
+.graphie-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Ensure SVG text elements render correctly */
+.graphie-image-container svg text,
+.athena-choice-image svg text,
+.graphie-svg-wrapper svg text {
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+/* Inline SVG wrapper */
+.graphie-svg-wrapper {
+  display: inline-block;
+  max-width: 100%;
+  line-height: 0;
+}
+
+.graphie-svg-wrapper svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Ensure SVG text is visible - override any hidden/transparent fills */
+.graphie-svg-wrapper svg text,
+.graphie-svg-wrapper svg tspan,
+.athena-choice-image text,
+.athena-radio-content svg text {
+  fill: #333 !important;
+  fill-opacity: 1 !important;
+  stroke: none !important;
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 14px;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.graphie-labels-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.graphie-label {
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+  text-shadow: 0 0 2px white, 0 0 2px white;
+}
+
+/* Choice images */
+.athena-choice-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0.5rem 0;
+  border-radius: 4px;
+}

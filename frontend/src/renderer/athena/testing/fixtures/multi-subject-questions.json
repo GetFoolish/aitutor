@@ -1,0 +1,244 @@
+{
+  "questions": [
+    {
+      "id": "physics-motion-1",
+      "title": "Projectile Motion",
+      "subject": "Physics",
+      "topic": "Kinematics",
+      "perseusFormat": {
+        "question": {
+          "content": "A ball is thrown horizontally from a cliff with initial velocity $v_0 = \\pu{10 m/s}$.\n\nIf it takes $\\pu{2 s}$ to hit the ground, what is the horizontal distance traveled?\n\n(Ignore air resistance, $g = \\pu{10 m/s^2}$)\n\n[[☃ numeric-input 1]] m",
+          "widgets": {
+            "numeric-input 1": {
+              "type": "numeric-input",
+              "graded": true,
+              "options": {
+                "answers": [{ "value": 20, "status": "correct", "maxError": 0.5 }],
+                "size": "normal"
+              },
+              "version": { "major": 0, "minor": 0 }
+            }
+          },
+          "images": {}
+        },
+        "hints": [
+          {
+            "content": "For projectile motion, horizontal and vertical motion are independent.\n\nHorizontal: $x = v_0 \\cdot t$ (constant velocity)",
+            "widgets": {},
+            "images": {}
+          },
+          {
+            "content": "$x = v_0 \\cdot t = \\pu{10 m/s} \\times \\pu{2 s} = \\pu{20 m}$",
+            "widgets": {},
+            "images": {}
+          }
+        ],
+        "answerArea": { "type": "single" }
+      }
+    },
+    {
+      "id": "cs-algorithms-1",
+      "title": "Binary Search Complexity",
+      "subject": "Computer Science",
+      "topic": "Algorithms",
+      "perseusFormat": {
+        "question": {
+          "content": "What is the time complexity of binary search on a sorted array of $n$ elements?\n\n[[☃ radio 1]]\n\n```python\ndef binary_search(arr, target):\n    left, right = 0, len(arr) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1\n```",
+          "widgets": {
+            "radio 1": {
+              "type": "radio",
+              "graded": true,
+              "options": {
+                "choices": [
+                  { "content": "$O(\\log n)$", "correct": true },
+                  { "content": "$O(n)$", "correct": false },
+                  { "content": "$O(n^2)$", "correct": false },
+                  { "content": "$O(1)$", "correct": false }
+                ],
+                "randomize": true
+              },
+              "version": { "major": 0, "minor": 0 }
+            }
+          },
+          "images": {}
+        },
+        "hints": [
+          {
+            "content": "Binary search works by repeatedly dividing the search space in half.\n\nWith each comparison, we eliminate half of the remaining elements.",
+            "widgets": {},
+            "images": {}
+          },
+          {
+            "content": "If we start with $n$ elements:\n- After 1 step: $n/2$ elements\n- After 2 steps: $n/4$ elements\n- After $k$ steps: $n/2^k$ elements\n\nWe stop when $n/2^k = 1$, so $k = \\log_2 n$",
+            "widgets": {},
+            "images": {}
+          }
+        ],
+        "answerArea": { "type": "single" }
+      }
+    },
+    {
+      "id": "history-timeline-1",
+      "title": "World War II Events",
+      "subject": "History",
+      "topic": "World War II",
+      "perseusFormat": {
+        "question": {
+          "content": "Place these World War II events in chronological order:\n\n[[☃ orderer 1]]",
+          "widgets": {
+            "orderer 1": {
+              "type": "orderer",
+              "graded": true,
+              "options": {
+                "options": [
+                  "Germany invades Poland (Sept 1939)",
+                  "Attack on Pearl Harbor (Dec 1941)",
+                  "D-Day Normandy landings (June 1944)",
+                  "Atomic bomb dropped on Hiroshima (Aug 1945)"
+                ],
+                "correctOrder": [0, 1, 2, 3]
+              },
+              "version": { "major": 0, "minor": 0 }
+            }
+          },
+          "images": {}
+        },
+        "hints": [
+          {
+            "content": "World War II began in Europe in September 1939 when Germany invaded Poland.",
+            "widgets": {},
+            "images": {}
+          },
+          {
+            "content": "The United States entered the war after Japan attacked Pearl Harbor on December 7, 1941.",
+            "widgets": {},
+            "images": {}
+          }
+        ],
+        "answerArea": { "type": "single" }
+      }
+    },
+    {
+      "id": "biology-genetics-1",
+      "title": "Punnett Square",
+      "subject": "Biology",
+      "topic": "Genetics",
+      "perseusFormat": {
+        "question": {
+          "content": "In pea plants, tall (T) is dominant over short (t).\n\nIf a heterozygous tall plant (Tt) is crossed with a short plant (tt), what percentage of offspring will be tall?\n\n[[☃ numeric-input 1]]%",
+          "widgets": {
+            "numeric-input 1": {
+              "type": "numeric-input",
+              "graded": true,
+              "options": {
+                "answers": [{ "value": 50, "status": "correct" }],
+                "size": "small"
+              },
+              "version": { "major": 0, "minor": 0 }
+            }
+          },
+          "images": {}
+        },
+        "hints": [
+          {
+            "content": "Set up a Punnett square:\n\n```\n        t       t\n   +-------+-------+\n T |  Tt   |  Tt   |\n   +-------+-------+\n t |  tt   |  tt   |\n   +-------+-------+\n```",
+            "widgets": {},
+            "images": {}
+          },
+          {
+            "content": "Results:\n- Tt (tall): 2 out of 4 = 50%\n- tt (short): 2 out of 4 = 50%",
+            "widgets": {},
+            "images": {}
+          }
+        ],
+        "answerArea": { "type": "single" }
+      }
+    },
+    {
+      "id": "economics-supply-demand-1",
+      "title": "Supply and Demand",
+      "subject": "Economics",
+      "topic": "Microeconomics",
+      "perseusFormat": {
+        "question": {
+          "content": "If the price of a good increases while demand remains constant, what happens to the quantity demanded?\n\n[[☃ radio 1]]",
+          "widgets": {
+            "radio 1": {
+              "type": "radio",
+              "graded": true,
+              "options": {
+                "choices": [
+                  { "content": "Quantity demanded decreases", "correct": true },
+                  { "content": "Quantity demanded increases", "correct": false },
+                  { "content": "Quantity demanded stays the same", "correct": false },
+                  { "content": "Cannot be determined", "correct": false }
+                ],
+                "randomize": false
+              },
+              "version": { "major": 0, "minor": 0 }
+            }
+          },
+          "images": {}
+        },
+        "hints": [
+          {
+            "content": "The **Law of Demand** states that, all else being equal, as the price of a good increases, the quantity demanded decreases.",
+            "widgets": {},
+            "images": {}
+          },
+          {
+            "content": "This is represented by the downward slope of a demand curve. When price goes up, you move UP along the curve, which means moving LEFT (lower quantity).",
+            "widgets": {},
+            "images": {}
+          }
+        ],
+        "answerArea": { "type": "single" }
+      }
+    },
+    {
+      "id": "literature-analysis-1",
+      "title": "Literary Devices",
+      "subject": "Literature",
+      "topic": "Poetry Analysis",
+      "perseusFormat": {
+        "question": {
+          "content": "Read the following passage:\n\n[[☃ passage 1]]\n\nWhat literary device is used in \"the wind whispered through the trees\"?\n\n[[☃ radio 1]]",
+          "widgets": {
+            "passage 1": {
+              "type": "passage",
+              "graded": false,
+              "options": {
+                "passageText": "The autumn leaves danced in the breeze,\nAs the wind whispered through the trees.\nNature's symphony played soft and slow,\nWhile golden sunlight cast its glow.",
+                "showLineNumbers": true
+              },
+              "version": { "major": 0, "minor": 0 }
+            },
+            "radio 1": {
+              "type": "radio",
+              "graded": true,
+              "options": {
+                "choices": [
+                  { "content": "Personification", "correct": true },
+                  { "content": "Simile", "correct": false },
+                  { "content": "Metaphor", "correct": false },
+                  { "content": "Hyperbole", "correct": false }
+                ],
+                "randomize": true
+              },
+              "version": { "major": 0, "minor": 0 }
+            }
+          },
+          "images": {}
+        },
+        "hints": [
+          {
+            "content": "**Personification** is giving human qualities to non-human things.\n\n\"Whispered\" is a human action being attributed to wind.",
+            "widgets": {},
+            "images": {}
+          }
+        ],
+        "answerArea": { "type": "single" }
+      }
+    }
+  ]
+}

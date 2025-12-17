@@ -1,0 +1,408 @@
+"""
+Question Loader for Athena Renderer
+
+Fetches questions from MongoDB and converts Perseus format to Athena format.
+Handles image URL conversion and widget normalization.
+
+NO CODE FROM SHERLOCKEDAPI OR PERSEUS.
+"""
+
+import os
+import sys
+import random
+import re
+from typing import List, Dict, Any, Optional
+from bson import ObjectId
+
+# Add project root to path for imports
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.insert(0, project_root)
+
+from managers.mongodb_manager import mongo_db
+from shared.logging_config import get_logger
+
+logger = get_logger(__name__)
+
+
+def convert_graphie_url(url: str) -> str:
+    """
+    Convert Perseus graphie URLs to standard HTTPS URLs.
+
+    Perseus format: web+graphie://cdn.kastatic.org/ka-perseus-graphie/{hash}
+    Athena format: https://cdn.kastatic.org/ka-perseus-graphie/{hash}.svg
+    """
+    if not url:
+        return url
+
+    # Handle web+graphie:// protocol
+    if url.startswith('web+graphie://'):
+        # Remove protocol and add https
+        clean_url = url.replace('web+graphie://', 'https://')
+
+        # Add .svg extension if not present
+        if not clean_url.endswith(('.svg', '.png', '.jpg', '.jpeg', '.gif')):
+            clean_url += '.svg'
+
+        return clean_url
+
+    return url
+
+
+def convert_widget_to_athena(widget_id: str, widget_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Convert a Perseus widget to Athena format.
+
+    Normalizes widget types and options for the Athena renderer.
+    """
+    widget_type = widget_data.get('type', 'unknown')
+    options = widget_data.get('options', {})
+
+    # Normalize widget type aliases
+    type_aliases = {
+        'input-number': 'numeric-input',
+    }
+    normalized_type = type_aliases.get(widget_type, widget_type)
+
+    athena_widget = {
+        'type': normalized_type,
+        'options': options.copy(),
+        'alignment': widget_data.get('alignment', 'default'),
+        'graded': widget_data.get('graded', True),
+        'static': widget_data.get('static', False),
+        'version': widget_data.get('version', {'major': 1, 'minor': 0}),
+    }
+
+    # Convert image URLs in options
+    if 'backgroundImage' in athena_widget['options']:
+        bg_image = athena_widget['options']['backgroundImage']
+        if isinstance(bg_image, dict) and 'url' in bg_image:
+            bg_image['url'] = convert_graphie_url(bg_image['url'])
+
+    if 'imageUrl' in athena_widget['options']:
+        athena_widget['options']['imageUrl'] = convert_graphie_url(athena_widget['options']['imageUrl'])
+
+    # Handle specific widget type conversions
+    if normalized_type == 'numeric-input':
+        # Ensure answers are properly formatted
+        answers = athena_widget['options'].get('answers', [])
+        if answers:
+            for answer in answers:
+                if 'status' not in answer:
+                    answer['status'] = 'correct'
+
+    elif normalized_type == 'radio':
+        # Ensure choices are properly formatted
+        choices = athena_widget['options'].get('choices', [])
+        for i, choice in enumerate(choices):
+            if isinstance(choice, dict):
+                if 'content' not in choice:
+                    choice['content'] = choice.get('text', '')
+                if 'correct' not in choice:
+                    choice['correct'] = choice.get('isCorrect', False)
+
+    elif normalized_type == 'image':
+        # Ensure image has proper dimensions
+        if 'box' not in athena_widget['options']:
+            bg = athena_widget['options'].get('backgroundImage', {})
+            athena_widget['options']['box'] = [
+                bg.get('width', 400),
+                bg.get('height', 300)
+            ]
+
+    return athena_widget
+
+
+def convert_content_images(content: str, images: Dict[str, Any]) -> str:
+    """
+    Convert image references in content to use HTTPS URLs.
+    """
+    if not content:
+        return content
+
+    # Find all image URLs in the content
+    # Pattern matches: ![alt](url) and web+graphie:// URLs
+    converted = content
+
+    for url, img_data in images.items():
+        if url.startswith('web+graphie://'):
+            new_url = convert_graphie_url(url)
+            converted = converted.replace(url, new_url)
+
+    return converted
+
+
+def convert_question_to_athena(doc: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Convert a Perseus question document to Athena format.
+
+    Input: MongoDB document with Perseus format
+    Output: Athena-compatible question format
+    """
+    question_data = doc.get('question', {})
+
+    # Convert widgets
+    athena_widgets = {}
+    for widget_id, widget_data in question_data.get('widgets', {}).items():
+        athena_widgets[widget_id] = convert_widget_to_athena(widget_id, widget_data)
+
+    # Convert content (update image URLs)
+    content = question_data.get('content', '')
+    images = question_data.get('images', {})
+    converted_content = convert_content_images(content, images)
+
+    # Convert images dict
+    athena_images = {}
+    for url, img_data in images.items():
+        new_url = convert_graphie_url(url)
+        athena_images[new_url] = {
+            'url': new_url,
+            'width': img_data.get('width', 400),
+            'height': img_data.get('height', 300),
+            'alt': img_data.get('alt', ''),
+        }
+
+    # Convert hints
+    athena_hints = []
+    for hint in doc.get('hints', []):
+        hint_widgets = {}
+        for widget_id, widget_data in hint.get('widgets', {}).items():
+            hint_widgets[widget_id] = convert_widget_to_athena(widget_id, widget_data)
+
+        hint_content = hint.get('content', '')
+        hint_images = hint.get('images', {})
+
+        athena_hints.append({
+            'content': convert_content_images(hint_content, hint_images),
+            'widgets': hint_widgets,
+            'images': hint_images,
+            'replace': hint.get('replace', False),
+        })
+
+    # Build answer area
+    answer_area = doc.get('answerArea', {})
+    athena_answer_area = {
+        'calculator': answer_area.get('calculator', False),
+        'periodicTable': answer_area.get('periodicTable', False),
+        'chi2Table': answer_area.get('chi2Table', False),
+        'tTable': answer_area.get('tTable', False),
+        'zTable': answer_area.get('zTable', False),
+        'financialCalculator': (
+            answer_area.get('financialCalculatorMonthlyPayment', False) or
+            answer_area.get('financialCalculatorTimeToPayOff', False) or
+            answer_area.get('financialCalculatorTotalAmount', False)
+        ),
+    }
+
+    # Build Athena item
+    athena_item = {
+        '_id': str(doc.get('_id', '')),
+        'slug': doc.get('slug', ''),
+        'skill_prefix': doc.get('skill_prefix', ''),
+
+        # Question data
+        'question': {
+            'content': converted_content,
+            'widgets': athena_widgets,
+            'images': athena_images,
+        },
+
+        # Hints
+        'hints': athena_hints,
+
+        # Answer area with tool toggles
+        'answerArea': athena_answer_area,
+
+        # Metadata
+        'itemDataVersion': doc.get('itemDataVersion', {'major': 2, 'minor': 0}),
+
+        # Widget type summary (for debugging/filtering)
+        'widgetTypes': list(set(w['type'] for w in athena_widgets.values())),
+    }
+
+    return athena_item
+
+
+def get_question_by_id(question_id: str) -> Optional[Dict[str, Any]]:
+    """
+    Fetch a single question by its MongoDB ObjectId.
+
+    Args:
+        question_id: MongoDB ObjectId as string
+
+    Returns:
+        Athena-formatted question or None if not found
+    """
+    try:
+        # Validate ObjectId format
+        if not ObjectId.is_valid(question_id):
+            logger.warning(f"Invalid ObjectId format: {question_id}")
+            return None
+
+        doc = mongo_db.perseus_questions.find_one({'_id': ObjectId(question_id)})
+
+        if not doc:
+            logger.warning(f"Question not found: {question_id}")
+            return None
+
+        return convert_question_to_athena(doc)
+
+    except Exception as e:
+        logger.error(f"Error fetching question {question_id}: {e}")
+        return None
+
+
+def get_questions(
+    sample_size: int = 10,
+    widget_types: Optional[List[str]] = None,
+    skill_prefix: Optional[str] = None
+) -> List[Dict[str, Any]]:
+    """
+    Fetch multiple questions from MongoDB.
+
+    Args:
+        sample_size: Number of questions to fetch
+        widget_types: Filter by widget types (optional)
+        skill_prefix: Filter by skill prefix (optional)
+
+    Returns:
+        List of Athena-formatted questions
+    """
+    try:
+        # Build query
+        query = {}
+
+        if skill_prefix:
+            query['skill_prefix'] = {'$regex': f'^{skill_prefix}', '$options': 'i'}
+
+        if widget_types:
+            # Match questions that have at least one of the specified widget types
+            query['question.widgets'] = {
+                '$exists': True
+            }
+
+        # Get total count for random sampling
+        total = mongo_db.perseus_questions.count_documents(query)
+
+        if total == 0:
+            logger.warning("No questions found matching criteria")
+            return []
+
+        # Fetch questions with random skip for variety
+        if total > sample_size:
+            # Random sample using aggregation
+            pipeline = [
+                {'$match': query},
+                {'$sample': {'size': sample_size}}
+            ]
+            cursor = mongo_db.perseus_questions.aggregate(pipeline)
+        else:
+            cursor = mongo_db.perseus_questions.find(query).limit(sample_size)
+
+        # Convert to Athena format
+        athena_questions = []
+        for doc in cursor:
+            athena_item = convert_question_to_athena(doc)
+            athena_questions.append(athena_item)
+
+        logger.info(f"Fetched {len(athena_questions)} questions")
+        return athena_questions
+
+    except Exception as e:
+        logger.error(f"Error fetching questions: {e}")
+        return []
+
+
+def get_questions_by_ids(question_ids: List[str]) -> List[Dict[str, Any]]:
+    """
+    Fetch multiple questions by their MongoDB ObjectIds.
+
+    Args:
+        question_ids: List of MongoDB ObjectIds as strings
+
+    Returns:
+        List of Athena-formatted questions
+    """
+    try:
+        # Convert to ObjectIds
+        object_ids = []
+        for qid in question_ids:
+            if ObjectId.is_valid(qid):
+                object_ids.append(ObjectId(qid))
+            else:
+                logger.warning(f"Invalid ObjectId: {qid}")
+
+        if not object_ids:
+            return []
+
+        cursor = mongo_db.perseus_questions.find({'_id': {'$in': object_ids}})
+
+        athena_questions = []
+        for doc in cursor:
+            athena_item = convert_question_to_athena(doc)
+            athena_questions.append(athena_item)
+
+        return athena_questions
+
+    except Exception as e:
+        logger.error(f"Error fetching questions by IDs: {e}")
+        return []
+
+
+def get_widget_types_summary() -> Dict[str, int]:
+    """
+    Get a summary of widget types in the database.
+
+    Returns:
+        Dictionary mapping widget type to count
+    """
+    try:
+        pipeline = [
+            {'$project': {'widgets': {'$objectToArray': '$question.widgets'}}},
+            {'$unwind': '$widgets'},
+            {'$group': {'_id': '$widgets.v.type', 'count': {'$sum': 1}}},
+            {'$sort': {'count': -1}}
+        ]
+
+        result = mongo_db.perseus_questions.aggregate(pipeline)
+
+        return {doc['_id']: doc['count'] for doc in result}
+
+    except Exception as e:
+        logger.error(f"Error getting widget types: {e}")
+        return {}
+
+
+def search_questions(
+    search_text: str,
+    limit: int = 20
+) -> List[Dict[str, Any]]:
+    """
+    Search questions by content text.
+
+    Args:
+        search_text: Text to search for
+        limit: Maximum results to return
+
+    Returns:
+        List of Athena-formatted questions
+    """
+    try:
+        query = {
+            '$or': [
+                {'question.content': {'$regex': search_text, '$options': 'i'}},
+                {'slug': {'$regex': search_text, '$options': 'i'}},
+            ]
+        }
+
+        cursor = mongo_db.perseus_questions.find(query).limit(limit)
+
+        athena_questions = []
+        for doc in cursor:
+            athena_item = convert_question_to_athena(doc)
+            athena_questions.append(athena_item)
+
+        return athena_questions
+
+    except Exception as e:
+        logger.error(f"Error searching questions: {e}")
+        return []

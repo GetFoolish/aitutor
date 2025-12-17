@@ -48,3 +48,10 @@ questionbankscrapper/
 
 # Build output
 frontend/build/
+
+# Local config files
+.mcp.json
+
+# Junk/temp files
+junk/
+*.tmp

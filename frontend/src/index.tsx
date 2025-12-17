@@ -27,6 +27,9 @@ import ComingSoonGuard from "./components/coming-soon/ComingSoonGuard"; // Comme
 
 const LoginPage = lazy(() => import("./components/auth/LoginPage"));
 const LandingPageWrapper = lazy(() => import("./components/landing/LandingPageWrapper"));
+const QuestionPane = lazy(() => import("./components/question-pane/QuestionPane"));
+const SimpleTest = lazy(() => import("./components/question-pane/SimpleTest"));
+const WidgetDemo = lazy(() => import("./renderer/athena/demo/ComparisonDemo"));
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
@@ -142,14 +145,18 @@ root.render(
       <BrowserRouter>
         <AuthProvider>
           <ComingSoonGuard>
-            <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+            <Suspense fallback={<div className="flex items-center justify-center h-screen" style={{ background: '#fff', color: '#333' }}>Loading Athena...</div>}>
               <Switch>
-                <Route path="/app/auth/setup" component={LoginPage} />
-                <Route path="/app/login" component={LoginPage} />
-                <Route path="/app" exact component={LandingPageOrApp} />
+                {/* TEST ROUTES - No auth required, exact match */}
+                <Route exact path="/test/simple" component={SimpleTest} />
+                <Route exact path="/test/athena" component={QuestionPane} />
+                <Route exact path="/test/widgets" component={WidgetDemo} />
+                <Route exact path="/app/auth/setup" component={LoginPage} />
+                <Route exact path="/app/login" component={LoginPage} />
+                <Route exact path="/app" component={LandingPageOrApp} />
                 <Route path="/app" component={App} />
-                <Route path="/" exact component={LandingPageOrApp} />
-                <Route component={LandingPageOrApp} /> {/* Catch-all route - fallback to landing page */}
+                <Route exact path="/" component={LandingPageOrApp} />
+                <Route component={LandingPageOrApp} /> {/* Catch-all route */}
               </Switch>
             </Suspense>
           </ComingSoonGuard>

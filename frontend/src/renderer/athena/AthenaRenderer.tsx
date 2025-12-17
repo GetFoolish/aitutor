@@ -1,0 +1,1265 @@
+/**
+ * Athena Renderer - Main Entry Point
+ *
+ * A modern, performant content renderer for educational content.
+ * Supports Perseus JSON format for backward compatibility while
+ * providing improved performance and multi-subject notation support.
+ */
+
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useCallback,
+  useMemo,
+  useEffect,
+  useState,
+  Suspense,
+} from 'react';
+import ReactDOM from 'react-dom';
+import { AthenaProvider, useAthena } from './AthenaContext';
+import { WidgetFactory } from './widgets/WidgetFactory';
+// @ts-ignore - KaTeX types resolution issue
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+import './athena.css';
+import type {
+  AthenaRendererProps,
+  AthenaRendererRef,
+  PerseusItem,
+  AthenaItem,
+  SerializedState,
+  ScoringResult,
+  WidgetScoreDetail,
+  NotationType,
+} from './core/types';
+
+// ============================================================================
+// CONTENT RENDERER (Internal Component)
+// ============================================================================
+
+interface ContentRendererProps {
+  item: PerseusItem | AthenaItem;
+  problemNum: number;
+}
+
+const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
+  function ContentRenderer({ item, problemNum }, ref) {
+    const { state, setAnswer, dispatchEvent, resolveStaticUrl } = useAthena();
+    const containerRef = useRef<HTMLDivElement>(null);
+    const widgetRefs = useRef<Map<string, unknown>>(new Map());
+
+    // Detect notation types in content
+    const detectedNotations = useMemo(() => {
+      const notations = new Set<NotationType>();
+      const content = item.question?.content || '';
+
+      // Math detection
+      if (/\$[^$]+\$|\\\[|\\\(|\\frac|\\sqrt|\\int|\\sum/.test(content)) {
+        notations.add('math');
+      }
+
+      // Chemistry detection
+      if (/\\ce\{|\\pu\{|->|<->/.test(content)) {
+        notations.add('chemistry');
+      }
+
+      // Code detection
+      if (/```[\w]*\n/.test(content)) {
+        notations.add('code');
+      }
+
+      // Diagram detection
+      if (/```mermaid|graph\s+(TD|LR)|sequenceDiagram|gantt/.test(content)) {
+        notations.add('diagram');
+      }
+
+      return notations;
+    }, [item.question?.content]);
+
+    // Parse content and extract widget placeholders
+    const parsedContent = useMemo(() => {
+      let content = item?.question?.content || '';
+      const widgets = item?.question?.widgets || {};
+
+      // FIRST: Process ALL image markdown BEFORE anything else
+      // This ensures images are converted to HTML tags early in the pipeline
+      const processImageMarkdown = (text: string): string => {
+        if (!text.includes('![')) return text;
+
+        let processed = text;
+
+        // Helper to convert URL to img tag
+        const toImgTag = (alt: string, url: string): string => {
+          let imageUrl = url.trim();
+          if (imageUrl.startsWith('web+graphie://')) {
+            imageUrl = imageUrl.replace('web+graphie://', 'https://') + '.png';
+          } else if ((imageUrl.includes('cdn.kastatic.org') || imageUrl.includes('ka-perseus')) &&
+                     !imageUrl.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i)) {
+            imageUrl = imageUrl + '.png';
+          }
+          return `<img src="${imageUrl}" alt="${alt}" class="athena-image" style="max-width:100%;height:auto;display:block;margin:1rem 0;" referrerpolicy="no-referrer" />`;
+        };
+
+        // Pattern 1: Standard ![alt](url) with closing paren
+        processed = processed.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
+          console.log('[Athena] Early processing: Standard image:', url.substring(0, 80));
+          return toImgTag(alt, url);
+        });
+
+        // Pattern 2: Truncated URL without closing paren
+        processed = processed.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s\n<]+)/g, (_, alt, url) => {
+          console.log('[Athena] Early processing: Truncated image:', url.substring(0, 80));
+          return toImgTag(alt, url.replace(/[)\s]+$/, ''));
+        });
+
+        return processed;
+      };
+
+      // Process images in content FIRST
+      content = processImageMarkdown(content);
+
+      // Also process images in all widget options that might contain markdown
+      const processedWidgets = { ...widgets };
+      Object.keys(processedWidgets).forEach(widgetId => {
+        const widget = processedWidgets[widgetId];
+        if (widget?.options) {
+          const newOptions = { ...widget.options };
+          let changed = false;
+
+          // Process passageText
+          if (newOptions.passageText && typeof newOptions.passageText === 'string') {
+            console.log('[Athena] Processing passageText for widget:', widgetId);
+            newOptions.passageText = processImageMarkdown(newOptions.passageText);
+            changed = true;
+          }
+
+          // Process passageTitle
+          if (newOptions.passageTitle && typeof newOptions.passageTitle === 'string') {
+            console.log('[Athena] Processing passageTitle for widget:', widgetId);
+            newOptions.passageTitle = processImageMarkdown(newOptions.passageTitle);
+            changed = true;
+          }
+
+          if (changed) {
+            processedWidgets[widgetId] = {
+              ...widget,
+              options: newOptions,
+            };
+          }
+        }
+      });
+
+      // Check if content contains tables with widget placeholders
+      // If so, process as a single block to preserve table structure
+      const hasTableWithWidgets = content.includes('|') && content.includes('[[☃');
+
+      // DEBUG: Check for image markdown in content (after processing)
+      const hasImageMarkdown = content.includes('![');
+      console.log('[Athena] parsedContent:', {
+        hasTableWithWidgets,
+        hasImageMarkdown,
+        contentPreview: content.substring(0, 500),
+        widgetCount: Object.keys(processedWidgets).length,
+        widgetTypes: Object.values(processedWidgets).map((w: any) => w.type),
+      });
+
+      // DEBUG: If image markdown still exists after processing, log it
+      if (hasImageMarkdown) {
+        const imageMatch = content.match(/!\[[^\]]*\]\([^)]{0,150}/);
+        console.log('[Athena] WARNING: Still has image markdown after early processing:', imageMatch?.[0]);
+      }
+
+      if (hasTableWithWidgets) {
+        // Process entire content as one block - widgets inside tables will be handled by renderHtmlWithInlineWidgets
+        console.log('[Athena] Detected table with widgets - processing as single block');
+        return {
+          parts: [{ type: 'text' as const, content }],
+          widgets: processedWidgets,
+        };
+      }
+
+      // Otherwise, split content by widget placeholders [[☃ widget-id]]
+      const parts: Array<{ type: 'text' | 'widget'; content: string; widgetId?: string }> = [];
+      const widgetPattern = /\[\[☃\s+([^\]]+)\]\]/g;
+
+      let lastIndex = 0;
+      let match;
+
+      while ((match = widgetPattern.exec(content)) !== null) {
+        // Add text before widget
+        if (match.index > lastIndex) {
+          parts.push({
+            type: 'text',
+            content: content.slice(lastIndex, match.index),
+          });
+        }
+
+        // Add widget placeholder
+        const widgetId = match[1].trim();
+        parts.push({
+          type: 'widget',
+          content: '',
+          widgetId,
+        });
+
+        lastIndex = match.index + match[0].length;
+      }
+
+      // Add remaining text
+      if (lastIndex < content.length) {
+        parts.push({
+          type: 'text',
+          content: content.slice(lastIndex),
+        });
+      }
+
+      return { parts, widgets: processedWidgets };
+    }, [item.question?.content, item.question?.widgets]);
+
+    // Get user input for all widgets
+    const getUserInput = useCallback((): Record<string, unknown> => {
+      return { ...state.answers };
+    }, [state.answers]);
+
+    // Get legacy user input format
+    const getUserInputLegacy = useCallback((): unknown[] => {
+      return Object.values(state.answers);
+    }, [state.answers]);
+
+    // Get serialized state
+    const getSerializedState = useCallback((): SerializedState => {
+      return {
+        question: state.answers,
+      };
+    }, [state.answers]);
+
+    // Restore state
+    const restoreState = useCallback(
+      (serializedState: SerializedState) => {
+        if (serializedState.question) {
+          Object.entries(serializedState.question).forEach(([widgetId, value]) => {
+            setAnswer(widgetId, value);
+          });
+        }
+      },
+      [setAnswer]
+    );
+
+    // Focus management
+    const focus = useCallback(() => {
+      containerRef.current?.focus();
+    }, []);
+
+    const blur = useCallback(() => {
+      containerRef.current?.blur();
+    }, []);
+
+    // Scoring (basic implementation - will be enhanced in Phase 4)
+    const score = useCallback((): ScoringResult => {
+      const widgets = item.question?.widgets || {};
+      const details: WidgetScoreDetail[] = [];
+      let totalEarned = 0;
+      let totalPossible = 0;
+      let allCorrect = true;
+      let isEmpty = true;
+
+      Object.entries(widgets).forEach(([widgetId, widget]) => {
+        const userAnswer = state.answers[widgetId];
+        const widgetType = widget.type as any;
+
+        // Skip ungraded widgets
+        if (!widget.graded) {
+          return;
+        }
+
+        totalPossible += 1;
+
+        if (userAnswer !== undefined && userAnswer !== null && userAnswer !== '') {
+          isEmpty = false;
+        }
+
+        // Basic scoring logic (to be expanded in Phase 4)
+        let correct = false;
+
+        if (widgetType === 'radio' && widget.options) {
+          const options = widget.options as any;
+          const choices = Array.isArray(options?.choices) ? options.choices : [];
+          const selectedIndex = userAnswer as number;
+          correct = choices[selectedIndex]?.correct === true;
+        } else if (widgetType === 'numeric-input' && widget.options) {
+          const options = widget.options as any;
+          const answers = Array.isArray(options?.answers) ? options.answers : [];
+          const numericAnswer = parseFloat(String(userAnswer));
+          correct = answers.some((ans: any) => {
+            if (!ans) return false;
+            const tolerance = ans.maxError || 0;
+            return (
+              ans.status === 'correct' &&
+              Math.abs(numericAnswer - ans.value) <= tolerance
+            );
+          });
+        }
+
+        if (correct) {
+          totalEarned += 1;
+        } else {
+          allCorrect = false;
+        }
+
+        details.push({
+          widgetId,
+          widgetType,
+          correct,
+          earned: correct ? 1 : 0,
+          total: 1,
+        });
+      });
+
+      return {
+        correct: allCorrect && !isEmpty,
+        empty: isEmpty,
+        earned: totalEarned,
+        total: totalPossible,
+        details,
+      };
+    }, [item.question?.widgets, state.answers]);
+
+    // Expose ref methods
+    useImperativeHandle(
+      ref,
+      () => ({
+        getUserInput,
+        getUserInputLegacy,
+        getSerializedState,
+        restoreState,
+        focus,
+        blur,
+        score,
+      }),
+      [getUserInput, getUserInputLegacy, getSerializedState, restoreState, focus, blur, score]
+    );
+
+    // Dispatch render events
+    useEffect(() => {
+      dispatchEvent({
+        type: 'render-start',
+        timestamp: Date.now(),
+        data: { problemNum },
+      });
+
+      return () => {
+        dispatchEvent({
+          type: 'render-complete',
+          timestamp: Date.now(),
+          data: { problemNum },
+        });
+      };
+    }, [problemNum, dispatchEvent]);
+
+    // Helper function to render math with KaTeX
+    const renderMath = (text: string): string => {
+      if (!text || typeof text !== 'string') return text || '';
+      let processed = text;
+
+      // First, handle escaped dollar signs \$ -> $ (currency)
+      // Use a placeholder to protect them from math processing
+      const dollarPlaceholder = '__DOLLAR_SIGN__';
+      processed = processed.replace(/\\\$/g, dollarPlaceholder);
+
+      // Process display math $$...$$ first (multiline support with [\s\S])
+      processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
+        try {
+          return katex.renderToString(math.trim(), { displayMode: true, throwOnError: false });
+        } catch {
+          return `<span class="athena-math-error">${math}</span>`;
+        }
+      });
+
+      // Process LaTeX environments \begin{...}...\end{...} (align, gather, etc.)
+      // First: with $ wrapper
+      processed = processed.replace(/\$\\?(large|Large|LARGE|huge|Huge)?\s*\\begin\{(align|aligned|gather|gathered|equation|array|matrix|pmatrix|bmatrix|cases)\}([\s\S]*?)\\end\{\2\}\s*\$/g, (_, size, env, content) => {
+        try {
+          const latex = `\\begin{${env}}${content}\\end{${env}}`;
+          return katex.renderToString(latex, { displayMode: true, throwOnError: false });
+        } catch (e) {
+          console.error('KaTeX align error:', e);
+          return `<span class="athena-math-error">${content}</span>`;
+        }
+      });
+
+      // Second: without $ wrapper (standalone \begin{align}...\end{align})
+      processed = processed.replace(/\\begin\{(align|aligned|gather|gathered|equation|array|matrix|pmatrix|bmatrix|cases)\}([\s\S]*?)\\end\{\1\}/g, (_, env, content) => {
+        try {
+          const latex = `\\begin{${env}}${content}\\end{${env}}`;
+          return katex.renderToString(latex, { displayMode: true, throwOnError: false });
+        } catch (e) {
+          console.error('KaTeX align error:', e);
+          return `<span class="athena-math-error">${content}</span>`;
+        }
+      });
+
+      // Process inline math $...$ (but not $$)
+      // Note: $28$ IS valid math (renders 28 in math font), different from $28 (currency)
+      // Currency like $28 without closing $ won't match this regex anyway
+      processed = processed.replace(/\$([^$]+)\$/g, (match, math) => {
+        // Skip if it looks like already processed or is $$
+        if (match.startsWith('$$')) return match;
+        try {
+          return katex.renderToString(math.trim(), { displayMode: false, throwOnError: false });
+        } catch {
+          return `<span class="athena-math-error">${math}</span>`;
+        }
+      });
+
+      // Handle LaTeX commands like \dfrac, \frac without $ delimiters
+      processed = processed.replace(/\\(dfrac|frac|sqrt|int|sum|prod|lim)\{([^}]+)\}\{([^}]+)\}/g, (match, cmd, arg1, arg2) => {
+        try {
+          return katex.renderToString(`\\${cmd}{${arg1}}{${arg2}}`, { displayMode: false, throwOnError: false });
+        } catch {
+          return match;
+        }
+      });
+
+      // Restore dollar signs
+      processed = processed.replace(/__DOLLAR_SIGN__/g, '$');
+
+      return processed;
+    };
+
+    // Process markdown tables - handles both strict and loose table formats
+    const processTable = (text: string): string => {
+      if (!text || typeof text !== 'string') return text || '';
+
+      console.log('[Athena] processTable input:', text.substring(0, 800));
+
+      const lines = text.split('\n');
+      const result: string[] = [];
+      let i = 0;
+      let tablesFound = 0;
+
+      // Helper to check if a line looks like a real table row (not just separators or short)
+      const isValidTableRow = (line: string): boolean => {
+        const trimmed = line.trim();
+        // Skip lines that are too short
+        if (trimmed.length < 5) return false;
+        // Skip lines that are just pipes and dashes (separator-like but not standalone)
+        if (/^[\s|:\-]+$/.test(trimmed) && !trimmed.includes('|---|')) return false;
+        // Skip lines that are just || or similar
+        if (/^\|+$/.test(trimmed.replace(/\s/g, ''))) return false;
+        // ALLOW lines with widget placeholders - they should render in table cells
+        return true;
+      };
+
+      // Helper to convert widget placeholders to data attributes for later processing
+      const preserveWidgetPlaceholders = (cell: string): string => {
+        // Convert [[☃ widget-id]] to <span class="athena-widget-inline" data-widget-id="widget-id"></span>
+        return cell.replace(/\[\[☃\s+([^\]]+)\]\]/g, (_, widgetId) => {
+          return `<span class="athena-widget-inline" data-widget-id="${widgetId.trim()}"></span>`;
+        });
+      };
+
+      // Helper to process cell content including math ($...$, $$...$$)
+      const processCellContent = (cell: string): string => {
+        let processed = preserveWidgetPlaceholders(cell);
+
+        // Process display math $$...$$
+        processed = processed.replace(/\$\$([^$]+)\$\$/g, (_, math) => {
+          try {
+            return katex.renderToString(math.trim(), {
+              displayMode: true,
+              throwOnError: false
+            });
+          } catch {
+            return `<span class="athena-math-display">${math}</span>`;
+          }
+        });
+
+        // Process inline math $...$
+        processed = processed.replace(/\$([^$]+)\$/g, (_, math) => {
+          try {
+            return katex.renderToString(math.trim(), {
+              displayMode: false,
+              throwOnError: false
+            });
+          } catch {
+            return `<span class="athena-math-inline" style="font-style:italic;">${math}</span>`;
+          }
+        });
+
+        // Process standalone \text{} commands (outside of $ delimiters)
+        processed = processed.replace(/\(\\text\{([^}]+)\}\)/g, (_, text) => {
+          try {
+            return katex.renderToString(`(\\text{${text}})`, {
+              displayMode: false,
+              throwOnError: false
+            });
+          } catch {
+            return `(${text})`;
+          }
+        });
+
+        // Process other standalone LaTeX commands like \frac{}{}, \sqrt{}, etc.
+        processed = processed.replace(/\\(frac|dfrac)\{([^}]+)\}\{([^}]+)\}/g, (_, cmd, num, den) => {
+          try {
+            return katex.renderToString(`\\${cmd}{${num}}{${den}}`, {
+              displayMode: false,
+              throwOnError: false
+            });
+          } catch {
+            return `${num}/${den}`;
+          }
+        });
+
+        return processed;
+      };
+
+      // Helper to parse cells from a line
+      const parseCells = (line: string): string[] => {
+        const trimmed = line.trim();
+        // Handle lines that start and end with |
+        if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+          return trimmed.slice(1, -1).split('|').map(c => c.trim());
+        }
+        // Handle lines that start with | but don't end with |
+        if (trimmed.startsWith('|')) {
+          return trimmed.slice(1).split('|').map(c => c.trim());
+        }
+        // Handle lines without leading |
+        return trimmed.split('|').map(c => c.trim());
+      };
+
+      // Helper to check if cells have meaningful content
+      const hasMeaningfulContent = (cells: string[]): boolean => {
+        // At least one cell should have content that's not just dashes or empty
+        return cells.some(cell => cell.length > 0 && !/^[-:]+$/.test(cell));
+      };
+
+      while (i < lines.length) {
+        const line = lines[i];
+        const trimmedLine = line.trim();
+
+        // Check if this line looks like a table row
+        // Must have pipes, be a valid table row, have 2+ cells with meaningful content
+        const hasPipes = trimmedLine.includes('|');
+        const isValid = isValidTableRow(trimmedLine);
+        const cells = parseCells(trimmedLine);
+        const hasCells = cells.length >= 2;
+        const hasMeaningful = hasMeaningfulContent(cells);
+
+        if (hasPipes && trimmedLine.length > 3) {
+          console.log('[Athena] Checking line for table:', {
+            line: trimmedLine.substring(0, 100),
+            hasPipes,
+            isValid,
+            cellCount: cells.length,
+            cells: cells.slice(0, 3),
+            hasMeaningful,
+          });
+        }
+
+        if (hasPipes && isValid && hasCells && hasMeaningful) {
+          const tableLines: string[] = [];
+          let j = i;
+
+          // Collect consecutive lines with pipes (allowing empty lines between)
+          let emptyLineCount = 0;
+          while (j < lines.length) {
+            const nextLine = lines[j].trim();
+            const isSeparatorRow = nextLine.includes('-') && /^[\s|:\-]+$/.test(nextLine);
+
+            if (nextLine.includes('|') &&
+                (isSeparatorRow || (isValidTableRow(nextLine) && parseCells(nextLine).length >= 2))) {
+              tableLines.push(lines[j]);
+              emptyLineCount = 0;
+              j++;
+            } else if (nextLine === '' && emptyLineCount === 0) {
+              // Allow one empty line
+              emptyLineCount++;
+              j++;
+            } else {
+              break;
+            }
+          }
+
+          // Need at least 2 rows to be a table, and must have a proper separator OR meaningful data
+          const hasSeparator = tableLines.some(l => /^[\s|:\-]+$/.test(l.trim()) && l.includes('-'));
+          if (tableLines.length >= 2 && (hasSeparator || tableLines.length >= 3)) {
+            // Look for a separator row (contains only |, -, :, and spaces)
+            const separatorIndex = tableLines.findIndex(l => {
+              const t = l.trim();
+              // Must have at least one - and multiple |, and only contain |, -, :, whitespace
+              return t.includes('-') && t.split('|').length >= 2 && /^[\s|:\-]+$/.test(t);
+            });
+
+            let html = '<table class="athena-equation-table">';
+            const alignments: string[] = [];
+
+            if (separatorIndex >= 1) {
+              // Standard markdown table with separator
+              // Parse alignment from separator row
+              const separatorCells = parseCells(tableLines[separatorIndex]);
+              separatorCells.forEach(cell => {
+                if (cell.startsWith(':') && cell.endsWith(':')) alignments.push('center');
+                else if (cell.endsWith(':')) alignments.push('right');
+                else alignments.push('left');
+              });
+
+              // Header rows (before separator)
+              html += '<thead>';
+              for (let k = 0; k < separatorIndex; k++) {
+                html += '<tr>';
+                const cells = parseCells(tableLines[k]);
+                cells.forEach((cell, idx) => {
+                  const align = alignments[idx] || 'center';
+                  const processedCell = processCellContent(cell);
+                  html += `<th style="text-align:${align};padding:8px 12px;font-weight:600;border:1px solid #e5e5e5;">${processedCell}</th>`;
+                });
+                html += '</tr>';
+              }
+              html += '</thead>';
+
+              // Body rows (after separator)
+              html += '<tbody>';
+              for (let k = separatorIndex + 1; k < tableLines.length; k++) {
+                if (tableLines[k].trim() === '') continue;
+                // Skip if this is another separator row
+                if (/^[\s|:\-]+$/.test(tableLines[k].trim())) continue;
+                html += '<tr>';
+                const cells = parseCells(tableLines[k]);
+                cells.forEach((cell, idx) => {
+                  const align = alignments[idx] || 'center';
+                  const processedCell = processCellContent(cell);
+                  html += `<td style="text-align:${align};padding:6px 12px;border:1px solid #e5e5e5;">${processedCell}</td>`;
+                });
+                html += '</tr>';
+              }
+              html += '</tbody>';
+            } else {
+              // Simple table without separator - treat first row as header
+              html += '<thead><tr>';
+              const headerCells = parseCells(tableLines[0]);
+              headerCells.forEach(cell => {
+                const processedCell = processCellContent(cell);
+                html += `<th style="text-align:center;padding:8px 12px;font-weight:600;border:1px solid #e5e5e5;background:#f7f7f7;">${processedCell}</th>`;
+              });
+              html += '</tr></thead><tbody>';
+
+              // Data rows
+              for (let k = 1; k < tableLines.length; k++) {
+                if (tableLines[k].trim() === '') continue;
+                html += '<tr>';
+                const cells = parseCells(tableLines[k]);
+                cells.forEach(cell => {
+                  const processedCell = processCellContent(cell);
+                  html += `<td style="text-align:center;padding:6px 12px;border:1px solid #e5e5e5;">${processedCell}</td>`;
+                });
+                html += '</tr>';
+              }
+              html += '</tbody>';
+            }
+
+            html += '</table>';
+            console.log('[Athena] Table created successfully:', {
+              rowCount: tableLines.length,
+              htmlPreview: html.substring(0, 500),
+            });
+            tablesFound++;
+            result.push(html);
+            i = j;
+            continue;
+          } else {
+            console.log('[Athena] Table rejected:', {
+              tableLineCount: tableLines.length,
+              hasSeparator,
+              firstLines: tableLines.slice(0, 3),
+            });
+          }
+        }
+
+        result.push(line);
+        i++;
+      }
+
+      // Convert any remaining widget placeholders to inline markers (for non-table content)
+      let finalResult = result.join('\n');
+      finalResult = finalResult.replace(/\[\[☃\s+([^\]]+)\]\]/g, (_, widgetId) => {
+        return `<span class="athena-widget-inline" data-widget-id="${widgetId.trim()}"></span>`;
+      });
+
+      console.log('[Athena] processTable complete:', {
+        tablesFound,
+        hasWidgetPlaceholders: finalResult.includes('athena-widget-inline'),
+        outputPreview: finalResult.substring(0, 500),
+      });
+
+      return finalResult;
+    };
+
+    // Component to render HTML with inline widget placeholders using portals
+    // This preserves table structure by rendering HTML first, then mounting widgets into placeholders
+    const HtmlWithInlineWidgets = React.memo(({ html, keyPrefix }: { html: string; keyPrefix: string }) => {
+      const containerRef = React.useRef<HTMLDivElement>(null);
+      const [widgetMounts, setWidgetMounts] = React.useState<Array<{ el: HTMLElement; widgetId: string }>>([]);
+
+      console.log('[Athena] HtmlWithInlineWidgets rendering:', {
+        keyPrefix,
+        htmlLength: html.length,
+        htmlPreview: html.substring(0, 500),
+      });
+
+      // After initial render, find widget placeholders in the DOM
+      React.useEffect(() => {
+        if (!containerRef.current) return;
+
+        const placeholders = containerRef.current.querySelectorAll('.athena-widget-inline[data-widget-id]');
+        const mounts: Array<{ el: HTMLElement; widgetId: string }> = [];
+
+        placeholders.forEach((el) => {
+          const widgetId = el.getAttribute('data-widget-id');
+          if (widgetId) {
+            mounts.push({ el: el as HTMLElement, widgetId });
+          }
+        });
+
+        console.log('[Athena] Found widget placeholders:', mounts.length);
+        if (mounts.length > 0) {
+          setWidgetMounts(mounts);
+        }
+      }, [html]);
+
+      // Render widgets into their placeholders using portals
+      const widgetPortals = widgetMounts.map(({ el, widgetId }, idx) => {
+        const widget = parsedContent.widgets[widgetId];
+        if (!widget) {
+          return ReactDOM.createPortal(
+            <span className="athena-widget-error">[Widget not found: {widgetId}]</span>,
+            el,
+            `${keyPrefix}-portal-${idx}`
+          );
+        }
+
+        const safeWidget = {
+          ...widget,
+          options: widget.options || {},
+          type: widget.type || 'unknown',
+        };
+        const userValue = state.answers[widgetId];
+        const isReadOnly = state.readOnly || (safeWidget.static ?? false);
+
+        return ReactDOM.createPortal(
+          <WidgetFactory
+            widgetId={widgetId}
+            widget={safeWidget as any}
+            value={userValue}
+            onChange={(value) => !isReadOnly && setAnswer(widgetId, value)}
+            readOnly={isReadOnly}
+            reviewMode={state.reviewMode}
+            theme={state.theme}
+          />,
+          el,
+          `${keyPrefix}-portal-${idx}`
+        );
+      });
+
+      return (
+        <>
+          <div
+            ref={containerRef}
+            className="athena-inline-widgets-container"
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
+          {widgetPortals}
+        </>
+      );
+    });
+
+    // Helper to render HTML that contains inline widget placeholders
+    const renderHtmlWithInlineWidgets = (html: string, key: string): React.ReactNode => {
+      return <HtmlWithInlineWidgets key={key} html={html} keyPrefix={key} />;
+    };
+
+    // Render text content with math/notation support
+    const renderTextContent = (text: string, key: string) => {
+      // Safety check for null/undefined text
+      if (!text || typeof text !== 'string') {
+        return null;
+      }
+
+      try {
+        // First, process tables
+        let processedText = processTable(text);
+
+        // Clean up stray pipe characters that aren't part of tables
+        // Remove standalone || at start of lines
+        processedText = processedText.replace(/^\|\|\s*$/gm, '');
+        // Remove lines that are just dashes, pipes, colons and spaces (table alignment patterns like "-:|-: | :-")
+        processedText = processedText.replace(/^[\s\-:|]+$/gm, '');
+        // Remove table alignment pattern lines (e.g., "-:|-:|:-" or "---|---|---")
+        processedText = processedText.replace(/^[-:|]+\|[-:|]+$/gm, '');
+        // Handle patterns like "|=" at start of lines (from poorly formatted content)
+        processedText = processedText.replace(/^\|([^|]*?)$/gm, '$1');
+        // Handle inline "|=" patterns that should be "="
+        processedText = processedText.replace(/\|=/g, '=');
+        // Remove standalone | characters that appear alone on lines
+        processedText = processedText.replace(/^\s*\|\s*$/gm, '');
+        // Remove trailing || at end of lines (but keep content before)
+        processedText = processedText.replace(/\|\|\s*$/gm, '');
+        // Remove trailing | at end of lines after content
+        processedText = processedText.replace(/\s*\|\s*$/gm, '');
+        // Handle "Step N| content" patterns - remove pipe after "Step N"
+        processedText = processedText.replace(/(Step\s*\d+)\|\s*/gi, '$1 ');
+        // Handle leading pipes before content (like "|28" -> "28")
+        processedText = processedText.replace(/^\|(\d)/gm, '$1');
+        // Handle "| × " patterns
+        processedText = processedText.replace(/\|\s*×/g, '×');
+
+        // Then process math
+        processedText = renderMath(processedText);
+
+        // Check for markdown images and render them as React elements
+        // FIRST: Pre-process to convert ALL image markdown (including truncated URLs) to a normalized format
+        let imageProcessedText = processedText;
+
+        // Debug: Log if content contains image markdown
+        if (imageProcessedText.includes('![')) {
+          console.log('[Athena] Content contains image markdown:', imageProcessedText.substring(0, 500));
+        }
+
+        // Pattern 1: Handle image URLs without closing paren - ![alt](url followed by whitespace/newline/end
+        imageProcessedText = imageProcessedText.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)\n]+)(?:\s|$)/g, (_, alt, url) => {
+          console.log('[Athena] Pre-process: Image without closing paren:', url);
+          return `![${alt}](${url.trim()}) `;
+        });
+
+        // Pattern 2: Handle image URLs without closing paren at end of string
+        imageProcessedText = imageProcessedText.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)\n]+)$/gm, (_, alt, url) => {
+          console.log('[Athena] Pre-process: Image at end of line:', url);
+          return `![${alt}](${url.trim()})`;
+        });
+
+        // Pattern 3: Handle CDN URLs without closing paren
+        imageProcessedText = imageProcessedText.replace(/!\[([^\]]*)\]\(([^)\s]*(?:cdn\.kastatic|ka-perseus)[^\s)\n]*)/g, (_, alt, url) => {
+          if (!url.endsWith(')')) {
+            console.log('[Athena] Pre-process: CDN image without closing paren:', url);
+            return `![${alt}](${url.trim()})`;
+          }
+          return `![${alt}](${url})`;
+        });
+
+        // NUCLEAR OPTION: Direct replacement of ALL image markdown to HTML
+        // This runs BEFORE the React element processing and handles ALL cases
+        const convertToImgTag = (alt: string, rawUrl: string): string => {
+          let imageUrl = rawUrl.trim();
+          // Convert web+graphie:// URLs
+          if (imageUrl.startsWith('web+graphie://')) {
+            imageUrl = imageUrl.replace('web+graphie://', 'https://') + '.png';
+          }
+          // Handle CDN URLs missing extension
+          else if ((imageUrl.includes('cdn.kastatic.org') || imageUrl.includes('ka-perseus')) &&
+                   !imageUrl.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i)) {
+            imageUrl = imageUrl + '.png';
+          }
+          // Handle relative URLs
+          else if (imageUrl.startsWith('/')) {
+            const ASSETS_BASE_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
+            imageUrl = ASSETS_BASE_URL + imageUrl;
+          }
+          return `<img src="${imageUrl}" alt="${alt}" class="athena-image" style="max-width:100%;height:auto;display:block;margin:1rem 0;" referrerpolicy="no-referrer" />`;
+        };
+
+        // Replace ALL image markdown patterns with img tags directly
+        // Pattern: ![alt](url) - standard with closing paren
+        imageProcessedText = imageProcessedText.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, url) => {
+          console.log('[Athena] Nuclear: Converting image to HTML:', url.substring(0, 80));
+          return convertToImgTag(alt, url);
+        });
+
+        // Pattern: ![alt](url followed by non-paren (no closing paren)
+        imageProcessedText = imageProcessedText.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s<]+)/g, (match, alt, url) => {
+          // Only if there's still a ![ pattern (wasn't matched above)
+          console.log('[Athena] Nuclear fallback: Converting truncated image:', url.substring(0, 80));
+          return convertToImgTag(alt, url);
+        });
+
+        // If still has raw markdown, log it
+        if (imageProcessedText.includes('![') && imageProcessedText.includes('](')) {
+          console.log('[Athena] WARNING: Still has raw image markdown after nuclear processing:',
+            imageProcessedText.match(/!\[[^\]]*\]\([^)]{0,100}/)?.[0]);
+        }
+
+        // Now use the standard pattern for React element processing (should find nothing since we converted to HTML)
+        const imagePattern = /!\[([^\]]*)\]\(([^)]+)\)/g;
+        const parts: React.ReactNode[] = [];
+        let lastIndex = 0;
+        let match;
+        let partIndex = 0;
+
+        while ((match = imagePattern.exec(imageProcessedText)) !== null) {
+          console.log('[Athena] Image match found:', { alt: match[1], url: match[2] });
+          // Add text before the image
+          if (match.index > lastIndex) {
+            const textBefore = imageProcessedText.slice(lastIndex, match.index);
+            const finalText = textBefore
+              .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+              .replace(/(?<!\*)\*(?!\*)(.+?)\*(?!\*)/g, '<em>$1</em>')
+              .replace(/`([^`]+)`/g, '<code>$1</code>');
+            parts.push(
+              <span
+                key={`${key}-text-${partIndex++}`}
+                className="athena-text"
+                dangerouslySetInnerHTML={{ __html: finalText }}
+              />
+            );
+          }
+
+          // Add the image
+          const altText = match[1];
+          let imageUrl = match[2];
+
+          // Convert web+graphie:// URLs - use PNG which has labels baked in
+          // SVG requires fetching -data.json for labels which faces CORS issues
+          if (imageUrl.startsWith('web+graphie://')) {
+            imageUrl = imageUrl.replace('web+graphie://', 'https://') + '.png';
+          }
+          // Handle CDN URLs that might be missing file extension
+          else if (imageUrl.includes('cdn.kastatic.org') || imageUrl.includes('ka-perseus')) {
+            // Add .png extension if no extension present
+            if (!imageUrl.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i)) {
+              imageUrl = imageUrl + '.png';
+            }
+          }
+          // Handle relative URLs from backend assets
+          else if (imageUrl.startsWith('/')) {
+            const ASSETS_BASE_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
+            imageUrl = ASSETS_BASE_URL + imageUrl;
+          }
+          // Handle other relative URLs (no protocol)
+          else if (!imageUrl.startsWith('http') && !imageUrl.startsWith('data:')) {
+            const ASSETS_BASE_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
+            imageUrl = ASSETS_BASE_URL + '/' + imageUrl;
+          }
+
+          console.log('[Athena] Rendering image:', { alt: altText, url: imageUrl });
+          parts.push(
+            <div key={`${key}-img-${partIndex++}`} className="athena-inline-image">
+              <img
+                src={imageUrl}
+                alt={altText}
+                className="athena-image"
+                referrerPolicy="no-referrer"
+                style={{ maxWidth: '100%', height: 'auto', display: 'block', margin: '1rem 0' }}
+                onLoad={() => console.log('[Athena] Image loaded:', imageUrl)}
+                onError={(e) => {
+                  console.error('[Athena] Image failed to load:', imageUrl);
+                  // Try alternate format as fallback
+                  const target = e.target as HTMLImageElement;
+                  if (target.src.endsWith('.png')) {
+                    target.src = target.src.replace('.png', '.svg');
+                  } else if (target.src.endsWith('.svg')) {
+                    target.src = target.src.replace('.svg', '.png');
+                  }
+                }}
+              />
+            </div>
+          );
+
+          lastIndex = match.index + match[0].length;
+        }
+
+        // Add remaining text
+        if (lastIndex < imageProcessedText.length) {
+          const remainingText = imageProcessedText.slice(lastIndex);
+          const finalText = remainingText
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/(?<!\*)\*(?!\*)(.+?)\*(?!\*)/g, '<em>$1</em>')
+            .replace(/`([^`]+)`/g, '<code>$1</code>');
+          parts.push(
+            <span
+              key={`${key}-text-${partIndex++}`}
+              className="athena-text"
+              dangerouslySetInnerHTML={{ __html: finalText }}
+            />
+          );
+        }
+
+        // If no images found, just process as text with markdown
+        if (parts.length === 0) {
+          const finalText = imageProcessedText
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/(?<!\*)\*(?!\*)(.+?)\*(?!\*)/g, '<em>$1</em>')
+            .replace(/`([^`]+)`/g, '<code>$1</code>');
+
+          // Check for inline widget placeholders (from table cells)
+          if (finalText.includes('athena-widget-inline')) {
+            return renderHtmlWithInlineWidgets(finalText, key);
+          }
+
+          return (
+            <span
+              key={key}
+              className="athena-text"
+              dangerouslySetInnerHTML={{ __html: finalText }}
+            />
+          );
+        }
+
+        // Check if any parts contain inline widgets
+        const processedParts = parts.map((part, idx) => {
+          if (React.isValidElement(part) && part.props.dangerouslySetInnerHTML) {
+            const html = part.props.dangerouslySetInnerHTML.__html;
+            if (html && html.includes('athena-widget-inline')) {
+              return renderHtmlWithInlineWidgets(html, `${key}-inline-${idx}`);
+            }
+          }
+          return part;
+        });
+
+        return <React.Fragment key={key}>{processedParts}</React.Fragment>;
+      } catch (error) {
+        console.error(`Error rendering text content:`, error);
+        return (
+          <span key={key} className="athena-text-error">
+            {text}
+          </span>
+        );
+      }
+    };
+
+    // Render widget using WidgetFactory
+    const renderWidget = (widgetId: string, key: string) => {
+      try {
+        const widget = parsedContent.widgets[widgetId];
+        if (!widget) {
+          return (
+            <span key={key} className="athena-widget-error">
+              [Widget not found: {widgetId}]
+            </span>
+          );
+        }
+
+        // Ensure widget has proper structure
+        const safeWidget = {
+          ...widget,
+          options: widget.options || {},
+          type: widget.type || 'unknown',
+        };
+
+        const userValue = state.answers[widgetId];
+        const isReadOnly = state.readOnly || (safeWidget.static ?? false);
+
+        return (
+          <WidgetFactory
+            key={key}
+            widgetId={widgetId}
+            widget={safeWidget as any}
+            value={userValue}
+            onChange={(value) => !isReadOnly && setAnswer(widgetId, value)}
+            readOnly={isReadOnly}
+            reviewMode={state.reviewMode}
+            theme={state.theme}
+          />
+        );
+      } catch (error) {
+        console.error(`Error rendering widget ${widgetId}:`, error);
+        return (
+          <span key={key} className="athena-widget-error">
+            [Error rendering widget: {widgetId}]
+          </span>
+        );
+      }
+    };
+
+    return (
+      <div
+        ref={containerRef}
+        className={`athena-content athena-theme-${state.theme}`}
+        tabIndex={-1}
+        role="region"
+        aria-label="Question content"
+      >
+        <div className="athena-question">
+          {parsedContent.parts.map((part, idx) => {
+            const key = `part-${idx}`;
+            if (part.type === 'text') {
+              return renderTextContent(part.content, key);
+            } else if (part.type === 'widget' && part.widgetId) {
+              return renderWidget(part.widgetId, key);
+            }
+            return null;
+          })}
+        </div>
+
+        {/* Hints section */}
+        {state.hintsVisible > 0 && Array.isArray(item.hints) && item.hints.length > 0 && (
+          <div className="athena-hints">
+            <h4 className="athena-hints-title">Hints</h4>
+            {item.hints.slice(0, state.hintsVisible).map((hint, idx) => {
+              // Process images in hint content
+              let hintContent = hint?.content || '';
+              if (hintContent.includes('![')) {
+                hintContent = hintContent.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
+                  let imageUrl = url.trim();
+                  if (imageUrl.startsWith('web+graphie://')) {
+                    imageUrl = imageUrl.replace('web+graphie://', 'https://') + '.png';
+                  } else if ((imageUrl.includes('cdn.kastatic.org') || imageUrl.includes('ka-perseus')) &&
+                             !imageUrl.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i)) {
+                    imageUrl = imageUrl + '.png';
+                  }
+                  return `<img src="${imageUrl}" alt="${alt}" class="athena-image" style="max-width:100%;height:auto;display:block;margin:1rem 0;" referrerpolicy="no-referrer" />`;
+                });
+              }
+              return (
+                <div key={`hint-${idx}`} className="athena-hint">
+                  <span className="athena-hint-number">Hint {idx + 1}:</span>
+                  <span
+                    className="athena-hint-content"
+                    dangerouslySetInnerHTML={{ __html: hintContent }}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+
+// ============================================================================
+// LOADING FALLBACK
+// ============================================================================
+
+function LoadingFallback() {
+  return (
+    <div className="athena-loading">
+      <div className="athena-loading-spinner" />
+      <span className="athena-loading-text">Loading content...</span>
+    </div>
+  );
+}
+
+// ============================================================================
+// ERROR BOUNDARY
+// ============================================================================
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+
+class AthenaErrorBoundary extends React.Component<
+  { children: React.ReactNode; fallback?: React.ReactNode },
+  ErrorBoundaryState
+> {
+  constructor(props: { children: React.ReactNode; fallback?: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('Athena render error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        this.props.fallback || (
+          <div className="athena-error">
+            <h4>Unable to render content</h4>
+            <p>{this.state.error?.message || 'An unexpected error occurred'}</p>
+          </div>
+        )
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// ============================================================================
+// MAIN RENDERER COMPONENT
+// ============================================================================
+
+export const AthenaRenderer = forwardRef<AthenaRendererRef, AthenaRendererProps>(
+  function AthenaRenderer(
+    {
+      item,
+      problemNum = 0,
+      hintsVisible = 0,
+      reviewMode = false,
+      showSolutions = 'none',
+      initialState,
+      onStateChange,
+      onAnswerChange,
+      readOnly = false,
+      theme = 'light',
+      ariaLabel,
+      apiOptions = {},
+      dependencies = {},
+    },
+    ref
+  ) {
+    const contentRef = useRef<AthenaRendererRef>(null);
+
+    // Forward ref to content renderer
+    useImperativeHandle(ref, () => ({
+      getUserInput: () => contentRef.current?.getUserInput() || {},
+      getUserInputLegacy: () => contentRef.current?.getUserInputLegacy() || [],
+      getSerializedState: () =>
+        contentRef.current?.getSerializedState() || { question: {} },
+      restoreState: (state) => contentRef.current?.restoreState(state),
+      focus: () => contentRef.current?.focus(),
+      blur: () => contentRef.current?.blur(),
+      score: () =>
+        contentRef.current?.score() || {
+          correct: false,
+          empty: true,
+          earned: 0,
+          total: 0,
+          details: [],
+        },
+    }));
+
+    // Handle state changes
+    const handleEvent = useCallback(
+      (event: any) => {
+        if (event.type === 'answer-change' && onAnswerChange) {
+          onAnswerChange(event.data.widgetId, event.data.value);
+        }
+        dependencies.onEvent?.(event);
+      },
+      [onAnswerChange, dependencies]
+    );
+
+    return (
+      <AthenaErrorBoundary>
+        <AthenaProvider
+          theme={theme}
+          dependencies={{ ...dependencies, onEvent: handleEvent }}
+          apiOptions={apiOptions}
+          initialAnswers={initialState?.question || {}}
+          hintsVisible={hintsVisible}
+          reviewMode={reviewMode}
+          showSolutions={showSolutions}
+          readOnly={readOnly}
+        >
+          <div
+            className="athena-renderer"
+            role="application"
+            aria-label={ariaLabel || `Question ${problemNum + 1}`}
+          >
+            <Suspense fallback={<LoadingFallback />}>
+              <ContentRenderer ref={contentRef} item={item} problemNum={problemNum} />
+            </Suspense>
+          </div>
+        </AthenaProvider>
+      </AthenaErrorBoundary>
+    );
+  }
+);
+
+export default AthenaRenderer;

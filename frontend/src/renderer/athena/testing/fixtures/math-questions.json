@@ -1,0 +1,225 @@
+{
+  "questions": [
+    {
+      "id": "math-algebra-1",
+      "title": "Solving Linear Equations",
+      "subject": "Mathematics",
+      "topic": "Algebra",
+      "perseusFormat": {
+        "question": {
+          "content": "Solve for $x$:\n\n$$3x + 7 = 22$$\n\n[[☃ numeric-input 1]]",
+          "widgets": {
+            "numeric-input 1": {
+              "type": "numeric-input",
+              "graded": true,
+              "options": {
+                "answers": [
+                  {
+                    "value": 5,
+                    "status": "correct",
+                    "maxError": 0
+                  }
+                ],
+                "size": "normal",
+                "coefficient": false
+              },
+              "version": { "major": 0, "minor": 0 }
+            }
+          },
+          "images": {}
+        },
+        "hints": [
+          {
+            "content": "First, subtract 7 from both sides:\n\n$$3x + 7 - 7 = 22 - 7$$\n$$3x = 15$$",
+            "widgets": {},
+            "images": {}
+          },
+          {
+            "content": "Then divide both sides by 3:\n\n$$\\frac{3x}{3} = \\frac{15}{3}$$\n$$x = 5$$",
+            "widgets": {},
+            "images": {}
+          }
+        ],
+        "answerArea": { "type": "single" }
+      }
+    },
+    {
+      "id": "math-quadratic-1",
+      "title": "Factoring Quadratics",
+      "subject": "Mathematics",
+      "topic": "Algebra",
+      "perseusFormat": {
+        "question": {
+          "content": "Factor the following expression:\n\n$$x^2 + 5x + 6$$\n\n[[☃ expression 1]]",
+          "widgets": {
+            "expression 1": {
+              "type": "expression",
+              "graded": true,
+              "options": {
+                "answerForms": [
+                  {
+                    "value": "(x+2)(x+3)",
+                    "form": true,
+                    "simplify": false,
+                    "considered": "correct"
+                  },
+                  {
+                    "value": "(x+3)(x+2)",
+                    "form": true,
+                    "simplify": false,
+                    "considered": "correct"
+                  }
+                ],
+                "buttonSets": ["basic"],
+                "times": false
+              },
+              "version": { "major": 0, "minor": 0 }
+            }
+          },
+          "images": {}
+        },
+        "hints": [
+          {
+            "content": "To factor $x^2 + 5x + 6$, we need to find two numbers that:\n- Multiply to give 6\n- Add to give 5",
+            "widgets": {},
+            "images": {}
+          },
+          {
+            "content": "The numbers 2 and 3 work:\n- $2 \\times 3 = 6$ ✓\n- $2 + 3 = 5$ ✓\n\nSo: $x^2 + 5x + 6 = (x + 2)(x + 3)$",
+            "widgets": {},
+            "images": {}
+          }
+        ],
+        "answerArea": { "type": "single" }
+      }
+    },
+    {
+      "id": "math-geometry-1",
+      "title": "Triangle Area",
+      "subject": "Mathematics",
+      "topic": "Geometry",
+      "perseusFormat": {
+        "question": {
+          "content": "A triangle has a base of 8 cm and a height of 5 cm.\n\nWhat is the area of the triangle?\n\n[[☃ numeric-input 1]] cm²",
+          "widgets": {
+            "numeric-input 1": {
+              "type": "numeric-input",
+              "graded": true,
+              "options": {
+                "answers": [
+                  {
+                    "value": 20,
+                    "status": "correct",
+                    "maxError": 0
+                  }
+                ],
+                "size": "normal"
+              },
+              "version": { "major": 0, "minor": 0 }
+            }
+          },
+          "images": {}
+        },
+        "hints": [
+          {
+            "content": "The formula for the area of a triangle is:\n\n$$A = \\frac{1}{2} \\times base \\times height$$",
+            "widgets": {},
+            "images": {}
+          },
+          {
+            "content": "Substituting the values:\n\n$$A = \\frac{1}{2} \\times 8 \\times 5 = \\frac{40}{2} = 20$$",
+            "widgets": {},
+            "images": {}
+          }
+        ],
+        "answerArea": { "type": "single" }
+      }
+    },
+    {
+      "id": "math-multiple-choice-1",
+      "title": "Properties of Exponents",
+      "subject": "Mathematics",
+      "topic": "Algebra",
+      "perseusFormat": {
+        "question": {
+          "content": "Which expression is equivalent to $x^3 \\cdot x^4$?\n\n[[☃ radio 1]]",
+          "widgets": {
+            "radio 1": {
+              "type": "radio",
+              "graded": true,
+              "options": {
+                "choices": [
+                  { "content": "$x^7$", "correct": true },
+                  { "content": "$x^{12}$", "correct": false },
+                  { "content": "$x^1$", "correct": false },
+                  { "content": "$2x^7$", "correct": false }
+                ],
+                "randomize": true,
+                "multipleSelect": false
+              },
+              "version": { "major": 0, "minor": 0 }
+            }
+          },
+          "images": {}
+        },
+        "hints": [
+          {
+            "content": "When multiplying powers with the same base, you add the exponents:\n\n$$x^a \\cdot x^b = x^{a+b}$$",
+            "widgets": {},
+            "images": {}
+          }
+        ],
+        "answerArea": { "type": "single" }
+      }
+    },
+    {
+      "id": "math-fractions-1",
+      "title": "Adding Fractions",
+      "subject": "Mathematics",
+      "topic": "Arithmetic",
+      "perseusFormat": {
+        "question": {
+          "content": "Simplify:\n\n$$\\frac{1}{4} + \\frac{2}{3}$$\n\n[[☃ expression 1]]",
+          "widgets": {
+            "expression 1": {
+              "type": "expression",
+              "graded": true,
+              "options": {
+                "answerForms": [
+                  {
+                    "value": "11/12",
+                    "form": true,
+                    "simplify": true,
+                    "considered": "correct"
+                  }
+                ],
+                "buttonSets": ["basic", "basic+div"],
+                "times": false
+              },
+              "version": { "major": 0, "minor": 0 }
+            }
+          },
+          "images": {}
+        },
+        "hints": [
+          {
+            "content": "To add fractions, we need a common denominator.\n\nThe LCM of 4 and 3 is 12.",
+            "widgets": {},
+            "images": {}
+          },
+          {
+            "content": "Convert each fraction:\n\n$$\\frac{1}{4} = \\frac{3}{12}$$\n$$\\frac{2}{3} = \\frac{8}{12}$$",
+            "widgets": {},
+            "images": {}
+          },
+          {
+            "content": "Now add:\n\n$$\\frac{3}{12} + \\frac{8}{12} = \\frac{11}{12}$$",
+            "widgets": {},
+            "images": {}
+          }
+        ],
+        "answerArea": { "type": "single" }
+      }
+    }
+  ]
+}
