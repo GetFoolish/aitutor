@@ -44,6 +44,17 @@ steps:
       - '.'
     id: 'build-auth-service'
 
+  # Build InsightExtractor Service
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/insight-extractor${_ENV_SUFFIX}'
+      - '-f'
+      - 'services/InsightExtractor/Dockerfile'
+      - '.'
+    id: 'build-insight-extractor'
+
   # Build Frontend
   - name: 'gcr.io/cloud-builders/docker'
     args:
@@ -86,6 +97,11 @@ steps:
     args: ['push', 'gcr.io/$PROJECT_ID/auth-service${_ENV_SUFFIX}']
     id: 'push-auth-service'
     waitFor: ['build-auth-service']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/insight-extractor${_ENV_SUFFIX}']
+    id: 'push-insight-extractor'
+    waitFor: ['build-insight-extractor']
 
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/tutor-frontend${_ENV_SUFFIX}']
@@ -188,6 +204,35 @@ steps:
     id: 'deploy-auth-service'
     waitFor: ['push-auth-service']
 
+  # Deploy InsightExtractor Service to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'insight-extractor${_ENV_SUFFIX}'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/insight-extractor${_ENV_SUFFIX}'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '8080'
+      - '--min-instances'
+      - '0'
+      - '--max-instances'
+      - '3'
+      - '--memory'
+      - '1Gi'
+      - '--timeout'
+      - '300'
+      - '--set-env-vars'
+      - 'MONGODB_URI=${_MONGODB_URI},MONGODB_DB_NAME=${_MONGODB_DB_NAME},GOOGLE_CLIENT_ID=${_GOOGLE_CLIENT_ID},GOOGLE_CLIENT_SECRET=${_GOOGLE_CLIENT_SECRET},JWT_SECRET=${_JWT_SECRET},INSIGHT_SERVICE_URL=${_INSIGHT_SERVICE_URL},FRONTEND_URL=${_FRONTEND_URL},GEMINI_API_KEY=${_GEMINI_API_KEY},ALLOWED_ORIGINS=${_ALLOWED_ORIGINS}'
+    id: 'deploy-insight-extractor'
+    waitFor: ['push-insight-extractor']
+
   # Deploy Frontend to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
@@ -212,6 +257,7 @@ images:
   - 'gcr.io/$PROJECT_ID/sherlocked-api${_ENV_SUFFIX}'
   - 'gcr.io/$PROJECT_ID/teaching-assistant${_ENV_SUFFIX}'
   - 'gcr.io/$PROJECT_ID/auth-service${_ENV_SUFFIX}'
+  - 'gcr.io/$PROJECT_ID/insight-extractor${_ENV_SUFFIX}'
   - 'gcr.io/$PROJECT_ID/tutor-frontend${_ENV_SUFFIX}'
 
 substitutions:
@@ -228,6 +274,7 @@ substitutions:
   _SHERLOCKED_API_URL: 'REPLACE_IN_COMMAND'
   _TEACHING_ASSISTANT_API_URL: 'REPLACE_IN_COMMAND'
   _AUTH_SERVICE_URL: 'REPLACE_IN_COMMAND'
+  _INSIGHT_SERVICE_URL: 'REPLACE_IN_COMMAND'
   _FRONTEND_URL: 'REPLACE_IN_COMMAND'
   _ALLOWED_ORIGINS: 'REPLACE_IN_COMMAND'
 
