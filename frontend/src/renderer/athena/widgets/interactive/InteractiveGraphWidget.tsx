@@ -477,6 +477,10 @@ export function InteractiveGraphWidget({
           {state.points.map((point, index) => {
             const svgPoint = toSVG(point);
             const isSelected = state.selectedPointIndex === index;
+            // Get label from options or use alphabet (A, B, C, ...)
+            const optionLabels = options.graph?.coords?.map((c: any) => c.label) || [];
+            const alphabetLabel = String.fromCharCode(65 + index); // A, B, C...
+            const label = optionLabels[index] || alphabetLabel;
 
             return (
               <g key={index}>
@@ -501,15 +505,29 @@ export function InteractiveGraphWidget({
                   strokeWidth={2}
                   style={{ transition: 'r 0.1s ease' }}
                 />
-                {/* Point label */}
+                {/* Point label - alphabet (A, B, C...) below the point */}
                 <text
-                  x={svgPoint.x + 12}
-                  y={svgPoint.y - 12}
-                  fontSize="12"
+                  x={svgPoint.x}
+                  y={svgPoint.y + 24}
+                  textAnchor="middle"
+                  fontSize="14"
+                  fontWeight="bold"
                   fill={themeStyles.text}
                 >
-                  ({point.x}, {point.y})
+                  {label}
                 </text>
+                {/* Coordinate tooltip shown on hover or if showCoordinates option is set */}
+                {options.showCoordinates && (
+                  <text
+                    x={svgPoint.x + 14}
+                    y={svgPoint.y - 14}
+                    fontSize="11"
+                    fill={themeStyles.text}
+                    opacity={0.7}
+                  >
+                    ({point.x}, {point.y})
+                  </text>
+                )}
               </g>
             );
           })}

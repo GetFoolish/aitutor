@@ -1,8 +1,7 @@
 /**
- * SherlockED API New - Frontend Client
+ * Athena API - Frontend Client
  *
  * Client for the Athena-based question service.
- * NO CODE FROM SHERLOCKEDAPI OR PERSEUS.
  */
 
 export interface AthenaWidget {
@@ -51,15 +50,15 @@ export interface AthenaItem {
   widgetTypes: string[];
 }
 
-// API base URL - new Athena service
-const SHERLOCKED_API_NEW_URL = import.meta.env.VITE_SHERLOCKED_API_NEW_URL || 'http://localhost:8010';
+// API base URL - Athena service
+const ATHENA_API_URL = import.meta.env.VITE_ATHENA_API_URL || 'http://localhost:8010';
 
 /**
  * Fetch a single question by ObjectId
  */
 export async function fetchQuestionById(questionId: string): Promise<AthenaItem | null> {
   try {
-    const response = await fetch(`${SHERLOCKED_API_NEW_URL}/api/question/${questionId}`);
+    const response = await fetch(`${ATHENA_API_URL}/api/question/${questionId}`);
 
     if (!response.ok) {
       console.error(`Failed to fetch question: ${response.status}`);
@@ -82,7 +81,7 @@ export async function fetchQuestions(
   skillPrefix?: string
 ): Promise<AthenaItem[]> {
   try {
-    let url = `${SHERLOCKED_API_NEW_URL}/api/questions/${count}`;
+    let url = `${ATHENA_API_URL}/api/questions/${count}`;
     const params = new URLSearchParams();
 
     if (widgetTypes && widgetTypes.length > 0) {
@@ -116,7 +115,7 @@ export async function fetchQuestions(
  */
 export async function fetchQuestionsByIds(ids: string[]): Promise<AthenaItem[]> {
   try {
-    const response = await fetch(`${SHERLOCKED_API_NEW_URL}/api/questions/by-ids`, {
+    const response = await fetch(`${ATHENA_API_URL}/api/questions/by-ids`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -141,7 +140,7 @@ export async function fetchQuestionsByIds(ids: string[]): Promise<AthenaItem[]> 
  */
 export async function getWidgetTypes(): Promise<Record<string, number>> {
   try {
-    const response = await fetch(`${SHERLOCKED_API_NEW_URL}/api/widget-types`);
+    const response = await fetch(`${ATHENA_API_URL}/api/widget-types`);
 
     if (!response.ok) {
       return {};
@@ -163,7 +162,7 @@ export async function searchQuestions(
   limit: number = 20
 ): Promise<AthenaItem[]> {
   try {
-    const response = await fetch(`${SHERLOCKED_API_NEW_URL}/api/questions/search`, {
+    const response = await fetch(`${ATHENA_API_URL}/api/questions/search`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -191,7 +190,7 @@ export async function getDatabaseStats(): Promise<{
   widget_types: Record<string, number>;
 }> {
   try {
-    const response = await fetch(`${SHERLOCKED_API_NEW_URL}/api/stats`);
+    const response = await fetch(`${ATHENA_API_URL}/api/stats`);
 
     if (!response.ok) {
       return { total_questions: 0, widget_types: {} };
@@ -209,7 +208,7 @@ export async function getDatabaseStats(): Promise<{
  */
 export async function checkHealth(): Promise<boolean> {
   try {
-    const response = await fetch(`${SHERLOCKED_API_NEW_URL}/health`);
+    const response = await fetch(`${ATHENA_API_URL}/health`);
     return response.ok;
   } catch {
     return false;

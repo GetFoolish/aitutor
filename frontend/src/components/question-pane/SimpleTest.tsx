@@ -5,8 +5,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { fetchQuestions, fetchQuestionById, checkHealth } from '../../services/sherlockedAPI_New';
-import type { AthenaItem } from '../../services/sherlockedAPI_New';
+import { fetchQuestions, fetchQuestionById, checkHealth } from '../../services/athenaAPI';
+import type { AthenaItem } from '../../services/athenaAPI';
 
 export const SimpleTest: React.FC = () => {
   const [questions, setQuestions] = useState<AthenaItem[]>([]);
@@ -92,7 +92,7 @@ export const SimpleTest: React.FC = () => {
           <strong>Backend Status:</strong>{' '}
           {backendStatus === 'checking' && '⏳ Checking...'}
           {backendStatus === 'online' && '✅ Online (localhost:8010)'}
-          {backendStatus === 'offline' && '❌ Offline - Start backend with: cd services/sherlockedAPI_New && python run_backend.py'}
+          {backendStatus === 'offline' && '❌ Offline - Start backend with: cd services/athenaAPI && python run_backend.py'}
         </div>
 
         {/* ObjectID Input */}

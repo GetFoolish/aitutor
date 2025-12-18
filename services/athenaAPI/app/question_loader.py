@@ -3,8 +3,6 @@ Question Loader for Athena Renderer
 
 Fetches questions from MongoDB and converts Perseus format to Athena format.
 Handles image URL conversion and widget normalization.
-
-NO CODE FROM SHERLOCKEDAPI OR PERSEUS.
 """
 
 import os
@@ -268,43 +266,79 @@ def get_questions(
         List of Athena-formatted questions
     """
     try:
-        # Build query
-        query = {}
+        # Build aggregation pipeline
+        pipeline = []
 
+        # Initial match stage for skill_prefix
+        match_stage = {}
         if skill_prefix:
-            query['skill_prefix'] = {'$regex': f'^{skill_prefix}', '$options': 'i'}
+            match_stage['skill_prefix'] = {'$regex': f'^{skill_prefix}', '$options': 'i'}
+
+        if match_stage:
+            pipeline.append({'$match': match_stage})
 
         if widget_types:
-            # Match questions that have at least one of the specified widget types
-            query['question.widgets'] = {
-                '$exists': True
-            }
+            # Expand widget type aliases
+            expanded_types = set()
+            for wt in widget_types:
+                expanded_types.add(wt)
+                # Add aliases
+                if wt == 'numeric-input':
+                    expanded_types.add('input-number')
+                elif wt == 'input-number':
+                    expanded_types.add('numeric-input')
 
-        # Get total count for random sampling
-        total = mongo_db.perseus_questions.count_documents(query)
+            expanded_types = list(expanded_types)
 
-        if total == 0:
-            logger.warning("No questions found matching criteria")
-            return []
+            # Use aggregation to filter by widget type
+            # Convert widgets object to array, then filter
+            pipeline.extend([
+                # Add a field with widgets as array
+                {'$addFields': {
+                    'widgetsArray': {'$objectToArray': '$question.widgets'}
+                }},
+                # Filter to only include questions where at least one widget matches
+                {'$match': {
+                    'widgetsArray.v.type': {'$in': expanded_types}
+                }},
+                # Remove the temporary field
+                {'$project': {
+                    'widgetsArray': 0
+                }}
+            ])
 
-        # Fetch questions with random skip for variety
-        if total > sample_size:
-            # Random sample using aggregation
-            pipeline = [
-                {'$match': query},
-                {'$sample': {'size': sample_size}}
-            ]
-            cursor = mongo_db.perseus_questions.aggregate(pipeline)
-        else:
-            cursor = mongo_db.perseus_questions.find(query).limit(sample_size)
+        # Add random sampling
+        pipeline.append({'$sample': {'size': sample_size * 3}})  # Fetch more for better variety
 
-        # Convert to Athena format
+        # Execute pipeline
+        cursor = mongo_db.perseus_questions.aggregate(pipeline)
+
+        # Convert to Athena format and filter
         athena_questions = []
         for doc in cursor:
             athena_item = convert_question_to_athena(doc)
+
+            # Double-check widget type filter (post-processing)
+            if widget_types:
+                item_widget_types = athena_item.get('widgetTypes', [])
+                # Check if any of the requested types are in this question
+                expanded_types_set = set()
+                for wt in widget_types:
+                    expanded_types_set.add(wt)
+                    if wt == 'numeric-input':
+                        expanded_types_set.add('input-number')
+                    elif wt == 'input-number':
+                        expanded_types_set.add('numeric-input')
+
+                if not any(t in expanded_types_set for t in item_widget_types):
+                    continue  # Skip this question
+
             athena_questions.append(athena_item)
 
-        logger.info(f"Fetched {len(athena_questions)} questions")
+            if len(athena_questions) >= sample_size:
+                break
+
+        logger.info(f"Fetched {len(athena_questions)} questions (filter: {widget_types})")
         return athena_questions
 
     except Exception as e:

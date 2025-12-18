@@ -29,7 +29,6 @@ const LoginPage = lazy(() => import("./components/auth/LoginPage"));
 const LandingPageWrapper = lazy(() => import("./components/landing/LandingPageWrapper"));
 const QuestionPane = lazy(() => import("./components/question-pane/QuestionPane"));
 const SimpleTest = lazy(() => import("./components/question-pane/SimpleTest"));
-const WidgetDemo = lazy(() => import("./renderer/athena/demo/ComparisonDemo"));
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
@@ -150,7 +149,6 @@ root.render(
                 {/* TEST ROUTES - No auth required, exact match */}
                 <Route exact path="/test/simple" component={SimpleTest} />
                 <Route exact path="/test/athena" component={QuestionPane} />
-                <Route exact path="/test/widgets" component={WidgetDemo} />
                 <Route exact path="/app/auth/setup" component={LoginPage} />
                 <Route exact path="/app/login" component={LoginPage} />
                 <Route exact path="/app" component={LandingPageOrApp} />

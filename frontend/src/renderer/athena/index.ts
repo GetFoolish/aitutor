@@ -379,8 +379,6 @@ export type {
 export { AthenaDemo } from './AthenaDemo';
 export type { AthenaDemoProps } from './AthenaDemo';
 
-export { ComparisonDemo } from './demo/ComparisonDemo';
-
 // Performance Benchmark utilities
 export {
   measureRenderTime,

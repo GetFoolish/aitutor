@@ -5,7 +5,7 @@
 # ==============================================================================
 # Quick launcher for testing the new Athena rendering engine
 # This starts only the services needed for Athena testing:
-# - sherlockedAPI_New (Athena backend on port 8010)
+# - athenaAPI (Athena backend on port 8010)
 # - Frontend (React app on port 3000)
 # ==============================================================================
 
@@ -108,10 +108,10 @@ echo ""
 echo -e "${BLUE}Starting services...${NC}"
 echo ""
 
-# Start the NEW Athena Backend API (sherlockedAPI_New on port 8010)
+# Start the Athena Backend API (athenaAPI on port 8010)
 echo -e "${GREEN}►${NC} Starting Athena Backend API (port 8010)..."
 echo "  Logs → logs/athena/backend.log"
-(cd "$SCRIPT_DIR/services/sherlockedAPI_New" && "$PYTHON_BIN" run_backend.py) > "$SCRIPT_DIR/logs/athena/backend.log" 2>&1 &
+(cd "$SCRIPT_DIR/services/athenaAPI" && "$PYTHON_BIN" run_backend.py) > "$SCRIPT_DIR/logs/athena/backend.log" 2>&1 &
 pids+=($!)
 
 # Give backend a moment to start

@@ -46,6 +46,16 @@ export function DropdownWidget({
     ? state.value === correctIndex
     : undefined;
 
+  // Calculate max choice length to determine if we need compact mode
+  const maxChoiceLength = options.choices?.reduce((max, choice) => {
+    const content = typeof choice === 'string' ? choice : choice.content;
+    return Math.max(max, content?.length || 0);
+  }, 0) || 0;
+
+  // Use compact mode for short choices (like >, <, =, etc.)
+  const isCompact = maxChoiceLength <= 3;
+  const placeholder = isCompact ? '?' : (options.placeholder || 'Select');
+
   return (
     <BaseWidgetWrapper
       widgetId={widgetId}
@@ -58,16 +68,17 @@ export function DropdownWidget({
       <span className="athena-dropdown-container" style={{ display: 'inline-flex', alignItems: 'center', verticalAlign: 'middle' }}>
         <select
           id={selectId}
-          className={`athena-dropdown-select ${
+          className={`athena-dropdown-select ${isCompact ? 'compact' : ''} ${
             isCorrect === true ? 'correct' : ''
           } ${isCorrect === false ? 'incorrect' : ''}`}
           value={state.value ?? ''}
           onChange={handleChange}
           disabled={disabled || readOnly}
           aria-label={options.placeholder || 'Select an answer'}
+          style={isCompact ? { minWidth: '50px', width: 'auto', paddingRight: '28px' } : undefined}
         >
           <option value="" disabled>
-            {options.placeholder || 'Select an answer'}
+            {placeholder}
           </option>
 
           {options.choices?.map((choice, index) => (

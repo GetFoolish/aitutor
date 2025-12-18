@@ -161,10 +161,94 @@ export class MarkdownProcessor {
   }
 
   /**
+   * Process Khan Academy style color commands
+   * \purpleD{text}, \blueE{text}, \greenE{text}, \redE{text}, etc.
+   */
+  private processKhanColors(content: string): string {
+    const colorMap: Record<string, string> = {
+      // Purple variants
+      purpleA: '#9c4dcc',
+      purpleB: '#a05acc',
+      purpleC: '#aa63d9',
+      purpleD: '#b56ccc',
+      purpleE: '#c077d9',
+      // Blue variants
+      blueA: '#1865f2',
+      blueB: '#2b73e8',
+      blueC: '#4185e8',
+      blueD: '#5a9ce8',
+      blueE: '#72b3e8',
+      // Green variants
+      greenA: '#28b463',
+      greenB: '#2ecc71',
+      greenC: '#52d689',
+      greenD: '#6dd8a0',
+      greenE: '#87dbb3',
+      // Red variants
+      redA: '#e74c3c',
+      redB: '#ec5050',
+      redC: '#f06464',
+      redD: '#f47878',
+      redE: '#f78c8c',
+      // Orange variants
+      orangeA: '#e67e22',
+      orangeB: '#eb8a33',
+      orangeC: '#f09644',
+      orangeD: '#f5a256',
+      orangeE: '#faae67',
+      // Gold/yellow variants
+      goldA: '#f1c40f',
+      goldB: '#f4ca25',
+      goldC: '#f7d03b',
+      goldD: '#fad651',
+      goldE: '#fddc67',
+      // Teal variants
+      tealA: '#1abc9c',
+      tealB: '#2cc4a4',
+      tealC: '#3dccac',
+      tealD: '#4dd4b4',
+      tealE: '#5edcbc',
+      // Pink variants
+      pinkA: '#e91e63',
+      pinkB: '#ec3575',
+      pinkC: '#ef4c87',
+      pinkD: '#f26399',
+      pinkE: '#f57aab',
+      // Gray variants
+      grayA: '#333333',
+      grayB: '#555555',
+      grayC: '#777777',
+      grayD: '#999999',
+      grayE: '#bbbbbb',
+      // Khan accent colors
+      kaGreen: '#1fab54',
+      kaBlue: '#1865f2',
+    };
+
+    let result = content;
+
+    // Match \colorName{text} patterns
+    const colorPattern = /\\(purple|blue|green|red|orange|gold|teal|pink|gray|kaGreen|kaBlue)([A-E])?\{([^}]+)\}/gi;
+    result = result.replace(colorPattern, (match, colorBase, variant, text) => {
+      const colorKey = colorBase.toLowerCase() + (variant || 'D');
+      const color = colorMap[colorKey] || colorMap[colorBase.toLowerCase() + 'D'] || '#333';
+      return `<span style="color: ${color}; font-weight: 600;">${text}</span>`;
+    });
+
+    // Also handle \text{} command (just render the text)
+    result = result.replace(/\\text\{([^}]+)\}/g, '$1');
+
+    return result;
+  }
+
+  /**
    * Process basic markdown syntax
    */
   private processMarkdownSyntax(content: string): string {
     let result = content;
+
+    // Process Khan Academy color commands first
+    result = this.processKhanColors(result);
 
     // Process tables first (before other transformations)
     result = this.processTables(result);

@@ -177,6 +177,16 @@
   border-radius: 0.25rem;
 }
 
+.athena-link {
+  color: #1865f2;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.athena-link:hover {
+  text-decoration: underline;
+}
+
 /* ============================================================================
    WIDGET BASE STYLES
    ============================================================================ */
@@ -381,11 +391,11 @@
   padding: 10px 16px;
   border: 2px solid #e5e5e5;
   border-radius: 12px;
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 600;
   width: auto;
-  min-width: 80px;
+  min-width: 100px;
   max-width: 200px;
   transition: all 0.15s ease;
   background-color: #f7f7f7;
@@ -733,9 +743,20 @@
   background-color: #f7f7f7;
   cursor: pointer;
   appearance: none;
-  min-width: 140px;
+  min-width: 60px;
+  width: auto;
   box-shadow: 0 2px 0 #e5e5e5;
   transition: all 0.15s ease;
+}
+
+/* Compact dropdown for short choices like comparison operators */
+.athena-dropdown-select.compact {
+  min-width: 44px;
+  max-width: 70px;
+  width: fit-content;
+  padding: 6px 24px 6px 8px;
+  font-size: 1rem;
+  text-align: center;
 }
 
 .athena-dropdown-select:focus {
@@ -941,6 +962,119 @@
   border-top: 2px solid var(--athena-border, #e5e5e5);
 }
 
+.athena-hints-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.athena-hint-item {
+  background-color: #E8F4FD;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #B8D9F0;
+}
+
+.athena-hint-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #2F7BF6;
+  cursor: pointer;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+
+.athena-hint-header:hover {
+  background-color: rgba(47, 123, 246, 0.1);
+}
+
+.athena-hint-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.athena-hint-label::before {
+  content: '💡';
+  font-size: 1rem;
+}
+
+.athena-hint-content {
+  padding: 0 16px 16px 16px;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #333;
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Math in hints should render properly */
+.athena-hint-content .athena-math,
+.athena-hint-content .katex {
+  font-size: 1.1em;
+}
+
+.athena-hint-content .athena-math-display {
+  display: block;
+  text-align: center;
+  margin: 1rem 0;
+  overflow-x: auto;
+}
+
+.athena-hint-content .athena-math-inline {
+  display: inline;
+}
+
+/* Note styling in hints */
+.athena-hint-content strong,
+.athena-hint-content b {
+  font-weight: 700;
+}
+
+.athena-hints-actions {
+  margin-top: 1rem;
+}
+
+.athena-hint-request-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background-color: #F3F4FF;
+  border: 2px solid #2F7BF6;
+  border-radius: 12px;
+  color: #2F7BF6;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.athena-hint-request-button:hover {
+  background-color: #E8EAFF;
+}
+
+.athena-hint-count {
+  font-weight: 400;
+  opacity: 0.8;
+  margin-left: 4px;
+}
+
+.athena-hints-complete {
+  text-align: center;
+  padding: 12px;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
 .athena-hints-title {
   margin: 0 0 0.75rem 0;
   font-size: 0.875rem;
@@ -1037,13 +1171,13 @@
 }
 
 .athena-equation-table .athena-numeric-input-field {
-  width: 60px;
-  min-width: 50px;
+  width: 70px;
+  min-width: 60px;
   text-align: center;
   font-family: 'Nunito', sans-serif;
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 600;
-  padding: 8px 12px;
+  padding: 10px 14px;
   border: 2px solid #e5e5e5;
   border-radius: 12px;
   background: #f7f7f7;
@@ -1097,6 +1231,18 @@
   margin: 1rem 0;
   border-radius: 0.5rem;
   overflow: hidden;
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+}
+
+.athena-code-block code {
+  display: block;
+  padding: 1rem;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  white-space: pre;
 }
 
 .athena-code-block pre {
@@ -1106,6 +1252,16 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.875rem;
   line-height: 1.5;
+}
+
+.athena-inline-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875em;
+  padding: 0.125rem 0.375rem;
+  background-color: #f3f4f6;
+  border-radius: 0.25rem;
+  color: #d63384;
+  border: 1px solid #e5e7eb;
 }
 
 .athena-code-header {

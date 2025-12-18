@@ -1,9 +1,7 @@
 """
-API Routes for SherlockED API New
+API Routes for Athena API
 
 Endpoints for fetching and managing questions in Athena format.
-
-NO CODE FROM SHERLOCKEDAPI OR PERSEUS.
 """
 
 from fastapi import APIRouter, HTTPException, Query
@@ -221,6 +219,6 @@ async def get_database_stats():
     return {
         "total_questions": total_questions,
         "widget_types": widget_summary,
-        "service": "sherlockedAPI_New",
+        "service": "athenaAPI",
         "renderer": "Athena"
     }

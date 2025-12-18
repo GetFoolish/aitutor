@@ -357,10 +357,101 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
       };
     }, [problemNum, dispatchEvent]);
 
+    // KaTeX macros for Khan Academy color commands
+    const katexMacros = {
+      // Color commands (Khan Academy style)
+      '\\blue': '\\textcolor{#1865f2}{#1}',
+      '\\red': '\\textcolor{#e84d39}{#1}',
+      '\\green': '\\textcolor{#1fab54}{#1}',
+      '\\purple': '\\textcolor{#9c4dcc}{#1}',
+      '\\orange': '\\textcolor{#e67e22}{#1}',
+      '\\pink': '\\textcolor{#e91e63}{#1}',
+      '\\teal': '\\textcolor{#1abc9c}{#1}',
+      '\\gold': '\\textcolor{#f1c40f}{#1}',
+      '\\gray': '\\textcolor{#777777}{#1}',
+      '\\grey': '\\textcolor{#777777}{#1}',
+      // Variant colors
+      '\\blueA': '\\textcolor{#1865f2}{#1}',
+      '\\blueB': '\\textcolor{#2b73e8}{#1}',
+      '\\blueC': '\\textcolor{#4185e8}{#1}',
+      '\\blueD': '\\textcolor{#5a9ce8}{#1}',
+      '\\blueE': '\\textcolor{#72b3e8}{#1}',
+      '\\redA': '\\textcolor{#e74c3c}{#1}',
+      '\\redB': '\\textcolor{#ec5050}{#1}',
+      '\\redC': '\\textcolor{#f06464}{#1}',
+      '\\redD': '\\textcolor{#f47878}{#1}',
+      '\\redE': '\\textcolor{#f78c8c}{#1}',
+      '\\greenA': '\\textcolor{#28b463}{#1}',
+      '\\greenB': '\\textcolor{#2ecc71}{#1}',
+      '\\greenC': '\\textcolor{#52d689}{#1}',
+      '\\greenD': '\\textcolor{#6dd8a0}{#1}',
+      '\\greenE': '\\textcolor{#87dbb3}{#1}',
+      '\\purpleA': '\\textcolor{#9c4dcc}{#1}',
+      '\\purpleB': '\\textcolor{#a05acc}{#1}',
+      '\\purpleC': '\\textcolor{#aa63d9}{#1}',
+      '\\purpleD': '\\textcolor{#b56ccc}{#1}',
+      '\\purpleE': '\\textcolor{#c077d9}{#1}',
+      '\\goldA': '\\textcolor{#f1c40f}{#1}',
+      '\\goldB': '\\textcolor{#f4ca25}{#1}',
+      '\\goldC': '\\textcolor{#f7d03b}{#1}',
+      '\\goldD': '\\textcolor{#fad651}{#1}',
+      '\\goldE': '\\textcolor{#fddc67}{#1}',
+      '\\grayA': '\\textcolor{#333333}{#1}',
+      '\\grayB': '\\textcolor{#555555}{#1}',
+      '\\grayC': '\\textcolor{#777777}{#1}',
+      '\\grayD': '\\textcolor{#999999}{#1}',
+      '\\grayE': '\\textcolor{#bbbbbb}{#1}',
+      // Khan Academy specific
+      '\\kaBlue': '\\textcolor{#1865f2}{#1}',
+      '\\kaGreen': '\\textcolor{#1fab54}{#1}',
+      // Maroon for negative numbers
+      '\\maroonC': '\\textcolor{#c03}{#1}',
+      '\\maroonD': '\\textcolor{#a02}{#1}',
+    };
+
+    // KaTeX options with macros
+    const katexOptions = {
+      throwOnError: false,
+      macros: katexMacros,
+      trust: true,
+    };
+
     // Helper function to render math with KaTeX
     const renderMath = (text: string): string => {
       if (!text || typeof text !== 'string') return text || '';
       let processed = text;
+
+      // Color map for preprocessing color commands without braces
+      const colorHexMap: Record<string, string> = {
+        blue: '#1865f2', red: '#e84d39', green: '#1fab54', purple: '#9c4dcc',
+        orange: '#e67e22', pink: '#e91e63', teal: '#1abc9c', gold: '#f1c40f',
+        gray: '#777777', grey: '#777777',
+        blueA: '#1865f2', blueB: '#2b73e8', blueC: '#4185e8', blueD: '#5a9ce8', blueE: '#72b3e8',
+        redA: '#e74c3c', redB: '#ec5050', redC: '#f06464', redD: '#f47878', redE: '#f78c8c',
+        greenA: '#28b463', greenB: '#2ecc71', greenC: '#52d689', greenD: '#6dd8a0', greenE: '#87dbb3',
+        purpleA: '#9c4dcc', purpleB: '#a05acc', purpleC: '#aa63d9', purpleD: '#b56ccc', purpleE: '#c077d9',
+        tealA: '#1abc9c', tealB: '#2cc4a4', tealC: '#3dccac', tealD: '#4dd4b4', tealE: '#5edcbc',
+        goldA: '#f1c40f', goldB: '#f4ca25', goldC: '#f7d03b', goldD: '#fad651', goldE: '#fddc67',
+        grayA: '#333333', grayB: '#555555', grayC: '#777777', grayD: '#999999', grayE: '#bbbbbb',
+        maroonC: '#cc0033', maroonD: '#aa0022',
+        kaBlue: '#1865f2', kaGreen: '#1fab54',
+      };
+
+      // Preprocess: Handle color commands WITHOUT braces like \blueD7 -> render as colored math
+      // These are Khan Academy shorthand where \colorX followed by a single character applies color to that char
+      const colorNames = Object.keys(colorHexMap);
+      for (const colorName of colorNames) {
+        // Pattern: \colorName followed by a digit or letter (not a brace)
+        const pattern = new RegExp(`\\\\${colorName}([0-9a-zA-Z])(?![{])`, 'g');
+        processed = processed.replace(pattern, (_, char) => {
+          const color = colorHexMap[colorName];
+          try {
+            return katex.renderToString(`\\textcolor{${color}}{${char}}`, { ...katexOptions, displayMode: false });
+          } catch {
+            return `<span style="color:${color}">${char}</span>`;
+          }
+        });
+      }
 
       // First, handle escaped dollar signs \$ -> $ (currency)
       // Use a placeholder to protect them from math processing
@@ -370,7 +461,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
       // Process display math $$...$$ first (multiline support with [\s\S])
       processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
         try {
-          return katex.renderToString(math.trim(), { displayMode: true, throwOnError: false });
+          return katex.renderToString(math.trim(), { ...katexOptions, displayMode: true });
         } catch {
           return `<span class="athena-math-error">${math}</span>`;
         }
@@ -381,7 +472,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
       processed = processed.replace(/\$\\?(large|Large|LARGE|huge|Huge)?\s*\\begin\{(align|aligned|gather|gathered|equation|array|matrix|pmatrix|bmatrix|cases)\}([\s\S]*?)\\end\{\2\}\s*\$/g, (_, size, env, content) => {
         try {
           const latex = `\\begin{${env}}${content}\\end{${env}}`;
-          return katex.renderToString(latex, { displayMode: true, throwOnError: false });
+          return katex.renderToString(latex, { ...katexOptions, displayMode: true });
         } catch (e) {
           console.error('KaTeX align error:', e);
           return `<span class="athena-math-error">${content}</span>`;
@@ -392,7 +483,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
       processed = processed.replace(/\\begin\{(align|aligned|gather|gathered|equation|array|matrix|pmatrix|bmatrix|cases)\}([\s\S]*?)\\end\{\1\}/g, (_, env, content) => {
         try {
           const latex = `\\begin{${env}}${content}\\end{${env}}`;
-          return katex.renderToString(latex, { displayMode: true, throwOnError: false });
+          return katex.renderToString(latex, { ...katexOptions, displayMode: true });
         } catch (e) {
           console.error('KaTeX align error:', e);
           return `<span class="athena-math-error">${content}</span>`;
@@ -406,7 +497,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         // Skip if it looks like already processed or is $$
         if (match.startsWith('$$')) return match;
         try {
-          return katex.renderToString(math.trim(), { displayMode: false, throwOnError: false });
+          return katex.renderToString(math.trim(), { ...katexOptions, displayMode: false });
         } catch {
           return `<span class="athena-math-error">${math}</span>`;
         }
@@ -415,7 +506,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
       // Handle LaTeX commands like \dfrac, \frac without $ delimiters
       processed = processed.replace(/\\(dfrac|frac|sqrt|int|sum|prod|lim)\{([^}]+)\}\{([^}]+)\}/g, (match, cmd, arg1, arg2) => {
         try {
-          return katex.renderToString(`\\${cmd}{${arg1}}{${arg2}}`, { displayMode: false, throwOnError: false });
+          return katex.renderToString(`\\${cmd}{${arg1}}{${arg2}}`, { ...katexOptions, displayMode: false });
         } catch {
           return match;
         }
@@ -463,12 +554,17 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
       const processCellContent = (cell: string): string => {
         let processed = preserveWidgetPlaceholders(cell);
 
+        // First, handle escaped dollar signs \$ -> $ (currency)
+        // Use a placeholder to protect them from math processing
+        const dollarPlaceholder = '__CELL_DOLLAR__';
+        processed = processed.replace(/\\\$/g, dollarPlaceholder);
+
         // Process display math $$...$$
-        processed = processed.replace(/\$\$([^$]+)\$\$/g, (_, math) => {
+        processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
           try {
             return katex.renderToString(math.trim(), {
-              displayMode: true,
-              throwOnError: false
+              ...katexOptions,
+              displayMode: true
             });
           } catch {
             return `<span class="athena-math-display">${math}</span>`;
@@ -479,8 +575,8 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         processed = processed.replace(/\$([^$]+)\$/g, (_, math) => {
           try {
             return katex.renderToString(math.trim(), {
-              displayMode: false,
-              throwOnError: false
+              ...katexOptions,
+              displayMode: false
             });
           } catch {
             return `<span class="athena-math-inline" style="font-style:italic;">${math}</span>`;
@@ -491,8 +587,8 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         processed = processed.replace(/\(\\text\{([^}]+)\}\)/g, (_, text) => {
           try {
             return katex.renderToString(`(\\text{${text}})`, {
-              displayMode: false,
-              throwOnError: false
+              ...katexOptions,
+              displayMode: false
             });
           } catch {
             return `(${text})`;
@@ -503,13 +599,20 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         processed = processed.replace(/\\(frac|dfrac)\{([^}]+)\}\{([^}]+)\}/g, (_, cmd, num, den) => {
           try {
             return katex.renderToString(`\\${cmd}{${num}}{${den}}`, {
-              displayMode: false,
-              throwOnError: false
+              ...katexOptions,
+              displayMode: false
             });
           } catch {
             return `${num}/${den}`;
           }
         });
+
+        // Restore dollar signs
+        processed = processed.replace(/__CELL_DOLLAR__/g, '$');
+
+        // Process markdown bold **text** and italic *text*
+        processed = processed.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        processed = processed.replace(/(?<!\*)\*(?!\*)([^*]+)\*(?!\*)/g, '<em>$1</em>');
 
         return processed;
       };
@@ -790,6 +893,43 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         // First, process tables
         let processedText = processTable(text);
 
+        // Process code fences ```language\ncode\n``` BEFORE math processing
+        // This prevents code from being interpreted as math
+        // Pattern 1: With language specifier and newline
+        processedText = processedText.replace(/```(\w+)\n([\s\S]*?)```/g, (_, lang, code) => {
+          const escapedCode = code
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+          return `<pre class="athena-code-block" data-language="${lang}"><code>${escapedCode}</code></pre>`;
+        });
+        // Pattern 2: Without language, just ```\ncode\n```
+        processedText = processedText.replace(/```\n([\s\S]*?)```/g, (_, code) => {
+          const escapedCode = code
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+          return `<pre class="athena-code-block"><code>${escapedCode}</code></pre>`;
+        });
+        // Pattern 3: Inline code fence ```code``` (no newlines)
+        processedText = processedText.replace(/```([^`]+)```/g, (_, code) => {
+          const escapedCode = code
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+          return `<code class="athena-inline-code">${escapedCode.trim()}</code>`;
+        });
+
+        // Also handle inline code `code` (single backticks)
+        // But be careful not to process backticks inside code blocks
+        processedText = processedText.replace(/`([^`\n]+)`/g, '<code class="athena-inline-code">$1</code>');
+
         // Clean up stray pipe characters that aren't part of tables
         // Remove standalone || at start of lines
         processedText = processedText.replace(/^\|\|\s*$/gm, '');
@@ -903,7 +1043,8 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
             const finalText = textBefore
               .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
               .replace(/(?<!\*)\*(?!\*)(.+?)\*(?!\*)/g, '<em>$1</em>')
-              .replace(/`([^`]+)`/g, '<code>$1</code>');
+              .replace(/`([^`]+)`/g, '<code>$1</code>')
+              .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="athena-link">$1</a>');
             parts.push(
               <span
                 key={`${key}-text-${partIndex++}`}
@@ -973,7 +1114,8 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
           const finalText = remainingText
             .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
             .replace(/(?<!\*)\*(?!\*)(.+?)\*(?!\*)/g, '<em>$1</em>')
-            .replace(/`([^`]+)`/g, '<code>$1</code>');
+            .replace(/`([^`]+)`/g, '<code>$1</code>')
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="athena-link">$1</a>');
           parts.push(
             <span
               key={`${key}-text-${partIndex++}`}
@@ -988,7 +1130,8 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
           const finalText = imageProcessedText
             .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
             .replace(/(?<!\*)\*(?!\*)(.+?)\*(?!\*)/g, '<em>$1</em>')
-            .replace(/`([^`]+)`/g, '<code>$1</code>');
+            .replace(/`([^`]+)`/g, '<code>$1</code>')
+            .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="athena-link">$1</a>');
 
           // Check for inline widget placeholders (from table cells)
           if (finalText.includes('athena-widget-inline')) {
@@ -1095,8 +1238,10 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
           <div className="athena-hints">
             <h4 className="athena-hints-title">Hints</h4>
             {item.hints.slice(0, state.hintsVisible).map((hint, idx) => {
-              // Process images in hint content
+              // Process hint content - same processing as question content
               let hintContent = hint?.content || '';
+
+              // Process images in hint content FIRST (before math processing)
               if (hintContent.includes('![')) {
                 hintContent = hintContent.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
                   let imageUrl = url.trim();
@@ -1109,10 +1254,24 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
                   return `<img src="${imageUrl}" alt="${alt}" class="athena-image" style="max-width:100%;height:auto;display:block;margin:1rem 0;" referrerpolicy="no-referrer" />`;
                 });
               }
+
+              // Process math with KaTeX FIRST - this handles \blue{}, \dfrac{}{}, etc.
+              // KaTeX macros handle color commands like \blue, \red, \green, etc.
+              hintContent = renderMath(hintContent);
+
+              // Process markdown links [text](url) AFTER math (so links aren't inside math)
+              hintContent = hintContent.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">$1</a>');
+
+              // Process bold **text** and *text* AFTER math
+              hintContent = hintContent.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+              hintContent = hintContent.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
               return (
-                <div key={`hint-${idx}`} className="athena-hint">
-                  <span className="athena-hint-number">Hint {idx + 1}:</span>
-                  <span
+                <div key={`hint-${idx}`} className="athena-hint-item expanded">
+                  <div className="athena-hint-header">
+                    <span className="athena-hint-label">Hint {idx + 1} of {item.hints?.length || 0}</span>
+                  </div>
+                  <div
                     className="athena-hint-content"
                     dangerouslySetInnerHTML={{ __html: hintContent }}
                   />

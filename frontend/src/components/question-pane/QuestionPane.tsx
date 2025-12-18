@@ -33,16 +33,17 @@ import {
 
 import { AthenaRenderer, registerDefaultWidgets, ScoringEngine } from '../../renderer/athena';
 import '../../renderer/athena/athena.css';
-import type { AthenaItem } from '../../services/sherlockedAPI_New';
+import type { AthenaItem } from '../../services/athenaAPI';
+import katex from 'katex';
 
 // Initialize scoring engine
 const scoringEngine = new ScoringEngine();
-import { DEMO_WIDGETS } from './demoWidgets';
+// Demo widgets removed - all questions load from MongoDB
 import {
   fetchQuestionById,
   fetchQuestions,
   checkHealth,
-} from '../../services/sherlockedAPI_New';
+} from '../../services/athenaAPI';
 
 // Perseus imports for comparison
 import { ServerItemRenderer } from '../../package/perseus/src/server-item-renderer';
@@ -403,8 +404,10 @@ const FeedbackBanner: React.FC<{
   onWhyExplanation: () => void;
   onSkipExplanation: () => void;
   onContinue: () => void;
+  onGetHint: () => void;
+  hasHints: boolean;
   darkMode: boolean;
-}> = ({ attemptState, onTryAgain, onSeeAnswer, onNextQuestion, onWhyExplanation, onSkipExplanation, onContinue, darkMode }) => {
+}> = ({ attemptState, onTryAgain, onSeeAnswer, onNextQuestion, onWhyExplanation, onSkipExplanation, onContinue, onGetHint, hasHints, darkMode }) => {
   if (attemptState === 'idle') return null;
 
   // Correct answer - green feedback
@@ -429,7 +432,7 @@ const FeedbackBanner: React.FC<{
     );
   }
 
-  // Incorrect answer - yellow/cream feedback with Try again + See answer + Next question
+  // Incorrect answer - yellow/cream feedback with Try again + Get a hint + See answer + Next question
   if (attemptState === 'checked_incorrect') {
     return (
       <div className="fixed bottom-0 left-0 right-0 z-30 bg-[#FFF4CC] border-t-4 border-[#FFD966] animate-fadeInUp">
@@ -442,6 +445,15 @@ const FeedbackBanner: React.FC<{
             >
               Try again
             </button>
+            {hasHints && (
+              <button
+                onClick={onGetHint}
+                className="px-6 py-3 bg-[#F3F4FF] hover:bg-[#E8EAFF] text-[#2F7BF6] brilliant-btn-text rounded-full border-2 border-[#2F7BF6] transition-colors flex items-center gap-2"
+              >
+                <Lightbulb className="w-4 h-4" />
+                Get a hint
+              </button>
+            )}
             <button
               onClick={onSeeAnswer}
               className="px-6 py-3 bg-[#E8DFC4] hover:bg-[#D9CEB0] text-[#5C4813] brilliant-btn-text rounded-full transition-colors"
@@ -509,6 +521,227 @@ const HintPanel: React.FC<{
 }> = ({ hints, currentIndex, onNextHint, darkMode }) => {
   if (!hints?.length) return null;
 
+  const currentHint = hints[currentIndex];
+  const hintWidgets = currentHint?.widgets || {};
+
+  // Convert graphie URL to standard HTTPS URL
+  const convertGraphieUrl = (url: string): string => {
+    if (!url) return url;
+    if (url.startsWith('web+graphie://')) {
+      let clean = url.replace('web+graphie://', 'https://');
+      if (!clean.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i)) {
+        clean += '.png';
+      }
+      return clean;
+    }
+    // Add extension if it's a kastatic URL without one
+    if ((url.includes('cdn.kastatic.org') || url.includes('ka-perseus')) &&
+        !url.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i)) {
+      return url + '.png';
+    }
+    return url;
+  };
+
+  // Process hint content with KaTeX for math rendering
+  const processHintContent = (content: string, widgets: Record<string, any>): string => {
+    if (!content) return '';
+
+    // Color map for Khan Academy color commands
+    const colorMap: Record<string, string> = {
+      blue: '#1865f2', red: '#e84d39', green: '#1fab54', purple: '#9c4dcc',
+      orange: '#e67e22', pink: '#e91e63', teal: '#1abc9c', gold: '#f1c40f',
+      gray: '#777777', grey: '#777777',
+      tealA: '#1abc9c', tealB: '#2cc4a4', tealC: '#3dccac', tealD: '#4dd4b4', tealE: '#5edcbc',
+      goldA: '#f1c40f', goldB: '#f4ca25', goldC: '#f7d03b', goldD: '#fad651', goldE: '#fddc67',
+      grayA: '#333333', grayB: '#555555', grayC: '#777777', grayD: '#999999', grayE: '#bbbbbb',
+      blueA: '#1865f2', blueB: '#2b73e8', blueC: '#4185e8', blueD: '#5a9ce8', blueE: '#72b3e8',
+      redA: '#e74c3c', redB: '#ec5050', redC: '#f06464', redD: '#f47878', redE: '#f78c8c',
+      greenA: '#28b463', greenB: '#2ecc71', greenC: '#52d689', greenD: '#6dd8a0', greenE: '#87dbb3',
+      purpleA: '#9c4dcc', purpleB: '#a05acc', purpleC: '#aa63d9', purpleD: '#b56ccc', purpleE: '#c077d9',
+      maroonC: '#cc0033', maroonD: '#aa0022',
+    };
+
+    // Pre-process: convert Khan Academy color commands to \textcolor before KaTeX parsing
+    const preprocessColorCommands = (text: string): string => {
+      const colorNames = Object.keys(colorMap);
+      let result = text;
+      for (const colorName of colorNames) {
+        // Match \colorName{content} with balanced braces
+        const pattern = new RegExp(`\\\\${colorName}\\{`, 'g');
+        let match;
+        while ((match = pattern.exec(result)) !== null) {
+          const braceStart = match.index + match[0].length - 1;
+          let depth = 1;
+          let i = braceStart + 1;
+          while (i < result.length && depth > 0) {
+            if (result[i] === '{') depth++;
+            else if (result[i] === '}') depth--;
+            i++;
+          }
+          if (depth === 0) {
+            const innerContent = result.slice(braceStart + 1, i - 1);
+            const color = colorMap[colorName];
+            const replacement = `\\textcolor{${color}}{${innerContent}}`;
+            result = result.slice(0, match.index) + replacement + result.slice(i);
+            pattern.lastIndex = match.index + replacement.length;
+          }
+        }
+      }
+      return result;
+    };
+
+    // KaTeX macros for Khan Academy color commands
+    const katexMacros: Record<string, string> = {};
+    Object.entries(colorMap).forEach(([name, hex]) => {
+      katexMacros[`\\${name}`] = `\\textcolor{${hex}}{#1}`;
+    });
+
+    const katexOptions = {
+      throwOnError: false,
+      trust: true,
+      macros: katexMacros,
+    };
+
+    let processed = content;
+
+    // FIRST: Process image markdown ![alt](url)
+    processed = processed.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
+      const imageUrl = convertGraphieUrl(url);
+      return `<div class="my-4 flex justify-center"><img src="${imageUrl}" alt="${alt || ''}" class="max-w-full h-auto rounded-lg" style="max-height: 400px;" /></div>`;
+    });
+
+    // Process widget placeholders [[☃ widget-name n]] - replace with image widgets
+    processed = processed.replace(/\[\[☃\s*([^\]]+)\]\]/g, (match, widgetRef) => {
+      const widgetId = widgetRef.trim();
+      const widget = widgets[widgetId];
+      if (widget && widget.type === 'image') {
+        const bgImage = widget.options?.backgroundImage;
+        if (bgImage?.url) {
+          const imageUrl = convertGraphieUrl(bgImage.url);
+          const width = bgImage.width || 'auto';
+          const height = bgImage.height || 'auto';
+          const alt = widget.options?.alt || '';
+          return `<div class="my-4 flex justify-center"><img src="${imageUrl}" alt="${alt}" class="max-w-full h-auto rounded-lg" style="max-width: ${typeof width === 'number' ? width + 'px' : width}; max-height: ${typeof height === 'number' ? height + 'px' : height};" /></div>`;
+        }
+      }
+      // If widget not found or not an image, hide the placeholder
+      return '';
+    });
+
+    // Process display math $$...$$
+    processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
+      try {
+        return katex.renderToString(math.trim(), { ...katexOptions, displayMode: true });
+      } catch {
+        return `<span class="math-error">${math}</span>`;
+      }
+    });
+
+    // Process inline math $...$
+    processed = processed.replace(/\$([^$]+)\$/g, (match, math) => {
+      if (match.startsWith('$$')) return match;
+      try {
+        // Pre-process color commands before KaTeX
+        const preprocessed = preprocessColorCommands(math.trim());
+        return katex.renderToString(preprocessed, { ...katexOptions, displayMode: false });
+      } catch (e) {
+        console.error('KaTeX error:', e);
+        return `<span class="math-error">${math}</span>`;
+      }
+    });
+
+    // Process LaTeX environments without $ wrappers (e.g., \begin{align}...\end{align})
+    const envNames = ['align', 'align\\*', 'equation', 'equation\\*', 'gather', 'gather\\*', 'matrix', 'pmatrix', 'bmatrix', 'cases'];
+    for (const envName of envNames) {
+      const envPattern = new RegExp(`\\\\begin\\{${envName}\\}([\\s\\S]*?)\\\\end\\{${envName}\\}`, 'g');
+      processed = processed.replace(envPattern, (fullMatch, innerContent) => {
+        try {
+          return katex.renderToString(fullMatch, { ...katexOptions, displayMode: true });
+        } catch (e) {
+          console.warn('KaTeX env render error:', e);
+          return `<span class="math-error">${fullMatch}</span>`;
+        }
+      });
+    }
+
+    // Process standalone color commands NOT wrapped in $...$ (e.g., \purpleC{8\text{ tens}})
+    const colorNames = Object.keys(colorMap);
+
+    // Function to extract content within balanced braces
+    const extractBalancedBraces = (str: string, startIdx: number): { content: string; endIdx: number } | null => {
+      if (str[startIdx] !== '{') return null;
+      let depth = 0;
+      let i = startIdx;
+      while (i < str.length) {
+        if (str[i] === '{') depth++;
+        else if (str[i] === '}') depth--;
+        if (depth === 0) return { content: str.slice(startIdx + 1, i), endIdx: i };
+        i++;
+      }
+      return null;
+    };
+
+    // Process each color command with nested brace handling
+    for (const colorName of colorNames) {
+      const searchStr = `\\${colorName}{`;
+      let searchIdx = 0;
+      while (true) {
+        const matchIdx = processed.indexOf(searchStr, searchIdx);
+        if (matchIdx === -1) break;
+
+        const braceStart = matchIdx + searchStr.length - 1;
+        const result = extractBalancedBraces(processed, braceStart);
+        if (result) {
+          const innerContent = result.content;
+          const color = colorMap[colorName] || '#333';
+          let replacement: string;
+
+          // Check if content has LaTeX commands like \text{} - render as math
+          if (innerContent.includes('\\text{') || innerContent.includes('\\frac') || innerContent.includes('\\sqrt')) {
+            try {
+              // Render the colored content with KaTeX
+              const coloredLatex = `\\textcolor{${color}}{${innerContent}}`;
+              replacement = katex.renderToString(coloredLatex, katexOptions);
+            } catch (e) {
+              // Fallback: process \text{} manually
+              let processedInner = innerContent;
+              processedInner = processedInner.replace(/\\text\{([^}]+)\}/g, '$1');
+              replacement = `<span style="color: ${color}; font-weight: 500;">${processedInner}</span>`;
+            }
+          } else {
+            // Simple content - try KaTeX first, then fallback to colored span
+            try {
+              const coloredLatex = `\\textcolor{${color}}{${innerContent}}`;
+              replacement = katex.renderToString(coloredLatex, katexOptions);
+            } catch {
+              replacement = `<span style="color: ${color}; font-weight: 500;">${innerContent}</span>`;
+            }
+          }
+
+          processed = processed.slice(0, matchIdx) + replacement + processed.slice(result.endIdx + 1);
+          searchIdx = matchIdx + replacement.length;
+        } else {
+          searchIdx = matchIdx + 1;
+        }
+      }
+    }
+
+    // Process markdown links [text](url) - but not image links
+    processed = processed.replace(/(?<!!)\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">$1</a>');
+
+    // Process bold and italic
+    processed = processed.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    processed = processed.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+    // Convert newlines to line breaks
+    processed = processed.replace(/\n\n/g, '</p><p class="mt-3">');
+    processed = processed.replace(/\n/g, '<br/>');
+
+    return `<p>${processed}</p>`;
+  };
+
+  const processedContent = processHintContent(currentHint?.content || '', hintWidgets);
+
   return (
     <div className={`mt-4 rounded-2xl px-5 py-4 animate-fadeInUp ${darkMode ? 'bg-blue-900/30' : 'bg-[#F3F4FF]'}`}>
       <div className="flex items-center gap-2 mb-3">
@@ -517,9 +750,10 @@ const HintPanel: React.FC<{
           Hint {currentIndex + 1} of {hints.length}
         </span>
       </div>
-      <p className={`brilliant-option-text ${darkMode ? 'text-blue-200' : 'text-slate-700'}`}>
-        {hints[currentIndex]?.content}
-      </p>
+      <div
+        className={`brilliant-option-text ${darkMode ? 'text-blue-200' : 'text-slate-700'}`}
+        dangerouslySetInnerHTML={{ __html: processedContent }}
+      />
       {currentIndex < hints.length - 1 && (
         <button
           onClick={onNextHint}
@@ -549,7 +783,7 @@ export const QuestionPane: React.FC = () => {
   const [answers, setAnswers] = useState<Record<string, unknown>>({});
   const [hearts, setHearts] = useState(5);
   const [serviceHealthy, setServiceHealthy] = useState(false);
-  const [demoMode, setDemoMode] = useState(false);
+  // Demo mode removed - all questions load from MongoDB only
   const [widgetFilter, setWidgetFilter] = useState<string>('all');
 
   // Brilliant state machine
@@ -578,7 +812,7 @@ export const QuestionPane: React.FC = () => {
     'grapher', 'plotter', 'image', 'passage', 'table', 'matrix', 'label-image', 'free-response',
   ];
 
-  const activeQuestions = demoMode ? DEMO_WIDGETS : questions;
+  const activeQuestions = questions;
   const currentQuestion = activeQuestions[currentIndex];
   const hasCalculator = !!(currentQuestion?.answerArea as { calculator?: boolean })?.calculator;
 
@@ -727,8 +961,6 @@ export const QuestionPane: React.FC = () => {
     if (!correct && quizMode === 'test') {
       setHearts(h => Math.max(0, h - 1));
     }
-
-    console.log('[Scoring]', result);
   };
 
   const handleTryAgain = () => {
@@ -818,11 +1050,7 @@ export const QuestionPane: React.FC = () => {
     });
   };
 
-  const toggleDemoMode = () => {
-    setDemoMode(!demoMode);
-    setCurrentIndex(0);
-    resetState();
-  };
+  // toggleDemoMode removed - all questions load from MongoDB only
 
   const toggleQuizMode = () => {
     setQuizMode(quizMode === 'test' ? 'practice' : 'test');
@@ -908,7 +1136,7 @@ export const QuestionPane: React.FC = () => {
               {/* Filters */}
               <select
                 value={widgetFilter}
-                onChange={(e) => { setWidgetFilter(e.target.value); if (!demoMode) loadQuestions(e.target.value); }}
+                onChange={(e) => { setWidgetFilter(e.target.value); loadQuestions(e.target.value); }}
                 className={`px-3 py-2 rounded-xl text-sm font-medium border-2 cursor-pointer focus:outline-none ${
                   darkMode
                     ? 'bg-gray-700 border-gray-600 text-white'
@@ -919,10 +1147,6 @@ export const QuestionPane: React.FC = () => {
                   <option key={type} value={type}>{type === 'all' ? '🎯 All Widgets' : type}</option>
                 ))}
               </select>
-
-              <button onClick={toggleDemoMode} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${demoMode ? 'bg-[var(--brilliant-selected-border)] text-white' : darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
-                {demoMode ? `📦 Demo (${activeQuestions.length})` : '📦 Demo'}
-              </button>
 
               {/* View mode toggles */}
               <div className="flex gap-1">
@@ -936,7 +1160,7 @@ export const QuestionPane: React.FC = () => {
                         : darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
                     }`}
                   >
-                    {mode === 'athena' ? 'Sherlocked' : mode === 'perseus' ? 'Perseus' : 'Compare'}
+                    {mode === 'athena' ? 'Athena' : mode === 'perseus' ? 'Perseus' : 'Compare'}
                   </button>
                 ))}
               </div>
@@ -947,7 +1171,7 @@ export const QuestionPane: React.FC = () => {
           {!serviceHealthy && (
             <div className="px-4 py-2 bg-amber-50 dark:bg-amber-900/30 border-t border-amber-200 dark:border-amber-800">
               <p className="text-center text-amber-700 dark:text-amber-300 font-medium text-sm">
-                Backend not running. Start: <code className="bg-amber-100 dark:bg-amber-800 px-2 py-0.5 rounded text-xs">cd services/sherlockedAPI_New && python run_backend.py</code>
+                Backend not running. Start: <code className="bg-amber-100 dark:bg-amber-800 px-2 py-0.5 rounded text-xs">cd services/athenaAPI && python run_backend.py</code>
               </p>
             </div>
           )}
@@ -978,22 +1202,21 @@ export const QuestionPane: React.FC = () => {
 
       {/* Main Content Area */}
       <main className={`flex-1 flex flex-col items-center justify-start px-4 py-8 md:py-12 ${attemptState !== 'idle' ? 'pb-24' : ''}`}>
-        {isLoading && !demoMode ? (
+        {isLoading ? (
           <div className="flex flex-col items-center gap-4 py-20">
             <div className="w-10 h-10 border-4 border-[var(--brilliant-accent)] border-t-transparent rounded-full animate-spin" />
             <p className={`brilliant-option-text ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Loading questions...</p>
           </div>
-        ) : error && !demoMode ? (
+        ) : error ? (
           <div className="text-center py-20">
             <div className="text-6xl mb-4">😢</div>
             <p className="brilliant-question-stem text-red-500 mb-4">{error}</p>
             <div className="flex gap-3 justify-center">
               <button onClick={() => loadQuestions()} className="px-6 py-3 bg-[var(--brilliant-accent)] text-white brilliant-btn-text rounded-2xl shadow-[0_4px_0_var(--brilliant-accent-dark)] active:translate-y-[2px] active:shadow-none">Try Again</button>
-              <button onClick={toggleDemoMode} className="px-6 py-3 bg-[var(--brilliant-selected-border)] text-white brilliant-btn-text rounded-2xl">Try Demo</button>
             </div>
           </div>
         ) : currentQuestion ? (
-          <div className="w-full max-w-[720px]">
+          <div className={`w-full ${viewMode === 'comparison' ? 'max-w-[1400px]' : 'max-w-[720px]'}`}>
             {/* Tools Row */}
             <div className="flex justify-between items-center mb-4">
               {hasCalculator ? (
@@ -1082,11 +1305,17 @@ export const QuestionPane: React.FC = () => {
                   </div>
                 )}
 
-                {/* Comparison Mode */}
+                {/* Comparison Mode - Responsive side by side */}
                 {viewMode === 'comparison' && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className={`p-4 rounded-2xl border-2 border-[var(--brilliant-accent)] ${darkMode ? 'bg-gray-700' : 'bg-green-50/30'}`}>
-                      <h3 className="text-center font-bold text-[var(--brilliant-accent)] mb-4 pb-2 border-b border-[var(--brilliant-accent)]/30 text-sm">Sherlocked</h3>
+                  <div className="flex flex-col lg:flex-row gap-4 w-full min-h-[400px]">
+                    {/* Athena Panel */}
+                    <div className={`flex-1 min-w-0 p-4 rounded-2xl border-2 border-[var(--brilliant-accent)] overflow-auto ${darkMode ? 'bg-gray-700' : 'bg-green-50/30'}`}>
+                      <div className="sticky top-0 z-10 mb-4 pb-2 border-b border-[var(--brilliant-accent)]/30" style={{ background: 'inherit' }}>
+                        <h3 className="text-center font-bold text-[var(--brilliant-accent)] text-sm flex items-center justify-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-[var(--brilliant-accent)]"></span>
+                          Athena (New)
+                        </h3>
+                      </div>
                       <RendererErrorBoundary key={`athena-cmp-${currentQuestion._id}-${rendererKey}`} name="Athena" onRetry={() => setRendererKey(k => k + 1)}>
                         <AthenaRenderer
                           item={{ question: currentQuestion.question as any, hints: currentQuestion.hints as any, answerArea: currentQuestion.answerArea }}
@@ -1097,8 +1326,14 @@ export const QuestionPane: React.FC = () => {
                         />
                       </RendererErrorBoundary>
                     </div>
-                    <div className={`p-4 rounded-2xl border-2 border-orange-500 framework-perseus ${darkMode ? 'bg-gray-700' : 'bg-orange-50/30'}`}>
-                      <h3 className="text-center font-bold text-orange-500 mb-4 pb-2 border-b border-orange-500/30 text-sm">Perseus</h3>
+                    {/* Perseus Panel */}
+                    <div className={`flex-1 min-w-0 p-4 rounded-2xl border-2 border-orange-500 framework-perseus overflow-auto ${darkMode ? 'bg-gray-700' : 'bg-orange-50/30'}`}>
+                      <div className="sticky top-0 z-10 mb-4 pb-2 border-b border-orange-500/30" style={{ background: 'inherit' }}>
+                        <h3 className="text-center font-bold text-orange-500 text-sm flex items-center justify-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-orange-500"></span>
+                          Perseus (Original)
+                        </h3>
+                      </div>
                       <RendererErrorBoundary key={`perseus-cmp-${currentQuestion._id}-${rendererKey}`} name="Perseus" onRetry={() => setRendererKey(k => k + 1)}>
                         <PerseusI18nContextProvider locale="en" strings={mockStrings}>
                           <RenderStateRoot>
@@ -1197,6 +1432,8 @@ export const QuestionPane: React.FC = () => {
         onWhyExplanation={handleWhyExplanation}
         onSkipExplanation={handleSkipExplanation}
         onContinue={handleContinue}
+        onGetHint={() => setShowHints(true)}
+        hasHints={!!(currentQuestion?.hints?.length)}
         darkMode={darkMode}
       />
 
