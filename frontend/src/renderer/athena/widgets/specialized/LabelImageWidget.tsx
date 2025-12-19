@@ -172,6 +172,15 @@ export function LabelImageWidget({
   const [fallbackAttempt, setFallbackAttempt] = useState(0); // 0: original, 1: .png, 2: .svg, 3: no extension
   const [katex, setKatex] = useState<any>(null);
 
+  // Check if this is a graphie URL (needs special handling for labels)
+  // IMPORTANT: This must be defined BEFORE any useEffect that uses it
+  const isGraphieUrl = useMemo(() => {
+    const url = options.imageUrl || '';
+    return url.startsWith('web+graphie://') ||
+           url.includes('ka-perseus-graphie') ||
+           url.includes('kastatic.org') && !url.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i);
+  }, [options.imageUrl]);
+
   // Load KaTeX on mount
   useEffect(() => {
     ensureKaTeX().then(k => setKatex(k));
@@ -209,14 +218,6 @@ export function LabelImageWidget({
   }, [katex]);
 
   const isDisabled = readOnly || disabled;
-
-  // Check if this is a graphie URL (needs special handling for labels)
-  const isGraphieUrl = useMemo(() => {
-    const url = options.imageUrl || '';
-    return url.startsWith('web+graphie://') ||
-           url.includes('ka-perseus-graphie') ||
-           url.includes('kastatic.org') && !url.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i);
-  }, [options.imageUrl]);
 
   // Convert image URL with fallback handling
   const imageUrl = useMemo(() => {
