@@ -18,6 +18,8 @@ interface NumberLineOptions {
   labelTicks?: boolean;
   correctX?: number;
   initialX?: number;
+  divisionRange?: [number, number]; // Min/max divisions user can select
+  isTickCtrl?: boolean; // Whether to show tick/division control
 }
 
 export interface NumberLineWidgetProps extends WidgetProps<NumberLineOptions> {}
@@ -44,6 +46,25 @@ export function NumberLineWidget({
   );
   const [isDragging, setIsDragging] = useState(false);
 
+  // Division control - allow user to change number of tick marks
+  // For small ranges like [0,1], we need more divisions to be useful
+  const isSmallRange = Math.abs(range[1] - range[0]) <= 1;
+  const defaultMinDivisions = isSmallRange ? 2 : 2;
+  const divisionRange = options.divisionRange || [defaultMinDivisions, 12];
+  const showDivisionControl = options.isTickCtrl !== false; // Show by default
+  // Calculate initial divisions - use numDivisions if set, otherwise default to something reasonable
+  const getInitialDivisions = () => {
+    if (options.numDivisions) return options.numDivisions;
+    const minDiv = options.divisionRange?.[0] || defaultMinDivisions;
+    const maxDiv = options.divisionRange?.[1] || 12;
+    // For small ranges, start with more divisions
+    const calculated = isSmallRange
+      ? 4 // Default to 4 divisions for [0,1] type ranges
+      : Math.round((range[1] - range[0]) / tickStep) || 4;
+    return Math.max(minDiv, Math.min(maxDiv, calculated));
+  };
+  const [userDivisions, setUserDivisions] = useState<number>(getInitialDivisions);
+
   const themeStyles = {
     light: { bg: '#fff', line: '#374151', tick: '#6b7280', point: '#22c55e', correct: '#22c55e', incorrect: '#ef4444', label: '#1f2937' },
     dark: { bg: '#1f2937', line: '#e5e7eb', tick: '#9ca3af', point: '#4ade80', correct: '#4ade80', incorrect: '#f87171', label: '#e5e7eb' },
@@ -58,17 +79,17 @@ export function NumberLineWidget({
     return ((val - range[0]) / (range[1] - range[0])) * width;
   };
 
-  // Calculate value from position
+  // Calculate value from position (uses userDivisions for snapping)
   const positionToValue = (pos: number, containerWidth: number): number => {
     const percentage = pos / containerWidth;
     const val = range[0] + percentage * (range[1] - range[0]);
 
-    // Snap to nearest tick
-    const snapStep = options.snapDivisions ? (range[1] - range[0]) / options.snapDivisions : tickStep;
+    // Snap to nearest tick based on current user divisions
+    const snapStep = (range[1] - range[0]) / userDivisions;
     const snapped = Math.round(val / snapStep) * snapStep;
 
-    // Clamp to range
-    return Math.max(range[0], Math.min(range[1], snapped));
+    // Clamp to range and round to avoid floating point issues
+    return Math.round(Math.max(range[0], Math.min(range[1], snapped)) * 10000) / 10000;
   };
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -138,9 +159,8 @@ export function NumberLineWidget({
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (isDisabled || pointX === null) return;
 
-    const snapStep = options.snapDivisions
-      ? (range[1] - range[0]) / options.snapDivisions
-      : tickStep;
+    // Use userDivisions for step size
+    const snapStep = (range[1] - range[0]) / userDivisions;
 
     let newValue = pointX;
 
@@ -171,17 +191,31 @@ export function NumberLineWidget({
     newValue = Math.round(newValue * 10000) / 10000;
     setPointX(newValue);
     onChange?.(newValue);
-  }, [isDisabled, pointX, range, options.snapDivisions, tickStep, onChange]);
+  }, [isDisabled, pointX, range, userDivisions, onChange]);
 
-  // Generate tick marks using numDivisions if available
+  // Generate tick marks using userDivisions (user-controlled)
   const ticks: number[] = [];
-  const numDivisions = options.numDivisions || Math.round((range[1] - range[0]) / tickStep);
+  const numDivisions = userDivisions;
   const actualTickStep = (range[1] - range[0]) / numDivisions;
 
   for (let i = 0; i <= numDivisions; i++) {
     const tickValue = range[0] + i * actualTickStep;
     ticks.push(Math.round(tickValue * 10000) / 10000); // Round to avoid floating point issues
   }
+
+  // Handle division change
+  const handleDivisionChange = (newDivisions: number) => {
+    const clamped = Math.max(divisionRange[0], Math.min(divisionRange[1], newDivisions));
+    setUserDivisions(clamped);
+    // Snap current point to nearest valid position with new divisions
+    if (pointX !== null) {
+      const newStep = (range[1] - range[0]) / clamped;
+      const snappedValue = Math.round(pointX / newStep) * newStep;
+      const clampedValue = Math.max(range[0], Math.min(range[1], snappedValue));
+      setPointX(Math.round(clampedValue * 10000) / 10000);
+      onChange?.(Math.round(clampedValue * 10000) / 10000);
+    }
+  };
 
   // Check if answer is correct in review mode
   const isCorrect = reviewMode && pointX !== null && correctX !== undefined && Math.abs(pointX - correctX) < 0.01;
@@ -238,6 +272,81 @@ export function NumberLineWidget({
           borderRadius: '8px',
         }}
       >
+        {/* Division Control - lets user change number of tick marks */}
+        {showDivisionControl && !isDisabled && (
+          <div
+            style={{
+              marginBottom: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '12px',
+              flexWrap: 'wrap',
+            }}
+          >
+            <span style={{ fontSize: '14px', color: themeStyles.label }}>
+              Number of divisions:
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                onClick={() => handleDivisionChange(userDivisions - 1)}
+                disabled={userDivisions <= divisionRange[0]}
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  border: `2px solid ${themeStyles.tick}`,
+                  backgroundColor: 'transparent',
+                  color: themeStyles.label,
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  cursor: userDivisions <= divisionRange[0] ? 'not-allowed' : 'pointer',
+                  opacity: userDivisions <= divisionRange[0] ? 0.4 : 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                aria-label="Decrease divisions"
+              >
+                −
+              </button>
+              <span
+                style={{
+                  minWidth: '40px',
+                  textAlign: 'center',
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  color: themeStyles.point,
+                }}
+              >
+                {userDivisions}
+              </span>
+              <button
+                onClick={() => handleDivisionChange(userDivisions + 1)}
+                disabled={userDivisions >= divisionRange[1]}
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  border: `2px solid ${themeStyles.tick}`,
+                  backgroundColor: 'transparent',
+                  color: themeStyles.label,
+                  fontSize: '18px',
+                  fontWeight: 'bold',
+                  cursor: userDivisions >= divisionRange[1] ? 'not-allowed' : 'pointer',
+                  opacity: userDivisions >= divisionRange[1] ? 0.4 : 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                aria-label="Increase divisions"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        )}
+
         <div
           ref={containerRef}
           tabIndex={isDisabled ? -1 : 0}

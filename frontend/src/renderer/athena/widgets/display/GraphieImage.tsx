@@ -9,7 +9,7 @@
  * SVGs are loaded inline to ensure text renders with proper fonts.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
 interface GraphieLabel {
   content: string;
@@ -379,6 +379,45 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     });
   }, [svgContent]);
 
+  // Process label content - convert LaTeX commands to plain text for SVG display
+  const processLabelContent = (content: string): string => {
+    if (!content) return '';
+    let processed = content;
+
+    // Remove \small{} wrapper - just extract the content
+    processed = processed.replace(/\\small\{([^}]*)\}/g, '$1');
+
+    // Remove standalone braces {X} -> X
+    processed = processed.replace(/\{([^}]*)\}/g, '$1');
+
+    // Remove \text{} wrapper
+    processed = processed.replace(/\\text\{([^}]*)\}/g, '$1');
+
+    // Handle \textbf{} - bold text (just extract content for SVG)
+    processed = processed.replace(/\\textbf\{([^}]*)\}/g, '$1');
+
+    // Handle \textit{} - italic text
+    processed = processed.replace(/\\textit\{([^}]*)\}/g, '$1');
+
+    // Handle common LaTeX symbols
+    processed = processed.replace(/\\times/g, '×');
+    processed = processed.replace(/\\div/g, '÷');
+    processed = processed.replace(/\\pm/g, '±');
+    processed = processed.replace(/\\leq/g, '≤');
+    processed = processed.replace(/\\geq/g, '≥');
+    processed = processed.replace(/\\neq/g, '≠');
+    processed = processed.replace(/\\infty/g, '∞');
+    processed = processed.replace(/\\cdot/g, '·');
+
+    // Remove any remaining backslashes from simple commands
+    processed = processed.replace(/\\([a-zA-Z]+)/g, '');
+
+    // Clean up any double spaces
+    processed = processed.replace(/\s+/g, ' ').trim();
+
+    return processed;
+  };
+
   // Inject labels directly into SVG content
   const injectLabelsIntoSvg = useCallback((svg: string, labels: GraphieLabel[], range: [[number, number], [number, number]]): string => {
     if (!labels || labels.length === 0) return svg;
@@ -434,8 +473,9 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         if (label.style.transform) styleStr += ` transform-origin: center; transform: ${label.style.transform};`;
       }
 
-      // Escape content for SVG
-      const escapedContent = label.content
+      // Process and escape content for SVG
+      const processedContent = processLabelContent(label.content);
+      const escapedContent = processedContent
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');

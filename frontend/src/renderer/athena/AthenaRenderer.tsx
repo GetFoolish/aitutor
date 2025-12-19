@@ -19,6 +19,7 @@ import React, {
 import ReactDOM from 'react-dom';
 import { AthenaProvider, useAthena } from './AthenaContext';
 import { WidgetFactory } from './widgets/WidgetFactory';
+import { GraphieImage } from './widgets/display/GraphieImage';
 // @ts-ignore - KaTeX types resolution issue
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
@@ -88,10 +89,33 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         if (!text.includes('![')) return text;
 
         let processed = text;
+        let graphieCounter = 0;
 
-        // Helper to convert URL to img tag
+        // Helper to check if URL is a graphie URL (needs labels from data.json)
+        const isGraphieUrl = (url: string): boolean => {
+          return url.startsWith('web+graphie://') ||
+                 url.includes('ka-perseus-graphie') ||
+                 (url.includes('kastatic.org') && url.includes('graphie'));
+        };
+
+        // Helper to convert URL to img tag or graphie placeholder
         const toImgTag = (alt: string, url: string): string => {
           let imageUrl = url.trim();
+
+          // For graphie images, create a placeholder that will be replaced with GraphieImage component
+          if (isGraphieUrl(imageUrl)) {
+            // Normalize the graphie URL (remove extension if present)
+            let graphieUrl = imageUrl;
+            if (graphieUrl.startsWith('web+graphie://')) {
+              graphieUrl = 'web+graphie://' + graphieUrl.replace('web+graphie://', '').replace(/\.(png|svg)$/, '');
+            } else {
+              graphieUrl = graphieUrl.replace(/\.(png|svg)$/, '');
+            }
+            const placeholderId = `athena-graphie-${graphieCounter++}`;
+            return `<span class="athena-graphie-placeholder" data-graphie-url="${graphieUrl}" data-graphie-alt="${alt}" id="${placeholderId}" style="display:block;margin:1rem 0;"></span>`;
+          }
+
+          // For non-graphie images, use regular img tag
           if (imageUrl.startsWith('web+graphie://')) {
             imageUrl = imageUrl.replace('web+graphie://', 'https://') + '.png';
           } else if ((imageUrl.includes('cdn.kastatic.org') || imageUrl.includes('ka-perseus')) &&
@@ -512,6 +536,27 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         }
       });
 
+      // Handle color commands WITH braces outside of $ delimiters (e.g., \greenD{\text{starts}})
+      // These commands take one argument in braces
+      const colorCommandNames = Object.keys(colorHexMap);
+      for (const colorName of colorCommandNames) {
+        // Match \colorName{...} where ... can contain nested braces (like \text{...})
+        // Using a more permissive pattern to handle nested content
+        const colorPattern = new RegExp(`\\\\${colorName}\\{([^{}]*(?:\\{[^{}]*\\}[^{}]*)*)\\}`, 'g');
+        processed = processed.replace(colorPattern, (match, content) => {
+          const color = colorHexMap[colorName];
+          try {
+            // Try to render as KaTeX with the color
+            return katex.renderToString(`\\textcolor{${color}}{${content}}`, { ...katexOptions, displayMode: false });
+          } catch {
+            // Fallback to HTML span with color
+            // Also process any \text{} inside to just show the text
+            const textContent = content.replace(/\\text\{([^}]+)\}/g, '$1');
+            return `<span style="color:${color};font-weight:600">${textContent}</span>`;
+          }
+        });
+      }
+
       // Restore dollar signs
       processed = processed.replace(/__DOLLAR_SIGN__/g, '$');
 
@@ -804,6 +849,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
     const HtmlWithInlineWidgets = React.memo(({ html, keyPrefix }: { html: string; keyPrefix: string }) => {
       const containerRef = React.useRef<HTMLDivElement>(null);
       const [widgetMounts, setWidgetMounts] = React.useState<Array<{ el: HTMLElement; widgetId: string }>>([]);
+      const [graphieMounts, setGraphieMounts] = React.useState<Array<{ el: HTMLElement; url: string; alt: string }>>([]);
 
       console.log('[Athena] HtmlWithInlineWidgets rendering:', {
         keyPrefix,
@@ -811,10 +857,11 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         htmlPreview: html.substring(0, 500),
       });
 
-      // After initial render, find widget placeholders in the DOM
+      // After initial render, find widget and graphie placeholders in the DOM
       React.useEffect(() => {
         if (!containerRef.current) return;
 
+        // Find widget placeholders
         const placeholders = containerRef.current.querySelectorAll('.athena-widget-inline[data-widget-id]');
         const mounts: Array<{ el: HTMLElement; widgetId: string }> = [];
 
@@ -828,6 +875,23 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         console.log('[Athena] Found widget placeholders:', mounts.length);
         if (mounts.length > 0) {
           setWidgetMounts(mounts);
+        }
+
+        // Find graphie image placeholders
+        const graphiePlaceholders = containerRef.current.querySelectorAll('.athena-graphie-placeholder[data-graphie-url]');
+        const gMounts: Array<{ el: HTMLElement; url: string; alt: string }> = [];
+
+        graphiePlaceholders.forEach((el) => {
+          const url = el.getAttribute('data-graphie-url');
+          const alt = el.getAttribute('data-graphie-alt') || '';
+          if (url) {
+            gMounts.push({ el: el as HTMLElement, url, alt });
+          }
+        });
+
+        console.log('[Athena] Found graphie placeholders:', gMounts.length);
+        if (gMounts.length > 0) {
+          setGraphieMounts(gMounts);
         }
       }, [html]);
 
@@ -865,6 +929,19 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         );
       });
 
+      // Render graphie images into their placeholders using portals
+      const graphiePortals = graphieMounts.map(({ el, url, alt }, idx) => {
+        return ReactDOM.createPortal(
+          <GraphieImage
+            url={url}
+            alt={alt}
+            style={{ maxWidth: '100%' }}
+          />,
+          el,
+          `${keyPrefix}-graphie-portal-${idx}`
+        );
+      });
+
       return (
         <>
           <div
@@ -873,6 +950,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
             dangerouslySetInnerHTML={{ __html: html }}
           />
           {widgetPortals}
+          {graphiePortals}
         </>
       );
     });
@@ -1133,8 +1211,8 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
             .replace(/`([^`]+)`/g, '<code>$1</code>')
             .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="athena-link">$1</a>');
 
-          // Check for inline widget placeholders (from table cells)
-          if (finalText.includes('athena-widget-inline')) {
+          // Check for inline widget placeholders (from table cells) or graphie image placeholders
+          if (finalText.includes('athena-widget-inline') || finalText.includes('athena-graphie-placeholder')) {
             return renderHtmlWithInlineWidgets(finalText, key);
           }
 
@@ -1147,11 +1225,11 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
           );
         }
 
-        // Check if any parts contain inline widgets
+        // Check if any parts contain inline widgets or graphie images
         const processedParts = parts.map((part, idx) => {
           if (React.isValidElement(part) && part.props.dangerouslySetInnerHTML) {
             const html = part.props.dangerouslySetInnerHTML.__html;
-            if (html && html.includes('athena-widget-inline')) {
+            if (html && (html.includes('athena-widget-inline') || html.includes('athena-graphie-placeholder'))) {
               return renderHtmlWithInlineWidgets(html, `${key}-inline-${idx}`);
             }
           }

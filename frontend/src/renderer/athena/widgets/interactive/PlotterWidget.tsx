@@ -71,6 +71,22 @@ const splitMultilineLabel = (text: string): string[] => {
   return lines.map(line => line.trim()).filter(line => line.length > 0);
 };
 
+// Helper to extract label from category (handles string or object formats)
+const getCategoryLabel = (cat: unknown): string => {
+  if (!cat) return '';
+  if (typeof cat === 'string') return cat;
+  if (typeof cat === 'object') {
+    const obj = cat as Record<string, unknown>;
+    // Try common property names for labels
+    if (typeof obj.content === 'string') return obj.content;
+    if (typeof obj.label === 'string') return obj.label;
+    if (typeof obj.text === 'string') return obj.text;
+    if (typeof obj.name === 'string') return obj.name;
+    if (typeof obj.value === 'string') return obj.value;
+  }
+  return String(cat);
+};
+
 interface PlotterOptions {
   range?: [[number, number], [number, number]];
   step?: [number, number];
@@ -84,6 +100,8 @@ interface PlotterOptions {
   scaleY?: number;
   maxY?: number;
   snapsPerLine?: number;
+  labels?: string[];  // Axis labels [x-axis label, y-axis label]
+  labelText?: string; // Alternate axis label property
 }
 
 export interface PlotterWidgetProps extends WidgetProps<PlotterOptions> {}
@@ -126,7 +144,8 @@ export function PlotterWidget({
   // Check if there are any non-empty categories (to determine if it's a bar chart)
   const hasValidCategories = categories.some(cat => {
     if (!cat) return false;
-    const stripped = stripMathDelimiters(cat);
+    const label = getCategoryLabel(cat);
+    const stripped = stripMathDelimiters(label);
     return stripped.length > 0;
   });
   const isBarChart = categories.length > 0 && !isDotPlot;
@@ -322,7 +341,7 @@ export function PlotterWidget({
                     fill={isHovered ? themeStyles.axis : themeStyles.text}
                     fontWeight={isHovered ? 600 : 400}
                   >
-                    {splitMultilineLabel(cat).map((line, lineIndex) => (
+                    {splitMultilineLabel(getCategoryLabel(cat)).map((line, lineIndex) => (
                       <tspan
                         key={lineIndex}
                         x={barX + barWidth / 2}
@@ -468,13 +487,13 @@ export function PlotterWidget({
                   fontSize="12"
                   fill={themeStyles.text}
                 >
-                  {categories.length > 0 ? stripMathDelimiters(categories[i]) : x}
+                  {categories.length > 0 ? stripMathDelimiters(getCategoryLabel(categories[i])) : x}
                 </text>
               </g>
             ))}
 
-            {/* Axis label (if categories have a label) */}
-            {categories.length > 0 && (
+            {/* Axis label (from labels array or labelText) */}
+            {(options.labels?.[0] || options.labelText) && (
               <text
                 x={width / 2}
                 y={xAxisY + 45}
@@ -483,7 +502,7 @@ export function PlotterWidget({
                 fontWeight="500"
                 fill={themeStyles.text}
               >
-                {stripMathDelimiters(categories[categories.length - 1]) || ''}
+                {stripMathDelimiters(options.labels?.[0] || options.labelText || '')}
               </text>
             )}
 

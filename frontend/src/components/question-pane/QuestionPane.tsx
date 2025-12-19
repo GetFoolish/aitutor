@@ -726,6 +726,31 @@ const HintPanel: React.FC<{
       }
     }
 
+    // Process color commands WITHOUT braces (e.g., \purpleD1 means \purpleD{1})
+    // This handles Khan Academy's shorthand where \colorName followed by a digit or single char
+    for (const colorName of colorNames) {
+      // Match \colorName followed by a single digit, letter, or word (without braces)
+      const noBracePattern = new RegExp(`\\\\${colorName}(\\d+|[a-zA-Z])(?![{a-zA-Z])`, 'g');
+      processed = processed.replace(noBracePattern, (match, content) => {
+        const color = colorMap[colorName] || '#333';
+        try {
+          const coloredLatex = `\\textcolor{${color}}{${content}}`;
+          return katex.renderToString(coloredLatex, katexOptions);
+        } catch {
+          return `<span style="color: ${color}; font-weight: 600;">${content}</span>`;
+        }
+      });
+    }
+
+    // Handle \textcolor{#hex}{content} syntax
+    processed = processed.replace(/\\textcolor\{(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3})\}\{([^}]+)\}/g, (match, color, content) => {
+      try {
+        return katex.renderToString(match, katexOptions);
+      } catch {
+        return `<span style="color: ${color}; font-weight: 600;">${content}</span>`;
+      }
+    });
+
     // Process markdown links [text](url) - but not image links
     processed = processed.replace(/(?<!!)\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">$1</a>');
 
@@ -1307,9 +1332,9 @@ export const QuestionPane: React.FC = () => {
 
                 {/* Comparison Mode - Responsive side by side */}
                 {viewMode === 'comparison' && (
-                  <div className="flex flex-col lg:flex-row gap-4 w-full min-h-[400px]">
+                  <div className="comparison-container">
                     {/* Athena Panel */}
-                    <div className={`flex-1 min-w-0 p-4 rounded-2xl border-2 border-[var(--brilliant-accent)] overflow-auto ${darkMode ? 'bg-gray-700' : 'bg-green-50/30'}`}>
+                    <div className={`comparison-panel comparison-panel-athena ${darkMode ? 'bg-gray-700' : ''}`}>
                       <div className="sticky top-0 z-10 mb-4 pb-2 border-b border-[var(--brilliant-accent)]/30" style={{ background: 'inherit' }}>
                         <h3 className="text-center font-bold text-[var(--brilliant-accent)] text-sm flex items-center justify-center gap-2">
                           <span className="w-2 h-2 rounded-full bg-[var(--brilliant-accent)]"></span>
@@ -1327,7 +1352,7 @@ export const QuestionPane: React.FC = () => {
                       </RendererErrorBoundary>
                     </div>
                     {/* Perseus Panel */}
-                    <div className={`flex-1 min-w-0 p-4 rounded-2xl border-2 border-orange-500 framework-perseus overflow-auto ${darkMode ? 'bg-gray-700' : 'bg-orange-50/30'}`}>
+                    <div className={`comparison-panel comparison-panel-perseus framework-perseus ${darkMode ? 'bg-gray-700' : ''}`}>
                       <div className="sticky top-0 z-10 mb-4 pb-2 border-b border-orange-500/30" style={{ background: 'inherit' }}>
                         <h3 className="text-center font-bold text-orange-500 text-sm flex items-center justify-center gap-2">
                           <span className="w-2 h-2 rounded-full bg-orange-500"></span>

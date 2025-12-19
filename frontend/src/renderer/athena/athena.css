@@ -161,6 +161,11 @@
   white-space: pre-wrap;
 }
 
+/* Ensure KaTeX math content has proper font size matching Perseus */
+.athena-renderer .katex {
+  font-size: 1.21em;
+}
+
 .athena-text strong {
   font-weight: 700;
 }
@@ -388,19 +393,18 @@
 }
 
 .athena-numeric-input-field {
-  padding: 10px 16px;
-  border: 2px solid #e5e5e5;
-  border-radius: 12px;
-  font-size: 1.25rem;
-  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-weight: 600;
+  padding: 6px 10px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+  font-weight: 400;
   width: auto;
-  min-width: 100px;
-  max-width: 200px;
+  min-width: 50px;
+  max-width: 120px;
   transition: all 0.15s ease;
-  background-color: #f7f7f7;
-  text-align: center;
-  box-shadow: 0 2px 0 #e5e5e5;
+  background-color: #ffffff;
+  text-align: left;
   /* Prevent text truncation */
   text-overflow: clip;
   overflow: visible;
@@ -751,10 +755,10 @@
 
 /* Compact dropdown for short choices like comparison operators */
 .athena-dropdown-select.compact {
-  min-width: 44px;
-  max-width: 70px;
+  min-width: 40px;
+  max-width: 56px;
   width: fit-content;
-  padding: 6px 24px 6px 8px;
+  padding: 6px 22px 6px 8px;
   font-size: 1rem;
   text-align: center;
 }
@@ -1406,4 +1410,41 @@
   height: auto;
   margin: 0.5rem 0;
   border-radius: 4px;
+}
+
+/* ============================================================================
+   COMPARISON VIEW - Side by Side Layout
+   ============================================================================ */
+
+.comparison-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  min-height: 400px;
+}
+
+@media (min-width: 1024px) {
+  .comparison-container {
+    flex-direction: row;
+  }
+}
+
+.comparison-panel {
+  flex: 1;
+  min-width: 0;
+  padding: 1rem;
+  border-radius: 1rem;
+  border-width: 2px;
+  overflow: auto;
+}
+
+.comparison-panel-athena {
+  border-color: var(--brilliant-accent, #58CC02);
+  background-color: rgba(88, 204, 2, 0.05);
+}
+
+.comparison-panel-perseus {
+  border-color: #f97316;
+  background-color: rgba(249, 115, 22, 0.05);
 }

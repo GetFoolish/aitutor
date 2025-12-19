@@ -14,6 +14,7 @@ import type { WidgetProps } from '../WidgetRegistry';
 import type { ImageOptions } from '../../core/types';
 import { BaseWidgetWrapper } from '../base/BaseWidget';
 import { ImageURLMigrator } from '../../migration/ImageURLMigrator';
+import { GraphieImage } from './GraphieImage';
 
 // Base URL for resolving relative asset URLs (from backend API)
 const ASSETS_BASE_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
@@ -226,6 +227,35 @@ export function ImageWidget({
         <div className="athena-image-placeholder">
           No image specified
         </div>
+      </BaseWidgetWrapper>
+    );
+  }
+
+  // Check if this is a graphie image that needs labels from data.json
+  const isGraphieImage = backgroundImage.url.startsWith('web+graphie://') ||
+    backgroundImage.url.includes('ka-perseus-graphie') ||
+    (backgroundImage.url.includes('kastatic.org') && backgroundImage.url.includes('graphie'));
+
+  // Use GraphieImage component for graphie images to properly render labels from data.json
+  if (isGraphieImage) {
+    return (
+      <BaseWidgetWrapper widgetId={widgetId} widgetType="image">
+        <figure className="athena-image-figure">
+          <GraphieImage
+            url={backgroundImage.url}
+            alt={options.alt || ''}
+            style={{
+              maxWidth: '100%',
+              height: 'auto',
+            }}
+          />
+          {/* Caption */}
+          {options.caption && (
+            <figcaption className="athena-image-caption">
+              {options.caption}
+            </figcaption>
+          )}
+        </figure>
       </BaseWidgetWrapper>
     );
   }
