@@ -64,10 +64,12 @@ export default function SidePanel({ open }: SidePanelProps) {
   return (
     <div
       className={cn(
-        "fixed top-[44px] lg:top-[48px] right-0 flex flex-col border-l-[3px] lg:border-l-[4px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) z-50 will-change-transform shadow-[-2px_0_0_0_rgba(0,0,0,1)] lg:shadow-[-2px_0_0_0_rgba(0,0,0,1)] dark:shadow-[-2px_0_0_0_rgba(255,255,255,0.3)]",
-        "h-[calc(100vh-44px)] lg:h-[calc(100vh-48px)] w-[240px] lg:w-[260px]",
+        "fixed top-[44px] lg:top-[48px] right-0 flex flex-col border-l-[3px] lg:border-l-[4px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) z-50 will-change-transform",
+        "h-[calc(100vh-44px)] lg:h-[calc(100vh-48px)]",
+        "w-[85vw] sm:w-[240px] lg:w-[260px]", // Responsive width
         open ? "translate-x-0" : "translate-x-full",
-        "max-md:hidden" // Hide on mobile
+        // Mobile: Full overlay with shadow
+        "shadow-[-4px_0_16px_rgba(0,0,0,0.3)] md:shadow-[-2px_0_0_0_rgba(0,0,0,1)] dark:shadow-[-4px_0_16px_rgba(255,255,255,0.2)] md:dark:shadow-[-2px_0_0_0_rgba(255,255,255,0.3)]"
       )}
     >
       <header className="flex items-center justify-between h-[44px] lg:h-[48px] px-3 lg:px-4 border-b-[3px] border-black dark:border-white shrink-0 overflow-hidden transition-all duration-300 bg-[#C4B5FD]">

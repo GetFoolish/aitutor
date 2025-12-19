@@ -18,6 +18,7 @@ import { useRef, useState, useEffect, Suspense, lazy } from "react";
 import "./App.scss";
 import "./styles/mobile-fixes.css"; // Mobile UI fixes
 import { TutorProvider } from "./features/tutor";
+import cn from "classnames";
 import AuthGuard from "./components/auth/AuthGuard";
 import Header from "./components/header/Header";
 import BackgroundShapes from "./components/background-shapes/BackgroundShapes";
@@ -131,11 +132,11 @@ function App() {
                     onToggle={toggleGradingSidebar}
                     currentSkill={currentSkill}
                   />
-                  <main style={{
-                    marginRight: isSidebarOpen ? "260px" : "0",
-                    marginLeft: isGradingSidebarOpen ? "260px" : "40px",
-                    transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
-                  }}>
+                  <main className={cn(
+                    "main-content-area",
+                    isSidebarOpen && "sidebar-open",
+                    isGradingSidebarOpen && "grading-sidebar-open"
+                  )}>
                     <div className="main-app-area">
                       <div className="question-panel">
                         <BackgroundShapes />

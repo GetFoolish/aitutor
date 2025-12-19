@@ -166,10 +166,14 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
     return (
         <div
             className={cn(
-                "fixed top-[44px] lg:top-[48px] left-0 flex flex-col border-r-[3px] lg:border-r-[4px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) z-50 will-change-transform shadow-[2px_0_0_0_rgba(0,0,0,1)] lg:shadow-[2px_0_0_0_rgba(0,0,0,1)] dark:shadow-[2px_0_0_0_rgba(255,255,255,0.3)]",
+                "fixed top-[44px] lg:top-[48px] left-0 flex flex-col border-r-[3px] lg:border-r-[4px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) z-50 will-change-transform",
                 "h-[calc(100vh-44px)] lg:h-[calc(100vh-48px)]",
-                open ? "w-[240px] lg:w-[260px]" : "w-[40px]",
-                "max-md:hidden" // Hide on mobile
+                // Responsive width with mobile support
+                open 
+                  ? "w-[85vw] sm:w-[240px] lg:w-[260px]" 
+                  : "w-[40px]",
+                // Mobile: Full overlay with shadow, Desktop: regular shadow
+                "shadow-[4px_0_16px_rgba(0,0,0,0.3)] md:shadow-[2px_0_0_0_rgba(0,0,0,1)] dark:shadow-[4px_0_16px_rgba(255,255,255,0.2)] md:dark:shadow-[2px_0_0_0_rgba(255,255,255,0.3)]"
             )}
         >
             <header className={cn(

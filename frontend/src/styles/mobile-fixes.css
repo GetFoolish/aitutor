@@ -1,4 +1,4 @@
-/* Mobile UI Fixes - Addressing feedback from spreadsheet */
+/* Mobile UI Fixes - Comprehensive mobile responsiveness */
 
 /* Fix 1: Parent icon too close to edge */
 .parent-icon-container,
@@ -16,6 +16,7 @@
     .floating-control-panel {
         padding: 12px;
         margin: 8px;
+        max-width: calc(100vw - 32px) !important;
     }
 
     /* Icon containers need more breathing room */
@@ -32,8 +33,10 @@
 
     /* Question panel should not overlap controls */
     .question-panel {
-        padding-bottom: 80px;
+        padding-bottom: 120px !important;
         /* Space for floating controls */
+        max-width: 100vw;
+        overflow-x: hidden;
     }
 
     /* Scratchpad controls positioning */
@@ -41,6 +44,13 @@
         right: 12px;
         /* was too close to edge */
         top: 12px;
+    }
+
+    /* Prevent horizontal scroll */
+    .main-app-area,
+    .streaming-console {
+        max-width: 100vw;
+        overflow-x: hidden;
     }
 }
 
@@ -51,17 +61,28 @@
     button,
     .clickable,
     [role="button"] {
-        min-height: 44px;
+        min-height: 44px !important;
         /* iOS recommended minimum */
-        min-width: 44px;
+        min-width: 44px !important;
+        padding: 8px !important;
     }
 
     /* Icon buttons */
     button[size="icon"],
     .icon-button {
-        min-height: 48px;
-        min-width: 48px;
-        padding: 12px;
+        min-height: 48px !important;
+        min-width: 48px !important;
+        padding: 12px !important;
+    }
+}
+
+/* Fix 3b: Touch targets for all mobile devices */
+@media (max-width: 768px) {
+    button,
+    .clickable,
+    [role="button"] {
+        min-height: 44px;
+        min-width: 44px;
     }
 }
 
@@ -120,16 +141,20 @@
 /* Fix 7: Landscape mode optimizations */
 @media (max-width: 768px) and (orientation: landscape) {
 
-    /* Use horizontal space better in landscape */
-    .question-panel {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-    }
-
     /* Controls can be smaller in landscape */
     .floating-control-panel {
-        scale: 0.9;
+        scale: 0.85 !important;
+        transform-origin: bottom right;
+    }
+
+    /* Reduce header height */
+    header {
+        height: 40px !important;
+    }
+
+    .streaming-console {
+        margin-top: 40px !important;
+        height: calc(100vh - 40px) !important;
     }
 }
 
@@ -140,5 +165,55 @@
         padding-right: max(12px, env(safe-area-inset-right));
         padding-top: max(12px, env(safe-area-inset-top));
         padding-bottom: max(12px, env(safe-area-inset-bottom));
+    }
+
+    header {
+        padding-left: max(8px, env(safe-area-inset-left));
+        padding-right: max(8px, env(safe-area-inset-right));
+    }
+}
+
+/* Fix 9: Enhanced mobile layout fixes */
+@media (max-width: 768px) {
+    /* Full-width content on mobile */
+    .question-display-container {
+        width: 100%;
+        max-width: 100%;
+        padding: 12px;
+    }
+
+    /* Stack elements vertically */
+    .streaming-console {
+        flex-direction: column;
+    }
+
+    /* Responsive image and media */
+    img, video, canvas {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Ensure floating panel doesn't block content */
+    body {
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+}
+
+/* Fix 10: Small mobile devices (iPhone SE, etc.) */
+@media (max-width: 375px) {
+    .floating-control-panel {
+        scale: 0.9 !important;
+        transform-origin: bottom right;
+    }
+
+    /* Smaller font sizes for tiny screens */
+    body {
+        font-size: 10px !important;
+    }
+
+    /* Reduce padding everywhere */
+    .main-app-area,
+    .question-panel {
+        padding: 6px !important;
     }
 }
