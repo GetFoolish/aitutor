@@ -22,8 +22,7 @@ import AuthGuard from "./components/auth/AuthGuard";
 import Header from "./components/header/Header";
 import BackgroundShapes from "./components/background-shapes/BackgroundShapes";
 import QuestionDisplay from "./components/question-display/QuestionDisplay";
-import TldrawCanvas, { TldrawCanvasRef } from "./components/tldraw-canvas/TldrawCanvas";
-import "./components/tldraw-canvas/tldraw-canvas.scss";
+import FabricCanvas, { FabricCanvasRef } from "./components/fabric-canvas/FabricCanvas";
 import { ThemeProvider } from "./components/theme/theme-provier";
 import { HintProvider } from "./contexts/HintContext";
 import { Toaster } from "@/components/ui/sonner";
@@ -45,7 +44,7 @@ function App() {
   const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
   const [mixerStream, setMixerStream] = useState<MediaStream | null>(null);
   const mixerVideoRef = useRef<HTMLVideoElement>(null);
-  const scratchpadRef = useRef<TldrawCanvasRef>(null);
+  const scratchpadRef = useRef<FabricCanvasRef>(null);
   const [isScratchpadOpen, setScratchpadOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isGradingSidebarOpen, setIsGradingSidebarOpen] = useState(false);
@@ -151,7 +150,7 @@ function App() {
                             onQuestionsLoaded={() => setQuestionsReady(true)}
                           />
                           {isScratchpadOpen && (
-                            <TldrawCanvas 
+                            <FabricCanvas 
                               ref={scratchpadRef}
                               onClose={() => setScratchpadOpen(false)}
                             />

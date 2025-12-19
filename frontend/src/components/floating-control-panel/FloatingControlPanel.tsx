@@ -383,7 +383,7 @@ function FloatingControlPanel({
     function sendVideoFrame() {
       const canvas = mediaMixerCanvasRef.current;
 
-      if (!canvas || !connected || !isRunning) {
+      if (!canvas || !connected || isPaused || !isRunning) {
         return;
       }
 
@@ -399,13 +399,13 @@ function FloatingControlPanel({
       }
       
       // Schedule next frame only if still connected and running
-      if (connected && isRunning) {
+      if (connected && !isPaused && isRunning) {
         timeoutId = window.setTimeout(sendVideoFrame, 1000 / 0.5);
       }
     }
     
     // Start sending frames when connected
-    if (connected && !isRunning) {
+    if (connected && !isPaused && !isRunning) {
       isRunning = true;
       // Send first frame immediately, then schedule subsequent frames
       rafId = requestAnimationFrame(sendVideoFrame);
@@ -420,7 +420,7 @@ function FloatingControlPanel({
         clearTimeout(timeoutId);
       }
     };
-  }, [connected, activeVideoStream, client]); // Removed refs from dependencies - they don't trigger re-renders
+  }, [connected, activeVideoStream, client, isPaused]); // Removed refs from dependencies - they don't trigger re-renders
 
   const handleConnect = useCallback(async () => {
     if (connected) {
