@@ -318,10 +318,11 @@ def get_questions(
         for doc in cursor:
             athena_item = convert_question_to_athena(doc)
 
-            # Double-check widget type filter (post-processing)
+            # Strict widget type filter (post-processing)
+            # Only include questions where the PRIMARY widget (or only widget) matches
             if widget_types:
                 item_widget_types = athena_item.get('widgetTypes', [])
-                # Check if any of the requested types are in this question
+                # Build expanded type set including aliases
                 expanded_types_set = set()
                 for wt in widget_types:
                     expanded_types_set.add(wt)
@@ -330,8 +331,21 @@ def get_questions(
                     elif wt == 'input-number':
                         expanded_types_set.add('numeric-input')
 
-                if not any(t in expanded_types_set for t in item_widget_types):
-                    continue  # Skip this question
+                # For stricter filtering:
+                # - If filtering for a specific widget, ensure it's the primary (first) or only widget type
+                # - If the question has multiple widget types, the filtered type should be dominant
+                if len(item_widget_types) == 0:
+                    continue  # No widgets, skip
+
+                # Check if the requested widget type is the primary (first) widget type
+                # or if it's the only widget type
+                primary_type = item_widget_types[0] if item_widget_types else None
+
+                # Accept if: primary type matches OR it's the only type and matches
+                if primary_type not in expanded_types_set:
+                    # If primary doesn't match, only accept if ALL widgets match the filter
+                    if not all(t in expanded_types_set for t in item_widget_types):
+                        continue  # Skip - primary type doesn't match and has mixed types
 
             athena_questions.append(athena_item)
 

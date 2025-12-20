@@ -632,8 +632,9 @@ const HintPanel: React.FC<{
     processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
       try {
         return katex.renderToString(math.trim(), { ...katexOptions, displayMode: true });
-      } catch {
-        return `<span class="math-error">${math}</span>`;
+      } catch (e) {
+        console.error('[HintPanel] KaTeX display math error:', e, 'Math:', math);
+        return `<span class="math-error" style="color: #666; font-style: italic;">${math}</span>`;
       }
     });
 
@@ -645,8 +646,13 @@ const HintPanel: React.FC<{
         const preprocessed = preprocessColorCommands(math.trim());
         return katex.renderToString(preprocessed, { ...katexOptions, displayMode: false });
       } catch (e) {
-        console.error('KaTeX error:', e);
-        return `<span class="math-error">${math}</span>`;
+        console.error('[HintPanel] KaTeX inline math error:', e, 'Math:', math);
+        // Fallback: try without preprocessing
+        try {
+          return katex.renderToString(math.trim(), { throwOnError: false, displayMode: false });
+        } catch {
+          return `<span class="math-error" style="color: #666; font-style: italic;">${math}</span>`;
+        }
       }
     });
 

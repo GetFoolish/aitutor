@@ -47,12 +47,26 @@ export function DropdownWidget({
     : undefined;
 
   // Calculate max choice length to determine if we need compact mode
+  // Strip HTML entities and tags for accurate length calculation
+  const getTextLength = (content: string | undefined): number => {
+    if (!content) return 0;
+    // Decode HTML entities like &gt; &lt; etc.
+    const decoded = content
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&le;/g, '≤')
+      .replace(/&ge;/g, '≥')
+      .replace(/&amp;/g, '&')
+      .replace(/<[^>]*>/g, ''); // Strip any HTML tags
+    return decoded.trim().length;
+  };
+
   const maxChoiceLength = options.choices?.reduce((max, choice) => {
     const content = typeof choice === 'string' ? choice : choice.content;
-    return Math.max(max, content?.length || 0);
+    return Math.max(max, getTextLength(content));
   }, 0) || 0;
 
-  // Use compact mode for short choices (like >, <, =, etc.)
+  // Use compact mode for short choices (like >, <, =, ≤, ≥, etc.)
   const isCompact = maxChoiceLength <= 3;
   const placeholder = isCompact ? '?' : (options.placeholder || 'Select');
 
@@ -75,7 +89,6 @@ export function DropdownWidget({
           onChange={handleChange}
           disabled={disabled || readOnly}
           aria-label={options.placeholder || 'Select an answer'}
-          style={isCompact ? { minWidth: '50px', width: 'auto', paddingRight: '28px' } : undefined}
         >
           <option value="" disabled>
             {placeholder}

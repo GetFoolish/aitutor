@@ -1333,9 +1333,20 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
                 });
               }
 
-              // Process math with KaTeX FIRST - this handles \blue{}, \dfrac{}{}, etc.
-              // KaTeX macros handle color commands like \blue, \red, \green, etc.
-              hintContent = renderMath(hintContent);
+              // Process math with KaTeX - wrap in try-catch for safety
+              try {
+                hintContent = renderMath(hintContent);
+              } catch (e) {
+                console.error('[Athena] Error rendering math in hint:', e);
+                // Fallback: try basic LaTeX rendering for inline math
+                hintContent = hintContent.replace(/\$([^$]+)\$/g, (_, math) => {
+                  try {
+                    return katex.renderToString(math.trim(), { throwOnError: false, displayMode: false });
+                  } catch {
+                    return `<span style="font-style: italic; color: #666;">${math}</span>`;
+                  }
+                });
+              }
 
               // Process markdown links [text](url) AFTER math (so links aren't inside math)
               hintContent = hintContent.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">$1</a>');

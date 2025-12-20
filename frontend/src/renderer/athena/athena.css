@@ -396,7 +396,7 @@
   padding: 6px 10px;
   border: 1px solid #999;
   border-radius: 4px;
-  font-size: 1rem;
+  font-size: 1.21em; /* Match KaTeX math font size */
   font-family: inherit;
   font-weight: 400;
   width: auto;
@@ -1424,9 +1424,11 @@
   min-height: 400px;
 }
 
-@media (min-width: 1024px) {
+/* Side by side at tablet and above (768px) */
+@media (min-width: 768px) {
   .comparison-container {
     flex-direction: row;
+    align-items: stretch;
   }
 }
 
@@ -1436,7 +1438,17 @@
   padding: 1rem;
   border-radius: 1rem;
   border-width: 2px;
+  border-style: solid;
   overflow: auto;
+  max-height: 80vh;
+}
+
+/* At 768px+, ensure panels take equal width */
+@media (min-width: 768px) {
+  .comparison-panel {
+    flex: 1 1 50%;
+    max-width: 50%;
+  }
 }
 
 .comparison-panel-athena {
