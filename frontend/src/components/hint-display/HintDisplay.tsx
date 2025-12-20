@@ -8,6 +8,101 @@ import { useHint } from '../../contexts/HintContext';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import cn from 'classnames';
 
+/**
+ * Process markdown tables in hint content to HTML
+ * Handles tables with or without leading/trailing pipes:
+ *
+ * Format 1 (with pipes):
+ * | Hundreds | Tens | Ones |
+ * |:-:|:-:|:-:|
+ * | $1$ | $8$ | $+$ |
+ *
+ * Format 2 (without leading pipes):
+ * Hundred thousands|Ten thousands|Thousands
+ * :-:|:-:|:-:
+ * 7|0|9
+ */
+const processTable = (content: string): string => {
+  const lines = content.split('\n');
+  const result: string[] = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // Check if this line could be a table header (contains | and has content)
+    if (line.includes('|') && line.trim().length > 0) {
+      // Check if next line is an alignment row (contains :- patterns)
+      const nextLine = lines[i + 1];
+      if (nextLine && /^[\s|:-]+$/.test(nextLine) && nextLine.includes('-')) {
+        // This looks like a table! Parse it
+        const tableLines: string[] = [line, nextLine];
+        let j = i + 2;
+
+        // Collect body rows (lines with | that aren't empty)
+        while (j < lines.length && lines[j].includes('|') && lines[j].trim().length > 0) {
+          tableLines.push(lines[j]);
+          j++;
+        }
+
+        // Only process if we have at least header + alignment + 1 data row
+        if (tableLines.length >= 3) {
+          // Parse header
+          const headerLine = tableLines[0];
+          const headers = headerLine.split('|').map(h => h.trim()).filter(h => h.length > 0);
+
+          // Parse alignment
+          const alignLine = tableLines[1];
+          const alignCells = alignLine.split('|').map(a => a.trim()).filter(a => a.length > 0);
+          const alignments = alignCells.map(a => {
+            if (a.startsWith(':') && a.endsWith(':')) return 'center';
+            if (a.endsWith(':')) return 'right';
+            if (a.startsWith(':')) return 'left';
+            return 'center';
+          });
+
+          // Parse body rows
+          const bodyRows = tableLines.slice(2).map(row =>
+            row.split('|').map(c => c.trim()).filter(c => c.length > 0 || c === '')
+          ).filter(row => row.length > 0);
+
+          // Build HTML table
+          let html = '<table style="width: auto; border-collapse: collapse; margin: 1em 0; border: 2px solid #333;">\n';
+
+          // Header row
+          html += '<thead><tr style="background-color: #f5f5f5;">';
+          headers.forEach((header, idx) => {
+            const align = alignments[idx] || 'center';
+            html += `<th style="border: 2px solid #333; padding: 8px 12px; text-align: ${align}; font-weight: bold;">${header}</th>`;
+          });
+          html += '</tr></thead>\n';
+
+          // Body rows
+          html += '<tbody>';
+          bodyRows.forEach(row => {
+            html += '<tr>';
+            row.forEach((cell, idx) => {
+              const align = alignments[idx] || 'center';
+              html += `<td style="border: 2px solid #333; padding: 8px 12px; text-align: ${align};">${cell}</td>`;
+            });
+            html += '</tr>\n';
+          });
+          html += '</tbody></table>';
+
+          result.push(html);
+          i = j;
+          continue;
+        }
+      }
+    }
+
+    result.push(line);
+    i++;
+  }
+
+  return result.join('\n');
+};
+
 interface Hint {
   content: string;
   images: Record<string, { width: number; height: number }>;
@@ -106,7 +201,7 @@ const HintDisplay: React.FC<HintDisplayProps> = ({ hints }) => {
           <PerseusI18nContextProvider locale="en" strings={mockStrings}>
             <RenderStateRoot>
               <Renderer
-                content={currentHint.content}
+                content={processTable(currentHint.content)}
                 widgets={currentHint.widgets || {}}
                 images={currentHint.images || {}}
                 apiOptions={{}}

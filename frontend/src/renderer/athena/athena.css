@@ -206,6 +206,17 @@
   vertical-align: middle;
 }
 
+/* Large widgets should be block-level to prevent text wrapping around them */
+.athena-widget-inline:has(.athena-plotter),
+.athena-widget-inline:has(.athena-grapher),
+.athena-widget-inline:has(.athena-interactive-graph),
+.athena-widget-inline:has([class*="perseus-widget-plotter"]),
+.athena-widget-inline:has([class*="perseus-widget-grapher"]),
+.athena-widget-inline:has([class*="perseus-widget-interactive-graph"]) {
+  display: block;
+  margin: 1rem 0;
+}
+
 /* Expression widget inline alignment */
 .athena-widget-inline .athena-expression-input {
   display: inline-flex;
@@ -342,6 +353,23 @@
   line-height: 1.5;
 }
 
+/* Khan Academy style: Highlight math/numbers in choices with blue color */
+.athena-radio-content .katex {
+  color: #1865f2;
+  font-weight: 600;
+}
+
+/* Also style math in question content for emphasis */
+.athena-renderer > .katex,
+.athena-text > .katex {
+  color: inherit;
+}
+
+/* Bold math in question titles should be bold */
+.athena-text strong .katex {
+  font-weight: 700;
+}
+
 .athena-radio-status {
   flex-shrink: 0;
   display: flex;
@@ -393,21 +421,23 @@
 }
 
 .athena-numeric-input-field {
-  padding: 6px 10px;
-  border: 1px solid #999;
-  border-radius: 4px;
-  font-size: 1.21em; /* Match KaTeX math font size */
-  font-family: inherit;
+  padding: 8px 12px;
+  border: 2px solid #d0d0d0;
+  border-radius: 8px;
+  font-size: 1.25em; /* Match KaTeX math font size (1em = base, 1.21em = math) */
+  font-family: 'KaTeX_Main', 'Times New Roman', Times, serif; /* Match KaTeX font */
   font-weight: 400;
   width: auto;
-  min-width: 50px;
-  max-width: 120px;
+  min-width: 60px;
+  max-width: 180px;
   transition: all 0.15s ease;
   background-color: #ffffff;
-  text-align: left;
+  text-align: center;
   /* Prevent text truncation */
   text-overflow: clip;
   overflow: visible;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+  line-height: 1.2;
 }
 
 .athena-numeric-input-field:focus {
@@ -753,14 +783,21 @@
   transition: all 0.15s ease;
 }
 
-/* Compact dropdown for short choices like comparison operators */
+/* Compact dropdown for short choices like comparison operators (<, >, =, ≤, ≥) */
 .athena-dropdown-select.compact {
-  min-width: 40px;
-  max-width: 56px;
-  width: fit-content;
-  padding: 6px 22px 6px 8px;
-  font-size: 1rem;
+  min-width: 48px;
+  max-width: 60px;
+  width: auto;
+  padding: 6px 24px 6px 10px;
+  font-size: 1.1rem;
   text-align: center;
+  font-weight: 700;
+}
+
+/* Even more compact for very short single-character options */
+.athena-dropdown-select.compact option {
+  text-align: center;
+  font-size: 1rem;
 }
 
 .athena-dropdown-select:focus {
@@ -784,11 +821,20 @@
 
 .athena-dropdown-chevron {
   position: absolute;
-  right: 10px;
+  right: 6px;
   top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
   color: #6b7280;
+  width: 16px;
+  height: 16px;
+}
+
+/* Smaller chevron for compact dropdown */
+.athena-dropdown-select.compact ~ .athena-dropdown-chevron {
+  right: 4px;
+  width: 14px;
+  height: 14px;
 }
 
 .athena-dropdown-widget {
@@ -1413,22 +1459,30 @@
 }
 
 /* ============================================================================
-   COMPARISON VIEW - Side by Side Layout
+   COMPARISON VIEW - Responsive Side by Side Layout
    ============================================================================ */
 
 .comparison-container {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
   width: 100%;
   min-height: 400px;
 }
 
-/* Side by side at tablet and above (768px) */
+/* Side by side at tablet (768px) and above */
 @media (min-width: 768px) {
   .comparison-container {
     flex-direction: row;
-    align-items: stretch;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+/* Large screens - more gap */
+@media (min-width: 1024px) {
+  .comparison-container {
+    gap: 1.5rem;
   }
 }
 
@@ -1439,15 +1493,27 @@
   border-radius: 1rem;
   border-width: 2px;
   border-style: solid;
-  overflow: auto;
-  max-height: 80vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: none; /* Allow natural height on mobile */
 }
 
-/* At 768px+, ensure panels take equal width */
+/* At tablet+, constrain max height and ensure equal width */
 @media (min-width: 768px) {
   .comparison-panel {
-    flex: 1 1 50%;
-    max-width: 50%;
+    flex: 1 1 calc(50% - 0.5rem);
+    max-width: calc(50% - 0.5rem);
+    max-height: 80vh;
+    min-height: 300px;
+  }
+}
+
+/* Large screens - better sizing */
+@media (min-width: 1024px) {
+  .comparison-panel {
+    flex: 1 1 calc(50% - 0.75rem);
+    max-width: calc(50% - 0.75rem);
+    padding: 1.25rem;
   }
 }
 
@@ -1459,4 +1525,10 @@
 .comparison-panel-perseus {
   border-color: #f97316;
   background-color: rgba(249, 115, 22, 0.05);
+}
+
+/* Ensure internal content scrolls properly */
+.comparison-panel .perseus-renderer,
+.comparison-panel .athena-renderer {
+  overflow: visible;
 }

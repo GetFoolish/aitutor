@@ -319,9 +319,10 @@ def get_questions(
             athena_item = convert_question_to_athena(doc)
 
             # Strict widget type filter (post-processing)
-            # Only include questions where the PRIMARY widget (or only widget) matches
+            # Only include questions where the PRIMARY INTERACTIVE widget matches
             if widget_types:
                 item_widget_types = athena_item.get('widgetTypes', [])
+
                 # Build expanded type set including aliases
                 expanded_types_set = set()
                 for wt in widget_types:
@@ -331,21 +332,40 @@ def get_questions(
                     elif wt == 'input-number':
                         expanded_types_set.add('numeric-input')
 
-                # For stricter filtering:
-                # - If filtering for a specific widget, ensure it's the primary (first) or only widget type
-                # - If the question has multiple widget types, the filtered type should be dominant
                 if len(item_widget_types) == 0:
                     continue  # No widgets, skip
 
-                # Check if the requested widget type is the primary (first) widget type
-                # or if it's the only widget type
-                primary_type = item_widget_types[0] if item_widget_types else None
+                # Define interactive widget types (widgets that users interact with for answers)
+                # These are mutually exclusive - a question shouldn't have both radio AND numeric-input
+                interactive_types = {
+                    'radio', 'dropdown', 'numeric-input', 'input-number', 'expression',
+                    'sorter', 'orderer', 'matcher', 'categorizer', 'interactive-graph',
+                    'grapher', 'plotter', 'table', 'matrix', 'label-image', 'free-response'
+                }
 
-                # Accept if: primary type matches OR it's the only type and matches
-                if primary_type not in expanded_types_set:
-                    # If primary doesn't match, only accept if ALL widgets match the filter
-                    if not all(t in expanded_types_set for t in item_widget_types):
-                        continue  # Skip - primary type doesn't match and has mixed types
+                # Display-only widget types (these don't affect filtering)
+                display_types = {'image', 'passage', 'passage-ref', 'video', 'explanation', 'definition'}
+
+                # Find the interactive widgets in this question
+                interactive_widgets_in_question = set(item_widget_types) & interactive_types
+
+                # Check if ANY of the requested types match the interactive widgets
+                requested_interactive = expanded_types_set & interactive_types
+
+                if requested_interactive:
+                    # User is filtering for an interactive widget type
+                    # The question MUST have that type and NOT have other conflicting interactive types
+                    if not (interactive_widgets_in_question & expanded_types_set):
+                        continue  # Skip - doesn't have the requested interactive widget type
+
+                    # Check for conflicting interactive types (e.g., filtering for numeric-input but has radio)
+                    conflicting_types = interactive_widgets_in_question - expanded_types_set
+                    if conflicting_types:
+                        continue  # Skip - has conflicting interactive widget types
+                else:
+                    # User is filtering for a display-only type (e.g., image, passage)
+                    if not (set(item_widget_types) & expanded_types_set):
+                        continue  # Skip - doesn't have the requested type
 
             athena_questions.append(athena_item)
 
