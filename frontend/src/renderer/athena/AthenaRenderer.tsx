@@ -485,10 +485,15 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
 
       // Process display math $$...$$ first (multiline support with [\s\S])
       processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
+        // Preprocess: Remove unsupported LaTeX sizing commands
+        let cleanMath = math.trim();
+        cleanMath = cleanMath.replace(/\\(tiny|scriptsize|footnotesize|small|normalsize|large|Large|LARGE|huge|Huge)\s*/g, '');
+
         try {
-          return katex.renderToString(math.trim(), { ...katexOptions, displayMode: true });
-        } catch {
-          return `<span class="athena-math-error">${math}</span>`;
+          return katex.renderToString(cleanMath, { ...katexOptions, displayMode: true });
+        } catch (e) {
+          console.warn('[Athena] KaTeX display math error:', e, 'for:', cleanMath);
+          return `<span class="athena-math-error">${cleanMath}</span>`;
         }
       });
 
@@ -521,10 +526,39 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
       processed = processed.replace(/\$([^$]+)\$/g, (match, math) => {
         // Skip if it looks like already processed or is $$
         if (match.startsWith('$$')) return match;
+
+        // Preprocess: Remove unsupported LaTeX sizing commands
+        let cleanMath = math.trim();
+        cleanMath = cleanMath.replace(/\\(tiny|scriptsize|footnotesize|small|normalsize|large|Large|LARGE|huge|Huge)\s*/g, '');
+
+        // Preprocess: Expand Khan Academy color commands to standard \textcolor format
+        // This is more reliable than using KaTeX macros
+        const colorExpansions: Record<string, string> = {
+          'blueD': '#5a9ce8', 'blueE': '#72b3e8', 'blueC': '#4185e8', 'blueB': '#2b73e8', 'blueA': '#1865f2',
+          'greenD': '#6dd8a0', 'greenE': '#87dbb3', 'greenC': '#52d689', 'greenB': '#2ecc71', 'greenA': '#28b463',
+          'purpleD': '#b56ccc', 'purpleE': '#c077d9', 'purpleC': '#aa63d9', 'purpleB': '#a05acc', 'purpleA': '#9c4dcc',
+          'redD': '#f47878', 'redE': '#f78c8c', 'redC': '#f06464', 'redB': '#ec5050', 'redA': '#e74c3c',
+          'goldD': '#fad651', 'goldE': '#fddc67', 'goldC': '#f7d03b', 'goldB': '#f4ca25', 'goldA': '#f1c40f',
+          'grayD': '#999999', 'grayE': '#bbbbbb', 'grayC': '#777777', 'grayB': '#555555', 'grayA': '#333333',
+          'maroonD': '#a02', 'maroonC': '#c03',
+          'blue': '#1865f2', 'red': '#e84d39', 'green': '#1fab54', 'purple': '#9c4dcc',
+          'orange': '#e67e22', 'pink': '#e91e63', 'teal': '#1abc9c', 'gold': '#f1c40f', 'gray': '#777777',
+        };
+        // Sort by length descending to match longer names first
+        const colorCmdNames = Object.keys(colorExpansions).sort((a, b) => b.length - a.length);
+        for (const colorName of colorCmdNames) {
+          const hex = colorExpansions[colorName];
+          // Match \colorName{content} and expand to \textcolor{#hex}{content}
+          const pattern = new RegExp(`\\\\${colorName}\\{([^{}]*(?:\\{[^{}]*\\}[^{}]*)*)\\}`, 'g');
+          cleanMath = cleanMath.replace(pattern, `\\textcolor{${hex}}{$1}`);
+        }
+
         try {
-          return katex.renderToString(math.trim(), { ...katexOptions, displayMode: false });
-        } catch {
-          return `<span class="athena-math-error">${math}</span>`;
+          return katex.renderToString(cleanMath, { ...katexOptions, displayMode: false });
+        } catch (e) {
+          console.warn('[Athena] KaTeX inline math error:', e, 'for:', cleanMath);
+          // Use cleanMath (without \huge etc) to avoid double-rendering color commands
+          return `<span class="athena-math-error">${cleanMath}</span>`;
         }
       });
 
