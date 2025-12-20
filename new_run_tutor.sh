@@ -82,11 +82,6 @@ echo "Starting Python backend... Logs -> logs/mediamixer.log"
 (cd "$SCRIPT_DIR" && "$PYTHON_BIN" MediaMixer/media_mixer.py) > "$SCRIPT_DIR/logs/mediamixer.log" 2>&1 &
 pids+=($!)
 
-# Start the DASH API server in the background
-echo "Starting DASH API server... Logs -> logs/api.log"
-(cd "$SCRIPT_DIR" && "$PYTHON_BIN" DashSystem/dash_api.py) > "$SCRIPT_DIR/logs/api.log" 2>&1 &
-pids+=($!)
-
 # Start the SherlockED Exam API server in the background
 echo "Starting SherlockED Exam API server... Logs -> logs/sherlocked_exam.log"
 (cd "$SCRIPT_DIR/SherlockEDApi" && "$PYTHON_BIN" run_backend.py) > "$SCRIPT_DIR/logs/sherlocked_exam.log" 2>&1 &
