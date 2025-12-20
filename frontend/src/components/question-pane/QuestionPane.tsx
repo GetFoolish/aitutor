@@ -671,7 +671,8 @@ const HintPanel: React.FC<{
     }
 
     // Process standalone color commands NOT wrapped in $...$ (e.g., \purpleC{8\text{ tens}})
-    const colorNames = Object.keys(colorMap);
+    // IMPORTANT: Sort by length descending so longer names match first (purpleD before purple)
+    const colorNames = Object.keys(colorMap).sort((a, b) => b.length - a.length);
 
     // Function to extract content within balanced braces
     const extractBalancedBraces = (str: string, startIdx: number): { content: string; endIdx: number } | null => {
@@ -748,14 +749,31 @@ const HintPanel: React.FC<{
       });
     }
 
-    // Handle \textcolor{#hex}{content} syntax
-    processed = processed.replace(/\\textcolor\{(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3})\}\{([^}]+)\}/g, (match, color, content) => {
-      try {
-        return katex.renderToString(match, katexOptions);
-      } catch {
-        return `<span style="color: ${color}; font-weight: 600;">${content}</span>`;
+    // Handle \textcolor{#hex}{content} syntax with nested braces
+    // Use balanced brace matching for proper handling
+    const textcolorPattern = /\\textcolor\{(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3})\}\{/g;
+    let textcolorMatch;
+    while ((textcolorMatch = textcolorPattern.exec(processed)) !== null) {
+      const color = textcolorMatch[1];
+      const braceStart = textcolorMatch.index + textcolorMatch[0].length - 1;
+      const result = extractBalancedBraces(processed, braceStart);
+      if (result) {
+        const innerContent = result.content;
+        const fullMatch = processed.slice(textcolorMatch.index, result.endIdx + 1);
+        let replacement: string;
+        try {
+          replacement = katex.renderToString(fullMatch, katexOptions);
+        } catch {
+          // Fallback: render inner content and wrap with color span
+          let renderedInner = innerContent;
+          // Try to render any \text{} inside
+          renderedInner = renderedInner.replace(/\\text\{([^}]+)\}/g, '$1');
+          replacement = `<span style="color: ${color}; font-weight: 600;">${renderedInner}</span>`;
+        }
+        processed = processed.slice(0, textcolorMatch.index) + replacement + processed.slice(result.endIdx + 1);
+        textcolorPattern.lastIndex = textcolorMatch.index + replacement.length;
       }
-    });
+    }
 
     // Process markdown links [text](url) - but not image links
     processed = processed.replace(/(?<!!)\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">$1</a>');

@@ -463,7 +463,8 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
 
       // Preprocess: Handle color commands WITHOUT braces like \blueD7 -> render as colored math
       // These are Khan Academy shorthand where \colorX followed by a single character applies color to that char
-      const colorNames = Object.keys(colorHexMap);
+      // IMPORTANT: Sort by length descending so longer names match first (purpleD before purple)
+      const colorNames = Object.keys(colorHexMap).sort((a, b) => b.length - a.length);
       for (const colorName of colorNames) {
         // Pattern: \colorName followed by a digit or letter (not a brace)
         const pattern = new RegExp(`\\\\${colorName}([0-9a-zA-Z])(?![{])`, 'g');
@@ -538,7 +539,8 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
 
       // Handle color commands WITH braces outside of $ delimiters (e.g., \greenD{\text{starts}})
       // These commands take one argument in braces
-      const colorCommandNames = Object.keys(colorHexMap);
+      // IMPORTANT: Sort by length descending so longer names match first (purpleD before purple)
+      const colorCommandNames = Object.keys(colorHexMap).sort((a, b) => b.length - a.length);
       for (const colorName of colorCommandNames) {
         // Match \colorName{...} where ... can contain nested braces (like \text{...})
         // Using a more permissive pattern to handle nested content
@@ -555,6 +557,42 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
             return `<span style="color:${color};font-weight:600">${textContent}</span>`;
           }
         });
+      }
+
+      // Handle explicit \textcolor{#hex}{content} with nested braces
+      // This handles cases like \textcolor{#b56ccc}{7\text{ hundreds}}
+      const extractBraces = (str: string, start: number): { content: string; end: number } | null => {
+        if (str[start] !== '{') return null;
+        let depth = 0;
+        let i = start;
+        while (i < str.length) {
+          if (str[i] === '{') depth++;
+          else if (str[i] === '}') depth--;
+          if (depth === 0) return { content: str.slice(start + 1, i), end: i };
+          i++;
+        }
+        return null;
+      };
+
+      const textcolorRegex = /\\textcolor\{(#[0-9a-fA-F]{3,6})\}\{/g;
+      let tcMatch;
+      while ((tcMatch = textcolorRegex.exec(processed)) !== null) {
+        const color = tcMatch[1];
+        const braceStart = tcMatch.index + tcMatch[0].length - 1;
+        const result = extractBraces(processed, braceStart);
+        if (result) {
+          const fullMatch = processed.slice(tcMatch.index, result.end + 1);
+          let replacement: string;
+          try {
+            replacement = katex.renderToString(fullMatch, { ...katexOptions, displayMode: false });
+          } catch {
+            // Fallback: process \text{} and wrap with color span
+            let inner = result.content.replace(/\\text\{([^}]+)\}/g, '$1');
+            replacement = `<span style="color:${color};font-weight:600">${inner}</span>`;
+          }
+          processed = processed.slice(0, tcMatch.index) + replacement + processed.slice(result.end + 1);
+          textcolorRegex.lastIndex = tcMatch.index + replacement.length;
+        }
       }
 
       // Restore dollar signs
