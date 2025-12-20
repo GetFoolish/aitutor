@@ -92,28 +92,44 @@ body {
   font-family: "Space Mono", monospace;
   background: var(--neo-bg);
   color: var(--neo-black);
-  font-size: 11px; // Much smaller base for better fit
   font-weight: 700; // Bold typography for Web 1.0 aesthetic
-
-  // Responsive scaling - only increase on very large screens
-  @media (min-width: 2560px) {
-    font-size: 14px; // 4K displays
+  
+  // Aggressive mobile-first responsive typography
+  font-size: 9px; // Ultra-small mobile base
+  
+  // Small mobile (iPhone SE+)
+  @media (min-width: 376px) {
+    font-size: 10px;
   }
-
+  
+  // Standard mobile (large phones)
+  @media (min-width: 640px) {
+    font-size: 10px;
+  }
+  
+  // Large mobile / small tablet
+  @media (min-width: 768px) {
+    font-size: 11px;
+  }
+  
+  // Tablet
+  @media (min-width: 1024px) {
+    font-size: 11px;
+  }
+  
+  // Small laptop
+  @media (min-width: 1440px) {
+    font-size: 12px;
+  }
+  
+  // Large desktop
   @media (min-width: 1920px) {
-    font-size: 13px; // Full HD
+    font-size: 13px;
   }
-
-  @media (min-width: 1440px) and (max-width: 1919px) {
-    font-size: 12px; // Standard large laptop
-  }
-
-  @media (max-width: 1024px) {
-    font-size: 11px; // Tablets
-  }
-
-  @media (max-width: 768px) {
-    font-size: 10px; // Mobile
+  
+  // 4K displays
+  @media (min-width: 2560px) {
+    font-size: 14px;
   }
 }
 
@@ -177,19 +193,42 @@ body {
 .streaming-console {
   color: var(--neo-black);
   display: flex;
-  height: calc(100vh - 48px); // Reduced from 56px
+  height: calc(100vh - 32px); // Ultra-small mobile first
   width: 100vw;
-  margin-top: 48px; // Reduced from 56px
+  margin-top: 32px; // Ultra-small mobile first
   position: relative;
   background: var(--neo-bg);
   overflow-y: auto; // Enable scrolling when content exceeds viewport
   overflow-x: hidden;
 
-  // Responsive layout
-  @media (max-width: 768px) {
-    flex-direction: column;
-    height: calc(100vh - 44px); // Reduced from 50px
+  // Extra-small mobile
+  @media (min-width: 376px) {
+    height: calc(100vh - 36px);
+    margin-top: 36px;
+  }
+
+  // Small mobile
+  @media (min-width: 640px) {
+    height: calc(100vh - 40px);
+    margin-top: 40px;
+  }
+
+  // Tablet/large mobile
+  @media (min-width: 768px) {
+    flex-direction: row; // Back to row on tablet+
+    height: calc(100vh - 44px);
     margin-top: 44px;
+  }
+
+  // Desktop
+  @media (min-width: 1024px) {
+    height: calc(100vh - 48px);
+    margin-top: 48px;
+  }
+
+  // Mobile specific
+  @media (max-width: 767px) {
+    flex-direction: column;
   }
 }
 

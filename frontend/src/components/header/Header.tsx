@@ -73,18 +73,18 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
     const logoSource = isDarkMode ? '/logo_white.png' : '/logo.png';
 
     return (
-        <header className="fixed top-0 left-0 right-0 h-[44px] lg:h-[48px] bg-[#FFFDF5] dark:bg-[#000000] border-b-[3px] lg:border-b-[4px] border-black dark:border-white z-40 flex items-center justify-between px-2 md:px-4 lg:px-5 shadow-[0_2px_0_0_rgba(0,0,0,1)] lg:shadow-[0_2px_0_0_rgba(0,0,0,1)] dark:shadow-[0_2px_0_0_rgba(255,255,255,0.3)]">
+        <header className="fixed top-0 left-0 right-0 h-[32px] xs:h-[36px] sm:h-[40px] md:h-[44px] lg:h-[48px] bg-[#FFFDF5] dark:bg-[#000000] border-b-[2px] sm:border-b-[3px] lg:border-b-[4px] border-black dark:border-white z-40 flex items-center justify-between px-1.5 sm:px-2 md:px-4 lg:px-5 shadow-[0_2px_0_0_rgba(0,0,0,1)] lg:shadow-[0_2px_0_0_rgba(0,0,0,1)] dark:shadow-[0_2px_0_0_rgba(255,255,255,0.3)]">
             {/* Left side - Logo */}
-            <div className="flex items-center gap-1.5 md:gap-2 group cursor-pointer">
+            <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 group cursor-pointer">
                 <img 
                     src={logoSource} 
                     alt="teachr" 
-                    className="h-7 md:h-8 lg:h-9 w-auto group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform duration-100"
+                    className="h-[18px] xs:h-5 sm:h-6 md:h-7 lg:h-8 w-auto max-h-[28px] group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform duration-100"
                 />
             </div>
 
             {/* Right side - Actions */}
-            <div className="flex items-center gap-1.5 md:gap-2">
+            <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
                 {/* DARK MODE TOGGLE BUTTON DISABLED - Button commented out to disable dark mode switching */}
                 {/* <Button
                     type="button"
@@ -100,10 +100,10 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="relative h-7 w-7 md:h-8 md:w-8 lg:h-8 lg:w-8 p-0 border-[2px] border-black dark:border-white bg-[#FF6B6B] hover:bg-[#FF6B6B] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100">
+                        <Button variant="ghost" className="relative h-[24px] w-[24px] xs:h-6 xs:w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 p-0 border-[2px] border-black dark:border-white bg-[#FF6B6B] hover:bg-[#FF6B6B] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100">
                             <Avatar className="h-full w-full border-none">
                                 <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                                <AvatarFallback className="bg-transparent text-white font-black text-xs">CN</AvatarFallback>
+                                <AvatarFallback className="bg-transparent text-white font-black text-[9px] xs:text-[10px] sm:text-xs">CN</AvatarFallback>
                             </Avatar>
                         </Button>
                     </DropdownMenuTrigger>
@@ -139,13 +139,13 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="w-7 h-7 md:w-8 md:h-8 lg:w-8 lg:h-8 border-[2px] border-black dark:border-white bg-[#FFD93D] hover:bg-[#FFD93D] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 text-black"
+                    className="h-[24px] w-[24px] xs:h-6 xs:w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 border-[2px] border-black dark:border-white bg-[#FFD93D] hover:bg-[#FFD93D] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 text-black"
                     onClick={onToggleSidebar}
                 >
                     {sidebarOpen ? (
-                        <RiSidebarFoldLine className="w-4 h-4 lg:w-[1.1rem] lg:h-[1.1rem] font-black" />
+                        <RiSidebarFoldLine className="w-[12px] h-[12px] xs:w-3.5 xs:h-3.5 sm:w-4 sm:h-4 lg:w-[1.1rem] lg:h-[1.1rem] font-black" />
                     ) : (
-                        <RiSidebarUnfoldLine className="w-4 h-4 lg:w-[1.1rem] lg:h-[1.1rem] font-black" />
+                        <RiSidebarUnfoldLine className="w-[12px] h-[12px] xs:w-3.5 xs:h-3.5 sm:w-4 sm:h-4 lg:w-[1.1rem] lg:h-[1.1rem] font-black" />
                     )}
                 </Button>
             </div>

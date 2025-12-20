@@ -166,8 +166,8 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
     return (
         <div
             className={cn(
-                "fixed top-[44px] lg:top-[48px] left-0 flex flex-col border-r-[3px] lg:border-r-[4px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) z-50 will-change-transform",
-                "h-[calc(100vh-44px)] lg:h-[calc(100vh-48px)]",
+                "fixed top-[36px] sm:top-[40px] md:top-[44px] lg:top-[48px] left-0 flex flex-col border-r-[2px] sm:border-r-[3px] lg:border-r-[4px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) z-50 will-change-transform",
+                "h-[calc(100vh-32px)] xs:h-[calc(100vh-36px)] sm:h-[calc(100vh-40px)] md:h-[calc(100vh-44px)] lg:h-[calc(100vh-48px)]",
                 // Responsive width with mobile support
                 open 
                   ? "w-[85vw] sm:w-[240px] lg:w-[260px]" 

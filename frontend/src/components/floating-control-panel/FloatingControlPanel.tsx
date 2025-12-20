@@ -8,7 +8,7 @@ import React, {
   useMemo,
 } from "react";
 import { motion, useDragControls } from "framer-motion";
-import { useTutorContext, AudioRecorder } from "../../features/tutor";
+import { useTutorContext, AudioRecorder, TranscriptionData } from "../../features/tutor";
 // import { useLiveAPIContext } from "../../contexts/LiveAPIContext"; // Commented out - useLiveAPIContext is an alias for useTutorContext, import from correct location
 // import { AudioRecorder } from "../../lib/audio-recorder"; // Commented out - AudioRecorder is exported from ../../features/tutor, not from lib
 import { jwtUtils } from "../../lib/jwt-utils";
@@ -118,6 +118,31 @@ function FloatingControlPanel({
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [popoverHeight, setPopoverHeight] = useState<number | null>(null);
   const popoverHeaderRef = useRef<HTMLDivElement>(null);
+  // Initialize mobile/tablet state immediately based on current window size
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 768);
+  const [isTablet, setIsTablet] = useState(() => typeof window !== 'undefined' && window.innerWidth > 768 && window.innerWidth <= 1024);
+
+  // Mobile/Tablet detection with auto-collapse
+  useEffect(() => {
+    const checkDevice = () => {
+      const width = window.innerWidth;
+      const newIsMobile = width <= 768;
+      const newIsTablet = width > 768 && width <= 1024;
+      
+      setIsMobile(newIsMobile);
+      setIsTablet(newIsTablet);
+      
+      // Auto-collapse on mobile
+      if (newIsMobile) {
+        setIsCollapsed(true);
+      }
+    };
+    
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
 
   // Calculate popover height based on canvas dimensions
   useEffect(() => {
@@ -133,7 +158,6 @@ function FloatingControlPanel({
       const headerHeight = header ? header.getBoundingClientRect().height : 56;
       
       // Determine popover width based on screen size
-      const isMobile = window.innerWidth < 768;
       const popoverWidth = isMobile ? 320 : 360;
       
       if (!canvas || canvas.width === 0 || canvas.height === 0) {
@@ -173,7 +197,7 @@ function FloatingControlPanel({
       clearInterval(checkCanvas);
       window.removeEventListener('resize', updateHeight);
     };
-  }, [mediaMixerCanvasRef, sharedMediaOpen]);
+  }, [mediaMixerCanvasRef, sharedMediaOpen, isMobile]);
 
   // Dark mode detection for logo
   useEffect(() => {
@@ -638,16 +662,124 @@ function FloatingControlPanel({
 
   const [verticalAlign, setVerticalAlign] = useState<"top" | "bottom">("top");
 
-  // Calculate initial position once without state
+  // Dynamic drag constraints that update on resize
+  const [dragConstraints, setDragConstraints] = useState({
+    left: 0,
+    top: 0,
+    right: 1000,
+    bottom: 800,
+  });
+
+  // Calculate drag constraints based on current viewport and collapsed state
+  const calculateDragConstraints = useCallback(() => {
+    if (typeof window === "undefined") {
+      return { left: 0, top: 0, right: 1000, bottom: 800 };
+    }
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    // Calculate panel width based on collapsed state and screen size
+    let panelWidth: number;
+    if (isCollapsed) {
+      panelWidth = viewportWidth <= 375 ? 45 : viewportWidth <= 640 ? 50 : 55;
+    } else {
+      panelWidth = viewportWidth <= 375 ? 180 
+        : viewportWidth <= 640 ? 200 
+        : viewportWidth <= 768 ? 220 
+        : 250;
+    }
+    
+    // Calculate bottom offset based on screen size
+    const bottomOffset = viewportWidth <= 375 ? 70 
+      : viewportWidth <= 768 ? 80 
+      : 100;
+    
+    return {
+      left: 0,
+      top: 0,
+      right: viewportWidth - panelWidth,
+      bottom: viewportHeight - bottomOffset,
+    };
+  }, [isCollapsed]);
+
+  // Update drag constraints when viewport size or collapsed state changes (Desktop only)
+  useEffect(() => {
+    // Skip drag constraints on mobile
+    if (isMobile) return;
+    
+    const updateConstraints = () => {
+      const newConstraints = calculateDragConstraints();
+      setDragConstraints(newConstraints);
+    };
+    
+    // Update on mount
+    updateConstraints();
+    
+    // Update on window resize (including DevTools open/close)
+    window.addEventListener('resize', updateConstraints);
+    
+    // Also listen for DevTools-specific resize using ResizeObserver on body
+    const resizeObserver = new ResizeObserver(updateConstraints);
+    resizeObserver.observe(document.body);
+    
+    return () => {
+      window.removeEventListener('resize', updateConstraints);
+      resizeObserver.disconnect();
+    };
+  }, [isCollapsed, calculateDragConstraints, isMobile]);
+
+  // Ensure panel stays within bounds when constraints change (Desktop only)
+  useEffect(() => {
+    // Skip bounds checking on mobile - use fixed positioning instead
+    if (isMobile || !panelRef.current) return;
+    
+    const checkBounds = () => {
+      const panel = panelRef.current;
+      if (!panel) return;
+      
+      const rect = panel.getBoundingClientRect();
+      
+      // Check if panel is outside new constraints
+      const isOutOfBoundsRight = rect.left > dragConstraints.right;
+      const isOutOfBoundsBottom = rect.top > dragConstraints.bottom;
+      const isOutOfBoundsLeft = rect.left < 0;
+      const isOutOfBoundsTop = rect.top < 0;
+      
+      if (isOutOfBoundsRight || isOutOfBoundsBottom || isOutOfBoundsLeft || isOutOfBoundsTop) {
+        // Calculate safe position
+        let safeX = rect.left;
+        let safeY = rect.top;
+        
+        if (isOutOfBoundsRight) safeX = dragConstraints.right - 20; // 20px margin
+        if (isOutOfBoundsLeft) safeX = 20;
+        if (isOutOfBoundsBottom) safeY = dragConstraints.bottom - 20;
+        if (isOutOfBoundsTop) safeY = 20;
+        
+        // Smoothly reposition panel
+        panel.style.transition = 'transform 0.3s ease-out';
+        panel.style.transform = `translate3d(${safeX}px, ${safeY}px, 0)`;
+        
+        // Remove transition after animation
+        setTimeout(() => {
+          panel.style.transition = '';
+        }, 300);
+      }
+    };
+    
+    // Check bounds with a small delay to allow layout to settle
+    const timeoutId = setTimeout(checkBounds, 100);
+    
+    return () => clearTimeout(timeoutId);
+  }, [dragConstraints, isMobile]);
+
+  // Calculate initial position once without state (Desktop only)
   const initialPosition = useMemo(() => {
     if (typeof window === "undefined") return { x: 0, y: 0 };
     
-    // Mobile: bottom-right with proper spacing
+    // On mobile, don't calculate initial position - use CSS fixed positioning
     if (window.innerWidth <= 768) {
-      return { 
-        x: window.innerWidth - 220, 
-        y: window.innerHeight - 120 
-      };
+      return { x: 0, y: 0 };
     }
     
     // Desktop: top-right
@@ -703,6 +835,14 @@ function FloatingControlPanel({
     }
   }, [sharedMediaOpen, updatePopoverPosition]);
 
+  // Auto-close Adam's View on mobile devices
+  useEffect(() => {
+    if (isMobile && sharedMediaOpen) {
+      setSharedMediaOpen(false);
+      setIsAnimatingOut(false);
+    }
+  }, [isMobile, sharedMediaOpen]);
+
   const handleCollapse = useCallback(() => {
     setIsCollapsed(!isCollapsed);
   }, [isCollapsed]);
@@ -736,47 +876,50 @@ function FloatingControlPanel({
   const panelClasses = useMemo(
     () =>
       cn(
-        "fixed z-[1000] bg-[#FFFDF5] dark:bg-[#000000] border-[2px] md:border-[3px] border-black dark:border-white rounded-lg md:rounded-xl",
+        "bg-[#FFFDF5] dark:bg-[#000000] border-[2px] md:border-[3px] border-black dark:border-white rounded-lg md:rounded-xl",
+        // Mobile: Fixed at bottom, horizontal layout (positioning via inline styles)
+        isMobile && "w-auto max-w-[calc(100vw-16px)]",
+        // Desktop: Draggable floating panel
+        !isMobile && "fixed z-[1000]",
         isCollapsed
-          ? "w-[50px] md:w-[55px] py-2 md:py-2.5 px-1 md:px-1.5 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)]"
-          : "w-[200px] sm:w-[220px] md:w-[250px] p-2 md:p-2.5 md:p-3 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1),_6px_6px_16px_rgba(0,0,0,0.15),_12px_12px_32px_rgba(0,0,0,0.1)]",
-        "hover:shadow-[2px_2px_0_0_rgba(0,0,0,1),_6px_6px_16px_rgba(0,0,0,0.15),_12px_12px_32px_rgba(0,0,0,0.1)] md:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1),_8px_8px_20px_rgba(0,0,0,0.18),_16px_16px_40px_rgba(0,0,0,0.12)]",
-        "max-w-[calc(100vw-32px)]", // Prevent overflow on mobile
+          ? isMobile 
+            ? "py-2 px-3 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12)]" // Mobile collapsed: horizontal
+            : "w-[45px] sm:w-[50px] md:w-[55px] py-1.5 sm:py-2 md:py-2.5 px-1 md:px-1.5 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)]" // Desktop collapsed: vertical
+          : "w-[180px] sm:w-[200px] md:w-[220px] lg:w-[250px] p-1.5 sm:p-2 md:p-2.5 lg:p-3 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1),_6px_6px_16px_rgba(0,0,0,0.15),_12px_12px_32px_rgba(0,0,0,0.1)]",
+        !isMobile && "hover:shadow-[2px_2px_0_0_rgba(0,0,0,1),_6px_6px_16px_rgba(0,0,0,0.15),_12px_12px_32px_rgba(0,0,0,0.1)] md:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1),_8px_8px_20px_rgba(0,0,0,0.18),_16px_16px_40px_rgba(0,0,0,0.12)]",
       ),
-    [isCollapsed],
+    [isCollapsed, isMobile],
   );
 
   return (
     <motion.div
       ref={panelRef}
       className={panelClasses}
-      drag
-      dragControls={dragControls}
-      dragListener={false}
+      drag={!isMobile} // Disable drag on mobile
+      dragControls={!isMobile ? dragControls : undefined}
+      dragListener={!isMobile}
       dragMomentum={false}
       dragElastic={0}
-      dragConstraints={{
-        left: 0,
-        top: 0,
-        right: typeof window !== "undefined" 
-          ? window.innerWidth - (isCollapsed ? 55 : (window.innerWidth <= 768 ? 200 : 250))
-          : 1000,
-        bottom: typeof window !== "undefined" 
-          ? window.innerHeight - (window.innerWidth <= 768 ? 80 : 100)
-          : 800,
-      }}
-      onDragEnd={handleDragEnd}
-      initial={initialPosition}
-      whileDrag={{ 
+      dragConstraints={!isMobile ? dragConstraints : undefined}
+      onDragEnd={!isMobile ? handleDragEnd : undefined}
+      initial={isMobile ? false : initialPosition}
+      animate={isMobile ? false : undefined}
+      whileDrag={!isMobile ? { 
         cursor: "grabbing",
         scale: 1.0,
-      }}
-      dragTransition={{
+      } : undefined}
+      dragTransition={!isMobile ? {
         bounceStiffness: 600,
         bounceDamping: 20,
         power: 0.1,
-      }}
-      style={{
+      } : undefined}
+      style={isMobile ? {
+        position: 'fixed',
+        bottom: '8px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 1000,
+      } : {
         left: 0,
         top: 0,
         x: initialPosition.x,
@@ -798,51 +941,81 @@ function FloatingControlPanel({
           style={{ display: 'none' }}
         />
         
-        {/* Drag Handle & Header */}
-        <div
-          className={cn(
-            "cursor-grab active:cursor-grabbing flex items-center mb-1.5 md:mb-2",
-            isCollapsed ? "justify-center mb-1 md:mb-1.5" : "justify-between",
-          )}
-          onPointerDown={(e) => dragControls.start(e)}
-        >
-          {!isCollapsed && (
-            <div className="flex items-center gap-1.5 md:gap-2">
-              <img 
-                src={isDarkMode ? '/logo_white.png' : '/logo.png'} 
-                alt="teachr" 
-                className="h-6 md:h-7 w-auto"
-              />
-            </div>
-          )}
-          <button
-            onClick={handleCollapse}
-            className="w-5 h-5 md:w-6 md:h-6 flex items-center justify-center border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] text-black dark:text-white hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-100"
-          >
-            {isCollapsed ? (
-              <ChevronDown className="w-3 h-3 md:w-3.5 md:h-3.5 font-black" />
-            ) : (
-              <ChevronUp className="w-3 h-3 md:w-3.5 md:h-3.5 font-black" />
+        {/* Drag Handle & Header - Only show on desktop */}
+        {!isMobile && (
+          <div
+            className={cn(
+              "cursor-grab active:cursor-grabbing flex items-center mb-1.5 md:mb-2",
+              isCollapsed ? "justify-center mb-1 md:mb-1.5" : "justify-between",
             )}
-          </button>
-        </div>
+            onPointerDown={(e) => !isMobile && dragControls.start(e)}
+          >
+            {!isCollapsed && (
+              <div className="flex items-center gap-1.5 md:gap-2">
+                <img 
+                  src={isDarkMode ? '/logo_white.png' : '/logo.png'} 
+                  alt="teachr" 
+                  className="h-6 md:h-7 w-auto"
+                />
+              </div>
+            )}
+            <button
+              onClick={handleCollapse}
+              className="w-5 h-5 md:w-6 md:h-6 flex items-center justify-center border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] text-black dark:text-white hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-100"
+            >
+              {isCollapsed ? (
+                <ChevronDown className="w-3 h-3 md:w-3.5 md:h-3.5 font-black" />
+              ) : (
+                <ChevronUp className="w-3 h-3 md:w-3.5 md:h-3.5 font-black" />
+              )}
+            </button>
+          </div>
+        )}
 
         {isCollapsed ? (
           // COLLAPSED VIEW
-          <div className="flex flex-col items-center gap-1.5 md:gap-2">
+          <div className={cn(
+            "flex items-center",
+            isMobile ? "flex-row gap-2" : "flex-col gap-1.5 md:gap-2"
+          )}>
+            {/* Home/Expand Button - Desktop only */}
+            {!isMobile && (
+              <button
+                onClick={handleCollapse}
+                className="w-8 h-8 md:w-9 md:h-9 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] flex items-center justify-center text-black dark:text-white transition-all hover:translate-x-0.5 hover:translate-y-0.5 duration-100 shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none"
+                title="Expand"
+              >
+                <Home className="w-4 h-4 font-bold" />
+              </button>
+            )}
+
+            {/* Microphone Button */}
             <button
-              onClick={handleCollapse}
-              className="w-8 h-8 md:w-9 md:h-9 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] flex items-center justify-center text-black dark:text-white transition-all hover:translate-x-0.5 hover:translate-y-0.5 duration-100 shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none"
-              title="Expand"
+              onClick={() => connected && handleMute()}
+              disabled={!connected}
+              className={cn(
+                "border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none active:translate-x-0.5 active:translate-y-0.5 duration-100",
+                isMobile ? "w-9 h-9" : "w-8 h-8 md:w-9 md:h-9",
+                muted
+                  ? "bg-[#FF6B6B] text-white"
+                  : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
+                !connected && "opacity-50 cursor-not-allowed"
+              )}
+              title={muted ? "Unmute" : "Mute"}
             >
-              <Home className="w-4 h-4 font-bold" />
+              {muted ? (
+                <MicOff className="w-4 h-4 font-bold" />
+              ) : (
+                <Mic className="w-4 h-4 font-bold" />
+              )}
             </button>
 
             {/* Start/Stop Session Button */}
             <button
               onClick={handleConnect}
               className={cn(
-                "w-9 h-9 md:w-10 md:h-10 border-[2px] border-black flex items-center justify-center transition-all transform active:translate-x-1 active:translate-y-1 relative group font-black",
+                "border-[2px] border-black flex items-center justify-center transition-all transform active:translate-x-1 active:translate-y-1 relative group font-black",
+                isMobile ? "w-10 h-10" : "w-9 h-9 md:w-10 md:h-10",
                 connected
                   ? "bg-[#FF6B6B] hover:bg-[#FF6B6B] text-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)]"
                   : "bg-[#4ADE80] hover:bg-[#4ADE80] text-black shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)]",
@@ -864,7 +1037,8 @@ function FloatingControlPanel({
               <button
                 onClick={handlePause}
                 className={cn(
-                  "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
+                  "border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none active:translate-x-0.5 active:translate-y-0.5 duration-100",
+                  isMobile ? "w-9 h-9" : "w-8 h-8 md:w-9 md:h-9",
                   isPaused
                     ? "bg-[#4ADE80] text-black" // Green for Resume
                     : "bg-[#FFD93D] text-black" // Yellow for Pause
@@ -872,125 +1046,112 @@ function FloatingControlPanel({
                 title={isPaused ? "Resume Session" : "Pause Session"}
               >
                 {isPaused ? (
-                  <Play className="w-3.5 h-3.5 font-bold" />
+                  <Play className="w-4 h-4 font-bold" />
                 ) : (
-                  <Pause className="w-3.5 h-3.5 font-bold" />
+                  <Pause className="w-4 h-4 font-bold" />
                 )}
               </button>
             )}
 
-            <div className="w-7 h-[2px] bg-black dark:bg-white my-0.5" />
+            {/* Separator - Desktop only */}
+            {!isMobile && <div className="w-7 h-[2px] bg-black dark:bg-white my-0.5" />}
 
-            <button
-              onClick={() => connected && handleMute()}
-              disabled={!connected}
-              className={cn(
-                "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
-                muted
-                  ? "bg-[#FF6B6B] text-white"
-                  : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
-                !connected && "opacity-50 cursor-not-allowed"
-              )}
-              title={muted ? "Unmute" : "Mute"}
-            >
-              {muted ? (
-                <MicOff className="w-3.5 h-3.5 font-bold" />
-              ) : (
-                <Mic className="w-3.5 h-3.5 font-bold" />
-              )}
-            </button>
-
-            {supportsVideo && (
-              <button
-                onClick={() => connected && onToggleCamera(!cameraEnabled)}
-                disabled={!connected}
-                className={cn(
-                  "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
-                  cameraEnabled
-                    ? "bg-[#C4B5FD] text-black"
-                    : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
-                  !connected && "opacity-50 cursor-not-allowed"
-                )}
-                title="Toggle Camera"
-              >
-                {cameraEnabled ? (
-                  <Video className="w-3.5 h-3.5 font-bold" />
-                ) : (
-                  <VideoOff className="w-3.5 h-3.5 font-bold" />
-                )}
-              </button>
-            )}
-
-            {supportsVideo && (
-              <button
-                onClick={() => connected && onToggleScreen(!screenEnabled)}
-                disabled={!connected}
-                className={cn(
-                  "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
-                  screenEnabled
-                    ? "bg-[#FFD93D] text-black"
-                    : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
-                  !connected && "opacity-50 cursor-not-allowed"
-                )}
-                title="Share Screen"
-              >
-                {screenEnabled ? (
-                  <Monitor className="w-3.5 h-3.5 font-bold" />
-                ) : (
-                  <MonitorOff className="w-3.5 h-3.5 font-bold" />
-                )}
-              </button>
-            )}
-
-            <div className="w-7 h-[2px] bg-black dark:bg-white my-0.5" />
-
-            {enableEditingSettings && (
-              <SettingsDialog
-                className="!h-auto !block"
-                trigger={
-                  <button className="w-8 h-8 md:w-9 md:h-9 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FF6B6B] flex items-center justify-center text-black dark:text-white hover:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100">
-                    <Settings className="w-3.5 h-3.5 font-bold" />
+            {/* Additional controls - Desktop only */}
+            {!isMobile && (
+              <>
+                {supportsVideo && (
+                  <button
+                    onClick={() => connected && onToggleCamera(!cameraEnabled)}
+                    disabled={!connected}
+                    className={cn(
+                      "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
+                      cameraEnabled
+                        ? "bg-[#C4B5FD] text-black"
+                        : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
+                      !connected && "opacity-50 cursor-not-allowed"
+                    )}
+                    title="Toggle Camera"
+                  >
+                    {cameraEnabled ? (
+                      <Video className="w-3.5 h-3.5 font-bold" />
+                    ) : (
+                      <VideoOff className="w-3.5 h-3.5 font-bold" />
+                    )}
                   </button>
-                }
-              />
+                )}
+
+                {supportsVideo && (
+                  <button
+                    onClick={() => connected && onToggleScreen(!screenEnabled)}
+                    disabled={!connected}
+                    className={cn(
+                      "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
+                      screenEnabled
+                        ? "bg-[#FFD93D] text-black"
+                        : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
+                      !connected && "opacity-50 cursor-not-allowed"
+                    )}
+                    title="Share Screen"
+                  >
+                    {screenEnabled ? (
+                      <Monitor className="w-3.5 h-3.5 font-bold" />
+                    ) : (
+                      <MonitorOff className="w-3.5 h-3.5 font-bold" />
+                    )}
+                  </button>
+                )}
+
+                <div className="w-7 h-[2px] bg-black dark:bg-white my-0.5" />
+
+                {enableEditingSettings && (
+                  <SettingsDialog
+                    className="!h-auto !block"
+                    trigger={
+                      <button className="w-8 h-8 md:w-9 md:h-9 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FF6B6B] flex items-center justify-center text-black dark:text-white hover:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100">
+                        <Settings className="w-3.5 h-3.5 font-bold" />
+                      </button>
+                    }
+                  />
+                )}
+
+                <button
+                  onClick={onPaintClick}
+                  className={cn(
+                    "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
+                    isPaintActive
+                      ? "bg-[#FFD93D] text-black"
+                      : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
+                  )}
+                  title="Canvas"
+                >
+                  <PenTool className="w-3.5 h-3.5 font-bold" />
+                </button>
+
+                <button
+                  onClick={toggleSharedMedia}
+                  className={cn(
+                    "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
+                    sharedMediaOpen
+                      ? "bg-[#C4B5FD] text-black"
+                      : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#C4B5FD] border-black dark:border-white",
+                  )}
+                  title="View"
+                >
+                  <Eye className="w-3.5 h-3.5 font-bold" />
+                </button>
+
+                <div
+                  className={cn(
+                    "w-10 h-8 flex items-center justify-center text-[9px] font-mono font-black mt-1 transition-colors border-[2px] border-black",
+                    connected
+                      ? "bg-[#FFD93D] text-black"
+                      : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white border-black dark:border-white",
+                  )}
+                >
+                  {connected ? formatTime(sessionTime) : "--:--"}
+                </div>
+              </>
             )}
-
-            <button
-              onClick={onPaintClick}
-              className={cn(
-                "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
-                isPaintActive
-                  ? "bg-[#FFD93D] text-black"
-                  : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
-              )}
-              title="Canvas"
-            >
-              <PenTool className="w-3.5 h-3.5 font-bold" />
-            </button>
-
-            <button
-              onClick={toggleSharedMedia}
-              className={cn(
-                "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
-                sharedMediaOpen
-                  ? "bg-[#C4B5FD] text-black"
-                  : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#C4B5FD] border-black dark:border-white",
-              )}
-              title="View"
-            >
-              <Eye className="w-3.5 h-3.5 font-bold" />
-            </button>
-
-            <div
-              className={cn(
-                "w-10 h-8 flex items-center justify-center text-[9px] font-mono font-black mt-1 transition-colors border-[2px] border-black",
-                connected
-                  ? "bg-[#FFD93D] text-black"
-                  : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white border-black dark:border-white",
-              )}
-            >
-              {connected ? formatTime(sessionTime) : "--:--"}
-            </div>
           </div>
         ) : (
           // EXPANDED VIEW

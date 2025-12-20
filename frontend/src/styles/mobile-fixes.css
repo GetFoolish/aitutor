@@ -197,23 +197,206 @@
     body {
         padding-bottom: env(safe-area-inset-bottom, 0);
     }
+    
+    /* Question area optimization */
+    #question-content-container {
+        padding: 12px !important;
+        border-width: 2px !important;
+    }
+    
+    /* Smaller practice session header */
+    .practice-session-header,
+    [class*="practice-session"],
+    [class*="session-header"] {
+        font-size: 11px !important;
+        padding: 10px !important;
+    }
+    
+    /* Compact MCQ choices */
+    .choice,
+    [class*="choice"] {
+        padding: 12px !important;
+        min-height: 44px !important;
+        font-size: 13px !important;
+        margin-bottom: 6px !important;
+    }
+    
+    /* Smaller action buttons */
+    button:not(.floating-control-panel button) {
+        font-size: 11px !important;
+        padding: 10px 14px !important;
+    }
+    
+    /* Compact hints */
+    .hint-display,
+    [class*="hint"] {
+        padding: 10px !important;
+        font-size: 12px !important;
+    }
+    
+    /* Hide Adam's View button hint on mobile */
+    button[title*="View"]::after {
+        content: none !important;
+    }
+}
+
+/* Fix 9b: Standard mobile (376px-640px) */
+@media (min-width: 376px) and (max-width: 640px) {
+    header {
+        height: 36px !important;
+    }
+    
+    .streaming-console {
+        margin-top: 36px !important;
+        height: calc(100vh - 36px) !important;
+    }
+    
+    header img {
+        height: 20px !important;
+    }
+    
+    header button {
+        width: 26px !important;
+        height: 26px !important;
+    }
+    
+    header button svg {
+        width: 14px !important;
+        height: 14px !important;
+    }
+    
+    body {
+        font-size: 10px !important;
+    }
 }
 
 /* Fix 10: Small mobile devices (iPhone SE, etc.) */
 @media (max-width: 375px) {
-    .floating-control-panel {
-        scale: 0.9 !important;
-        transform-origin: bottom right;
+    /* Ultra-compact header */
+    header {
+        height: 32px !important;
+        padding: 0 6px !important;
     }
-
-    /* Smaller font sizes for tiny screens */
+    
+    .streaming-console {
+        margin-top: 32px !important;
+        height: calc(100vh - 32px) !important;
+    }
+    
+    /* Smaller logo */
+    header img {
+        height: 18px !important;
+    }
+    
+    /* Compact header buttons */
+    header button {
+        width: 24px !important;
+        height: 24px !important;
+        padding: 4px !important;
+        min-width: 24px !important;
+        min-height: 24px !important;
+    }
+    
+    header button svg {
+        width: 12px !important;
+        height: 12px !important;
+    }
+    
+    /* FloatingControlPanel ultra-compact */
+    .floating-control-panel:not(.collapsed) {
+        width: 160px !important;
+        padding: 8px !important;
+    }
+    
+    .floating-control-panel.collapsed {
+        width: 40px !important;
+    }
+    
+    /* Scale down control buttons */
+    .floating-control-panel button {
+        transform: scale(0.9);
+    }
+    
+    /* Smaller fonts */
     body {
-        font-size: 10px !important;
+        font-size: 9px !important;
     }
-
+    
     /* Reduce padding everywhere */
     .main-app-area,
     .question-panel {
         padding: 6px !important;
+    }
+    
+    /* Question content compact */
+    #question-content-container {
+        padding: 10px !important;
+        border-width: 2px !important;
+    }
+}
+
+/* Fix 11: iPad Mini specific fixes (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+    /* Header adjustments for tablet */
+    header {
+        height: 44px !important;
+        padding: 0 12px !important;
+    }
+    
+    .streaming-console {
+        margin-top: 44px !important;
+        height: calc(100vh - 44px) !important;
+    }
+    
+    /* Logo sizing for iPad Mini */
+    header img {
+        height: 28px !important;
+        max-height: 28px !important;
+    }
+    
+    /* Header buttons sizing for tablet */
+    header button {
+        width: 32px !important;
+        height: 32px !important;
+        padding: 6px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+    }
+    
+    header button svg {
+        width: 16px !important;
+        height: 16px !important;
+    }
+    
+    /* Avatar sizing */
+    header .relative {
+        width: 32px !important;
+        height: 32px !important;
+    }
+}
+
+/* Fix 12: Mobile horizontal floating panel */
+@media (max-width: 768px) {
+    /* Ensure question panel has bottom padding for floating controls */
+    .question-panel {
+        padding-bottom: 90px !important;
+    }
+    
+    /* Ensure main app area doesn't hide controls */
+    .main-app-area {
+        padding-bottom: 80px !important;
+    }
+    
+    /* Force floating control panel to be visible and properly positioned on mobile */
+    [style*="position: fixed"][style*="bottom: 8px"] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+    
+    /* Prevent any transform animations from hiding the panel */
+    [style*="position: fixed"][style*="bottom: 8px"] * {
+        visibility: visible !important;
     }
 }
