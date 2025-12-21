@@ -213,7 +213,7 @@ async def get_database_stats():
 
     from managers.mongodb_manager import mongo_db
 
-    total_questions = mongo_db.perseus_questions.count_documents({})
+    total_questions = mongo_db.scraped_questions.count_documents({})
     widget_summary = get_widget_types_summary()
 
     return {

@@ -136,7 +136,30 @@ def convert_question_to_athena(doc: Dict[str, Any]) -> Dict[str, Any]:
     Input: MongoDB document with Perseus format
     Output: Athena-compatible question format
     """
-    question_data = doc.get('question', {})
+    # Extract question data
+    question_data = doc.get('question')
+    hints = doc.get('hints')
+    answer_area = doc.get('answerArea')
+
+    # Fallback to nested structure if top-level fields are missing
+    if not question_data and 'assessmentData' in doc:
+        try:
+            item_data_str = doc.get('assessmentData', {}).get('data', {}).get('assessmentItem', {}).get('item', {}).get('itemData', '')
+            if item_data_str:
+                import json
+                item_data = json.loads(item_data_str)
+                question_data = item_data.get('question', {})
+                hints = item_data.get('hints', [])
+                answer_area = item_data.get('answerArea', {})
+        except Exception as e:
+            logger.warning(f"Failed to extract nested question data: {e}")
+
+    if not question_data:
+        question_data = {}
+    if not hints:
+        hints = []
+    if not answer_area:
+        answer_area = {}
 
     # Convert widgets
     athena_widgets = {}
@@ -161,7 +184,7 @@ def convert_question_to_athena(doc: Dict[str, Any]) -> Dict[str, Any]:
 
     # Convert hints
     athena_hints = []
-    for hint in doc.get('hints', []):
+    for hint in hints:
         hint_widgets = {}
         for widget_id, widget_data in hint.get('widgets', {}).items():
             hint_widgets[widget_id] = convert_widget_to_athena(widget_id, widget_data)
@@ -177,7 +200,6 @@ def convert_question_to_athena(doc: Dict[str, Any]) -> Dict[str, Any]:
         })
 
     # Build answer area
-    answer_area = doc.get('answerArea', {})
     athena_answer_area = {
         'calculator': answer_area.get('calculator', False),
         'periodicTable': answer_area.get('periodicTable', False),
@@ -192,10 +214,12 @@ def convert_question_to_athena(doc: Dict[str, Any]) -> Dict[str, Any]:
     }
 
     # Build Athena item
+    skill_prefix = doc.get('skill_prefix') or doc.get('skill_id') or ''
+
     athena_item = {
         '_id': str(doc.get('_id', '')),
         'slug': doc.get('slug', ''),
-        'skill_prefix': doc.get('skill_prefix', ''),
+        'skill_prefix': skill_prefix,
 
         # Question data
         'question': {
@@ -236,7 +260,7 @@ def get_question_by_id(question_id: str) -> Optional[Dict[str, Any]]:
             logger.warning(f"Invalid ObjectId format: {question_id}")
             return None
 
-        doc = mongo_db.perseus_questions.find_one({'_id': ObjectId(question_id)})
+        doc = mongo_db.scraped_questions.find_one({'_id': ObjectId(question_id)})
 
         if not doc:
             logger.warning(f"Question not found: {question_id}")
@@ -311,7 +335,7 @@ def get_questions(
         pipeline.append({'$sample': {'size': sample_size * 3}})  # Fetch more for better variety
 
         # Execute pipeline
-        cursor = mongo_db.perseus_questions.aggregate(pipeline)
+        cursor = mongo_db.scraped_questions.aggregate(pipeline)
 
         # Convert to Athena format and filter
         athena_questions = []
@@ -402,7 +426,7 @@ def get_questions_by_ids(question_ids: List[str]) -> List[Dict[str, Any]]:
         if not object_ids:
             return []
 
-        cursor = mongo_db.perseus_questions.find({'_id': {'$in': object_ids}})
+        cursor = mongo_db.scraped_questions.find({'_id': {'$in': object_ids}})
 
         athena_questions = []
         for doc in cursor:
@@ -431,7 +455,7 @@ def get_widget_types_summary() -> Dict[str, int]:
             {'$sort': {'count': -1}}
         ]
 
-        result = mongo_db.perseus_questions.aggregate(pipeline)
+        result = mongo_db.scraped_questions.aggregate(pipeline)
 
         return {doc['_id']: doc['count'] for doc in result}
 
@@ -462,7 +486,7 @@ def search_questions(
             ]
         }
 
-        cursor = mongo_db.perseus_questions.find(query).limit(limit)
+        cursor = mongo_db.scraped_questions.find(query).limit(limit)
 
         athena_questions = []
         for doc in cursor:

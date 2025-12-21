@@ -164,9 +164,10 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         let processedSvg = svg.replace(/<svg/, '<svg class="graphie-svg"');
 
         // Inject comprehensive CSS style block to ensure ALL text is visible
+        // IMPORTANT: Scope all selectors to .graphie-svg to avoid affecting other page elements
         const styleBlock = `<style>
-          /* Force all text elements to be visible */
-          text, tspan, .label, [class*="label"] {
+          /* Force all text elements to be visible - scoped to SVG only */
+          .graphie-svg text, .graphie-svg tspan, .graphie-svg .label, svg[class*="graphie"] [class*="label"] {
             fill: #333 !important;
             fill-opacity: 1 !important;
             font-family: 'Nunito', -apple-system, sans-serif !important;
@@ -409,6 +410,14 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     processed = processed.replace(/\\infty/g, '∞');
     processed = processed.replace(/\\cdot/g, '·');
 
+    // Handle LaTeX spacing commands
+    processed = processed.replace(/\\,/g, ' ');  // thin space
+    processed = processed.replace(/\\;/g, ' ');  // medium space
+    processed = processed.replace(/\\!/g, '');   // negative thin space
+    processed = processed.replace(/\\ /g, ' ');  // regular space
+    processed = processed.replace(/\\quad/g, '  ');  // quad space
+    processed = processed.replace(/\\qquad/g, '    ');  // double quad space
+
     // Remove any remaining backslashes from simple commands
     processed = processed.replace(/\\([a-zA-Z]+)/g, '');
 
@@ -503,7 +512,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       className={`graphie-image-container ${className}`}
       style={{
         position: 'relative',
-        display: 'inline-block',
+        display: 'block',
         maxWidth: '100%',
         ...style,
       }}

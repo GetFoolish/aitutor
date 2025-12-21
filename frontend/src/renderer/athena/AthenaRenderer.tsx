@@ -112,7 +112,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
               graphieUrl = graphieUrl.replace(/\.(png|svg)$/, '');
             }
             const placeholderId = `athena-graphie-${graphieCounter++}`;
-            return `<span class="athena-graphie-placeholder" data-graphie-url="${graphieUrl}" data-graphie-alt="${alt}" id="${placeholderId}" style="display:block;margin:1rem 0;"></span>`;
+            return `<span class="athena-graphie-placeholder" data-graphie-url="${graphieUrl}" data-graphie-alt="${alt}" id="${placeholderId}" style="display:block;margin:1rem 0;overflow:hidden;"></span>`;
           }
 
           // For non-graphie images, use regular img tag
@@ -382,55 +382,56 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
     }, [problemNum, dispatchEvent]);
 
     // KaTeX macros for Khan Academy color commands
+    // Note: In KaTeX macros, # is used for arguments, so hex colors need ## to escape the #
     const katexMacros = {
       // Color commands (Khan Academy style)
-      '\\blue': '\\textcolor{#1865f2}{#1}',
-      '\\red': '\\textcolor{#e84d39}{#1}',
-      '\\green': '\\textcolor{#1fab54}{#1}',
-      '\\purple': '\\textcolor{#9c4dcc}{#1}',
-      '\\orange': '\\textcolor{#e67e22}{#1}',
-      '\\pink': '\\textcolor{#e91e63}{#1}',
-      '\\teal': '\\textcolor{#1abc9c}{#1}',
-      '\\gold': '\\textcolor{#f1c40f}{#1}',
-      '\\gray': '\\textcolor{#777777}{#1}',
-      '\\grey': '\\textcolor{#777777}{#1}',
+      '\\blue': '\\textcolor{##1865f2}{#1}',
+      '\\red': '\\textcolor{##e84d39}{#1}',
+      '\\green': '\\textcolor{##1fab54}{#1}',
+      '\\purple': '\\textcolor{##9c4dcc}{#1}',
+      '\\orange': '\\textcolor{##e67e22}{#1}',
+      '\\pink': '\\textcolor{##e91e63}{#1}',
+      '\\teal': '\\textcolor{##1abc9c}{#1}',
+      '\\gold': '\\textcolor{##f1c40f}{#1}',
+      '\\gray': '\\textcolor{##777777}{#1}',
+      '\\grey': '\\textcolor{##777777}{#1}',
       // Variant colors
-      '\\blueA': '\\textcolor{#1865f2}{#1}',
-      '\\blueB': '\\textcolor{#2b73e8}{#1}',
-      '\\blueC': '\\textcolor{#4185e8}{#1}',
-      '\\blueD': '\\textcolor{#5a9ce8}{#1}',
-      '\\blueE': '\\textcolor{#72b3e8}{#1}',
-      '\\redA': '\\textcolor{#e74c3c}{#1}',
-      '\\redB': '\\textcolor{#ec5050}{#1}',
-      '\\redC': '\\textcolor{#f06464}{#1}',
-      '\\redD': '\\textcolor{#f47878}{#1}',
-      '\\redE': '\\textcolor{#f78c8c}{#1}',
-      '\\greenA': '\\textcolor{#28b463}{#1}',
-      '\\greenB': '\\textcolor{#2ecc71}{#1}',
-      '\\greenC': '\\textcolor{#52d689}{#1}',
-      '\\greenD': '\\textcolor{#6dd8a0}{#1}',
-      '\\greenE': '\\textcolor{#87dbb3}{#1}',
-      '\\purpleA': '\\textcolor{#9c4dcc}{#1}',
-      '\\purpleB': '\\textcolor{#a05acc}{#1}',
-      '\\purpleC': '\\textcolor{#aa63d9}{#1}',
-      '\\purpleD': '\\textcolor{#b56ccc}{#1}',
-      '\\purpleE': '\\textcolor{#c077d9}{#1}',
-      '\\goldA': '\\textcolor{#f1c40f}{#1}',
-      '\\goldB': '\\textcolor{#f4ca25}{#1}',
-      '\\goldC': '\\textcolor{#f7d03b}{#1}',
-      '\\goldD': '\\textcolor{#fad651}{#1}',
-      '\\goldE': '\\textcolor{#fddc67}{#1}',
-      '\\grayA': '\\textcolor{#333333}{#1}',
-      '\\grayB': '\\textcolor{#555555}{#1}',
-      '\\grayC': '\\textcolor{#777777}{#1}',
-      '\\grayD': '\\textcolor{#999999}{#1}',
-      '\\grayE': '\\textcolor{#bbbbbb}{#1}',
+      '\\blueA': '\\textcolor{##1865f2}{#1}',
+      '\\blueB': '\\textcolor{##2b73e8}{#1}',
+      '\\blueC': '\\textcolor{##4185e8}{#1}',
+      '\\blueD': '\\textcolor{##5a9ce8}{#1}',
+      '\\blueE': '\\textcolor{##72b3e8}{#1}',
+      '\\redA': '\\textcolor{##e74c3c}{#1}',
+      '\\redB': '\\textcolor{##ec5050}{#1}',
+      '\\redC': '\\textcolor{##f06464}{#1}',
+      '\\redD': '\\textcolor{##f47878}{#1}',
+      '\\redE': '\\textcolor{##f78c8c}{#1}',
+      '\\greenA': '\\textcolor{##28b463}{#1}',
+      '\\greenB': '\\textcolor{##2ecc71}{#1}',
+      '\\greenC': '\\textcolor{##52d689}{#1}',
+      '\\greenD': '\\textcolor{##6dd8a0}{#1}',
+      '\\greenE': '\\textcolor{##87dbb3}{#1}',
+      '\\purpleA': '\\textcolor{##9c4dcc}{#1}',
+      '\\purpleB': '\\textcolor{##a05acc}{#1}',
+      '\\purpleC': '\\textcolor{##aa63d9}{#1}',
+      '\\purpleD': '\\textcolor{##b56ccc}{#1}',
+      '\\purpleE': '\\textcolor{##c077d9}{#1}',
+      '\\goldA': '\\textcolor{##f1c40f}{#1}',
+      '\\goldB': '\\textcolor{##f4ca25}{#1}',
+      '\\goldC': '\\textcolor{##f7d03b}{#1}',
+      '\\goldD': '\\textcolor{##fad651}{#1}',
+      '\\goldE': '\\textcolor{##fddc67}{#1}',
+      '\\grayA': '\\textcolor{##333333}{#1}',
+      '\\grayB': '\\textcolor{##555555}{#1}',
+      '\\grayC': '\\textcolor{##777777}{#1}',
+      '\\grayD': '\\textcolor{##999999}{#1}',
+      '\\grayE': '\\textcolor{##bbbbbb}{#1}',
       // Khan Academy specific
-      '\\kaBlue': '\\textcolor{#1865f2}{#1}',
-      '\\kaGreen': '\\textcolor{#1fab54}{#1}',
+      '\\kaBlue': '\\textcolor{##1865f2}{#1}',
+      '\\kaGreen': '\\textcolor{##1fab54}{#1}',
       // Maroon for negative numbers
-      '\\maroonC': '\\textcolor{#c03}{#1}',
-      '\\maroonD': '\\textcolor{#a02}{#1}',
+      '\\maroonC': '\\textcolor{##c03}{#1}',
+      '\\maroonD': '\\textcolor{##a02}{#1}',
     };
 
     // KaTeX options with macros
@@ -443,7 +444,98 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
     // Helper function to render math with KaTeX
     const renderMath = (text: string): string => {
       if (!text || typeof text !== 'string') return text || '';
-      let processed = text;
+
+      // STEP 1: Decode HTML entities FIRST (before any other processing)
+      // This fixes &amp; → & which is critical for align environments
+      let processed = text
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#039;/g, "'")
+        .replace(/&nbsp;/g, ' ');
+
+      // STEP 2: Use placeholders to protect KaTeX output from subsequent processing
+      const katexPlaceholders: string[] = [];
+      const createPlaceholder = (html: string): string => {
+        const idx = katexPlaceholders.length;
+        katexPlaceholders.push(html);
+        return `__KATEX_PLACEHOLDER_${idx}__`;
+      };
+
+      // Helper: preprocess Khan Academy color commands to \textcolor
+      const preprocessColorCommands = (latex: string): string => {
+        const colorMap: Record<string, string> = {
+          blueA: '#1865f2', blueB: '#2b73e8', blueC: '#4185e8', blueD: '#5a9ce8', blueE: '#72b3e8',
+          redA: '#e74c3c', redB: '#ec5050', redC: '#f06464', redD: '#f47878', redE: '#f78c8c',
+          greenA: '#28b463', greenB: '#2ecc71', greenC: '#52d689', greenD: '#6dd8a0', greenE: '#87dbb3',
+          purpleA: '#9c4dcc', purpleB: '#a05acc', purpleC: '#aa63d9', purpleD: '#b56ccc', purpleE: '#c077d9',
+          goldA: '#f1c40f', goldB: '#f4ca25', goldC: '#f7d03b', goldD: '#fad651', goldE: '#fddc67',
+          grayA: '#333333', grayB: '#555555', grayC: '#777777', grayD: '#999999', grayE: '#bbbbbb',
+          maroonC: '#cc0033', maroonD: '#aa0022',
+          blue: '#1865f2', red: '#e84d39', green: '#1fab54', purple: '#9c4dcc',
+          orange: '#e67e22', pink: '#e91e63', teal: '#1abc9c', gold: '#f1c40f', gray: '#777777',
+        };
+        let result = latex;
+        // Sort by length descending to match longer names first (purpleD before purple)
+        const colorNames = Object.keys(colorMap).sort((a, b) => b.length - a.length);
+        for (const colorName of colorNames) {
+          const hex = colorMap[colorName];
+          const pattern = new RegExp(`\\\\${colorName}\\{([^{}]*(?:\\{[^{}]*\\}[^{}]*)*)\\}`, 'g');
+          result = result.replace(pattern, `\\textcolor{${hex}}{$1}`);
+        }
+        return result;
+      };
+
+      // STEP 3: Handle $\begin{align}...\end{align}$ patterns BEFORE general math processing
+      // This is the special case that needs careful handling of & alignment markers
+      processed = processed.replace(/\$\\begin\{(align\*?|aligned)\}([\s\S]*?)\\end\{\1\}\$/g, (fullMatch, envName, innerContent) => {
+        try {
+          // Clean the inner content - restore any corrupted & characters
+          let cleanContent = innerContent
+            .replace(/&amp;/g, '&')
+            .replace(/amp;/g, '&')   // Handle cases where & was stripped
+            .replace(/=\s*amp;/g, '&=')  // Fix =amp; patterns
+            .replace(/amp;\s*=/g, '&=') // Fix amp;= patterns
+            .replace(/\\\\\\\\/g, '\\\\'); // Fix escaped backslashes: \\\\ -> \\
+
+          // Pre-process color commands before KaTeX
+          cleanContent = preprocessColorCommands(cleanContent);
+
+          // Render the full align environment
+          const latex = `\\begin{${envName}}${cleanContent}\\end{${envName}}`;
+          const result = katex.renderToString(latex, { ...katexOptions, displayMode: true });
+          // Return placeholder to protect from subsequent processing
+          return createPlaceholder(result);
+        } catch (e) {
+          console.error('[Athena] KaTeX align error:', e, 'Content:', innerContent);
+          return `<span class="math-error">${fullMatch}</span>`;
+        }
+      });
+
+      // STEP 3b: Handle standalone \begin{align}...\end{align} (without $ wrapper)
+      processed = processed.replace(/\\begin\{(align\*?|aligned)\}([\s\S]*?)\\end\{\1\}/g, (fullMatch, envName, innerContent) => {
+        try {
+          // Clean the inner content - restore any corrupted & characters
+          let cleanContent = innerContent
+            .replace(/&amp;/g, '&')
+            .replace(/amp;/g, '&')
+            .replace(/=\s*amp;/g, '&=')
+            .replace(/amp;\s*=/g, '&=')
+            .replace(/\\\\\\\\/g, '\\\\');
+
+          // Pre-process color commands before KaTeX
+          cleanContent = preprocessColorCommands(cleanContent);
+
+          // Render the full align environment
+          const latex = `\\begin{${envName}}${cleanContent}\\end{${envName}}`;
+          const result = katex.renderToString(latex, { ...katexOptions, displayMode: true });
+          return createPlaceholder(result);
+        } catch (e) {
+          console.error('[Athena] KaTeX standalone align error:', e);
+          return `<span class="math-error">${fullMatch}</span>`;
+        }
+      });
 
       // Color map for preprocessing color commands without braces
       const colorHexMap: Record<string, string> = {
@@ -461,22 +553,8 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         kaBlue: '#1865f2', kaGreen: '#1fab54',
       };
 
-      // Preprocess: Handle color commands WITHOUT braces like \blueD7 -> render as colored math
-      // These are Khan Academy shorthand where \colorX followed by a single character applies color to that char
-      // IMPORTANT: Sort by length descending so longer names match first (purpleD before purple)
-      const colorNames = Object.keys(colorHexMap).sort((a, b) => b.length - a.length);
-      for (const colorName of colorNames) {
-        // Pattern: \colorName followed by a digit or letter (not a brace)
-        const pattern = new RegExp(`\\\\${colorName}([0-9a-zA-Z])(?![{])`, 'g');
-        processed = processed.replace(pattern, (_, char) => {
-          const color = colorHexMap[colorName];
-          try {
-            return katex.renderToString(`\\textcolor{${color}}{${char}}`, { ...katexOptions, displayMode: false });
-          } catch {
-            return `<span style="color:${color}">${char}</span>`;
-          }
-        });
-      }
+      // NOTE: Braceless color commands like \blueD7 are now handled INSIDE the inline math processor
+      // to avoid inserting KaTeX HTML inside $...$ blocks which causes escaping issues
 
       // First, handle escaped dollar signs \$ -> $ (currency)
       // Use a placeholder to protect them from math processing
@@ -497,25 +575,40 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         }
       });
 
-      // Process LaTeX environments \begin{...}...\end{...} (align, gather, etc.)
+      // Process LaTeX environments \begin{...}...\end{...} (gather, equation, array, matrix, cases)
+      // Note: align/aligned are handled above with special & character cleaning
       // First: with $ wrapper
-      processed = processed.replace(/\$\\?(large|Large|LARGE|huge|Huge)?\s*\\begin\{(align|aligned|gather|gathered|equation|array|matrix|pmatrix|bmatrix|cases)\}([\s\S]*?)\\end\{\2\}\s*\$/g, (_, size, env, content) => {
+      processed = processed.replace(/\$\\?(large|Large|LARGE|huge|Huge)?\s*\\begin\{(gather|gathered|equation|array|matrix|pmatrix|bmatrix|cases)\}([\s\S]*?)\\end\{\2\}\s*\$/g, (_, size, env, content) => {
         try {
-          const latex = `\\begin{${env}}${content}\\end{${env}}`;
-          return katex.renderToString(latex, { ...katexOptions, displayMode: true });
+          // Clean up any HTML-encoded & characters
+          let cleanContent = content
+            .replace(/&amp;/g, '&')
+            .replace(/amp;/g, '&')
+            .replace(/\\\\\\\\/g, '\\\\');
+          cleanContent = preprocessColorCommands(cleanContent);
+          const latex = `\\begin{${env}}${cleanContent}\\end{${env}}`;
+          const result = katex.renderToString(latex, { ...katexOptions, displayMode: true });
+          return createPlaceholder(result);
         } catch (e) {
-          console.error('KaTeX align error:', e);
+          console.error('KaTeX env error:', e);
           return `<span class="athena-math-error">${content}</span>`;
         }
       });
 
-      // Second: without $ wrapper (standalone \begin{align}...\end{align})
-      processed = processed.replace(/\\begin\{(align|aligned|gather|gathered|equation|array|matrix|pmatrix|bmatrix|cases)\}([\s\S]*?)\\end\{\1\}/g, (_, env, content) => {
+      // Second: without $ wrapper (standalone \begin{...}...\end{...})
+      processed = processed.replace(/\\begin\{(gather|gathered|equation|array|matrix|pmatrix|bmatrix|cases)\}([\s\S]*?)\\end\{\1\}/g, (_, env, content) => {
         try {
-          const latex = `\\begin{${env}}${content}\\end{${env}}`;
-          return katex.renderToString(latex, { ...katexOptions, displayMode: true });
+          // Clean up any HTML-encoded & characters
+          let cleanContent = content
+            .replace(/&amp;/g, '&')
+            .replace(/amp;/g, '&')
+            .replace(/\\\\\\\\/g, '\\\\');
+          cleanContent = preprocessColorCommands(cleanContent);
+          const latex = `\\begin{${env}}${cleanContent}\\end{${env}}`;
+          const result = katex.renderToString(latex, { ...katexOptions, displayMode: true });
+          return createPlaceholder(result);
         } catch (e) {
-          console.error('KaTeX align error:', e);
+          console.error('KaTeX env error:', e);
           return `<span class="athena-math-error">${content}</span>`;
         }
       });
@@ -551,6 +644,15 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
           // Match \colorName{content} and expand to \textcolor{#hex}{content}
           const pattern = new RegExp(`\\\\${colorName}\\{([^{}]*(?:\\{[^{}]*\\}[^{}]*)*)\\}`, 'g');
           cleanMath = cleanMath.replace(pattern, `\\textcolor{${hex}}{$1}`);
+        }
+
+        // Also handle braceless color commands like \blueE5 -> \textcolor{#hex}{5}
+        // These are Khan Academy shorthand where \colorX followed by a single character applies color to that char
+        for (const colorName of colorCmdNames) {
+          const hex = colorExpansions[colorName];
+          // Match \colorName followed by a digit or letter (not a brace)
+          const bracelessPattern = new RegExp(`\\\\${colorName}([0-9a-zA-Z])(?![{a-zA-Z])`, 'g');
+          cleanMath = cleanMath.replace(bracelessPattern, `\\textcolor{${hex}}{$1}`);
         }
 
         try {
@@ -632,6 +734,11 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
       // Restore dollar signs
       processed = processed.replace(/__DOLLAR_SIGN__/g, '$');
 
+      // FINAL STEP: Restore KaTeX placeholders (protected from subsequent processing)
+      katexPlaceholders.forEach((html, idx) => {
+        processed = processed.replace(`__KATEX_PLACEHOLDER_${idx}__`, html);
+      });
+
       return processed;
     };
 
@@ -667,65 +774,10 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         });
       };
 
-      // Helper to process cell content including math ($...$, $$...$$)
+      // Helper to process cell content - preserves math for later processing by renderMath
+      // DO NOT process math here - it will be double-processed by renderMath later
       const processCellContent = (cell: string): string => {
         let processed = preserveWidgetPlaceholders(cell);
-
-        // First, handle escaped dollar signs \$ -> $ (currency)
-        // Use a placeholder to protect them from math processing
-        const dollarPlaceholder = '__CELL_DOLLAR__';
-        processed = processed.replace(/\\\$/g, dollarPlaceholder);
-
-        // Process display math $$...$$
-        processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
-          try {
-            return katex.renderToString(math.trim(), {
-              ...katexOptions,
-              displayMode: true
-            });
-          } catch {
-            return `<span class="athena-math-display">${math}</span>`;
-          }
-        });
-
-        // Process inline math $...$
-        processed = processed.replace(/\$([^$]+)\$/g, (_, math) => {
-          try {
-            return katex.renderToString(math.trim(), {
-              ...katexOptions,
-              displayMode: false
-            });
-          } catch {
-            return `<span class="athena-math-inline" style="font-style:italic;">${math}</span>`;
-          }
-        });
-
-        // Process standalone \text{} commands (outside of $ delimiters)
-        processed = processed.replace(/\(\\text\{([^}]+)\}\)/g, (_, text) => {
-          try {
-            return katex.renderToString(`(\\text{${text}})`, {
-              ...katexOptions,
-              displayMode: false
-            });
-          } catch {
-            return `(${text})`;
-          }
-        });
-
-        // Process other standalone LaTeX commands like \frac{}{}, \sqrt{}, etc.
-        processed = processed.replace(/\\(frac|dfrac)\{([^}]+)\}\{([^}]+)\}/g, (_, cmd, num, den) => {
-          try {
-            return katex.renderToString(`\\${cmd}{${num}}{${den}}`, {
-              ...katexOptions,
-              displayMode: false
-            });
-          } catch {
-            return `${num}/${den}`;
-          }
-        });
-
-        // Restore dollar signs
-        processed = processed.replace(/__CELL_DOLLAR__/g, '$');
 
         // Process markdown bold **text** and italic *text*
         processed = processed.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
@@ -1404,6 +1456,9 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
                   return `<img src="${imageUrl}" alt="${alt}" class="athena-image" style="max-width:100%;height:auto;display:block;margin:1rem 0;" referrerpolicy="no-referrer" />`;
                 });
               }
+
+              // Process markdown tables BEFORE math processing
+              hintContent = processTable(hintContent);
 
               // Process math with KaTeX - wrap in try-catch for safety
               try {

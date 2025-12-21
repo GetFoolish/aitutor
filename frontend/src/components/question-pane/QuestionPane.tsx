@@ -542,9 +542,151 @@ const HintPanel: React.FC<{
     return url;
   };
 
+  // Process markdown tables in content to HTML
+  const processMarkdownTable = (text: string): string => {
+    const lines = text.split('\n');
+    const result: string[] = [];
+    let i = 0;
+
+    while (i < lines.length) {
+      const line = lines[i];
+      const trimmedLine = line.trim();
+
+      // Check if this line looks like a table header (has pipes and content)
+      if (trimmedLine.includes('|') && trimmedLine.length > 3) {
+        // Look ahead for separator row (contains :- or -: or ---)
+        const nextLine = lines[i + 1]?.trim() || '';
+        const isSeparatorRow = nextLine.includes('|') && /^[\s|:\-]+$/.test(nextLine);
+
+        if (isSeparatorRow) {
+          // This is a table! Collect all table rows
+          const tableLines: string[] = [line];
+          let j = i + 1;
+
+          while (j < lines.length) {
+            const tableLine = lines[j].trim();
+            if (tableLine.includes('|')) {
+              tableLines.push(lines[j]);
+              j++;
+            } else if (tableLine === '') {
+              // Empty line - check if next line continues table
+              if (lines[j + 1]?.trim().includes('|')) {
+                j++;
+              } else {
+                break;
+              }
+            } else {
+              break;
+            }
+          }
+
+          // Parse the table
+          if (tableLines.length >= 2) {
+            // Parse header
+            const headerLine = tableLines[0].trim();
+            const headers = headerLine.startsWith('|') && headerLine.endsWith('|')
+              ? headerLine.slice(1, -1).split('|').map(h => h.trim())
+              : headerLine.split('|').map(h => h.trim()).filter(h => h);
+
+            // Parse alignment from separator row (use only up to header count)
+            const sepLine = tableLines[1].trim();
+            const sepParts = sepLine.startsWith('|') && sepLine.endsWith('|')
+              ? sepLine.slice(1, -1).split('|').map(s => s.trim())
+              : sepLine.split('|').map(s => s.trim()).filter(s => s);
+
+            const alignments: string[] = [];
+            for (let ai = 0; ai < headers.length; ai++) {
+              const sep = sepParts[ai] || '';
+              if (sep.startsWith(':') && sep.endsWith(':')) alignments.push('center');
+              else if (sep.endsWith(':')) alignments.push('right');
+              else if (sep.startsWith(':')) alignments.push('left');
+              else alignments.push('center');
+            }
+
+            // Parse body rows (skip header and separator)
+            const bodyRows: string[][] = [];
+            for (let ri = 2; ri < tableLines.length; ri++) {
+              const rowLine = tableLines[ri].trim();
+              if (/^[\s|:\-]+$/.test(rowLine)) continue; // Skip separator-like rows
+              const cells = rowLine.startsWith('|') && rowLine.endsWith('|')
+                ? rowLine.slice(1, -1).split('|').map(c => c.trim())
+                : rowLine.split('|').map(c => c.trim()).filter(c => c !== '');
+              if (cells.length > 0) bodyRows.push(cells);
+            }
+
+            // Build HTML table
+            let html = '<table style="width: 100%; border-collapse: collapse; margin: 1em 0; border: 2px solid #333;">\n';
+
+            // Header
+            html += '<thead><tr style="background-color: #f5f5f5;">';
+            headers.forEach((header, hi) => {
+              const align = alignments[hi] || 'center';
+              html += `<th style="border: 2px solid #333; padding: 8px 12px; text-align: ${align}; font-weight: bold;">${header}</th>`;
+            });
+            html += '</tr></thead>\n';
+
+            // Body
+            html += '<tbody>';
+            bodyRows.forEach(row => {
+              html += '<tr>';
+              for (let ci = 0; ci < headers.length; ci++) {
+                const cell = row[ci] || '';
+                const align = alignments[ci] || 'center';
+                html += `<td style="border: 2px solid #333; padding: 8px 12px; text-align: ${align};">${cell}</td>`;
+              }
+              html += '</tr>\n';
+            });
+            html += '</tbody></table>';
+
+            result.push(html);
+            i = j;
+            continue;
+          }
+        }
+      }
+
+      result.push(line);
+      i++;
+    }
+
+    return result.join('\n');
+  };
+
   // Process hint content with KaTeX for math rendering
   const processHintContent = (content: string, widgets: Record<string, any>): string => {
     if (!content) return '';
+
+    // FIRST: Decode HTML entities that may be present in the content
+    // This is important for LaTeX alignment environments that use & character
+    // Apply multiple times to handle double-encoding
+    let processed = content;
+    for (let i = 0; i < 3; i++) {
+      processed = processed
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&nbsp;/g, ' ');
+    }
+    // Also fix corrupted LaTeX alignment markers where &amp; became literal "amp;"
+    // In LaTeX align environments, & is used for column alignment
+    // Handle various corruption patterns
+    processed = processed.replace(/=amp;/g, '&=');
+    processed = processed.replace(/amp;=/g, '&=');
+    processed = processed.replace(/&amp;=/g, '&=');
+    processed = processed.replace(/=&amp;/g, '&=');
+    // Also handle cases where amp; appears alone (KaTeX alignment)
+    processed = processed.replace(/([^&])amp;/g, '$1&');
+
+    // Process markdown tables BEFORE math processing
+    // Tables have | delimiters which could be confused with math
+    processed = processMarkdownTable(processed);
+
+    // Early preprocessing: Fix malformed LaTeX patterns
+    // Fix malformed \dfrac{?}\textcolor patterns - the second arg should be wrapped in braces
+    // e.g., \dfrac{?}\textcolor{#hex}{6} -> \dfrac{?}{\textcolor{#hex}{6}}
+    processed = processed.replace(/\\(d?frac)\{([^{}]*)\}(\\textcolor\{[^}]+\}\{[^}]+\})/g, '\\$1{$2}{$3}');
 
     // Color map for Khan Academy color commands
     const colorMap: Record<string, string> = {
@@ -563,8 +705,17 @@ const HintPanel: React.FC<{
 
     // Pre-process: convert Khan Academy color commands to \textcolor before KaTeX parsing
     const preprocessColorCommands = (text: string): string => {
-      const colorNames = Object.keys(colorMap);
       let result = text;
+
+      // First: Strip unsupported LaTeX sizing commands
+      result = result.replace(/\\(tiny|scriptsize|footnotesize|small|normalsize|large|Large|LARGE|huge|Huge)\s*/g, '');
+
+      // Fix malformed \dfrac{?}\textcolor patterns - the second arg should be wrapped in braces
+      // e.g., \dfrac{?}\textcolor{#hex}{6} -> \dfrac{?}{\textcolor{#hex}{6}}
+      result = result.replace(/\\(d?frac)\{([^{}]*)\}(\\textcolor\{[^}]+\}\{[^}]+\})/g, '\\$1{$2}{$3}');
+
+      // Sort color names by length descending so longer names match first (purpleD before purple)
+      const colorNames = Object.keys(colorMap).sort((a, b) => b.length - a.length);
       for (const colorName of colorNames) {
         // Match \colorName{content} with balanced braces
         const pattern = new RegExp(`\\\\${colorName}\\{`, 'g');
@@ -591,9 +742,11 @@ const HintPanel: React.FC<{
     };
 
     // KaTeX macros for Khan Academy color commands
+    // Note: In KaTeX macros, # is used for arguments, so hex colors need ## to escape the #
     const katexMacros: Record<string, string> = {};
     Object.entries(colorMap).forEach(([name, hex]) => {
-      katexMacros[`\\${name}`] = `\\textcolor{${hex}}{#1}`;
+      const escapedHex = hex.replace('#', '##');
+      katexMacros[`\\${name}`] = `\\textcolor{${escapedHex}}{#1}`;
     });
 
     const katexOptions = {
@@ -602,7 +755,39 @@ const HintPanel: React.FC<{
       macros: katexMacros,
     };
 
-    let processed = content;
+    // Use placeholders to protect KaTeX output from subsequent processing
+    const katexPlaceholders: string[] = [];
+    const createPlaceholder = (html: string): string => {
+      const idx = katexPlaceholders.length;
+      katexPlaceholders.push(html);
+      return `__KATEX_PLACEHOLDER_${idx}__`;
+    };
+
+    // SPECIAL: Handle $\begin{align}...\end{align}$ patterns BEFORE general math processing
+    // These need special handling because the & alignment markers get corrupted
+    processed = processed.replace(/\$\\begin\{(align\*?|aligned)\}([\s\S]*?)\\end\{\1\}\$/g, (fullMatch, envName, innerContent) => {
+      try {
+        // Clean the inner content - restore any corrupted & characters
+        let cleanContent = innerContent
+          .replace(/&amp;/g, '&')
+          .replace(/amp;/g, '&')   // Handle cases where & was stripped
+          .replace(/=\s*amp;/g, '&=')  // Fix =amp; patterns
+          .replace(/amp;\s*=/g, '&=') // Fix amp;= patterns
+          .replace(/\\\\\\\\/g, '\\\\'); // Fix escaped backslashes: \\\\ -> \\
+
+        // Pre-process color commands before KaTeX
+        cleanContent = preprocessColorCommands(cleanContent);
+
+        // Render the full align environment
+        const latex = `\\begin{${envName}}${cleanContent}\\end{${envName}}`;
+        const result = katex.renderToString(latex, { ...katexOptions, displayMode: true });
+        // Return placeholder to protect from subsequent processing
+        return createPlaceholder(result);
+      } catch (e) {
+        console.error('[HintPanel] KaTeX align error:', e, 'Content:', innerContent);
+        return `<span class="math-error">${fullMatch}</span>`;
+      }
+    });
 
     // FIRST: Process image markdown ![alt](url)
     processed = processed.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
@@ -628,28 +813,37 @@ const HintPanel: React.FC<{
       return '';
     });
 
-    // Process display math $$...$$
+    // Process display math $$...$$ - use placeholders to protect from subsequent processing
     processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
       try {
-        return katex.renderToString(math.trim(), { ...katexOptions, displayMode: true });
+        const result = katex.renderToString(math.trim(), { ...katexOptions, displayMode: true });
+        return createPlaceholder(result);
       } catch (e) {
         console.error('[HintPanel] KaTeX display math error:', e, 'Math:', math);
         return `<span class="math-error" style="color: #666; font-style: italic;">${math}</span>`;
       }
     });
 
-    // Process inline math $...$
-    processed = processed.replace(/\$([^$]+)\$/g, (match, math) => {
+    // Process inline math $...$ (including multiline content like align environments)
+    // Use placeholders to protect KaTeX output from subsequent processing
+    processed = processed.replace(/\$([\s\S]+?)\$/g, (match, math) => {
       if (match.startsWith('$$')) return match;
       try {
+        // Pre-process: fix HTML-encoded ampersands that break LaTeX alignment
+        let cleanMath = math.trim()
+          .replace(/&amp;/g, '&')
+          .replace(/amp;/g, '&');  // Handle corrupted ampersands
         // Pre-process color commands before KaTeX
-        const preprocessed = preprocessColorCommands(math.trim());
-        return katex.renderToString(preprocessed, { ...katexOptions, displayMode: false });
+        const preprocessed = preprocessColorCommands(cleanMath);
+        const result = katex.renderToString(preprocessed, { ...katexOptions, displayMode: false });
+        // Return placeholder to protect from subsequent color processing
+        return createPlaceholder(result);
       } catch (e) {
         console.error('[HintPanel] KaTeX inline math error:', e, 'Math:', math);
         // Fallback: try without preprocessing
         try {
-          return katex.renderToString(math.trim(), { throwOnError: false, displayMode: false });
+          const result = katex.renderToString(math.trim(), { throwOnError: false, displayMode: false });
+          return createPlaceholder(result);
         } catch {
           return `<span class="math-error" style="color: #666; font-style: italic;">${math}</span>`;
         }
@@ -657,12 +851,28 @@ const HintPanel: React.FC<{
     });
 
     // Process LaTeX environments without $ wrappers (e.g., \begin{align}...\end{align})
-    const envNames = ['align', 'align\\*', 'equation', 'equation\\*', 'gather', 'gather\\*', 'matrix', 'pmatrix', 'bmatrix', 'cases'];
+    const envNames = ['align', 'align\\*', 'aligned', 'equation', 'equation\\*', 'gather', 'gather\\*', 'matrix', 'pmatrix', 'bmatrix', 'cases'];
     for (const envName of envNames) {
       const envPattern = new RegExp(`\\\\begin\\{${envName}\\}([\\s\\S]*?)\\\\end\\{${envName}\\}`, 'g');
       processed = processed.replace(envPattern, (fullMatch, innerContent) => {
         try {
-          return katex.renderToString(fullMatch, { ...katexOptions, displayMode: true });
+          // Clean the inner content - restore any corrupted & characters
+          let cleanContent = innerContent
+            .replace(/&amp;/g, '&')
+            .replace(/amp;/g, '&')   // Handle cases where & was stripped
+            .replace(/=\s*amp;/g, '&=')  // Fix =amp; patterns
+            .replace(/amp;\s*=/g, '&=') // Fix amp;= patterns
+            .replace(/\\\\\\\\/g, '\\\\'); // Fix escaped backslashes: \\\\ -> \\
+
+          // Pre-process color commands before KaTeX
+          cleanContent = preprocessColorCommands(cleanContent);
+
+          // Build the full environment with cleaned content
+          const actualEnvName = envName.replace('\\*', '*'); // Fix escaped asterisk
+          const latex = `\\begin{${actualEnvName}}${cleanContent}\\end{${actualEnvName}}`;
+          const result = katex.renderToString(latex, { ...katexOptions, displayMode: true });
+          // Return placeholder to protect from subsequent processing
+          return createPlaceholder(result);
         } catch (e) {
           console.warn('KaTeX env render error:', e);
           return `<span class="math-error">${fullMatch}</span>`;
@@ -762,17 +972,86 @@ const HintPanel: React.FC<{
         const fullMatch = processed.slice(textcolorMatch.index, result.endIdx + 1);
         let replacement: string;
         try {
-          replacement = katex.renderToString(fullMatch, katexOptions);
+          // First, fix any malformed \dfrac{?}\textcolor patterns in the fullMatch
+          let fixedMatch = fullMatch.replace(/\\(d?frac)\{([^{}]*)\}(\\textcolor\{[^}]+\}\{[^}]+\})/g, '\\$1{$2}{$3}');
+          replacement = katex.renderToString(fixedMatch, katexOptions);
         } catch {
-          // Fallback: render inner content and wrap with color span
+          // Fallback: try to render the inner content as math if it contains LaTeX commands
           let renderedInner = innerContent;
-          // Try to render any \text{} inside
-          renderedInner = renderedInner.replace(/\\text\{([^}]+)\}/g, '$1');
-          replacement = `<span style="color: ${color}; font-weight: 600;">${renderedInner}</span>`;
+          // Fix malformed dfrac patterns in inner content
+          renderedInner = renderedInner.replace(/\\(d?frac)\{([^{}]*)\}(\\textcolor\{[^}]+\}\{[^}]+\})/g, '\\$1{$2}{$3}');
+
+          if (renderedInner.includes('\\dfrac') || renderedInner.includes('\\frac') || renderedInner.includes('\\sqrt') || renderedInner.includes('\\textcolor')) {
+            try {
+              // Try to render with fixed inner content
+              const fixedFullMatch = `\\textcolor{${color}}{${renderedInner}}`;
+              replacement = katex.renderToString(fixedFullMatch, { ...katexOptions, throwOnError: false });
+            } catch {
+              // Last resort: strip LaTeX and show text
+              renderedInner = renderedInner.replace(/\\textcolor\{[^}]+\}\{([^}]+)\}/g, '$1');
+              renderedInner = renderedInner.replace(/\\dfrac\{([^}]*)\}\{([^}]*)\}/g, '$1/$2');
+              renderedInner = renderedInner.replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, '$1/$2');
+              renderedInner = renderedInner.replace(/\\text\{([^}]+)\}/g, '$1');
+              replacement = `<span style="color: ${color}; font-weight: 600;">${renderedInner}</span>`;
+            }
+          } else {
+            // Try to render any \text{} inside
+            renderedInner = renderedInner.replace(/\\text\{([^}]+)\}/g, '$1');
+            replacement = `<span style="color: ${color}; font-weight: 600;">${renderedInner}</span>`;
+          }
         }
         processed = processed.slice(0, textcolorMatch.index) + replacement + processed.slice(result.endIdx + 1);
         textcolorPattern.lastIndex = textcolorMatch.index + replacement.length;
       }
+    }
+
+    // Handle standalone \dfrac{}{} and \frac{}{} outside of $ delimiters
+    // These should be rendered as math
+    const fracPattern = /\\(d?frac)\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}/g;
+    processed = processed.replace(fracPattern, (fullMatch) => {
+      try {
+        return katex.renderToString(fullMatch, katexOptions);
+      } catch {
+        return fullMatch;
+      }
+    });
+
+    // Handle standalone LaTeX math symbols outside of $ delimiters
+    // Convert common LaTeX symbols to their Unicode equivalents
+    const latexSymbols: Record<string, string> = {
+      '\\div': '÷',
+      '\\times': '×',
+      '\\cdot': '·',
+      '\\pm': '±',
+      '\\mp': '∓',
+      '\\leq': '≤',
+      '\\geq': '≥',
+      '\\neq': '≠',
+      '\\approx': '≈',
+      '\\equiv': '≡',
+      '\\infty': '∞',
+      '\\sqrt': '√',
+      '\\alpha': 'α',
+      '\\beta': 'β',
+      '\\gamma': 'γ',
+      '\\delta': 'δ',
+      '\\pi': 'π',
+      '\\theta': 'θ',
+      '\\lambda': 'λ',
+      '\\mu': 'μ',
+      '\\sigma': 'σ',
+      '\\omega': 'ω',
+      '\\rightarrow': '→',
+      '\\leftarrow': '←',
+      '\\Rightarrow': '⇒',
+      '\\Leftarrow': '⇐',
+    };
+    // Sort by length descending to match longer symbols first
+    const symbolNames = Object.keys(latexSymbols).sort((a, b) => b.length - a.length);
+    for (const symbol of symbolNames) {
+      const escaped = symbol.replace(/\\/g, '\\\\');
+      const pattern = new RegExp(escaped + '(?![a-zA-Z{])', 'g');
+      processed = processed.replace(pattern, latexSymbols[symbol]);
     }
 
     // Process markdown links [text](url) - but not image links
@@ -785,6 +1064,19 @@ const HintPanel: React.FC<{
     // Convert newlines to line breaks
     processed = processed.replace(/\n\n/g, '</p><p class="mt-3">');
     processed = processed.replace(/\n/g, '<br/>');
+
+    // Final cleanup: remove raw LaTeX artifacts that didn't render
+    // Remove raw \begin{align}, \end{align}, \\ line breaks, etc.
+    processed = processed.replace(/\\begin\{[^}]+\}/g, '');
+    processed = processed.replace(/\\end\{[^}]+\}/g, '');
+    processed = processed.replace(/\\\\/g, '');  // Remove raw LaTeX line breaks
+    processed = processed.replace(/=&amp;/g, '=');  // Clean up alignment markers in HTML context
+    processed = processed.replace(/&amp;=/g, '=');
+
+    // Restore KaTeX placeholders
+    katexPlaceholders.forEach((html, idx) => {
+      processed = processed.replace(`__KATEX_PLACEHOLDER_${idx}__`, html);
+    });
 
     return `<p>${processed}</p>`;
   };
