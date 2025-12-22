@@ -51,9 +51,16 @@ export class AudioRecorder extends EventEmitter {
     }
 
     this.starting = new Promise(async (resolve, reject) => {
-      this.stream = await navigator.mediaDevices.getUserMedia({
-        audio: deviceId ? { deviceId: { exact: deviceId } } : true,
-      });
+      try {
+        this.stream = await navigator.mediaDevices.getUserMedia({
+          audio: deviceId ? { deviceId: { exact: deviceId } } : true,
+        });
+      } catch (e) {
+        console.warn("Failed to get audio with exact deviceId, falling back to default device", e);
+        this.stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+      }
       this.audioContext = await audioContext({ sampleRate: this.sampleRate });
       this.source = this.audioContext.createMediaStreamSource(this.stream);
 

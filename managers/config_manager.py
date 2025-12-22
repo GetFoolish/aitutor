@@ -19,6 +19,8 @@ class ConfigManager:
             return os.getenv("OPENROUTER_API_KEY", "")
         elif provider == "google":
             return os.getenv("GOOGLE_API_KEY", "")
+        elif provider == "groq":
+            return os.getenv("GROQ_API_KEY", "")
         else:
             raise ValueError(f"Unknown provider: {provider}")
     

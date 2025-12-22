@@ -4,6 +4,9 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { authAPI } from '../../lib/auth-api';
+import { App, URLOpenListenerEvent } from '@capacitor/app';
+import { Browser } from '@capacitor/browser';
+import { PluginListenerHandle } from '@capacitor/core';
 import SignupForm from './SignupForm';
 import BackgroundShapes from '../background-shapes/BackgroundShapes';
 import './auth.scss';
@@ -20,47 +23,72 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
   const [googleUser, setGoogleUser] = useState<any>(null);
 
   const handleGoogleLogin = async () => {
+    console.log('Google Sign-In button clicked');
     try {
-      // Get authorization URL from backend and redirect
+      // Get authorization URL from backend
       const authUrl = await authAPI.getGoogleAuthUrl();
-      window.location.href = authUrl.authorization_url;
-    } catch (error) {
+
+      // Use Capacitor Browser to open the auth URL
+      await Browser.open({ url: authUrl.authorization_url });
+
+    } catch (error: any) {
       console.error('Google login error:', error);
-      alert('Failed to sign in with Google. Please try again.');
+      // Show specific error to help debugging
+      alert(`Failed to sign in: ${error.message || JSON.stringify(error, null, 2)}. check your network connection.`);
     }
   };
 
   // Check if we're returning from OAuth callback
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    const isNewUser = urlParams.get('is_new_user') === 'true';
-    const setupTokenParam = urlParams.get('setup_token');
+    const handleAuthParams = (params: URLSearchParams) => {
+      const token = params.get('token');
+      const isNewUser = params.get('is_new_user') === 'true';
+      const setupTokenParam = params.get('setup_token');
 
-    if (token) {
-      // Existing user - login directly
-      // We need to get user info from token
-      fetch(`${import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003'}/auth/me`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      })
-        .then(res => res.json())
-        .then(userData => {
-          onAuthSuccess(token, userData);
-          // Clean up URL
+      if (token) {
+        // Existing user - login directly
+        // We need to get user info from token
+        authAPI.getCurrentUser(token)
+          .then(userData => {
+            onAuthSuccess(token, userData);
+            // Clean up URL if possible (web only)
+            if (window.history && window.history.replaceState) {
+              window.history.replaceState({}, document.title, window.location.pathname);
+            }
+          })
+          .catch(error => {
+            console.error('Failed to get user info:', error);
+            alert('Failed to get user info. Please try again.');
+          });
+      } else if (setupTokenParam) {
+        // New user - show signup form
+        setSetupToken(setupTokenParam);
+        setShowSignupForm(true);
+        // Clean up URL if possible (web only)
+        if (window.history && window.history.replaceState) {
           window.history.replaceState({}, document.title, window.location.pathname);
-        })
-        .catch(error => {
-          console.error('Failed to get user info:', error);
-        });
-    } else if (setupTokenParam) {
-      // New user - show signup form
-      setSetupToken(setupTokenParam);
-      setShowSignupForm(true);
-      // Clean up URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
+        }
+      }
+    };
+
+    // Check initial URL (Web & Mobile Cold Start)
+    handleAuthParams(new URLSearchParams(window.location.search));
+
+    // Listen for Deep Links (Mobile Resume)
+    const listener = App.addListener('appUrlOpen', (data: URLOpenListenerEvent) => {
+      try {
+        const url = new URL(data.url);
+        if (url.search) {
+          handleAuthParams(new URLSearchParams(url.search));
+        }
+      } catch (e) {
+        console.error('Error parsing deep link:', e);
+      }
+    });
+
+    return () => {
+      listener.then((handle: PluginListenerHandle) => handle.remove());
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -90,7 +118,7 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
 
   return (
     <div className="auth-container">
-      <BackgroundShapes />
+      {/* <BackgroundShapes /> */}
       <div className="auth-card">
         {/* Logo Badge */}
         <div style={{
@@ -124,8 +152,36 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
         <h1>Welcome to AI Tutor</h1>
         <p>Sign in with your Google account to get started</p>
 
-        <button className="google-sign-in-button" onClick={handleGoogleLogin}>
-          <svg width="20" height="20" viewBox="0 0 18 18" style={{ flexShrink: 0 }}>
+        <button
+          onClick={() => {
+            console.log('Debug Button Clicked');
+            alert('Debug Button Works!');
+          }}
+          style={{
+            marginBottom: '20px',
+            padding: '10px',
+            background: 'red',
+            color: 'white',
+            zIndex: 9999,
+            position: 'relative'
+          }}
+        >
+          DEBUG CLICK TEST
+        </button>
+
+        <button
+          className="google-sign-in-button"
+          onClick={handleGoogleLogin}
+          onTouchEnd={(e) => {
+            // Ensure touch events trigger the login if click fails
+            // (though React usually handles this, some fast-click libs or mobile behaviors interfere)
+            console.log('Touch end on Google button');
+            // preventDefault to avoid double-firing if onClick also fires?
+            // Better to just log for now to see if it even receives touch.
+          }}
+          style={{ position: 'relative', zIndex: 100 }}
+        >
+          <svg width="20" height="20" viewBox="0 0 18 18" style={{ flexShrink: 0, pointerEvents: 'none' }}>
             <path
               fill="#4285F4"
               d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"
@@ -146,10 +202,10 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
           Sign in with Google
         </button>
 
-        {/* Dev Mode Verification Button */}
-        {process.env.NODE_ENV === 'development' && (
+        {/* Dev Mode Verification Button - Always enabled for mobile testing */}
+        {(
           <div style={{ marginTop: '20px', borderTop: '2px dashed #ccc', paddingTop: '20px' }}>
-            <p style={{ fontSize: '12px', marginBottom: '10px', color: '#666' }}>Development Mode:</p>
+            <p style={{ fontSize: '12px', marginBottom: '10px', color: '#666' }}>Test Mode:</p>
             <button
               onClick={handleDevSignupTest}
               style={{
@@ -163,10 +219,13 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
                 fontWeight: 'bold'
               }}
             >
-              Test Signup Wizard UI
+              Test Signup / Bypass Login
             </button>
           </div>
         )}
+      </div>
+      <div className="background-shapes-container" style={{ pointerEvents: 'none' }}>
+        <BackgroundShapes />
       </div>
     </div>
   );

@@ -35,8 +35,26 @@ const root = ReactDOM.createRoot(
 const queryClient = new QueryClient();
 
 // Suppress Perseus library warnings (known issues in the library)
-if (import.meta.env.DEV) {
+// Suppress Perseus library warnings (known issues in the library)
+// AND Patch console for better debugging on Android (stringify objects)
+if (import.meta.env.DEV || true) { // Force enable for this debug session
   const originalWarn = console.warn;
+  const originalError = console.error;
+  const originalLog = console.log;
+
+  const stringifyArgs = (args: any[]) => {
+    return args.map(arg => {
+      if (typeof arg === 'object' && arg !== null) {
+        try {
+          return JSON.stringify(arg, null, 2);
+        } catch (e) {
+          return arg.toString();
+        }
+      }
+      return arg;
+    });
+  };
+
   console.warn = (...args: any[]) => {
     // Filter out known Perseus warnings
     const message = args[0]?.toString() || '';
@@ -47,8 +65,61 @@ if (import.meta.env.DEV) {
     ) {
       return; // Suppress these warnings
     }
-    originalWarn.apply(console, args);
+    originalWarn.apply(console, stringifyArgs(args));
   };
+
+  console.error = (...args: any[]) => {
+    originalError.apply(console, stringifyArgs(args));
+  };
+
+  console.log = (...args: any[]) => {
+    originalLog.apply(console, stringifyArgs(args));
+  };
+
+  console.info = (...args: any[]) => {
+    // Suppress [object Object] from Capacitor/Plugin logs if possible, or just stringify
+    originalLog.apply(console, stringifyArgs(args)); // Redirect info to log for Android visibility
+  };
+
+  console.debug = (...args: any[]) => {
+    originalLog.apply(console, stringifyArgs(args));
+  };
+
+  window.onerror = (message, source, lineno, colno, error) => {
+    console.error('Uncaught Exception:', { message, source, lineno, colno, error });
+    // alert('Uncaught Exception: ' + message); // Optional: noisy but effective
+  };
+
+  window.addEventListener('unhandledrejection', (event) => {
+    console.error('Unhandled Rejection:', event.reason);
+  });
+
+  // Global click logger to debug what's being clicked
+  window.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    const info = {
+      tagName: target.tagName,
+      className: target.className,
+      id: target.id,
+      text: target.innerText?.substring(0, 20),
+      rect: target.getBoundingClientRect()
+    };
+    console.log('CLICKED_INFO:' + JSON.stringify(info));
+  }, true); // Capture phase to see even intercepted clicks
+
+  // Performance monitoring: Log long tasks (> 50ms)
+  if ('PerformanceObserver' in window) {
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        console.warn('LONG_TASK_DETECTED:', {
+          duration: entry.duration,
+          startTime: entry.startTime,
+          name: entry.name
+        });
+      }
+    });
+    observer.observe({ entryTypes: ['longtask'] });
+  }
 }
 
 // Component to decide between landing page and app

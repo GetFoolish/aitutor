@@ -22,10 +22,13 @@ class GoogleOAuthHandler:
         self.redirect_uri = redirect_uri
         self.client = None
     
-    def get_authorization_url(self) -> tuple[str, str]:
+    def get_authorization_url(self, state: Optional[str] = None) -> tuple[str, str]:
         """
         Get Google OAuth authorization URL
         
+        Args:
+            state: Optional state string. If None, a random one is generated.
+
         Returns:
             Tuple of (authorization_url, state)
         """
@@ -40,6 +43,7 @@ class GoogleOAuthHandler:
         
         authorization_url, state = self.client.create_authorization_url(
             'https://accounts.google.com/o/oauth2/v2/auth',
+            state=state,
             scope=['openid', 'email', 'profile']
         )
         

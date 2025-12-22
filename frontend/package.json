@@ -2,6 +2,12 @@
   "name": "multimodal-live-api-web-console",
   "version": "0.1.0",
   "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/app": "^8.0.0",
+    "@capacitor/browser": "^8.0.0",
+    "@capacitor/cli": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/ios": "^8.0.0",
     "@excalidraw/excalidraw": "^0.18.0",
     "@google/genai": "1.33.0",
     "@hookform/resolvers": "^5.2.2",

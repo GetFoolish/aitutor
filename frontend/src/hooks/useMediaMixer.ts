@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState, useEffect, RefObject } from 'react';
+import { useRef, useCallback, useState, useEffect, RefObject, useMemo } from 'react';
 
 interface MediaMixerConfig {
   width: number;      // 1280
@@ -120,11 +120,11 @@ export const useMediaMixer = (config: MediaMixerConfig) => {
     };
   }, [isRunning, mixFrames, config.fps]);
 
-  return {
+  return useMemo(() => ({
     canvasRef,
     updateScratchpadFrame,
     setIsRunning,
     mixFrames: () => mixFrames() // Manual trigger
-  };
+  }), [updateScratchpadFrame, mixFrames]);
 };
 

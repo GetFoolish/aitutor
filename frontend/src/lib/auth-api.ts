@@ -3,7 +3,9 @@
  */
 import { httpClient } from './http-client';
 
-const AUTH_SERVICE_URL = import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003';
+import { Capacitor } from '@capacitor/core';
+
+const AUTH_SERVICE_URL = import.meta.env.VITE_AUTH_SERVICE_URL || 'http://10.0.2.2:8003';
 
 export interface GoogleUser {
   id: string;
@@ -34,7 +36,8 @@ export interface SetupResponse {
 
 class AuthAPI {
   async getGoogleAuthUrl(): Promise<{ authorization_url: string; state: string }> {
-    const response = await fetch(`${AUTH_SERVICE_URL}/auth/google`);
+    const platform = Capacitor.isNativePlatform() ? 'mobile' : 'web';
+    const response = await fetch(`${AUTH_SERVICE_URL}/auth/google?platform=${platform}`);
     if (!response.ok) {
       throw new Error('Failed to get Google auth URL');
     }

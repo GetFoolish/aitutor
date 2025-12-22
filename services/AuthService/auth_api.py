@@ -3,6 +3,7 @@ Auth Service - Google OAuth authentication API
 """
 import os
 import sys
+import secrets
 import logging
 from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -54,7 +55,7 @@ app.add_middleware(
 )
 
 # Get base URL from environment
-BASE_URL = os.getenv("AUTH_SERVICE_URL", "http://localhost:8003")
+BASE_URL = os.getenv("AUTH_SERVICE_URL", "http://192.168.1.10:8003")
 REDIRECT_URI = f"{BASE_URL}/auth/callback"
 
 # Initialize OAuth handler
@@ -77,10 +78,14 @@ async def health_check():
 
 
 @app.get("/auth/google")
-async def google_login():
+async def google_login(platform: str = "web"):
     """Initiate Google OAuth flow"""
     try:
-        authorization_url, state = oauth_handler.get_authorization_url()
+        # Generate state with platform info
+        rand_state = secrets.token_urlsafe(16)
+        state_val = f"{rand_state}|{platform}"
+        
+        authorization_url, state = oauth_handler.get_authorization_url(state=state_val)
         return {
             "authorization_url": authorization_url,
             "state": state
@@ -128,20 +133,46 @@ async def google_callback(code: Optional[str] = Query(None), state: Optional[str
                 "google_id": google_user["id"]
             })
             
-            # Redirect to frontend with token
-            frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
-            return RedirectResponse(
-                url=f"{frontend_url}/app/login?token={jwt_token}&is_new_user=false"
-            )
+            # Helper to extract platform
+            platform = "web"
+            if state and "|" in state:
+                parts = state.split("|")
+                if len(parts) >= 2:
+                    platform = parts[-1]
+
+            if platform == "mobile":
+                # Redirect to mobile app via Custom Scheme
+                return RedirectResponse(
+                    url=f"com.aitutor.mobile://auth/callback?token={jwt_token}&is_new_user=false"
+                )
+            else:
+                # Redirect to frontend with token
+                # For Mobile (Capacitor), the origin is usually http://localhost
+                frontend_url = os.getenv("FRONTEND_URL", "http://localhost")
+                return RedirectResponse(
+                    url=f"{frontend_url}/app/login?token={jwt_token}&is_new_user=false"
+                )
         else:
             # New user - need to complete setup
             setup_token = create_setup_token(google_user)
             
-            # Redirect to frontend setup page
-            frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
-            return RedirectResponse(
-                url=f"{frontend_url}/app/login?setup_token={setup_token}"
-            )
+            # Helper to extract platform
+            platform = "web"
+            if state and "|" in state:
+                parts = state.split("|")
+                if len(parts) >= 2:
+                    platform = parts[-1]
+
+            if platform == "mobile":
+                 return RedirectResponse(
+                    url=f"com.aitutor.mobile://auth/callback?setup_token={setup_token}"
+                )
+            else:
+                # Redirect to frontend setup page
+                frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+                return RedirectResponse(
+                    url=f"{frontend_url}/app/login?setup_token={setup_token}"
+                )
             
     except Exception as e:
         logger.error(f"Error in OAuth callback: {e}")

@@ -16,6 +16,10 @@ interface ComingSoonGuardProps {
 const ComingSoonGuard: React.FC<ComingSoonGuardProps> = ({ children }) => {
   const location = useLocation();
   
+  // Bypass guard for mobile app
+  return <>{children}</>;
+  
+  /* 
   // Check if current pathname starts with the access prefix
   const hasAccess = location.pathname.startsWith(ACCESS_PREFIX);
   
@@ -25,7 +29,8 @@ const ComingSoonGuard: React.FC<ComingSoonGuardProps> = ({ children }) => {
   }
   
   // No access - show coming soon page
-  return <ComingSoon />;
+  return <ComingSoon />; 
+  */
 };
 
 export default ComingSoonGuard;

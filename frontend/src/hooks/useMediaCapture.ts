@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { Capacitor } from '@capacitor/core';
 
 interface UseMediaCaptureProps {
   onCameraFrame?: (imageData: ImageData) => void;
@@ -54,9 +55,18 @@ export const useMediaCapture = ({ onCameraFrame, onScreenFrame }: UseMediaCaptur
   const startCamera = useCallback(async () => {
     try {
       console.log('Starting camera capture...');
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: 1280, height: 720 }
-      });
+      const isMobile = Capacitor.isNativePlatform();
+
+      const constraints: MediaStreamConstraints = {
+        video: {
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          // Prefer front camera on mobile
+          facingMode: isMobile ? 'user' : undefined
+        }
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
       cameraStreamRef.current = stream;
       const video = cameraVideoRef.current!;
@@ -94,7 +104,8 @@ export const useMediaCapture = ({ onCameraFrame, onScreenFrame }: UseMediaCaptur
           onCameraFrame?.(imageData);
         }
 
-        // Continue loop - reduced to ~2 FPS for better performance (500ms)
+        // Continue loop - use 5FPS (200ms) on mobile for smoother feel, 2FPS (500ms) on desktop if desired
+        // Or stick to 500ms for performance
         setTimeout(() => requestAnimationFrame(captureLoop), 500);
       };
 
@@ -104,6 +115,12 @@ export const useMediaCapture = ({ onCameraFrame, onScreenFrame }: UseMediaCaptur
     } catch (error) {
       console.error('Error starting camera:', error);
       setCameraEnabled(false);
+
+      // Handle permission errors explicitly if needed
+      if (Capacitor.isNativePlatform()) {
+        // Maybe toast here via non-alert method? Using console for now.
+        console.warn('Camera permission might be denied');
+      }
     }
   }, [onCameraFrame]);
 
@@ -184,6 +201,14 @@ export const useMediaCapture = ({ onCameraFrame, onScreenFrame }: UseMediaCaptur
 
   const toggleScreen = useCallback(async (enabled: boolean) => {
     console.log(`toggleScreen called with enabled=${enabled}`);
+
+    // Check for mobile support
+    if (Capacitor.isNativePlatform()) {
+      alert("Screen sharing is not currently supported on mobile devices.");
+      // Ensure we don't enable it state-wise
+      setScreenEnabled(false);
+      return;
+    }
 
     setScreenEnabled(enabled);
 

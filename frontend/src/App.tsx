@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useRef, useState, useEffect, Suspense, lazy } from "react";
+import { useRef, useState, useEffect, Suspense, lazy, useMemo } from "react";
 import "./App.scss";
 import "./styles/mobile-fixes.css"; // Mobile UI fixes
 import { TutorProvider } from "./features/tutor";
@@ -65,7 +65,7 @@ function App() {
   } = useMediaCapture({});
 
   // MediaMixer hook for local video mixing - uses state from useMediaCapture
-  const mediaMixer = useMediaMixer({
+  const mixerConfig = useMemo(() => ({
     width: 1280,
     height: 2160,
     fps: 2,  // Reduced from 10 to 2 FPS for better performance
@@ -74,7 +74,9 @@ function App() {
     screenEnabled: screenEnabled,
     cameraVideoRef: cameraVideoRef,
     screenVideoRef: screenVideoRef
-  });
+  }), [cameraEnabled, screenEnabled, cameraVideoRef, screenVideoRef]);
+
+  const mediaMixer = useMediaMixer(mixerConfig);
 
   // Store mediaMixer in ref for use in callbacks
   useEffect(() => {
@@ -129,8 +131,8 @@ function App() {
                     currentSkill={currentSkill}
                   />
                   <main style={{
-                    marginRight: isSidebarOpen ? "260px" : "0",
-                    marginLeft: isGradingSidebarOpen ? "260px" : "40px",
+                    marginRight: (isSidebarOpen && window.innerWidth > 768) ? "260px" : "0",
+                    marginLeft: (isGradingSidebarOpen && window.innerWidth > 768) ? "260px" : (window.innerWidth > 768 ? "40px" : "0"),
                     transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
                   }}>
                     <div className="main-app-area">
