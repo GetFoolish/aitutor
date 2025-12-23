@@ -45,3 +45,6 @@ questionbankscrapper/
 
 # Build output
 frontend/build/
+
+# Environment variables
+.env

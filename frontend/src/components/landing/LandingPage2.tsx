@@ -5,7 +5,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import TeachrLogo from './TeachrLogo';
-import './landing.scss';
+
 
 interface LandingPageNeoProps {
   onGetStarted: () => void;
@@ -40,18 +40,18 @@ const LandingPageNeo: React.FC<LandingPageNeoProps> = ({ onGetStarted }) => {
           {/* Floating decorative shapes */}
           <div className="neo-ref-shape neo-ref-shape-red" style={{ top: '10%', left: '5%' }} />
           <div className="neo-ref-shape neo-ref-shape-yellow neo-ref-shape-circle" style={{ top: '15%', right: '8%' }} />
-          
+
           <div className="neo-ref-hero-content">
             <h1 className="neo-ref-hero-title">
               <span className="neo-ref-title-line">WHAT IF YOU</span>
               <span className="neo-ref-title-line neo-ref-title-highlight">ACTUALLY UNDERSTOOD IT?</span>
             </h1>
-            
+
             <div className="neo-ref-hero-description">
               <p className="neo-ref-text-large">
                 Not memorized it for the test. Not faked your way through it. Actually got it. That's what we're building.
               </p>
-              
+
               <div className="neo-ref-hero-cta">
                 <button onClick={onGetStarted} className="neo-ref-button neo-ref-button-cta">
                   TRY IT FREE
@@ -318,18 +318,18 @@ const LandingPageNeo: React.FC<LandingPageNeoProps> = ({ onGetStarted }) => {
         <div className="neo-ref-container">
           <div className="neo-ref-cta-box">
             <div className="neo-ref-badge neo-ref-badge-large neo-ref-badge-rotate">ONE SENTENCE</div>
-            
+
             <h2 className="neo-ref-cta-title">THE PITCH</h2>
             <h3 className="neo-ref-cta-subtitle">One Sentence. No Tricks.</h3>
-            
+
             <p className="neo-ref-cta-text">
               A personalized math tutor that's available 24/7, adapts to how you learn, and actually helps you understand.
             </p>
-            
+
             <p className="neo-ref-cta-subtext">
               That's it. That's the product.
             </p>
-            
+
             <button onClick={onGetStarted} className="neo-ref-button neo-ref-button-massive">
               START LEARNING NOW
             </button>
@@ -345,7 +345,7 @@ const LandingPageNeo: React.FC<LandingPageNeoProps> = ({ onGetStarted }) => {
               <TeachrLogo size="large" />
               <p className="neo-ref-footer-tagline">Finally, teaching that teaches.</p>
             </div>
-            
+
             <div className="neo-ref-footer-contact">
               <p>Questions?</p>
               <a href="mailto:contact@teachr.live" className="neo-ref-link-black">
@@ -353,7 +353,7 @@ const LandingPageNeo: React.FC<LandingPageNeoProps> = ({ onGetStarted }) => {
               </a>
             </div>
           </div>
-          
+
           <div className="neo-ref-footer-bottom">
             <p className="neo-ref-footer-quote">
               Because understanding beats memorizing. Every time.

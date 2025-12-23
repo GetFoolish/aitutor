@@ -6,7 +6,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { authAPI } from '../../lib/auth-api';
 import SignupForm from './SignupForm';
 import BackgroundShapes from '../background-shapes/BackgroundShapes';
-import './auth.scss';
+
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
@@ -93,29 +93,9 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
       <BackgroundShapes />
       <div className="auth-card">
         {/* Logo Badge */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '12px',
-          marginBottom: '24px'
-        }}>
-          <div style={{
-            width: '56px',
-            height: '56px',
-            border: '4px solid #000000',
-            background: '#FFD93D',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '4px 4px 0px 0px #000000',
-            transform: 'rotate(-2deg)'
-          }}>
-            <span className="material-symbols-outlined" style={{
-              fontSize: '32px',
-              color: '#000000',
-              fontWeight: 900
-            }}>
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <div className="w-14 h-14 border-4 border-black bg-[#FFD93D] flex items-center justify-center shadow-[4px_4px_0_0_#000] -rotate-2">
+            <span className="material-symbols-outlined text-[32px] text-black font-[900]">
               smart_toy
             </span>
           </div>
@@ -125,7 +105,7 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
         <p>Sign in with your Google account to get started</p>
 
         <button className="google-sign-in-button" onClick={handleGoogleLogin}>
-          <svg width="20" height="20" viewBox="0 0 18 18" style={{ flexShrink: 0 }}>
+          <svg width="20" height="20" viewBox="0 0 18 18" className="shrink-0">
             <path
               fill="#4285F4"
               d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"
@@ -148,20 +128,11 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
 
         {/* Dev Mode Verification Button */}
         {process.env.NODE_ENV === 'development' && (
-          <div style={{ marginTop: '20px', borderTop: '2px dashed #ccc', paddingTop: '20px' }}>
-            <p style={{ fontSize: '12px', marginBottom: '10px', color: '#666' }}>Development Mode:</p>
+          <div className="mt-5 border-t-2 border-dashed border-[#ccc] pt-5">
+            <p className="text-xs mb-2.5 text-[#666]">Development Mode:</p>
             <button
               onClick={handleDevSignupTest}
-              style={{
-                padding: '10px 15px',
-                background: '#333',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '13px',
-                fontWeight: 'bold'
-              }}
+              className="px-4 py-2.5 bg-[#333] text-white border-0 rounded cursor-pointer text-[13px] font-bold"
             >
               Test Signup Wizard UI
             </button>

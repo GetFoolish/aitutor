@@ -20,64 +20,19 @@ const DynamicLandingPage: React.FC = () => {
   // Validate page ID (only pages 1-2 exist)
   if (isNaN(pageId) || pageId < 1 || pageId > 2) {
     return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        background: '#FFFDF5',
-        textAlign: 'center',
-        padding: '20px'
-      }}>
-        <h1 style={{
-          fontSize: '64px',
-          fontWeight: 900,
-          marginBottom: '24px',
-          border: '5px solid #000000',
-          padding: '20px 60px',
-          background: '#FF006E',
-          color: '#FFFFFF',
-          boxShadow: '4px 4px 0 #000000'
-        }}>404</h1>
-        <p style={{ 
-          fontSize: '20px', 
-          fontWeight: 700, 
-          marginBottom: '12px',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em'
-        }}>
+      <div className="flex flex-col justify-center items-center h-screen bg-[#FFFDF5] text-center p-5">
+        <h1 className="text-6xl font-black mb-6 border-[5px] border-black py-5 px-16 bg-[#FF006E] text-white shadow-[4px_4px_0_0_#000]">
+          404
+        </h1>
+        <p className="text-xl font-bold mb-3 uppercase tracking-widest text-black">
           Landing Page Not Found
         </p>
-        <p style={{ 
-          fontSize: '14px', 
-          fontWeight: 600, 
-          marginBottom: '32px',
-          color: '#666'
-        }}>
+        <p className="text-sm font-semibold mb-8 text-[#666]">
           Landing page {id} does not exist. Please use page 1 or 2.
         </p>
         <button
           onClick={() => history.push('/')}
-          style={{
-            padding: '14px 40px',
-            border: '4px solid #000000',
-            background: '#FFD93D',
-            cursor: 'pointer',
-            fontWeight: 900,
-            textTransform: 'uppercase',
-            fontSize: '14px',
-            boxShadow: '3px 3px 0 #000000',
-            transition: 'all 0.1s'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translate(1px, 1px)';
-            e.currentTarget.style.boxShadow = '2px 2px 0 #000000';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translate(0, 0)';
-            e.currentTarget.style.boxShadow = '3px 3px 0 #000000';
-          }}
+          className="px-10 py-3.5 border-4 border-black bg-[#FFD93D] cursor-pointer font-black uppercase text-sm shadow-[3px_3px_0_0_#000] transition-all duration-100 hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_0_#000]"
         >
           Go to Home
         </button>

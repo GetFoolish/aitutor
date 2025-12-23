@@ -4,7 +4,7 @@
  */
 import React from 'react';
 import TeachrLogo from './TeachrLogo';
-import './landing.scss';
+
 
 interface LandingPage1Props {
   onGetStarted: () => void;
@@ -17,26 +17,16 @@ const LandingPage1: React.FC<LandingPage1Props> = ({ onGetStarted }) => {
         {/* Header */}
         <header className="landing-header">
           <TeachrLogo size="medium" />
-          <nav style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-            <a href="#features" style={{ color: '#000000', textDecoration: 'none', fontWeight: 700, fontSize: '14px', textTransform: 'uppercase' }}>Features</a>
-            <a href="#how-it-works" style={{ color: '#000000', textDecoration: 'none', fontWeight: 700, fontSize: '14px', textTransform: 'uppercase' }}>How It Works</a>
+          <nav className="flex gap-4 md:gap-6 items-center hidden sm:flex">
+            <a href="#features" className="text-black no-underline font-bold text-sm uppercase">Features</a>
+            <a href="#how-it-works" className="text-black no-underline font-bold text-sm uppercase">How It Works</a>
           </nav>
         </header>
 
         {/* Hero Section */}
         <section className="landing-hero">
           <div className="hero-content">
-            <div style={{
-              display: 'inline-block',
-              padding: '8px 20px',
-              background: '#FFD93D',
-              border: '4px solid #000000',
-              marginBottom: '24px',
-              fontSize: '12px',
-              fontWeight: 900,
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em'
-            }}>
+            <div className="inline-block px-5 py-2 bg-[#FFD93D] border-4 border-black mb-6 text-xs font-black uppercase tracking-widest">
               AI-Powered Learning Platform
             </div>
             <h1 className="hero-title">
@@ -45,76 +35,39 @@ const LandingPage1: React.FC<LandingPage1Props> = ({ onGetStarted }) => {
             <p className="hero-subtitle">
               Teachr adapts to your learning style, providing personalized practice questions that match your skill level. Get real-time help from our AI tutor, track your progress, and master any subject at your own pace.
             </p>
-            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '32px' }}>
+            <div className="flex flex-col sm:flex-row gap-4 mt-8">
               <button
                 onClick={onGetStarted}
-                className="cta-button cta-button-neo"
+                className="cta-button cta-button-neo w-full sm:w-auto"
               >
                 Start Learning Free
               </button>
               <button
                 onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-                style={{
-                  padding: '16px 32px',
-                  fontSize: '18px',
-                  fontWeight: 700,
-                  background: 'transparent',
-                  color: '#000000',
-                  border: '4px solid #000000',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  cursor: 'pointer',
-                  transition: 'all 100ms ease-out'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#000000';
-                  e.currentTarget.style.color = '#FFFFFF';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = '#000000';
-                }}
+                className="px-8 py-4 text-lg font-bold bg-transparent text-black border-4 border-black uppercase tracking-wider cursor-pointer transition-all duration-100 ease-out hover:bg-black hover:text-white w-full sm:w-auto"
               >
                 Learn More
               </button>
             </div>
           </div>
-          <div className="hero-image">
+          <div className="hero-image hidden md:block">
             <img
               src="/landing-screenshots/home-screen-placeholder.png"
               alt="Teachr Learning Interface"
-              style={{ width: '100%', height: 'auto', borderRadius: '0' }}
+              className="w-full h-auto border-4 border-black shadow-[12px_12px_0_0_#000] rounded-none"
             />
           </div>
         </section>
 
         {/* How It Works Section */}
-        <section id="how-it-works" style={{ padding: '100px 0', background: '#FFFFFF' }}>
-          <h2 style={{
-            fontSize: '56px',
-            fontWeight: 900,
-            textAlign: 'center',
-            marginBottom: '16px',
-            textTransform: 'uppercase',
-            letterSpacing: '-0.02em'
-          }}>
+        <section id="how-it-works" className="py-16 md:py-24 bg-white">
+          <h2 className="text-4xl md:text-[56px] font-black text-center mb-4 uppercase tracking-tighter">
             How It Works
           </h2>
-          <p style={{
-            fontSize: '20px',
-            fontWeight: 700,
-            textAlign: 'center',
-            marginBottom: '60px',
-            color: '#000000'
-          }}>
+          <p className="text-lg md:text-xl font-bold text-center mb-10 md:mb-16 text-black">
             Three simple steps to start your learning journey
           </p>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '40px',
-            marginTop: '60px'
-          }}>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 mt-10 md:mt-16">
             {[
               {
                 number: '01',
@@ -134,44 +87,25 @@ const LandingPage1: React.FC<LandingPage1Props> = ({ onGetStarted }) => {
             ].map((step, idx) => (
               <div
                 key={idx}
-                style={{
-                  background: '#FFFFFF',
-                  border: '4px solid #000000',
-                  padding: '40px',
-                  boxShadow: '8px 8px 0px 0px #000000',
-                  position: 'relative'
-                }}
+                className="bg-white border-4 border-black p-8 md:p-10 shadow-[8px_8px_0_0_#000] relative"
               >
-                <div style={{
-                  fontSize: '72px',
-                  fontWeight: 900,
-                  color: '#FFD93D',
-                  lineHeight: 1,
-                  marginBottom: '20px',
-                  WebkitTextStroke: '4px #000000',
-
-                  // For future standard compliance or if browsers drop prefix:
-                  // textStroke: '4px #000000' 
-                  // But 'textStroke' is not in standard React CSSProperties yet.
-                }}>
+                <div
+                  className="text-6xl md:text-[72px] font-black text-[#FFD93D] leading-none mb-5"
+                  style={{
+                    WebkitTextStroke: '4px #000000',
+                  }}
+                >
                   {step.number}
                 </div>
-                <h3 style={{
-                  fontSize: '24px',
-                  WebkitTextStroke: "2px black",
-                  fontWeight: 900,
-                  marginBottom: '16px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em'
-                }}>
+                <h3
+                  className="text-2xl font-black mb-4 uppercase tracking-wider"
+                  style={{
+                    WebkitTextStroke: "1px black",
+                  }}
+                >
                   {step.title}
                 </h3>
-                <p style={{
-                  fontSize: '16px',
-                  fontWeight: 700,
-                  lineHeight: 1.6,
-                  color: '#000000'
-                }}>
+                <p className="text-base font-bold leading-relaxed text-black">
                   {step.description}
                 </p>
               </div>
@@ -181,29 +115,15 @@ const LandingPage1: React.FC<LandingPage1Props> = ({ onGetStarted }) => {
 
         {/* Features Section */}
         <section id="features" className="landing-features">
-          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-            <h2 style={{
-              fontSize: '56px',
-              fontWeight: 900,
-              marginBottom: '16px',
-              textTransform: 'uppercase',
-              letterSpacing: '-0.02em'
-            }}>
+          <div className="text-center mb-10 md:mb-16">
+            <h2 className="text-4xl md:text-[56px] font-black mb-4 uppercase tracking-tighter">
               Powerful Features
             </h2>
-            <p style={{
-              fontSize: '20px',
-              fontWeight: 700,
-              color: '#000000'
-            }}>
+            <p className="text-lg md:text-xl font-bold text-black">
               Everything you need to succeed in your learning journey
             </p>
           </div>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '32px'
-          }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             <div className="feature-card">
               <div className="feature-icon">🎯</div>
               <h3>Adaptive Learning System</h3>
@@ -238,30 +158,11 @@ const LandingPage1: React.FC<LandingPage1Props> = ({ onGetStarted }) => {
         </section>
 
         {/* Benefits Section */}
-        <section style={{
-          padding: '100px 0',
-          background: '#FFD93D',
-          border: '4px solid #000000',
-          margin: '60px 0',
-          boxShadow: '12px 12px 0px 0px #000000'
-        }}>
-          <h2 style={{
-            fontSize: '48px',
-            fontWeight: 900,
-            textAlign: 'center',
-            marginBottom: '40px',
-            textTransform: 'uppercase',
-            letterSpacing: '-0.02em'
-          }}>
+        <section className="py-16 md:py-24 bg-[#FFD93D] border-4 border-black my-10 md:my-16 shadow-[8px_8px_0_0_#000] md:shadow-[12px_12px_0_0_#000]">
+          <h2 className="text-3xl md:text-5xl font-black text-center mb-10 uppercase tracking-tighter px-4">
             Why Students Love Teachr
           </h2>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '32px',
-            maxWidth: '1000px',
-            margin: '0 auto'
-          }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-[1000px] mx-auto px-6">
             {[
               'Practice at your own pace - no pressure, no deadlines',
               'Questions adapt to your skill level automatically',
@@ -272,28 +173,10 @@ const LandingPage1: React.FC<LandingPage1Props> = ({ onGetStarted }) => {
             ].map((benefit, idx) => (
               <div
                 key={idx}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '16px',
-                  padding: '20px',
-                  background: '#FFFFFF',
-                  border: '4px solid #000000',
-                  boxShadow: '4px 4px 0px 0px #000000'
-                }}
+                className="flex items-center gap-4 p-5 bg-white border-4 border-black shadow-[4px_4px_0_0_#000]"
               >
-                <div style={{
-                  width: '24px',
-                  height: '24px',
-                  background: '#000000',
-                  flexShrink: 0
-                }} />
-                <p style={{
-                  fontSize: '18px',
-                  fontWeight: 700,
-                  margin: 0,
-                  color: '#000000'
-                }}>
+                <div className="w-6 h-6 bg-black shrink-0" />
+                <p className="text-base md:text-lg font-bold m-0 text-black">
                   {benefit}
                 </p>
               </div>
@@ -307,35 +190,23 @@ const LandingPage1: React.FC<LandingPage1Props> = ({ onGetStarted }) => {
           <p>Join thousands of students who are mastering new skills and building confidence every day with Teachr.</p>
           <button
             onClick={onGetStarted}
-            className="cta-button cta-button-neo cta-button-large"
+            className="cta-button cta-button-neo cta-button-large w-full md:w-auto"
           >
             Get Started Now
           </button>
-          <p style={{
-            fontSize: '14px',
-            fontWeight: 700,
-            marginTop: '24px',
-            color: '#000000',
-            opacity: 0.7
-          }}>
+          <p className="text-sm font-bold mt-6 text-black opacity-70">
             Free to start • No credit card required • Cancel anytime
           </p>
         </section>
 
         {/* Footer */}
         <footer className="landing-footer">
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '24px'
-          }}>
-            <p style={{ margin: 0 }}>© 2024 Teachr. Making learning accessible for everyone.</p>
-            <div style={{ display: 'flex', gap: '24px' }}>
-              <a href="#" style={{ color: '#000000', textDecoration: 'none', fontWeight: 700, fontSize: '14px' }}>Privacy</a>
-              <a href="#" style={{ color: '#000000', textDecoration: 'none', fontWeight: 700, fontSize: '14px' }}>Terms</a>
-              <a href="#" style={{ color: '#000000', textDecoration: 'none', fontWeight: 700, fontSize: '14px' }}>Contact</a>
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <p className="m-0 text-center md:text-left">© 2024 Teachr. Making learning accessible for everyone.</p>
+            <div className="flex gap-6">
+              <a href="#" className="text-black no-underline font-bold text-sm">Privacy</a>
+              <a href="#" className="text-black no-underline font-bold text-sm">Terms</a>
+              <a href="#" className="text-black no-underline font-bold text-sm">Contact</a>
             </div>
           </div>
         </footer>
@@ -345,3 +216,4 @@ const LandingPage1: React.FC<LandingPage1Props> = ({ onGetStarted }) => {
 };
 
 export default LandingPage1;
+
