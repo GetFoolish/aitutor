@@ -1,5 +1,9 @@
 import sys
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file immediately
+load_dotenv()
 import threading
 import requests
 import asyncio

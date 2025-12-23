@@ -3,6 +3,10 @@ Auth Service - Google OAuth authentication API
 """
 import os
 import sys
+from dotenv import load_dotenv
+
+# Load environment variables from .env file immediately
+load_dotenv()
 import logging
 from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.middleware.cors import CORSMiddleware

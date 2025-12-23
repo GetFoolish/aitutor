@@ -15,8 +15,6 @@
  */
 
 import { useRef, useState, useEffect, Suspense, lazy } from "react";
-import "./App.scss";
-import "./styles/mobile-fixes.css"; // Mobile UI fixes
 import { TutorProvider } from "./features/tutor";
 import cn from "classnames";
 import AuthGuard from "./components/auth/AuthGuard";
@@ -140,18 +138,18 @@ function App() {
                     <div className="main-app-area">
                       <div className="question-panel">
                         <BackgroundShapes />
-                        <ScratchpadCapture 
+                        <ScratchpadCapture
                           onFrameCaptured={(canvas: HTMLCanvasElement) => {
                             mediaMixer.updateScratchpadFrame(canvas);
                           }}
                           scratchpadRef={scratchpadRef}
                         >
-                          <QuestionDisplay 
+                          <QuestionDisplay
                             onSkillChange={setCurrentSkill}
                             onQuestionsLoaded={() => setQuestionsReady(true)}
                           />
                           {isScratchpadOpen && (
-                            <FabricCanvas 
+                            <FabricCanvas
                               ref={scratchpadRef}
                               onClose={() => setScratchpadOpen(false)}
                             />

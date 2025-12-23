@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+load_dotenv()
 from app.main import app 
 import uvicorn 
 import os
@@ -8,5 +10,5 @@ if __name__ == "__main__":
         "app.main:app", 
         host="0.0.0.0", 
         port=port,
-        reload=False  # Don't use reload in production
+        reload=False  
     )

@@ -1,6 +1,10 @@
 import time
 import sys
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file immediately
+load_dotenv()
 import json
 import logging
 from typing import List, Dict, Optional
