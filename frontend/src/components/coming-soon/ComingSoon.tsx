@@ -25,10 +25,10 @@ const ComingSoon: React.FC = () => {
               Coming Soon
             </h1>
             <p className="coming-soon-subtitle">
-              We're working hard to bring you an incredible learning experience. 
+              We're working hard to bring you an incredible learning experience.
               Stay tuned for updates!
             </p>
-            
+
             {/* Decorative Elements */}
             <div className="coming-soon-decoration">
               <div className="decoration-box decoration-box-1"></div>
@@ -40,13 +40,7 @@ const ComingSoon: React.FC = () => {
 
         {/* Footer */}
         <footer className="coming-soon-footer">
-          <p style={{ 
-            fontSize: '14px', 
-            fontWeight: 700, 
-            color: '#000000',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em'
-          }}>
+          <p className="text-sm font-bold text-black uppercase tracking-wider">
             Thank you for your patience
           </p>
         </footer>

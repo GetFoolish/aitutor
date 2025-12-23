@@ -56,8 +56,15 @@ export const useMediaCapture = ({ onCameraFrame, onScreenFrame }: UseMediaCaptur
   const startCamera = useCallback(async () => {
     try {
       console.log('Starting camera capture...');
+
+      // Use ideal constraints for mobile compatibility
+      // facingMode: 'user' prefers the front camera (selfie mode)
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: 1280, height: 720 }
+        video: {
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          facingMode: 'user'
+        }
       });
 
       cameraStreamRef.current = stream;
@@ -85,6 +92,7 @@ export const useMediaCapture = ({ onCameraFrame, onScreenFrame }: UseMediaCaptur
         ctx.drawImage(video, 0, 0);
 
         // Resize to section dimensions and get ImageData
+        // Note: scaling might distort if aspect ratio differs, but keeps stream consistent
         const sectionCanvas = document.createElement('canvas');
         sectionCanvas.width = 1280;
         sectionCanvas.height = 720;
@@ -112,8 +120,17 @@ export const useMediaCapture = ({ onCameraFrame, onScreenFrame }: UseMediaCaptur
   const startScreen = useCallback(async () => {
     try {
       console.log('Starting screen capture...');
+
+      // Check if getDisplayMedia is supported (often missing on mobile)
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+        throw new Error('Screen sharing is not supported on this device/browser');
+      }
+
       const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: { width: 1280, height: 720 }
+        video: {
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
       });
 
       screenStreamRef.current = stream;
@@ -187,9 +204,9 @@ export const useMediaCapture = ({ onCameraFrame, onScreenFrame }: UseMediaCaptur
   const toggleScreen = useCallback(async (enabled: boolean) => {
     console.log(`toggleScreen called with enabled=${enabled}`);
 
-    setScreenEnabled(enabled);
-
     if (enabled) {
+      // Optimistically set state, but revert if it fails (handled in startScreen catch)
+      setScreenEnabled(true);
       await startScreen();
     } else {
       stopScreen();

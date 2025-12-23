@@ -27,7 +27,7 @@ Thumbs.db
 ehthumbs.db
 
 # IDE / Editor specific
-.vscode/
+
 .idea/
 *.suo
 *.ntvs*

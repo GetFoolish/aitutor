@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import "./auth.scss";
+
 
 // Zod Schema for Validation
 const signupSchema = z.object({

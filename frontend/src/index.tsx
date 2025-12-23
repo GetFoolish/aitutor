@@ -144,17 +144,17 @@ root.render(
         <AuthProvider>
           {/* ComingSoonGuard commented out to allow home page access - uncomment to re-enable coming soon page */}
           {/* <ComingSoonGuard> */}
-            <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
-              <Switch>
-                <Route path="/app/auth/setup" component={LoginPage} />
-                <Route path="/app/login" component={LoginPage} />
-                <Route path="/landing/:id" component={DynamicLandingPage} /> {/* Dynamic landing page routes */}
-                <Route path="/app" exact component={LandingPageOrApp} />
-                <Route path="/app" component={App} />
-                <Route path="/" exact component={LandingPageOrApp} />
-                <Route component={LandingPageOrApp} /> {/* Catch-all route - fallback to landing page */}
-              </Switch>
-            </Suspense>
+          <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+            <Switch>
+              <Route path="/app/auth/setup" component={LoginPage} />
+              <Route path="/app/login" component={LoginPage} />
+              <Route path="/landing/:id" component={DynamicLandingPage} /> {/* Dynamic landing page routes */}
+              <Route path="/app" exact component={LandingPageOrApp} />
+              <Route path="/app" component={App} />
+              <Route path="/" exact component={LandingPageOrApp} />
+              <Route component={LandingPageOrApp} /> {/* Catch-all route - fallback to landing page */}
+            </Switch>
+          </Suspense>
           {/* </ComingSoonGuard> */}
         </AuthProvider>
       </BrowserRouter>
