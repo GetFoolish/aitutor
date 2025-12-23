@@ -3,7 +3,20 @@
 /* @plugin "tailwindcss-animate"; */
 @import "tailwindcss";
 
+@theme {
+  --breakpoint-xs: 375px;
+}
+
 @custom-variant dark (&:is(.dark *));
+
+/* Dot Pattern Background */
+.bg-dots {
+  background-image: radial-gradient(#E5E7EB 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+.dark .bg-dots {
+  background-image: radial-gradient(#333333 1px, transparent 1px);
+}
 
 body {
   margin: 0;
@@ -6770,23 +6783,16 @@ body {
 
 
   .neo-grid-3 {
-
+    display: grid;
     grid-template-columns: 1fr;
-
-
+    gap: 24px;
 
     @media (min-width: 768px) {
-
       grid-template-columns: repeat(3, 1fr);
-
     }
-
   }
 
-
-
   .neo-comparison-grid {
-
     display: grid;
     grid-template-columns: 1fr;
     gap: 32px;

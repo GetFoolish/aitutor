@@ -74,7 +74,7 @@ const RendererComponent = ({ onSkillChange, onQuestionsLoaded }: RendererCompone
             // Retry logic for connection errors with exponential backoff
             const maxRetries = 3;
             let retryCount = 0;
-            
+
             const attemptFetch = async (): Promise<void> => {
                 try {
                     // First, check for pre-loaded questions
@@ -94,10 +94,10 @@ const RendererComponent = ({ onSkillChange, onQuestionsLoaded }: RendererCompone
                         // 422 means validation error, but we can still try fallback
                         console.warn('Pre-loaded questions endpoint returned 422, using fallback');
                     }
-                    
+
                     // Fallback: Load initial 5 questions
                     const response = await apiUtils.get(`${DASH_API_URL}/api/questions/5`);
-                    
+
                     if (!response.ok) {
                         // Don't retry on HTTP error codes (401, 403, 404, 500, etc.)
                         throw new Error(`Failed to fetch questions: ${response.status}`);
@@ -111,11 +111,11 @@ const RendererComponent = ({ onSkillChange, onQuestionsLoaded }: RendererCompone
                     setStartTime(Date.now());
                 } catch (err) {
                     // Check if it's a network/connection error that we should retry
-                    const isNetworkError = err instanceof TypeError && 
-                        (err.message.includes('Failed to fetch') || 
-                         err.message.includes('NetworkError') ||
-                         err.message.includes('ERR_CONNECTION_REFUSED'));
-                    
+                    const isNetworkError = err instanceof TypeError &&
+                        (err.message.includes('Failed to fetch') ||
+                            err.message.includes('NetworkError') ||
+                            err.message.includes('ERR_CONNECTION_REFUSED'));
+
                     if (isNetworkError && retryCount < maxRetries) {
                         retryCount++;
                         const backoffDelay = Math.pow(2, retryCount) * 1000; // Exponential backoff: 2s, 4s, 8s
@@ -123,7 +123,7 @@ const RendererComponent = ({ onSkillChange, onQuestionsLoaded }: RendererCompone
                         await new Promise(resolve => setTimeout(resolve, backoffDelay));
                         return attemptFetch(); // Retry
                     }
-                    
+
                     // Not a retryable error or max retries reached
                     throw err;
                 }
@@ -188,13 +188,13 @@ const RendererComponent = ({ onSkillChange, onQuestionsLoaded }: RendererCompone
             setShowFeedback(false);
             // Slight delay before showing to trigger animation
             const showTimer = setTimeout(() => setShowFeedback(true), 50);
-            
+
             // Auto-hide after 2 seconds (2000ms + 50ms initial delay)
             const hideTimer = setTimeout(() => {
                 setShowFeedback(false);
                 setIsAnswered(false);
             }, 2050);
-            
+
             return () => {
                 clearTimeout(showTimer);
                 clearTimeout(hideTimer);
@@ -207,39 +207,39 @@ const RendererComponent = ({ onSkillChange, onQuestionsLoaded }: RendererCompone
     // Load next batch of questions when approaching end
     const loadNextBatch = async () => {
         if (perseusItems.length === 0) return;
-        
+
         // Prevent concurrent calls
         if (isLoadingNextBatch) {
             return;
         }
-        
+
         setIsLoadingNextBatch(true);
-        
+
         try {
             // Get current question IDs
             const currentQuestionIds = perseusItems.map(
                 (item: any) => item.dash_metadata?.dash_question_id || ''
             ).filter(Boolean);
-            
+
             if (currentQuestionIds.length === 0) {
                 setIsLoadingNextBatch(false);
                 return; // No valid question IDs
             }
-            
+
             // Request next 5 questions
             const response = await apiUtils.post(`${DASH_API_URL}/api/questions/recommend-next`, {
                 current_question_ids: currentQuestionIds,
                 count: 5
             });
-            
+
             if (!response.ok) {
                 console.warn('Failed to fetch next batch:', response.status);
                 setIsLoadingNextBatch(false);
                 return;
             }
-            
+
             const newQuestions = await response.json();
-            
+
             // Only update if we got new questions (non-empty response means questions changed)
             if (newQuestions.length > 0) {
                 setPerseusItems(prev => [...prev, ...newQuestions]);
@@ -305,7 +305,7 @@ const RendererComponent = ({ onSkillChange, onQuestionsLoaded }: RendererCompone
                     is_correct: keScore.correct,
                     response_time_seconds: responseTimeSeconds
                 });
-                
+
                 // Invalidate skill-scores cache to trigger refetch with updated data
                 queryClient.invalidateQueries({ queryKey: ["skill-scores"] });
             } catch (err) {
@@ -315,14 +315,14 @@ const RendererComponent = ({ onSkillChange, onQuestionsLoaded }: RendererCompone
             // Display score to user
             setIsAnswered(true);
             setScore(keScore);
-            
+
             // Play sound based on result
             if (keScore.correct) {
                 playCorrectSound();
             } else {
                 playWrongSound();
             }
-            
+
             console.log("Score:", keScore);
 
             // Record question answer with TeachingAssistant
@@ -369,18 +369,18 @@ const RendererComponent = ({ onSkillChange, onQuestionsLoaded }: RendererCompone
 
                 <CardHeader className="space-y-2 pt-4 md:pt-5 px-3 md:px-4 border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#FFD93D]">
                     <div className="flex items-start justify-between gap-3 md:gap-4 flex-wrap">
-                        <div className="space-y-1.5 flex-1">
-                            <div className="flex items-center gap-2 md:gap-3">
-                                <div className="p-1.5 md:p-2 border-[2px] md:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]">
-                                    <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-black dark:text-white font-bold" />
-                                </div>
-                                <CardTitle className="text-lg md:text-xl font-black text-black uppercase tracking-tight">
+                        <div className="flex items-start gap-2 md:gap-3 flex-1 min-w-0">
+                            <div className="p-1.5 md:p-2 border-[2px] md:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] mt-0.5 shrink-0">
+                                <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-black dark:text-white font-bold" />
+                            </div>
+                            <div className="flex flex-col gap-0.5 min-w-0">
+                                <CardTitle className="text-lg md:text-xl font-black text-black uppercase tracking-tight leading-none pt-0.5">
                                     Practice Session
                                 </CardTitle>
+                                <CardDescription className="text-xs md:text-sm font-bold text-black uppercase tracking-wide leading-tight break-words">
+                                    {user ? `Welcome, ${user.name}! Grade: ${user.current_grade}` : `User: ${user_id}`}
+                                </CardDescription>
                             </div>
-                            <CardDescription className="text-xs md:text-sm font-bold text-black uppercase tracking-wide">
-                                {user ? `Welcome, ${user.name}! Grade: ${user.current_grade}` : `User: ${user_id}`}
-                            </CardDescription>
                         </div>
 
                         {/* Neo-Brutalist Progress Badge */}
@@ -517,7 +517,7 @@ const RendererComponent = ({ onSkillChange, onQuestionsLoaded }: RendererCompone
                                                 }`}>
                                                 {score?.correct ? "🎯 Correct!" : "📚 Not quite!"}
                                             </span>
-                                            
+
                                             {/* Manual Close Button */}
                                             <button
                                                 onClick={() => {

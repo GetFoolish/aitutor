@@ -166,8 +166,8 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
     return (
         <div
             className={cn(
-                "fixed top-[36px] sm:top-[40px] md:top-[44px] lg:top-[48px] left-0 flex flex-col border-r-[3px] sm:border-r-[4px] lg:border-r-[5px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) z-50 will-change-transform",
-                "h-[calc(100vh-32px)] xs:h-[calc(100vh-36px)] sm:h-[calc(100vh-40px)] md:h-[calc(100vh-44px)] lg:h-[calc(100vh-48px)]",
+                "fixed top-12 left-0 flex flex-col border-r-[3px] sm:border-r-[4px] lg:border-r-[5px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) z-50 will-change-transform",
+                "h-[calc(100vh-3rem)]",
                 // Responsive width with mobile support
                 open
                     ? "w-[85vw] sm:w-[240px] lg:w-[260px]"
@@ -182,8 +182,8 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
             )}>
                 {open ? (
                     <div className="flex items-center gap-2 lg:gap-2.5 animate-in fade-in slide-in-from-left-4 duration-300">
-                        <div className="px-[0.25rem] pt-[0.15rem] pb-[0.25rem] lg:px-[0.375rem] lg:pt-[0.25rem] lg:pb-[0.375rem] border-[3px] lg:border-[4px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]">
-                            <GraduationCap className="w-4 h-4 text-black dark:text-white font-bold" />
+                        <div className="px-[0.25rem] pt-[0.15rem] pb-[0.25rem] lg:px-[0.375rem] lg:pt-[0.25rem] lg:pb-[0.375rem] border-[3px] lg:border-[4px] border-black dark:border-white bg-[#FFD93D] dark:bg-[#FFD93D]">
+                            <GraduationCap className="w-4 h-4 text-black font-bold" />
                         </div>
                         <h2 className="text-xs lg:text-sm font-black text-white whitespace-nowrap uppercase tracking-tight">
                             GRADING & SKILLS
@@ -194,9 +194,9 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                         variant="ghost"
                         size="icon"
                         onClick={onToggle}
-                        className="w-[1.8125rem] h-[1.6rem] lg:w-[2.025rem] lg:h-[1.8125rem] border-[3px] lg:border-[4px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] transition-colors shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
+                        className="w-[1.8125rem] h-[1.6rem] lg:w-[2.025rem] lg:h-[1.8125rem] border-[3px] lg:border-[4px] border-black dark:border-white bg-[#FFD93D] dark:bg-[#FFD93D] hover:bg-[#FFD93D]/80 dark:hover:bg-[#FFD93D]/80 transition-colors shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
                     >
-                        <GraduationCap className="w-3 h-3 text-black dark:text-white dark:hover:text-black font-bold" />
+                        <GraduationCap className="w-3 h-3 text-black font-bold" />
                     </Button>
                 )}
 
@@ -212,7 +212,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                 )}
             </header>
 
-            <div className="flex-grow overflow-hidden relative">
+            <div className="flex-grow overflow-hidden relative flex flex-col">
                 {open ? (
                     <div
                         ref={scrollContainerRef}
@@ -399,8 +399,8 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                         </Accordion>
                     </div>
                 ) : (
-                    <div className="h-full w-full flex items-center justify-center cursor-pointer hover:bg-[#FFE500]/20 transition-colors pb-[140px]" onClick={onToggle}>
-                        <div className="rotate-180 [writing-mode:vertical-rl] text-lg font-black tracking-widest uppercase whitespace-nowrap select-none text-black dark:text-white text-center leading-none">
+                    <div className="relative flex-grow w-full cursor-pointer hover:bg-[#FFE500]/20 transition-colors" onClick={onToggle}>
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-180 [writing-mode:vertical-rl] text-lg font-black tracking-widest uppercase whitespace-nowrap select-none text-black dark:text-white text-center leading-none">
                             GRADES & SKILLS
                         </div>
                     </div>

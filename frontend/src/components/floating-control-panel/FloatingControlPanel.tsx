@@ -8,6 +8,14 @@ import React, {
   useMemo,
 } from "react";
 import { Button } from "../ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { motion, useDragControls } from "framer-motion";
 import { useTutorContext, AudioRecorder, TranscriptionData } from "../../features/tutor";
 // import { useLiveAPIContext } from "../../contexts/LiveAPIContext"; // Commented out - useLiveAPIContext is an alias for useTutorContext, import from correct location
@@ -677,7 +685,8 @@ function FloatingControlPanel({
       return { left: 0, top: 0, right: 1000, bottom: 800 };
     }
 
-    const viewportWidth = window.innerWidth;
+    // Use clientWidth to exclude scrollbar width
+    const viewportWidth = document.documentElement.clientWidth;
     const viewportHeight = window.innerHeight;
 
     // Calculate panel width based on collapsed state and screen size
@@ -699,7 +708,7 @@ function FloatingControlPanel({
     return {
       left: 0,
       top: 0,
-      right: viewportWidth - panelWidth,
+      right: viewportWidth - panelWidth - 16, // Add 16px safety margin
       bottom: viewportHeight - bottomOffset,
     };
   }, [isCollapsed]);
@@ -752,7 +761,7 @@ function FloatingControlPanel({
         let safeX = rect.left;
         let safeY = rect.top;
 
-        if (isOutOfBoundsRight) safeX = dragConstraints.right - 20; // 20px margin
+        if (isOutOfBoundsRight) safeX = dragConstraints.right; // Snap to right constraint (already has margin)
         if (isOutOfBoundsLeft) safeX = 20;
         if (isOutOfBoundsBottom) safeY = dragConstraints.bottom - 20;
         if (isOutOfBoundsTop) safeY = 20;
@@ -784,7 +793,16 @@ function FloatingControlPanel({
     }
 
     // Desktop: top-right
-    return { x: window.innerWidth - 380, y: 96 };
+    // Use clientWidth to exclude scrollbar
+    const viewportWidth = document.documentElement.clientWidth;
+    // Initial position: width - panelWidth (approx 250 or 55) - margin
+    // Default collapsed width is ~55px. Expanded 250px.
+    // Let's position it for expanded state mostly, or safe right edge.
+    // 380px from left of right edge was the old value.
+    // If width is 1920, x = 1540.
+    // With clientWidth (e.g. 1903), x = 1523.
+    // This is consistently safer.
+    return { x: viewportWidth - 380, y: 96 };
   }, []);
 
   // Memoize popover position calculation to avoid expensive DOM queries
@@ -793,7 +811,7 @@ function FloatingControlPanel({
 
     const panelRect = panelRef.current.getBoundingClientRect();
     const popoverWidth = 360;
-    const viewportWidth = window.innerWidth;
+    const viewportWidth = document.documentElement.clientWidth; // consistency
     const viewportHeight = window.innerHeight;
     const spaceOnRight = viewportWidth - panelRect.right;
     const spaceOnLeft = panelRect.left;
@@ -916,7 +934,7 @@ function FloatingControlPanel({
       } : undefined}
       style={isMobile ? {
         position: 'fixed',
-        bottom: '8px',
+        bottom: '24px',
         left: '50%',
         transform: 'translateX(-50%)',
         zIndex: 1000,
@@ -1174,7 +1192,7 @@ function FloatingControlPanel({
                 )}
               </div>
               <div className="flex flex-col min-w-0 flex-1">
-                <span className="text-[9px] md:text-[10px] font-black text-black dark:text-white uppercase tracking-wide">
+                <span className="text-[9px] md:text-[10px] font-black text-black dark:text-white uppercase tracking-wide leading-none mt-[1px]">
                   Microphone
                 </span>
                 <select
@@ -1242,7 +1260,7 @@ function FloatingControlPanel({
                     <VideoOff className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
                   )}
                 </div>
-                <span className="text-[9px] md:text-[10px] font-black text-black dark:text-white uppercase tracking-wide">
+                <span className="text-[9px] md:text-[10px] font-black text-black dark:text-white uppercase tracking-wide leading-none mt-[1px]">
                   Camera
                 </span>
               </div>
@@ -1292,7 +1310,7 @@ function FloatingControlPanel({
                     <MonitorOff className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
                   )}
                 </div>
-                <span className="text-[9px] md:text-[10px] font-black text-black dark:text-white uppercase tracking-wide">
+                <span className="text-[9px] md:text-[10px] font-black text-black dark:text-white uppercase tracking-wide leading-none mt-[1px]">
                   Screen Share
                 </span>
               </div>
@@ -1357,19 +1375,20 @@ function FloatingControlPanel({
           )}
 
           {/* Bottom Actions */}
-          <div className="grid grid-cols-4 gap-1.5 md:gap-2 pt-2 md:pt-3 border-t-[2px] border-black dark:border-white">
+          {/* Bottom Actions */}
+          <div className="grid grid-cols-4 gap-1 md:gap-2 pt-2 md:pt-3 border-t-[2px] border-black dark:border-white">
             {enableEditingSettings && (
               <SettingsDialog
                 className="w-full"
                 trigger={
                   <Button
                     variant="neo"
-                    className="flex flex-col h-auto items-center gap-1 p-1.5 md:p-2 hover:bg-[#FF6B6B] hover:text-white group w-full"
+                    className="flex flex-col h-auto items-center justify-center gap-0.5 p-1 md:p-2 hover:bg-[#FF6B6B] hover:text-white group w-full min-w-0"
                   >
                     <div className="p-1 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#FF6B6B] transition-colors">
                       <Settings className="w-3 h-3 md:w-4 md:h-4 font-bold" />
                     </div>
-                    <span className="text-[7px] md:text-[8px] font-black uppercase">Settings</span>
+                    <span className="text-[6px] xs:text-[7px] md:text-[8px] font-black uppercase truncate w-full text-center">Settings</span>
                   </Button>
                 }
               />
@@ -1378,7 +1397,7 @@ function FloatingControlPanel({
               variant={isPaintActive ? "neo-warning" : "neo"}
               onClick={onPaintClick}
               className={cn(
-                "flex flex-col h-auto items-center gap-1 p-1.5 md:p-2 group w-full",
+                "flex flex-col h-auto items-center justify-center gap-0.5 p-1 md:p-2 group w-full min-w-0",
                 !isPaintActive && "hover:bg-[#FFD93D] hover:text-black"
               )}
             >
@@ -1392,15 +1411,15 @@ function FloatingControlPanel({
               >
                 <PenTool className="w-3 h-3 md:w-4 md:h-4 font-bold" />
               </div>
-              <span className="text-[7px] md:text-[8px] font-black uppercase">Canvas</span>
+              <span className="text-[6px] xs:text-[7px] md:text-[8px] font-black uppercase truncate w-full text-center">Canvas</span>
             </Button>
             <Button
               variant={sharedMediaOpen ? "neo" : "neo"}
               onClick={toggleSharedMedia}
               className={cn(
-                "flex flex-col h-auto items-center gap-1 p-1.5 md:p-2 group w-full",
+                "flex flex-col h-auto items-center justify-center gap-0.5 p-1 md:p-2 hover:bg-[#C4B5FD] hover:text-black group w-full min-w-0",
                 sharedMediaOpen
-                  ? "bg-[#C4B5FD] text-black hover:bg-[#C4B5FD]"
+                  ? "bg-[#C4B5FD] text-black"
                   : "hover:bg-[#C4B5FD] hover:text-black"
               )}
             >
@@ -1414,17 +1433,28 @@ function FloatingControlPanel({
               >
                 <Eye className="w-3 h-3 md:w-4 md:h-4 font-bold" />
               </div>
-              <span className="text-[7px] md:text-[8px] font-black uppercase">View</span>
+              <span className="text-[6px] xs:text-[7px] md:text-[8px] font-black uppercase truncate w-full text-center">View</span>
             </Button>
-            <Button
-              variant="neo"
-              className="flex flex-col h-auto items-center gap-1 p-1.5 md:p-2 hover:bg-[#C4B5FD] hover:text-black group w-full"
-            >
-              <div className="p-1 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#C4B5FD] transition-colors">
-                <MoreHorizontal className="w-3 h-3 md:w-4 md:h-4 font-bold" />
-              </div>
-              <span className="text-[7px] md:text-[8px] font-black uppercase">More</span>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="neo" className="flex flex-col h-auto items-center justify-center gap-0.5 p-1 md:p-2 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black group w-full min-w-0">
+                  <div className="p-1 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-black dark:group-hover:bg-white transition-colors">
+                    <MoreHorizontal className="w-3 h-3 md:w-4 md:h-4 font-bold group-hover:text-white dark:group-hover:text-black" />
+                  </div>
+                  <span className="text-[6px] xs:text-[7px] md:text-[8px] font-black uppercase truncate w-full text-center">More</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuLabel>More Options</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem disabled>
+                  <span>Keyboard Shortcuts</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem disabled>
+                  <span>Help & Support</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       )}

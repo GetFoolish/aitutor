@@ -131,11 +131,11 @@ function App() {
                     currentSkill={currentSkill}
                   />
                   <main className={cn(
-                    "main-content-area",
+                    "main-content-area pt-12",
                     isSidebarOpen && "sidebar-open",
                     isGradingSidebarOpen && "grading-sidebar-open"
                   )}>
-                    <div className="main-app-area">
+                    <div className="main-app-area bg-dots">
                       <div className="question-panel">
                         <BackgroundShapes />
                         <ScratchpadCapture
