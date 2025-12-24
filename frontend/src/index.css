@@ -8,23 +8,43 @@
 }
 
 @custom-variant dark (&:is(.dark *));
-
-/* Dot Pattern Background */
-.bg-dots {
-  background-image: radial-gradient(#E5E7EB 1px, transparent 1px);
-  background-size: 20px 20px;
-}
-.dark .bg-dots {
-  background-image: radial-gradient(#333333 1px, transparent 1px);
+html {
+  height: 100%;
+  margin: 0;
 }
 
 body {
   margin: 0;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
   font-family:
     'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
     "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: transparent;
+}
+
+/* Dedicated Fixed Background Layer */
+.fixed-background {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -50; /* Ensure it stays behind everything */
+  pointer-events: none;
+  background-image: radial-gradient(#E5E7EB 1px, transparent 5px);
+  background-size: 500px, 100px;
+  background-position: center top;
+}
+
+.dark .fixed-background {
+  background-image: radial-gradient(#333333 1px, transparent 5px);
+}
+
+.dark html {
+  /* background removed */
 }
 
 code {

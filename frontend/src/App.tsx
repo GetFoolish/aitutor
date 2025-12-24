@@ -112,6 +112,7 @@ function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="ai-tutor-theme">
       <div className="App">
+        <div className="fixed-background" />
         <AuthGuard>
           <TutorProvider>
             <HintProvider>
@@ -135,7 +136,7 @@ function App() {
                     isSidebarOpen && "sidebar-open",
                     isGradingSidebarOpen && "grading-sidebar-open"
                   )}>
-                    <div className="main-app-area bg-dots">
+                    <div className="main-app-area">
                       <div className="question-panel">
                         <BackgroundShapes />
                         <ScratchpadCapture
@@ -178,11 +179,11 @@ function App() {
                 </Suspense>
               </div>
               <Toaster richColors closeButton />
-            </HintProvider>
-          </TutorProvider>
-        </AuthGuard>
-      </div>
-    </ThemeProvider>
+            </HintProvider >
+          </TutorProvider >
+        </AuthGuard >
+      </div >
+    </ThemeProvider >
   );
 }
 

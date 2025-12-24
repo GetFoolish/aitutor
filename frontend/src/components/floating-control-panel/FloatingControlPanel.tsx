@@ -718,24 +718,19 @@ function FloatingControlPanel({
     // Skip drag constraints on mobile
     if (isMobile) return;
 
+    // Simplified drag constraints or removed to prevent conflict with centering
     const updateConstraints = () => {
-      const newConstraints = calculateDragConstraints();
-      setDragConstraints(newConstraints);
+      // Optional: Add logic here if strict bounds are needed.
+      // For now, we allow free movement but default to center.
     };
 
-    // Update on mount
-    updateConstraints();
-
-    // Update on window resize (including DevTools open/close)
-    window.addEventListener('resize', updateConstraints);
-
-    // Also listen for DevTools-specific resize using ResizeObserver on body
-    const resizeObserver = new ResizeObserver(updateConstraints);
-    resizeObserver.observe(document.body);
-
+    // updateConstraints(); // constraints removed
+    // window.addEventListener('resize', updateConstraints);
+    // const resizeObserver = new ResizeObserver(updateConstraints);
+    // resizeObserver.observe(document.body);
     return () => {
-      window.removeEventListener('resize', updateConstraints);
-      resizeObserver.disconnect();
+      // window.removeEventListener('resize', updateConstraints);
+      // resizeObserver.disconnect();
     };
   }, [isCollapsed, calculateDragConstraints, isMobile]);
 
@@ -781,29 +776,10 @@ function FloatingControlPanel({
     const timeoutId = setTimeout(checkBounds, 100);
 
     return () => clearTimeout(timeoutId);
-  }, [dragConstraints, isMobile]);
+  }, [isMobile]);
 
-  // Calculate initial position once without state (Desktop only)
-  const initialPosition = useMemo(() => {
-    if (typeof window === "undefined") return { x: 0, y: 0 };
-
-    // On mobile, don't calculate initial position - use CSS fixed positioning
-    if (window.innerWidth <= 768) {
-      return { x: 0, y: 0 };
-    }
-
-    // Desktop: top-right
-    // Use clientWidth to exclude scrollbar
-    const viewportWidth = document.documentElement.clientWidth;
-    // Initial position: width - panelWidth (approx 250 or 55) - margin
-    // Default collapsed width is ~55px. Expanded 250px.
-    // Let's position it for expanded state mostly, or safe right edge.
-    // 380px from left of right edge was the old value.
-    // If width is 1920, x = 1540.
-    // With clientWidth (e.g. 1903), x = 1523.
-    // This is consistently safer.
-    return { x: viewportWidth - 380, y: 96 };
-  }, []);
+  // No initial position calculation needed for centered layout
+  // We use CSS centering: left: 50%, x: "-50%"
 
   // Memoize popover position calculation to avoid expensive DOM queries
   const calculatePopoverPosition = useCallback(() => {
@@ -919,9 +895,9 @@ function FloatingControlPanel({
       dragListener={!isMobile}
       dragMomentum={false}
       dragElastic={0}
-      dragConstraints={!isMobile ? dragConstraints : undefined}
+      dragConstraints={!isMobile && !isCollapsed ? undefined : undefined} // Removed strict constraints for now
       onDragEnd={!isMobile ? handleDragEnd : undefined}
-      initial={isMobile ? false : initialPosition}
+      initial={isMobile ? false : { x: "-50%", y: 0 }}
       animate={isMobile ? false : undefined}
       whileDrag={!isMobile ? {
         cursor: "grabbing",
@@ -939,14 +915,14 @@ function FloatingControlPanel({
         transform: 'translateX(-50%)',
         zIndex: 1000,
       } : {
-        left: 0,
-        top: 0,
-        x: initialPosition.x,
-        y: initialPosition.y,
+        position: 'absolute',
+        top: '24px',
+        left: '50%',
+        zIndex: 1000,
       }}
     >
       {/* Hidden canvas for MediaMixer - will be set by parent */}
-      <canvas
+      < canvas
         ref={(canvas) => {
           if (typeof renderCanvasRef === 'function') {
             renderCanvasRef(canvas);
@@ -961,569 +937,575 @@ function FloatingControlPanel({
       />
 
       {/* Drag Handle & Header - Only show on desktop */}
-      {!isMobile && (
-        <div
-          className={cn(
-            "cursor-grab active:cursor-grabbing flex items-center mb-1.5 md:mb-2",
-            isCollapsed ? "justify-center mb-1 md:mb-1.5" : "justify-between",
-          )}
-          onPointerDown={(e) => !isMobile && dragControls.start(e)}
-        >
-          {!isCollapsed && (
-            <div className="flex items-center gap-1.5 md:gap-2">
-              <img
-                src={isDarkMode ? '/logo_white.png' : '/logo.png'}
-                alt="teachr"
-                className="h-6 md:h-7 w-auto"
-              />
-            </div>
-          )}
-          <Button
-            variant="neo"
-            size="sm"
-            onClick={handleCollapse}
-            className="w-6 h-6 md:w-6 md:h-6 p-0"
-          >
-            {isCollapsed ? (
-              <ChevronDown className="w-3 h-3 md:w-3.5 md:h-3.5 font-black" />
-            ) : (
-              <ChevronUp className="w-3 h-3 md:w-3.5 md:h-3.5 font-black" />
+      {
+        !isMobile && (
+          <div
+            className={cn(
+              "cursor-grab active:cursor-grabbing flex items-center mb-1.5 md:mb-2",
+              isCollapsed ? "justify-center mb-1 md:mb-1.5" : "justify-between",
             )}
-          </Button>
-        </div>
-      )}
-
-      {isCollapsed ? (
-        // COLLAPSED VIEW
-        <div className={cn(
-          "flex items-center",
-          isMobile ? "flex-row gap-2" : "flex-col gap-1.5 md:gap-2"
-        )}>
-          {/* Home/Expand Button - Desktop only */}
-          {!isMobile && (
+            onPointerDown={(e) => !isMobile && dragControls.start(e)}
+          >
+            {!isCollapsed && (
+              <div className="flex items-center gap-1.5 md:gap-2">
+                <img
+                  src={isDarkMode ? '/logo_white.png' : '/logo.png'}
+                  alt="teachr"
+                  className="h-6 md:h-7 w-auto"
+                />
+              </div>
+            )}
             <Button
               variant="neo"
-              size="icon"
+              size="sm"
               onClick={handleCollapse}
-              className="shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]"
-              title="Expand"
+              className="w-6 h-6 md:w-6 md:h-6 p-0"
             >
-              <Home className="w-4 h-4 font-bold" />
-            </Button>
-          )}
-
-          {/* Microphone Button */}
-          <Button
-            variant={muted ? "neo-destructive" : "neo"}
-            size="icon"
-            onClick={() => connected && handleMute()}
-            disabled={!connected}
-            className={cn(
-              !connected && "opacity-50 cursor-not-allowed"
-            )}
-            title={muted ? "Unmute" : "Mute"}
-          >
-            {muted ? (
-              <MicOff className="w-4 h-4 font-bold" />
-            ) : (
-              <Mic className="w-4 h-4 font-bold" />
-            )}
-          </Button>
-
-          {/* Start/Stop Session Button */}
-          <Button
-            variant={connected ? "neo-destructive" : "neo-success"}
-            size="icon"
-            onClick={handleConnect}
-            className="relative group font-black"
-            title={connected ? "Stop Session" : "Start Session"}
-          >
-            {connected ? (
-              <StopCircle className="w-5 h-5" />
-            ) : (
-              <PlayCircle className="w-5 h-5" />
-            )}
-            {connected && (
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#FFD93D] border-2 border-black animate-pulse" />
-            )}
-          </Button>
-
-          {/* Pause/Resume Button (only show when connected) */}
-          {/* Pause/Resume Button (only show when connected) */}
-          {connected && (
-            <Button
-              variant={isPaused ? "neo-success" : "neo-warning"}
-              size="icon"
-              onClick={handlePause}
-              title={isPaused ? "Resume Session" : "Pause Session"}
-            >
-              {isPaused ? (
-                <Play className="w-4 h-4 font-bold" />
+              {isCollapsed ? (
+                <ChevronDown className="w-3 h-3 md:w-3.5 md:h-3.5 font-black" />
               ) : (
-                <Pause className="w-4 h-4 font-bold" />
+                <ChevronUp className="w-3 h-3 md:w-3.5 md:h-3.5 font-black" />
               )}
             </Button>
-          )}
+          </div>
+        )
+      }
 
-          {/* Separator - Desktop only */}
-          {!isMobile && <div className="w-7 h-[2px] bg-black dark:bg-white my-0.5" />}
+      {
+        isCollapsed ? (
+          // COLLAPSED VIEW
+          <div className={cn(
+            "flex items-center",
+            isMobile ? "flex-row gap-2" : "flex-col gap-1.5 md:gap-2"
+          )}>
+            {/* Home/Expand Button - Desktop only */}
+            {!isMobile && (
+              <Button
+                variant="neo"
+                size="icon"
+                onClick={handleCollapse}
+                className="shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]"
+                title="Expand"
+              >
+                <Home className="w-4 h-4 font-bold" />
+              </Button>
+            )}
 
-          {/* Additional controls - Desktop only */}
-          {!isMobile && (
-            <>
-              {supportsVideo && (
+            {/* Microphone Button */}
+            <Button
+              variant={muted ? "neo-destructive" : "neo"}
+              size="icon"
+              onClick={() => connected && handleMute()}
+              disabled={!connected}
+              className={cn(
+                !connected && "opacity-50 cursor-not-allowed"
+              )}
+              title={muted ? "Unmute" : "Mute"}
+            >
+              {muted ? (
+                <MicOff className="w-4 h-4 font-bold" />
+              ) : (
+                <Mic className="w-4 h-4 font-bold" />
+              )}
+            </Button>
+
+            {/* Start/Stop Session Button */}
+            <Button
+              variant={connected ? "neo-destructive" : "neo-success"}
+              size="icon"
+              onClick={handleConnect}
+              className="relative group font-black"
+              title={connected ? "Stop Session" : "Start Session"}
+            >
+              {connected ? (
+                <StopCircle className="w-5 h-5" />
+              ) : (
+                <PlayCircle className="w-5 h-5" />
+              )}
+              {connected && (
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#FFD93D] border-2 border-black animate-pulse" />
+              )}
+            </Button>
+
+            {/* Pause/Resume Button (only show when connected) */}
+            {/* Pause/Resume Button (only show when connected) */}
+            {connected && (
+              <Button
+                variant={isPaused ? "neo-success" : "neo-warning"}
+                size="icon"
+                onClick={handlePause}
+                title={isPaused ? "Resume Session" : "Pause Session"}
+              >
+                {isPaused ? (
+                  <Play className="w-4 h-4 font-bold" />
+                ) : (
+                  <Pause className="w-4 h-4 font-bold" />
+                )}
+              </Button>
+            )}
+
+            {/* Separator - Desktop only */}
+            {!isMobile && <div className="w-7 h-[2px] bg-black dark:bg-white my-0.5" />}
+
+            {/* Additional controls - Desktop only */}
+            {!isMobile && (
+              <>
+                {supportsVideo && (
+                  <Button
+                    variant="neo"
+                    size="icon"
+                    onClick={() => connected && onToggleCamera(!cameraEnabled)}
+                    disabled={!connected}
+                    className={cn(
+                      cameraEnabled && "bg-[#C4B5FD]",
+                      !connected && "opacity-50 cursor-not-allowed"
+                    )}
+                    title="Toggle Camera"
+                  >
+                    {cameraEnabled ? (
+                      <Video className="w-3.5 h-3.5 font-bold" />
+                    ) : (
+                      <VideoOff className="w-3.5 h-3.5 font-bold" />
+                    )}
+                  </Button>
+                )}
+
+                {supportsVideo && (
+                  <Button
+                    variant={screenEnabled ? "neo-warning" : "neo"}
+                    size="icon"
+                    onClick={() => connected && onToggleScreen(!screenEnabled)}
+                    disabled={!connected}
+                    className={cn(
+                      !connected && "opacity-50 cursor-not-allowed"
+                    )}
+                    title="Share Screen"
+                  >
+                    {screenEnabled ? (
+                      <Monitor className="w-3.5 h-3.5 font-bold" />
+                    ) : (
+                      <MonitorOff className="w-3.5 h-3.5 font-bold" />
+                    )}
+                  </Button>
+                )}
+
+                <div className="w-7 h-[2px] bg-black dark:bg-white my-0.5" />
+
+                {enableEditingSettings && (
+                  <SettingsDialog
+                    className="!h-auto !block"
+                    trigger={
+                      <Button
+                        variant="neo"
+                        size="icon"
+                        className="hover:bg-[#FF6B6B] hover:text-white"
+                      >
+                        <Settings className="w-3.5 h-3.5 font-bold" />
+                      </Button>
+                    }
+                  />
+                )}
+
+                <Button
+                  variant={isPaintActive ? "neo-warning" : "neo"}
+                  size="icon"
+                  onClick={onPaintClick}
+                  title="Canvas"
+                >
+                  <PenTool className="w-3.5 h-3.5 font-bold" />
+                </Button>
+
                 <Button
                   variant="neo"
                   size="icon"
-                  onClick={() => connected && onToggleCamera(!cameraEnabled)}
-                  disabled={!connected}
+                  onClick={toggleSharedMedia}
                   className={cn(
-                    cameraEnabled && "bg-[#C4B5FD]",
-                    !connected && "opacity-50 cursor-not-allowed"
+                    sharedMediaOpen && "bg-[#C4B5FD] hover:bg-[#C4B5FD]",
+                    !sharedMediaOpen && "hover:bg-[#C4B5FD]"
                   )}
-                  title="Toggle Camera"
+                  title="View"
                 >
-                  {cameraEnabled ? (
-                    <Video className="w-3.5 h-3.5 font-bold" />
-                  ) : (
-                    <VideoOff className="w-3.5 h-3.5 font-bold" />
-                  )}
+                  <Eye className="w-3.5 h-3.5 font-bold" />
                 </Button>
-              )}
 
-              {supportsVideo && (
+                <div
+                  className={cn(
+                    "w-10 h-8 flex items-center justify-center text-[9px] font-mono font-black mt-1 transition-colors border-[2px] border-black",
+                    connected
+                      ? "bg-[#FFD93D] text-black"
+                      : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white border-black dark:border-white",
+                  )}
+                >
+                  {connected ? formatTime(sessionTime) : "--:--"}
+                </div>
+              </>
+            )}
+          </div>
+        ) : (
+          // EXPANDED VIEW
+          <div className="flex flex-col gap-1.5 md:gap-2">
+            {/* Audio Control */}
+            <div
+              onClick={() => connected && handleMute()}
+              className={cn(
+                "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 group shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
+                !muted
+                  ? "bg-[#FFFDF5] dark:bg-[#000000]"
+                  : "bg-[#FF6B6B]",
+                connected ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
+              )}
+            >
+              <div className="flex items-center gap-1.5 md:gap-2 min-w-0 flex-1 pr-2 md:pr-3">
+                <div
+                  className={cn(
+                    "flex items-center justify-center w-6 h-6 md:w-7 md:h-7 border-[2px] border-black dark:border-white transition-colors flex-shrink-0",
+                    !muted
+                      ? "bg-[#C4B5FD] text-black"
+                      : "bg-white dark:bg-[#000000] text-black dark:text-white",
+                  )}
+                >
+                  {muted ? (
+                    <MicOff className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
+                  ) : (
+                    <Mic className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
+                  )}
+                </div>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-[9px] md:text-[10px] font-black text-black dark:text-white uppercase tracking-wide leading-none mt-[1px]">
+                    Microphone
+                  </span>
+                  <select
+                    className="bg-transparent border-none text-[9px] md:text-[10px] text-black dark:text-white outline-none cursor-pointer w-full max-w-[100px] md:max-w-[120px] truncate p-0 font-bold uppercase pr-4"
+                    value={selectedAudioDevice}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      setSelectedAudioDevice(e.target.value);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    disabled={connected}
+                  >
+                    {audioDevices.map((device) => (
+                      <option
+                        key={device.deviceId}
+                        value={device.deviceId}
+                        className="bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
+                      >
+                        {device.label || `Mic ${device.deviceId.slice(0, 4)}`}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <Button
+                variant={!muted ? "neo" : "neo"}
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMute();
+                }}
+                className={cn(
+                  "px-2 md:px-3 uppercase flex-shrink-0",
+                  !muted && "bg-[#C4B5FD] hover:bg-[#C4B5FD] text-black"
+                )}
+              >
+                {muted ? "Unmute" : "Mute"}
+              </Button>
+            </div>
+
+            {/* Camera Control */}
+            {supportsVideo && (
+              <div
+                onClick={() => connected && onToggleCamera(!cameraEnabled)}
+                className={cn(
+                  "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
+                  cameraEnabled
+                    ? "bg-[#C4B5FD]"
+                    : "bg-[#FFFDF5] dark:bg-[#000000]",
+                  connected ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
+                )}
+              >
+                <div className="flex items-center gap-1.5 md:gap-2">
+                  <div
+                    className={cn(
+                      "flex items-center justify-center w-6 h-6 md:w-7 md:h-7 border-[2px] border-black dark:border-white transition-colors",
+                      cameraEnabled
+                        ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
+                        : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white",
+                    )}
+                  >
+                    {cameraEnabled ? (
+                      <Video className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
+                    ) : (
+                      <VideoOff className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
+                    )}
+                  </div>
+                  <span className="text-[9px] md:text-[10px] font-black text-black dark:text-white uppercase tracking-wide leading-none mt-[1px]">
+                    Camera
+                  </span>
+                </div>
                 <Button
-                  variant={screenEnabled ? "neo-warning" : "neo"}
-                  size="icon"
-                  onClick={() => connected && onToggleScreen(!screenEnabled)}
+                  variant={cameraEnabled ? "neo" : "neo"}
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (connected) onToggleCamera(!cameraEnabled);
+                  }}
                   disabled={!connected}
                   className={cn(
+                    "px-2 md:px-3 uppercase",
+                    !cameraEnabled && "bg-[#C4B5FD] hover:bg-[#C4B5FD] text-black",
                     !connected && "opacity-50 cursor-not-allowed"
                   )}
-                  title="Share Screen"
                 >
-                  {screenEnabled ? (
-                    <Monitor className="w-3.5 h-3.5 font-bold" />
+                  {cameraEnabled ? "Off" : "On"}
+                </Button>
+              </div>
+            )}
+
+            {/* Screen Share Control */}
+            {supportsVideo && (
+              <div
+                onClick={() => connected && onToggleScreen(!screenEnabled)}
+                className={cn(
+                  "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
+                  screenEnabled
+                    ? "bg-[#FFD93D]"
+                    : "bg-[#FFFDF5] dark:bg-[#000000]",
+                  connected ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
+                )}
+              >
+                <div className="flex items-center gap-1.5 md:gap-2">
+                  <div
+                    className={cn(
+                      "flex items-center justify-center w-6 h-6 md:w-7 md:h-7 border-[2px] border-black transition-colors",
+                      screenEnabled
+                        ? "bg-[#FFFDF5] text-black"
+                        : "bg-[#FFFDF5] text-black",
+                    )}
+                  >
+                    {screenEnabled ? (
+                      <Monitor className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
+                    ) : (
+                      <MonitorOff className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
+                    )}
+                  </div>
+                  <span className="text-[9px] md:text-[10px] font-black text-black dark:text-white uppercase tracking-wide leading-none mt-[1px]">
+                    Screen Share
+                  </span>
+                </div>
+                <Button
+                  variant={screenEnabled ? "neo" : "neo-warning"}
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (connected) onToggleScreen(!screenEnabled);
+                  }}
+                  disabled={!connected}
+                  className={cn(
+                    "px-2 md:px-3 uppercase",
+                    !connected && "opacity-50 cursor-not-allowed"
+                  )}
+                >
+                  {screenEnabled ? "Stop" : "Share"}
+                </Button>
+              </div>
+            )}
+
+            {/* Main Action Buttons */}
+            {connected ? (
+              // When connected: Show Pause and Stop buttons
+              <div className="flex gap-1.5 md:gap-2 mt-1">
+                <Button
+                  variant={isPaused ? "neo-success" : "neo-warning"}
+                  onClick={handlePause}
+                  className="flex-1 uppercase text-[10px] md:text-xs"
+                >
+                  {isPaused ? (
+                    <>
+                      <Play className="w-4 h-4 md:w-5 md:h-5" />
+                      Resume
+                    </>
                   ) : (
-                    <MonitorOff className="w-3.5 h-3.5 font-bold" />
+                    <>
+                      <Pause className="w-4 h-4 md:w-5 md:h-5" />
+                      Pause
+                    </>
                   )}
                 </Button>
-              )}
+                <Button
+                  variant="neo-destructive"
+                  onClick={handleConnect}
+                  className="flex-1 uppercase text-[10px] md:text-xs"
+                >
+                  <StopCircle className="w-4 h-4 md:w-5 md:h-5" />
+                  Stop
+                </Button>
+              </div>
+            ) : (
+              // When disconnected: Show Start Session button
+              <Button
+                variant="neo-success"
+                onClick={handleConnect}
+                className="w-full mt-1 uppercase text-[10px] md:text-xs"
+              >
+                <PlayCircle className="w-4 h-4 md:w-5 md:h-5" />
+                Start Session
+              </Button>
+            )}
 
-              <div className="w-7 h-[2px] bg-black dark:bg-white my-0.5" />
-
+            {/* Bottom Actions */}
+            {/* Bottom Actions */}
+            <div className="grid grid-cols-4 gap-1 md:gap-2 pt-2 md:pt-3 border-t-[2px] border-black dark:border-white">
               {enableEditingSettings && (
                 <SettingsDialog
-                  className="!h-auto !block"
+                  className="w-full"
                   trigger={
                     <Button
                       variant="neo"
-                      size="icon"
-                      className="hover:bg-[#FF6B6B] hover:text-white"
+                      className="flex flex-col h-auto items-center justify-center gap-0.5 p-1 md:p-2 hover:bg-[#FF6B6B] hover:text-white group w-full min-w-0"
                     >
-                      <Settings className="w-3.5 h-3.5 font-bold" />
+                      <div className="p-1 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#FF6B6B] transition-colors">
+                        <Settings className="w-3 h-3 md:w-4 md:h-4 font-bold" />
+                      </div>
+                      <span className="text-[6px] xs:text-[7px] md:text-[8px] font-black uppercase truncate w-full text-center">Settings</span>
                     </Button>
                   }
                 />
               )}
-
               <Button
                 variant={isPaintActive ? "neo-warning" : "neo"}
-                size="icon"
                 onClick={onPaintClick}
-                title="Canvas"
+                className={cn(
+                  "flex flex-col h-auto items-center justify-center gap-0.5 p-1 md:p-2 group w-full min-w-0",
+                  !isPaintActive && "hover:bg-[#FFD93D] hover:text-black"
+                )}
               >
-                <PenTool className="w-3.5 h-3.5 font-bold" />
+                <div
+                  className={cn(
+                    "p-1 border-[2px] border-black dark:border-white transition-colors",
+                    isPaintActive
+                      ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
+                      : "bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#FFD93D]",
+                  )}
+                >
+                  <PenTool className="w-3 h-3 md:w-4 md:h-4 font-bold" />
+                </div>
+                <span className="text-[6px] xs:text-[7px] md:text-[8px] font-black uppercase truncate w-full text-center">Canvas</span>
               </Button>
+              <Button
+                variant={sharedMediaOpen ? "neo" : "neo"}
+                onClick={toggleSharedMedia}
+                className={cn(
+                  "flex flex-col h-auto items-center justify-center gap-0.5 p-1 md:p-2 hover:bg-[#C4B5FD] hover:text-black group w-full min-w-0",
+                  sharedMediaOpen
+                    ? "bg-[#C4B5FD] text-black"
+                    : "hover:bg-[#C4B5FD] hover:text-black"
+                )}
+              >
+                <div
+                  className={cn(
+                    "p-1 border-[2px] border-black dark:border-white transition-colors",
+                    sharedMediaOpen
+                      ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
+                      : "bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#C4B5FD]",
+                  )}
+                >
+                  <Eye className="w-3 h-3 md:w-4 md:h-4 font-bold" />
+                </div>
+                <span className="text-[6px] xs:text-[7px] md:text-[8px] font-black uppercase truncate w-full text-center">View</span>
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="neo" className="flex flex-col h-auto items-center justify-center gap-0.5 p-1 md:p-2 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black group w-full min-w-0">
+                    <div className="p-1 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-black dark:group-hover:bg-white transition-colors">
+                      <MoreHorizontal className="w-3 h-3 md:w-4 md:h-4 font-bold group-hover:text-white dark:group-hover:text-black" />
+                    </div>
+                    <span className="text-[6px] xs:text-[7px] md:text-[8px] font-black uppercase truncate w-full text-center">More</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuLabel>More Options</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem disabled>
+                    <span>Keyboard Shortcuts</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem disabled>
+                    <span>Help & Support</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+        )
+      }
 
+      {/* Popover for Shared Media */}
+      {
+        sharedMediaOpen && (
+          <div
+            className={cn(
+              "absolute w-[320px] md:w-[360px] flex flex-col bg-white dark:bg-[#000000] border-[3px] md:border-[4px] border-black dark:border-white rounded-xl md:rounded-2xl shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] overflow-hidden z-[1001]",
+              isAnimatingOut ? "animate-popover-out" : "animate-popover-in",
+              popoverPosition === "right"
+                ? "left-full ml-4 md:ml-6"
+                : "right-full mr-4 md:mr-6",
+              verticalAlign === "bottom" ? "bottom-0" : "top-0",
+            )}
+            style={{
+              height: popoverHeight ? `${popoverHeight}px` : 'auto',
+            }}
+          >
+            <div ref={popoverHeaderRef} className="flex items-center justify-between p-3 md:p-3.5 border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#FFE500]">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="p-1.5 md:p-2 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-[#000000]">
+                  <ImageIcon className="w-4 h-4 md:w-5 md:h-5 text-black dark:text-white font-bold" />
+                </div>
+                <h3 className="font-black text-black uppercase text-xs md:text-sm">
+                  ADAM'S VIEW
+                </h3>
+                <span
+                  className={cn(
+                    "px-2 md:px-3 py-0.5 md:py-1 text-[9px] md:text-[10px] font-black uppercase tracking-wider border-[2px] md:border-[3px] border-black dark:border-white",
+                    {
+                      "bg-[#ADFF2F] text-black":
+                        mediaMixerStatus.isConnected && !mediaMixerStatus.error,
+                      "bg-[#FF006E] text-white":
+                        !!mediaMixerStatus.error,
+                      "bg-white dark:bg-[#000000] text-black dark:text-white":
+                        !mediaMixerStatus.isConnected &&
+                        !mediaMixerStatus.error,
+                    },
+                  )}
+                >
+                  {mediaMixerStatus.error
+                    ? "OFF"
+                    : mediaMixerStatus.isConnected
+                      ? "LIVE"
+                      : "..."}
+                </span>
+              </div>
               <Button
                 variant="neo"
                 size="icon"
                 onClick={toggleSharedMedia}
-                className={cn(
-                  sharedMediaOpen && "bg-[#C4B5FD] hover:bg-[#C4B5FD]",
-                  !sharedMediaOpen && "hover:bg-[#C4B5FD]"
-                )}
-                title="View"
+                className="hover:bg-[#FF006E] hover:text-white"
               >
-                <Eye className="w-3.5 h-3.5 font-bold" />
-              </Button>
-
-              <div
-                className={cn(
-                  "w-10 h-8 flex items-center justify-center text-[9px] font-mono font-black mt-1 transition-colors border-[2px] border-black",
-                  connected
-                    ? "bg-[#FFD93D] text-black"
-                    : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white border-black dark:border-white",
-                )}
-              >
-                {connected ? formatTime(sessionTime) : "--:--"}
-              </div>
-            </>
-          )}
-        </div>
-      ) : (
-        // EXPANDED VIEW
-        <div className="flex flex-col gap-1.5 md:gap-2">
-          {/* Audio Control */}
-          <div
-            onClick={() => connected && handleMute()}
-            className={cn(
-              "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 group shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
-              !muted
-                ? "bg-[#FFFDF5] dark:bg-[#000000]"
-                : "bg-[#FF6B6B]",
-              connected ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
-            )}
-          >
-            <div className="flex items-center gap-1.5 md:gap-2 min-w-0 flex-1 pr-2 md:pr-3">
-              <div
-                className={cn(
-                  "flex items-center justify-center w-6 h-6 md:w-7 md:h-7 border-[2px] border-black dark:border-white transition-colors flex-shrink-0",
-                  !muted
-                    ? "bg-[#C4B5FD] text-black"
-                    : "bg-white dark:bg-[#000000] text-black dark:text-white",
-                )}
-              >
-                {muted ? (
-                  <MicOff className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
-                ) : (
-                  <Mic className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
-                )}
-              </div>
-              <div className="flex flex-col min-w-0 flex-1">
-                <span className="text-[9px] md:text-[10px] font-black text-black dark:text-white uppercase tracking-wide leading-none mt-[1px]">
-                  Microphone
-                </span>
-                <select
-                  className="bg-transparent border-none text-[9px] md:text-[10px] text-black dark:text-white outline-none cursor-pointer w-full max-w-[100px] md:max-w-[120px] truncate p-0 font-bold uppercase pr-4"
-                  value={selectedAudioDevice}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    setSelectedAudioDevice(e.target.value);
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                  disabled={connected}
-                >
-                  {audioDevices.map((device) => (
-                    <option
-                      key={device.deviceId}
-                      value={device.deviceId}
-                      className="bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
-                    >
-                      {device.label || `Mic ${device.deviceId.slice(0, 4)}`}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <Button
-              variant={!muted ? "neo" : "neo"}
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleMute();
-              }}
-              className={cn(
-                "px-2 md:px-3 uppercase flex-shrink-0",
-                !muted && "bg-[#C4B5FD] hover:bg-[#C4B5FD] text-black"
-              )}
-            >
-              {muted ? "Unmute" : "Mute"}
-            </Button>
-          </div>
-
-          {/* Camera Control */}
-          {supportsVideo && (
-            <div
-              onClick={() => connected && onToggleCamera(!cameraEnabled)}
-              className={cn(
-                "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
-                cameraEnabled
-                  ? "bg-[#C4B5FD]"
-                  : "bg-[#FFFDF5] dark:bg-[#000000]",
-                connected ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
-              )}
-            >
-              <div className="flex items-center gap-1.5 md:gap-2">
-                <div
-                  className={cn(
-                    "flex items-center justify-center w-6 h-6 md:w-7 md:h-7 border-[2px] border-black dark:border-white transition-colors",
-                    cameraEnabled
-                      ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
-                      : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white",
-                  )}
-                >
-                  {cameraEnabled ? (
-                    <Video className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
-                  ) : (
-                    <VideoOff className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
-                  )}
-                </div>
-                <span className="text-[9px] md:text-[10px] font-black text-black dark:text-white uppercase tracking-wide leading-none mt-[1px]">
-                  Camera
-                </span>
-              </div>
-              <Button
-                variant={cameraEnabled ? "neo" : "neo"}
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (connected) onToggleCamera(!cameraEnabled);
-                }}
-                disabled={!connected}
-                className={cn(
-                  "px-2 md:px-3 uppercase",
-                  !cameraEnabled && "bg-[#C4B5FD] hover:bg-[#C4B5FD] text-black",
-                  !connected && "opacity-50 cursor-not-allowed"
-                )}
-              >
-                {cameraEnabled ? "Off" : "On"}
+                <X className="w-4 h-4 md:w-5 md:h-5 font-bold" />
               </Button>
             </div>
-          )}
-
-          {/* Screen Share Control */}
-          {supportsVideo && (
-            <div
-              onClick={() => connected && onToggleScreen(!screenEnabled)}
-              className={cn(
-                "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
-                screenEnabled
-                  ? "bg-[#FFD93D]"
-                  : "bg-[#FFFDF5] dark:bg-[#000000]",
-                connected ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
-              )}
-            >
-              <div className="flex items-center gap-1.5 md:gap-2">
-                <div
-                  className={cn(
-                    "flex items-center justify-center w-6 h-6 md:w-7 md:h-7 border-[2px] border-black transition-colors",
-                    screenEnabled
-                      ? "bg-[#FFFDF5] text-black"
-                      : "bg-[#FFFDF5] text-black",
-                  )}
-                >
-                  {screenEnabled ? (
-                    <Monitor className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
-                  ) : (
-                    <MonitorOff className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
-                  )}
-                </div>
-                <span className="text-[9px] md:text-[10px] font-black text-black dark:text-white uppercase tracking-wide leading-none mt-[1px]">
-                  Screen Share
-                </span>
-              </div>
-              <Button
-                variant={screenEnabled ? "neo" : "neo-warning"}
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (connected) onToggleScreen(!screenEnabled);
-                }}
-                disabled={!connected}
-                className={cn(
-                  "px-2 md:px-3 uppercase",
-                  !connected && "opacity-50 cursor-not-allowed"
-                )}
-              >
-                {screenEnabled ? "Stop" : "Share"}
-              </Button>
-            </div>
-          )}
-
-          {/* Main Action Buttons */}
-          {connected ? (
-            // When connected: Show Pause and Stop buttons
-            <div className="flex gap-1.5 md:gap-2 mt-1">
-              <Button
-                variant={isPaused ? "neo-success" : "neo-warning"}
-                onClick={handlePause}
-                className="flex-1 uppercase text-[10px] md:text-xs"
-              >
-                {isPaused ? (
-                  <>
-                    <Play className="w-4 h-4 md:w-5 md:h-5" />
-                    Resume
-                  </>
-                ) : (
-                  <>
-                    <Pause className="w-4 h-4 md:w-5 md:h-5" />
-                    Pause
-                  </>
-                )}
-              </Button>
-              <Button
-                variant="neo-destructive"
-                onClick={handleConnect}
-                className="flex-1 uppercase text-[10px] md:text-xs"
-              >
-                <StopCircle className="w-4 h-4 md:w-5 md:h-5" />
-                Stop
-              </Button>
-            </div>
-          ) : (
-            // When disconnected: Show Start Session button
-            <Button
-              variant="neo-success"
-              onClick={handleConnect}
-              className="w-full mt-1 uppercase text-[10px] md:text-xs"
-            >
-              <PlayCircle className="w-4 h-4 md:w-5 md:h-5" />
-              Start Session
-            </Button>
-          )}
-
-          {/* Bottom Actions */}
-          {/* Bottom Actions */}
-          <div className="grid grid-cols-4 gap-1 md:gap-2 pt-2 md:pt-3 border-t-[2px] border-black dark:border-white">
-            {enableEditingSettings && (
-              <SettingsDialog
-                className="w-full"
-                trigger={
-                  <Button
-                    variant="neo"
-                    className="flex flex-col h-auto items-center justify-center gap-0.5 p-1 md:p-2 hover:bg-[#FF6B6B] hover:text-white group w-full min-w-0"
-                  >
-                    <div className="p-1 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#FF6B6B] transition-colors">
-                      <Settings className="w-3 h-3 md:w-4 md:h-4 font-bold" />
-                    </div>
-                    <span className="text-[6px] xs:text-[7px] md:text-[8px] font-black uppercase truncate w-full text-center">Settings</span>
-                  </Button>
-                }
+            <div className="flex-1 min-h-0 bg-[#FFFDF5] dark:bg-[#000000] overflow-hidden p-0 m-0">
+              <MediaMixerDisplay
+                canvasRef={mediaMixerCanvasRef}
+                onStatusChange={setMediaMixerStatus}
+                isCameraEnabled={cameraEnabled}
+                isScreenShareEnabled={screenEnabled}
+                isCanvasEnabled={isPaintActive}
               />
-            )}
-            <Button
-              variant={isPaintActive ? "neo-warning" : "neo"}
-              onClick={onPaintClick}
-              className={cn(
-                "flex flex-col h-auto items-center justify-center gap-0.5 p-1 md:p-2 group w-full min-w-0",
-                !isPaintActive && "hover:bg-[#FFD93D] hover:text-black"
-              )}
-            >
-              <div
-                className={cn(
-                  "p-1 border-[2px] border-black dark:border-white transition-colors",
-                  isPaintActive
-                    ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
-                    : "bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#FFD93D]",
-                )}
-              >
-                <PenTool className="w-3 h-3 md:w-4 md:h-4 font-bold" />
-              </div>
-              <span className="text-[6px] xs:text-[7px] md:text-[8px] font-black uppercase truncate w-full text-center">Canvas</span>
-            </Button>
-            <Button
-              variant={sharedMediaOpen ? "neo" : "neo"}
-              onClick={toggleSharedMedia}
-              className={cn(
-                "flex flex-col h-auto items-center justify-center gap-0.5 p-1 md:p-2 hover:bg-[#C4B5FD] hover:text-black group w-full min-w-0",
-                sharedMediaOpen
-                  ? "bg-[#C4B5FD] text-black"
-                  : "hover:bg-[#C4B5FD] hover:text-black"
-              )}
-            >
-              <div
-                className={cn(
-                  "p-1 border-[2px] border-black dark:border-white transition-colors",
-                  sharedMediaOpen
-                    ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
-                    : "bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#C4B5FD]",
-                )}
-              >
-                <Eye className="w-3 h-3 md:w-4 md:h-4 font-bold" />
-              </div>
-              <span className="text-[6px] xs:text-[7px] md:text-[8px] font-black uppercase truncate w-full text-center">View</span>
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="neo" className="flex flex-col h-auto items-center justify-center gap-0.5 p-1 md:p-2 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black group w-full min-w-0">
-                  <div className="p-1 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-black dark:group-hover:bg-white transition-colors">
-                    <MoreHorizontal className="w-3 h-3 md:w-4 md:h-4 font-bold group-hover:text-white dark:group-hover:text-black" />
-                  </div>
-                  <span className="text-[6px] xs:text-[7px] md:text-[8px] font-black uppercase truncate w-full text-center">More</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel>More Options</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem disabled>
-                  <span>Keyboard Shortcuts</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem disabled>
-                  <span>Help & Support</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      )}
-
-      {/* Popover for Shared Media */}
-      {sharedMediaOpen && (
-        <div
-          className={cn(
-            "absolute w-[320px] md:w-[360px] flex flex-col bg-white dark:bg-[#000000] border-[3px] md:border-[4px] border-black dark:border-white rounded-xl md:rounded-2xl shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] overflow-hidden z-[1001]",
-            isAnimatingOut ? "animate-popover-out" : "animate-popover-in",
-            popoverPosition === "right"
-              ? "left-full ml-4 md:ml-6"
-              : "right-full mr-4 md:mr-6",
-            verticalAlign === "bottom" ? "bottom-0" : "top-0",
-          )}
-          style={{
-            height: popoverHeight ? `${popoverHeight}px` : 'auto',
-          }}
-        >
-          <div ref={popoverHeaderRef} className="flex items-center justify-between p-3 md:p-3.5 border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#FFE500]">
-            <div className="flex items-center gap-2 md:gap-3">
-              <div className="p-1.5 md:p-2 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-[#000000]">
-                <ImageIcon className="w-4 h-4 md:w-5 md:h-5 text-black dark:text-white font-bold" />
-              </div>
-              <h3 className="font-black text-black uppercase text-xs md:text-sm">
-                ADAM'S VIEW
-              </h3>
-              <span
-                className={cn(
-                  "px-2 md:px-3 py-0.5 md:py-1 text-[9px] md:text-[10px] font-black uppercase tracking-wider border-[2px] md:border-[3px] border-black dark:border-white",
-                  {
-                    "bg-[#ADFF2F] text-black":
-                      mediaMixerStatus.isConnected && !mediaMixerStatus.error,
-                    "bg-[#FF006E] text-white":
-                      !!mediaMixerStatus.error,
-                    "bg-white dark:bg-[#000000] text-black dark:text-white":
-                      !mediaMixerStatus.isConnected &&
-                      !mediaMixerStatus.error,
-                  },
-                )}
-              >
-                {mediaMixerStatus.error
-                  ? "OFF"
-                  : mediaMixerStatus.isConnected
-                    ? "LIVE"
-                    : "..."}
-              </span>
             </div>
-            <Button
-              variant="neo"
-              size="icon"
-              onClick={toggleSharedMedia}
-              className="hover:bg-[#FF006E] hover:text-white"
-            >
-              <X className="w-4 h-4 md:w-5 md:h-5 font-bold" />
-            </Button>
           </div>
-          <div className="flex-1 min-h-0 bg-[#FFFDF5] dark:bg-[#000000] overflow-hidden p-0 m-0">
-            <MediaMixerDisplay
-              canvasRef={mediaMixerCanvasRef}
-              onStatusChange={setMediaMixerStatus}
-              isCameraEnabled={cameraEnabled}
-              isScreenShareEnabled={screenEnabled}
-              isCanvasEnabled={isPaintActive}
-            />
-          </div>
-        </div>
-      )}
-    </motion.div>
+        )
+      }
+    </motion.div >
   );
 }
 export default memo(FloatingControlPanel);
