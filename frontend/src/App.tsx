@@ -64,6 +64,8 @@ function App() {
     screenVideoRef
   } = useMediaCapture({});
 
+  const [privacyEnabled, setPrivacyEnabled] = useState(false);
+
   // MediaMixer hook for local video mixing - uses state from useMediaCapture
   const mediaMixer = useMediaMixer({
     width: 1280,
@@ -72,6 +74,7 @@ function App() {
     quality: 0.85,
     cameraEnabled: cameraEnabled,
     screenEnabled: screenEnabled,
+    privacyEnabled: privacyEnabled,
     cameraVideoRef: cameraVideoRef,
     screenVideoRef: screenVideoRef
   });
@@ -160,6 +163,8 @@ function App() {
                         screenEnabled={screenEnabled}
                         onToggleCamera={toggleCamera}
                         onToggleScreen={toggleScreen}
+                        privacyEnabled={privacyEnabled}
+                        onTogglePrivacy={setPrivacyEnabled}
                         mediaMixerCanvasRef={mediaMixer.canvasRef}
                       />
                     </div>

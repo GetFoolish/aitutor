@@ -1,4 +1,5 @@
 import { useRef, useCallback, useState, useEffect, RefObject } from 'react';
+import { CannyEdgeFilter } from '../utils/CannyEdgeFilter';
 
 interface MediaMixerConfig {
   width: number;      // 1280
@@ -7,6 +8,7 @@ interface MediaMixerConfig {
   quality: number;    // 0.85 (not used in canvas mixing)
   cameraEnabled?: boolean;
   screenEnabled?: boolean;
+  privacyEnabled?: boolean;
   cameraVideoRef?: RefObject<HTMLVideoElement>;
   screenVideoRef?: RefObject<HTMLVideoElement>;
 }
@@ -14,6 +16,12 @@ interface MediaMixerConfig {
 export const useMediaMixer = (config: MediaMixerConfig) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const scratchpadCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const filterRef = useRef<CannyEdgeFilter | null>(null);
+
+  // Initialize filter
+  useEffect(() => {
+    filterRef.current = new CannyEdgeFilter();
+  }, []);
 
   // State for UI control - controlled by props
   const showCamera = config.cameraEnabled || false;
@@ -72,13 +80,20 @@ export const useMediaMixer = (config: MediaMixerConfig) => {
       try {
         const video = config.cameraVideoRef.current;
         if (video.readyState >= 2) {
-          ctx.drawImage(video, 0, 2 * sectionHeight, config.width, sectionHeight);
+          if (config.privacyEnabled && filterRef.current) {
+            // Apply Canny Edge Filter
+            const filteredCanvas = filterRef.current.process(video);
+            ctx.drawImage(filteredCanvas, 0, 2 * sectionHeight, config.width, sectionHeight);
+          } else {
+            // Normal Camera Feed
+            ctx.drawImage(video, 0, 2 * sectionHeight, config.width, sectionHeight);
+          }
         }
       } catch (error) {
         // console.error('Error drawing camera frame:', error);
       }
     }
-  }, [config.width, config.height, showCamera, showScreen, config.cameraVideoRef, config.screenVideoRef]);
+  }, [config.width, config.height, showCamera, showScreen, config.cameraVideoRef, config.screenVideoRef, config.privacyEnabled]);
 
   // Update frame buffers
   const updateScratchpadFrame = useCallback((canvas: HTMLCanvasElement) => {
