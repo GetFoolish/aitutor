@@ -25,6 +25,8 @@ import QuestionDisplay from "./components/question-display/QuestionDisplay";
 import Scratchpad from "./components/scratchpad/Scratchpad";
 import { ThemeProvider } from "./components/theme/theme-provier";
 import { HintProvider } from "./contexts/HintContext";
+import { StreakProvider } from "./contexts/StreakContext";
+import { StreakMessage } from "./components/daily-streak";
 import { Toaster } from "@/components/ui/sonner";
 import { useMediaMixer } from "./hooks/useMediaMixer";
 import { useMediaCapture } from "./hooks/useMediaCapture";
@@ -109,11 +111,13 @@ function App() {
 
   return (
     <ThemeProvider defaultTheme="light" storageKey="ai-tutor-theme">
-      <div className="App">
-        <AuthGuard>
-          <TutorProvider>
-            <HintProvider>
-              <Header
+      <StreakProvider>
+        <div className="App">
+          <AuthGuard>
+            <TutorProvider>
+              <HintProvider>
+                <StreakMessage />
+                <Header
                 sidebarOpen={isSidebarOpen}
                 onToggleSidebar={toggleSidebar}
               />
@@ -167,10 +171,11 @@ function App() {
                 </Suspense>
               </div>
               <Toaster richColors closeButton />
-            </HintProvider>
-          </TutorProvider>
-        </AuthGuard>
-      </div>
+              </HintProvider>
+            </TutorProvider>
+          </AuthGuard>
+        </div>
+      </StreakProvider>
     </ThemeProvider>
   );
 }
