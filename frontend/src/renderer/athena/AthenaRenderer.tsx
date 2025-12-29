@@ -561,6 +561,11 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
       const dollarPlaceholder = '__DOLLAR_SIGN__';
       processed = processed.replace(/\\\$/g, dollarPlaceholder);
 
+      // Clean up stray/empty $$ patterns FIRST (before valid processing)
+      // Remove $$ followed immediately by whitespace or non-math content (likely malformed)
+      processed = processed.replace(/\$\$\s+(?=[A-Z])/g, ''); // $$ followed by space then capital letter
+      processed = processed.replace(/\$\$\s*$/gm, ''); // $$ at end of line with optional whitespace
+
       // Process display math $$...$$ first (multiline support with [\s\S])
       processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
         // Preprocess: Remove unsupported LaTeX sizing commands
