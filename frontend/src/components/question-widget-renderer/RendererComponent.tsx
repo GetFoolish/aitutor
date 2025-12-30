@@ -322,58 +322,28 @@ const RendererComponent = ({
             const itemData = perseusItem; // Full item with question AND answer
             
             console.log('[SCORING] User input:', JSON.stringify(userInput, null, 2));
-            console.log('[SCORING] Item data keys:', Object.keys(itemData));
-            console.log('[SCORING] Has answer key:', !!itemData.answer);
-            console.log('[SCORING] Answer:', JSON.stringify(itemData.answer, null, 2));
+            console.log('[SCORING] Question widgets:', Object.keys(itemData.question.widgets || {}));
             
-            // Custom scoring since Perseus doesn't have answer keys in our questions
-            // Score based on the 'correct' property in widget choices
-            let isCorrect = false;
-            const question = itemData.question;
+            // Use Perseus's built-in scoring for ALL widget types
+            // scorePerseusItem handles radio, orderer, numeric-input, expression, etc.
+            const perseusScore = scorePerseusItem(
+                itemData.question,  // PerseusRenderer with widgets
+                userInput,          // UserInputMap from getUserInput()
+                'en'                // locale
+            );
             
-            // Check each widget in the user input
-            for (const [widgetId, widgetInput] of Object.entries(userInput)) {
-                const widgetDef = question.widgets?.[widgetId];
-                if (!widgetDef) continue;
-                
-                if (widgetDef.type === 'radio') {
-                    const choices = widgetDef.options?.choices || [];
-                    const selectedIds = (widgetInput as any).selectedChoiceIds || [];
-                    const isMultiSelect = widgetDef.options?.multipleSelect || false;
-                    
-                    if (isMultiSelect) {
-                        // For multi-select: all selected choices must be correct, and all correct choices must be selected
-                        const correctIndices = choices
-                            .map((c, i) => c.correct ? i : -1)
-                            .filter(i => i >= 0);
-                        const selectedIndices = selectedIds.map((id: string) => {
-                            const match = id.match(/choice-(\d+)-/);
-                            return match ? parseInt(match[1]) : -1;
-                        }).filter((i: number) => i >= 0);
-                        
-                        isCorrect = correctIndices.length === selectedIndices.length &&
-                                   correctIndices.every((idx: number) => selectedIndices.includes(idx));
-                    } else {
-                        // For single-select: the one selected choice must be correct
-                        if (selectedIds.length === 1) {
-                            const selectedId = selectedIds[0];
-                            const match = selectedId.match(/choice-(\d+)-/);
-                            if (match) {
-                                const selectedIndex = parseInt(match[1]);
-                                isCorrect = choices[selectedIndex]?.correct === true;
-                            }
-                        }
-                    }
-                }
-            }
+            console.log('[SCORING] Perseus score:', perseusScore);
             
-            console.log('[SCORING] Custom score - is correct:', isCorrect);
+            // Convert Perseus score to our score format
+            const isCorrect = perseusScore.type === 'points' && 
+                             perseusScore.earned === perseusScore.total &&
+                             perseusScore.total > 0;
             
             const scoreResult = {
-                type: isCorrect ? 'points' : 'points',
+                type: 'points',
                 earned: isCorrect ? 1 : 0,
                 total: 1,
-                message: null
+                message: perseusScore.message || null
             };
 
             // Continue to include an empty guess for the now defunct answer area.
