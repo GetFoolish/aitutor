@@ -78,6 +78,7 @@ class PerseusQuestion(BaseModel):
     hints: List = Field(description="List of question hints")
     itemDataVersion: Optional[dict] = Field(default=None, description="Perseus item data version")
     dash_metadata: Optional[dict] = Field(default=None, description="DASH metadata for tracking")
+    learningAsset: Optional[dict] = Field(default=None, description="Embedded learning asset (video)")
     
     class Config:
         extra = "allow"  # Allow additional fields that aren't in the model
@@ -205,6 +206,23 @@ def load_perseus_items_for_dash_questions_from_mongodb(
             continue
         except Exception as e:
             logger.warning(f"Failed to load Perseus from scraped_questions for question_id {question_id}: {e}")
+
+    # --- MOCK DATA INJECTION FOR DEVELOPMENT ---
+    # Inject learningAsset for known questions to verify frontend
+    if perseus_items:
+        # Just pick the first one or a specific ID if you prefer
+        # Example: Inject into the first item so we always see it
+        mock_asset = {
+            "title": "Introduction to Algebra",
+            "thumbnail": "https://img.youtube.com/vi/NybHckSEQBI/mqdefault.jpg",
+            "videoId": "NybHckSEQBI",
+            "duration": "12:30",
+            "category": "Math"
+        }
+        # In real implementation, this would come from `item_data.get('learningAsset')`
+        # For now, we force it on the first item if not present
+        if not perseus_items[0].get('learningAsset'):
+            perseus_items[0]['learningAsset'] = mock_asset
 
     return perseus_items
 
@@ -606,6 +624,75 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
     except Exception as e:
         logger.error(f"[ERROR] Failed to load recommended questions: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to load recommended questions: {e}")
+
+class LearningAsset(BaseModel):
+    id: str = Field(alias="_id", default="")
+    title: str
+    path: str
+    slug: Optional[str] = ""
+    category: Optional[str] = "General"
+    lessonName: Optional[str] = ""
+    courseName: Optional[str] = ""
+    
+    class Config:
+        extra = "allow"
+        arbitrary_types_allowed = True
+        json_encoders = {
+            object: str
+        }
+
+@app.get("/api/learning-assets", response_model=List[LearningAsset])
+def get_learning_assets():
+    """
+    Get all learning assets directly from the exercises collection.
+    """
+    from managers.mongodb_manager import mongo_db
+    
+    try:
+        logger.info("[LEARNING_ASSETS] Fetching all available assets")
+        
+        # 1. Fetch exercises that have regions/paths (videos)
+        # We limit to a reasonable number to avoid heavy load, but enough to feel "complete"
+        exercises_cursor = mongo_db.db.exercises.find({"status": "CAPTURED"}).limit(100)
+        
+        assets_list = []
+        for exercise in exercises_cursor:
+            # Resolve path (prefer multivariable-calculus or GLOBAL)
+            regions = exercise.get("regions", {})
+            path = None
+            
+            # Use the same priority logic as before
+            if "multivariable-calculus" in regions:
+                path = regions["multivariable-calculus"].get("path")
+            elif "GLOBAL" in regions:
+                path = regions["GLOBAL"].get("path")
+            else:
+                # Fallback to first region with a path
+                for r_data in regions.values():
+                    if isinstance(r_data, dict) and r_data.get("path"):
+                        path = r_data.get("path")
+                        break
+            
+            if not path:
+                continue
+                
+            assets_list.append({
+                "_id": str(exercise.get("_id")),
+                "title": exercise.get("title", "Untitled Asset"),
+                "path": path,
+                "slug": exercise.get("slug", ""),
+                "category": "Mixed", # We don't have courseName/lessonName directly here easily without join
+                "lessonName": "",
+                "courseName": ""
+            })
+            
+        logger.info(f"[LEARNING_ASSETS] Generated {len(assets_list)} assets from exercises collection")
+        return assets_list
+    except Exception as e:
+        logger.error(f"[ERROR] Failed to fetch learning assets: {e}")
+        import traceback
+        logger.error(f"[ERROR] Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch learning assets: {e}")
 
 if __name__ == "__main__":
     import uvicorn
