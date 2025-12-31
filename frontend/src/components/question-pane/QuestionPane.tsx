@@ -201,17 +201,16 @@ const CalculatorModal: React.FC<{ isOpen: boolean; onClose: () => void; darkMode
           ))}
         </div>
         <div className="grid grid-cols-4 gap-2">
-          {['7','8','9','÷','4','5','6','×','1','2','3','-','0','.','=','+'].map((btn) => (
+          {['7', '8', '9', '÷', '4', '5', '6', '×', '1', '2', '3', '-', '0', '.', '=', '+'].map((btn) => (
             <button
               key={btn}
               onClick={() => {
-                if (['÷','×','-','+'].includes(btn)) handleOperator(btn);
+                if (['÷', '×', '-', '+'].includes(btn)) handleOperator(btn);
                 else if (btn === '=') handleEquals();
                 else handleNumber(btn);
               }}
-              className={`p-3 text-lg font-bold rounded-xl transition-all ${
-                btn === '=' ? 'bg-[var(--brilliant-accent)] text-white' : btnClass
-              }`}
+              className={`p-3 text-lg font-bold rounded-xl transition-all ${btn === '=' ? 'bg-[var(--brilliant-accent)] text-white' : btnClass
+                }`}
             >
               {btn}
             </button>
@@ -365,11 +364,10 @@ const ProgressHeader: React.FC<{
       <div className="max-w-5xl mx-auto flex items-center gap-2 px-4 pb-2">
         <button
           onClick={onToggleQuizMode}
-          className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
-            quizMode === 'practice'
+          className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${quizMode === 'practice'
               ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'
               : 'bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-300'
-          }`}
+            }`}
         >
           {quizMode === 'practice' ? '📚 Practice' : '🎯 Test'}
         </button>
@@ -445,15 +443,13 @@ const FeedbackBanner: React.FC<{
             >
               Try again
             </button>
-            {hasHints && (
-              <button
-                onClick={onGetHint}
-                className="px-6 py-3 bg-[#F3F4FF] hover:bg-[#E8EAFF] text-[#2F7BF6] brilliant-btn-text rounded-full border-2 border-[#2F7BF6] transition-colors flex items-center gap-2"
-              >
-                <Lightbulb className="w-4 h-4" />
-                Get a hint
-              </button>
-            )}
+            <button
+              onClick={onGetHint}
+              className="px-6 py-3 bg-[#F3F4FF] hover:bg-[#E8EAFF] text-[#2F7BF6] brilliant-btn-text rounded-full border-2 border-[#2F7BF6] transition-colors flex items-center gap-2"
+            >
+              <Lightbulb className="w-4 h-4" />
+              Get a hint
+            </button>
             <button
               onClick={onSeeAnswer}
               className="px-6 py-3 bg-[#E8DFC4] hover:bg-[#D9CEB0] text-[#5C4813] brilliant-btn-text rounded-full transition-colors"
@@ -536,7 +532,7 @@ const HintPanel: React.FC<{
     }
     // Add extension if it's a kastatic URL without one
     if ((url.includes('cdn.kastatic.org') || url.includes('ka-perseus')) &&
-        !url.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i)) {
+      !url.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i)) {
       return url + '.png';
     }
     return url;
@@ -1459,11 +1455,10 @@ export const QuestionPane: React.FC = () => {
                     value={objectIdInput}
                     onChange={(e) => setObjectIdInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && loadQuestionById()}
-                    className={`w-full pl-9 pr-3 py-2 rounded-xl text-sm font-medium border-2 transition-colors focus:outline-none ${
-                      darkMode
+                    className={`w-full pl-9 pr-3 py-2 rounded-xl text-sm font-medium border-2 transition-colors focus:outline-none ${darkMode
                         ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500'
                         : 'bg-white border-gray-200 text-gray-700 focus:border-[var(--brilliant-selected-border)]'
-                    }`}
+                      }`}
                   />
                 </div>
                 <button onClick={loadQuestionById} className="px-4 py-2 bg-[var(--brilliant-selected-border)] text-white font-bold rounded-xl text-sm hover:opacity-90 transition-opacity">
@@ -1478,11 +1473,10 @@ export const QuestionPane: React.FC = () => {
               <select
                 value={widgetFilter}
                 onChange={(e) => { setWidgetFilter(e.target.value); loadQuestions(e.target.value); }}
-                className={`px-3 py-2 rounded-xl text-sm font-medium border-2 cursor-pointer focus:outline-none ${
-                  darkMode
+                className={`px-3 py-2 rounded-xl text-sm font-medium border-2 cursor-pointer focus:outline-none ${darkMode
                     ? 'bg-gray-700 border-gray-600 text-white'
                     : 'bg-white border-gray-200 text-gray-700'
-                }`}
+                  }`}
               >
                 {widgetTypeOptions.map((type) => (
                   <option key={type} value={type}>{type === 'all' ? '🎯 All Widgets' : type}</option>
@@ -1495,11 +1489,10 @@ export const QuestionPane: React.FC = () => {
                   <button
                     key={mode}
                     onClick={() => setViewMode(mode)}
-                    className={`px-3 py-2 rounded-xl text-sm font-bold transition-all ${
-                      viewMode === mode
+                    className={`px-3 py-2 rounded-xl text-sm font-bold transition-all ${viewMode === mode
                         ? mode === 'athena' ? 'bg-[var(--brilliant-accent)] text-white' : mode === 'perseus' ? 'bg-orange-500 text-white' : 'bg-purple-500 text-white'
                         : darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
-                    }`}
+                      }`}
                   >
                     {mode === 'athena' ? 'Athena' : mode === 'perseus' ? 'Perseus' : 'Compare'}
                   </button>
@@ -1528,11 +1521,10 @@ export const QuestionPane: React.FC = () => {
               <button
                 key={idx}
                 onClick={() => handleJumpToQuestion(idx)}
-                className={`px-3 py-1 rounded-lg brilliant-label transition-colors ${
-                  idx === currentIndex
+                className={`px-3 py-1 rounded-lg brilliant-label transition-colors ${idx === currentIndex
                     ? 'bg-[var(--brilliant-selected-border)] text-white'
                     : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                }`}
+                  }`}
               >
                 Q{idx + 1}
               </button>
@@ -1563,9 +1555,8 @@ export const QuestionPane: React.FC = () => {
               {hasCalculator ? (
                 <button
                   onClick={() => setShowCalculator(true)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl brilliant-btn-text transition-colors ${
-                    darkMode ? 'bg-gray-800 hover:bg-gray-700 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                  }`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl brilliant-btn-text transition-colors ${darkMode ? 'bg-gray-800 hover:bg-gray-700 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                    }`}
                 >
                   <Calculator className="w-4 h-4" />
                   Calculator
@@ -1576,11 +1567,10 @@ export const QuestionPane: React.FC = () => {
 
               <button
                 onClick={toggleBookmark}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl brilliant-btn-text transition-colors ${
-                  bookmarkedQuestions.has(currentIndex)
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl brilliant-btn-text transition-colors ${bookmarkedQuestions.has(currentIndex)
                     ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300'
                     : darkMode ? 'bg-gray-800 hover:bg-gray-700 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                }`}
+                  }`}
               >
                 {bookmarkedQuestions.has(currentIndex) ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
                 {bookmarkedQuestions.has(currentIndex) ? 'Saved' : 'Save'}
@@ -1590,9 +1580,8 @@ export const QuestionPane: React.FC = () => {
             {/* Question Card - Brilliant Style */}
             <div
               ref={cardRef}
-              className={`rounded-3xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] transition-all duration-200 ${
-                isTransitioning ? 'opacity-0 translate-x-[-8px]' : 'opacity-100 translate-x-0 animate-cardIn'
-              } ${darkMode ? 'bg-gray-800' : 'bg-[var(--brilliant-bg-card)]'}`}
+              className={`rounded-3xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] transition-all duration-200 ${isTransitioning ? 'opacity-0 translate-x-[-8px]' : 'opacity-100 translate-x-0 animate-cardIn'
+                } ${darkMode ? 'bg-gray-800' : 'bg-[var(--brilliant-bg-card)]'}`}
             >
               <div className="px-6 py-6 md:px-8 md:py-8">
                 {/* Athena Renderer */}
@@ -1715,9 +1704,8 @@ export const QuestionPane: React.FC = () => {
                       {currentQuestion.hints?.length > 0 && !showHints && (
                         <button
                           onClick={() => setShowHints(true)}
-                          className={`brilliant-btn-text underline-offset-2 hover:underline ${
-                            darkMode ? 'text-blue-400' : 'text-[var(--brilliant-hint-text)]'
-                          }`}
+                          className={`brilliant-btn-text underline-offset-2 hover:underline ${darkMode ? 'text-blue-400' : 'text-[var(--brilliant-hint-text)]'
+                            }`}
                         >
                           Need a hint?
                         </button>
@@ -1728,11 +1716,10 @@ export const QuestionPane: React.FC = () => {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={handleSkip}
-                        className={`px-5 py-2.5 rounded-2xl brilliant-btn-text transition-all ${
-                          darkMode
+                        className={`px-5 py-2.5 rounded-2xl brilliant-btn-text transition-all ${darkMode
                             ? 'text-gray-400 border-2 border-gray-600 hover:bg-gray-700'
                             : 'text-gray-500 border-2 border-gray-200 hover:bg-gray-50'
-                        }`}
+                          }`}
                       >
                         Skip
                       </button>
@@ -1740,11 +1727,10 @@ export const QuestionPane: React.FC = () => {
                       <button
                         onClick={handleSubmit}
                         disabled={!hasAnswers}
-                        className={`inline-flex items-center justify-center rounded-2xl px-6 py-2.5 md:px-7 md:py-3 brilliant-btn-text transition-all brilliant-btn-3d ${
-                          hasAnswers
+                        className={`inline-flex items-center justify-center rounded-2xl px-6 py-2.5 md:px-7 md:py-3 brilliant-btn-text transition-all brilliant-btn-3d ${hasAnswers
                             ? 'bg-[var(--brilliant-accent)] text-white shadow-[0_4px_0_var(--brilliant-accent-dark)] border-b-4 border-[var(--brilliant-accent-dark)] active:border-b-0 active:shadow-none'
                             : 'bg-[var(--brilliant-accent-disabled)] text-white/80 border-b-4 border-[var(--brilliant-accent-disabled-border)] cursor-not-allowed'
-                        }`}
+                          }`}
                       >
                         Check
                       </button>
@@ -1785,9 +1771,8 @@ export const QuestionPane: React.FC = () => {
             <button
               onClick={handlePrevious}
               disabled={currentIndex === 0}
-              className={`p-2 rounded-full transition-colors disabled:opacity-30 ${
-                darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
-              }`}
+              className={`p-2 rounded-full transition-colors disabled:opacity-30 ${darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+                }`}
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
@@ -1797,9 +1782,8 @@ export const QuestionPane: React.FC = () => {
             <button
               onClick={handleContinue}
               disabled={currentIndex === activeQuestions.length - 1 && attemptState === 'idle'}
-              className={`p-2 rounded-full transition-colors disabled:opacity-30 ${
-                darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
-              }`}
+              className={`p-2 rounded-full transition-colors disabled:opacity-30 ${darkMode ? 'hover:bg-gray-800 text-gray-400' : 'hover:bg-gray-100 text-gray-500'
+                }`}
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -1807,11 +1791,10 @@ export const QuestionPane: React.FC = () => {
 
           <button
             onClick={() => setShowSummary(true)}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-full brilliant-btn-text transition-colors ${
-              darkMode
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-full brilliant-btn-text transition-colors ${darkMode
                 ? 'text-purple-400 bg-purple-900/30 hover:bg-purple-900/50'
                 : 'text-purple-600 bg-purple-50 hover:bg-purple-100'
-            }`}
+              }`}
           >
             <Trophy className="w-4 h-4" />
             Results

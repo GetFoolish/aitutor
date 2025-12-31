@@ -1532,3 +1532,27 @@
 .comparison-panel .athena-renderer {
   overflow: visible;
 }
+
+/* ============================================================================
+   KATEX ALIGNMENT OVERRIDES
+   ============================================================================ */
+
+/* Left-align display math (overriding KaTeX default centering) */
+.athena-renderer .katex-display {
+  display: block;
+  text-align: left;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0.5rem; /* Add slight padding for readability */
+}
+
+.athena-renderer .katex-display > .katex {
+  text-align: left;
+}
+
+.athena-renderer .katex-display > .katex > .katex-html {
+  display: block;
+  text-align: left;
+  padding-right: 0;
+  padding-left: 0;
+}

@@ -7,7 +7,7 @@ from pymongo import MongoClient
 from typing import Optional
 import os
 import logging
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
 from shared.logging_config import get_logger
 
@@ -15,7 +15,13 @@ logger = get_logger(__name__)
 
 
 # Load environment variables from .env file
-load_dotenv()
+# Load environment variables from .env file
+dotenv_path = find_dotenv()
+if dotenv_path:
+    logger.info(f"Loading .env from: {dotenv_path}")
+    load_dotenv(dotenv_path)
+else:
+    logger.warning("No .env file found via find_dotenv()")
 
 logger = logging.getLogger(__name__)
 
@@ -41,11 +47,13 @@ class MongoDBManager:
             # Get connection string from environment variable
             mongo_uri = os.getenv('MONGODB_URI')
             if not mongo_uri:
-                raise ValueError(
+                msg = (
                     "MONGODB_URI not found in environment variables. "
-                    "Please create a .env file with MONGODB_URI. "
-                    "See .env.example for template."
+                    f"Tried to load from: {dotenv_path if 'dotenv_path' in locals() else 'unknown'}. "
+                    "Please check if MONGODB_URI is correctly defined in your .env file."
                 )
+                logger.error(f"[MONGODB] {msg}")
+                raise ValueError(msg)
             
             db_name = os.getenv('MONGODB_DB_NAME', 'ai_tutor')
             

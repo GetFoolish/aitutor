@@ -94,8 +94,8 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         // Helper to check if URL is a graphie URL (needs labels from data.json)
         const isGraphieUrl = (url: string): boolean => {
           return url.startsWith('web+graphie://') ||
-                 url.includes('ka-perseus-graphie') ||
-                 (url.includes('kastatic.org') && url.includes('graphie'));
+            url.includes('ka-perseus-graphie') ||
+            (url.includes('kastatic.org') && url.includes('graphie'));
         };
 
         // Helper to convert URL to img tag or graphie placeholder
@@ -119,7 +119,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
           if (imageUrl.startsWith('web+graphie://')) {
             imageUrl = imageUrl.replace('web+graphie://', 'https://') + '.png';
           } else if ((imageUrl.includes('cdn.kastatic.org') || imageUrl.includes('ka-perseus')) &&
-                     !imageUrl.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i)) {
+            !imageUrl.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i)) {
             imageUrl = imageUrl + '.png';
           }
           return `<img src="${imageUrl}" alt="${alt}" class="athena-image" style="max-width:100%;height:auto;display:block;margin:1rem 0;" referrerpolicy="no-referrer" />`;
@@ -563,8 +563,9 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
 
       // Clean up stray/empty $$ patterns FIRST (before valid processing)
       // Remove $$ followed immediately by whitespace or non-math content (likely malformed)
-      processed = processed.replace(/\$\$\s+(?=[A-Z])/g, ''); // $$ followed by space then capital letter
-      processed = processed.replace(/\$\$\s*$/gm, ''); // $$ at end of line with optional whitespace
+      // Clean up stray/empty $$ patterns FIRST (before valid processing)
+      // Remove $$ followed immediately by whitespace or non-math content (valid display math usually starts with content or newline)
+      // processed = processed.replace(/\$\$\s*$/gm, ''); // $$ at end of line with optional whitespace
 
       // Process display math $$...$$ first (multiline support with [\s\S])
       processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
@@ -846,7 +847,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
             const isSeparatorRow = nextLine.includes('-') && /^[\s|:\-]+$/.test(nextLine);
 
             if (nextLine.includes('|') &&
-                (isSeparatorRow || (isValidTableRow(nextLine) && parseCells(nextLine).length >= 2))) {
+              (isSeparatorRow || (isValidTableRow(nextLine) && parseCells(nextLine).length >= 2))) {
               tableLines.push(lines[j]);
               emptyLineCount = 0;
               j++;
@@ -1204,7 +1205,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
           }
           // Handle CDN URLs missing extension
           else if ((imageUrl.includes('cdn.kastatic.org') || imageUrl.includes('ka-perseus')) &&
-                   !imageUrl.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i)) {
+            !imageUrl.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i)) {
             imageUrl = imageUrl + '.png';
           }
           // Handle relative URLs
@@ -1455,7 +1456,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
                   if (imageUrl.startsWith('web+graphie://')) {
                     imageUrl = imageUrl.replace('web+graphie://', 'https://') + '.png';
                   } else if ((imageUrl.includes('cdn.kastatic.org') || imageUrl.includes('ka-perseus')) &&
-                             !imageUrl.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i)) {
+                    !imageUrl.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i)) {
                     imageUrl = imageUrl + '.png';
                   }
                   return `<img src="${imageUrl}" alt="${alt}" class="athena-image" style="max-width:100%;height:auto;display:block;margin:1rem 0;" referrerpolicy="no-referrer" />`;

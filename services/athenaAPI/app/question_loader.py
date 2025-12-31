@@ -55,14 +55,14 @@ def convert_widget_to_athena(widget_id: str, widget_data: Dict[str, Any]) -> Dic
     widget_type = widget_data.get('type', 'unknown')
     options = widget_data.get('options', {})
 
-    # Normalize widget type aliases
+    # Normalize widget type aliases for internal logic processing
     type_aliases = {
         'input-number': 'numeric-input',
     }
     normalized_type = type_aliases.get(widget_type, widget_type)
 
     athena_widget = {
-        'type': normalized_type,
+        'type': widget_type,  # Keep original type for Perseus compatibility
         'options': options.copy(),
         'alignment': widget_data.get('alignment', 'default'),
         'graded': widget_data.get('graded', True),
@@ -132,81 +132,100 @@ def convert_content_images(content: str, images: Dict[str, Any]) -> str:
 def convert_question_to_athena(doc: Dict[str, Any]) -> Dict[str, Any]:
     """
     Convert a Perseus question document to Athena format.
-
-    Input: MongoDB document with Perseus format
-    Output: Athena-compatible question format
+    Handles both direct 'question' field and nested 'assessmentData' structures.
     """
     # Extract question data
     question_data = doc.get('question')
     hints = doc.get('hints')
     answer_area = doc.get('answerArea')
 
-    # Fallback to nested structure if top-level fields are missing
-    if not question_data and 'assessmentData' in doc:
+    # Fallback to nested structure if top-level fields are missing or empty
+    if (not question_data or not isinstance(question_data, dict)) and 'assessmentData' in doc:
         try:
-            item_data_str = doc.get('assessmentData', {}).get('data', {}).get('assessmentItem', {}).get('item', {}).get('itemData', '')
-            if item_data_str:
+            # Handle deep nested structure from some scrapers
+            item_data = doc.get('assessmentData', {}).get('data', {}).get('assessmentItem', {}).get('item', {}).get('itemData', '')
+            
+            # itemData can be a JSON string or a dict
+            if isinstance(item_data, str) and item_data.startswith('{'):
                 import json
-                item_data = json.loads(item_data_str)
+                item_data = json.loads(item_data)
+            
+            if isinstance(item_data, dict):
                 question_data = item_data.get('question', {})
                 hints = item_data.get('hints', [])
                 answer_area = item_data.get('answerArea', {})
         except Exception as e:
             logger.warning(f"Failed to extract nested question data: {e}")
 
-    if not question_data:
+    # Ensure we have valid dictionaries/lists
+    if not isinstance(question_data, dict):
         question_data = {}
-    if not hints:
+    if not isinstance(hints, list):
         hints = []
-    if not answer_area:
+    if not isinstance(answer_area, dict):
         answer_area = {}
 
     # Convert widgets
     athena_widgets = {}
     for widget_id, widget_data in question_data.get('widgets', {}).items():
-        athena_widgets[widget_id] = convert_widget_to_athena(widget_id, widget_data)
+        if isinstance(widget_data, dict):
+            athena_widgets[widget_id] = convert_widget_to_athena(widget_id, widget_data)
 
     # Convert content (update image URLs)
     content = question_data.get('content', '')
     images = question_data.get('images', {})
+    if not isinstance(images, dict):
+        images = {}
     converted_content = convert_content_images(content, images)
 
-    # Convert images dict
-    athena_images = {}
-    for url, img_data in images.items():
-        new_url = convert_graphie_url(url)
-        athena_images[new_url] = {
-            'url': new_url,
-            'width': img_data.get('width', 400),
-            'height': img_data.get('height', 300),
-            'alt': img_data.get('alt', ''),
-        }
+    # Convert images dict to Athena format
+    def convert_images_dict(img_dict):
+        athena_imgs = {}
+        if not isinstance(img_dict, dict):
+            return athena_imgs
+        for url, img_data in img_dict.items():
+            if not isinstance(img_data, dict): continue
+            new_url = convert_graphie_url(url)
+            athena_imgs[new_url] = {
+                'url': new_url,
+                'width': img_data.get('width', 400),
+                'height': img_data.get('height', 300),
+                'alt': img_data.get('alt', ''),
+            }
+        return athena_imgs
+
+    athena_images = convert_images_dict(images)
 
     # Convert hints
     athena_hints = []
     for hint in hints:
+        if not isinstance(hint, dict): continue
+        
         hint_widgets = {}
         for widget_id, widget_data in hint.get('widgets', {}).items():
-            hint_widgets[widget_id] = convert_widget_to_athena(widget_id, widget_data)
+            if isinstance(widget_data, dict):
+                hint_widgets[widget_id] = convert_widget_to_athena(widget_id, widget_data)
 
         hint_content = hint.get('content', '')
         hint_images = hint.get('images', {})
+        if not isinstance(hint_images, dict):
+            hint_images = {}
 
         athena_hints.append({
             'content': convert_content_images(hint_content, hint_images),
             'widgets': hint_widgets,
-            'images': hint_images,
+            'images': convert_images_dict(hint_images),
             'replace': hint.get('replace', False),
         })
 
     # Build answer area
     athena_answer_area = {
-        'calculator': answer_area.get('calculator', False),
-        'periodicTable': answer_area.get('periodicTable', False),
-        'chi2Table': answer_area.get('chi2Table', False),
-        'tTable': answer_area.get('tTable', False),
-        'zTable': answer_area.get('zTable', False),
-        'financialCalculator': (
+        'calculator': bool(answer_area.get('calculator', False)),
+        'periodicTable': bool(answer_area.get('periodicTable', False)),
+        'chi2Table': bool(answer_area.get('chi2Table', False)),
+        'tTable': bool(answer_area.get('tTable', False)),
+        'zTable': bool(answer_area.get('zTable', False)),
+        'financialCalculator': bool(
             answer_area.get('financialCalculatorMonthlyPayment', False) or
             answer_area.get('financialCalculatorTimeToPayOff', False) or
             answer_area.get('financialCalculatorTotalAmount', False)
@@ -216,29 +235,22 @@ def convert_question_to_athena(doc: Dict[str, Any]) -> Dict[str, Any]:
     # Build Athena item
     skill_prefix = doc.get('skill_prefix') or doc.get('skill_id') or ''
 
+    # Get all widget types for filtering
+    widget_types_in_item = list(set(w['type'] for w in athena_widgets.values()))
+
     athena_item = {
         '_id': str(doc.get('_id', '')),
         'slug': doc.get('slug', ''),
         'skill_prefix': skill_prefix,
-
-        # Question data
         'question': {
             'content': converted_content,
             'widgets': athena_widgets,
             'images': athena_images,
         },
-
-        # Hints
         'hints': athena_hints,
-
-        # Answer area with tool toggles
         'answerArea': athena_answer_area,
-
-        # Metadata
         'itemDataVersion': doc.get('itemDataVersion', {'major': 2, 'minor': 0}),
-
-        # Widget type summary (for debugging/filtering)
-        'widgetTypes': list(set(w['type'] for w in athena_widgets.values())),
+        'widgetTypes': widget_types_in_item,
     }
 
     return athena_item
@@ -279,120 +291,83 @@ def get_questions(
     skill_prefix: Optional[str] = None
 ) -> List[Dict[str, Any]]:
     """
-    Fetch multiple questions from MongoDB.
-
-    Args:
-        sample_size: Number of questions to fetch
-        widget_types: Filter by widget types (optional)
-        skill_prefix: Filter by skill prefix (optional)
-
-    Returns:
-        List of Athena-formatted questions
+    Fetch multiple questions from MongoDB with strict widget type filtering.
     """
     try:
-        # Build aggregation pipeline
         pipeline = []
 
-        # Initial match stage for skill_prefix
-        match_stage = {}
+        # 1. Match stage for skill_prefix
         if skill_prefix:
-            match_stage['skill_prefix'] = {'$regex': f'^{skill_prefix}', '$options': 'i'}
+            pipeline.append({'$match': {'skill_prefix': {'$regex': f'^{skill_prefix}', '$options': 'i'}}})
 
-        if match_stage:
-            pipeline.append({'$match': match_stage})
-
+        # 2. Match stage for widget types (if provided)
         if widget_types:
-            # Expand widget type aliases
             expanded_types = set()
             for wt in widget_types:
                 expanded_types.add(wt)
-                # Add aliases
-                if wt == 'numeric-input':
-                    expanded_types.add('input-number')
-                elif wt == 'input-number':
-                    expanded_types.add('numeric-input')
+                if wt == 'numeric-input': expanded_types.add('input-number')
+                elif wt == 'input-number': expanded_types.add('numeric-input')
+            
+            # Robust match that checks multiple possible paths for widgets
+            pipeline.append({
+                '$match': {
+                    '$or': [
+                        # Top-level 'question.widgets'
+                        {'question.widgets': {'$exists': True, '$ne': {}}},
+                        # Nested 'assessmentData' variants
+                        {'assessmentData.data.assessmentItem.item.itemData': {'$exists': True}},
+                    ]
+                }
+            })
 
-            expanded_types = list(expanded_types)
+        # 3. Random sample (fetch more to allow filtering)
+        fetch_limit = sample_size * 5 if widget_types else sample_size
+        pipeline.append({'$sample': {'size': min(fetch_limit, 100)}})
 
-            # Use aggregation to filter by widget type
-            # Convert widgets object to array, then filter
-            pipeline.extend([
-                # Add a field with widgets as array
-                {'$addFields': {
-                    'widgetsArray': {'$objectToArray': '$question.widgets'}
-                }},
-                # Filter to only include questions where at least one widget matches
-                {'$match': {
-                    'widgetsArray.v.type': {'$in': expanded_types}
-                }},
-                # Remove the temporary field
-                {'$project': {
-                    'widgetsArray': 0
-                }}
-            ])
-
-        # Add random sampling
-        pipeline.append({'$sample': {'size': sample_size * 3}})  # Fetch more for better variety
-
-        # Execute pipeline
+        # Execute aggregation
         cursor = mongo_db.scraped_questions.aggregate(pipeline)
 
-        # Convert to Athena format and filter
         athena_questions = []
         for doc in cursor:
             athena_item = convert_question_to_athena(doc)
-
-            # Strict widget type filter (post-processing)
-            # Only include questions where the PRIMARY INTERACTIVE widget matches
+            
+            # Post-processing filter (STRICT)
             if widget_types:
                 item_widget_types = athena_item.get('widgetTypes', [])
+                
+                # Expand requested types for comparison
+                requested_types = set(widget_types)
+                if 'numeric-input' in requested_types: requested_types.add('input-number')
+                if 'input-number' in requested_types: requested_types.add('numeric-input')
 
-                # Build expanded type set including aliases
-                expanded_types_set = set()
-                for wt in widget_types:
-                    expanded_types_set.add(wt)
-                    if wt == 'numeric-input':
-                        expanded_types_set.add('input-number')
-                    elif wt == 'input-number':
-                        expanded_types_set.add('numeric-input')
-
-                if len(item_widget_types) == 0:
-                    continue  # No widgets, skip
-
-                # Define interactive widget types (widgets that users interact with for answers)
-                # These are mutually exclusive - a question shouldn't have both radio AND numeric-input
+                # Define interactive vs display types
                 interactive_types = {
                     'radio', 'dropdown', 'numeric-input', 'input-number', 'expression',
                     'sorter', 'orderer', 'matcher', 'categorizer', 'interactive-graph',
                     'grapher', 'plotter', 'table', 'matrix', 'label-image', 'free-response'
                 }
 
-                # Display-only widget types (these don't affect filtering)
-                display_types = {'image', 'passage', 'passage-ref', 'video', 'explanation', 'definition'}
-
-                # Find the interactive widgets in this question
-                interactive_widgets_in_question = set(item_widget_types) & interactive_types
-
-                # Check if ANY of the requested types match the interactive widgets
-                requested_interactive = expanded_types_set & interactive_types
-
+                # Find interactive widgets in this question
+                question_interactive = set(item_widget_types) & interactive_types
+                
+                # Check if this question is primarily of the requested interactive types
+                requested_interactive = requested_types & interactive_types
+                
                 if requested_interactive:
-                    # User is filtering for an interactive widget type
-                    # The question MUST have that type and NOT have other conflicting interactive types
-                    if not (interactive_widgets_in_question & expanded_types_set):
-                        continue  # Skip - doesn't have the requested interactive widget type
-
-                    # Check for conflicting interactive types (e.g., filtering for numeric-input but has radio)
-                    conflicting_types = interactive_widgets_in_question - expanded_types_set
-                    if conflicting_types:
-                        continue  # Skip - has conflicting interactive widget types
+                    # If we asked for an interactive type, the question must have it
+                    # and MUST NOT have other interactive types (no radio + numeric-input mix)
+                    if not (question_interactive & requested_types):
+                        continue
+                    
+                    # If it has other conflicting interactive types, skip
+                    if question_interactive - requested_types:
+                        continue
                 else:
-                    # User is filtering for a display-only type (e.g., image, passage)
-                    if not (set(item_widget_types) & expanded_types_set):
-                        continue  # Skip - doesn't have the requested type
+                    # If we asked for display type (e.g. passage), just check presence
+                    if not (set(item_widget_types) & requested_types):
+                        continue
 
             athena_questions.append(athena_item)
-
             if len(athena_questions) >= sample_size:
                 break
 

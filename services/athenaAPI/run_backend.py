@@ -5,6 +5,10 @@ Start the Athena-based question service.
 """
 
 import uvicorn
+from dotenv import load_dotenv, find_dotenv
+
+# Initialize environment variables before any other imports
+load_dotenv(find_dotenv())
 
 if __name__ == "__main__":
     uvicorn.run(
