@@ -49,6 +49,7 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isGradingSidebarOpen, setIsGradingSidebarOpen] = useState(false);
   const [currentSkill, setCurrentSkill] = useState<string | null>(null);
+  const [currentLearningAsset, setCurrentLearningAsset] = useState<any | null>(null);
 
   // Ref to hold mediaMixer instance for use in callbacks
   const mediaMixerRef = useRef<any>(null);
@@ -123,7 +124,7 @@ function App() {
               />
               <div className="streaming-console">
                 <Suspense fallback={<div className="flex items-center justify-center h-full w-full">Loading...</div>}>
-                  {import.meta.env.DEV ? (
+                  {import.meta.env.DEV? (
                     <SidePanel
                       open={isSidebarOpen}
                       onToggle={toggleSidebar}
@@ -132,6 +133,7 @@ function App() {
                     <LearningAssetsPanel
                       open={isSidebarOpen}
                       onToggle={toggleSidebar}
+                      currentAsset={currentLearningAsset}
                     />
                   )}
                   <GradingSidebar
@@ -150,7 +152,10 @@ function App() {
                         <ScratchpadCapture onFrameCaptured={(canvas) => {
                           mediaMixer.updateScratchpadFrame(canvas);
                         }}>
-                          <QuestionDisplay onSkillChange={setCurrentSkill} />
+                          <QuestionDisplay
+                            onSkillChange={setCurrentSkill}
+                            onLearningAssetChange={setCurrentLearningAsset}
+                          />
                           {isScratchpadOpen && (
                             <div className="scratchpad-container">
                               <Scratchpad />
