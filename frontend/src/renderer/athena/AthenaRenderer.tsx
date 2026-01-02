@@ -619,6 +619,30 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         }
       });
 
+      // Process regex-based math wrapping for common bare LaTeX patterns
+      // This handles cases like "kx^\textcolor{...}" which are math but miss $ delimiters
+      const bareMathPatterns = [
+        // Pattern: something^something (exponent) - Supports simple chars, {groups}, or \textcolor{...}{...}
+        new RegExp("(?<!\\$)(?<!\\\\)\\b([a-zA-Z0-9]+)\\^(\\{[^}]+\\}|\\\\textcolor\\{[^}]+\\}\\{[^}]+\\}|[a-zA-Z0-9\\\\]+)(?!\\$)", "g"),
+        // Pattern: \frac{...}{...} without $
+        new RegExp("(?<!\\$)\\\\frac\\{[^}]+\\}\\{[^}]+\\}(?!\\$)", "g"),
+        // Pattern: \sqrt{...} without $
+        // Pattern: complex polynomial with color (e.g. \textcolor{...}{7}x^...)
+        // Matches sequences of digits, vars, ^, +, -, and textcolor blocks
+        new RegExp("(?<!\\$)(?<!\\\\)((?:\\\\textcolor\\{#[a-fA-F0-9]{3,6}\\}\\{[^}]+\\}|[0-9a-z]+)[\\^x+\\-=]+(?:\\\\textcolor\\{#[a-fA-F0-9]{3,6}\\}\\{[^}]+\\}|[0-9a-z\\^+\\-=]+)+)(?!\\$)", "g"),
+      ];
+
+      bareMathPatterns.forEach(pattern => {
+        processed = processed.replace(pattern, (match) => {
+          // Safety check: strictly ignore matches that look like CSS classes or simple hyphenated text.
+          // We only want to wrap distinctively "math-y" expressions (containing ^, \, +, =, etc.)
+          // This prevents breaking HTML attributes like class="athena-equation-table"
+          if (/^[a-zA-Z0-9\-\s]+$/.test(match)) return match;
+
+          return `$${match}$`;
+        });
+      });
+
       // Process inline math $...$ (but not $$)
       // Note: $28$ IS valid math (renders 28 in math font), different from $28 (currency)
       // Currency like $28 without closing $ won't match this regex anyway

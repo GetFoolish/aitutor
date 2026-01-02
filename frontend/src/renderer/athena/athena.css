@@ -17,18 +17,24 @@
    ============================================================================ */
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.6;
   }
 }
 
 @keyframes bounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.05);
   }
@@ -39,6 +45,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -177,9 +184,34 @@
 .athena-text code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.875em;
-  padding: 0.125rem 0.25rem;
+  padding: 0.125rem 0.375rem;
   background-color: var(--athena-border, #e5e5e5);
   border-radius: 0.25rem;
+  color: #c7254e;
+  /* Reddish for inline code like GitHub/StackOverflow */
+}
+
+.athena-code-block {
+  display: block;
+  padding: 1rem;
+  margin: 1rem 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #abb2bf;
+  word-break: normal;
+  overflow-x: auto;
+  background-color: #282c34;
+  /* Dark theme for code blocks */
+  border-radius: 0.5rem;
+  border: 1px solid var(--athena-border, #e5e5e5);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.athena-code-block code {
+  padding: 0;
+  background-color: transparent;
+  color: inherit;
+  border-radius: 0;
 }
 
 .athena-link {
@@ -360,8 +392,8 @@
 }
 
 /* Also style math in question content for emphasis */
-.athena-renderer > .katex,
-.athena-text > .katex {
+.athena-renderer>.katex,
+.athena-text>.katex {
   color: inherit;
 }
 
@@ -424,8 +456,10 @@
   padding: 8px 12px;
   border: 2px solid #d0d0d0;
   border-radius: 8px;
-  font-size: 1.25em; /* Match KaTeX math font size (1em = base, 1.21em = math) */
-  font-family: 'KaTeX_Main', 'Times New Roman', Times, serif; /* Match KaTeX font */
+  font-size: 1.25em;
+  /* Match KaTeX math font size (1em = base, 1.21em = math) */
+  font-family: 'KaTeX_Main', 'Times New Roman', Times, serif;
+  /* Match KaTeX font */
   font-weight: 400;
   width: auto;
   min-width: 60px;
@@ -436,7 +470,7 @@
   /* Prevent text truncation */
   text-overflow: clip;
   overflow: visible;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
   line-height: 1.2;
 }
 
@@ -831,7 +865,7 @@
 }
 
 /* Smaller chevron for compact dropdown */
-.athena-dropdown-select.compact ~ .athena-dropdown-chevron {
+.athena-dropdown-select.compact~.athena-dropdown-chevron {
   right: 4px;
   width: 14px;
   height: 14px;
@@ -918,7 +952,9 @@
 }
 
 @keyframes athena-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .athena-image-placeholder {
@@ -1495,7 +1531,8 @@
   border-style: solid;
   overflow-x: hidden;
   overflow-y: auto;
-  max-height: none; /* Allow natural height on mobile */
+  max-height: none;
+  /* Allow natural height on mobile */
 }
 
 /* At tablet+, constrain max height and ensure equal width */
@@ -1543,14 +1580,15 @@
   text-align: left;
   margin-left: 0;
   margin-right: 0;
-  padding-left: 0.5rem; /* Add slight padding for readability */
+  padding-left: 0.5rem;
+  /* Add slight padding for readability */
 }
 
-.athena-renderer .katex-display > .katex {
+.athena-renderer .katex-display>.katex {
   text-align: left;
 }
 
-.athena-renderer .katex-display > .katex > .katex-html {
+.athena-renderer .katex-display>.katex>.katex-html {
   display: block;
   text-align: left;
   padding-right: 0;

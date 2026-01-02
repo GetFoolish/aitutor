@@ -48,6 +48,7 @@ export interface AthenaItem {
   hints: AthenaHint[];
   answerArea: AthenaAnswerArea;
   widgetTypes: string[];
+  perseusItem?: any;
 }
 
 // API base URL - Athena service

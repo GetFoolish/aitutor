@@ -1476,7 +1476,7 @@ export const QuestionPane: React.FC = () => {
                       }`}
                   />
                 </div>
-                <button onClick={loadQuestionById} className="px-4 py-2 bg-[var(--brilliant-selected-border)] text-white font-bold rounded-xl text-sm hover:opacity-90 transition-opacity">
+                <button onClick={() => loadQuestionById()} className="px-4 py-2 bg-[var(--brilliant-selected-border)] text-white font-bold rounded-xl text-sm hover:opacity-90 transition-opacity">
                   Load
                 </button>
                 <button onClick={() => loadQuestions()} className={`p-2 rounded-xl transition-colors ${darkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'}`}>
@@ -1497,6 +1497,7 @@ export const QuestionPane: React.FC = () => {
                   <option key={type} value={type}>{type === 'all' ? '🎯 All Widgets' : type}</option>
                 ))}
               </select>
+
 
               {/* View mode toggles */}
               <div className="flex gap-1">
@@ -1632,10 +1633,11 @@ export const QuestionPane: React.FC = () => {
                         <RenderStateRoot>
                           <ServerItemRenderer
                             problemNum={0}
-                            item={{
+                            item={(currentQuestion.perseusItem && currentQuestion.perseusItem.question) ? currentQuestion.perseusItem : {
                               question: currentQuestion.question as any,
                               hints: currentQuestion.hints as any,
                               answerArea: currentQuestion.answerArea as any,
+                              itemDataVersion: { major: 2, minor: 0 }
                             }}
                             dependencies={storybookDependenciesV2}
                             apiOptions={{}}
@@ -1684,7 +1686,12 @@ export const QuestionPane: React.FC = () => {
                           <RenderStateRoot>
                             <ServerItemRenderer
                               problemNum={0}
-                              item={{ question: currentQuestion.question as any, hints: currentQuestion.hints as any, answerArea: currentQuestion.answerArea as any }}
+                              item={(currentQuestion.perseusItem && currentQuestion.perseusItem.question) ? currentQuestion.perseusItem : {
+                                question: currentQuestion.question as any,
+                                hints: currentQuestion.hints as any,
+                                answerArea: currentQuestion.answerArea as any,
+                                itemDataVersion: { major: 2, minor: 0 }
+                              }}
                               dependencies={storybookDependenciesV2}
                               apiOptions={{}}
                               linterContext={{ contentType: "", highlightLint: false, paths: [], stack: [] }}
@@ -1756,9 +1763,10 @@ export const QuestionPane: React.FC = () => {
             </div>
 
             {/* Debug: Question ID */}
-            {showDebugUI && currentQuestion && (
-              <div className={`mt-4 text-center text-xs font-mono ${darkMode ? 'text-gray-600' : 'text-gray-400'}`}>
-                {currentQuestion._id}
+            {currentQuestion && (
+              <div className="mt-4 text-center p-2 bg-yellow-100 border border-yellow-300 rounded select-all cursor-text z-50 relative">
+                <span className="font-bold text-gray-700 mr-2">ID:</span>
+                <span className="font-mono text-lg font-bold text-blue-600 select-all">{currentQuestion._id}</span>
               </div>
             )}
           </div>

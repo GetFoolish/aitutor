@@ -199,21 +199,12 @@ The platform follows a microservices architecture with the following components:
 ```
 aitutor/
 ├── frontend/                    # React frontend application
-│   ├── src/
-│   │   ├── components/         # React components
-│   │   │   ├── auth/           # Authentication components
-│   │   │   ├── question-display/ # Question rendering
-│   │   │   ├── grading-sidebar/  # Progress tracking UI
-│   │   │   ├── side-panel/       # Settings and controls
-│   │   │   └── ...
-│   │   ├── contexts/           # React contexts
-│   │   ├── hooks/              # Custom React hooks
-│   │   ├── lib/                # Utility libraries
-│   │   ├── services/           # Frontend services
-│   │   │   └── tutor/          # Tutor service (direct Gemini Live API integration)
-│   │   └── App.tsx             # Main app component
-│   ├── package.json
-│   └── Dockerfile              # Frontend Docker image
+├── scripts/                      # Utility and maintenance scripts
+│   ├── migrations/                # Migration and data synchronization
+│   │   └── sync_legacy_ids.py     # Clones real questions to legacy IDs
+│   ├── debug/                     # Temporary debug and verification tools
+│   ├── tests/                     # Performance and rendering tests
+│   └── utils/                     # General internal utilities
 │
 ├── services/                    # Backend microservices
 │   ├── DashSystem/             # DASH adaptive learning system
@@ -561,7 +552,11 @@ cd ..
 The collections will be created automatically when the services start. However, you need to:
 
 1. **Populate `scraped_questions`**: Use the question scraper (see `questionbankscrapper/README.md`)
-2. **Generate `generated_skills`**: Run the skill generation script:
+2. **Setup Legacy IDs**: Run the legacy ID synchronization script to support old recruiter IDs:
+   ```bash
+   python scripts/migrations/sync_legacy_ids.py
+   ```
+3. **Generate `generated_skills`**: Run the skill generation script:
 
 ```bash
 cd questionbankscrapper

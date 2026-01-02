@@ -61,6 +61,7 @@ class AthenaItem(BaseModel):
     hints: List[AthenaHint] = []
     answerArea: AthenaAnswerArea
     widgetTypes: List[str] = []
+    perseusItem: Optional[Dict[str, Any]] = None
 
     class Config:
         populate_by_name = True

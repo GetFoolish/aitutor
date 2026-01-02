@@ -15,7 +15,7 @@ interface ExplanationOptions {
   widgets?: Record<string, unknown>;
 }
 
-export interface ExplanationWidgetProps extends WidgetProps<ExplanationOptions> {}
+export interface ExplanationWidgetProps extends WidgetProps<ExplanationOptions> { }
 
 export function ExplanationWidget({
   widgetId,
@@ -70,7 +70,17 @@ export function ExplanationWidget({
               whiteSpace: 'pre-wrap',
             }}
           >
-            {options.explanation || 'No explanation provided'}
+            <div dangerouslySetInnerHTML={{
+              __html: (options.explanation || 'No explanation provided')
+                // Parse Links: [text](url)
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:#1865f2;text-decoration:none;">$1</a>')
+                // Parse Bold: **text**
+                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                // Parse Italic: *text* or _text_
+                .replace(/(?<!\*)\*([^*]+)\*(?!\*)|_([^_]+)_/g, '<em>$1$2</em>')
+                // Convert newlines to breaks
+                .replace(/\n/g, '<br />')
+            }} />
           </div>
         )}
       </div>
