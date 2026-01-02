@@ -138,7 +138,7 @@
     "terser": "^5.44.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3",
-    "vite": "^7.2.4",
+    "vite": "^5.4.11",
     "vite-bundle-visualizer": "^1.2.1"
   },
   "overrides": {

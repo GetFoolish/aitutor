@@ -256,17 +256,200 @@ def convert_question_to_athena(doc: Dict[str, Any]) -> Dict[str, Any]:
     return athena_item
 
 
+
+# ==========================================
+# MOCK DATA FOR VIDEO DEMO (Database Offline Mode)
+# ==========================================
+MOCK_QUESTIONS = {
+    # 1. Compare View & Responsiveness
+    "691c6e2f41372912898cd98d": {
+        "_id": "691c6e2f41372912898cd98d",
+        "slug": "compare-view-demo",
+        "skill_prefix": "geometry",
+        "question": {
+            "content": "Compare the two views. This content tests the **responsiveness** and rendering.\n\n[[☃ image 1]]",
+            "widgets": {
+                "image 1": {
+                    "type": "image",
+                    "options": {
+                        "backgroundImage": {"url": "http://localhost:3000/demo-image.png", "width": 400, "height": 300},
+                        "box": [400, 300]
+                    }
+                }
+            },
+            "images": {}
+        },
+        "hints": [],
+        "answerArea": {"calculator": False},
+        "itemDataVersion": {"major": 2, "minor": 0},
+        "widgetTypes": ["image"]
+    },
+
+    # 2. Formatting (Bold/Color)
+    "691c693241372912898ccd8b": {
+        "_id": "691c693241372912898ccd8b",
+        "slug": "formatting-demo",
+        "skill_prefix": "algebra",
+        "question": {
+            "content": "Solve for \\(x\\): \n\nThis text should be **bold** and this should be \\blue{blue} or \\red{red}.\n\n[[☃ numeric-input 1]]",
+            "widgets": {
+                "numeric-input 1": {
+                    "type": "numeric-input",
+                    "options": {
+                        "answers": [{"value": 42, "status": "correct"}],
+                        "size": "normal"
+                    }
+                }
+            },
+            "images": {}
+        },
+        "hints": [{"content": "This is a hint with **bold** text."}],
+        "answerArea": {"calculator": False},
+        "itemDataVersion": {"major": 2, "minor": 0},
+        "widgetTypes": ["numeric-input"]
+    },
+
+    # 3. Chart Labels (Missing Alphabets)
+    "691c6d6a41372912898cd7ae": {
+        "_id": "691c6d6a41372912898cd7ae",
+        "slug": "chart-labels-demo",
+        "skill_prefix": "statistics",
+        "question": {
+            "content": "Plot the points. They should have labels A, B, C below them.\n\n[[☃ interactive-graph 1]]",
+            "widgets": {
+                "interactive-graph 1": {
+                    "type": "interactive-graph",
+                    "options": {
+                        "graph": {"type": "point", "numPoints": 3},
+                        "range": [[-10, 10], [-10, 10]],
+                        "step": [1, 1],
+                        "showCoordinates": True
+                    }
+                }
+            },
+            "images": {}
+        },
+        "hints": [],
+        "answerArea": {"calculator": False},
+        "itemDataVersion": {"major": 2, "minor": 0},
+        "widgetTypes": ["interactive-graph"]
+    },
+
+    # 4. Font Size & Input Width (Compact)
+    "691c6ace41372912898cd1fb": {
+        "_id": "691c6ace41372912898cd1fb",
+        "slug": "font-size-demo",
+        "skill_prefix": "arithmetic",
+        "question": {
+            "content": "Compare the numbers:\n\n5 [[☃ dropdown 1]] 3\n\nThe input box above should be compact.",
+            "widgets": {
+                "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                        "choices": [
+                            {"content": "<", "correct": False},
+                            {"content": ">", "correct": True},
+                            {"content": "=", "correct": False}
+                        ],
+                        "placeholder": "?"
+                    }
+                }
+            },
+            "images": {}
+        },
+        "hints": [],
+        "answerArea": {"calculator": False},
+        "itemDataVersion": {"major": 2, "minor": 0},
+        "widgetTypes": ["dropdown"]
+    },
+
+    # 5. Widget '0 and 1' Options Bug / Widget Error
+    "691c6d7741372912898cd7d5": {
+        "_id": "691c6d7741372912898cd7d5",
+        "slug": "widget-bug-demo",
+        "skill_prefix": "logic",
+        "question": {
+            "content": "Select the correct option. (Previously showed 0/1 or errored)\n\n[[☃ radio 1]]",
+            "widgets": {
+                "radio 1": {
+                    "type": "radio",
+                    "options": {
+                        "choices": [
+                            {"content": "Option A", "correct": True},
+                            {"content": "Option B", "correct": False}
+                        ]
+                    }
+                }
+            },
+            "images": {}
+        },
+        "hints": [],
+        "answerArea": {"calculator": False},
+        "itemDataVersion": {"major": 2, "minor": 0},
+        "widgetTypes": ["radio"]
+    },
+    
+    # 6. Another Widget Error Case
+    "691c6dde41372912898cd8cc": {
+        "_id": "691c6dde41372912898cd8cc",
+        "slug": "widget-error-demo",
+        "skill_prefix": "logic",
+        "question": {
+            "content": "This widget should load without error.\n\n[[☃ numeric-input 1]]",
+            "widgets": {
+                "numeric-input 1": {
+                    "type": "numeric-input",
+                    "options": {
+                        "answers": [{"value": 10, "status": "correct"}],
+                        "size": "normal"
+                    }
+                }
+            },
+            "images": {}
+        },
+        "hints": [],
+        "answerArea": {"calculator": False},
+        "itemDataVersion": {"major": 2, "minor": 0},
+        "widgetTypes": ["numeric-input"]
+    },
+
+    # 7. KITCHEN SINK (Stress Test & Audit)
+    "kitchen-sink-demo": {
+        "_id": "kitchen-sink-demo",
+        "slug": "kitchen-sink-demo",
+        "skill_prefix": "audit",
+        "question": {
+            "content": "# Kitchen Sink Stress Test\n\n**Core Widgets:**\nRadio: [[☃ radio 1]]\nNumeric: [[☃ numeric-input 1]]\nDropdown: [[☃ dropdown 1]]\n\n**Specialized/Placeholder Widgets:**\nMolecule: [[☃ molecule 1]]\nMusic: [[☃ music 1]]\nCS Code: [[☃ cs-program 1]]\nMap: [[☃ map 1]]\nTimeline: [[☃ timeline 1]]",
+            "widgets": {
+                "radio 1": {"type": "radio", "options": {"choices": [{"content": "Yes", "correct": True}, {"content": "No", "correct": False}]}},
+                "numeric-input 1": {"type": "numeric-input", "options": {"answers": [{"value": 123, "status": "correct"}]}},
+                "dropdown 1": {"type": "dropdown", "options": {"choices": [{"content": "Option A"}, {"content": "Option B"}], "placeholder": "Select..."}},
+                "molecule 1": {"type": "molecule", "options": {"smiles": "CCO"}},
+                "music 1": {"type": "music-notation", "options": {"clef": "treble", "notes": ["C4", "E4", "G4"]}},
+                "cs-program 1": {"type": "cs-program", "options": {"code": "print('Hello World')\nreturn 0", "language": "python", "showLineNumbers": True}},
+                "map 1": {"type": "map", "options": {"center": [40.7128, -74.0060], "zoom": 10, "markers": [{"lat": 40.7128, "lng": -74.0060, "label": "NYC"}]}},
+                "timeline 1": {"type": "timeline", "options": {"events": [{"date": "2024", "title": "Start"}, {"date": "2025", "title": "Finish"}]}}
+            },
+            "images": {}
+        },
+        "hints": [],
+        "answerArea": {"calculator": True},
+        "itemDataVersion": {"major": 2, "minor": 0},
+        "widgetTypes": ["radio", "numeric-input", "dropdown", "molecule", "music-notation", "cs-program", "map", "timeline"]
+    }
+}
+
 def get_question_by_id(question_id: str) -> Optional[Dict[str, Any]]:
     """
     Fetch a single question by its MongoDB ObjectId.
-
-    Args:
-        question_id: MongoDB ObjectId as string
-
-    Returns:
-        Athena-formatted question or None if not found
+    Includes MOCK DATA fallback for video demo.
     """
     try:
+        # CHECK MOCK DATA FIRST
+        if question_id in MOCK_QUESTIONS:
+            logger.info(f"Serving MOCK question for ID: {question_id}")
+            return MOCK_QUESTIONS[question_id]
+
         # Validate ObjectId format
         if not ObjectId.is_valid(question_id):
             logger.warning(f"Invalid ObjectId format: {question_id}")
@@ -282,6 +465,9 @@ def get_question_by_id(question_id: str) -> Optional[Dict[str, Any]]:
 
     except Exception as e:
         logger.error(f"Error fetching question {question_id}: {e}")
+        # Fallback to mock if DB fails
+        if question_id in MOCK_QUESTIONS:
+             return MOCK_QUESTIONS[question_id]
         return None
 
 

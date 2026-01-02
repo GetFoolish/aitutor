@@ -372,12 +372,7 @@ export type {
   AuditOptions,
 } from './testing';
 
-// ============================================================================
-// DEMO
-// ============================================================================
 
-export { AthenaDemo } from './AthenaDemo';
-export type { AthenaDemoProps } from './AthenaDemo';
 
 // Performance Benchmark utilities
 export {

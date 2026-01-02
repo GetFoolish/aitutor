@@ -7,7 +7,7 @@ import { useLocation } from 'react-router-dom';
 import ComingSoon from './ComingSoon';
 
 // Access keys - paths that bypass coming soon page
-const ACCESS_PREFIXES = ['/app', '/test'];
+const ACCESS_PREFIXES = ['/app', '/test', '/question'];
 
 interface ComingSoonGuardProps {
   children: ReactNode;

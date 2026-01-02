@@ -149,6 +149,8 @@ root.render(
                 {/* TEST ROUTES - No auth required, exact match */}
                 <Route exact path="/test/simple" component={SimpleTest} />
                 <Route exact path="/test/athena" component={QuestionPane} />
+                {/* Demo Route for specific questions */}
+                <Route path="/question/:questionId" component={QuestionPane} />
                 <Route exact path="/app/auth/setup" component={LoginPage} />
                 <Route exact path="/app/login" component={LoginPage} />
                 <Route exact path="/app" component={LandingPageOrApp} />

@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { AthenaQuestionRenderer } from './AthenaIntegration';
-import { AthenaDemo } from '../AthenaDemo';
+
 import type { PerseusItem } from '../core/types';
 
 /**
@@ -116,12 +116,7 @@ export function ReviewModeExample() {
   );
 }
 
-/**
- * Example 3: Using the full demo
- */
-export function FullDemoExample() {
-  return <AthenaDemo />;
-}
+
 
 /**
  * Example 4: Migrating multiple questions

@@ -11,6 +11,7 @@
  */
 
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   X,
   Heart,
@@ -365,8 +366,8 @@ const ProgressHeader: React.FC<{
         <button
           onClick={onToggleQuizMode}
           className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${quizMode === 'practice'
-              ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'
-              : 'bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-300'
+            ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'
+            : 'bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-300'
             }`}
         >
           {quizMode === 'practice' ? '📚 Practice' : '🎯 Test'}
@@ -1138,6 +1139,11 @@ export const QuestionPane: React.FC = () => {
   const [startTime] = useState(Date.now());
   const [rendererKey, setRendererKey] = useState(0);
 
+
+
+  // Get URL parameters
+  const { questionId } = useParams<{ questionId?: string }>();
+
   const cardRef = useRef<HTMLDivElement>(null);
 
   // Debug UI toggle
@@ -1191,7 +1197,15 @@ export const QuestionPane: React.FC = () => {
   }, [questionResults, currentIndex, hearts, startTime]);
 
   useEffect(() => { checkHealth().then(setServiceHealthy); }, []);
-  useEffect(() => { loadQuestions(); }, []);
+
+  // Load initial question(s)
+  useEffect(() => {
+    if (questionId) {
+      loadQuestionById(questionId);
+    } else {
+      loadQuestions();
+    }
+  }, [questionId]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -1239,18 +1253,19 @@ export const QuestionPane: React.FC = () => {
     }
   };
 
-  const loadQuestionById = async () => {
-    if (!objectIdInput.trim()) return;
+  const loadQuestionById = async (id?: string) => {
+    const targetId = id || objectIdInput.trim();
+    if (!targetId) return;
     setIsLoading(true);
     setError(null);
     try {
-      const data = await fetchQuestionById(objectIdInput.trim());
+      const data = await fetchQuestionById(targetId);
       if (data) {
         setQuestions([data]);
         setCurrentIndex(0);
         resetState();
       } else {
-        setError(`Question not found: ${objectIdInput}`);
+        setError(`Question not found: ${targetId}`);
       }
     } catch {
       setError('Failed to load question');
@@ -1456,8 +1471,8 @@ export const QuestionPane: React.FC = () => {
                     onChange={(e) => setObjectIdInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && loadQuestionById()}
                     className={`w-full pl-9 pr-3 py-2 rounded-xl text-sm font-medium border-2 transition-colors focus:outline-none ${darkMode
-                        ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500'
-                        : 'bg-white border-gray-200 text-gray-700 focus:border-[var(--brilliant-selected-border)]'
+                      ? 'bg-gray-700 border-gray-600 text-white focus:border-blue-500'
+                      : 'bg-white border-gray-200 text-gray-700 focus:border-[var(--brilliant-selected-border)]'
                       }`}
                   />
                 </div>
@@ -1474,8 +1489,8 @@ export const QuestionPane: React.FC = () => {
                 value={widgetFilter}
                 onChange={(e) => { setWidgetFilter(e.target.value); loadQuestions(e.target.value); }}
                 className={`px-3 py-2 rounded-xl text-sm font-medium border-2 cursor-pointer focus:outline-none ${darkMode
-                    ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-white border-gray-200 text-gray-700'
+                  ? 'bg-gray-700 border-gray-600 text-white'
+                  : 'bg-white border-gray-200 text-gray-700'
                   }`}
               >
                 {widgetTypeOptions.map((type) => (
@@ -1490,8 +1505,8 @@ export const QuestionPane: React.FC = () => {
                     key={mode}
                     onClick={() => setViewMode(mode)}
                     className={`px-3 py-2 rounded-xl text-sm font-bold transition-all ${viewMode === mode
-                        ? mode === 'athena' ? 'bg-[var(--brilliant-accent)] text-white' : mode === 'perseus' ? 'bg-orange-500 text-white' : 'bg-purple-500 text-white'
-                        : darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
+                      ? mode === 'athena' ? 'bg-[var(--brilliant-accent)] text-white' : mode === 'perseus' ? 'bg-orange-500 text-white' : 'bg-purple-500 text-white'
+                      : darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
                       }`}
                   >
                     {mode === 'athena' ? 'Athena' : mode === 'perseus' ? 'Perseus' : 'Compare'}
@@ -1522,8 +1537,8 @@ export const QuestionPane: React.FC = () => {
                 key={idx}
                 onClick={() => handleJumpToQuestion(idx)}
                 className={`px-3 py-1 rounded-lg brilliant-label transition-colors ${idx === currentIndex
-                    ? 'bg-[var(--brilliant-selected-border)] text-white'
-                    : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                  ? 'bg-[var(--brilliant-selected-border)] text-white'
+                  : darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                   }`}
               >
                 Q{idx + 1}
@@ -1568,8 +1583,8 @@ export const QuestionPane: React.FC = () => {
               <button
                 onClick={toggleBookmark}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl brilliant-btn-text transition-colors ${bookmarkedQuestions.has(currentIndex)
-                    ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300'
-                    : darkMode ? 'bg-gray-800 hover:bg-gray-700 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                  ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300'
+                  : darkMode ? 'bg-gray-800 hover:bg-gray-700 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                   }`}
               >
                 {bookmarkedQuestions.has(currentIndex) ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
@@ -1717,8 +1732,8 @@ export const QuestionPane: React.FC = () => {
                       <button
                         onClick={handleSkip}
                         className={`px-5 py-2.5 rounded-2xl brilliant-btn-text transition-all ${darkMode
-                            ? 'text-gray-400 border-2 border-gray-600 hover:bg-gray-700'
-                            : 'text-gray-500 border-2 border-gray-200 hover:bg-gray-50'
+                          ? 'text-gray-400 border-2 border-gray-600 hover:bg-gray-700'
+                          : 'text-gray-500 border-2 border-gray-200 hover:bg-gray-50'
                           }`}
                       >
                         Skip
@@ -1728,8 +1743,8 @@ export const QuestionPane: React.FC = () => {
                         onClick={handleSubmit}
                         disabled={!hasAnswers}
                         className={`inline-flex items-center justify-center rounded-2xl px-6 py-2.5 md:px-7 md:py-3 brilliant-btn-text transition-all brilliant-btn-3d ${hasAnswers
-                            ? 'bg-[var(--brilliant-accent)] text-white shadow-[0_4px_0_var(--brilliant-accent-dark)] border-b-4 border-[var(--brilliant-accent-dark)] active:border-b-0 active:shadow-none'
-                            : 'bg-[var(--brilliant-accent-disabled)] text-white/80 border-b-4 border-[var(--brilliant-accent-disabled-border)] cursor-not-allowed'
+                          ? 'bg-[var(--brilliant-accent)] text-white shadow-[0_4px_0_var(--brilliant-accent-dark)] border-b-4 border-[var(--brilliant-accent-dark)] active:border-b-0 active:shadow-none'
+                          : 'bg-[var(--brilliant-accent-disabled)] text-white/80 border-b-4 border-[var(--brilliant-accent-disabled-border)] cursor-not-allowed'
                           }`}
                       >
                         Check
@@ -1792,8 +1807,8 @@ export const QuestionPane: React.FC = () => {
           <button
             onClick={() => setShowSummary(true)}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-full brilliant-btn-text transition-colors ${darkMode
-                ? 'text-purple-400 bg-purple-900/30 hover:bg-purple-900/50'
-                : 'text-purple-600 bg-purple-50 hover:bg-purple-100'
+              ? 'text-purple-400 bg-purple-900/30 hover:bg-purple-900/50'
+              : 'text-purple-600 bg-purple-50 hover:bg-purple-100'
               }`}
           >
             <Trophy className="w-4 h-4" />
