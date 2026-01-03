@@ -18,7 +18,7 @@ import type { InteractiveGraphOptions } from '../../core/types';
 import { BaseWidgetWrapper } from '../base/BaseWidget';
 import { ImageURLMigrator } from '../../migration/ImageURLMigrator';
 
-export interface InteractiveGraphWidgetProps extends WidgetProps<InteractiveGraphOptions> {}
+export interface InteractiveGraphWidgetProps extends WidgetProps<InteractiveGraphOptions> { }
 
 interface Point {
   x: number;
@@ -87,13 +87,26 @@ export function InteractiveGraphWidget({
     [xMin, yMin, xScale, yScale, snapStep]
   );
 
-  // Initialize state from value
+  // Initialize state from value or options
   const getInitialState = (): GraphState => {
     if (value && typeof value === 'object') {
       return value as GraphState;
     }
+
+    // Default points from question data
+    const initialPoints: Point[] = [];
+    if (options.graph?.coords) {
+      options.graph.coords.forEach((coord: any) => {
+        if (Array.isArray(coord)) {
+          initialPoints.push({ x: coord[0], y: coord[1] });
+        } else if (coord && typeof coord === 'object' && coord.x !== undefined) {
+          initialPoints.push({ x: coord.x, y: coord.y });
+        }
+      });
+    }
+
     return {
-      points: [],
+      points: initialPoints,
       lines: [],
       selectedPointIndex: null,
     };

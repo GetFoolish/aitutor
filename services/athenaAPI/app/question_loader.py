@@ -132,7 +132,7 @@ def convert_content_images(content: str, images: Dict[str, Any]) -> str:
     return converted
 
 
-def deep_convert_urls(obj: Any, force_png: bool = False) -> Any:
+def deep_convert_urls(obj: Any) -> Any:
     """
     Recursively find and convert web+graphie:// URLs in a dictionary or list.
     """
@@ -140,22 +140,14 @@ def deep_convert_urls(obj: Any, force_png: bool = False) -> Any:
         new_dict = {}
         for k, v in obj.items():
             if k == 'url' and isinstance(v, str) and v.startswith('web+graphie://'):
-                url = convert_graphie_url(v)
-                if force_png and not url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
-                    url += '.png'
-                new_dict[k] = url
+                new_dict[k] = convert_graphie_url(v)
             else:
-                # Force PNG for backgroundImage urls in interactive-graph options
-                is_bg_image = (k == 'backgroundImage')
-                new_dict[k] = deep_convert_urls(v, force_png=force_png or is_bg_image)
+                new_dict[k] = deep_convert_urls(v)
         return new_dict
     elif isinstance(obj, list):
-        return [deep_convert_urls(item, force_png=force_png) for item in obj]
+        return [deep_convert_urls(item) for item in obj]
     elif isinstance(obj, str) and obj.startswith('web+graphie://'):
-        url = convert_graphie_url(obj)
-        if force_png and not url.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
-            url += '.png'
-        return url
+        return convert_graphie_url(obj)
     return obj
 
 
