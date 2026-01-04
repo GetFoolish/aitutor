@@ -151,9 +151,9 @@ export function CategorizerWidget({
       incorrect: '#ffebee',
     },
     dark: {
-      bg: '#2d2d2d',
-      itemBg: '#3d3d3d',
-      border: '#4d4d4d',
+      bg: '#000000',
+      itemBg: '#1e1e1e',
+      border: '#333333',
       text: '#fff',
       correct: '#1b5e20',
       incorrect: '#b71c1c',

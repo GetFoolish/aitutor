@@ -958,12 +958,21 @@ a[target="lint-help-window"] {
   /* Light grey for instructions */
 }
 
-/* Fix Table Widget if it doesn't use inline styles */
+/* Fix Table and Categorizer Widgets dark mode */
 .athena-theme-dark .athena-table th,
-.athena-theme-dark .athena-table td {
-  background-color: #1e1e1e !important;
+.athena-theme-dark .athena-table td,
+.athena-theme-dark .athena-categorizer-table th,
+.athena-theme-dark .athena-categorizer-table td,
+.athena-theme-dark table th,
+.athena-theme-dark table td {
+  background-color: #000000 !important;
   color: #ffffff !important;
   border-color: #333333 !important;
+}
+
+/* Ensure alternating rows are also dark if they use nth-child or tr styles */
+.athena-theme-dark tr {
+  background-color: #000000 !important;
 }
 
 /* Fix Brilliant Typography in Dark Mode */

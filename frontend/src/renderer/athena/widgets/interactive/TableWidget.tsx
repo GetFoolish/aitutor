@@ -12,8 +12,9 @@ import React, { useState, useCallback } from 'react';
 import type { WidgetProps } from '../WidgetRegistry';
 import type { TableOptions } from '../../core/types';
 import { BaseWidgetWrapper } from '../base/BaseWidget';
+import { processContent } from '../../utils/ContentRendererUtils';
 
-export interface TableWidgetProps extends WidgetProps<TableOptions> {}
+export interface TableWidgetProps extends WidgetProps<TableOptions> { }
 
 export function TableWidget({
   widgetId,
@@ -36,10 +37,37 @@ export function TableWidget({
     if (value && Array.isArray(value)) {
       return value as string[][];
     }
-    // Use data from options if provided
+
+    // Check if data is provided and not corrupted
+    let validData: string[][] | null = null;
     if (options.data && Array.isArray(options.data)) {
+      const dataStr = JSON.stringify(options.data);
+      console.log('[TableWidget] Checking data:', { data: options.data, answers: options.answers });
+
+      // Aggressive check for ANY Athena placeholder or corruption
+      const isCorrupted = dataStr.includes('ATHENA') || dataStr.includes('HTML_SAFE');
+
+      if (!isCorrupted) {
+        validData = options.data as string[][];
+      } else {
+        console.warn('[TableWidget] Corrupted data detected, attempting fallback to answers');
+      }
+    }
+
+    if (validData) return validData;
+
+    // Fallback: Use answers if provided (for legacy content or static tables)
+    if (options.answers && Array.isArray(options.answers)) {
+      console.log('[TableWidget] Using answers fallback');
+      return options.answers as string[][];
+    }
+
+    // If fallback failed but we have corrupted data, show it (with warning in console)
+    if (options.data && Array.isArray(options.data)) {
+      console.error('[TableWidget] Fallback failed, showing corrupted data');
       return options.data as string[][];
     }
+
     // Create empty grid
     return Array.from({ length: rows }, () =>
       Array.from({ length: columns }, () => '')
@@ -76,11 +104,11 @@ export function TableWidget({
       evenRowBg: '#fafafa',
     },
     dark: {
-      bg: '#2d2d2d',
-      headerBg: '#3d3d3d',
-      border: '#4d4d4d',
+      bg: '#000000',
+      headerBg: '#1e1e1e',
+      border: '#333333',
       text: '#fff',
-      evenRowBg: '#333',
+      evenRowBg: '#000000',
     },
     'high-contrast': {
       bg: '#000',
@@ -162,9 +190,8 @@ export function TableWidget({
                             handleCellChange(rowIdx, colIdx, e.target.value)
                           }
                           disabled={disabled}
-                          aria-label={`Row ${rowIdx + 1}, Column ${
-                            headers[colIdx] || colIdx + 1
-                          }`}
+                          aria-label={`Row ${rowIdx + 1}, Column ${headers[colIdx] || colIdx + 1
+                            }`}
                           style={{
                             width: '100%',
                             padding: '8px 12px',
@@ -176,7 +203,7 @@ export function TableWidget({
                           }}
                         />
                       ) : (
-                        cellValue
+                        <div dangerouslySetInnerHTML={{ __html: processContent(cellValue).replace(/^<p>|<\/p>$/g, '') }} />
                       )}
                     </td>
                   );
@@ -185,22 +212,9 @@ export function TableWidget({
             ))}
           </tbody>
         </table>
-
-        {/* Caption */}
-        {options.caption && (
-          <div
-            className="athena-table-caption"
-            style={{
-              marginTop: '8px',
-              fontSize: '14px',
-              color: '#666',
-              fontStyle: 'italic',
-            }}
-          >
-            {options.caption}
-          </div>
-        )}
       </div>
+
+
     </BaseWidgetWrapper>
   );
 }
