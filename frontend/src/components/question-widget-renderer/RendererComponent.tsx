@@ -49,6 +49,17 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
     const [isError, setIsError] = useState(false);
     const [error, setError] = useState<Error | null>(null);
     const [isLoadingNextBatch, setIsLoadingNextBatch] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     const rendererRef = useRef<ServerItemRenderer>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -447,7 +458,10 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                                                 problemNum={0}
                                                 item={perseusItem}
                                                 dependencies={storybookDependenciesV2}
-                                                apiOptions={{}}
+                                                apiOptions={{
+                                                    isMobile,
+                                                    customKeypad: isMobile,
+                                                }}
                                                 linterContext={{
                                                     contentType: "",
                                                     highlightLint: true,

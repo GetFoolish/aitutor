@@ -19,6 +19,7 @@ let katexModule: any = null;
 async function ensureKaTeX() {
   if (katexModule) return katexModule;
   try {
+    // @ts-ignore
     katexModule = await import('katex');
     return katexModule.default || katexModule;
   } catch {

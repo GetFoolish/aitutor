@@ -363,11 +363,13 @@ export interface NumericInputOptions extends BaseWidgetOptions {
     message?: string;
     strict?: boolean;
     maxError?: number;
+    answerType?: string;
   }>;
   size: 'normal' | 'small';
   coefficient?: boolean;
   labelText?: string;
   rightAlign?: boolean;
+  simplify?: string;
 }
 
 export interface RadioOptions extends BaseWidgetOptions {
@@ -430,6 +432,7 @@ export interface InteractiveGraphOptions extends BaseWidgetOptions {
       width: number;
       height: number;
     };
+    coords?: unknown[];
   };
   backgroundImage?: {
     url: string;
@@ -443,6 +446,7 @@ export interface InteractiveGraphOptions extends BaseWidgetOptions {
   markings: 'graph' | 'grid' | 'none';
   showProtractor?: boolean;
   showRuler?: boolean;
+  showCoordinates?: boolean;
   correct: unknown;
   title?: string;
 }

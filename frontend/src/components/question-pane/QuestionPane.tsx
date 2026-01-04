@@ -35,6 +35,7 @@ import {
 import { AthenaRenderer, registerDefaultWidgets, ScoringEngine } from '../../renderer/athena';
 import '../../renderer/athena/athena.css';
 import type { AthenaItem } from '../../services/athenaAPI';
+// @ts-ignore
 import katex from 'katex';
 
 // Initialize scoring engine
@@ -1138,6 +1139,9 @@ export const QuestionPane: React.FC = () => {
   const [showSummary, setShowSummary] = useState(false);
   const [startTime] = useState(Date.now());
   const [rendererKey, setRendererKey] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+
 
 
 
@@ -1167,9 +1171,25 @@ export const QuestionPane: React.FC = () => {
   const isSubmitted = attemptState !== 'idle';
   const isShowingAnswer = attemptState === 'showing_answer';
 
+  const hasGradedGroup = useMemo(() => {
+    if (!currentQuestion) return false;
+    const widgets = (currentQuestion.perseusItem?.question?.widgets) || 
+                   ((currentQuestion.question as any)?.widgets) || {};
+    return Object.values(widgets).some((w: any) => w.type === 'graded-group');
+  }, [currentQuestion]);
+
   // ============================================================================
   // EFFECTS
   // ============================================================================
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768 || (currentQuestion?._id === '6932cb575853fec4a5597201'));
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, [currentQuestion]);
 
   // Load saved progress
   useEffect(() => {
@@ -1206,6 +1226,13 @@ export const QuestionPane: React.FC = () => {
       loadQuestions();
     }
   }, [questionId]);
+
+  // Automatically switch to Perseus view for unsupported widgets
+  useEffect(() => {
+    if ((hasGradedGroup || ['6932cb575853fec4a5597201', '6932995aa627ab2be37e6c2d'].includes(currentQuestion?._id)) && viewMode !== 'perseus') {
+      setViewMode('perseus');
+    }
+  }, [hasGradedGroup, currentQuestion, viewMode]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -1640,7 +1667,10 @@ export const QuestionPane: React.FC = () => {
                               itemDataVersion: { major: 2, minor: 0 }
                             }}
                             dependencies={storybookDependenciesV2}
-                            apiOptions={{}}
+                            apiOptions={{
+                              isMobile,
+                              customKeypad: isMobile,
+                            }}
                             linterContext={{ contentType: "", highlightLint: false, paths: [], stack: [] }}
                             showSolutions="none"
                             hintsVisible={0}
@@ -1693,7 +1723,10 @@ export const QuestionPane: React.FC = () => {
                                 itemDataVersion: { major: 2, minor: 0 }
                               }}
                               dependencies={storybookDependenciesV2}
-                              apiOptions={{}}
+                              apiOptions={{
+                              isMobile,
+                              customKeypad: isMobile,
+                            }}
                               linterContext={{ contentType: "", highlightLint: false, paths: [], stack: [] }}
                               showSolutions="none"
                               hintsVisible={0}

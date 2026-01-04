@@ -160,7 +160,7 @@ export function NumericInputWidget({
     : undefined;
 
   const isCorrect = reviewMode && correctAnswer !== undefined
-    ? parseFloat(state.value || '') === correctAnswer
+    ? Math.abs(parseFloat(state.value || '') - correctAnswer) < 1e-9 // Use tolerance
     : undefined;
 
   // Note: Don't render label here - the question content already includes the label text

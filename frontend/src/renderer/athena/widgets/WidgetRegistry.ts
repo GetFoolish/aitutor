@@ -553,7 +553,7 @@ export function registerDefaultWidgets(): void {
   WidgetRegistry.register({
     type: 'group',
     displayName: 'Widget Group',
-    component: React.lazy(() => import('./specialized/PlaceholderWidgets').then(m => ({ default: m.GroupWidget }))),
+    component: React.lazy(() => import('./group/GroupWidget').then(m => ({ default: m.GroupWidget }))),
     gradable: true,
     static: false,
   });
