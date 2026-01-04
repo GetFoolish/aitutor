@@ -23,7 +23,7 @@ async function ensureKaTeX() {
   }
 }
 
-export interface SorterWidgetProps extends WidgetProps<SorterOptions> {}
+export interface SorterWidgetProps extends WidgetProps<SorterOptions> { }
 
 interface DragState {
   isDragging: boolean;
@@ -114,13 +114,13 @@ export function SorterWidget({
     // Orderer format: combine correctOptions and otherOptions
     const correctOpts = Array.isArray(options.correctOptions)
       ? options.correctOptions.map((opt: any) =>
-          typeof opt === 'string' ? opt : (opt.content || opt.text || String(opt))
-        )
+        typeof opt === 'string' ? opt : (opt.content || opt.text || String(opt))
+      )
       : [];
     const otherOpts = Array.isArray(options.otherOptions)
       ? options.otherOptions.map((opt: any) =>
-          typeof opt === 'string' ? opt : (opt.content || opt.text || String(opt))
-        )
+        typeof opt === 'string' ? opt : (opt.content || opt.text || String(opt))
+      )
       : [];
 
     return [...correctOpts, ...otherOpts];
@@ -282,7 +282,7 @@ export function SorterWidget({
           style={{
             marginBottom: '12px',
             fontSize: '14px',
-            color: '#666',
+            color: themeStyles.text,
           }}
         >
           {isDisabled
@@ -383,7 +383,7 @@ export function SorterWidget({
 function DragHandleIcon({ style }: { style?: React.CSSProperties }) {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style={style} aria-hidden="true">
-      <path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+      <path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
     </svg>
   );
 }
@@ -391,7 +391,7 @@ function DragHandleIcon({ style }: { style?: React.CSSProperties }) {
 function CheckIcon({ style }: { style?: React.CSSProperties }) {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style={style} aria-hidden="true">
-      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
     </svg>
   );
 }
@@ -399,7 +399,7 @@ function CheckIcon({ style }: { style?: React.CSSProperties }) {
 function CrossIcon({ style }: { style?: React.CSSProperties }) {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style={style} aria-hidden="true">
-      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
     </svg>
   );
 }

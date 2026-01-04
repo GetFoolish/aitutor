@@ -187,7 +187,7 @@ const CalculatorModal: React.FC<{ isOpen: boolean; onClose: () => void; darkMode
             <X className={`w-5 h-5 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`} />
           </button>
         </div>
-        <div className={`${darkMode ? 'bg-gray-900' : 'bg-gray-100'} rounded-xl p-4 mb-4 text-right`}>
+        <div className={`${darkMode ? 'bg-black border border-gray-800' : 'bg-gray-100'} rounded-xl p-4 mb-4 text-right`}>
           <div className={`brilliant-label ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>{expression}</div>
           <div className={`text-3xl font-mono font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>{display}</div>
         </div>
@@ -323,7 +323,7 @@ const ProgressHeader: React.FC<{
   const progress = total > 0 ? ((current + 1) / total) * 100 : 0;
 
   return (
-    <header className={`sticky top-0 z-20 w-full border-b border-black/5 ${darkMode ? 'bg-gray-900' : 'bg-[var(--brilliant-bg-page)]'}`}>
+    <header className={`sticky top-0 z-20 w-full border-b border-black/5 ${darkMode ? 'bg-black' : 'bg-[var(--brilliant-bg-page)]'}`}>
       <div className="max-w-5xl mx-auto flex items-center justify-between py-3 px-4">
         {/* Left: Back button */}
         <button className={`p-2 rounded-full transition-colors ${darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}>
@@ -516,7 +516,8 @@ const HintPanel: React.FC<{
   currentIndex: number;
   onNextHint: () => void;
   darkMode: boolean;
-}> = ({ hints, currentIndex, onNextHint, darkMode }) => {
+  viewMode?: 'athena' | 'perseus' | 'comparison';
+}> = ({ hints, currentIndex, onNextHint, darkMode, viewMode = 'perseus' }) => {
   if (!hints?.length) return null;
 
   const currentHint = hints[currentIndex];
@@ -848,6 +849,22 @@ const HintPanel: React.FC<{
       }
     });
 
+    // PREPROCESSING: Fix standalone LaTeX that isn't wrapped in $...$
+    // Fix Khan Academy specific patterns
+
+    // Pattern 1: Convert unsupported 'eqnarray' to 'aligned' (KaTeX doesn't support eqnarray)
+    // And remove the \qquad wrapper: \qquad { \begin{eqnarray} ... \end{eqnarray} }
+    // We strictly look for the structure `\qquad { \begin{eqnarray}`
+
+    // First, replace the start pattern
+    processed = processed.replace(/\\qquad\s*\{\s*\\begin\{eqnarray\}/g, '$$\\begin{aligned}');
+    // Replace the end pattern
+    processed = processed.replace(/\\end\{eqnarray\}\s*\}/g, '\\end{aligned}$$');
+
+    // Pattern 2: Convert standalone 'eqnarray' to 'aligned' (without qquad)
+    processed = processed.replace(/\\begin\{eqnarray\}/g, '\\begin{aligned}');
+    processed = processed.replace(/\\end\{eqnarray\}/g, '\\end{aligned}');
+
     // Process LaTeX environments without $ wrappers (e.g., \begin{align}...\end{align})
     const envNames = ['align', 'align\\*', 'aligned', 'equation', 'equation\\*', 'gather', 'gather\\*', 'matrix', 'pmatrix', 'bmatrix', 'cases'];
     for (const envName of envNames) {
@@ -1073,7 +1090,8 @@ const HintPanel: React.FC<{
 
     // Restore KaTeX placeholders
     katexPlaceholders.forEach((html, idx) => {
-      processed = processed.replace(`__KATEX_PLACEHOLDER_${idx}__`, html);
+      const placeholder = `__KATEX_PLACEHOLDER_${idx}__`;
+      processed = processed.replace(placeholder, html);
     });
 
     return `<p>${processed}</p>`;
@@ -1081,22 +1099,65 @@ const HintPanel: React.FC<{
 
   const processedContent = processHintContent(currentHint?.content || '', hintWidgets);
 
+  // In comparison mode, show both Athena and Perseus hints side-by-side
+  if (viewMode === 'comparison') {
+    return (
+      <div className={`mt-4 rounded-2xl px-5 py-4 animate-fadeInUp ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-[#F3F4FF]'}`}>
+        <div className="flex items-center gap-2 mb-3">
+          <Lightbulb className={`w-5 h-5 ${darkMode ? 'text-yellow-400' : 'text-[#2F7BF6]'}`} />
+          <span className={`brilliant-label ${darkMode ? 'text-gray-300' : 'text-[#2F7BF6]'}`}>
+            Hint {currentIndex + 1} of {hints.length}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          {/* Athena Hint */}
+          <div className={`p-4 rounded-xl border-2 ${darkMode ? 'bg-green-900/20 border-green-600' : 'bg-green-50 border-green-500'}`}>
+            <div className="text-xs font-bold text-green-600 dark:text-green-400 mb-2 uppercase tracking-wide">Athena (New)</div>
+            <div
+              className={`brilliant-option-text ${darkMode ? 'text-white' : 'text-slate-700'}`}
+              dangerouslySetInnerHTML={{ __html: processedContent }}
+            />
+          </div>
+
+          {/* Perseus Hint */}
+          <div className={`p-4 rounded-xl border-2 ${darkMode ? 'bg-blue-900/20 border-blue-600' : 'bg-blue-50 border-blue-500'}`}>
+            <div className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-2 uppercase tracking-wide">Perseus (Original)</div>
+            <div
+              className={`brilliant-option-text ${darkMode ? 'text-white' : 'text-slate-700'}`}
+              dangerouslySetInnerHTML={{ __html: processedContent }}
+            />
+          </div>
+        </div>
+
+        {currentIndex < hints.length - 1 && (
+          <button
+            onClick={onNextHint}
+            className={`mt-3 brilliant-btn-text underline-offset-2 hover:underline ${darkMode ? 'text-blue-300' : 'text-[#2F7BF6]'}`}
+          >
+            Next hint →
+          </button>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <div className={`mt-4 rounded-2xl px-5 py-4 animate-fadeInUp ${darkMode ? 'bg-blue-900/30' : 'bg-[#F3F4FF]'}`}>
+    <div className={`mt-4 rounded-2xl px-5 py-4 animate-fadeInUp ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-[#F3F4FF]'}`}>
       <div className="flex items-center gap-2 mb-3">
-        <Lightbulb className={`w-5 h-5 ${darkMode ? 'text-blue-400' : 'text-[#2F7BF6]'}`} />
-        <span className={`brilliant-label ${darkMode ? 'text-blue-300' : 'text-[#2F7BF6]'}`}>
+        <Lightbulb className={`w-5 h-5 ${darkMode ? 'text-yellow-400' : 'text-[#2F7BF6]'}`} />
+        <span className={`brilliant-label ${darkMode ? 'text-gray-300' : 'text-[#2F7BF6]'}`}>
           Hint {currentIndex + 1} of {hints.length}
         </span>
       </div>
       <div
-        className={`brilliant-option-text ${darkMode ? 'text-blue-200' : 'text-slate-700'}`}
+        className={`brilliant-option-text ${darkMode ? 'text-white' : 'text-slate-700'}`}
         dangerouslySetInnerHTML={{ __html: processedContent }}
       />
       {currentIndex < hints.length - 1 && (
         <button
           onClick={onNextHint}
-          className={`mt-3 brilliant-btn-text underline-offset-2 hover:underline ${darkMode ? 'text-blue-400' : 'text-[#2F7BF6]'}`}
+          className={`mt-3 brilliant-btn-text underline-offset-2 hover:underline ${darkMode ? 'text-blue-300' : 'text-[#2F7BF6]'}`}
         >
           Show next hint →
         </button>
@@ -1173,8 +1234,8 @@ export const QuestionPane: React.FC = () => {
 
   const hasGradedGroup = useMemo(() => {
     if (!currentQuestion) return false;
-    const widgets = (currentQuestion.perseusItem?.question?.widgets) || 
-                   ((currentQuestion.question as any)?.widgets) || {};
+    const widgets = (currentQuestion.perseusItem?.question?.widgets) ||
+      ((currentQuestion.question as any)?.widgets) || {};
     return Object.values(widgets).some((w: any) => w.type === 'graded-group');
   }, [currentQuestion]);
 
@@ -1229,7 +1290,8 @@ export const QuestionPane: React.FC = () => {
 
   // Automatically switch to Perseus view for unsupported widgets
   useEffect(() => {
-    if ((hasGradedGroup || ['6932cb575853fec4a5597201', '6932995aa627ab2be37e6c2d'].includes(currentQuestion?._id)) && viewMode !== 'perseus') {
+    // Only force switch for specific broken IDs if needed
+    if (hasGradedGroup && viewMode !== 'perseus') {
       setViewMode('perseus');
     }
   }, [hasGradedGroup, currentQuestion, viewMode]);
@@ -1456,7 +1518,7 @@ export const QuestionPane: React.FC = () => {
   // ============================================================================
 
   return (
-    <div className={`min-h-screen flex flex-col transition-colors duration-300 ${darkMode ? 'bg-gray-900' : 'bg-[var(--brilliant-bg-page)]'}`}>
+    <div className={`min-h-screen flex flex-col transition-colors duration-300 ${darkMode ? 'bg-black athena-theme-dark' : 'bg-[var(--brilliant-bg-page)]'}`}>
       {/* Modals */}
       <CalculatorModal isOpen={showCalculator} onClose={() => setShowCalculator(false)} darkMode={darkMode} />
       <PerformanceSummary
@@ -1468,6 +1530,9 @@ export const QuestionPane: React.FC = () => {
         darkMode={darkMode}
         timeSpent={Date.now() - startTime}
       />
+
+
+
 
       {/* Sticky Progress Header */}
       <ProgressHeader
@@ -1724,9 +1789,9 @@ export const QuestionPane: React.FC = () => {
                               }}
                               dependencies={storybookDependenciesV2}
                               apiOptions={{
-                              isMobile,
-                              customKeypad: isMobile,
-                            }}
+                                isMobile,
+                                customKeypad: isMobile,
+                              }}
                               linterContext={{ contentType: "", highlightLint: false, paths: [], stack: [] }}
                               showSolutions="none"
                               hintsVisible={0}
@@ -1741,13 +1806,13 @@ export const QuestionPane: React.FC = () => {
 
                 {/* Hint Panel - shown when "Why?" is clicked */}
 
-                {/* Hint Panel */}
                 {showHints && currentQuestion.hints?.length > 0 && (
                   <HintPanel
                     hints={currentQuestion.hints}
                     currentIndex={currentHintIndex}
                     onNextHint={() => setCurrentHintIndex(i => i + 1)}
                     darkMode={darkMode}
+                    viewMode={viewMode}
                   />
                 )}
 
@@ -1797,9 +1862,12 @@ export const QuestionPane: React.FC = () => {
 
             {/* Debug: Question ID */}
             {currentQuestion && (
-              <div className="mt-4 text-center p-2 bg-yellow-100 border border-yellow-300 rounded select-all cursor-text z-50 relative">
-                <span className="font-bold text-gray-700 mr-2">ID:</span>
-                <span className="font-mono text-lg font-bold text-blue-600 select-all">{currentQuestion._id}</span>
+              <div className={`mt-4 text-center p-2 border rounded select-all cursor-text z-50 relative ${darkMode
+                ? 'bg-black border-gray-700'
+                : 'bg-yellow-100 border-yellow-300'
+                }`}>
+                <span className={`font-bold mr-2 ${darkMode ? 'text-white' : 'text-gray-700'}`}>ID:</span>
+                <span className={`font-mono text-lg font-bold select-all ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>{currentQuestion._id}</span>
               </div>
             )}
           </div>
@@ -1821,7 +1889,7 @@ export const QuestionPane: React.FC = () => {
       />
 
       {/* Footer Navigation - Hidden when feedback banner is shown */}
-      <footer className={`py-3 px-4 border-t ${darkMode ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'} ${attemptState !== 'idle' ? 'hidden' : ''}`}>
+      <footer className={`py-3 px-4 border-t ${darkMode ? 'border-gray-800 bg-black' : 'border-gray-200 bg-white'} ${attemptState !== 'idle' ? 'hidden' : ''}`}>
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <button

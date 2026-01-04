@@ -93,7 +93,7 @@ code {
 }
 
 /* Ensure Excalidraw fills its container */
-.scratchpad-container > div {
+.scratchpad-container>div {
   height: 100% !important;
   width: 100% !important;
 }
@@ -734,6 +734,7 @@ a[target="lint-help-window"] {
    BRILLIANT.ORG ANIMATIONS
    ============================================ */
 @layer utilities {
+
   /* Feedback banner fade-in-up animation */
   .animate-fadeInUp {
     animation: fadeInUp 180ms ease-out forwards;
@@ -744,6 +745,7 @@ a[target="lint-help-window"] {
       opacity: 0;
       transform: translateY(8px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -760,6 +762,7 @@ a[target="lint-help-window"] {
       opacity: 0;
       transform: translateY(12px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -776,6 +779,7 @@ a[target="lint-help-window"] {
       opacity: 1;
       transform: translateX(0);
     }
+
     to {
       opacity: 0;
       transform: translateX(-8px);
@@ -850,4 +854,140 @@ a[target="lint-help-window"] {
   .dark ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.2);
   }
+}
+
+/* Athena Widget Global Dark Mode Overrides */
+.athena-theme-dark {
+  --brilliant-bg-page: #000000 !important;
+  --brilliant-bg-card: #121212 !important;
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+.athena-theme-dark .athena-content,
+.athena-theme-dark .athena-widget,
+.athena-theme-dark .perseus-renderer {
+  color: #ffffff !important;
+}
+
+/* Ensure math formulas (KaTeX) are white in dark mode */
+.athena-theme-dark .katex {
+  color: #ffffff !important;
+}
+
+/* Ensure input fields have dark background and white text in dark mode */
+.athena-theme-dark input[type="text"],
+.athena-theme-dark input[type="number"],
+.athena-theme-dark textarea,
+.athena-theme-dark select {
+  background-color: #1e1e1e !important;
+  color: #ffffff !important;
+  border-color: #333333 !important;
+}
+
+/* Fix placeholders in inputs */
+.athena-theme-dark ::placeholder {
+  color: #888888 !important;
+}
+
+/* Specific fix for the container if needed */
+.athena-renderer {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Radio Widget Specific Dark Mode */
+.athena-theme-dark .athena-radio-choice {
+  background-color: #1e1e1e !important;
+  /* Dark grey background */
+  color: #ffffff !important;
+  border: 1px solid #333333 !important;
+}
+
+.athena-theme-dark .athena-radio-label {
+  color: #ffffff !important;
+}
+
+.athena-theme-dark .athena-radio-choice:hover {
+  background-color: #2c2c2c !important;
+}
+
+.athena-theme-dark .athena-radio-choice--selected {
+  background-color: #263238 !important;
+  /* Selected dark state */
+  border-color: #90caf9 !important;
+}
+
+/* Fix "Choose 1 answer" instruction text */
+.athena-theme-dark .athena-radio-instruction {
+  color: #dddddd !important;
+  /* Light grey for instructions */
+}
+
+/* Fix Table Widget if it doesn't use inline styles */
+.athena-theme-dark .athena-table th,
+.athena-theme-dark .athena-table td {
+  background-color: #1e1e1e !important;
+  color: #ffffff !important;
+  border-color: #333333 !important;
+}
+
+/* Fix Brilliant Typography in Dark Mode */
+.athena-theme-dark .brilliant-question-stem,
+.athena-theme-dark .brilliant-option-text,
+.athena-theme-dark .brilliant-label,
+.athena-theme-dark .brilliant-progress-text,
+.athena-theme-dark .brilliant-feedback-title,
+.athena-theme-dark .brilliant-btn-text {
+  color: #ffffff !important;
+}
+
+/* Force all standard text elements to be white in dark mode */
+.athena-theme-dark p,
+.athena-theme-dark span,
+.athena-theme-dark div,
+.athena-theme-dark strong,
+.athena-theme-dark em,
+.athena-theme-dark h1,
+.athena-theme-dark h2,
+.athena-theme-dark h3,
+.athena-theme-dark h4,
+.athena-theme-dark h5,
+.athena-theme-dark h6,
+.athena-theme-dark li,
+.athena-theme-dark blockquote,
+.athena-theme-dark pre,
+.athena-theme-dark code {
+  color: #ffffff !important;
+}
+
+/* Prevent SVG icons from being forced to white if they rely on specific colors */
+.athena-theme-dark svg:not(.correct-icon):not(.incorrect-icon):not(.missed-icon) path {
+  fill: currentColor;
+}
+
+/* 
+  Invert images in dark mode for visibility 
+  Only invert if they are likely diagrams (graphie, etc.)
+  Avoid inverting photos if possible, but for math content, inversion is usually safe
+*/
+.athena-theme-dark img,
+.athena-theme-dark .graphie-image,
+.athena-theme-dark svg {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* Re-invert specific UI icons that shouldn't be inverted */
+.athena-theme-dark .athena-radio-indicator svg,
+.athena-theme-dark .correct-icon,
+.athena-theme-dark .incorrect-icon,
+.athena-theme-dark .missed-icon {
+  filter: invert(1) hue-rotate(180deg);
+  /* Cancel out the inversion */
+}
+
+/* Ensure hints are visible */
+.athena-hint-content {
+  color: #ffffff !important;
+  background-color: #1e1e1e !important;
+  border-color: #333 !important;
 }

@@ -39,7 +39,7 @@ const renderMathContent = (text: string): string => {
   return processed;
 };
 
-export interface CategorizerWidgetProps extends WidgetProps<CategorizerOptions> {}
+export interface CategorizerWidgetProps extends WidgetProps<CategorizerOptions> { }
 
 interface CategoryAssignment {
   [categoryId: string]: string[];
@@ -220,7 +220,7 @@ export function CategorizerWidget({
           className="athena-categorizer-table-wrapper"
           style={{
             overflowX: 'auto',
-            backgroundColor: '#f5f5f5',
+            backgroundColor: themeStyles.itemBg,
             borderRadius: '8px',
             padding: '4px',
           }}
@@ -230,7 +230,7 @@ export function CategorizerWidget({
             style={{
               width: '100%',
               borderCollapse: 'collapse',
-              backgroundColor: '#fff',
+              backgroundColor: themeStyles.bg,
             }}
           >
             <thead>
@@ -240,8 +240,8 @@ export function CategorizerWidget({
                     padding: '12px 16px',
                     textAlign: 'left',
                     fontWeight: 600,
-                    backgroundColor: '#f5f5f5',
-                    borderBottom: '2px solid #e0e0e0',
+                    backgroundColor: themeStyles.itemBg,
+                    borderBottom: `2px solid ${themeStyles.border}`,
                     color: themeStyles.text,
                   }}
                 >
@@ -254,8 +254,8 @@ export function CategorizerWidget({
                       padding: '12px 16px',
                       textAlign: 'center',
                       fontWeight: 600,
-                      backgroundColor: '#f5f5f5',
-                      borderBottom: '2px solid #e0e0e0',
+                      backgroundColor: themeStyles.itemBg,
+                      borderBottom: `2px solid ${themeStyles.border}`,
                       color: themeStyles.text,
                       minWidth: '100px',
                     }}
@@ -274,16 +274,16 @@ export function CategorizerWidget({
                   <tr
                     key={item}
                     style={{
-                      backgroundColor: rowIndex % 2 === 0 ? '#fff' : '#fafafa',
+                      backgroundColor: rowIndex % 2 === 0 ? themeStyles.bg : themeStyles.itemBg,
                     }}
                   >
                     <td
                       style={{
                         padding: '12px 16px',
                         fontWeight: 500,
-                        borderBottom: '1px solid #e0e0e0',
+                        borderBottom: `1px solid ${themeStyles.border}`,
                         color: themeStyles.text,
-                        backgroundColor: isRowCorrect ? '#e8f5e9' : (isRowIncorrect ? '#ffebee' : 'transparent'),
+                        backgroundColor: isRowCorrect ? themeStyles.correct : (isRowIncorrect ? themeStyles.incorrect : 'transparent'),
                       }}
                       dangerouslySetInnerHTML={{ __html: renderMathContent(item) }}
                     />
@@ -298,8 +298,8 @@ export function CategorizerWidget({
                           style={{
                             padding: '12px 16px',
                             textAlign: 'center',
-                            borderBottom: '1px solid #e0e0e0',
-                            backgroundColor: isCellCorrect ? '#e8f5e9' : (isCellIncorrect ? '#ffebee' : 'transparent'),
+                            borderBottom: `1px solid ${themeStyles.border}`,
+                            backgroundColor: isCellCorrect ? themeStyles.correct : (isCellIncorrect ? themeStyles.incorrect : 'transparent'),
                           }}
                         >
                           <label

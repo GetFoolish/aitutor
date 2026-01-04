@@ -12,7 +12,7 @@ import type { WidgetProps } from '../WidgetRegistry';
 import type { NumericInputOptions } from '../../core/types';
 import { BaseWidgetWrapper, useWidgetState } from '../base/BaseWidget';
 
-export interface NumericInputWidgetProps extends WidgetProps<NumericInputOptions> {}
+export interface NumericInputWidgetProps extends WidgetProps<NumericInputOptions> { }
 
 // Validation helper
 function validateNumericInput(value: string, options: NumericInputOptions): { isValid: boolean; message: string | null } {
@@ -184,11 +184,9 @@ export function NumericInputWidget({
           id={inputId}
           type="text"
           inputMode="decimal"
-          className={`athena-numeric-input-field ${
-            options.rightAlign ? 'right-align' : ''
-          } ${isCorrect === true ? 'correct' : ''} ${
-            isCorrect === false ? 'incorrect' : ''
-          } ${!validation.isValid && showValidation ? 'validation-error' : ''}`}
+          className={`athena-numeric-input-field ${options.rightAlign ? 'right-align' : ''
+            } ${isCorrect === true ? 'correct' : ''} ${isCorrect === false ? 'incorrect' : ''
+            } ${!validation.isValid && showValidation ? 'validation-error' : ''}`}
           value={state.value || ''}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
@@ -212,7 +210,7 @@ export function NumericInputWidget({
             className="athena-numeric-input-hint"
             style={{
               fontSize: '12px',
-              color: '#666',
+              color: theme === 'dark' ? '#aaa' : '#666',
               marginTop: '4px',
             }}
           >

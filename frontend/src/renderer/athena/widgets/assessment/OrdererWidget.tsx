@@ -36,7 +36,7 @@ interface OrdererOptions {
   height?: 'normal' | 'auto';
 }
 
-export interface OrdererWidgetProps extends WidgetProps<OrdererOptions> {}
+export interface OrdererWidgetProps extends WidgetProps<OrdererOptions> { }
 
 export function OrdererWidget({
   widgetId,
@@ -258,16 +258,22 @@ export function OrdererWidget({
       incorrect: '#f44336',
       dropZoneBg: '#fafafa',
       dropZoneBorder: '#ccc',
+      availableBg: '#f5f5f5',
+      availableBorder: '#e0e0e0',
+      labelColor: '#666',
     },
     dark: {
-      cardBg: '#3d3d3d',
-      cardBorder: '#555',
+      cardBg: '#2d2d2d',
+      cardBorder: '#444',
       text: '#fff',
       highlight: '#64b5f6',
       correct: '#81c784',
       incorrect: '#e57373',
-      dropZoneBg: '#333',
-      dropZoneBorder: '#555',
+      dropZoneBg: '#1e1e1e',
+      dropZoneBorder: '#444',
+      availableBg: '#1e1e1e',
+      availableBorder: '#444',
+      labelColor: '#ccc',
     },
     'high-contrast': {
       cardBg: '#222',
@@ -278,6 +284,9 @@ export function OrdererWidget({
       incorrect: '#f00',
       dropZoneBg: '#111',
       dropZoneBorder: '#fff',
+      availableBg: '#000',
+      availableBorder: '#fff',
+      labelColor: '#fff',
     },
   }[theme];
 
@@ -305,7 +314,7 @@ export function OrdererWidget({
     <BaseWidgetWrapper widgetId={widgetId} widgetType="orderer">
       <div className="athena-orderer-container">
         {/* Instructions */}
-        <div style={{ marginBottom: '12px', fontSize: '14px', color: '#666' }}>
+        <div style={{ marginBottom: '12px', fontSize: '14px', color: themeStyles.labelColor }}>
           {isDisabled
             ? 'Your answer:'
             : 'Drag cards to the answer area, or click to add/remove.'}
@@ -331,17 +340,16 @@ export function OrdererWidget({
             backgroundColor: reviewMode
               ? isCorrect ? 'rgba(76, 175, 80, 0.1)' : isIncorrect ? 'rgba(244, 67, 54, 0.1)' : themeStyles.dropZoneBg
               : themeStyles.dropZoneBg,
-            border: `2px dashed ${
-              reviewMode
+            border: `2px dashed ${reviewMode
                 ? isCorrect ? themeStyles.correct : isIncorrect ? themeStyles.incorrect : themeStyles.dropZoneBorder
                 : dropTargetIndex !== null ? themeStyles.highlight : themeStyles.dropZoneBorder
-            }`,
+              }`,
             borderRadius: '8px',
             transition: 'all 0.2s ease',
           }}
         >
           {selectedCards.length === 0 ? (
-            <span style={{ color: '#999', fontStyle: 'italic', fontSize: '14px' }}>
+            <span style={{ color: themeStyles.labelColor, fontStyle: 'italic', fontSize: '14px' }}>
               {isDisabled ? 'No cards selected' : 'Drop cards here or click to add'}
             </span>
           ) : (
@@ -379,11 +387,11 @@ export function OrdererWidget({
             <div style={{ marginLeft: 'auto', paddingLeft: '12px' }}>
               {isCorrect ? (
                 <svg width="28" height="28" viewBox="0 0 24 24" fill={themeStyles.correct}>
-                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                 </svg>
               ) : (
                 <svg width="28" height="28" viewBox="0 0 24 24" fill={themeStyles.incorrect}>
-                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
                 </svg>
               )}
             </div>
@@ -402,12 +410,12 @@ export function OrdererWidget({
               flexWrap: 'wrap',
               alignItems: 'center',
               padding: '12px',
-              backgroundColor: '#f5f5f5',
+              backgroundColor: themeStyles.availableBg,
               borderRadius: '8px',
-              border: `2px solid ${dragSource === 'selected' ? themeStyles.highlight : '#e0e0e0'}`,
+              border: `2px solid ${dragSource === 'selected' ? themeStyles.highlight : themeStyles.availableBorder}`,
             }}
           >
-            <span style={{ marginRight: '12px', fontSize: '14px', color: '#666', fontWeight: 500 }}>
+            <span style={{ marginRight: '12px', fontSize: '14px', color: themeStyles.labelColor, fontWeight: 500 }}>
               Available:
             </span>
             {availableCards.map((card, index) => (
@@ -420,7 +428,7 @@ export function OrdererWidget({
                 style={{
                   ...cardStyle,
                   opacity: draggedCard === card ? 0.6 : 1,
-                  backgroundColor: draggedCard === card ? themeStyles.highlight : '#fff',
+                  backgroundColor: draggedCard === card ? themeStyles.highlight : themeStyles.cardBg,
                   color: draggedCard === card ? '#fff' : themeStyles.text,
                 }}
                 dangerouslySetInnerHTML={{ __html: renderContent(card) }}
