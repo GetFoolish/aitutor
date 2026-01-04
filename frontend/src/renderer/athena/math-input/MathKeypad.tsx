@@ -6,6 +6,7 @@
  */
 
 import React, { useState, useCallback, useMemo } from 'react';
+import { useAthena } from '../AthenaContext';
 import type { ButtonSet, MathButton, ButtonSetId } from './ButtonSets';
 import {
   BASIC_SET,
@@ -48,6 +49,9 @@ export function MathKeypad({
   className = '',
   showTabs = true,
 }: MathKeypadProps) {
+  const { state } = useAthena();
+  const isDark = state.theme === 'dark';
+
   // Get the button set objects
   const sets = useMemo(() => {
     return buttonSets
@@ -112,10 +116,10 @@ export function MathKeypad({
   }
 
   const keypadStyles: React.CSSProperties = {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: isDark ? '#121212' : '#f5f5f5',
     borderRadius: '8px',
     padding: '8px',
-    border: '1px solid #e0e0e0',
+    border: `1px solid ${isDark ? '#333' : '#e0e0e0'}`,
     marginTop: '8px',
   };
 
@@ -123,7 +127,7 @@ export function MathKeypad({
     display: 'flex',
     gap: '4px',
     marginBottom: '8px',
-    borderBottom: '1px solid #e0e0e0',
+    borderBottom: `1px solid ${isDark ? '#333' : '#e0e0e0'}`,
     paddingBottom: '8px',
   };
 
@@ -131,7 +135,7 @@ export function MathKeypad({
     padding: '6px 12px',
     border: 'none',
     background: isActive ? '#667eea' : 'transparent',
-    color: isActive ? 'white' : '#666',
+    color: isActive ? 'white' : (isDark ? '#aaa' : '#666'),
     borderRadius: '4px',
     cursor: 'pointer',
     fontSize: '12px',
@@ -152,8 +156,9 @@ export function MathKeypad({
   const buttonStyles: React.CSSProperties = {
     flex: 1,
     padding: '12px 8px',
-    border: '1px solid #ddd',
-    background: 'white',
+    border: `1px solid ${isDark ? '#333' : '#ddd'}`,
+    background: isDark ? '#1e1e1e' : 'white',
+    color: isDark ? '#fff' : '#000',
     borderRadius: '4px',
     cursor: 'pointer',
     fontSize: '16px',
