@@ -88,10 +88,10 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     // Check if URL suggests this is a labeled/numbered image that works better with PNG
     const lowerUrl = baseUrl.toLowerCase();
     const preferPng = lowerUrl.includes('hundred') ||
-                      lowerUrl.includes('chart') ||
-                      lowerUrl.includes('grid') ||
-                      lowerUrl.includes('table') ||
-                      lowerUrl.includes('labeled');
+      lowerUrl.includes('chart') ||
+      lowerUrl.includes('grid') ||
+      lowerUrl.includes('table') ||
+      lowerUrl.includes('labeled');
 
     if (preferPng) {
       console.log('[GraphieImage] URL suggests labeled image, preferring PNG:', baseUrl);
@@ -168,7 +168,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         const styleBlock = `<style>
           /* Force all text elements to be visible - scoped to SVG only */
           .graphie-svg text, .graphie-svg tspan, .graphie-svg .label, svg[class*="graphie"] [class*="label"] {
-            fill: #333 !important;
+            fill: currentColor !important;
             fill-opacity: 1 !important;
             font-family: 'Nunito', -apple-system, sans-serif !important;
             visibility: visible !important;
@@ -182,7 +182,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
           text[fill="white"], tspan[fill="white"],
           text[fill="#fff"], tspan[fill="#fff"],
           text[fill="#ffffff"], tspan[fill="#ffffff"] {
-            fill: #333 !important;
+            fill: currentColor !important;
           }
           text[style*="opacity"], tspan[style*="opacity"] {
             opacity: 1 !important;
@@ -195,13 +195,38 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
           }
           /* Ensure text in defs/use elements is visible */
           defs text, defs tspan, use text, use tspan {
-            fill: #333 !important;
+            fill: currentColor !important;
             fill-opacity: 1 !important;
             visibility: visible !important;
           }
           /* Fix zero fill-opacity */
           text[fill-opacity="0"], tspan[fill-opacity="0"] {
             fill-opacity: 1 !important;
+          }
+          /* Force SVG background transparency */
+          svg {
+            background: transparent !important;
+            background-color: transparent !important;
+          }
+          /* Make white background-like shapes transparent */
+          ellipse[fill="white"], ellipse[fill="#fff"], ellipse[fill="#ffffff"],
+          polygon[fill="white"], polygon[fill="#fff"], polygon[fill="#ffffff"],
+          rect[style*="fill: white"], rect[style*="fill:#fff"], rect[style*="fill:#ffffff"],
+          path[style*="fill: white"], path[style*="fill:#fff"], path[style*="fill:#ffffff"],
+          rect[fill*="rgb(255"], path[fill*="rgb(255"],
+          /* Catch light gray intensities that act as backgrounds */
+          rect[fill^="#e"], path[fill^="#e"], rect[fill^="#f"], path[fill^="#f"],
+          rect[fill^="#d"], path[fill^="#d"], rect[fill^="#b"], path[fill^="#b"] {
+            fill: transparent !important;
+            fill-opacity: 0 !important;
+          }
+          /* Reset strokes that might have been forced to white incorrectly */
+          path[stroke="white"], path[stroke="#fff"], path[stroke="#ffffff"] {
+            stroke: currentColor !important;
+          }
+          /* Ensure specific colors (like cyan boxes) are preserved and not forced to currentColor by high-level rules */
+          path[stroke*="#"], path[stroke*="rgb"], rect[stroke*="#"], rect[stroke*="rgb"] {
+            /* stroke: inherit; -- allow specific strokes */
           }
         </style>`;
 
@@ -214,8 +239,8 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         processedSvg = processedSvg.replace(/<tspan([^>]*)style="([^"]*?)opacity:\s*0([^"]*?)"/gi, '<tspan$1style="$2opacity:1$3"');
 
         // Handle fill="transparent" or fill="none"
-        processedSvg = processedSvg.replace(/<text([^>]*)fill="(?:transparent|none)"/gi, '<text$1fill="#333"');
-        processedSvg = processedSvg.replace(/<tspan([^>]*)fill="(?:transparent|none)"/gi, '<tspan$1fill="#333"');
+        processedSvg = processedSvg.replace(/<text([^>]*)fill="(?:transparent|none)"/gi, '<text$1fill="currentColor"');
+        processedSvg = processedSvg.replace(/<tspan([^>]*)fill="(?:transparent|none)"/gi, '<tspan$1fill="currentColor"');
 
         // Handle fill-opacity="0"
         processedSvg = processedSvg.replace(/<text([^>]*)fill-opacity="0"/gi, '<text$1fill-opacity="1"');
@@ -229,15 +254,28 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         processedSvg = processedSvg.replace(/<text([^>]*)display="none"/gi, '<text$1display="inline"');
         processedSvg = processedSvg.replace(/<tspan([^>]*)display="none"/gi, '<tspan$1display="inline"');
 
-        // Handle white/invisible fill colors (commonly used to hide text)
-        processedSvg = processedSvg.replace(/<text([^>]*)fill="(?:#fff(?:fff)?|white|rgba?\([^)]*,\s*0\))"/gi, '<text$1fill="#333"');
-        processedSvg = processedSvg.replace(/<tspan([^>]*)fill="(?:#fff(?:fff)?|white|rgba?\([^)]*,\s*0\))"/gi, '<tspan$1fill="#333"');
+        // Handle white/invisible fill colors (commonly used to hide text or as backgrounds)
+        // For text, we definitely want currentColor
+        processedSvg = processedSvg.replace(/<text([^>]*)fill="(?:#fff(?:fff)?|white|rgba?\([^)]*,\s*0\))"/gi, '<text$1fill="currentColor"');
+        processedSvg = processedSvg.replace(/<tspan([^>]*)fill="(?:#fff(?:fff)?|white|rgba?\([^)]*,\s*0\))"/gi, '<tspan$1fill="currentColor"');
+
+        // For shapes, if it's pure white, it's likely a background or container that should be transparent
+        processedSvg = processedSvg.replace(/<(path|rect|circle|ellipse|polygon|polyline)([^>]*)fill="(?:#fff(?:fff)?|white)"/gi, '<$1$2fill="none"');
+        processedSvg = processedSvg.replace(/<(path|rect|circle|ellipse|polygon|polyline)([^>]*)stroke="(?:#fff(?:fff)?|white)"/gi, '<$1$2stroke="currentColor"');
+
+        // Handle inline style white fills/strokes for all shapes
+        processedSvg = processedSvg.replace(/<(path|rect|circle|ellipse|polygon|polyline)([^>]*)style="([^"]*?)fill:\s*(?:#fff(?:fff)?|white)([^"]*?)"/gi, '<$1$2style="$3fill:none$4"');
+        processedSvg = processedSvg.replace(/<(path|rect|circle|ellipse|polygon|polyline)([^>]*)style="([^"]*?)stroke:\s*(?:#fff(?:fff)?|white)([^"]*?)"/gi, '<$1$2style="$3stroke:currentColor$4"');
+
+        // Handle black/dark fills that should be dynamic (only if they are pure black or very dark gray)
+        processedSvg = processedSvg.replace(/<(path|rect|circle|ellipse)([^>]*)fill="(?:#000(?:000)?|#333(?:333)?|black)"/gi, '<$1$2fill="currentColor"');
+        processedSvg = processedSvg.replace(/<(path|rect|circle|ellipse)([^>]*)stroke="(?:#000(?:000)?|#333(?:333)?|black)"/gi, '<$1$2stroke="currentColor"');
 
         // Handle stroke-opacity that might hide text outlines
         processedSvg = processedSvg.replace(/<text([^>]*)stroke-opacity="0"/gi, '<text$1stroke-opacity="1"');
 
         // Ensure text elements without fill get a default fill
-        processedSvg = processedSvg.replace(/<text(?![^>]*fill=)/gi, '<text fill="#333" ');
+        processedSvg = processedSvg.replace(/<text(?![^>]*fill=)/gi, '<text fill="currentColor" ');
 
         // Also handle text elements that might have empty or zero-value styling
         processedSvg = processedSvg.replace(/(<text[^>]*style=")([^"]*)(font-size:\s*0[^;]*;?)([^"]*")/gi, '$1$2font-size:14px;$4');
@@ -245,14 +283,23 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         // Remove any class-based hiding (common in graphie SVGs)
         processedSvg = processedSvg.replace(/class="[^"]*hidden[^"]*"/gi, '');
 
-        // Add explicit styling to make sure text is positioned correctly
+        // Handle <image> tags (pictograms/icons)
+        // Convert schemeless URLs (//) to https://
+        processedSvg = processedSvg.replace(/<image([^>]*)(?:xlink:)?href="\/\/([^"]*)"/gi, '<image$1href="https://$2"');
+        // Ensure images are visible
+        processedSvg = processedSvg.replace(/<image(?![^>]*style=)/gi, '<image style="visibility:visible;opacity:1" ');
+
+        // Add explicit styling to make sure text is positioned correctly and background is transparent
         // Some graphie SVGs use transforms that might position text outside viewport
         processedSvg = processedSvg.replace(/<svg([^>]*)>/, (match, attrs) => {
-          // Ensure SVG has overflow visible
+          let newAttrs = attrs;
+          // Ensure SVG has overflow visible and transparent background
           if (!attrs.includes('overflow')) {
-            return `<svg${attrs} style="overflow:visible">`;
+            newAttrs += ' style="overflow:visible;background:transparent !important"';
+          } else if (!attrs.includes('background')) {
+            newAttrs = attrs.replace(/style="([^"]*)"/, 'style="$1;background:transparent !important"');
           }
-          return match;
+          return `<svg${newAttrs}>`;
         });
 
         console.log('[GraphieImage] Processed SVG, text elements should now be visible');
@@ -365,7 +412,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       textElements.forEach((el) => {
         const element = el as SVGElement;
         // Force visibility
-        element.style.fill = element.style.fill || '#333';
+        element.style.fill = element.style.fill || 'currentColor';
         element.style.fillOpacity = '1';
         element.style.visibility = 'visible';
         element.style.display = 'inline';
@@ -373,7 +420,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
 
         // Also set attributes directly
         if (!element.getAttribute('fill') || element.getAttribute('fill') === 'none' || element.getAttribute('fill') === 'transparent') {
-          element.setAttribute('fill', '#333');
+          element.setAttribute('fill', 'currentColor');
         }
         element.setAttribute('fill-opacity', '1');
       });
@@ -489,7 +536,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
-      return `<text x="${svgX}" y="${svgY}" text-anchor="${textAnchor}" dy="${dy}" fill="#333" style="${styleStr}">${escapedContent}</text>`;
+      return `<text x="${svgX}" y="${svgY}" text-anchor="${textAnchor}" dy="${dy}" fill="currentColor" style="${styleStr}">${escapedContent}</text>`;
     }).join('\n');
 
     // Insert labels before closing </svg> tag

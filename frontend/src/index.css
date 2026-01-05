@@ -1004,34 +1004,61 @@ a[target="lint-help-window"] {
   color: #ffffff !important;
 }
 
-/* Prevent SVG icons from being forced to white if they rely on specific colors */
-.athena-theme-dark svg path {
+/* Limit global currentColor rules to prevent washing out specific colors in complex diagrams */
+/* Limit global currentColor rules to prevent washing out specific colors in complex diagrams */
+.athena-theme-dark .athena-widget svg:not(.graphie-svg) path,
+.athena-theme-dark .athena-widget svg:not(.graphie-svg) circle,
+.athena-theme-dark .athena-widget svg:not(.graphie-svg) line,
+.athena-theme-dark .athena-widget svg:not(.graphie-svg) polyline,
+.athena-theme-dark .athena-widget svg:not(.graphie-svg) polygon {
   fill: currentColor;
+  stroke: currentColor;
 }
 
 /* 
-  Invert images in dark mode for visibility 
-  Only invert if they are likely diagrams (graphie, etc.)
-  Avoid double-inversion by targetingcontainers OR images, not both.
+  Invert BITMAP images (PNG/JPG/WEBP) in dark mode for visibility 
+  Only invert if they are definitely not diagrams (or if they are the only option)
 */
-.athena-theme-dark img,
-.athena-theme-dark .athena-graphie-placeholder,
-.athena-theme-dark .graphie-image {
+.athena-theme-dark img:not([src$=".svg"]) {
   filter: invert(1) hue-rotate(180deg) !important;
 }
 
-/* For standalone SVGs that aren't inside inverted containers */
-.athena-theme-dark :not(.graphie-image)>svg:not(.athena-radio-indicator svg) {
-  filter: invert(1) hue-rotate(180deg);
+/* Dark mode diagram background to match Perseus - Force pure black to show white coques */
+.athena-theme-dark .graphie-image-container,
+.athena-theme-dark .graphie-svg-wrapper,
+.athena-theme-dark .athena-graphie-placeholder {
+  background-color: #000000 !important;
+  border-radius: 4px;
 }
 
-/* Re-invert specific UI icons that shouldn't be inverted */
+/* 
+  DO NOT invert SVGs or Graphie placeholders. 
+  Instead, rely on the fill/stroke currentColor rules above.
+*/
+/* Ensure diagrams (Graphie SVGs) are NOT inverted */
+.athena-theme-dark .athena-graphie-placeholder,
+.athena-theme-dark .graphie-svg-wrapper svg {
+  filter: none !important;
+}
+
+/* Allow .graphie-image (which can be a PNG) to inherit inversion if it's not an SVG */
+.athena-theme-dark img.graphie-image:not([src$=".svg"]) {
+  filter: invert(1) hue-rotate(180deg) !important;
+}
+
+/* Ensure math/diagram labels are white in dark mode */
+.athena-theme-dark .graphie-labels text,
+.athena-theme-dark .graphie-svg text {
+  fill: #ffffff !important;
+  color: #ffffff !important;
+}
+
+/* Re-invert specific UI icons that shouldn't be affected by filters or need to stay original */
 .athena-theme-dark .athena-radio-indicator svg,
 .athena-theme-dark .correct-icon,
 .athena-theme-dark .incorrect-icon,
 .athena-theme-dark .missed-icon {
   filter: none !important;
-  /* Reset the filter instead of double-inverting */
 }
 
 /* Ensure hints are visible */

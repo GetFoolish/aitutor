@@ -31,7 +31,7 @@ async function ensureKaTeX() {
   }
 }
 
-export interface ImageWidgetProps extends WidgetProps<ImageOptions> {}
+export interface ImageWidgetProps extends WidgetProps<ImageOptions> { }
 
 // Singleton migrator instance
 const imageUrlMigrator = new ImageURLMigrator();
@@ -346,14 +346,14 @@ export function ImageWidget({
                       left: `${(x / imgWidth) * 100}%`,
                       top: `${(y / imgHeight) * 100}%`,
                       transform: 'translate(-50%, -50%)',
-                      backgroundColor: 'rgba(255,255,255,0.9)',
+                      backgroundColor: theme === 'dark' ? 'rgba(0,0,0,0.7)' : 'rgba(255,255,255,0.9)',
                       padding: '2px 6px',
                       borderRadius: '4px',
                       fontSize: '14px',
                       fontWeight: 500,
-                      color: '#333',
+                      color: theme === 'dark' ? '#fff' : '#333',
                       whiteSpace: 'nowrap',
-                      boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                      boxShadow: theme === 'dark' ? '0 1px 3px rgba(255,255,255,0.1)' : '0 1px 3px rgba(0,0,0,0.2)',
                     }}
                     dangerouslySetInnerHTML={{ __html: renderLabelContent(label.content || '') }}
                   />
@@ -410,8 +410,8 @@ export function ImageWidget({
 function ZoomIcon() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-      <path d="M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z"/>
+      <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+      <path d="M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z" />
     </svg>
   );
 }
@@ -419,7 +419,7 @@ function ZoomIcon() {
 function CloseIcon() {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
     </svg>
   );
 }
@@ -427,7 +427,7 @@ function CloseIcon() {
 function ImageBrokenIcon() {
   return (
     <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M21 5v6.59l-3-3.01-4 4.01-4-4-4 4-3-3.01V5c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2zm-3 6.42l3 3.01V19c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2v-6.58l3 2.99 4-4 4 4 4-3.99z"/>
+      <path d="M21 5v6.59l-3-3.01-4 4.01-4-4-4 4-3-3.01V5c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2zm-3 6.42l3 3.01V19c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2v-6.58l3 2.99 4-4 4 4 4-3.99z" />
     </svg>
   );
 }

@@ -345,7 +345,7 @@ export function InteractiveGraphWidget({
       text: '#333',
     },
     dark: {
-      bg: '#2d2d2d',
+      bg: '#000000',
       grid: '#4d4d4d',
       axis: '#fff',
       point: '#64b5f6',

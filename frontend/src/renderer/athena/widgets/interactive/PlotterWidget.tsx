@@ -104,7 +104,7 @@ interface PlotterOptions {
   labelText?: string; // Alternate axis label property
 }
 
-export interface PlotterWidgetProps extends WidgetProps<PlotterOptions> {}
+export interface PlotterWidgetProps extends WidgetProps<PlotterOptions> { }
 
 export function PlotterWidget({
   widgetId,
@@ -134,11 +134,13 @@ export function PlotterWidget({
     typeof rawRange[1][1] === 'number'
   ) ? rawRange as [[number, number], [number, number]] : defaultRange;
 
-  // Determine plot type - dotplot takes precedence over categories
+  // Determine plot type - dotplot and pictograph take precedence over categories
   const plotType = options.type || 'scatter';
   const isDotPlot = plotType === 'dotplot';
+  const isPictograph = plotType === 'pic';
+  const isPictogram = isDotPlot || isPictograph;
 
-  // Check if this is a bar chart (categories mode, but NOT dotplot)
+  // Check if this is a bar chart (categories mode, but NOT dotplot or pictograph)
   // Keep all categories for positioning, but may render some labels as empty
   const categories = options.categories || [];
   // Check if there are any non-empty categories (to determine if it's a bar chart)
@@ -148,7 +150,7 @@ export function PlotterWidget({
     const stripped = stripMathDelimiters(label);
     return stripped.length > 0;
   });
-  const isBarChart = categories.length > 0 && !isDotPlot;
+  const isBarChart = categories.length > 0 && !isPictogram;
 
   // For bar charts, starting values are an array of Y values (one per category)
   const getStartingBarValues = (): number[] => {
@@ -169,8 +171,8 @@ export function PlotterWidget({
 
   const correctBarValues = isBarChart && Array.isArray(options.correct)
     ? (typeof options.correct[0] === 'number'
-        ? options.correct as number[]
-        : (options.correct as [number, number][]).map(p => Array.isArray(p) ? p[1] : 0))
+      ? options.correct as number[]
+      : (options.correct as [number, number][]).map(p => Array.isArray(p) ? p[1] : 0))
     : [];
 
   // For scatter plots
@@ -198,7 +200,7 @@ export function PlotterWidget({
 
   const themeStyles = {
     light: { bg: '#fff', grid: '#e5e7eb', axis: '#374151', point: '#3b82f6', correct: '#22c55e', text: '#6b7280' },
-    dark: { bg: '#1f2937', grid: '#374151', axis: '#e5e7eb', point: '#60a5fa', correct: '#4ade80', text: '#9ca3af' },
+    dark: { bg: '#000000', grid: '#374151', axis: '#e5e7eb', point: '#60a5fa', correct: '#4ade80', text: '#9ca3af' },
     'high-contrast': { bg: '#000', grid: '#333', axis: '#fff', point: '#ff0', correct: '#0f0', text: '#fff' },
   }[theme];
 
@@ -393,13 +395,13 @@ export function PlotterWidget({
     );
   }
 
-  // Render dot plot (number line with stackable dots)
-  if (isDotPlot) {
-    const dotRadius = 10;
-    const dotSpacing = 24;
+  // Render dot plot or pictograph (number line with stackable dots or icons)
+  if (isPictogram) {
+    const dotRadius = isPictograph ? (options.picSize || 20) / 2 : 10;
+    const dotSpacing = isPictograph ? (options.picSize || 30) + 4 : 24;
     const xAxisY = height - padding - 20;
 
-    // For dot plots, track how many dots are at each x position
+    // For pictogram plots, track how many elements are at each x position
     const dotCounts: Record<number, number> = {};
     points.forEach(([x]) => {
       dotCounts[x] = (dotCounts[x] || 0) + 1;
@@ -450,7 +452,7 @@ export function PlotterWidget({
 
     return (
       <BaseWidgetWrapper widgetId={widgetId} widgetType="plotter">
-        <div className="athena-plotter athena-dotplot" style={{ padding: '16px', backgroundColor: themeStyles.bg, borderRadius: '8px' }}>
+        <div className={`athena-plotter ${isDotPlot ? 'athena-dotplot' : 'athena-pictograph'}`} style={{ padding: '16px', backgroundColor: themeStyles.bg, borderRadius: '8px' }}>
           <svg
             width={width}
             height={height}
@@ -506,22 +508,42 @@ export function PlotterWidget({
               </text>
             )}
 
-            {/* Dots stacked at each x position */}
+            {/* Elements stacked at each x position */}
             {xPositions.map((x) => {
               const count = dotCounts[x] || 0;
-              return Array.from({ length: count }).map((_, dotIndex) => (
-                <circle
-                  key={`dot-${x}-${dotIndex}`}
-                  cx={xScale(x)}
-                  cy={xAxisY - dotSpacing - dotIndex * dotSpacing}
-                  r={dotRadius}
-                  fill={themeStyles.point}
-                  stroke="white"
-                  strokeWidth={2}
-                  style={{ cursor: isDisabled ? 'default' : 'pointer' }}
-                  onClick={(e) => handleDotClick(e, x)}
-                />
-              ));
+              return Array.from({ length: count }).map((_, dotIndex) => {
+                const cx = xScale(x);
+                const cy = xAxisY - dotSpacing - dotIndex * dotSpacing;
+
+                if (isPictograph && options.picUrl) {
+                  return (
+                    <image
+                      key={`pic-${x}-${dotIndex}`}
+                      x={cx - dotRadius}
+                      y={cy - dotRadius}
+                      width={dotRadius * 2}
+                      height={dotRadius * 2}
+                      href={options.picUrl}
+                      style={{ cursor: isDisabled ? 'default' : 'pointer' }}
+                      onClick={(e) => handleDotClick(e, x)}
+                    />
+                  );
+                }
+
+                return (
+                  <circle
+                    key={`dot-${x}-${dotIndex}`}
+                    cx={cx}
+                    cy={cy}
+                    r={dotRadius}
+                    fill={themeStyles.point}
+                    stroke="white"
+                    strokeWidth={2}
+                    style={{ cursor: isDisabled ? 'default' : 'pointer' }}
+                    onClick={(e) => handleDotClick(e, x)}
+                  />
+                );
+              });
             })}
 
             {/* Correct answer indicators (review mode) */}
@@ -529,16 +551,31 @@ export function PlotterWidget({
               const correctCount = correctPoints.filter(p => p[0] === x).length;
               const userCount = dotCounts[x] || 0;
               if (userCount < correctCount) {
-                return (
-                  <circle
-                    key={`correct-${i}`}
-                    cx={xScale(x)}
-                    cy={xAxisY - dotSpacing - userCount * dotSpacing}
-                    r={dotRadius}
-                    fill={themeStyles.correct}
-                    opacity={0.5}
-                  />
-                );
+                if (isPictograph && options.picUrl) {
+                  return (
+                    <image
+                      key={`correct-${i}`}
+                      x={xScale(x) - dotRadius}
+                      y={xAxisY - dotSpacing - userCount * dotSpacing - dotRadius}
+                      width={dotRadius * 2}
+                      height={dotRadius * 2}
+                      href={options.picUrl}
+                      opacity={0.5}
+                      style={{ filter: 'sepia(1) saturate(5) hue-rotate(90deg)' }} // Greenish tint for correct
+                    />
+                  );
+                } else {
+                  return (
+                    <circle
+                      key={`correct-${i}`}
+                      cx={xScale(x)}
+                      cy={xAxisY - dotSpacing - userCount * dotSpacing}
+                      r={dotRadius}
+                      fill={themeStyles.correct}
+                      opacity={0.5}
+                    />
+                  );
+                }
               }
               return null;
             })}

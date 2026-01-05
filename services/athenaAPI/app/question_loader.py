@@ -79,6 +79,9 @@ def convert_widget_to_athena(widget_id: str, widget_data: Dict[str, Any]) -> Dic
     if 'imageUrl' in athena_widget['options']:
         athena_widget['options']['imageUrl'] = convert_graphie_url(athena_widget['options']['imageUrl'])
 
+    if 'picUrl' in athena_widget['options']:
+        athena_widget['options']['picUrl'] = convert_graphie_url(athena_widget['options']['picUrl'])
+
     # Handle specific widget type conversions
     if normalized_type == 'numeric-input':
         # Ensure answers are properly formatted
