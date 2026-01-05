@@ -1005,18 +1005,23 @@ a[target="lint-help-window"] {
 }
 
 /* Prevent SVG icons from being forced to white if they rely on specific colors */
-.athena-theme-dark svg:not(.correct-icon):not(.incorrect-icon):not(.missed-icon) path {
+.athena-theme-dark svg path {
   fill: currentColor;
 }
 
 /* 
   Invert images in dark mode for visibility 
   Only invert if they are likely diagrams (graphie, etc.)
-  Avoid inverting photos if possible, but for math content, inversion is usually safe
+  Avoid double-inversion by targetingcontainers OR images, not both.
 */
 .athena-theme-dark img,
-.athena-theme-dark .graphie-image,
-.athena-theme-dark svg {
+.athena-theme-dark .athena-graphie-placeholder,
+.athena-theme-dark .graphie-image {
+  filter: invert(1) hue-rotate(180deg) !important;
+}
+
+/* For standalone SVGs that aren't inside inverted containers */
+.athena-theme-dark :not(.graphie-image)>svg:not(.athena-radio-indicator svg) {
   filter: invert(1) hue-rotate(180deg);
 }
 
@@ -1025,8 +1030,8 @@ a[target="lint-help-window"] {
 .athena-theme-dark .correct-icon,
 .athena-theme-dark .incorrect-icon,
 .athena-theme-dark .missed-icon {
-  filter: invert(1) hue-rotate(180deg);
-  /* Cancel out the inversion */
+  filter: none !important;
+  /* Reset the filter instead of double-inverting */
 }
 
 /* Ensure hints are visible */
