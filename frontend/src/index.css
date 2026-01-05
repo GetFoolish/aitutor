@@ -1037,7 +1037,7 @@ a[target="lint-help-window"] {
 */
 /* Ensure diagrams (Graphie SVGs) are NOT inverted */
 .athena-theme-dark .athena-graphie-placeholder,
-.athena-theme-dark .graphie-svg-wrapper svg {
+.athena-theme-dark .graphie-image {
   filter: none !important;
 }
 

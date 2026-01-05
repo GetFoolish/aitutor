@@ -397,8 +397,8 @@ export function PlotterWidget({
 
   // Render dot plot or pictograph (number line with stackable dots or icons)
   if (isPictogram) {
-    const dotRadius = isPictograph ? (options.picSize || 20) / 2 : 10;
-    const dotSpacing = isPictograph ? (options.picSize || 30) + 4 : 24;
+    const dotRadius = isPictograph ? (options.picSize || 30) / 2 : 10;
+    const dotSpacing = isPictograph ? (options.picSize || 34) + 4 : 24;
     const xAxisY = height - padding - 20;
 
     // For pictogram plots, track how many elements are at each x position
@@ -524,7 +524,10 @@ export function PlotterWidget({
                       width={dotRadius * 2}
                       height={dotRadius * 2}
                       href={options.picUrl}
-                      style={{ cursor: isDisabled ? 'default' : 'pointer' }}
+                      style={{
+                        cursor: isDisabled ? 'default' : 'pointer',
+                        filter: theme === 'dark' ? 'invert(1) hue-rotate(180deg)' : 'none'
+                      }}
                       onClick={(e) => handleDotClick(e, x)}
                     />
                   );
@@ -561,7 +564,11 @@ export function PlotterWidget({
                       height={dotRadius * 2}
                       href={options.picUrl}
                       opacity={0.5}
-                      style={{ filter: 'sepia(1) saturate(5) hue-rotate(90deg)' }} // Greenish tint for correct
+                      style={{
+                        filter: theme === 'dark'
+                          ? 'invert(1) hue-rotate(180deg) opacity(0.5) sepia(1) saturate(5) hue-rotate(90deg)'
+                          : 'sepia(1) saturate(5) hue-rotate(90deg)'
+                      }} // Greenish tint for correct
                     />
                   );
                 } else {

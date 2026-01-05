@@ -141,8 +141,10 @@ def deep_convert_urls(obj: Any) -> Any:
     """
     if isinstance(obj, dict):
         new_dict = {}
+        # List of fields that commonly contain image URLs in Perseus/Athena
+        image_fields = {'url', 'picUrl', 'iconUrl', 'backgroundImageUrl', 'imageUrl'}
         for k, v in obj.items():
-            if k == 'url' and isinstance(v, str) and v.startswith('web+graphie://'):
+            if k in image_fields and isinstance(v, str) and v.startswith('web+graphie://'):
                 new_dict[k] = convert_graphie_url(v)
             else:
                 new_dict[k] = deep_convert_urls(v)

@@ -213,10 +213,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
           polygon[fill="white"], polygon[fill="#fff"], polygon[fill="#ffffff"],
           rect[style*="fill: white"], rect[style*="fill:#fff"], rect[style*="fill:#ffffff"],
           path[style*="fill: white"], path[style*="fill:#fff"], path[style*="fill:#ffffff"],
-          rect[fill*="rgb(255"], path[fill*="rgb(255"],
-          /* Catch light gray intensities that act as backgrounds */
-          rect[fill^="#e"], path[fill^="#e"], rect[fill^="#f"], path[fill^="#f"],
-          rect[fill^="#d"], path[fill^="#d"], rect[fill^="#b"], path[fill^="#b"] {
+          rect[fill*="rgb(255"], path[fill*="rgb(255"] {
             fill: transparent !important;
             fill-opacity: 0 !important;
           }
@@ -268,8 +265,12 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         processedSvg = processedSvg.replace(/<(path|rect|circle|ellipse|polygon|polyline)([^>]*)style="([^"]*?)stroke:\s*(?:#fff(?:fff)?|white)([^"]*?)"/gi, '<$1$2style="$3stroke:currentColor$4"');
 
         // Handle black/dark fills that should be dynamic (only if they are pure black or very dark gray)
-        processedSvg = processedSvg.replace(/<(path|rect|circle|ellipse)([^>]*)fill="(?:#000(?:000)?|#333(?:333)?|black)"/gi, '<$1$2fill="currentColor"');
-        processedSvg = processedSvg.replace(/<(path|rect|circle|ellipse)([^>]*)stroke="(?:#000(?:000)?|#333(?:333)?|black)"/gi, '<$1$2stroke="currentColor"');
+        processedSvg = processedSvg.replace(/<(path|rect|circle|ellipse|line|polyline|polygon)([^>]*)fill="(?:#000(?:000)?|#333(?:333)?|black)"/gi, '<$1$2fill="currentColor"');
+        processedSvg = processedSvg.replace(/<(path|rect|circle|ellipse|line|polyline|polygon)([^>]*)stroke="(?:#000(?:000)?|#333(?:333)?|black)"/gi, '<$1$2stroke="currentColor"');
+
+        // Handle inline style dark fills/strokes
+        processedSvg = processedSvg.replace(/<(path|rect|circle|ellipse|line|polyline|polygon)([^>]*)style="([^"]*?)fill:\s*(?:#000(?:000)?|#333(?:333)?|black)([^"]*?)"/gi, '<$1$2style="$3fill:currentColor$4"');
+        processedSvg = processedSvg.replace(/<(path|rect|circle|ellipse|line|polyline|polygon)([^>]*)style="([^"]*?)stroke:\s*(?:#000(?:000)?|#333(?:333)?|black)([^"]*?)"/gi, '<$1$2style="$3stroke:currentColor$4"');
 
         // Handle stroke-opacity that might hide text outlines
         processedSvg = processedSvg.replace(/<text([^>]*)stroke-opacity="0"/gi, '<text$1stroke-opacity="1"');
