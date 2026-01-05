@@ -7,6 +7,7 @@
 import React, { useState } from 'react';
 import type { WidgetProps } from '../WidgetRegistry';
 import { BaseWidgetWrapper } from '../base/BaseWidget';
+import { processContent } from '../../utils/ContentRendererUtils';
 
 interface ExplanationOptions {
   showPrompt?: string;
@@ -30,6 +31,36 @@ export function ExplanationWidget({
     dark: { bg: '#374151', border: '#4b5563', text: '#f3f4f6', accent: '#60a5fa' },
     'high-contrast': { bg: '#000', border: '#fff', text: '#fff', accent: '#fff' },
   }[theme];
+
+  const formatExplanationContent = (content: string) => {
+    if (!content) return '';
+
+    // If the content looks like a list but doesn't have bullet points, add them
+    // This handles the case where multiple lines start with common instruction words
+    const lines = content.split('\n');
+    const listStarters = ['If', 'You', "Don't", 'When', 'Note'];
+
+    // Count how many lines start with these words
+    const matches = lines.filter(line =>
+      listStarters.some(starter => line.trim().startsWith(starter))
+    ).length;
+
+    // If more than 3 lines look like list items and there are no existing bullets
+    const hasExistingBullets = lines.some(line => /^\s*[*+-]\s/.test(line));
+
+    let processedContent = content;
+    if (matches >= 3 && !hasExistingBullets) {
+      processedContent = lines.map(line => {
+        const trimmed = line.trim();
+        if (listStarters.some(starter => trimmed.startsWith(starter))) {
+          return `* ${trimmed}`;
+        }
+        return line;
+      }).join('\n');
+    }
+
+    return processContent(processedContent);
+  };
 
   return (
     <BaseWidgetWrapper widgetId={widgetId} widgetType="explanation">
@@ -70,17 +101,12 @@ export function ExplanationWidget({
               whiteSpace: 'pre-wrap',
             }}
           >
-            <div dangerouslySetInnerHTML={{
-              __html: (options.explanation || 'No explanation provided')
-                // Parse Links: [text](url)
-                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color:#1865f2;text-decoration:none;">$1</a>')
-                // Parse Bold: **text**
-                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-                // Parse Italic: *text* or _text_
-                .replace(/(?<!\*)\*([^*]+)\*(?!\*)|_([^_]+)_/g, '<em>$1$2</em>')
-                // Convert newlines to breaks
-                .replace(/\n/g, '<br />')
-            }} />
+            <div
+              className="athena-explanation-content"
+              dangerouslySetInnerHTML={{
+                __html: formatExplanationContent(options.explanation || 'No explanation provided')
+              }}
+            />
           </div>
         )}
       </div>
