@@ -60,6 +60,7 @@ const katexOptions = {
   throwOnError: false,
   macros: katexMacros,
   trust: true,
+  output: 'html' as const, // Force only HTML output to avoid MathML duplication issues
 };
 
 // Helper function to render math with KaTeX
@@ -756,35 +757,68 @@ export const preprocessCodeBlocks = (text: string): string => {
 export const processContent = (content: string): string => {
   if (!content) return '';
 
-  // 1. Protect math blocks from table/markdown processing
-  // Use unique placeholders to preserve exact LaTeX content
-  const mathPlaceholders: string[] = [];
+  // Phase 1: Protect raw math from table parser
+  const mathBlocks: string[] = [];
   let processed = content.replace(/\$\$([\s\S]+?)\$\$|\$([^$]+)\$/g, (match) => {
-    const placeholder = `__ATHENA_MATH_PROTECT_${mathPlaceholders.length}__`;
-    mathPlaceholders.push(match);
+    const placeholder = `__ATHENA_MATH_RAW_${mathBlocks.length}__`;
+    mathBlocks.push(match);
     return placeholder;
   });
 
-  // 2. Process tables on the math-protected content
+  // Phase 2: Process tables (now safe from || in math)
   processed = processTable(processed);
 
-  // 3. Pre-process code blocks
+  // Phase 3: Pre-process code blocks
   processed = preprocessCodeBlocks(processed);
 
-  // 4. Clean legacy content artifacts
+  // Phase 4: Clean legacy content
   processed = cleanLegacyContent(processed);
 
-  // 5. Restore protected math blocks before KaTeX rendering
-  mathPlaceholders.forEach((math, idx) => {
-    processed = processed.replace(`__ATHENA_MATH_PROTECT_${idx}__`, math);
-  });
-
-  // 6. Render math with KaTeX
-  processed = renderMath(processed);
-
-  // 7. Process images
+  // Phase 5: Process images
   processed = processImageMarkdown(processed);
 
-  // 8. Final markdown parse
-  return marked.parse(processed, { breaks: true }) as string;
+  // Phase 6: Render math and protect the HTML output
+  const htmlProtected: string[] = [];
+  const addProtection = (html: string): string => {
+    const placeholder = `ATHENAHTMLSAFE${htmlProtected.length}ENDMARKER`;
+    htmlProtected.push(html);
+    return placeholder;
+  };
+
+  // Render each math block and protect the resulting HTML
+  mathBlocks.forEach((math, idx) => {
+    const renderedMath = renderMath(math);
+    const protectedPlaceholder = addProtection(renderedMath);
+    console.log(`[Athena] Math ${idx}: ${math} -> ${protectedPlaceholder}`);
+    processed = processed.replace(`__ATHENA_MATH_RAW_${idx}__`, protectedPlaceholder);
+  });
+
+  // Phase 7: Protect other HTML elements from Markdown
+  processed = processed.replace(/<table[\s\S]*?<\/table>/g, (match) => addProtection(match));
+  processed = processed.replace(/<(pre|code)[\s\S]*?<\/\1>/g, (match) => addProtection(match));
+  processed = processed.replace(/<img[^>]+>/g, (match) => addProtection(match));
+  processed = processed.replace(/<span[^>]*class="athena-graphie-placeholder"[^>]*>[\s\S]*?<\/span>/g, (match) => addProtection(match));
+
+  // Phase 8: Convert widget placeholders to HTML and protect them
+  processed = processed.replace(/\[\[☃\s+([^\]]+)\]\]/g, (_, widgetId) => {
+    const html = `<span class="athena-widget-inline" data-widget-id="${widgetId.trim()}"></span>`;
+    return addProtection(html);
+  });
+
+  // Phase 9: Run Markdown parser on simplified text
+  let finalHtml = marked.parse(processed, { breaks: true }) as string;
+
+  // Phase 10: Restore all protected HTML
+  // Phase 10: Restore all protected HTML
+  // IMPORTANT: Restore in REVERSE order (Last-In, First-Out)
+  // This is critical because outer blocks (like tables) are protected AFTER inner blocks (like math).
+  // Restoring the outer block first (higher index) exposes the inner placeholders (lower index) to be caught by subsequent iterations.
+  console.log(`[Athena] Restoring ${htmlProtected.length} protected HTML blocks`);
+  for (let idx = htmlProtected.length - 1; idx >= 0; idx--) {
+    const html = htmlProtected[idx];
+    const placeholder = `ATHENAHTMLSAFE${idx}ENDMARKER`;
+    finalHtml = finalHtml.split(placeholder).join(html);
+  }
+
+  return finalHtml;
 };

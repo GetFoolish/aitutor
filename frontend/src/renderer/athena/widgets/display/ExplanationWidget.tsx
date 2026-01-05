@@ -98,7 +98,6 @@ export function ExplanationWidget({
               color: themeStyles.text,
               fontSize: '14px',
               lineHeight: 1.6,
-              whiteSpace: 'pre-wrap',
             }}
           >
             <div
