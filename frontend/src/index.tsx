@@ -17,6 +17,7 @@ import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import "./index.css";
+import "katex/dist/katex.min.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 // @ts-ignore
