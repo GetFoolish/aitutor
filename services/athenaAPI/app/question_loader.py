@@ -34,6 +34,12 @@ def convert_graphie_url(url: str) -> str:
 
     # Handle web+graphie:// protocol
     if url.startswith('web+graphie://'):
+        # FIXED: Specific override for Question 6933689e1a5cae918f8bec3a (Hint 3)
+        # The original image has incorrect numbering (column-major instead of row-major).
+        # We redirect this specific hash to a local asset.
+        if 'e66544a9df611c00a03c44091f17ab1be4c19f1a' in url:
+             return '/assets/graphie-fix-6933689-hint3.svg'
+
         # Remove protocol and add https
         clean_url = url.replace('web+graphie://', 'https://')
 

@@ -1,0 +1,41 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="96" height="160" viewBox="0 0 96 160">
+    <style>
+        .grid-line { stroke: #e5e7eb; stroke-width: 1; fill: none; }
+        .outline { stroke: #000; stroke-width: 3; fill: none; }
+        /* Using strong bold Serif font to match reference photo exactly */
+        .label { font-family: "Times New Roman", Times, serif; font-size: 24px; font-weight: normal; text-anchor: middle; dominant-baseline: middle; fill: black; }
+        .athena-theme-dark .label { fill: white; }
+        .athena-theme-dark .outline { stroke: white; }
+        .athena-theme-dark .grid-line { stroke: #374151; }
+    </style>
+    
+    <!-- Grid: 3 columns (96px) x 5 rows (160px) -->
+    <!-- Horizontal Lines -->
+    <path class="grid-line" d="M0 0 H96" />
+    <path class="grid-line" d="M0 32 H96" />
+    <path class="grid-line" d="M0 64 H96" />
+    <path class="grid-line" d="M0 96 H96" />
+    <path class="grid-line" d="M0 128 H96" />
+    <path class="grid-line" d="M0 160 H96" />
+    
+    <!-- Vertical Lines -->
+    <path class="grid-line" d="M0 0 V160" />
+    <path class="grid-line" d="M32 0 V160" />
+    <path class="grid-line" d="M64 0 V160" />
+    <path class="grid-line" d="M96 0 V160" />
+
+    <!-- Shape Outline (2x3 rect at row 2, col 2) -->
+    <!-- Starts at x=32 (Col 2), y=32 (Row 2). Width=64 (Cols 2 & 3). Height=96 (Rows 2,3,4) -->
+    <rect class="outline" x="32" y="32" width="64" height="96" />
+
+    <!-- Numbers (Column-Major 1-6) -->
+    <!-- Col 1 (x=48) -->
+    <text class="label" x="48" y="48">1</text>
+    <text class="label" x="48" y="80">2</text>
+    <text class="label" x="48" y="112">3</text>
+    
+    <!-- Col 2 (x=80) -->
+    <text class="label" x="80" y="48">4</text>
+    <text class="label" x="80" y="80">5</text>
+    <text class="label" x="80" y="112">6</text>
+</svg>
