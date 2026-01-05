@@ -117,6 +117,17 @@ echo "Starting TeachingAssistant API server... Logs -> logs/teaching_assistant.l
 (cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/TeachingAssistant/api.py) > "$SCRIPT_DIR/logs/teaching_assistant.log" 2>&1 &
 pids+=($!)
 
+# Start LiveKit Agent (if enabled via environment variable)
+if [[ "${USE_LIVEKIT:-false}" == "true" ]]; then
+    echo "Starting LiveKit Agent... Logs -> logs/livekit_agent.log"
+    (cd "$SCRIPT_DIR/services/LiveKitAgent" && "$PYTHON_BIN" agent.py dev) > "$SCRIPT_DIR/logs/livekit_agent.log" 2>&1 &
+    pids+=($!)
+    LIVEKIT_ENABLED=true
+else
+    echo "ℹ️  LiveKit Agent disabled. Set USE_LIVEKIT=true in .env to enable."
+    LIVEKIT_ENABLED=false
+fi
+
 # Note: Tutor service has been moved to frontend (frontend/src/services/tutor/)
 # The backend Tutor service (services/Tutor/) is kept for reference but not started
 
@@ -181,7 +192,11 @@ echo "  🔐 Auth Service:       http://localhost:$AUTH_SERVICE_PORT"
 echo "  🔧 DASH API:           http://localhost:$DASH_API_PORT"
 echo "  🕵️  SherlockED API:     http://localhost:$SHERLOCKED_API_PORT"
 echo "  👨‍🏫 TeachingAssistant:  http://localhost:$TEACHING_ASSISTANT_PORT"
-echo "  🎓 Tutor Service:      (integrated in frontend)"
+if [[ "$LIVEKIT_ENABLED" == "true" ]]; then
+    echo "  🎤 LiveKit Agent:      Running (voice AI enabled)"
+else
+    echo "  🎓 Tutor Service:      Gemini Live (set USE_LIVEKIT=true for LiveKit)"
+fi
 echo ""
 echo "Press Ctrl+C to stop."
 echo "You can view the logs for each service in the 'logs' directory."

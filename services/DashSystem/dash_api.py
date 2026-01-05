@@ -660,52 +660,52 @@ async def get_learning_videos(
 ):
     """
     Get learning videos for a question, filtered by language.
-    
+
     Args:
         question_id: The dash_question_id (e.g., "41.1.1.1.1_xde8147b8edb82294")
         preferred_language: Preferred language for videos (default: "English")
-    
+
     Returns:
         List of learning videos (max 6) filtered by language
     """
     from managers.mongodb_manager import mongo_db
-    
+
     try:
         # Get question from scraped_questions collection
         question_doc = mongo_db.scraped_questions.find_one({"questionId": question_id})
-        
+
         if not question_doc:
             logger.warning(f"[LEARNING_ASSETS] Question not found: {question_id}")
             return []
-        
+
         # Extract learning_videos array
         learning_videos = question_doc.get("learning_videos", [])
-        
+
         if not learning_videos:
             logger.info(f"[LEARNING_ASSETS] No learning videos found for question: {question_id}")
             return []
-        
+
         # Filter by preferred_language
         filtered_videos = [
             video for video in learning_videos
             if video.get("language", "English").lower() == preferred_language.lower()
         ]
-        
+
         # If no videos in preferred language, return all videos
         if not filtered_videos:
             logger.info(f"[LEARNING_ASSETS] No videos in {preferred_language}, returning all videos")
             filtered_videos = learning_videos
-        
+
         # Sort by score (descending) - highest helping scores first
         filtered_videos.sort(key=lambda v: v.get("score", 0), reverse=True)
-        
+
         # Return top 6 videos
         result = filtered_videos[:6]
-        
+
         logger.info(f"[LEARNING_ASSETS] Returning {len(result)} videos for question {question_id} (language: {preferred_language})")
-        
+
         return result
-        
+
     except Exception as e:
         logger.error(f"[ERROR] Failed to get learning videos for question {question_id}: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to get learning videos: {str(e)}")
@@ -1278,6 +1278,277 @@ def get_videos_stats(
     except Exception as e:
         logger.error(f"[ADMIN_PANEL] Error fetching video statistics: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch statistics: {str(e)}")
+
+
+# ===== LIVEKIT TOKEN ENDPOINT =====
+class LiveKitTokenRequest(BaseModel):
+    room_name: str = Field(default="tutoring-session", description="Name of the LiveKit room")
+
+@app.post("/api/livekit-token")
+async def get_livekit_token(request: Request, token_request: LiveKitTokenRequest = None):
+    """Generate a LiveKit access token for the current user.
+
+    Creates a token that allows the user to join a LiveKit room
+    for real-time voice/video tutoring sessions. Also dispatches
+    the AI tutor agent to join the room.
+
+    Returns:
+        token: JWT token for LiveKit room access
+        room: Room name to join
+        url: LiveKit server WebSocket URL
+    """
+    from livekit import api
+
+    # Get user_id from JWT token
+    user_id = get_current_user(request)
+    # Create unique room name per session to avoid duplicate agent dispatches
+    import time
+    session_id = f"{int(time.time())}"
+    base_room = token_request.room_name if token_request else "tutoring-session"
+    room_name = f"{base_room}-{user_id[-8:]}-{session_id}"
+
+    # Get LiveKit credentials from environment
+    livekit_url = os.getenv("LIVEKIT_URL")
+    api_key = os.getenv("LIVEKIT_API_KEY")
+    api_secret = os.getenv("LIVEKIT_API_SECRET")
+
+    if not all([livekit_url, api_key, api_secret]):
+        logger.error("[LIVEKIT] Missing LiveKit credentials in environment")
+        raise HTTPException(
+            status_code=500,
+            detail="LiveKit not configured. Please set LIVEKIT_URL, LIVEKIT_API_KEY, and LIVEKIT_API_SECRET"
+        )
+
+    try:
+        # Create access token with user identity and grants using method chaining
+        token = (
+            api.AccessToken(api_key, api_secret)
+            .with_identity(user_id)
+            .with_name(f"Student {user_id}")
+            .with_grants(api.VideoGrants(
+                room_join=True,
+                room_create=True,  # Allow creating the room if it doesn't exist
+                room=room_name,
+                can_publish=True,
+                can_subscribe=True,
+                can_publish_data=True,
+            ))
+            .with_metadata(json.dumps({
+                "student_id": user_id,
+                "room_name": room_name,
+            }))
+        )
+
+        jwt_token = token.to_jwt()
+
+        logger.info(f"[LIVEKIT] Generated token for user {user_id} in room {room_name}")
+
+        # Explicitly dispatch the agent to the room
+        try:
+            # Create room service client
+            livekit_api = api.LiveKitAPI(
+                livekit_url.replace("wss://", "https://"),
+                api_key,
+                api_secret
+            )
+
+            # Create the room first (if it doesn't exist)
+            await livekit_api.room.create_room(
+                api.CreateRoomRequest(
+                    name=room_name,
+                    empty_timeout=300,  # 5 minutes
+                    max_participants=10,
+                )
+            )
+            logger.info(f"[LIVEKIT] Created room: {room_name}")
+
+            # Read current agent name from file (written by agent.py)
+            # Path: DashSystem -> services -> aitutor (need to go up 2 levels)
+            aitutor_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+            agent_name_file = os.path.join(aitutor_root, ".current_agent_name")
+            current_agent_name = None
+            try:
+                with open(agent_name_file, "r") as f:
+                    current_agent_name = f.read().strip()
+                logger.info(f"[LIVEKIT] Using agent name from file: {current_agent_name}")
+            except FileNotFoundError:
+                current_agent_name = "ai-tutor"  # Fallback
+                logger.warning(f"[LIVEKIT] Agent name file not found, using fallback: {current_agent_name}")
+
+            # Dispatch to the specific current agent
+            await livekit_api.agent_dispatch.create_dispatch(
+                api.CreateAgentDispatchRequest(
+                    room=room_name,
+                    agent_name=current_agent_name,
+                )
+            )
+            logger.info(f"[LIVEKIT] Agent '{current_agent_name}' dispatched to room: {room_name}")
+
+            await livekit_api.aclose()
+        except Exception as dispatch_err:
+            logger.warning(f"[LIVEKIT] Agent dispatch failed (may already be dispatched): {dispatch_err}")
+
+        return {
+            "token": jwt_token,
+            "room": room_name,
+            "url": livekit_url,
+        }
+    except Exception as e:
+        logger.error(f"[LIVEKIT] Failed to generate token: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate LiveKit token: {str(e)}")
+
+
+# ===== HEYGEN STREAMING AVATAR ENDPOINTS =====
+
+class HeyGenSessionRequest(BaseModel):
+    quality: str = Field(default="medium", description="Video quality: low, medium, high")
+
+class HeyGenSpeakRequest(BaseModel):
+    text: str = Field(description="Text for avatar to speak")
+    task_type: str = Field(default="talk", description="Task type: talk or repeat")
+
+@app.post("/api/heygen/session")
+async def create_heygen_session(request: Request, session_request: HeyGenSessionRequest = None):
+    """Create a new HeyGen streaming avatar session.
+
+    Returns WebRTC connection details for the avatar video stream.
+    """
+    import requests as http_requests
+
+    # Get user_id from JWT token
+    user_id = get_current_user(request)
+
+    # Get HeyGen credentials from environment
+    heygen_api_key = os.getenv("HEYGEN_API_KEY")
+    heygen_avatar_id = os.getenv("HEYGEN_AVATAR_ID", "Thaddeus_ProfessionalLook_public")
+    heygen_voice_id = os.getenv("HEYGEN_VOICE_ID", "da04d9a268ac468887a68359908e55b7")
+
+    if not heygen_api_key:
+        logger.error("[HEYGEN] Missing HEYGEN_API_KEY in environment")
+        raise HTTPException(status_code=500, detail="HeyGen not configured")
+
+    try:
+        quality = session_request.quality if session_request else "medium"
+
+        response = http_requests.post(
+            "https://api.heygen.com/v1/streaming.new",
+            headers={
+                "X-Api-Key": heygen_api_key,
+                "Content-Type": "application/json"
+            },
+            json={
+                "quality": quality,
+                "avatar_name": heygen_avatar_id,
+                "voice": {"voice_id": heygen_voice_id}
+            }
+        )
+
+        data = response.json()
+
+        if data.get("code") != 100:
+            logger.error(f"[HEYGEN] Failed to create session: {data.get('message')}")
+            raise HTTPException(status_code=500, detail=data.get("message", "Failed to create HeyGen session"))
+
+        session_data = data.get("data", {})
+        logger.info(f"[HEYGEN] Created session {session_data.get('session_id')} for user {user_id}")
+
+        return {
+            "session_id": session_data.get("session_id"),
+            "sdp": session_data.get("sdp"),
+            "access_token": session_data.get("access_token"),
+            "url": session_data.get("url"),
+            "ice_servers": session_data.get("ice_servers2", []),
+            "realtime_endpoint": session_data.get("realtime_endpoint"),
+            "session_duration_limit": session_data.get("session_duration_limit", 600),
+        }
+    except http_requests.RequestException as e:
+        logger.error(f"[HEYGEN] Request failed: {e}")
+        raise HTTPException(status_code=500, detail=f"HeyGen API request failed: {str(e)}")
+
+@app.post("/api/heygen/session/{session_id}/start")
+async def start_heygen_session(session_id: str, request: Request):
+    """Start the HeyGen session after WebRTC connection is established.
+
+    Send the client's SDP answer to complete the WebRTC handshake.
+    """
+    import requests as http_requests
+
+    body = await request.json()
+    sdp_answer = body.get("sdp")
+
+    heygen_api_key = os.getenv("HEYGEN_API_KEY")
+
+    try:
+        response = http_requests.post(
+            "https://api.heygen.com/v1/streaming.start",
+            headers={
+                "X-Api-Key": heygen_api_key,
+                "Content-Type": "application/json"
+            },
+            json={
+                "session_id": session_id,
+                "sdp": sdp_answer
+            }
+        )
+
+        data = response.json()
+        logger.info(f"[HEYGEN] Started session {session_id}")
+        return data
+    except http_requests.RequestException as e:
+        logger.error(f"[HEYGEN] Failed to start session: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/heygen/session/{session_id}/speak")
+async def heygen_speak(session_id: str, speak_request: HeyGenSpeakRequest):
+    """Send text for the avatar to speak."""
+    import requests as http_requests
+
+    heygen_api_key = os.getenv("HEYGEN_API_KEY")
+
+    try:
+        response = http_requests.post(
+            "https://api.heygen.com/v1/streaming.task",
+            headers={
+                "X-Api-Key": heygen_api_key,
+                "Content-Type": "application/json"
+            },
+            json={
+                "session_id": session_id,
+                "text": speak_request.text,
+                "task_type": speak_request.task_type
+            }
+        )
+
+        data = response.json()
+        logger.info(f"[HEYGEN] Sent speak task to session {session_id}")
+        return data
+    except http_requests.RequestException as e:
+        logger.error(f"[HEYGEN] Failed to send speak task: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/heygen/session/{session_id}")
+async def close_heygen_session(session_id: str):
+    """Close a HeyGen streaming session."""
+    import requests as http_requests
+
+    heygen_api_key = os.getenv("HEYGEN_API_KEY")
+
+    try:
+        response = http_requests.post(
+            "https://api.heygen.com/v1/streaming.stop",
+            headers={
+                "X-Api-Key": heygen_api_key,
+                "Content-Type": "application/json"
+            },
+            json={"session_id": session_id}
+        )
+
+        data = response.json()
+        logger.info(f"[HEYGEN] Closed session {session_id}")
+        return data
+    except http_requests.RequestException as e:
+        logger.error(f"[HEYGEN] Failed to close session: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":

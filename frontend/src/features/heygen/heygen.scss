@@ -1,0 +1,145 @@
+.heygen-avatar {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 9/16;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+  .heygen-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: #fff;
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-top-color: #6366f1;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  .heygen-error {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #ef4444;
+    padding: 20px;
+    text-align: center;
+
+    .material-symbols-outlined {
+      font-size: 48px;
+    }
+
+    button {
+      margin-top: 12px;
+      padding: 8px 16px;
+      background: #6366f1;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+
+      &:hover {
+        background: #4f46e5;
+      }
+    }
+  }
+
+  .heygen-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    &.connected {
+      opacity: 1;
+    }
+  }
+
+  .heygen-status {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    border-radius: 8px;
+    color: white;
+    font-size: 12px;
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+
+      &.speaking {
+        background: #6366f1;
+        animation: pulse 1s ease-in-out infinite;
+      }
+    }
+
+    .time-remaining {
+      font-family: monospace;
+      opacity: 0.8;
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+}
+
+/* Compact variant for sidebar placement */
+.heygen-avatar.compact {
+  max-width: 200px;
+  border-radius: 12px;
+
+  .heygen-status {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+
+/* Floating variant for bottom corner */
+.heygen-avatar.floating {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  max-width: 240px;
+  z-index: 1000;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+}

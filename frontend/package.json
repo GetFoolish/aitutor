@@ -4,6 +4,9 @@
   "dependencies": {
     "@excalidraw/excalidraw": "^0.18.0",
     "@google/genai": "1.33.0",
+    "@livekit/components-react": "^2.0.0",
+    "@livekit/components-styles": "^1.0.0",
+    "livekit-client": "^2.0.0",
     "@hookform/resolvers": "^5.2.2",
     "@khanacademy/kmath": "2.2.4",
     "@khanacademy/math-input": "26.2.4",

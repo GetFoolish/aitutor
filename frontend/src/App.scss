@@ -284,6 +284,39 @@ body {
     }
   }
 
+  // Question card with dot pattern
+  .question-card {
+    position: relative;
+    background-color: transparent;
+
+    // Dot pattern inside card
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      border-radius: inherit;
+      background-color: #FFFDF5;
+      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23000000' opacity='0.35'/%3E%3C/svg%3E");
+      background-size: 20px 20px;
+      background-repeat: repeat;
+    }
+
+    // Ensure all children are above the dot pattern
+    > * {
+      position: relative;
+      z-index: 1;
+    }
+  }
+
+  .dark .question-card {
+    &::before {
+      background-color: #0a0a0a;
+      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23FFFFFF' opacity='0.25'/%3E%3C/svg%3E");
+    }
+  }
+
   .media-mixer-display {
     display: flex;
     flex: 1;
@@ -332,4 +365,40 @@ body {
   justify-content: unset !important;
   gap: 0 !important;
   min-width: 0 !important;
+}
+
+// LiveKit Voice Session Styles
+.livekit-voice-container {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  z-index: 1000;
+  background: var(--neo-bg);
+  border: var(--neo-border);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: var(--neo-shadow);
+  min-width: 200px;
+}
+
+.livekit-loading,
+.livekit-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--gray-500);
+}
+
+.livekit-error {
+  color: var(--neo-red);
+}
+
+.livekit-loading .material-symbols-outlined,
+.livekit-error .material-symbols-outlined {
+  font-size: 1.25rem;
+}
+
+.livekit-loading .material-symbols-outlined {
+  animation: pulse 1.5s ease-in-out infinite;
 }

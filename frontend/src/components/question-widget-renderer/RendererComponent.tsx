@@ -19,7 +19,7 @@ import { PerseusI18nContextProvider } from "../../package/perseus/src/components
 import { mockStrings } from "../../package/perseus/src/strings";
 import { KEScore } from "@khanacademy/perseus-core";
 import { toast } from "sonner";
-import { CheckCircle2, XCircle, Sparkles, ChevronRight } from "lucide-react";
+import { CheckCircle2, XCircle, Sparkles, ChevronRight, Lightbulb, BookOpen, PenLine, CheckCheck } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useHint } from "../../contexts/HintContext";
 import { apiUtils } from "../../lib/api-utils";
@@ -66,8 +66,41 @@ const RendererComponent = ({
     const [isError, setIsError] = useState(false);
     const [error, setError] = useState<Error | null>(null);
     const [isLoadingNextBatch, setIsLoadingNextBatch] = useState(false);
+    const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1); // 1=Understand, 2=Plan, 3=Solve, 4=Check
+    const [showRecap, setShowRecap] = useState(false);
     const rendererRef = useRef<ServerItemRenderer>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+    // Step tracker steps
+    const steps = [
+        { id: 1, label: 'Understand', icon: BookOpen },
+        { id: 2, label: 'Plan', icon: Lightbulb },
+        { id: 3, label: 'Solve', icon: PenLine },
+        { id: 4, label: 'Check', icon: CheckCheck },
+    ];
+
+    // Generate teacher intro based on question context
+    const getTeacherIntro = () => {
+        if (perseusItems.length === 0 || isLoading) return null;
+        const currentItem = perseusItems[item];
+        const metadata = (currentItem as any).dash_metadata || {};
+        const exerciseName = metadata.exercise_name || '';
+        const skillNames = metadata.skill_names || [];
+
+        // Generate contextual intro based on skill/exercise
+        if (exerciseName.toLowerCase().includes('ratio')) {
+            return "Let's explore how ratios help us compare quantities...";
+        } else if (exerciseName.toLowerCase().includes('fraction')) {
+            return "Time to work with fractions — they're like puzzle pieces of a whole!";
+        } else if (exerciseName.toLowerCase().includes('percent')) {
+            return "Percentages are everywhere — let's see how to work with them!";
+        } else if (skillNames.some((s: string) => s.toLowerCase().includes('equation'))) {
+            return "Equations are like balanced scales — let's find what makes them equal!";
+        } else if (skillNames.some((s: string) => s.toLowerCase().includes('geometry'))) {
+            return "Let's put on our geometry glasses and explore shapes!";
+        }
+        return "Let's work through this together, step by step!";
+    };
 
     // Get user_id from auth context
     const user_id = user?.user_id || 'mongodb_test_user';
@@ -459,47 +492,75 @@ const RendererComponent = ({
     // Extract hints from current question
     const hints = (perseusItem as any)?.hints || [];
 
-    // Reset hint index and close hints when question changes
+    // Reset hint index, close hints, and reset step tracker when question changes
     useEffect(() => {
         setCurrentHintIndex(0);
         setShowHints(false); // Auto-close hints when question changes
+        setCurrentStep(1); // Reset to "Understand" step
+        setShowRecap(false); // Hide recap card
     }, [item, setCurrentHintIndex, setShowHints]);
+
+    // Progress step when hints are viewed (move to Plan)
+    useEffect(() => {
+        if (showHints && currentStep === 1) {
+            setCurrentStep(2);
+        }
+    }, [showHints, currentStep]);
+
+    // Move to Solve step when user starts interacting (first input)
+    useEffect(() => {
+        if (currentStep < 3 && !isAnswered && perseusItems.length > 0) {
+            // We'll advance to step 3 when they click in the answer area
+            // For now, auto-advance after a short delay of viewing the question
+            const timer = setTimeout(() => {
+                if (currentStep < 3) setCurrentStep(3);
+            }, 10000); // 10 seconds to read and plan
+            return () => clearTimeout(timer);
+        }
+    }, [currentStep, isAnswered, perseusItems.length, item]);
+
+    // Move to Check step when answer is submitted
+    useEffect(() => {
+        if (isAnswered) {
+            setCurrentStep(4);
+            // Show recap card after a delay
+            const timer = setTimeout(() => setShowRecap(true), 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [isAnswered]);
 
     return (
         <div className="framework-perseus relative flex w-full h-full items-start justify-center px-3 md:px-4">
-            {/* Neo-Brutalism Card */}
-            <Card className="relative flex w-full max-w-4xl md:max-w-5xl my-4 md:my-6 flex-col border-[4px] md:border-[5px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-200">
-                {/* Progress bar at top */}
-                <div className="absolute top-0 left-0 right-0 h-2 md:h-3 bg-[#FFFDF5] dark:bg-[#000000] border-b-[2px] md:border-b-[3px] border-black dark:border-white">
+            {/* Main Content Card - Clean & Professional with dot pattern */}
+            <Card className="question-card relative flex w-full max-w-3xl my-6 md:my-8 flex-col border border-gray-200 dark:border-neutral-800 shadow-xl shadow-black/5 dark:shadow-black/20 bg-transparent rounded-2xl overflow-hidden transition-all duration-200">
+                {/* Progress bar at top - subtle */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gray-100 dark:bg-neutral-800">
                     <div
-                        className="h-full bg-[#C4B5FD] transition-all duration-500 ease-out"
+                        className="h-full bg-gradient-to-r from-[#7C3AED] to-[#A78BFA] transition-all duration-500 ease-out"
                         style={{ width: `${progressPercentage}%` }}
                     />
                 </div>
 
-                <CardHeader className="space-y-2 pt-6 md:pt-7 px-4 md:px-6 border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#FFD93D]">
-                    <div className="flex items-start justify-between gap-3 md:gap-4 flex-wrap">
-                        <div className="space-y-1.5 flex-1">
-                            {/* Breadcrumb Navigation */}
+                <CardHeader className="space-y-0 py-3 px-5 md:px-6 border-b border-gray-200/50 dark:border-neutral-700/50">
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                            {/* Breadcrumb Navigation - Subtle & Compact */}
                             {perseusItems.length > 0 && !isLoading && (
-                                <div className="flex items-center gap-2 flex-wrap text-xs md:text-sm font-bold text-black">
+                                <div className="flex items-center gap-1.5 text-[10px] md:text-xs text-gray-600 dark:text-gray-400">
                                     {(() => {
                                         const currentItem = perseusItems[item];
                                         const metadata = (currentItem as any).dash_metadata || {};
                                         const unitName = metadata.unit_name || 'Unknown Unit';
                                         const lessonName = metadata.lesson_name || 'Unknown Lesson';
                                         const exerciseName = metadata.exercise_name || 'Unknown Exercise';
-                                        const mongodbId = metadata.mongodb_id || 'N/A';
-                                        
+
                                         return (
                                             <>
-                                                <span className="uppercase tracking-wide">{unitName}</span>
-                                                <ChevronRight className="w-4 h-4 flex-shrink-0" />
-                                                <span className="uppercase tracking-wide">{lessonName}</span>
-                                                <ChevronRight className="w-4 h-4 flex-shrink-0" />
-                                                <span className="uppercase tracking-wide">{exerciseName}</span>
-                                                <ChevronRight className="w-4 h-4 flex-shrink-0" />
-                                                <span className="font-mono text-gray-600 dark:text-gray-400 normal-case">{mongodbId}</span>
+                                                <span className="font-medium truncate">{unitName}</span>
+                                                <ChevronRight className="w-3 h-3 flex-shrink-0 text-gray-400" />
+                                                <span className="font-medium truncate">{lessonName}</span>
+                                                <ChevronRight className="w-3 h-3 flex-shrink-0 text-gray-400" />
+                                                <span className="font-semibold text-black dark:text-white truncate">{exerciseName}</span>
                                             </>
                                         );
                                     })()}
@@ -507,22 +568,15 @@ const RendererComponent = ({
                             )}
                         </div>
 
-                        {/* Neo-Brutalist Progress Badge */}
-                        <div className="flex items-center gap-2 md:gap-3">
+                        {/* Compact Progress Indicator */}
+                        <div className="flex items-center gap-2 flex-shrink-0">
                             {!isLoading && perseusItems.length > 0 && (
                                 <>
-                                    <div className="text-right hidden sm:block">
-                                        <div className="text-[10px] md:text-xs font-black uppercase tracking-wider text-black mb-0.5">
-                                            Progress
-                                        </div>
-                                        <div className="text-xs md:text-sm font-black text-black">
-                                            Q <span className="text-[#FF6B6B]">{item + 1}</span>/{perseusItems.length}
-                                        </div>
-                                    </div>
-                                    <div className="px-3 md:px-4 py-2 md:py-3 border-[2px] md:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]">
-                                        <div className="text-xl md:text-2xl font-black text-black dark:text-white">
-                                            {Math.round(progressPercentage)}%
-                                        </div>
+                                    <span className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 font-medium">
+                                        Q{item + 1}/{perseusItems.length}
+                                    </span>
+                                    <div className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800/50 rounded text-[10px] md:text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                                        {Math.round(progressPercentage)}%
                                     </div>
                                 </>
                             )}
@@ -530,7 +584,8 @@ const RendererComponent = ({
                     </div>
                 </CardHeader>
 
-                <CardContent className="px-4 md:px-6 py-4 md:py-6 bg-[#FFFDF5] dark:bg-[#000000]">
+                <CardContent className="px-5 md:px-8 py-6 md:py-8">
+
                     <div
                         ref={scrollContainerRef}
                         className="relative w-full max-w-4xl mx-auto"
@@ -589,7 +644,7 @@ const RendererComponent = ({
                             </div>
                         ) : perseusItems.length > 0 ? (
                             <div className="space-y-4 md:space-y-6">
-                                <div id="question-content-container" className="border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white p-4 md:p-5 lg:p-6 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] overflow-x-auto">
+                                <div id="question-content-container" className="bg-gray-50 dark:bg-neutral-800/50 text-black dark:text-white p-5 md:p-6 lg:p-8 rounded-xl border border-gray-200 dark:border-neutral-700 overflow-x-auto">
                                     <PerseusI18nContextProvider locale="en" strings={mockStrings}>
                                         <RenderStateRoot>
                                             <ServerItemRenderer
@@ -617,31 +672,83 @@ const RendererComponent = ({
                                     <HintDisplay hints={hints} />
                                 )}
 
-                                {/* Neo-Brutalist feedback */}
+                                {/* Scaffolded Feedback with explanation */}
                                 {isAnswered && (
                                     <div
-                                        className="fixed top-[60px] lg:top-[64px] left-1/2 transform -translate-x-1/2 z-[200] animate-in slide-in-from-top-4 duration-300"
+                                        className="fixed top-[60px] lg:top-[64px] left-1/2 transform -translate-x-1/2 z-[200] animate-in slide-in-from-top-4 duration-300 max-w-md w-[90%]"
                                     >
-                                        <div className={`flex items-center gap-2 md:gap-3 px-5 md:px-6 py-3 md:py-4 border-[3px] md:border-[4px] border-black dark:border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] md:shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] ${score?.correct
+                                        <div className={`flex flex-col gap-2 px-4 md:px-5 py-3 md:py-4 border-[3px] md:border-[4px] border-black dark:border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] md:shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] ${score?.correct
                                             ? "bg-[#ADFF2F]"
                                             : "bg-[#FF006E]"
                                             }`}>
-                                            {score?.correct ? (
-                                                <div className="p-1.5 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-900">
-                                                    <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-black dark:text-white flex-shrink-0 font-bold" />
-                                                </div>
-                                            ) : (
-                                                <div className="p-1.5 border-[2px] md:border-[3px] border-black dark:border-white bg-white">
-                                                    <XCircle className="w-5 h-5 md:w-6 md:h-6 text-black flex-shrink-0 font-bold" />
-                                                </div>
+                                            <div className="flex items-center gap-2 md:gap-3">
+                                                {score?.correct ? (
+                                                    <div className="p-1.5 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-900">
+                                                        <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-black dark:text-white flex-shrink-0 font-bold" />
+                                                    </div>
+                                                ) : (
+                                                    <div className="p-1.5 border-[2px] md:border-[3px] border-black dark:border-white bg-white">
+                                                        <XCircle className="w-5 h-5 md:w-6 md:h-6 text-black flex-shrink-0 font-bold" />
+                                                    </div>
+                                                )}
+                                                <span className={`text-base md:text-lg font-black uppercase tracking-tight ${score?.correct
+                                                    ? "text-black"
+                                                    : "text-white"
+                                                    }`}>
+                                                    {score?.correct ? "🎯 Correct!" : "Not yet — keep going!"}
+                                                </span>
+                                            </div>
+                                            {/* Explanation line */}
+                                            <p className={`text-xs md:text-sm ${score?.correct ? 'text-black/80' : 'text-white/90'}`}>
+                                                {score?.correct
+                                                    ? "Great work! You understood the relationship between the quantities."
+                                                    : "Let's review together — try using a tape diagram to visualize the ratio."}
+                                            </p>
+                                            {/* Suggested action */}
+                                            {!score?.correct && (
+                                                <button
+                                                    onClick={() => {
+                                                        setShowHints(true);
+                                                        setCurrentStep(2);
+                                                    }}
+                                                    className="mt-1 px-3 py-1.5 bg-white text-black text-xs font-black uppercase border-[2px] border-black shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all self-start"
+                                                >
+                                                    Get a hint →
+                                                </button>
                                             )}
-                                            <span className={`text-base md:text-lg font-black uppercase tracking-tight ${score?.correct
-                                                ? "text-black"
-                                                : "text-white"
-                                                }`}>
-                                                {score?.correct ? "🎯 Correct!" : "📚 Not quite!"}
-                                            </span>
                                         </div>
+                                    </div>
+                                )}
+
+                                {/* Recap Card - shows after completing a problem */}
+                                {showRecap && isAnswered && (
+                                    <div className="mt-4 md:mt-6 p-4 md:p-5 border-[2px] md:border-[3px] border-black dark:border-white bg-[#E0F2FE] dark:bg-[#0c2d48] shadow-[2px_2px_0_0_rgba(0,0,0,1)] animate-in slide-in-from-bottom-4 duration-300">
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-[#0EA5E9] border-[2px] border-black flex items-center justify-center flex-shrink-0">
+                                                <BookOpen className="w-4 h-4 text-white" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-[10px] md:text-xs font-black uppercase text-[#0369A1] dark:text-[#38BDF8] mb-1">What you practiced:</p>
+                                                <p className="text-sm md:text-base text-black dark:text-white font-medium mb-2">
+                                                    {(() => {
+                                                        const currentItem = perseusItems[item];
+                                                        const metadata = (currentItem as any).dash_metadata || {};
+                                                        const skillNames = metadata.skill_names || ['Problem solving'];
+                                                        return skillNames.slice(0, 2).join(', ');
+                                                    })()}
+                                                </p>
+                                                <p className="text-[10px] md:text-xs font-black uppercase text-[#0369A1] dark:text-[#38BDF8] mb-1">Next up:</p>
+                                                <p className="text-sm text-black dark:text-white">
+                                                    More practice with similar problems to build mastery!
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={handleNext}
+                                            className="mt-3 w-full py-2 bg-[#0EA5E9] text-white text-sm font-black uppercase border-[2px] border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] transition-all"
+                                        >
+                                            Continue →
+                                        </button>
                                     </div>
                                 )}
                             </div>
@@ -658,28 +765,28 @@ const RendererComponent = ({
                     </div>
                 </CardContent>
 
-                <CardFooter className="flex justify-between items-center gap-2 md:gap-3 px-4 md:px-6 pb-4 md:pb-5 pt-3 md:pt-4 border-t-[3px] md:border-t-[4px] border-black dark:border-white bg-white dark:bg-neutral-900">
+                <CardFooter className="flex justify-between items-center gap-3 px-5 md:px-6 py-4 border-t border-gray-200/50 dark:border-neutral-700/50">
                     <HintButton inline={true} />
-                    <div className="flex gap-2 md:gap-3">
+                    <div className="flex gap-3">
                         <Button
                             type="button"
-                            size="sm"
                             onClick={handleSubmit}
                             disabled={isLoading || endOfTest || perseusItems.length === 0 || isAnswered}
-                            className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-[#C4B5FD] hover:bg-[#C4B5FD] text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:hover:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
+                            className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-gradient-to-b from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold text-sm shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:from-gray-400 disabled:to-gray-500"
                         >
+                            <CheckCircle2 className="w-4 h-4" />
                             Submit
                         </Button>
                         {!assessmentMode && (
                             <Button
                                 type="button"
                                 variant="outline"
-                                size="sm"
                                 onClick={handleNext}
                                 disabled={isLoading || endOfTest || perseusItems.length === 0}
-                                className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-800 hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
+                                className="flex items-center gap-2 px-5 py-2.5 rounded-lg border-2 border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-700 text-gray-700 dark:text-gray-300 font-semibold text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Next →
+                                Next
+                                <ChevronRight className="w-4 h-4" />
                             </Button>
                         )}
                     </div>

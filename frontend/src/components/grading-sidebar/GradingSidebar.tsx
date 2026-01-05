@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import cn from "classnames";
-import { GraduationCap, ChevronRight, ChevronLeft, TrendingUp, Clock, Target } from "lucide-react";
+import { GraduationCap, ChevronRight, ChevronLeft, TrendingUp, Clock, Target, Flame, Zap, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { apiUtils } from "../../lib/api-utils";
@@ -192,23 +192,21 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
     return (
         <div
             className={cn(
-                "fixed top-[44px] lg:top-[48px] left-0 flex flex-col border-r-[3px] lg:border-r-[4px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) z-50 will-change-transform shadow-[2px_0_0_0_rgba(0,0,0,1)] lg:shadow-[2px_0_0_0_rgba(0,0,0,1)] dark:shadow-[2px_0_0_0_rgba(255,255,255,0.3)]",
+                "fixed top-[44px] lg:top-[48px] left-0 flex flex-col border-r border-gray-200 dark:border-neutral-800 bg-white dark:bg-[#0a0a0a] transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) z-50 will-change-transform",
                 "h-[calc(100vh-44px)] lg:h-[calc(100vh-48px)]",
-                open ? "w-[240px] lg:w-[260px]" : "w-[40px]",
+                open ? "w-[220px] lg:w-[240px]" : "w-[40px]",
                 "max-md:hidden" // Hide on mobile
             )}
         >
             <header className={cn(
-                "flex items-center h-[44px] lg:h-[48px] border-b-[3px] border-black dark:border-white shrink-0 overflow-hidden transition-all duration-300 bg-[#FF6B6B]",
-                open ? "justify-between px-3 lg:px-4" : "justify-center"
+                "flex items-center h-[40px] lg:h-[44px] border-b border-gray-200 dark:border-neutral-700 shrink-0 overflow-hidden transition-all duration-300 bg-white dark:bg-neutral-900",
+                open ? "justify-between px-3" : "justify-center"
             )}>
                 {open ? (
-                    <div className="flex items-center gap-2 lg:gap-2.5 animate-in fade-in slide-in-from-left-4 duration-300">
-                        <div className="px-[0.25rem] pt-[0.15rem] pb-[0.25rem] lg:px-[0.375rem] lg:pt-[0.25rem] lg:pb-[0.375rem] border-[2px] lg:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]">
-                            <GraduationCap className="w-4 h-4 text-black dark:text-white font-bold" />
-                        </div>
-                        <h2 className="text-xs lg:text-sm font-black text-white whitespace-nowrap tracking-tight">
-                            Grading & Skills
+                    <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-4 duration-300">
+                        <GraduationCap className="w-4 h-4 text-[#C4B5FD]" />
+                        <h2 className="text-xs font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                            Progress
                         </h2>
                     </div>
                 ) : (
@@ -216,9 +214,9 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                         variant="ghost"
                         size="icon"
                         onClick={onToggle}
-                        className="w-[1.8125rem] h-[1.6rem] lg:w-[2.025rem] lg:h-[1.8125rem] border-[2px] lg:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] transition-colors shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
+                        className="w-7 h-7 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
                     >
-                        <GraduationCap className="w-3 h-3 text-black dark:text-white dark:hover:text-black font-bold" />
+                        <GraduationCap className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                     </Button>
                 )}
 
@@ -227,9 +225,9 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                         variant="ghost"
                         size="icon"
                         onClick={onToggle}
-                        className="w-[2.125rem] h-[2.125rem] border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1"
+                        className="w-7 h-7 hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-500 transition-colors"
                     >
-                        <ChevronLeft className="w-5 h-5 font-bold" />
+                        <ChevronLeft className="w-4 h-4" />
                     </Button>
                 )}
             </header>
@@ -241,6 +239,47 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                         className="h-full overflow-y-auto overflow-x-hidden animate-in fade-in duration-500 px-4 py-4"
                         onClick={handleContainerClick}
                     >
+                        {/* Today's Progress Tokens */}
+                        {!isLoading && (
+                            <div className="mb-4 p-3 border-[3px] border-black dark:border-white bg-white dark:bg-neutral-800 shadow-[1px_1px_0_0_rgba(0,0,0,1)]">
+                                <div className="text-[9px] font-black uppercase tracking-wide text-black dark:text-white mb-2 flex items-center gap-1.5">
+                                    <Zap className="w-3 h-3 text-[#FFD93D]" />
+                                    Today's Progress
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    {/* Problems Solved Token */}
+                                    <div className="flex-1 flex items-center gap-1.5 px-2 py-1.5 bg-[#E0F2FE] dark:bg-[#0c2d48] border-[2px] border-[#0EA5E9] rounded-sm">
+                                        <div className="w-5 h-5 rounded-full bg-[#0EA5E9] flex items-center justify-center">
+                                            <Target className="w-3 h-3 text-white" />
+                                        </div>
+                                        <div>
+                                            <div className="text-[10px] font-black text-[#0369A1] dark:text-[#38BDF8]">
+                                                {(() => {
+                                                    // Calculate today's problems from subjects data
+                                                    let totalAnswered = 0;
+                                                    Object.values(subjects).forEach((subject: any) => {
+                                                        Object.values(subject.grade_levels || {}).forEach((grade: any) => {
+                                                            grade.units?.forEach((unit: any) => {
+                                                                totalAnswered += unit.questions_answered || 0;
+                                                            });
+                                                        });
+                                                    });
+                                                    return totalAnswered;
+                                                })()} solved
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {/* Streak Token */}
+                                    <div className="flex items-center gap-1.5 px-2 py-1.5 bg-[#FEF3C7] dark:bg-[#422006] border-[2px] border-[#F59E0B] rounded-sm">
+                                        <div className="w-5 h-5 rounded-full bg-[#F59E0B] flex items-center justify-center">
+                                            <Flame className="w-3 h-3 text-white" />
+                                        </div>
+                                        <div className="text-[10px] font-black text-[#B45309] dark:text-[#FCD34D]">3</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Overall Grade Display */}
                         {!isLoading && overallGrade && (
                             <div className="mb-4 border-[4px] border-black dark:border-white bg-[#FFD93D] dark:bg-[#FFD93D] p-4 shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
@@ -462,9 +501,9 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
             </Accordion>
                     </div>
                 ) : (
-                    <div className="h-full w-full flex items-center justify-center cursor-pointer hover:bg-[#FFE500]/20 transition-colors pb-[140px]" onClick={onToggle}>
-                        <div className="rotate-180 [writing-mode:vertical-rl] text-lg font-black tracking-widest whitespace-nowrap select-none text-black dark:text-white text-center leading-none">
-                            Grades & Skills
+                    <div className="h-full w-full flex items-center justify-center cursor-pointer hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors pb-[100px]" onClick={onToggle}>
+                        <div className="rotate-180 [writing-mode:vertical-rl] text-xs font-medium tracking-wide whitespace-nowrap select-none text-gray-400 dark:text-gray-500 text-center leading-none">
+                            Progress
                         </div>
                     </div>
                 )}
