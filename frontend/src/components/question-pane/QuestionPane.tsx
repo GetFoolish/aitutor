@@ -516,8 +516,9 @@ const HintPanel: React.FC<{
   currentIndex: number;
   onNextHint: () => void;
   darkMode: boolean;
+  questionId?: string;
   viewMode?: 'athena' | 'perseus' | 'comparison';
-}> = ({ hints, currentIndex, onNextHint, darkMode, viewMode = 'perseus' }) => {
+}> = ({ hints, currentIndex, onNextHint, darkMode, questionId, viewMode = 'perseus' }) => {
   if (!hints?.length) return null;
 
   const currentHint = hints[currentIndex];
@@ -1154,9 +1155,8 @@ const HintPanel: React.FC<{
 
   const hintContent = currentHint?.content || '';
 
-  // Skip overrides for Hint 1 (Index 0) to preserve intro text, 
-  // but let it flow to the normal render below.
-  if (currentIndex !== 0) {
+  // Override logic for question 6933689e1a5cae918f8bec3a only
+  if (currentIndex !== 0 && questionId === '6933689e1a5cae918f8bec3a') {
     // FINAL STABLE RESULTS
 
     // Hint 2 (Area 7) - Usually Index 1
@@ -1913,6 +1913,7 @@ export const QuestionPane: React.FC = () => {
                     currentIndex={currentHintIndex}
                     onNextHint={() => setCurrentHintIndex(i => i + 1)}
                     darkMode={darkMode}
+                    questionId={currentQuestion._id}
                     viewMode={viewMode}
                   />
                 )}
