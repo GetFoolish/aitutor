@@ -469,6 +469,10 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     // Remove any remaining backslashes from simple commands
     processed = processed.replace(/\\([a-zA-Z]+)/g, '');
 
+    // Remove <center> tags (often found in Perseus labels but not supported by SVG text)
+    processed = processed.replace(/<center>/gi, '');
+    processed = processed.replace(/<\/center>/gi, '');
+
     // Clean up any double spaces
     processed = processed.replace(/\s+/g, ' ').trim();
 
@@ -530,14 +534,25 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         if (label.style.transform) styleStr += ` transform-origin: center; transform: ${label.style.transform};`;
       }
 
-      // Process and escape content for SVG
+      // Process content: strip disallowed tags like <center> but keep <br> for multiline
       const processedContent = processLabelContent(label.content);
-      const escapedContent = processedContent
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
 
-      return `<text x="${svgX}" y="${svgY}" text-anchor="${textAnchor}" dy="${dy}" fill="currentColor" style="${styleStr}">${escapedContent}</text>`;
+      // Split by <br> tags to support multiline labels in SVG
+      const lines = processedContent.split(/<br\s*\/?>/i);
+
+      const tspanElements = lines.map((line, lineIdx) => {
+        // Escape content as it will be inside <tspan>
+        const escapedLine = line
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+
+        // Use dy for line spacing on subsequent lines
+        const lineDy = lineIdx === 0 ? '0' : '1.2em';
+        return `<tspan x="${svgX}" dy="${lineDy}">${escapedLine}</tspan>`;
+      }).join('');
+
+      return `<text x="${svgX}" y="${svgY}" text-anchor="${textAnchor}" dy="${dy}" fill="currentColor" style="${styleStr}">${tspanElements}</text>`;
     }).join('\n');
 
     // Insert labels before closing </svg> tag
