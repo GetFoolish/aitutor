@@ -669,14 +669,14 @@ export const processImageMarkdown = (text: string): string => {
     return `<img src="${imageUrl}" alt="${alt}" class="athena-image" style="max-width:100%;height:auto;display:block;margin:1rem 0;" referrerpolicy="no-referrer" />`;
   };
 
-  // Pattern 1: Standard ![alt](url) with closing paren
-  processed = processed.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
+  // Pattern 1: Standard ![alt] (url) with optional whitespace and closing paren
+  processed = processed.replace(/!\[([\s\S]*?)\]\s*\(\s*([\s\S]*?)\s*\)/g, (_, alt, url) => {
     console.log('[Athena] Early processing: Standard image:', url.substring(0, 80));
-    return toImgTag(alt, url);
+    return toImgTag(alt, url.trim());
   });
 
-  // Pattern 2: Truncated URL without closing paren
-  processed = processed.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s\n<]+)/g, (_, alt, url) => {
+  // Pattern 2: Truncated URL without closing paren, allowing whitespace
+  processed = processed.replace(/!\[([^\]]*)\]\s*\((https?:\/\/[^\s\n<]+)/g, (_, alt, url) => {
     console.log('[Athena] Early processing: Truncated image:', url.substring(0, 80));
     return toImgTag(alt, url.replace(/[)\s]+$/, ''));
   });

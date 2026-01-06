@@ -1119,6 +1119,12 @@ const HintPanel: React.FC<{
       processed = processed.replace(pattern, latexSymbols[symbol]);
     }
 
+    // Process images ![alt](url)
+    processed = processed.replace(/!\[([\s\S]*?)\]\s*\(\s*([\s\S]*?)\s*\)/g, (_, alt, url) => {
+      const imageUrl = url.trim();
+      return `<img src="${imageUrl}" alt="${alt}" class="athena-image" style="max-width:100%;height:auto;display:block;margin:1rem 0;" referrerpolicy="no-referrer" />`;
+    });
+
     // Process markdown links [text](url) - but not image links
     processed = processed.replace(/(?<!!)\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
       const escapedUrl = escapeHtml(url);
