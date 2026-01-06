@@ -15,7 +15,7 @@
  */
 import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
@@ -27,6 +27,9 @@ import ComingSoonGuard from "./components/coming-soon/ComingSoonGuard"; // Comme
 
 const LoginPage = lazy(() => import("./components/auth/LoginPage"));
 const LandingPageWrapper = lazy(() => import("./components/landing/LandingPageWrapper"));
+const AccountPage = lazy(() => import("./components/account/AccountPage"));
+const PricingPage = lazy(() => import("./components/pricing/PricingPage"));
+const AdminVideoPanel = lazy(() => import("./components/admin/AdminVideoPanel"));
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
@@ -146,9 +149,14 @@ root.render(
               <Switch>
                 <Route path="/app/auth/setup" component={LoginPage} />
                 <Route path="/app/login" component={LoginPage} />
+                <Route path="/app/account" component={AccountPage} />
+                <Route path="/app/pricing" component={PricingPage} />
+                <Route path="/pricing" component={PricingPage} />
+                <Route path="/app/admin/videos" component={AdminVideoPanel} />
+                <Route path="/landing/:id" component={LandingPageWrapper} /> {/* Dynamic landing page routes */}
                 <Route path="/app" exact component={LandingPageOrApp} />
                 <Route path="/app" component={App} />
-                <Route path="/" exact component={LandingPageOrApp} />
+                <Route path="/" exact render={() => <Redirect to="/comingsoon" />} />
                 <Route component={LandingPageOrApp} /> {/* Catch-all route - fallback to landing page */}
               </Switch>
             </Suspense>

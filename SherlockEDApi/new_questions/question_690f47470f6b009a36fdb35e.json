@@ -1,0 +1,131 @@
+{
+  "answerArea": {
+    "calculator": false,
+    "chi2Table": false,
+    "financialCalculatorMonthlyPayment": false,
+    "financialCalculatorTimeToPayOff": false,
+    "financialCalculatorTotalAmount": false,
+    "periodicTable": false,
+    "periodicTableWithKey": false,
+    "tTable": false,
+    "zTable": false
+  },
+  "hints": [
+    {
+      "content": "##Quadrilateral\n\nA quadrilateral is [[\u2603 definition 1]] with $4$ sides.\n\n[[\u2603 explanation 1]]",
+      "images": {},
+      "replace": false,
+      "widgets": {
+        "definition 1": {
+          "alignment": "default",
+          "graded": true,
+          "options": {
+            "definition": "A closed figure with four straight sides.",
+            "static": false,
+            "togglePrompt": "polygon"
+          },
+          "static": false,
+          "type": "definition",
+          "version": {
+            "major": 2,
+            "minor": 0
+          }
+        },
+        "explanation 1": {
+          "alignment": "default",
+          "graded": true,
+          "options": {
+            "explanation": "![Three distinct quadrilaterals displayed side-by-side on a white background. From left to right: a bright blue square, a vibrant red rectangle, and a green trapezoid. Each shape is clearly defined with sharp, straight edges and distinct vertices, all rendered within a 256x256 pixel canvas.](web+graphie://cdn.kastatic.org/ka-perseus-graphie/c45b54564065ad81025549d707e6113a7f936e22)",
+            "hidePrompt": "Got it, thanks!",
+            "showPrompt": "Show me examples of quadrilaterals.",
+            "static": false,
+            "widgets": {}
+          },
+          "static": false,
+          "type": "explanation",
+          "version": {
+            "major": 2,
+            "minor": 0
+          }
+        }
+      }
+    },
+    {
+      "content": "Which of the shapes is a polygon with $4$ sides?",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    },
+    {
+      "content": "The following shapes are quadrilaterals:\n\n | | \n- | - \n![A clear, two-dimensional geometric shape, specifically a vibrant blue square, perfectly centered on a white background. It has four equal straight sides and four 90-degree angles, rendered within a 256x256 pixel dimension.](/assets/1765813826076-0.9696903387765115.png) | ![A distinct, two-dimensional geometric shape, a vibrant green rectangle, horizontally oriented and perfectly centered on a white background. It features four straight sides, with opposite sides equal in length, and four 90-degree angles, rendered within a 256x256 pixel dimension.](/assets/1765813809244-0.7871862812221502.png)",
+      "images": {
+        "web+graphie://cdn.kastatic.org/ka-perseus-graphie/302fe3a697acd384ee71ca69daa14f07d7fc4c09": {
+          "height": 256,
+          "width": 256,
+          "alt": "A distinct, two-dimensional geometric shape, a vibrant green rectangle, horizontally oriented and perfectly centered on a white background. It features four straight sides, with opposite sides equal in length, and four 90-degree angles, rendered within a 256x256 pixel dimension."
+        },
+        "web+graphie://cdn.kastatic.org/ka-perseus-graphie/408b73f677d60e57ed6e4307d8687a505357c25f": {
+          "height": 256,
+          "width": 256,
+          "alt": "A clear, two-dimensional geometric shape, specifically a vibrant blue square, perfectly centered on a white background. It has four equal straight sides and four 90-degree angles, rendered within a 256x256 pixel dimension."
+        }
+      },
+      "replace": false,
+      "widgets": {}
+    }
+  ],
+  "itemDataVersion": null,
+  "question": {
+    "content": "**Which of the following shapes are quadrilaterals?** \n\n[[\u2603 radio 1]]\n\n",
+    "images": {},
+    "widgets": {
+      "radio 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "choices": [
+            {
+              "content": "![A distinct, two-dimensional geometric shape, specifically a vibrant blue square, perfectly centered on a white background. It has four equal straight sides and four 90-degree angles, rendered within a 256x256 pixel dimension.](/assets/1765813840054-0.6023421162832082.png)",
+              "correct": true,
+              "id": "0f9b0adb-3768-4c28-a2ca-5a8eddd057ac",
+              "alt": "A distinct, two-dimensional geometric shape, specifically a vibrant blue square, perfectly centered on a white background. It has four equal straight sides and four 90-degree angles, rendered within a 256x256 pixel dimension."
+            },
+            {
+              "content": "![A regular pentagon, a polygon with five equal straight sides and five equal interior angles, rendered in a distinct red color. The shape is clearly depicted and centered on a clean white background, sized at 256x256 pixels.](/assets/1765813855269-0.6200881744134674.png)",
+              "correct": false,
+              "id": "26ffffbf-6bac-4c80-ae09-07481599b476",
+              "alt": "A regular pentagon, a polygon with five equal straight sides and five equal interior angles, rendered in a distinct red color. The shape is clearly depicted and centered on a clean white background, sized at 256x256 pixels."
+            },
+            {
+              "content": "![A non-polygon shape with a unique form: three straight sides forming a partial enclosure, with a distinct smooth, curved arc completing its boundary. The shape is rendered in a bright yellow color, clearly defined and centered on a plain white background, sized at 256x256 pixels.](/assets/1765813870060-0.24272534492012898.png)",
+              "correct": false,
+              "id": "fcf45281-accf-4144-bb22-a584e79a0bca",
+              "alt": "A non-polygon shape with a unique form: three straight sides forming a partial enclosure, with a distinct smooth, curved arc completing its boundary. The shape is rendered in a bright yellow color, clearly defined and centered on a plain white background, sized at 256x256 pixels."
+            },
+            {
+              "content": "![A distinct, two-dimensional geometric shape, a vibrant green rectangle, horizontally oriented and perfectly centered on a white background. It features four straight sides, with opposite sides equal in length, and four 90-degree angles, rendered within a 256x256 pixel dimension.](/assets/1765813889202-0.8010801637010373.png)",
+              "correct": true,
+              "id": "2097c2bf-d160-4ee2-95f8-aada3837645e",
+              "alt": "A distinct, two-dimensional geometric shape, a vibrant green rectangle, horizontally oriented and perfectly centered on a white background. It features four straight sides, with opposite sides equal in length, and four 90-degree angles, rendered within a 256x256 pixel dimension."
+            }
+          ],
+          "countChoices": true,
+          "deselectEnabled": false,
+          "displayCount": null,
+          "hasNoneOfTheAbove": false,
+          "multipleSelect": true,
+          "numCorrect": 2,
+          "randomize": true
+        },
+        "static": false,
+        "type": "radio",
+        "version": {
+          "major": 2,
+          "minor": 0
+        }
+      }
+    }
+  },
+  "status": "pending_approval",
+  "human_approved": false
+}

@@ -19,7 +19,7 @@ import { PerseusI18nContextProvider } from "../../package/perseus/src/components
 import { mockStrings } from "../../package/perseus/src/strings";
 import { KEScore } from "@khanacademy/perseus-core";
 import { toast } from "sonner";
-import { CheckCircle2, XCircle, Sparkles } from "lucide-react";
+import { CheckCircle2, XCircle, Sparkles, ChevronRight } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useHint } from "../../contexts/HintContext";
 import { apiUtils } from "../../lib/api-utils";
@@ -32,9 +32,26 @@ const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_U
 
 interface RendererComponentProps {
     onSkillChange?: (skill: string) => void;
+    onQuestionChange?: (questionId: string | null) => void;
+    watchedVideoIds?: string[];
+    onAnswerSubmitted?: () => void;
+    // Assessment mode props
+    assessmentMode?: boolean;
+    assessmentQuestions?: any[];
+    onAssessmentAnswer?: (questionId: string, isCorrect: boolean) => void;
+    currentQuestionIndex?: number;
 }
 
-const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
+const RendererComponent = ({ 
+    onSkillChange, 
+    onQuestionChange,
+    watchedVideoIds = [],
+    onAnswerSubmitted,
+    assessmentMode = false,
+    assessmentQuestions = [],
+    onAssessmentAnswer,
+    currentQuestionIndex = 0
+}: RendererComponentProps) => {
     const { user } = useAuth();
     const { setTotalHints, setCurrentHintIndex, showHints, setShowHints } = useHint();
     const queryClient = useQueryClient();
@@ -57,6 +74,17 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
 
     // Fetch questions using apiUtils with JWT authentication
     useEffect(() => {
+        // In assessment mode, use provided questions instead of fetching
+        if (assessmentMode) {
+            setPerseusItems(assessmentQuestions);
+            setItem(currentQuestionIndex);
+            setIsLoading(false);
+            setIsAnswered(false);
+            setShowFeedback(false);
+            setStartTime(Date.now());
+            return;
+        }
+
         const fetchQuestions = async () => {
             if (!jwtUtils.getToken()) {
                 setIsLoading(false);
@@ -137,7 +165,7 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
         };
 
         fetchQuestions();
-    }, [user_id]);
+    }, [user_id, assessmentMode, assessmentQuestions, currentQuestionIndex]);
 
     // Fetch questions using apiUtils with JWT authentication
     useEffect(() => {
@@ -149,11 +177,15 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
         }
     }, [isError, error]);
 
-    // Log when question is displayed (once per item change)
+    // Log when question is displayed (once per item change) and emit question ID
     useEffect(() => {
         if (perseusItems.length > 0 && !isLoading) {
             const currentItem = perseusItems[item];
             const metadata = (currentItem as any).dash_metadata || {};
+            const dashQuestionId = metadata.dash_question_id || null;
+
+            // Emit question ID change for LearningAssetsPanel
+            onQuestionChange?.(dashQuestionId);
 
             // Log question displayed
             apiUtils.post(`${DASH_API_URL}/api/question-displayed`, {
@@ -162,17 +194,42 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
             }).catch((err) => {
                 console.error('Failed to log question displayed:', err);
             });
+        } else {
+            // No question loaded, emit null
+            onQuestionChange?.(null);
         }
-    }, [item, perseusItems, isLoading, user_id]);
+    }, [item, perseusItems, isLoading, user_id, onQuestionChange]);
 
-    // Mock skill state update
+    // Update current module (unit_id) and URL when question changes
     useEffect(() => {
-        if (onSkillChange) {
-            // Mock variable as requested
-            const mockSkill = "counting_100";
-            onSkillChange(mockSkill);
+        if (onSkillChange && perseusItems.length > 0 && !isLoading) {
+            const currentItem = perseusItems[item];
+            const metadata = (currentItem as any).dash_metadata || {};
+            // Extract unit_id from metadata - this is the "current module"
+            const unitId = metadata.unit_id || null;
+            const mongodbId = metadata.mongodb_id || null;
+            
+            console.log('[RendererComponent] Question metadata:', {
+                question_id: metadata.dash_question_id,
+                unit_id: unitId,
+                lesson_id: metadata.lesson_id,
+                exercise_id: metadata.exercise_id,
+                skill_names: metadata.skill_names,
+                mongodb_id: mongodbId
+            });
+            
+            if (unitId) {
+                onSkillChange(unitId);
+            } else {
+                console.warn('[RendererComponent] No unit_id found in metadata!');
+            }
+            
+            // Update URL to /app/{mongodb_id}
+            if (mongodbId && !assessmentMode) {
+                window.history.replaceState(null, '', `/app/${mongodbId}`);
+            }
         }
-    }, [onSkillChange]);
+    }, [item, perseusItems, isLoading, onSkillChange, assessmentMode]);
 
     // Trigger feedback animation and auto-scroll
     useEffect(() => {
@@ -260,9 +317,64 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
 
     const handleSubmit = async () => {
         if (rendererRef.current) {
+            // getUserInput() returns UserInputMap (the new object format)
             const userInput = rendererRef.current.getUserInput();
-            const question = perseusItem.question;
-            const scoreResult = scorePerseusItem(question, userInput, "en");
+            const itemData = perseusItem; // Full item with question AND answer
+            
+            console.log('[SCORING] User input:', JSON.stringify(userInput, null, 2));
+            console.log('[SCORING] Item data keys:', Object.keys(itemData));
+            console.log('[SCORING] Has answer key:', !!itemData.answer);
+            console.log('[SCORING] Answer:', JSON.stringify(itemData.answer, null, 2));
+            
+            // Custom scoring since Perseus doesn't have answer keys in our questions
+            // Score based on the 'correct' property in widget choices
+            let isCorrect = false;
+            const question = itemData.question;
+            
+            // Check each widget in the user input
+            for (const [widgetId, widgetInput] of Object.entries(userInput)) {
+                const widgetDef = question.widgets?.[widgetId];
+                if (!widgetDef) continue;
+                
+                if (widgetDef.type === 'radio') {
+                    const choices = widgetDef.options?.choices || [];
+                    const selectedIds = (widgetInput as any).selectedChoiceIds || [];
+                    const isMultiSelect = widgetDef.options?.multipleSelect || false;
+                    
+                    if (isMultiSelect) {
+                        // For multi-select: all selected choices must be correct, and all correct choices must be selected
+                        const correctIndices = choices
+                            .map((c, i) => c.correct ? i : -1)
+                            .filter(i => i >= 0);
+                        const selectedIndices = selectedIds.map((id: string) => {
+                            const match = id.match(/choice-(\d+)-/);
+                            return match ? parseInt(match[1]) : -1;
+                        }).filter((i: number) => i >= 0);
+                        
+                        isCorrect = correctIndices.length === selectedIndices.length &&
+                                   correctIndices.every((idx: number) => selectedIndices.includes(idx));
+                    } else {
+                        // For single-select: the one selected choice must be correct
+                        if (selectedIds.length === 1) {
+                            const selectedId = selectedIds[0];
+                            const match = selectedId.match(/choice-(\d+)-/);
+                            if (match) {
+                                const selectedIndex = parseInt(match[1]);
+                                isCorrect = choices[selectedIndex]?.correct === true;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            console.log('[SCORING] Custom score - is correct:', isCorrect);
+            
+            const scoreResult = {
+                type: isCorrect ? 'points' : 'points',
+                earned: isCorrect ? 1 : 0,
+                total: 1,
+                message: null
+            };
 
             // Continue to include an empty guess for the now defunct answer area.
             const maxCompatGuess = [rendererRef.current.getUserInputLegacy(), []];
@@ -272,17 +384,39 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                 rendererRef.current.getSerializedState().question,
             );
 
+            console.log('[RendererComponent] KEScore:', {
+                correct: keScore.correct,
+                empty: keScore.empty,
+                guess: keScore.guess
+            });
+
             // Calculate response time
             const responseTimeSeconds = (Date.now() - startTime) / 1000;
 
-            // Submit answer to DASH API for tracking and adaptive difficulty
+            // In assessment mode, call the assessment callback
+            if (assessmentMode && onAssessmentAnswer) {
+                const currentItem = perseusItems[item];
+                const metadata = (currentItem as any).dash_metadata || {};
+                const questionId = metadata.dash_question_id || `q_${item}`;
+                
+                setIsAnswered(true);
+                setScore(keScore);
+                setShowFeedback(true);
+                
+                // Call the callback with question ID and correctness
+                onAssessmentAnswer(questionId, keScore.correct);
+                return;
+            }
+
+            // Submit answer to DASH API for tracking and adaptive difficulty (normal mode)
             try {
                 const currentItem = perseusItems[item];
                 const metadata = (currentItem as any).dash_metadata || {};
+                const questionId = metadata.dash_question_id || `q_${item}`;
 
                 await apiUtils.post(`${DASH_API_URL}/api/submit-answer`, {
                     user_id: user_id,
-                    question_id: metadata.dash_question_id || `q_${item}`,
+                    question_id: questionId,
                     skill_ids: metadata.skill_ids || ["counting_1_10"],
                     is_correct: keScore.correct,
                     response_time_seconds: responseTimeSeconds
@@ -290,6 +424,22 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                 
                 // Invalidate skill-scores cache to trigger refetch with updated data
                 queryClient.invalidateQueries({ queryKey: ["skill-scores"] });
+                
+                // Track watched videos if answer was submitted
+                if (watchedVideoIds && watchedVideoIds.length > 0) {
+                    try {
+                        for (const videoId of watchedVideoIds) {
+                            await apiUtils.post(
+                                `${DASH_API_URL}/api/videos/mark-helpful?question_id=${encodeURIComponent(questionId)}&video_id=${encodeURIComponent(videoId)}&is_correct=${keScore.correct}`,
+                                {}
+                            );
+                        }
+                        // Reset watched videos after tracking
+                        onAnswerSubmitted?.();
+                    } catch (err) {
+                        console.error("Failed to track video helpfulness:", err);
+                    }
+                }
             } catch (err) {
                 console.error("Failed to submit answer to DASH:", err);
             }
@@ -298,20 +448,6 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
             setIsAnswered(true);
             setScore(keScore);
             console.log("Score:", keScore);
-
-            // Record question answer with TeachingAssistant
-            try {
-                const currentItem = perseusItems[item];
-                const metadata = (currentItem as any).dash_metadata || {};
-                const questionId = metadata.dash_question_id || `q_${item}_${Date.now()}`;
-
-                await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/question/answered`, {
-                    question_id: questionId,
-                    is_correct: keScore.correct || false
-                });
-            } catch (err) {
-                console.error("Error recording question answer:", err);
-            }
         }
     };
 
@@ -330,9 +466,9 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
     }, [item, setCurrentHintIndex, setShowHints]);
 
     return (
-        <div className="framework-perseus relative flex min-h-screen w-full items-center justify-center py-4 md:py-6 px-3 md:px-4">
+        <div className="framework-perseus relative flex w-full h-full items-start justify-center px-3 md:px-4">
             {/* Neo-Brutalism Card */}
-            <Card className="relative flex w-full max-w-4xl md:max-w-5xl h-auto flex-col border-[4px] md:border-[5px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-200">
+            <Card className="relative flex w-full max-w-4xl md:max-w-5xl my-4 md:my-6 flex-col border-[4px] md:border-[5px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-200">
                 {/* Progress bar at top */}
                 <div className="absolute top-0 left-0 right-0 h-2 md:h-3 bg-[#FFFDF5] dark:bg-[#000000] border-b-[2px] md:border-b-[3px] border-black dark:border-white">
                     <div
@@ -344,17 +480,31 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                 <CardHeader className="space-y-2 pt-6 md:pt-7 px-4 md:px-6 border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#FFD93D]">
                     <div className="flex items-start justify-between gap-3 md:gap-4 flex-wrap">
                         <div className="space-y-1.5 flex-1">
-                            <div className="flex items-center gap-2 md:gap-3">
-                                <div className="p-1.5 md:p-2 border-[2px] md:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]">
-                                    <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-black dark:text-white font-bold" />
+                            {/* Breadcrumb Navigation */}
+                            {perseusItems.length > 0 && !isLoading && (
+                                <div className="flex items-center gap-2 flex-wrap text-xs md:text-sm font-bold text-black">
+                                    {(() => {
+                                        const currentItem = perseusItems[item];
+                                        const metadata = (currentItem as any).dash_metadata || {};
+                                        const unitName = metadata.unit_name || 'Unknown Unit';
+                                        const lessonName = metadata.lesson_name || 'Unknown Lesson';
+                                        const exerciseName = metadata.exercise_name || 'Unknown Exercise';
+                                        const mongodbId = metadata.mongodb_id || 'N/A';
+                                        
+                                        return (
+                                            <>
+                                                <span className="uppercase tracking-wide">{unitName}</span>
+                                                <ChevronRight className="w-4 h-4 flex-shrink-0" />
+                                                <span className="uppercase tracking-wide">{lessonName}</span>
+                                                <ChevronRight className="w-4 h-4 flex-shrink-0" />
+                                                <span className="uppercase tracking-wide">{exerciseName}</span>
+                                                <ChevronRight className="w-4 h-4 flex-shrink-0" />
+                                                <span className="font-mono text-gray-600 dark:text-gray-400 normal-case">{mongodbId}</span>
+                                            </>
+                                        );
+                                    })()}
                                 </div>
-                                <CardTitle className="text-lg md:text-xl font-black text-black uppercase tracking-tight">
-                                    Practice Session
-                                </CardTitle>
-                            </div>
-                            <CardDescription className="text-xs md:text-sm font-bold text-black uppercase tracking-wide">
-                                {user ? `Welcome, ${user.name}! Grade: ${user.current_grade}` : `User: ${user_id}`}
-                            </CardDescription>
+                            )}
                         </div>
 
                         {/* Neo-Brutalist Progress Badge */}
@@ -380,10 +530,10 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                     </div>
                 </CardHeader>
 
-                <CardContent className="flex-1 min-h-0 px-4 md:px-6 bg-[#FFFDF5] dark:bg-[#000000]">
+                <CardContent className="px-4 md:px-6 py-4 md:py-6 bg-[#FFFDF5] dark:bg-[#000000]">
                     <div
                         ref={scrollContainerRef}
-                        className="relative w-full min-h-full"
+                        className="relative w-full max-w-4xl mx-auto"
                     >
                         {endOfTest ? (
                             <div className="flex h-full items-center justify-center px-3 md:px-4 py-4 md:py-6 text-center">
@@ -438,8 +588,8 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                                 </p>
                             </div>
                         ) : perseusItems.length > 0 ? (
-                            <div className="space-y-4 md:space-y-6 py-3 md:py-4">
-                                <div id="question-content-container" className="border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white p-4 md:p-5 lg:p-6 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]">
+                            <div className="space-y-4 md:space-y-6">
+                                <div id="question-content-container" className="border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white p-4 md:p-5 lg:p-6 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] overflow-x-auto">
                                     <PerseusI18nContextProvider locale="en" strings={mockStrings}>
                                         <RenderStateRoot>
                                             <ServerItemRenderer
@@ -515,21 +665,23 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                             type="button"
                             size="sm"
                             onClick={handleSubmit}
-                            disabled={isLoading || endOfTest || perseusItems.length === 0}
+                            disabled={isLoading || endOfTest || perseusItems.length === 0 || isAnswered}
                             className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-[#C4B5FD] hover:bg-[#C4B5FD] text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:hover:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
                         >
                             Submit
                         </Button>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={handleNext}
-                            disabled={isLoading || endOfTest || perseusItems.length === 0}
-                            className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-800 hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
-                        >
-                            Next →
-                        </Button>
+                        {!assessmentMode && (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={handleNext}
+                                disabled={isLoading || endOfTest || perseusItems.length === 0}
+                                className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-800 hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
+                            >
+                                Next →
+                            </Button>
+                        )}
                     </div>
                 </CardFooter>
             </Card>

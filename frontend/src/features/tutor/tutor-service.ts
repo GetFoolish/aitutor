@@ -71,25 +71,27 @@ export function clearTokenCache(): void {
   cachedModel = null;
 }
 
-// System prompt cache
-let systemPromptCache: string | null = null;
+// System prompt cache - keyed by language to support different languages
+let systemPromptCache: Map<string, string> = new Map();
 let systemPromptLoading: Promise<string> | null = null;
+let currentLoadingLanguage: string | null = null;
 
 /**
- * Load system prompt from public directory
+ * Load system prompt from public directory and inject language preference
  */
-async function loadSystemPrompt(): Promise<string> {
-  // Return cached prompt if available
-  if (systemPromptCache) {
-    return systemPromptCache;
+async function loadSystemPrompt(preferredLanguage: string = "English"): Promise<string> {
+  // Return cached prompt if available for this language
+  if (systemPromptCache.has(preferredLanguage)) {
+    return systemPromptCache.get(preferredLanguage)!;
   }
 
-  // If already loading, wait for it
-  if (systemPromptLoading) {
+  // If already loading for the same language, wait for it
+  if (systemPromptLoading && currentLoadingLanguage === preferredLanguage) {
     return systemPromptLoading;
   }
 
   // Start loading
+  currentLoadingLanguage = preferredLanguage;
   systemPromptLoading = (async () => {
     try {
       const response = await fetch('/ai_tutor_system_prompt.md');
@@ -98,14 +100,20 @@ async function loadSystemPrompt(): Promise<string> {
         return '';
       }
       const prompt = await response.text();
-      systemPromptCache = prompt;
-      console.log(`System prompt loaded (${prompt.length} characters)`);
-      return prompt;
+      
+      // Inject language instruction
+      const languageInstruction = `\n\n## Language Preference\n\nThe student's preferred language is ${preferredLanguage}. You should communicate with the student in ${preferredLanguage} by default. However, if the student explicitly requests to communicate in a different language during the session (e.g., "I want to talk in English", "Can we switch to Spanish?", "Let's speak in Hindi"), you must immediately switch to that requested language and continue the conversation in that language for the remainder of the session. Always prioritize the student's current language preference over the initial default.`;
+      
+      const fullPrompt = prompt + languageInstruction;
+      systemPromptCache.set(preferredLanguage, fullPrompt);
+      console.log(`System prompt loaded with language preference: ${preferredLanguage} (${fullPrompt.length} characters)`);
+      return fullPrompt;
     } catch (error) {
       console.error('Error loading system prompt:', error);
       return '';
     } finally {
       systemPromptLoading = null;
+      currentLoadingLanguage = null;
     }
   })();
 
@@ -126,14 +134,14 @@ export class TutorService {
    * Initialize the service
    * Fetches ephemeral token and loads system prompt
    */
-  async initialize(): Promise<void> {
+  async initialize(preferredLanguage: string = "English"): Promise<void> {
     try {
       // Fetch ephemeral token from backend
       const { token, model } = await fetchGeminiToken();
       this.model = model;
 
-      // Load system prompt
-      this.systemPrompt = await loadSystemPrompt();
+      // Load system prompt with language preference
+      this.systemPrompt = await loadSystemPrompt(preferredLanguage);
 
       // Initialize Gemini client with ephemeral token
       // IMPORTANT: Ephemeral tokens require v1alpha API version

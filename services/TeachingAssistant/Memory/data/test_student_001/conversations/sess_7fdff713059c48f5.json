@@ -1,0 +1,69 @@
+{
+  "session_id": "sess_7fdff713059c48f5",
+  "user_id": "test_student_001",
+  "start_time": "2025-12-18T03:27:36.651000",
+  "end_time": "2025-12-17T22:27:57.069575",
+  "turn_count": 6,
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "[SYSTEM PROMPT FOR ADAM] [MEMORY AND INJECTION HANDLING] During this session, you will receive 'System Updates' with retrieved memories. - If an update arrives while you are speaking or just finished: DO NOT hallucinate a new user turn. - If you have just finished a response, simply maintain consistency with that response. - Do not let internal system updates disrupt the natural flow of conversation. Hi! Great to see you again. Last time you navigated some tricky quadratic problems, and it was fantastic to see you bounce back from those frustrating moments feeling happy at the end. Last time we worked on: The student tackled quadratic equations and showed understanding of parabolic concepts, demonstrating a positive mood shift after breakthroughs. Despite experiencing frustration and anxiety, they ended the session feeling happy. Unfinished topics: Follow up on the details of the math test., Completing the square, picking up where the student left off previously., Explore the 'airball thing' visual aid used by the student to understand the concept of roots. Personal context available.",
+      "timestamp": 1766046456.651
+    },
+    {
+      "speaker": "user",
+      "text": "hey! honestly, pretty good. sun is shining, practice was good, and max finally stopped eating my socks.",
+      "timestamp": 1766028456.925388
+    },
+    {
+      "speaker": "tutor",
+      "text": "That is a trifecta of good news. Especially the socks. Max is evolving. Are you ready to level up to Systems of Equations?",
+      "timestamp": 1766028459.92628
+    },
+    {
+      "speaker": "user",
+      "text": "yeah, let's do it. i'm feeling awake today.",
+      "timestamp": 1766028460.926459
+    },
+    {
+      "speaker": "tutor",
+      "text": "Awesome energy. So, a 'system' just means looking at two or more equations at the same time and finding where they agree. Where they intersect.",
+      "timestamp": 1766028463.927646
+    },
+    {
+      "speaker": "user",
+      "text": "like where two lines cross on a graph?",
+      "timestamp": 1766028464.927812
+    },
+    {
+      "speaker": "tutor",
+      "text": "Exactly. Imagine two players running different routes on the court. The solution is where they crash into each other.",
+      "timestamp": 1766028467.928077
+    },
+    {
+      "speaker": "user",
+      "text": "hopefully they don't crash, that's a foul. but i get it.",
+      "timestamp": 1766028468.928224
+    },
+    {
+      "speaker": "tutor",
+      "text": "Fair point! Let's look at a Linear-Quadratic system. One straight line, one parabola. How many times *could* they intersect?",
+      "timestamp": 1766028471.928379
+    },
+    {
+      "speaker": "user",
+      "text": "hmm. well if the line goes right through the U shape... twice?",
+      "timestamp": 1766028472.929563
+    },
+    {
+      "speaker": "tutor",
+      "text": "Yep. What if it just grazes the bottom?",
+      "timestamp": 1766028475.930733
+    },
+    {
+      "speaker": "user",
+      "text": "once.",
+      "timestamp": 1766028476.931476
+    }
+  ]
+}

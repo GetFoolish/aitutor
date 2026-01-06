@@ -1,0 +1,379 @@
+[
+  {
+    "id": "67de8485-e55c-4eaf-b83d-e3bc6d4eeb9a",
+    "type": "academic",
+    "text": "Student is potentially struggling with a math topic, as indicated by the AI's repeated suggestion of 'math?'.",
+    "importance": 0.7,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:28:12.913301",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "math"
+    }
+  },
+  {
+    "id": "910c5740-bcb1-4248-a41d-ef0a36b9cbd9",
+    "type": "academic",
+    "text": "Student demonstrates a lack of engagement, responding with single words.",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:28:16.714467",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "21bafae7-5e4c-4a74-91b2-d4b6962b7ede",
+    "type": "academic",
+    "text": "The student struggles to form complete sentences or provide meaningful input, suggesting a potential knowledge gap or misunderstanding of the task.",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:28:18.823776",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "5a3b72d1-c27f-4558-b78e-31edcabbcef3",
+    "type": "academic",
+    "text": "The student seems to be testing the system with fragments of words or phrases, potentially indicating a misunderstanding of how to interact with the AI or the topic at hand.",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:28:22.223735",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "f801a5b3-6809-4aee-b037-5568d34f9c88",
+    "type": "academic",
+    "text": "Student's responses indicate a lack of understanding of the topic, possibly struggling to formulate a coherent response.",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:28:24.426272",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "189665a3-69df-47c4-b625-ae83b3f2b38c",
+    "type": "academic",
+    "text": "Student demonstrates a lack of engagement, responding with single-word utterances.",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:28:26.011570",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "8a44f1c6-f47f-4575-b40c-3a27e7e4d74c",
+    "type": "academic",
+    "text": "Student's initial response suggests a lack of understanding regarding the AI's question, likely indicating a misunderstanding of the topic at hand.",
+    "importance": 0.7,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:28:34.157372",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "11894bb8-3903-4c54-8d48-c3167588dab3",
+    "type": "academic",
+    "text": "The student provides negative answers in multiple exchanges indicating that the student either does not know how to start the topic or simply does not want to address the AI's prompts.",
+    "importance": 0.6,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:28:34.157397",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "9d4fa132-681f-4e89-8155-d730d81b1d46",
+    "type": "academic",
+    "text": "Student's responses indicate a lack of understanding or knowledge about the current topic of discussion, with incomplete sentence structures.",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:28:37.014177",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "d37ec006-73a1-416c-aa94-8cafb395d6fe",
+    "type": "academic",
+    "text": "Student demonstrates a general lack of clarity about the specific topic being discussed, repeatedly indicating a request for clarification.",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:28:59.433135",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "1a38da71-70db-4276-b39e-6bb75095d96a",
+    "type": "academic",
+    "text": "The student struggles to form complete sentences or articulate their thoughts, suggesting potential difficulty with communication or possibly a lack of understanding.",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:29:04.916423",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "192851bc-d4f8-43f2-9845-5f9b76bb53fc",
+    "type": "academic",
+    "text": "The student is engaging with math problems.",
+    "importance": 0.5,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:31:13.782167",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "math"
+    }
+  },
+  {
+    "id": "14daff7e-30db-4cc5-a899-70aa38b9c4fd",
+    "type": "academic",
+    "text": "Student likely does not understand the intended topic, as the AI's 'odd?' suggests a question or statement related to the content and the student's inputs 'me', 'some', and 'thing' are seemingly unrelated to any mathematical concepts.",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:31:17.809817",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "b7bd4a1c-dc41-4773-bae1-6e27899aec05",
+    "type": "academic",
+    "text": "Student's responses suggest a misunderstanding or confusion regarding the current topic, possibly related to the meaning of 'about', 'wha', and 't do you' in the context of the conversation.",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:31:21.602845",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "0dbb9466-4693-44a5-b3ec-ee51dc6b45f9",
+    "type": "academic",
+    "text": "The student seems to be struggling to formulate a question or engage with the topic 'general'.",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:31:23.660240",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "ad158014-03f2-4c5d-bc23-fe9e2a8b70af",
+    "type": "academic",
+    "text": "Student likely struggling with basic concepts as they are using non-words (pre, fere, nces) in the conversation.",
+    "importance": 0.9,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:31:25.694751",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "7c02d9d1-221a-4a83-bd7d-b97f65f36855",
+    "type": "academic",
+    "text": "The student seems to be struggling with basic concepts as evidenced by the words 'just', 'don't', and 'like'.",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:31:37.791853",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "13566c65-5171-4fda-8b62-d0c19179c9d6",
+    "type": "academic",
+    "text": "Student likely struggling with a concept, given the brief and uninformative input in exchange 1 and 2, which suggests a possible knowledge gap.",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:32:01.733085",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "4a8cb290-420c-48ad-900e-2da37384e1e7",
+    "type": "academic",
+    "text": "Student provided partial input, and the AI seemed to guess at the meaning, which can mean the student is not very knowledgable of the concepts.",
+    "importance": 0.6,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:32:01.733098",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "f832a9ad-0d71-45d9-86b2-672dee697472",
+    "type": "academic",
+    "text": "Student likely trying to spell or understand a word related to a general topic, but the AI's response suggests a misunderstanding of the student's input. The student might be struggling with basic vocabulary.",
+    "importance": 0.7,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:32:05.270044",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "efb2703c-e60b-4907-b9ce-f6e9472d1405",
+    "type": "academic",
+    "text": "The student is attempting a task, but the input is incomplete or nonsensical (fere, nce, s). The student likely misunderstands the expected input.",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:32:11.911742",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "c7caf195-a883-4d26-a53a-7f6afa1970e8",
+    "type": "academic",
+    "text": "The student appears to be starting a conversation without a clear mathematical topic in mind.",
+    "importance": 0.6,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:32:14.748992",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "5cfd6c1e-9dfb-4237-95f1-d96b9e278466",
+    "type": "academic",
+    "text": "Student appears to be starting a thought, question, or statement related to a topic but is not finishing the sentences (or is providing incomplete information).",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:32:55.723021",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "8f013a45-e321-4506-9e47-284231d46ae8",
+    "type": "academic",
+    "text": "Student's responses ('do', 'that', '.') suggest a lack of understanding or engagement with the topic.",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:32:58.338921",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "fa85a2ee-dbe6-4686-9b48-085905106dba",
+    "type": "academic",
+    "text": "Student provided isolated Japanese word 'うん' which is a general acknowledgement and indicates a possible gap in language understanding, or a misunderstanding of the prompt.",
+    "importance": 0.6,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:33:25.553218",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "2a42701b-9d45-42f8-91f5-6a68fbc9ef51",
+    "type": "academic",
+    "text": "Student provided the word 'I', which does not provide any information.",
+    "importance": 0.2,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:33:25.553233",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "1198e120-934d-4edc-9ce7-a4bdd124b050",
+    "type": "academic",
+    "text": "Student provided the word 'don', which does not provide any information.",
+    "importance": 0.2,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:33:25.553240",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "11ab1850-7390-4612-a5f7-e666efe48800",
+    "type": "academic",
+    "text": "The student provides only individual words, 'ts', ',', and 'don't', indicating a possible misunderstanding of how to use words together, a writing skills gap.",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:33:28.804970",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general language comprehension"
+    }
+  },
+  {
+    "id": "7fda7bf2-9539-4cd2-bb9a-309b15b96d00",
+    "type": "academic",
+    "text": "Student wants to do math but the specific topic or problem is not identified.",
+    "importance": 0.7,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:33:43.473162",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "Mathematics"
+    }
+  }
+]

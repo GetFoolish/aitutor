@@ -1,0 +1,322 @@
+[
+  {
+    "id": "7277a842-e3e9-4f84-a94b-e9e6a3cf0f19",
+    "type": "context",
+    "text": "Expresses a lack of enthusiasm for math.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": "2025-12-23T14:46:02.929040",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519162.929061,
+    "last_epoch": 1766519162.929065
+  },
+  {
+    "id": "12a32a6a-c114-46f7-8981-0c1c480ef03f",
+    "type": "context",
+    "text": "Dreads math.",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": "2025-12-23T14:46:02.929081",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519162.929082,
+    "last_epoch": 1766519162.929083
+  },
+  {
+    "id": "1f94de80-5207-41d2-a1a5-3515fb2a2778",
+    "type": "context",
+    "text": "Experiences anxiety before games.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": "2025-12-23T14:47:15.530986",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519235.531,
+    "last_epoch": 1766519235.531004
+  },
+  {
+    "id": "be80b3cf-6d22-46d6-aaba-1be86b3aa559",
+    "type": "context",
+    "text": "Experiences anxiety before tests.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": "2025-12-23T14:47:15.531019",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519235.531021,
+    "last_epoch": 1766519235.531022
+  },
+  {
+    "id": "b2bb147e-c19e-4e2e-b96f-1359c0bf9ec9",
+    "type": "context",
+    "text": "Feels stressed about a math test.",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": "2025-12-23T14:47:15.531032",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519235.531033,
+    "last_epoch": 1766519235.531035
+  },
+  {
+    "id": "2b4af6df-61ee-4184-aff1-14468c842418",
+    "type": "context",
+    "text": "Has a game on the same day as a test.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": "2025-12-23T14:47:15.531043",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519235.531044,
+    "last_epoch": 1766519235.531046
+  },
+  {
+    "id": "ba9e0049-9e65-452c-8c44-ab47bc6af1f1",
+    "type": "context",
+    "text": "Feels tired.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": "2025-12-23T14:49:45.654909",
+    "metadata": {
+      "emotion": "tired",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519385.654926,
+    "last_epoch": 1766519385.654932
+  },
+  {
+    "id": "c49c5ccb-1615-4a20-becf-2949d47434a1",
+    "type": "context",
+    "text": "Experienced anxiety before and during a math test.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": "2025-12-23T14:49:58.316657",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "math test"
+    },
+    "counter": 1,
+    "first_epoch": 1766519398.316658,
+    "last_epoch": 1766519398.31666
+  },
+  {
+    "id": "57469eab-258b-467f-af0c-91c73d41346e",
+    "type": "context",
+    "text": "Expresses frustration with the subject matter.",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": "2025-12-23T14:51:10.355894",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519470.355896,
+    "last_epoch": 1766519470.3559
+  },
+  {
+    "id": "4805d493-5ad3-4145-b773-4790a58c60ed",
+    "type": "context",
+    "text": "Feels that the material is pointless.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": "2025-12-23T14:51:10.355919",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519470.355921,
+    "last_epoch": 1766519470.355925
+  },
+  {
+    "id": "70d0dc5c-fc71-4ed1-8fd7-4b160fdd5a28",
+    "type": "context",
+    "text": "Feels tired of the subject.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": "2025-12-23T14:51:10.355943",
+    "metadata": {
+      "emotion": "tired",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519470.355945,
+    "last_epoch": 1766519470.355949
+  },
+  {
+    "id": "ff1bc132-3d6f-4ebd-9a31-26cbf9c7e0e3",
+    "type": "context",
+    "text": "Is tired and wants to nap.",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": "2025-12-23T14:51:25.721086",
+    "metadata": {
+      "emotion": "tired",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519485.721088,
+    "last_epoch": 1766519485.721092
+  },
+  {
+    "id": "f7a363a5-15d0-4107-b442-183e54b166f2",
+    "type": "context",
+    "text": "Feeling overwhelmed due to parental pressure regarding grades.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": "2025-12-23T14:52:58.274296",
+    "metadata": {
+      "emotion": "overwhelmed",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519578.274304,
+    "last_epoch": 1766519578.274307
+  },
+  {
+    "id": "fe7630e1-1c19-48d2-a5f2-ec7261b956c6",
+    "type": "context",
+    "text": "Having a bad day.",
+    "importance": 0.5,
+    "student_id": "simulator_user",
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": "2025-12-23T14:52:58.274318",
+    "metadata": {
+      "emotion": "sad",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519578.274319,
+    "last_epoch": 1766519578.27432
+  },
+  {
+    "id": "5de41ee1-9d88-4ff5-80eb-4606df1818b1",
+    "type": "context",
+    "text": "Feeling frustrated and tired (based on prior session).",
+    "importance": 0.6,
+    "student_id": "simulator_user",
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": "2025-12-23T14:52:58.274328",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519578.274329,
+    "last_epoch": 1766519578.274331
+  },
+  {
+    "id": "6e048b48-662c-4723-8a2c-750f9c21ffc9",
+    "type": "context",
+    "text": "Expresses frustration with the math problem.",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": "2025-12-23T14:53:34.586039",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519614.586059,
+    "last_epoch": 1766519614.586065
+  },
+  {
+    "id": "30071132-9f32-4dfc-b8cd-0fb32e10d9c2",
+    "type": "context",
+    "text": "States they are unable to think and requests to pause the session.",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": "2025-12-23T14:53:34.586091",
+    "metadata": {
+      "emotion": "tired",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519614.586093,
+    "last_epoch": 1766519614.586096
+  },
+  {
+    "id": "9e8e81eb-e727-4c49-a82b-7bf43988bb93",
+    "type": "context",
+    "text": "Feels better after recognizing a pattern.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": "2025-12-23T14:54:36.412876",
+    "metadata": {
+      "emotion": "happy",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519676.412883,
+    "last_epoch": 1766519676.412885
+  },
+  {
+    "id": "bf9acbc5-68b2-42bb-ab1a-4c154ec217c5",
+    "type": "context",
+    "text": "Recovered from frustration.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": "2025-12-23T14:54:36.412920",
+    "metadata": {
+      "emotion": "happy",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519676.41292,
+    "last_epoch": 1766519676.412921
+  },
+  {
+    "id": "0fa9c173-882b-4a06-809b-1e42f19a712e",
+    "type": "context",
+    "text": "Finds math cool.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_b1550c7e8ae74c19",
+    "timestamp": "2025-12-23T14:57:04.535073",
+    "metadata": {
+      "emotion": "happy",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519824.535076,
+    "last_epoch": 1766519824.535079
+  }
+]

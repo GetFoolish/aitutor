@@ -22,6 +22,7 @@ export interface AuthResponse {
     age: number;
     current_grade: string;
     user_type: string;
+    preferred_language?: string;
   };
   is_new_user: boolean;
 }
@@ -30,6 +31,18 @@ export interface SetupResponse {
   google_user: GoogleUser;
   requires_setup: boolean;
   setup_token: string;
+}
+
+export interface AccountInfo {
+  user_id: string;
+  email: string;
+  name: string;
+  date_of_birth: string;
+  location: string;
+  credits: {
+    balance: number;
+    currency: string;
+  };
 }
 
 class AuthAPI {
@@ -44,7 +57,9 @@ class AuthAPI {
   async completeSetup(
     setupToken: string,
     userType: string,
-    age: number,
+    dateOfBirth: string,
+    gender: string,
+    preferredLanguage: string,
     profileData: {
       subjects: string[];
       learningGoals: string[];
@@ -60,7 +75,9 @@ class AuthAPI {
       body: JSON.stringify({
         setup_token: setupToken,
         user_type: userType,
-        age: age,
+        date_of_birth: dateOfBirth,
+        gender: gender,
+        preferred_language: preferredLanguage,
         subjects: profileData.subjects,
         learning_goals: profileData.learningGoals,
         interests: profileData.interests,
@@ -76,6 +93,59 @@ class AuthAPI {
     return response.json();
   }
 
+  async emailSignup(
+    email: string,
+    password: string,
+    name: string,
+    dateOfBirth: string,
+    gender: string,
+    preferredLanguage: string,
+    userType: string = "student"
+  ): Promise<AuthResponse> {
+    const response = await fetch(`${AUTH_SERVICE_URL}/auth/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        name,
+        date_of_birth: dateOfBirth,
+        gender,
+        preferred_language: preferredLanguage,
+        user_type: userType
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Signup failed');
+    }
+
+    return response.json();
+  }
+
+  async emailLogin(email: string, password: string): Promise<AuthResponse> {
+    const response = await fetch(`${AUTH_SERVICE_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        password
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Login failed');
+    }
+
+    return response.json();
+  }
+
   async getCurrentUser(token: string): Promise<AuthResponse['user']> {
     const response = await httpClient.fetch(`${AUTH_SERVICE_URL}/auth/me`, {
       headers: {
@@ -85,6 +155,25 @@ class AuthAPI {
 
     if (!response.ok) {
       throw new Error('Failed to get current user');
+    }
+
+    return response.json();
+  }
+
+  async getAccountInfo(): Promise<AccountInfo> {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      throw new Error('Not authenticated');
+    }
+
+    const response = await httpClient.fetch(`${AUTH_SERVICE_URL}/account/info`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to get account info');
     }
 
     return response.json();

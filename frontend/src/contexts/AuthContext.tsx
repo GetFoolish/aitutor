@@ -14,6 +14,7 @@ interface AuthUser {
   current_grade: string;
   user_type: string;
   learning_style?: string;
+  preferred_language?: string;
 }
 
 interface AuthContextType {

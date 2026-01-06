@@ -1,0 +1,10 @@
+# VideoFinder Dependencies
+# Install with: pip install -r VideoFinder/requirements.txt
+
+# Core dependencies for Gemini-based video finder
+google-generativeai>=0.3.0  # Gemini AI API
+google-api-python-client>=2.0.0  # YouTube Data API v3
+youtube-transcript-api>=0.6.0  # Fetch video transcripts
+
+# Optional utilities
+python-dotenv>=1.0.0  # Load environment variables from .env file
