@@ -153,8 +153,175 @@ class FeedWebhookRequest(BaseModel):
     data: dict
 
 # ============================================================================
+# Health Check
+# ============================================================================
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy", "service": "TeachingAssistant"}
+
+@app.get("/session/info")
+def get_session_info(http_request: Request):
+    """Get current session info"""
+    user_id = get_current_user(http_request)
+    session = ta.get_active_session(user_id)
+    if not session:
+        return {"session_active": False, "user_id": user_id}
+    return ta.get_session_info(session["session_id"])
+# ============================================================================
+# Session Management Endpoints
+# ============================================================================
+
+@app.post("/session/start", response_model=PromptResponse)
+def start_session(http_request: Request, request: Optional[StartSessionRequest] = None):
+    """Start a new tutoring session"""
+    user_id = get_current_user(http_request)
+    try:
+        result = ta.start_session(user_id)
+        return PromptResponse(
+            prompt=result["prompt"],
+            session_info=result["session_info"]
+        )
+    except Exception as e:
+        logger.error(f"Error in start_session: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/session/end", response_model=PromptResponse)
+def end_session(http_request: Request, request: Optional[EndSessionRequest] = None):
+    """End the current tutoring session"""
+    user_id = get_current_user(http_request)
+    try:
+        # Get active session for user
+        session = ta.get_active_session(user_id)
+        if not session:
+            return PromptResponse(
+                prompt="",
+                session_info={'session_active': False, 'user_id': user_id}
+            )
+
+        result = ta.end_session(session["session_id"])
+
+        # Pre-load next session questions in background (non-blocking)
+        try:
+            auth_header = http_request.headers.get("Authorization", "")
+            if not auth_header:
+                auth_header = http_request.headers.get("authorization", "")
+
+            token = ""
+            if auth_header.startswith("Bearer "):
+                token = auth_header.replace("Bearer ", "", 1)
+            elif auth_header.startswith("bearer "):
+                token = auth_header.replace("bearer ", "", 1)
+
+            if token and len(token) > 0:
+                preload_thread = threading.Thread(
+                    target=_preload_questions_background,
+                    args=(user_id, token),
+                    daemon=True
+                )
+                preload_thread.start()
+        except Exception as e:
+            logger.error(f"[PRELOAD] Failed to start pre-loading thread: {e}")
+
+        return PromptResponse(
+            prompt=result["prompt"],
+            session_info=result["session_info"]
+        )
+    except Exception as e:
+        logger.error(f"Error in end_session: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ============================================================================
 # Helpers: queue + drop-oldest
 # ============================================================================
+def _preload_questions_background(user_id: str, token: str):
+    """Background function to pre-load questions for next session"""
+    try:
+        # Call DASH API to get 5 questions for next session
+        dash_response = requests.get(
+            f"{DASH_API_URL}/api/questions/5",
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json"
+            },
+            timeout=10
+        )
+
+        if dash_response.status_code == 200:
+            preloaded_questions = dash_response.json()
+            # Extract question IDs
+            question_ids = [
+                q.get('dash_metadata', {}).get('dash_question_id', '')
+                for q in preloaded_questions
+                if q.get('dash_metadata', {}).get('dash_question_id')
+            ]
+
+            if question_ids:
+                # Store in MongoDB user profile
+                from managers.mongodb_manager import mongo_db
+                mongo_db.users.update_one(
+                    {"user_id": user_id},
+                    {"$set": {"preloaded_question_ids": question_ids}}
+                )
+                logger.info(f"[PRELOAD] Stored {len(question_ids)} question IDs for next session (user: {user_id})")
+    except Exception as e:
+        # Don't fail session end if pre-loading fails
+        logger.error(f"[PRELOAD] Failed to pre-load questions: {e}")
+    
+@app.post("/question/answered")
+def record_question(http_request: Request, request: QuestionAnsweredRequest):
+    """Record a question answer"""
+    user_id = get_current_user(http_request)
+    try:
+        session = ta.get_active_session(user_id)
+        if not session:
+            raise HTTPException(status_code=404, detail="No active session")
+
+        ta.record_question_answered(
+            session["session_id"],
+            request.question_id,
+            request.is_correct
+        )
+        return {"status": "recorded", "session_info": ta.get_session_info(session["session_id"])}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in record_question: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/conversation/turn")
+def record_conversation_turn(http_request: Request):
+    """Record a conversation turn"""
+    user_id = get_current_user(http_request)
+    try:
+        session = ta.get_active_session(user_id)
+        if not session:
+            raise HTTPException(status_code=404, detail="No active session")
+
+        ta.record_conversation_turn(session["session_id"])
+        return {"status": "recorded"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in record_conversation_turn: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/inactivity/check", response_model=PromptResponse)
+def check_inactivity(http_request: Request):
+    """Check for inactivity and return prompt if needed"""
+    user_id = get_current_user(http_request)
+    try:
+        session = ta.get_active_session(user_id)
+        if not session:
+            return PromptResponse(prompt="", session_info={"session_active": False})
+
+        prompt = ta.check_inactivity(session["session_id"])
+        session_info = ta.get_session_info(session["session_id"])
+        return PromptResponse(prompt=prompt or "", session_info=session_info)
+    except Exception as e:
+        logger.error(f"Error in check_inactivity: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
 def _get_q(store: Dict[str, asyncio.Queue], session_id: str, maxsize: int) -> asyncio.Queue:
     q = store.get(session_id)
     if q is None:
