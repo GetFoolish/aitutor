@@ -37,31 +37,79 @@ import type {
 // CONTENT RENDERER (Internal Component)
 // ============================================================================
 
+interface AthenaRendererProps {
+  item: PerseusItem | AthenaItem;
+  problemNum: number;
+  apiOptions?: Record<string, any>;
+  linterContext?: any;
+  showSolutions?: string;
+  hintsVisible?: number;
+  reviewMode?: boolean;
+  theme?: 'light' | 'dark' | 'high-contrast';
+}
+
 interface ContentRendererProps {
   item: PerseusItem | AthenaItem;
   problemNum: number;
+  theme?: 'light' | 'dark' | 'high-contrast';
 }
 
+
+
 const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
-  function ContentRenderer({ item, problemNum }, ref) {
+  function ContentRenderer(props, ref) {
+    const { item, problemNum, theme } = props;
+
     const { state, setAnswer, dispatchEvent } = useAthena();
     const containerRef = useRef<HTMLDivElement>(null);
 
     // Process content and widgets
     const { processedContent, processedWidgets } = useMemo(() => {
-      const content = item?.question?.content || '';
+      let content = item?.question?.content || '';
       const widgets = item?.question?.widgets || {};
+
+      // REPAIR: Check main content for corruption
+      if (content.includes('ATHENAHTMLSAFE') || content.includes('ATHENA_HTML_SAFE')) {
+        console.warn('[AthenaRenderer] Main content corrupted. Attempting restoration from Perseus.');
+        const perseusContent = (item as any).perseusItem?.question?.content;
+        if (perseusContent) {
+          console.log('[AthenaRenderer] Restored main content from Perseus source.');
+          content = perseusContent;
+        }
+      }
 
       // Process main content
       const processedHtml = processContent(content);
 
-      // Process widget options (images in options)
+      // Process widget options (images in options) and REPAIR damaged data
       const newWidgets = { ...widgets };
+      // Access perseusItem safely (it exists on the raw object from backend)
+      const perseusWidgets = (item as any).perseusItem?.question?.widgets || {};
+
       Object.keys(newWidgets).forEach(widgetId => {
         const widget = newWidgets[widgetId];
         if (widget?.options) {
           const newOptions = { ...(widget.options as any) };
           let changed = false;
+
+          // REPAIR: Check for corrupted data (orphaned placeholders)
+          // This happens if data was saved with "ATHENAHTMLSAFE..." strings that lost their reference map
+          const optionsStr = JSON.stringify(newOptions);
+          if (optionsStr.includes('ATHENAHTMLSAFE') || optionsStr.includes('ATHENA_HTML_SAFE')) {
+            console.warn(`[AthenaRenderer] Widget ${widgetId} seems corrupted with placeholders. Attempting repair from Perseus source.`);
+            if (perseusWidgets[widgetId]) {
+              // REPAIR SUCCESS: Use the original Perseus options
+              console.log(`[AthenaRenderer] Replaced corrupted options for ${widgetId} with clean Perseus data.`);
+              newWidgets[widgetId] = {
+                ...widget,
+                options: perseusWidgets[widgetId].options
+              };
+              // Skip further processing for this widget to avoid corrupting it again immediately (though image processing below should be safe)
+              return;
+            } else {
+              console.error(`[AthenaRenderer] Could not repair ${widgetId}: No corresponding Perseus widget found.`);
+            }
+          }
 
           // Process passageText
           if (newOptions.passageText && typeof newOptions.passageText === 'string') {
@@ -85,7 +133,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
       });
 
       return { processedContent: processedHtml, processedWidgets: newWidgets };
-    }, [item.question?.content, item.question?.widgets]);
+    }, [item.question?.content, item.question?.widgets, item.perseusItem]);
 
     // Get user input for all widgets
     const getUserInput = useCallback((): Record<string, unknown> => {
@@ -160,7 +208,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         } else if (widgetType === 'numeric-input' && widget.options) {
           const options = widget.options as any;
           const answers = Array.isArray(options?.answers) ? options.answers : [];
-          
+
           // Handle fractions in user answer
           let numericAnswer = parseFloat(String(userAnswer));
           const strAnswer = String(userAnswer);
@@ -412,7 +460,7 @@ export const AthenaRenderer = forwardRef<AthenaRendererRef, AthenaRendererProps>
             aria-label={ariaLabel || `Question ${problemNum + 1}`}
           >
             <Suspense fallback={<LoadingFallback />}>
-              <ContentRenderer ref={contentRef} item={item} problemNum={problemNum} />
+              <ContentRenderer ref={contentRef} item={item} problemNum={problemNum} theme={theme} />
             </Suspense>
           </div>
         </AthenaProvider>

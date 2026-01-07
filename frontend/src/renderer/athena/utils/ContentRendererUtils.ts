@@ -610,7 +610,8 @@ export const processTable = (text: string): string => {
   }
 
   // Convert any remaining widget placeholders to inline markers (for non-table content)
-  let finalResult = result.join('\n');
+  // IMPORTANT: Ensure table is followed by a blank line to avoid merging with subsequent blocks (like headers)
+  let finalResult = result.join('\n') + '\n\n';
   finalResult = finalResult.replace(/\[\[☃\s+([^\]]+)\]\]/g, (_, widgetId) => {
     return `<span class="athena-widget-inline" data-widget-id="${widgetId.trim()}"></span>`;
   });
@@ -687,9 +688,38 @@ export const processImageMarkdown = (text: string): string => {
 // Helper to clean up legacy content artifacts (stray pipes, etc.)
 export const cleanLegacyContent = (text: string): string => {
   let processedText = text;
-  // Clean up stray pipe characters that aren't part of tables
-  // Remove standalone || at start of lines
-  processedText = processedText.replace(/^\|\|\s*$/gm, '');
+
+  // 1. Remove stray blockquote markers ">" that appear at the start of table cells or lines
+  // MUST happen before header normalization so we see the # characters correctly
+  processedText = processedText.replace(/([\|\n]|^)\s*>+\s*/gm, '$1');
+  // Also handle stray ">" immediately before headers or images within a line
+  processedText = processedText.replace(/(\s+)>+(#{1,6}|!\[)/g, '$1$2');
+
+  // 2. Handle headers with trailing hashes (e.g., "##Which Pet?##" -> "## Which Pet?")
+  // Ensure they are surrounded by blank lines so marked.parse() recognizes them as block elements
+  // We use a broader regex that handles both cases with and without trailing hashes
+  processedText = processedText.replace(/(^|[\n|])\s*(#{1,6})\s*([^#|\n]+?)\s*#*\s*(?=[\|\n]|$)/g, '$1\n\n$2 $3\n\n');
+
+  // 3. Unescape escaped dollar signs (e.g., "\$212" -> "$212")
+  // Use HTML entity &dollar; to avoid accidentally triggering KaTeX math rendering later
+  // MUST happen before math protection in Phase 2
+  processedText = processedText.replace(/\\(\$)/g, '&dollar;');
+
+  // 4. Normalize legacy double-pipe delimiters "||"
+  // Try to break them into newlines to separate sections or rows
+  processedText = processedText.replace(/\s*\|\|\s*/g, '\n\n');
+
+  // 4.5. Detect mangled table rows joined on one line (e.g. "Col1 | Col2 | - | - | Row2_1 | Row2_2")
+  // If we see a separator pattern followed by more pipes on the same line, break it
+  processedText = processedText.replace(/(\|\s*[:\-]{2,}\s*\|\s*[:\-]{2,}\s*\|)\s*/g, '$1\n');
+
+  // 4.6. Normalize ordered lists to ensure they're recognized as block elements
+  // Ensure ordered lists (1., 2., etc.) are preceded by blank lines
+  processedText = processedText.replace(/(\n)([0-9]+\.\s+)/g, '$1\n$2');
+
+  // 5. Clean up stray pipe characters that aren't part of tables
+  // Remove standalone | at start of lines
+  processedText = processedText.replace(/^\|\s*$/gm, '');
   // Remove lines that are just dashes, pipes, colons and spaces (table alignment patterns like "-:|-: | :-")
   processedText = processedText.replace(/^[\s\-:|]+$/gm, '');
   // Remove table alignment pattern lines (e.g., "-:|-:|:-" or "---|---|---")
@@ -700,16 +730,16 @@ export const cleanLegacyContent = (text: string): string => {
   processedText = processedText.replace(/\|=/g, '=');
   // Remove standalone | characters that appear alone on lines
   processedText = processedText.replace(/^\s*\|\s*$/gm, '');
-  // Remove trailing || at end of lines (but keep content before)
-  processedText = processedText.replace(/\|\|\s*$/gm, '');
   // Remove trailing | at end of lines after content
   processedText = processedText.replace(/\s*\|\s*$/gm, '');
-  // Handle "Step N| content" patterns - remove pipe after "Step N"
+
+  // 6. Handle "Step N| content" patterns - remove pipe after "Step N"
   processedText = processedText.replace(/(Step\s*\d+)\|\s*/gi, '$1 ');
   // Handle leading pipes before content (like "|28" -> "28")
   processedText = processedText.replace(/^\|(\d)/gm, '$1');
   // Handle "| × " patterns
   processedText = processedText.replace(/\|\s*×/g, '×');
+
   return processedText;
 };
 
@@ -757,22 +787,22 @@ export const preprocessCodeBlocks = (text: string): string => {
 export const processContent = (content: string): string => {
   if (!content) return '';
 
-  // Phase 1: Protect raw math from table parser
+  // Phase 1: Clean legacy content (IMPORTANT: must happen first to unescape \$ and fix mangled structure)
+  let processed = cleanLegacyContent(content);
+
+  // Phase 2: Protect raw math from table parser
   const mathBlocks: string[] = [];
-  let processed = content.replace(/\$\$([\s\S]+?)\$\$|\$([^$]+)\$/g, (match) => {
+  processed = processed.replace(/\$\$([\s\S]+?)\$\$|\$([^$]+)\$/g, (match) => {
     const placeholder = `__ATHENA_MATH_RAW_${mathBlocks.length}__`;
     mathBlocks.push(match);
     return placeholder;
   });
 
-  // Phase 2: Process tables (now safe from || in math)
+  // Phase 3: Process tables (now safe from || in math and clean from legacy artifacts)
   processed = processTable(processed);
 
-  // Phase 3: Pre-process code blocks
+  // Phase 4: Pre-process code blocks
   processed = preprocessCodeBlocks(processed);
-
-  // Phase 4: Clean legacy content
-  processed = cleanLegacyContent(processed);
 
   // Phase 5: Process images
   processed = processImageMarkdown(processed);
@@ -806,7 +836,12 @@ export const processContent = (content: string): string => {
   });
 
   // Phase 9: Run Markdown parser on simplified text
-  let finalHtml = marked.parse(processed, { breaks: true }) as string;
+  // Enable gfm (GitHub Flavored Markdown) and pedantic for better list handling
+  let finalHtml = marked.parse(processed, {
+    breaks: true,
+    gfm: true,
+    pedantic: false
+  }) as string;
 
   // Phase 10: Restore all protected HTML
   // Phase 10: Restore all protected HTML

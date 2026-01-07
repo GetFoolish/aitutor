@@ -710,20 +710,57 @@ const HintPanel: React.FC<{
        `;
     }
 
-    // GENERAL FIX: Brute-force regex to remove garbage attributes if the nuclear fix didn't trigger
-    processed = processed.replace(/class="max-w-full[^>]*\/>/g, '');
-
-    // In LaTeX align environments, & is used for column alignment
-    // Handle various corruption patterns
-    processed = processed.replace(/=amp;/g, '&=');
-    processed = processed.replace(/amp;=/g, '&=');
-    processed = processed.replace(/&amp;=/g, '&=');
-    processed = processed.replace(/=&amp;/g, '&=');
-    // Also handle cases where amp; appears alone (KaTeX alignment)
+    // Also fix corrupted LaTeX alignment markers where &amp; became literal "amp;"
     processed = processed.replace(/([^&])amp;/g, '$1&');
 
-    // Process markdown tables BEFORE math processing
-    // Tables have | delimiters which could be confused with math
+    // GLOBAL CLEANING: Normalize non-standard patterns
+    // 1. Remove stray blockquote markers ">" that appear at the start of table cells or lines
+    // MUST happen before header normalization so we see the # characters correctly
+    processed = processed.replace(/([\|\n]|^)\s*>+\s*/gm, '$1');
+    // Also handle stray ">" immediately before headers or images within a line
+    processed = processed.replace(/(\s+)>+(#{1,6}|!\[)/g, '$1$2');
+
+    // 2. Headers with trailing hashes (e.g., "##Which Pet?##" -> "## Which Pet?")
+    // Ensure they are surrounded by blank lines so marked.parse() recognizes them as block elements
+    // We use a broader regex that handles both cases with and without trailing hashes
+    processed = processed.replace(/(^|[\n|])\s*(#{1,6})\s*([^#|\n]+?)\s*#*\s*(?=[\|\n]|$)/g, '$1\n\n$2 $3\n\n');
+
+    // 3. Unescape escaped dollar signs (e.g., "\$212" -> "$212")
+    // Use HTML entity &dollar; to avoid accidentally triggering KaTeX math rendering later
+    processed = processed.replace(/\\(\$)/g, '&dollar;');
+
+    // 4. Normalize legacy double-pipe delimiters "||"
+    // Try to break them into newlines to separate sections or rows
+    processed = processed.replace(/\s*\|\|\s*/g, '\n\n');
+
+    // 5. Detect mangled table rows joined on one line
+    processed = processed.replace(/(\|\s*[:\-]{2,}\s*\|\s*[:\-]{2,}\s*\|)\s*/g, '$1\n');
+
+    // 5.5. Normalize ordered lists to ensure they're recognized as block elements
+    // Ensure ordered lists (1., 2., etc.) are preceded by blank lines
+    processed = processed.replace(/(\n)([0-9]+\.\s+)/g, '$1\n$2');
+
+    // SETUP MATH PROTECTION (EARLY)
+    const katexPlaceholders: string[] = [];
+    const createPlaceholder = (html: string): string => {
+      const idx = katexPlaceholders.length;
+      katexPlaceholders.push(html);
+      return `__KATEX_PLACEHOLDER_${idx}__`;
+    };
+
+    // Protect math before processing to avoid collisions with | or $
+    // 1. Display math
+    processed = processed.replace(/\$\$(?!\$)([\s\S]+?)\$\$/g, (match) => createPlaceholder(match));
+    // 2. Inline math 
+    processed = processed.replace(/\$(?!\$)([\s\S]+?)\$/g, (match) => createPlaceholder(match));
+    // 3. LaTeX environments
+    const basicEnvNames = ['align', 'align\\*', 'aligned', 'equation', 'equation\\*', 'gather', 'gather\\*', 'matrix', 'pmatrix', 'bmatrix', 'cases'];
+    for (const envName of basicEnvNames) {
+      const envPattern = new RegExp(`\\\\begin\\{${envName}\\}([\\s\\S]*?)\\\\end\\{${envName}\\}`, 'g');
+      processed = processed.replace(envPattern, (match) => createPlaceholder(match));
+    }
+
+    // Process markdown tables AFTER math protection and cleaning
     processed = processMarkdownTable(processed);
 
     // Early preprocessing: Fix malformed LaTeX patterns
@@ -798,106 +835,39 @@ const HintPanel: React.FC<{
       macros: katexMacros,
     };
 
-    // Use placeholders to protect KaTeX output from subsequent processing
-    const katexPlaceholders: string[] = [];
-    const createPlaceholder = (html: string): string => {
-      const idx = katexPlaceholders.length;
-      katexPlaceholders.push(html);
-      return `__KATEX_PLACEHOLDER_${idx}__`;
-    };
+    // RESTORE MATH BLOCKS AND RENDER THEM
+    for (let idx = 0; idx < katexPlaceholders.length; idx++) {
+      const rawMath = katexPlaceholders[idx];
+      const placeholder = `__KATEX_PLACEHOLDER_${idx}__`;
 
-    // SPECIAL: Handle $\begin{align}...\end{align}$ patterns BEFORE general math processing
-    // These need special handling because the & alignment markers get corrupted
-    processed = processed.replace(/\$\\begin\{(align\*?|aligned)\}([\s\S]*?)\\end\{\1\}\$/g, (fullMatch, envName, innerContent) => {
+      let rendered = '';
       try {
-        // Clean the inner content - restore any corrupted & characters
-        let cleanContent = innerContent
-          .replace(/&amp;/g, '&')
-          .replace(/amp;/g, '&')   // Handle cases where & was stripped
-          .replace(/=\s*amp;/g, '&=')  // Fix =amp; patterns
-          .replace(/amp;\s*=/g, '&=') // Fix amp;= patterns
-          .replace(/\\\\\\\\/g, '\\\\'); // Fix escaped backslashes: \\\\ -> \\
-
-        // Pre-process color commands before KaTeX
-        cleanContent = preprocessColorCommands(cleanContent);
-
-        // Render the full align environment
-        const latex = `\\begin{${envName}}${cleanContent}\\end{${envName}}`;
-        const result = katex.renderToString(latex, { ...katexOptions, displayMode: true });
-        // Return placeholder to protect from subsequent processing
-        return createPlaceholder(result);
-      } catch (e) {
-        console.error('[HintPanel] KaTeX align error:', e, 'Content:', innerContent);
-        return `<span class="math-error">${fullMatch}</span>`;
-      }
-    });
-
-    // FIRST: Process image markdown ![alt](url)
-    // Modified regex to consume potential garbage HTML attributes (class, style) that might be appended to the markdown
-    // We use a more aggressive pattern to match any sequence of attributes until the closing >
-    processed = processed.replace(/!\[([^\]]*)\]\(([^)]+)\)[^>]*>/g, (_, alt, url) => {
-      const imageUrl = convertGraphieUrl(url);
-      const escapedAlt = escapeHtml(alt || '');
-      const escapedUrl = escapeHtml(imageUrl);
-      return `<div class="my-4 flex justify-center"><img src="${escapedUrl}" alt="${escapedAlt}" class="max-w-full h-auto rounded-lg" style="max-height: 400px;" /></div>`;
-    });
-
-    // Process widget placeholders [[☃ widget-name n]] - replace with image widgets
-    processed = processed.replace(/\[\[☃\s*([^\]]+)\]\]/g, (match, widgetRef) => {
-      const widgetId = widgetRef.trim();
-      const widget = widgets[widgetId];
-      if (widget && widget.type === 'image') {
-        const bgImage = widget.options?.backgroundImage;
-        if (bgImage?.url) {
-          const imageUrl = convertGraphieUrl(bgImage.url);
-          const width = bgImage.width || 'auto';
-          const height = bgImage.height || 'auto';
-          const alt = widget.options?.alt || '';
-          const escapedAlt = escapeHtml(alt);
-          const escapedUrl = escapeHtml(imageUrl);
-          return `<div class="my-4"><img src="${escapedUrl}" alt="${escapedAlt}" class="max-w-full h-auto rounded-lg" style="max-width: ${typeof width === 'number' ? width + 'px' : width}; max-height: ${typeof height === 'number' ? height + 'px' : height};" /></div>`;
+        if (rawMath.startsWith('$$')) {
+          const math = rawMath.slice(2, -2).trim();
+          rendered = katex.renderToString(math, { ...katexOptions, displayMode: true });
+        } else if (rawMath.startsWith('$')) {
+          const math = rawMath.slice(1, -1).trim();
+          let cleanMath = math.replace(/&amp;/g, '&').replace(/amp;/g, '&');
+          const preprocessed = preprocessColorCommands(cleanMath);
+          rendered = katex.renderToString(preprocessed, { ...katexOptions, displayMode: false });
+        } else {
+          // Environment block (e.g. \begin{align}...\end{align})
+          let cleanContent = rawMath
+            .replace(/&amp;/g, '&')
+            .replace(/amp;/g, '&')
+            .replace(/=\s*amp;/g, '&=')
+            .replace(/amp;\s*=/g, '&=')
+            .replace(/\\\\\\\\/g, '\\\\');
+          const preprocessed = preprocessColorCommands(cleanContent);
+          rendered = katex.renderToString(preprocessed, { ...katexOptions, displayMode: true });
         }
-      }
-      // If widget not found or not an image, hide the placeholder
-      return '';
-    });
-
-    // Process display math $$...$$ - use placeholders to protect from subsequent processing
-    processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
-      try {
-        const result = katex.renderToString(math.trim(), { ...katexOptions, displayMode: true });
-        return createPlaceholder(result);
       } catch (e) {
-        console.error('[HintPanel] KaTeX display math error:', e, 'Math:', math);
-        return `<span class="math-error" style="color: #666; font-style: italic;">${math}</span>`;
+        console.error('KaTeX hint render error:', e, 'Math:', rawMath);
+        rendered = `<span class="math-error">${rawMath}</span>`;
       }
-    });
 
-    // Process inline math $...$ (including multiline content like align environments)
-    // Use placeholders to protect KaTeX output from subsequent processing
-    processed = processed.replace(/\$([\s\S]+?)\$/g, (match, math) => {
-      if (match.startsWith('$$')) return match;
-      try {
-        // Pre-process: fix HTML-encoded ampersands that break LaTeX alignment
-        let cleanMath = math.trim()
-          .replace(/&amp;/g, '&')
-          .replace(/amp;/g, '&');  // Handle corrupted ampersands
-        // Pre-process color commands before KaTeX
-        const preprocessed = preprocessColorCommands(cleanMath);
-        const result = katex.renderToString(preprocessed, { ...katexOptions, displayMode: false });
-        // Return placeholder to protect from subsequent color processing
-        return createPlaceholder(result);
-      } catch (e) {
-        console.error('[HintPanel] KaTeX inline math error:', e, 'Math:', math);
-        // Fallback: try without preprocessing
-        try {
-          const result = katex.renderToString(math.trim(), { throwOnError: false, displayMode: false });
-          return createPlaceholder(result);
-        } catch {
-          return `<span class="math-error" style="color: #666; font-style: italic;">${math}</span>`;
-        }
-      }
-    });
+      processed = processed.split(placeholder).join(rendered);
+    }
 
     // PREPROCESSING: Fix standalone LaTeX that isn't wrapped in $...$
     // Fix Khan Academy specific patterns
