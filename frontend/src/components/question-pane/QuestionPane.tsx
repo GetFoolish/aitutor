@@ -30,6 +30,9 @@ import {
   Flag,
   Check,
   ChevronDown,
+  ChevronUp,
+  ExternalLink,
+  Code,
 } from 'lucide-react';
 
 import { AthenaRenderer, registerDefaultWidgets, ScoringEngine } from '../../renderer/athena';
@@ -1278,9 +1281,7 @@ export const QuestionPane: React.FC = () => {
   const [startTime] = useState(Date.now());
   const [rendererKey, setRendererKey] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-
-
-
+  const [isJsonExpanded, setIsJsonExpanded] = useState(false);
 
 
   // Get URL parameters
@@ -1608,9 +1609,7 @@ export const QuestionPane: React.FC = () => {
         timeSpent={Date.now() - startTime}
       />
 
-
-
-
+      
       {/* Sticky Progress Header */}
       <ProgressHeader
         current={currentIndex}
@@ -1682,6 +1681,28 @@ export const QuestionPane: React.FC = () => {
                     {mode === 'athena' ? 'Athena' : mode === 'perseus' ? 'Perseus' : 'Compare'}
                   </button>
                 ))}
+                {/* Input Window button */}
+                <button
+                  onClick={() => {
+                    const jsonData = JSON.stringify({
+                      question: currentQuestion?.question,
+                      hints: currentQuestion?.hints || [],
+                      answerArea: currentQuestion?.answerArea || {},
+                      itemDataVersion: { major: 0, minor: 1 }
+                    }, null, 2);
+                    navigator.clipboard.writeText(jsonData).then(() => {
+                      window.open('https://khan.github.io/perseus/?path=/story/renderers-server-item-renderer--interactive', '_blank');
+                      alert('JSON copied to clipboard! Paste it in the "Dump Perseus data here" box.');
+                    });
+                  }}
+                  className={`px-3 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1 ${
+                    darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                  title="Copy JSON & Open Perseus Interactive Viewer"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Input Window
+                </button>
               </div>
             </div>
           </div>
@@ -1938,14 +1959,49 @@ export const QuestionPane: React.FC = () => {
               </div>
             </div>
 
-            {/* Debug: Question ID */}
+            {/* Debug: Question ID and Collapsible JSON */}
             {currentQuestion && (
-              <div className={`mt-4 text-center p-2 border rounded select-all cursor-text z-50 relative ${darkMode
+              <div className={`mt-4 border rounded z-50 relative ${darkMode
                 ? 'bg-black border-gray-700'
                 : 'bg-yellow-100 border-yellow-300'
                 }`}>
-                <span className={`font-bold mr-2 ${darkMode ? 'text-white' : 'text-gray-700'}`}>ID:</span>
-                <span className={`font-mono text-lg font-bold select-all ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>{currentQuestion._id}</span>
+                {/* ID Row */}
+                <div className="text-center p-2 select-all cursor-text">
+                  <span className={`font-bold mr-2 ${darkMode ? 'text-white' : 'text-gray-700'}`}>ID:</span>
+                  <span className={`font-mono text-lg font-bold select-all ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>{currentQuestion._id}</span>
+                </div>
+
+                {/* Collapsible JSON Viewer */}
+                <div className={`border-t ${darkMode ? 'border-gray-700' : 'border-yellow-300'}`}>
+                  <button
+                    onClick={() => setIsJsonExpanded(!isJsonExpanded)}
+                    className={`w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
+                      darkMode
+                        ? 'text-gray-300 hover:bg-gray-800'
+                        : 'text-gray-700 hover:bg-yellow-200'
+                    }`}
+                  >
+                    <Code className="w-4 h-4" />
+                    {isJsonExpanded ? 'Hide JSON' : 'Show JSON'}
+                    {isJsonExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </button>
+
+                  {isJsonExpanded && (
+                    <div className={`border-t overflow-auto max-h-96 ${darkMode ? 'border-gray-700' : 'border-yellow-300'}`}>
+                      <pre className={`p-4 text-xs font-mono whitespace-pre-wrap break-words ${
+                        darkMode ? 'text-gray-300 bg-gray-900' : 'text-gray-800 bg-yellow-50'
+                      }`}>
+                        {JSON.stringify({
+                          _id: currentQuestion._id,
+                          question: currentQuestion.question,
+                          hints: currentQuestion.hints,
+                          answerArea: currentQuestion.answerArea,
+                          perseusItem: currentQuestion.perseusItem,
+                        }, null, 2)}
+                      </pre>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
