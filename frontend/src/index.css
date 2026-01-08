@@ -30,22 +30,32 @@ code {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 100;
-  background: rgba(255, 255, 255, 0.95);
+  z-index: 9999;
+  background: #fff;
   border-radius: 8px;
   overflow: hidden;
+  pointer-events: auto !important;
 }
 
-/* Ensure Excalidraw fills its container */
+/* Ensure Excalidraw fills its container and is interactive */
 .scratchpad-container > div {
   height: 100% !important;
   width: 100% !important;
+  pointer-events: auto !important;
 }
 
-/* Excalidraw canvas wrapper */
 .scratchpad-container .excalidraw {
   height: 100% !important;
   width: 100% !important;
+  pointer-events: auto !important;
+}
+
+.scratchpad-container .excalidraw-container {
+  pointer-events: auto !important;
+}
+
+.scratchpad-container canvas {
+  pointer-events: auto !important;
 }
 
 /* Make question panel relative for absolute positioning of scratchpad */

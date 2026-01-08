@@ -1,6 +1,5 @@
-// @ts-nocheck
-import React, { useState, useEffect } from "react";
-import { Excalidraw, MainMenu, WelcomeScreen } from "@excalidraw/excalidraw";
+import React, { useRef, useState } from "react";
+import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -13,48 +12,171 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Loader2 } from "lucide-react";
 
-/**
- * A full-featured whiteboard using Excalidraw.
- * Replaces the limited 'react-sketch-canvas' implementation.
- */
-const Scratchpad = () => {
-  const [excalidrawAPI, setExcalidrawAPI] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+interface ScratchpadProps {
+  onCanvasReady?: (canvasRef: ReactSketchCanvasRef) => void;
+}
 
-  // Excalidraw loads asynchronously
-  useEffect(() => {
-    // Small timeout to prevent flicker if it loads instantly
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
-    return () => clearTimeout(timer); // Cleanup on unmount
-  }, []);
+// Global reference for TutorDrawingHandler and frame capture
+declare global {
+  interface Window {
+    __sketchCanvasRef?: ReactSketchCanvasRef | null;
+  }
+}
 
+const COLORS = [
+  "#1e1e1e", // black
+  "#e03131", // red
+  "#2f9e44", // green
+  "#1971c2", // blue
+  "#f08c00", // orange
+  "#9c36b5", // purple
+];
+
+const STROKE_WIDTHS = [2, 4, 8, 12];
+
+const Scratchpad = ({ onCanvasReady }: ScratchpadProps) => {
+  const canvasRef = useRef<ReactSketchCanvasRef>(null);
+  const [strokeColor, setStrokeColor] = useState("#1e1e1e");
+  const [strokeWidth, setStrokeWidth] = useState(4);
+  const [isEraser, setIsEraser] = useState(false);
 
   const handleClearAll = () => {
-    if (excalidrawAPI) {
-      excalidrawAPI.resetScene();
+    canvasRef.current?.clearCanvas();
+  };
+
+  const handleUndo = () => {
+    canvasRef.current?.undo();
+  };
+
+  const handleRedo = () => {
+    canvasRef.current?.redo();
+  };
+
+  const toggleEraser = () => {
+    if (isEraser) {
+      canvasRef.current?.eraseMode(false);
+      setIsEraser(false);
+    } else {
+      canvasRef.current?.eraseMode(true);
+      setIsEraser(true);
     }
   };
 
+  // Store ref globally when canvas is ready
+  React.useEffect(() => {
+    if (canvasRef.current) {
+      window.__sketchCanvasRef = canvasRef.current;
+      onCanvasReady?.(canvasRef.current);
+    }
+    return () => {
+      window.__sketchCanvasRef = null;
+    };
+  }, [onCanvasReady]);
+
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-md border border-border bg-card/60 shadow-sm">
-      {/* Custom absolute toolbar for external actions if needed, 
-          but Excalidraw has its own internal UI which is superior */}
-      <div className="absolute right-4 top-4 z-50 flex gap-2">
-        {/* Clear All with Confirmation - We keep this external for easy access 
-             although Excalidraw has a reset, this is safer/explicit */}
+    <div style={{
+      position: 'relative',
+      height: '100%',
+      width: '100%',
+      background: '#fff',
+      borderRadius: '8px',
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column'
+    }}>
+      {/* Toolbar */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '8px 12px',
+        borderBottom: '1px solid #e5e5e5',
+        background: '#fafafa',
+        flexWrap: 'wrap'
+      }}>
+        {/* Colors */}
+        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+          {COLORS.map((color) => (
+            <button
+              key={color}
+              onClick={() => {
+                setStrokeColor(color);
+                setIsEraser(false);
+                canvasRef.current?.eraseMode(false);
+              }}
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: '50%',
+                background: color,
+                border: strokeColor === color && !isEraser ? '3px solid #000' : '2px solid #ccc',
+                cursor: 'pointer',
+                padding: 0
+              }}
+              title={color}
+            />
+          ))}
+        </div>
+
+        <div style={{ width: 1, height: 24, background: '#ddd' }} />
+
+        {/* Stroke widths */}
+        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+          {STROKE_WIDTHS.map((width) => (
+            <button
+              key={width}
+              onClick={() => setStrokeWidth(width)}
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: '4px',
+                background: strokeWidth === width ? '#e5e5e5' : 'transparent',
+                border: '1px solid #ccc',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              title={`${width}px`}
+            >
+              <div style={{
+                width: width + 4,
+                height: width + 4,
+                borderRadius: '50%',
+                background: '#333'
+              }} />
+            </button>
+          ))}
+        </div>
+
+        <div style={{ width: 1, height: 24, background: '#ddd' }} />
+
+        {/* Eraser */}
+        <Button
+          type="button"
+          size="sm"
+          variant={isEraser ? "default" : "outline"}
+          onClick={toggleEraser}
+          style={{ height: 28 }}
+        >
+          <span className="material-symbols-outlined text-sm">ink_eraser</span>
+        </Button>
+
+        {/* Undo/Redo */}
+        <Button type="button" size="sm" variant="outline" onClick={handleUndo} style={{ height: 28 }}>
+          <span className="material-symbols-outlined text-sm">undo</span>
+        </Button>
+        <Button type="button" size="sm" variant="outline" onClick={handleRedo} style={{ height: 28 }}>
+          <span className="material-symbols-outlined text-sm">redo</span>
+        </Button>
+
+        <div style={{ flex: 1 }} />
+
+        {/* Clear All */}
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button
-              type="button"
-              size="sm"
-              variant="destructive"
-              className="h-8 text-xs shadow-md backdrop-blur-sm"
-            >
-              <span className="material-symbols-outlined mr-1 text-sm">delete_forever</span>
+            <Button type="button" size="sm" variant="destructive" style={{ height: 28 }}>
               Clear Board
             </Button>
           </AlertDialogTrigger>
@@ -62,65 +184,31 @@ const Scratchpad = () => {
             <AlertDialogHeader>
               <AlertDialogTitle>Clear entire whiteboard?</AlertDialogTitle>
               <AlertDialogDescription>
-                This will delete all your drawings. This action cannot be undone easily via this button
-                (though Excalidraw internal undo might still work).
+                This will delete all your drawings. This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleClearAll} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                Clear All
-              </AlertDialogAction>
+              <AlertDialogAction onClick={handleClearAll}>Clear All</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
       </div>
 
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-background/50 z-40 backdrop-blur-sm">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      )}
-
-      {/* Excalidraw Container */}
-      <div className="h-full w-full" style={{ height: "100%", width: "100%" }}>
-        {/* @ts-ignore - Excalidraw types mismatch with current version */}
-        <Excalidraw
-          onMount={(api: any) => {
-            setExcalidrawAPI(api);
-            setIsLoading(false);
+      {/* Canvas */}
+      <div style={{ flex: 1, position: 'relative' }}>
+        <ReactSketchCanvas
+          ref={canvasRef}
+          strokeWidth={strokeWidth}
+          strokeColor={strokeColor}
+          canvasColor="#ffffff"
+          style={{
+            border: 'none',
+            borderRadius: 0,
           }}
-          theme="light"
-          UIOptions={{
-            canvasActions: {
-              changeViewBackgroundColor: true,
-              clearCanvas: false, // We use our own clear button or key shortcut
-              loadScene: false,
-              saveToActiveFile: false,
-              toggleTheme: false, // Force light mode or controlled by app
-              saveAsImage: true,
-            },
-          }}
-        >
-          <WelcomeScreen>
-            <WelcomeScreen.Center>
-              <WelcomeScreen.Center.Heading>
-                Whiteboard
-              </WelcomeScreen.Center.Heading>
-              <WelcomeScreen.Center.Menu>
-                <WelcomeScreen.Center.MenuItemHelp />
-              </WelcomeScreen.Center.Menu>
-            </WelcomeScreen.Center>
-          </WelcomeScreen>
-          <MainMenu>
-            <MainMenu.DefaultItems.SaveAsImage />
-            <MainMenu.DefaultItems.Export />
-            <MainMenu.Separator />
-            <MainMenu.DefaultItems.ClearCanvas />
-            <MainMenu.Separator />
-            <MainMenu.DefaultItems.Help />
-          </MainMenu>
-        </Excalidraw>
+          exportWithBackgroundImage={false}
+          withTimestamp={false}
+        />
       </div>
     </div>
   );

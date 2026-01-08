@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useRef, useState, useEffect, Suspense, lazy } from "react";
+import { useRef, useState, useEffect, Suspense, lazy, useCallback } from "react";
 import "./App.scss";
 import "./styles/mobile-fixes.css"; // Mobile UI fixes
 import { TutorProvider } from "./features/tutor";
@@ -31,6 +31,7 @@ import { useMediaMixer } from "./hooks/useMediaMixer";
 import { useMediaCapture } from "./hooks/useMediaCapture";
 import { useDeveloperMode } from "./hooks/use-developer-mode";
 import { apiUtils } from "./lib/api-utils";
+import { TutorDrawingHandler } from "./components/tutor-drawing-handler/TutorDrawingHandler";
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 
@@ -83,6 +84,24 @@ function App() {
   } = useMediaCapture({});
 
   const [privacyEnabled, setPrivacyEnabled] = useState(false);
+
+  // Sketch canvas reference for scratchpad capture
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [sketchCanvasRef, setSketchCanvasRef] = useState<any>(null);
+
+  // Callback for when sketch canvas is ready
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleCanvasReady = useCallback((canvasRef: any) => {
+    setSketchCanvasRef(canvasRef);
+    console.log('✅ Sketch canvas ready for frame capture');
+  }, []);
+
+  // Clear canvas ref when scratchpad closes
+  useEffect(() => {
+    if (!isScratchpadOpen) {
+      setSketchCanvasRef(null);
+    }
+  }, [isScratchpadOpen]);
 
   // MediaMixer hook for local video mixing - uses state from useMediaCapture
   const mediaMixer = useMediaMixer({
@@ -222,6 +241,8 @@ function App() {
           <AssessmentGuard subject="math" onStartAssessment={startAssessment}>
             <TutorProvider>
               <HintProvider>
+                {/* TutorDrawingHandler registers the draw_on_scratchpad tool with Gemini */}
+                <TutorDrawingHandler />
                 <Header
                   sidebarOpen={isSidebarOpen}
                   onToggleSidebar={toggleSidebar}
@@ -254,10 +275,14 @@ function App() {
                     <div className="main-app-area">
                       <div className="question-panel">
                         <BackgroundShapes />
-                        <ScratchpadCapture onFrameCaptured={(canvas) => {
+                        <ScratchpadCapture
+                        onFrameCaptured={(canvas) => {
                           mediaMixer.updateScratchpadFrame(canvas);
-                        }}>
-                          <QuestionDisplay 
+                        }}
+                        sketchCanvasRef={sketchCanvasRef}
+                        isScratchpadOpen={isScratchpadOpen}
+                      >
+                          <QuestionDisplay
                             onSkillChange={setCurrentSkill}
                             onQuestionChange={setCurrentQuestionId}
                             watchedVideoIds={watchedVideoIds}
@@ -275,7 +300,7 @@ function App() {
                               const newAnswers = [...assessmentAnswers, newAnswer];
                               setAssessmentAnswers(newAnswers);
                               setWatchedVideoIds([]);
-                              
+
                               if (assessmentCurrentIndex < assessmentQuestions.length - 1) {
                                 setTimeout(() => {
                                   setAssessmentCurrentIndex(assessmentCurrentIndex + 1);
@@ -288,12 +313,13 @@ function App() {
                               }
                             }}
                           />
-                          {isScratchpadOpen && (
-                            <div className="scratchpad-container">
-                              <Scratchpad />
-                            </div>
-                          )}
                         </ScratchpadCapture>
+                        {/* Scratchpad */}
+                        {isScratchpadOpen && (
+                          <div className="scratchpad-container">
+                            <Scratchpad onCanvasReady={handleCanvasReady} />
+                          </div>
+                        )}
                       </div>
                       <FloatingControlPanel
                         renderCanvasRef={mediaMixer.canvasRef}
