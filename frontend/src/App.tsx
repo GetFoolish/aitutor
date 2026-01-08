@@ -61,8 +61,6 @@ function App() {
   const mediaMixerRef = useRef<any>(null);
 
   // Media capture with frame callbacks - must be called before useMediaMixer
-  // Media capture with frame callbacks - must be called before useMediaMixer
-  // Optimized: No longer using callbacks for frames, but exposing video refs directly
   const {
     cameraEnabled,
     screenEnabled,
@@ -142,77 +140,81 @@ function App() {
                   sidebarOpen={isSidebarOpen}
                   onToggleSidebar={toggleSidebar}
                 />
-              <div className="streaming-console">
-                <Suspense fallback={<div className="flex items-center justify-center h-full w-full">Loading...</div>}>
-                  {isDeveloperMode && (
-                    <SidePanel
-                      open={isSidebarOpen}
-                      onToggle={toggleSidebar}
-                    />
-                  )}
-                  {!isDeveloperMode && (
-                    <LearningAssetsPanel
-                      questionId={currentQuestionId}
-                      open={isSidebarOpen}
-                      onToggle={toggleSidebar}
-                      onVideosWatched={setWatchedVideoIds}
-                      isDeveloperMode={isDeveloperMode}
-                    />
-                  )}
-                  <GradingSidebar
-                    open={isGradingSidebarOpen}
-                    onToggle={toggleGradingSidebar}
-                    currentSkill={currentSkill}
-                  />
-                  <main style={{
-                    marginRight: isSidebarOpen ? "260px" : "0",
-                    marginLeft: isGradingSidebarOpen ? "260px" : "40px",
-                    transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
-                  }}>
-                    <div className="main-app-area">
-                      <div className="question-panel">
-                        <BackgroundShapes />
-                        <ScratchpadCapture onFrameCaptured={(canvas) => {
-                          mediaMixer.updateScratchpadFrame(canvas);
-                        }}>
-                          <QuestionDisplay 
-                            onSkillChange={setCurrentSkill}
-                            onQuestionChange={setCurrentQuestionId}
-                            watchedVideoIds={watchedVideoIds}
-                            onAnswerSubmitted={() => setWatchedVideoIds([])}
-                          />
-                          {isScratchpadOpen && (
-                            <div className="scratchpad-container">
-                              <Scratchpad />
-                            </div>
-                          )}
-                        </ScratchpadCapture>
-                      </div>
-                      <FloatingControlPanel
-                        renderCanvasRef={mediaMixer.canvasRef}
-                        videoRef={videoRef}
-                        supportsVideo={true}
-                        onVideoStreamChange={setVideoStream}
-                        onMixerStreamChange={setMixerStream}
-                        enableEditingSettings={true}
-                        onPaintClick={() => setScratchpadOpen(!isScratchpadOpen)}
-                        isPaintActive={isScratchpadOpen}
-                        cameraEnabled={cameraEnabled}
-                        screenEnabled={screenEnabled}
-                        onToggleCamera={toggleCamera}
-                        onToggleScreen={toggleScreen}
-                        mediaMixerCanvasRef={mediaMixer.canvasRef}
-                        privacyMode={privacyMode}
-                        onTogglePrivacy={setPrivacyMode}
-                        processedEdgesRef={processedEdgesRef}
+
+                {/* Single FloatingControlPanel - now safely inside TutorProvider */}
+                <FloatingControlPanel
+                  renderCanvasRef={mediaMixer.canvasRef}
+                  videoRef={videoRef}
+                  supportsVideo={true}
+                  onVideoStreamChange={setVideoStream}
+                  onMixerStreamChange={setMixerStream}
+                  enableEditingSettings={true}
+                  onPaintClick={() => setScratchpadOpen(!isScratchpadOpen)}
+                  isPaintActive={isScratchpadOpen}
+                  cameraEnabled={cameraEnabled}
+                  screenEnabled={screenEnabled}
+                  onToggleCamera={toggleCamera}
+                  onToggleScreen={toggleScreen}
+                  mediaMixerCanvasRef={mediaMixer.canvasRef}
+                  privacyMode={privacyMode}
+                  onTogglePrivacy={setPrivacyMode}
+                  processedEdgesRef={processedEdgesRef}
+                  assessmentMode={true}
+                />
+
+                <div className="streaming-console">
+                  <Suspense fallback={<div className="flex items-center justify-center h-full w-full">Loading...</div>}>
+                    {isDeveloperMode && (
+                      <SidePanel
+                        open={isSidebarOpen}
+                        onToggle={toggleSidebar}
                       />
-                    </div>
-                  </main>
-                </Suspense>
-              </div>
-              <Toaster richColors closeButton />
-            </HintProvider>
-          </TutorProvider>
+                    )}
+                    {!isDeveloperMode && (
+                      <LearningAssetsPanel
+                        questionId={currentQuestionId}
+                        open={isSidebarOpen}
+                        onToggle={toggleSidebar}
+                        onVideosWatched={setWatchedVideoIds}
+                        isDeveloperMode={isDeveloperMode}
+                      />
+                    )}
+                    <GradingSidebar
+                      open={isGradingSidebarOpen}
+                      onToggle={toggleGradingSidebar}
+                      currentSkill={currentSkill}
+                    />
+                    <main style={{
+                      marginRight: isSidebarOpen ? "260px" : "0",
+                      marginLeft: isGradingSidebarOpen ? "260px" : "40px",
+                      transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
+                    }}>
+                      <div className="main-app-area">
+                        <div className="question-panel">
+                          <BackgroundShapes />
+                          <ScratchpadCapture onFrameCaptured={(canvas) => {
+                            mediaMixer.updateScratchpadFrame(canvas);
+                          }}>
+                            <QuestionDisplay 
+                              onSkillChange={setCurrentSkill}
+                              onQuestionChange={setCurrentQuestionId}
+                              watchedVideoIds={watchedVideoIds}
+                              onAnswerSubmitted={() => setWatchedVideoIds([])}
+                            />
+                            {isScratchpadOpen && (
+                              <div className="scratchpad-container">
+                                <Scratchpad />
+                              </div>
+                            )}
+                          </ScratchpadCapture>
+                        </div>
+                      </div>
+                    </main>
+                  </Suspense>
+                </div>
+                <Toaster richColors closeButton />
+              </HintProvider>
+            </TutorProvider>
           </AssessmentGuard>
         </AuthGuard>
       </div>

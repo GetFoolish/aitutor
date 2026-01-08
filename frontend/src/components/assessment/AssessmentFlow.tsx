@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { apiUtils } from '../../lib/api-utils';
+import { TutorProvider, useTutorContext } from '../../features/tutor';
 import AssessmentQuestion from './AssessmentQuestion';
 import AssessmentResults from './AssessmentResults';
+
+const FloatingControlPanel = lazy(() => import('../../components/floating-control-panel/FloatingControlPanel'));
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 
@@ -18,6 +21,52 @@ interface Params {
   subject: string;
 }
 
+// Helper component to access tutor client and send the question
+const QuestionSender: React.FC<{ question: Question }> = ({ question }) => {
+  const { client, connected } = useTutorContext();
+
+  useEffect(() => {
+    if (!connected || !client) return;
+
+    // Extract visible text from the Perseus question content
+    // This safely handles widgets, markdown, images, etc.
+    const questionContent = question.question?.content || '';
+    const widgets = question.question?.widgets || {};
+
+    // Simple fallback: use raw content (Perseus markdown)
+    let questionText = questionContent.trim();
+
+    // If content is empty or very short, try to build a readable version
+    if (!questionText || questionText.length < 10) {
+      // Some questions store text in widgets (e.g., radio, dropdown)
+      const widgetTexts: string[] = [];
+      Object.values(widgets).forEach((widget: any) => {
+        if (widget?.options?.choices) {
+          widget.options.choices.forEach((choice: any) => {
+            if (choice?.content) widgetTexts.push(choice.content);
+          });
+        } else if (widget?.options?.content) {
+          widgetTexts.push(widget.options.content);
+        }
+      });
+      if (widgetTexts.length > 0) {
+        questionText = widgetTexts.join(' ');
+      }
+    }
+
+    if (questionText) {
+      const message = `New assessment question:\n\n${questionText}`;
+      try {
+        client.send({ text: message });
+      } catch (err) {
+        console.warn('Failed to send question to tutor:', err);
+      }
+    }
+  }, [question, client, connected]);
+
+  return null;
+};
+
 const AssessmentFlow: React.FC = () => {
   const history = useHistory();
   const { subject } = useParams<Params>();
@@ -31,6 +80,15 @@ const AssessmentFlow: React.FC = () => {
   const [total, setTotal] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const mediaMixerCanvasRef = React.useRef<HTMLCanvasElement>(null);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+  const processedEdgesRef = React.useRef<ImageData | null>(null);
+
+  const [isScratchpadOpen, setIsScratchpadOpen] = useState(false);
+  const [cameraEnabled, setCameraEnabled] = useState(false);
+  const [screenEnabled, setScreenEnabled] = useState(false);
+  const [privacyMode, setPrivacyMode] = useState(false);
 
   useEffect(() => {
     startAssessment();
@@ -47,7 +105,6 @@ const AssessmentFlow: React.FC = () => {
       const data = await response.json();
 
       if (data.error) {
-        // Already completed
         setCompleted(true);
         setScore(data.score);
         setTotal(data.total || 0);
@@ -76,12 +133,10 @@ const AssessmentFlow: React.FC = () => {
     setAnswers(newAnswers);
 
     if (currentIndex < questions.length - 1) {
-      // Wait 2 seconds to show feedback before moving to next question
       setTimeout(() => {
         setCurrentIndex(currentIndex + 1);
       }, 2000);
     } else {
-      // Assessment complete - submit all answers after showing final feedback
       setTimeout(() => {
         submitAssessment(newAnswers);
       }, 2000);
@@ -112,7 +167,6 @@ const AssessmentFlow: React.FC = () => {
       console.error('Failed to complete assessment:', err);
       setError(errorMessage);
       setSubmitting(false);
-      // Don't redirect immediately - show error to user
     }
   };
 
@@ -222,42 +276,66 @@ const AssessmentFlow: React.FC = () => {
     );
   }
 
+  const currentQuestion = questions[currentIndex];
+
   return (
-    <div style={{
-      padding: '40px 20px',
-      backgroundColor: 'var(--neo-bg)',
-      minHeight: '100vh'
-    }}>
-      <div style={{
-        maxWidth: '800px',
-        margin: '0 auto'
-      }}>
-        {submitting && (
-          <div style={{
-            marginBottom: '24px',
-            padding: '16px',
-            border: '5px solid var(--neo-black)',
-            backgroundColor: 'var(--neo-yellow)',
-            boxShadow: '2px 2px 0 var(--neo-black)',
-            textAlign: 'center',
-            fontSize: '14px',
-            fontWeight: 700,
-            color: 'var(--neo-black)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em'
-          }}>
-            Submitting Assessment...
-          </div>
-        )}
-        {questions.length > currentIndex && (
-          <AssessmentQuestion
-            question={questions[currentIndex]}
-            questionNumber={currentIndex + 1}
-            totalQuestions={questions.length}
-            onAnswer={handleAnswer}
-          />
-        )}
+    <div style={{ position: 'relative', minHeight: '100vh', backgroundColor: 'var(--neo-bg)' }}>
+      <div style={{ padding: '40px 20px' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          {submitting && (
+            <div style={{
+              marginBottom: '24px',
+              padding: '16px',
+              border: '5px solid var(--neo-black)',
+              backgroundColor: 'var(--neo-yellow)',
+              boxShadow: '2px 2px 0 var(--neo-black)',
+              textAlign: 'center',
+              fontSize: '14px',
+              fontWeight: 700,
+              color: 'var(--neo-black)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em'
+            }}>
+              Submitting Assessment...
+            </div>
+          )}
+          {currentQuestion && (
+            <AssessmentQuestion
+              question={currentQuestion}
+              questionNumber={currentIndex + 1}
+              totalQuestions={questions.length}
+              onAnswer={handleAnswer}
+            />
+          )}
+        </div>
       </div>
+
+      <TutorProvider>
+        {/* Send current question to tutor when it changes */}
+        {currentQuestion && <QuestionSender question={currentQuestion} />}
+
+        <Suspense fallback={null}>
+          <FloatingControlPanel
+            renderCanvasRef={mediaMixerCanvasRef}
+            videoRef={videoRef}
+            supportsVideo={true}
+            onVideoStreamChange={() => {}}
+            onMixerStreamChange={() => {}}
+            enableEditingSettings={true}
+            onPaintClick={() => setIsScratchpadOpen(!isScratchpadOpen)}
+            isPaintActive={isScratchpadOpen}
+            cameraEnabled={cameraEnabled}
+            screenEnabled={screenEnabled}
+            onToggleCamera={setCameraEnabled}
+            onToggleScreen={setScreenEnabled}
+            mediaMixerCanvasRef={mediaMixerCanvasRef}
+            privacyMode={privacyMode}
+            onTogglePrivacy={setPrivacyMode}
+            processedEdgesRef={processedEdgesRef}
+            assessmentMode={true}
+          />
+        </Suspense>
+      </TutorProvider>
     </div>
   );
 };

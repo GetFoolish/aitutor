@@ -9,8 +9,6 @@ import React, {
 } from "react";
 import { motion, useDragControls } from "framer-motion";
 import { useTutorContext, AudioRecorder } from "../../features/tutor";
-// import { useLiveAPIContext } from "../../contexts/LiveAPIContext"; // Commented out - useLiveAPIContext is an alias for useTutorContext, import from correct location
-// import { AudioRecorder } from "../../lib/audio-recorder"; // Commented out - AudioRecorder is exported from ../../features/tutor, not from lib
 import { jwtUtils } from "../../lib/jwt-utils";
 import { apiUtils } from "../../lib/api-utils";
 import SettingsDialog from "../settings-dialog/SettingsDialog";
@@ -21,9 +19,6 @@ import { feedWebSocketService } from "../../services/feed-websocket-service";
 import { instructionSSEService } from "../../services/instruction-sse-service";
 import { LiveServerContent } from '@google/genai';
 
-/**
- * Extract transcript text from Gemini content event
- */
 function extractTranscriptFromContent(content: LiveServerContent): string | null {
   const parts = content.modelTurn?.parts || [];
   const textParts = parts
@@ -31,6 +26,7 @@ function extractTranscriptFromContent(content: LiveServerContent): string | null
     .map((p: any) => p.text.trim());
   return textParts.length > 0 ? textParts.join(' ') : null;
 }
+
 import {
   Mic,
   MicOff,
@@ -64,17 +60,15 @@ export type FloatingControlPanelProps = {
   enableEditingSettings?: boolean;
   onPaintClick: () => void;
   isPaintActive: boolean;
-  // Camera/screen control props (from parent)
   cameraEnabled: boolean;
   screenEnabled: boolean;
   onToggleCamera: (enabled: boolean) => void;
   onToggleScreen: (enabled: boolean) => void;
-  // MediaMixer canvas ref for display
   mediaMixerCanvasRef: RefObject<HTMLCanvasElement>;
-  // Privacy mode props
   privacyMode: boolean;
   onTogglePrivacy: (enabled: boolean) => void;
   processedEdgesRef: RefObject<ImageData | null>;
+  assessmentMode?: boolean;
 };
 
 function FloatingControlPanel({
@@ -92,11 +86,11 @@ function FloatingControlPanel({
   privacyMode,
   onTogglePrivacy,
   processedEdgesRef,
+  assessmentMode = false,
 }: FloatingControlPanelProps) {
   const { client, connected, connect, disconnect, interruptAudio } = useTutorContext();
   const { theme } = useTheme();
   const dragControls = useDragControls();
-  // const { client, connected, connect, disconnect, interruptAudio } = useTutorContext(); // Commented out - duplicate declaration, already declared above
   const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>([]);
   const [selectedAudioDevice, setSelectedAudioDevice] = useState<string>("");
   const [audioRecorder] = useState(() => new AudioRecorder());
@@ -107,17 +101,14 @@ function FloatingControlPanel({
   const panelRef = useRef<HTMLDivElement>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [sessionTime, setSessionTime] = useState(0);
-  const [popoverPosition, setPopoverPosition] = useState<"left" | "right">(
-    "right",
-  );
+  const [popoverPosition, setPopoverPosition] = useState<"left" | "right">("right");
   const [mediaMixerStatus, setMediaMixerStatus] = useState<{
     isConnected: boolean;
     error: string | null;
-  }>({ isConnected: true, error: null }); // Default to connected since it's frontend-based now
+  }>({ isConnected: true, error: null });
   const turnCompleteRef = useRef(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Dark mode detection for logo
   useEffect(() => {
     const checkDarkMode = () => {
       if (theme === 'dark') {
@@ -125,14 +116,12 @@ function FloatingControlPanel({
       } else if (theme === 'light') {
         setIsDarkMode(false);
       } else if (theme === 'system') {
-        // Check if dark class is applied to document root
         setIsDarkMode(document.documentElement.classList.contains('dark'));
       }
     };
 
     checkDarkMode();
 
-    // Listen for theme changes when using system theme
     if (theme === 'system') {
       const observer = new MutationObserver(checkDarkMode);
       observer.observe(document.documentElement, {
@@ -144,7 +133,6 @@ function FloatingControlPanel({
     }
   }, [theme]);
 
-  // Timer for session duration
   useEffect(() => {
     if (!connected) {
       setSessionTime(0);
@@ -164,19 +152,16 @@ function FloatingControlPanel({
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   }, []);
 
-  // Transcript buffers for aggregating fragments into complete sentences
   const userTranscriptBuffer = useRef('');
   const userTranscriptTimer = useRef<number | null>(null);
   const tutorTranscriptBuffer = useRef('');
   const tutorTranscriptTimer = useRef<number | null>(null);
 
-  // Check if text ends with sentence boundary
   const isSentenceComplete = useCallback((text: string): boolean => {
     const trimmed = text.trim();
     return /[.!?;]$/.test(trimmed) && trimmed.length > 10;
   }, []);
 
-  // Flush user transcript buffer
   const flushUserTranscript = useCallback(() => {
     const text = userTranscriptBuffer.current.trim();
     if (text && connected) {
@@ -189,7 +174,6 @@ function FloatingControlPanel({
     }
   }, [connected]);
 
-  // Flush tutor transcript buffer
   const flushTutorTranscript = useCallback(() => {
     const text = tutorTranscriptBuffer.current.trim();
     if (text && connected) {
@@ -216,7 +200,6 @@ function FloatingControlPanel({
 
   useEffect(() => {
     const onData = (base64: string) => {
-      // Send to Gemini (existing functionality)
       client.sendRealtimeInput([
         {
           mimeType: "audio/pcm;rate=16000",
@@ -224,7 +207,6 @@ function FloatingControlPanel({
         },
       ]);
 
-      // Also send via WebSocket (batched, non-blocking)
       feedWebSocketService.sendAudio(base64);
     };
     if (connected && !muted && audioRecorder) {
@@ -237,11 +219,9 @@ function FloatingControlPanel({
     };
   }, [connected, client, muted, audioRecorder, selectedAudioDevice]);
 
-  // Subscribe to SSE instructions from TeachingAssistant
   useEffect(() => {
     const unsubscribe = instructionSSEService.onInstruction((instruction) => {
       if (client && client.status === "connected") {
-        // Send instruction to Gemini tutor
         client.send({ text: instruction });
       }
     });
@@ -251,7 +231,6 @@ function FloatingControlPanel({
     };
   }, [client]);
 
-  // Record conversation turns for TeachingAssistant (optional - fails gracefully if service unavailable)
   useEffect(() => {
     const onTurnComplete = () => {
       turnCompleteRef.current = true;
@@ -260,7 +239,6 @@ function FloatingControlPanel({
         const token = jwtUtils.getToken();
         if (token) {
           apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/conversation/turn`).catch((error: any) => {
-            // Only log if it's not a connection refused error (service not available)
             if (!error.message?.includes('Failed to fetch') && !error.message?.includes('ERR_CONNECTION_REFUSED')) {
               console.error('Failed to record conversation turn:', error);
             }
@@ -276,7 +254,6 @@ function FloatingControlPanel({
         const token = jwtUtils.getToken();
         if (token) {
           apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/conversation/turn`).catch((error: any) => {
-            // Only log if it's not a connection refused error (service not available)
             if (!error.message?.includes('Failed to fetch') && !error.message?.includes('ERR_CONNECTION_REFUSED')) {
               console.error('Failed to record conversation turn:', error);
             }
@@ -294,15 +271,12 @@ function FloatingControlPanel({
     };
   }, [client, connected]);
 
-  // Handle content events (transcript) - send via WebSocket
   useEffect(() => {
     const onContent = (content: any) => {
       if (!connected) return;
 
-      // Extract transcript from content
       const transcript = extractTranscriptFromContent(content);
       if (transcript) {
-        // Send transcript via WebSocket (fire-and-forget)
         feedWebSocketService.sendTranscript(transcript, 'tutor');
       }
     };
@@ -314,7 +288,6 @@ function FloatingControlPanel({
     };
   }, [client, connected]);
 
-  // Handle input audio transcription (user's speech) - send via WebSocket
   useEffect(() => {
     const onInputTranscript = (data: TranscriptionData) => {
       if (!connected) return;
@@ -322,11 +295,9 @@ function FloatingControlPanel({
       if (data.text) {
         userTranscriptBuffer.current += data.text;
 
-        // Send immediately if sentence is complete
         if (isSentenceComplete(userTranscriptBuffer.current)) {
           flushUserTranscript();
         } else {
-          // Set debounce timer to flush after 3 seconds of inactivity
           if (userTranscriptTimer.current) {
             clearTimeout(userTranscriptTimer.current);
           }
@@ -348,7 +319,6 @@ function FloatingControlPanel({
     };
   }, [client, connected, isSentenceComplete, flushUserTranscript]);
 
-  // Handle output audio transcription (tutor's speech) - send via WebSocket
   useEffect(() => {
     const onOutputTranscript = (data: TranscriptionData) => {
       if (!connected) return;
@@ -356,11 +326,9 @@ function FloatingControlPanel({
       if (data.text) {
         tutorTranscriptBuffer.current += data.text;
 
-        // Send immediately if sentence is complete
         if (isSentenceComplete(tutorTranscriptBuffer.current)) {
           flushTutorTranscript();
         } else {
-          // Set debounce timer to flush after 3 seconds of inactivity
           if (tutorTranscriptTimer.current) {
             clearTimeout(tutorTranscriptTimer.current);
           }
@@ -382,7 +350,6 @@ function FloatingControlPanel({
     };
   }, [client, connected, isSentenceComplete, flushTutorTranscript]);
 
-  // Video handling - capture full MediaMixer canvas and send to tutor as JPEG
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.srcObject = activeVideoStream;
@@ -390,17 +357,15 @@ function FloatingControlPanel({
 
     let timeoutId: number | null = null;
     let rafId: number | null = null;
-    let isRunning = false; // Track if loop is running to prevent multiple concurrent loops
+    let isRunning = false;
 
     function sendVideoFrame() {
       if (!connected || !isRunning) {
         return;
       }
 
-      // If privacy mode is ON, use processed edges instead of full canvas
       if (privacyMode && processedEdgesRef.current) {
         const edges = processedEdgesRef.current;
-        // Create a temporary canvas to convert ImageData to JPEG
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = edges.width;
         tempCanvas.height = edges.height;
@@ -411,42 +376,34 @@ function FloatingControlPanel({
           const base64 = tempCanvas.toDataURL("image/jpeg", 1.0);
           const data = base64.slice(base64.indexOf(",") + 1, Infinity);
           
-          // Send to Gemini (existing functionality)
           client.sendRealtimeInput([{ mimeType: "image/jpeg", data }]);
 
-          // Also send via WebSocket (fire-and-forget, non-blocking)
           feedWebSocketService.sendMedia(data);
         }
       } else {
-        // Normal mode: use MediaMixer canvas
         const canvas = mediaMixerCanvasRef.current;
         if (canvas && canvas.width + canvas.height > 0) {
           const base64 = canvas.toDataURL("image/jpeg", 1.0);
           const data = base64.slice(base64.indexOf(",") + 1, Infinity);
           
-          // Send to Gemini (existing functionality)
           client.sendRealtimeInput([{ mimeType: "image/jpeg", data }]);
 
-          // Also send via WebSocket (fire-and-forget, non-blocking)
           feedWebSocketService.sendMedia(data);
         }
       }
       
-      // Schedule next frame only if still connected and running
       if (connected && isRunning) {
         timeoutId = window.setTimeout(sendVideoFrame, 1000 / 0.5);
       }
     }
     
-    // Start sending frames when connected
     if (connected && !isRunning) {
       isRunning = true;
-      // Send first frame immediately, then schedule subsequent frames
       rafId = requestAnimationFrame(sendVideoFrame);
     }
     
     return () => {
-      isRunning = false; // Stop the loop
+      isRunning = false;
       if (rafId !== null) {
         cancelAnimationFrame(rafId);
       }
@@ -458,25 +415,19 @@ function FloatingControlPanel({
 
   const handleConnect = useCallback(async () => {
     if (connected) {
-      // Handle disconnect with TeachingAssistant session end
       try {
-        // Flush any remaining transcripts before disconnect
         flushUserTranscript();
         flushTutorTranscript();
 
         interruptAudio();
 
-        // Disconnect WebSocket and SSE first (optional - may not be connected)
         try {
           feedWebSocketService.disconnect();
-        } catch (e) {
-          // WebSocket may not be connected - ignore
-        }
+        } catch (e) {}
+
         try {
           instructionSSEService.disconnect();
-        } catch (e) {
-          // SSE may not be connected - ignore
-        }
+        } catch (e) {}
 
         await new Promise((resolve) => setTimeout(resolve, 300));
 
@@ -532,7 +483,6 @@ function FloatingControlPanel({
               }
             }
           } catch (taError: any) {
-            // Teaching Assistant service is not available - log warning but continue
             if (taError.message?.includes('Failed to fetch') || taError.message?.includes('ERR_CONNECTION_REFUSED')) {
               console.warn('TeachingAssistant service is not available during disconnect - continuing');
             } else {
@@ -546,7 +496,6 @@ function FloatingControlPanel({
 
       disconnect();
     } else {
-      // Handle connect with TeachingAssistant session start
       let setupCompleteReceived = false;
       let setupCompleteResolver: (() => void) | null = null;
       
@@ -562,7 +511,6 @@ function FloatingControlPanel({
       
       await connect();
       
-      // Wait for connection to be established
       const waitForConnection = () => {
         return new Promise<void>((resolve) => {
           if (client.status === 'connected') {
@@ -579,7 +527,6 @@ function FloatingControlPanel({
         });
       };
 
-      // Wait for setupComplete with timeout fallback
       const waitForSetupComplete = () => {
         return new Promise<void>((resolve) => {
           if (setupCompleteReceived) {
@@ -609,29 +556,24 @@ function FloatingControlPanel({
           return;
         }
 
-        // Start TeachingAssistant session (creates MongoDB session)
-        // Make this optional - if service is not available, continue without it
         try {
           const response = await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/session/start`);
 
           if (response.ok) {
             const data = await response.json();
 
-            // Connect WebSocket for feed streaming
             try {
               await feedWebSocketService.connect();
             } catch (wsError) {
               console.warn('Failed to connect WebSocket feed service (optional):', wsError);
             }
 
-            // Connect SSE for receiving instructions
             try {
               instructionSSEService.connect();
             } catch (sseError) {
               console.warn('Failed to connect SSE instruction service (optional):', sseError);
             }
 
-            // Send greeting if available
             if (data.prompt && client.status === 'connected') {
               client.send({ text: data.prompt });
             }
@@ -639,7 +581,6 @@ function FloatingControlPanel({
             console.warn(`TeachingAssistant service returned status ${response.status} - continuing without it`);
           }
         } catch (taError: any) {
-          // Teaching Assistant service is not available - log warning but continue
           if (taError.message?.includes('Failed to fetch') || taError.message?.includes('ERR_CONNECTION_REFUSED')) {
             console.warn('TeachingAssistant service is not available - continuing without advanced features');
           } else {
@@ -657,13 +598,11 @@ function FloatingControlPanel({
 
   const [verticalAlign, setVerticalAlign] = useState<"top" | "bottom">("top");
 
-  // Calculate initial position once without state
   const initialPosition = useMemo(() => {
     if (typeof window === "undefined") return { x: 0, y: 0 };
     return { x: window.innerWidth - 380, y: 96 };
   }, []);
 
-  // Memoize popover position calculation to avoid expensive DOM queries
   const calculatePopoverPosition = useCallback(() => {
     if (!panelRef.current) return { side: "right" as const, vertical: "top" as const };
 
@@ -682,7 +621,6 @@ function FloatingControlPanel({
       side = "left";
     }
 
-    // Calculate vertical alignment based on panel's center relative to screen center
     const panelCenterY = panelRect.top + panelRect.height / 2;
     const screenCenterY = viewportHeight / 2;
     const vertical: "top" | "bottom" = panelCenterY > screenCenterY ? "bottom" : "top";
@@ -698,17 +636,15 @@ function FloatingControlPanel({
 
   const toggleSharedMedia = useCallback(() => {
     if (!sharedMediaOpen) {
-      // Opening
       updatePopoverPosition();
       setSharedMediaOpen(true);
       setIsAnimatingOut(false);
     } else {
-      // Closing
       setIsAnimatingOut(true);
       setTimeout(() => {
         setSharedMediaOpen(false);
         setIsAnimatingOut(false);
-      }, 200); // Match CSS animation duration
+      }, 200);
     }
   }, [sharedMediaOpen, updatePopoverPosition]);
 
@@ -720,15 +656,12 @@ function FloatingControlPanel({
     setMuted(!muted);
   }, [muted]);
 
-  // Simplified drag end handler for Framer Motion
   const handleDragEnd = useCallback(() => {
-    // Recalculate popover position after drag ends
     if (sharedMediaOpen) {
       updatePopoverPosition();
     }
   }, [sharedMediaOpen, updatePopoverPosition]);
 
-  // Memoize panel classes to avoid recalculating on every render
   const panelClasses = useMemo(
     () =>
       cn(
@@ -774,13 +707,11 @@ function FloatingControlPanel({
         y: initialPosition.y,
       }}
     >
-        {/* Hidden canvas for MediaMixer - will be set by parent */}
         <canvas
           ref={(canvas) => {
             if (typeof renderCanvasRef === 'function') {
               renderCanvasRef(canvas);
             } else if (renderCanvasRef && 'current' in renderCanvasRef) {
-              // For RefObject, we need to cast it as mutable
               (renderCanvasRef as React.MutableRefObject<HTMLCanvasElement | null>).current = canvas;
             }
           }}
@@ -789,7 +720,6 @@ function FloatingControlPanel({
           style={{ display: 'none' }}
         />
         
-        {/* Drag Handle & Header */}
         <div
           className={cn(
             "cursor-grab active:cursor-grabbing flex items-center mb-1.5 md:mb-2",
@@ -819,7 +749,6 @@ function FloatingControlPanel({
         </div>
 
         {isCollapsed ? (
-          // COLLAPSED VIEW
           <div className="flex flex-col items-center gap-1.5 md:gap-2">
             <button
               onClick={handleCollapse}
@@ -829,7 +758,6 @@ function FloatingControlPanel({
               <Home className="w-4 h-4 font-bold" />
             </button>
 
-            {/* Start/End Session Button */}
             <button
               onClick={handleConnect}
               className={cn(
@@ -977,9 +905,7 @@ function FloatingControlPanel({
             </div>
           </div>
         ) : (
-          // EXPANDED VIEW
           <div className="flex flex-col gap-1.5 md:gap-2">
-            {/* Audio Control */}
             <div
               onClick={handleMute}
               className={cn(
@@ -1046,7 +972,6 @@ function FloatingControlPanel({
               </button>
             </div>
 
-            {/* Camera Control */}
             {supportsVideo && (
               <div
                 onClick={() => onToggleCamera(!cameraEnabled)}
@@ -1093,7 +1018,6 @@ function FloatingControlPanel({
               </div>
             )}
 
-            {/* Privacy Mode Control */}
             {supportsVideo && cameraEnabled && (
               <div
                 onClick={() => onTogglePrivacy(!privacyMode)}
@@ -1140,7 +1064,6 @@ function FloatingControlPanel({
               </div>
             )}
 
-            {/* Screen Share Control */}
             {supportsVideo && (
               <div
                 onClick={() => onToggleScreen(!screenEnabled)}
@@ -1187,7 +1110,6 @@ function FloatingControlPanel({
               </div>
             )}
 
-            {/* Main Action Button */}
             <button
               onClick={handleConnect}
               className={cn(
@@ -1210,7 +1132,6 @@ function FloatingControlPanel({
               )}
             </button>
 
-            {/* Bottom Actions */}
             <div className="grid grid-cols-4 gap-1.5 md:gap-2 pt-2 md:pt-3 border-t-[2px] border-black dark:border-white">
               {enableEditingSettings && (
                 <SettingsDialog
@@ -1277,7 +1198,6 @@ function FloatingControlPanel({
           </div>
         )}
 
-        {/* Popover for Shared Media */}
         {sharedMediaOpen && (
           <div
             className={cn(
@@ -1341,4 +1261,5 @@ function FloatingControlPanel({
       </motion.div>
   );
 }
+
 export default memo(FloatingControlPanel);
