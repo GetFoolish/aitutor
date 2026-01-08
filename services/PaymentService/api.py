@@ -5,6 +5,7 @@ Payment API Endpoints
 import os
 import stripe
 from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from managers.mongodb_manager import mongo_db
 from shared.auth_middleware import get_current_user
@@ -25,6 +26,12 @@ async def create_checkout_session(request: Request, body: CheckoutSessionRequest
     """Create Stripe checkout session"""
 
     user_id = get_current_user(request)
+
+    # Validate user authentication
+    if not user_id:
+        logger.error("[PAYMENT] User not authenticated for checkout session creation")
+        raise HTTPException(status_code=401, detail="User not authenticated")
+
     plan = body.plan
 
     try:
@@ -53,33 +60,195 @@ async def stripe_webhook(request: Request):
     sig_header = request.headers.get("stripe-signature")
     stripe_webhook_secret = os.getenv("STRIPE_WEBHOOK_SECRET")
 
+    logger.info(f"[WEBHOOK] Received webhook event. Signature header present: {bool(sig_header)}")
+
     try:
         event = stripe.Webhook.construct_event(
             payload,
             sig_header,
             stripe_webhook_secret
         )
-    except ValueError:
-        logger.error("[STRIPE] Invalid payload")
+        logger.info(f"[WEBHOOK] Event verified successfully. Type: {event['type']}")
+    except ValueError as e:
+        logger.error(f"[WEBHOOK] Invalid payload: {str(e)}")
         raise HTTPException(status_code=400, detail="Invalid payload")
-    except stripe.error.SignatureVerificationError:
-        logger.error("[STRIPE] Invalid signature")
+    except stripe.error.SignatureVerificationError as e:
+        logger.error(f"[WEBHOOK] Invalid signature: {str(e)}")
         raise HTTPException(status_code=400, detail="Invalid signature")
 
     # Handle events
     if event["type"] == "checkout.session.completed":
-        StripePaymentHandler.handle_payment_success(event)
+        logger.info(f"[WEBHOOK] Processing checkout.session.completed event")
+        try:
+            StripePaymentHandler.handle_payment_success(event)
+            logger.info(f"[WEBHOOK] Successfully processed checkout.session.completed event")
+        except Exception as e:
+            logger.error(f"[WEBHOOK] Error processing payment success: {str(e)}")
+            raise HTTPException(status_code=500, detail="Error processing payment")
+    else:
+        logger.info(f"[WEBHOOK] Received unhandled event type: {event['type']}")
 
     return {"status": "success"}
 
 
-@router.get("/success")
+@router.get("/success", response_class=HTMLResponse)
 async def payment_success():
     """Payment success redirect page"""
-    return {"message": "Payment successful! Your credits have been added."}
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Payment Successful</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            }
+            .container {
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+                padding: 40px;
+                text-align: center;
+                max-width: 500px;
+            }
+            .success-icon {
+                width: 80px;
+                height: 80px;
+                margin: 0 auto 20px;
+                background: #4CAF50;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 40px;
+            }
+            h1 {
+                color: #333;
+                margin-bottom: 10px;
+                font-size: 28px;
+            }
+            p {
+                color: #666;
+                margin-bottom: 30px;
+                font-size: 16px;
+                line-height: 1.6;
+            }
+            .button {
+                display: inline-block;
+                background: #667eea;
+                color: white;
+                padding: 12px 30px;
+                border-radius: 5px;
+                text-decoration: none;
+                font-weight: 600;
+                transition: background 0.3s;
+            }
+            .button:hover {
+                background: #764ba2;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="success-icon">✓</div>
+            <h1>Payment Successful!</h1>
+            <p>Your payment has been processed successfully and your credits have been added to your account.</p>
+            <a href="/app/account" class="button">Back to Account</a>
+        </div>
+    </body>
+    </html>
+    """
 
 
-@router.get("/cancel")
+@router.get("/cancel", response_class=HTMLResponse)
 async def payment_cancel():
     """Payment cancelled redirect page"""
-    return {"message": "Payment cancelled."}
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Payment Cancelled</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            }
+            .container {
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+                padding: 40px;
+                text-align: center;
+                max-width: 500px;
+            }
+            .cancel-icon {
+                width: 80px;
+                height: 80px;
+                margin: 0 auto 20px;
+                background: #f5576c;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 40px;
+                color: white;
+            }
+            h1 {
+                color: #333;
+                margin-bottom: 10px;
+                font-size: 28px;
+            }
+            p {
+                color: #666;
+                margin-bottom: 30px;
+                font-size: 16px;
+                line-height: 1.6;
+            }
+            .button {
+                display: inline-block;
+                background: #667eea;
+                color: white;
+                padding: 12px 30px;
+                border-radius: 5px;
+                text-decoration: none;
+                font-weight: 600;
+                transition: background 0.3s;
+            }
+            .button:hover {
+                background: #764ba2;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="cancel-icon">✕</div>
+            <h1>Payment Cancelled</h1>
+            <p>Your payment has been cancelled. No charges were made to your account.</p>
+            <a href="/app/pricing" class="button">Try Again</a>
+        </div>
+    </body>
+    </html>
+    """

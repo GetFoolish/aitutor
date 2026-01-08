@@ -46,6 +46,11 @@ export interface AccountInfo {
     balance: number;
     currency: string;
   };
+  free_minutes?: {
+    balance: number;
+    last_reset_date: string | null;
+  };
+  subscription_plan?: string | null;
 }
 
 class AuthAPI {

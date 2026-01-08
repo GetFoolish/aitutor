@@ -481,7 +481,21 @@ async def get_account_info(request: Request):
             credits["balance"] = 0.0
         if "currency" not in credits:
             credits["currency"] = "USD"
+
+    # Get subscription plan (default to None if not set)
+    subscription_plan = user_data.get("subscription_plan") if user_data else None
     
+    # Get free_minutes (for daily allocation)
+    free_minutes = user_data.get("free_minutes", {}) if user_data else {}
+    if not free_minutes:
+        free_minutes = {"balance": 0.0, "last_reset_date": None}
+    else:
+        # Ensure balance exists
+        if "balance" not in free_minutes:
+            free_minutes["balance"] = 0.0
+        if "last_reset_date" not in free_minutes:
+            free_minutes["last_reset_date"] = None
+
     return {
         "user_id": user_profile.user_id,
         "email": email,
@@ -491,7 +505,9 @@ async def get_account_info(request: Request):
         "gender": gender,
         "preferred_language": preferred_language,
         "user_type": user_type,
-        "credits": credits
+        "credits": credits,
+        "free_minutes": free_minutes,
+        "subscription_plan": subscription_plan
     }
 
 

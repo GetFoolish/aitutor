@@ -67,8 +67,27 @@ const AccountPage: React.FC = () => {
     }
   };
 
-  const formatMinutes = (minutes: number) => {
-    return `${Math.round(minutes).toLocaleString()} minutes`;
+  const formatMinutes = (totalMinutes: number) => {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+
+    if (hours === 0) {
+      return `${minutes} minutes`;
+    }
+    if (minutes === 0) {
+      return `${hours} hour${hours > 1 ? 's' : ''}`;
+    }
+    return `${hours} hour${hours > 1 ? 's' : ''} ${minutes} minute${minutes > 1 ? 's' : ''}`;
+  };
+
+  const getPlanDisplayName = (plan: string | null | undefined): string => {
+    if (!plan) return 'No Plan';
+    const planNames: { [key: string]: string } = {
+      'starter': 'Starter Plan',
+      'pro': 'Pro Plan',
+      'premium': 'Premium Plan'
+    };
+    return planNames[plan.toLowerCase()] || plan;
   };
 
   const handleBuyMinutes = () => {
@@ -475,13 +494,27 @@ const AccountPage: React.FC = () => {
                 <label className={cn(
                   "text-xs font-black uppercase tracking-wide text-black dark:text-white mb-1 block"
                 )}>
+                  Subscription Plan
+                </label>
+                <p className={cn(
+                  "text-base font-bold text-black dark:text-white p-2",
+                  "border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]"
+                )}>
+                  {getPlanDisplayName(accountInfo.subscription_plan)}
+                </p>
+              </div>
+
+              <div>
+                <label className={cn(
+                  "text-xs font-black uppercase tracking-wide text-black dark:text-white mb-1 block"
+                )}>
                   Balance
                 </label>
                 <p className={cn(
                   "text-3xl font-black text-black dark:text-white p-4",
                   "border-[2px] border-black dark:border-white bg-[#FFD93D]"
                 )}>
-                  {formatMinutes(accountInfo.credits.balance)}
+                  {formatMinutes((accountInfo.credits?.balance || 0) + (accountInfo.free_minutes?.balance || 0))}
                 </p>
               </div>
 

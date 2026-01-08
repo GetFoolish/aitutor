@@ -494,7 +494,11 @@ class UserManager:
             "interests": interests or [],
             "learning_style": learning_style,
             "last_login": current_time,
-            "is_active": True
+            "is_active": True,
+            "credits": {"balance": 0, "currency": "USD"},  # Paid minutes start at 0
+            "free_minutes": {"balance": 0, "last_reset_date": None},  # Will get 15 daily free minutes
+            "subscription_plan": None,  # No subscription plan until user purchases
+            "payment_history": []
         })
         
         # Save to MongoDB
@@ -581,7 +585,11 @@ class UserManager:
             "user_type": user_type,
             "email_verified": False,  # For future email verification
             "last_login": current_time,
-            "is_active": True
+            "is_active": True,
+            "credits": {"balance": 0, "currency": "USD"},  # Paid minutes start at 0
+            "free_minutes": {"balance": 0, "last_reset_date": None},  # Will get 15 daily free minutes
+            "subscription_plan": None,  # No subscription plan until user purchases
+            "payment_history": []
         })
 
         # Save to MongoDB

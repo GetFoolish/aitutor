@@ -20,7 +20,7 @@ const pricingTiers: PricingTier[] = [
     price: '$9.99',
     description: 'Perfect for getting started',
     features: [
-      '10 hours of tutoring per month',
+      '5 hours of tutoring',
       'Basic question bank access',
       'Email support',
       'Progress tracking'
@@ -32,7 +32,7 @@ const pricingTiers: PricingTier[] = [
     price: '$19.99',
     description: 'Most popular choice',
     features: [
-      '30 hours of tutoring per month',
+      '20 hours of tutoring',
       'Full question bank access',
       'Priority email support',
       'Advanced progress tracking',
@@ -47,7 +47,7 @@ const pricingTiers: PricingTier[] = [
     price: '$39.99',
     description: 'For serious learners',
     features: [
-      'Unlimited tutoring hours',
+      '50 hours of tutoring',
       'Full question bank access',
       '24/7 priority support',
       'Advanced progress tracking',

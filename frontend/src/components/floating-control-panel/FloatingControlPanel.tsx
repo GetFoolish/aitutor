@@ -51,7 +51,10 @@ import {
   Eye,
   ToggleLeft,
   ToggleRight,
+  Loader2,
+  Clock,
 } from "lucide-react";
+import { toast } from "sonner";
 
 const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
 
@@ -116,6 +119,8 @@ function FloatingControlPanel({
   }>({ isConnected: true, error: null }); // Default to connected since it's frontend-based now
   const turnCompleteRef = useRef(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [userBalance, setUserBalance] = useState<number | null>(null);
+  const [checkingBalance, setCheckingBalance] = useState(false);
 
   // Dark mode detection for logo
   useEffect(() => {
@@ -143,6 +148,33 @@ function FloatingControlPanel({
       return () => observer.disconnect();
     }
   }, [theme]);
+
+  // Check user balance on mount and when disconnecting
+  useEffect(() => {
+    const checkBalance = async () => {
+      try {
+        setCheckingBalance(true);
+        const token = jwtUtils.getToken();
+        if (!token) return;
+        
+        const response = await apiUtils.get(`${import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003'}/account/info`);
+        if (response.ok) {
+          const data = await response.json();
+          const totalBalance = (data.credits?.balance || 0) + (data.free_minutes?.balance || 0);
+          setUserBalance(totalBalance);
+        }
+      } catch (error) {
+        console.error('Failed to check balance:', error);
+      } finally {
+        setCheckingBalance(false);
+      }
+    };
+    
+    // Check balance on mount and when disconnecting
+    if (!connected) {
+      checkBalance();
+    }
+  }, [connected]);
 
   // Timer for session duration
   useEffect(() => {
@@ -382,6 +414,60 @@ function FloatingControlPanel({
     };
   }, [client, connected, isSentenceComplete, flushTutorTranscript]);
 
+  // Listen for backend-initiated disconnect (when credits run out)
+  useEffect(() => {
+    const handleBackendDisconnect = async (event: Event) => {
+      const customEvent = event as CustomEvent;
+      console.warn('[FloatingControlPanel] Backend initiated disconnect:', customEvent.detail);
+      
+      if (connected) {
+        try {
+          // Disconnect Gemini tutor
+          interruptAudio();
+          disconnect();
+          
+          // Disconnect WebSocket and SSE
+          try {
+            feedWebSocketService.disconnect();
+          } catch (e) {
+            console.error('Error disconnecting WebSocket:', e);
+          }
+          
+          try {
+            instructionSSEService.disconnect();
+          } catch (e) {
+            console.error('Error disconnecting SSE:', e);
+          }
+          
+          // Toast is already shown by feedWebSocketService
+          
+          // Refresh balance after a short delay
+          setTimeout(async () => {
+            try {
+              const response = await apiUtils.get(`${import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003'}/account/info`);
+              if (response.ok) {
+                const data = await response.json();
+                const totalBalance = (data.credits?.balance || 0) + (data.free_minutes?.balance || 0);
+                setUserBalance(totalBalance);
+              }
+            } catch (e) {
+              console.error('Failed to refresh balance:', e);
+            }
+          }, 1000);
+          
+        } catch (error) {
+          console.error('[FloatingControlPanel] Error handling backend disconnect:', error);
+        }
+      }
+    };
+    
+    window.addEventListener('backend-disconnect', handleBackendDisconnect);
+    
+    return () => {
+      window.removeEventListener('backend-disconnect', handleBackendDisconnect);
+    };
+  }, [connected, disconnect, interruptAudio]);
+
   // Video handling - capture full MediaMixer canvas and send to tutor as JPEG
   useEffect(() => {
     if (videoRef.current) {
@@ -545,6 +631,20 @@ function FloatingControlPanel({
       }
 
       disconnect();
+      
+      // Refresh balance after disconnect
+      setTimeout(async () => {
+        try {
+          const response = await apiUtils.get(`${import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003'}/account/info`);
+          if (response.ok) {
+            const data = await response.json();
+            const totalBalance = (data.credits?.balance || 0) + (data.free_minutes?.balance || 0);
+            setUserBalance(totalBalance);
+          }
+        } catch (e) {
+          console.error('Failed to refresh balance:', e);
+        }
+      }, 1000);
     } else {
       // Handle connect with TeachingAssistant session start
       let setupCompleteReceived = false;
@@ -635,6 +735,40 @@ function FloatingControlPanel({
             if (data.prompt && client.status === 'connected') {
               client.send({ text: data.prompt });
             }
+          } else if (response.status === 403) {
+            // Handle insufficient minutes with user-friendly toast
+            try {
+              const errorData = await response.json();
+              const errorMessage = errorData.detail?.message || errorData.detail || "Insufficient minutes";
+              
+              // Show toast notification
+              toast.error("⏰ Out of Minutes", {
+                description: errorMessage,
+                duration: 7000,
+                action: {
+                  label: "Buy Plan",
+                  onClick: () => {
+                    window.location.href = '/app/pricing';
+                  }
+                }
+              });
+              
+              console.warn('[SESSION] Insufficient minutes - session start blocked');
+              
+              // Disconnect Gemini if already connected
+              if (client.status === 'connected') {
+                disconnect();
+              }
+              
+              return;
+            } catch (parseError) {
+              console.error('Failed to parse 403 error response:', parseError);
+              toast.error("Cannot Start Session", {
+                description: "You've used your free minutes. Please purchase a plan or try again tomorrow.",
+                duration: 5000
+              });
+              return;
+            }
           } else {
             console.warn(`TeachingAssistant service returned status ${response.status} - continuing without it`);
           }
@@ -656,6 +790,10 @@ function FloatingControlPanel({
   }, [connected, connect, disconnect, client, interruptAudio, flushUserTranscript, flushTutorTranscript]);
 
   const [verticalAlign, setVerticalAlign] = useState<"top" | "bottom">("top");
+
+  // Compute whether button should be disabled
+  const hasNoMinutes = userBalance !== null && userBalance < 1;
+  const isStartButtonDisabled = checkingBalance || hasNoMinutes;
 
   // Calculate initial position once without state
   const initialPosition = useMemo(() => {
@@ -1190,17 +1328,37 @@ function FloatingControlPanel({
             {/* Main Action Button */}
             <button
               onClick={handleConnect}
+              disabled={!connected && isStartButtonDisabled}
               className={cn(
-                "w-full py-2.5 md:py-3 font-black text-black transition-all transform active:translate-x-1 active:translate-y-1 active:shadow-none flex items-center justify-center gap-2 mt-1 border-[2px] md:border-[3px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] uppercase text-[10px] md:text-xs",
+                "w-full py-2.5 md:py-3 font-black transition-all transform flex items-center justify-center gap-2 mt-1 border-[2px] md:border-[3px] border-black dark:border-white uppercase text-[10px] md:text-xs",
                 connected
-                  ? "bg-[#FF6B6B] hover:bg-[#FF6B6B]"
-                  : "bg-[#4ADE80] hover:bg-[#4ADE80]",
+                  ? "bg-[#FF6B6B] hover:bg-[#FF6B6B] text-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
+                  : isStartButtonDisabled
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60 shadow-none"
+                    : "bg-[#4ADE80] hover:bg-[#4ADE80] text-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
               )}
+              title={
+                connected 
+                  ? "End Session" 
+                  : hasNoMinutes 
+                    ? "No minutes available - Purchase a plan or return tomorrow"
+                    : "Start Session"
+              }
             >
               {connected ? (
                 <>
                   <div className="w-3 h-3 bg-white border-2 border-black" />
                   End Session
+                </>
+              ) : checkingBalance ? (
+                <>
+                  <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" />
+                  Loading...
+                </>
+              ) : hasNoMinutes ? (
+                <>
+                  <Clock className="w-4 h-4 md:w-5 md:h-5" />
+                  No Minutes Left
                 </>
               ) : (
                 <>
@@ -1209,6 +1367,18 @@ function FloatingControlPanel({
                 </>
               )}
             </button>
+
+            {/* Show message below button when no minutes */}
+            {!connected && hasNoMinutes && (
+              <div className="text-center mt-2 p-2 border-[2px] border-black dark:border-white bg-[#FFD93D] text-black text-[9px] md:text-[10px] font-black uppercase">
+                ⏰ Come back tomorrow or <button 
+                  onClick={() => window.location.href = '/app/pricing'}
+                  className="underline hover:no-underline"
+                >
+                  buy a plan
+                </button>
+              </div>
+            )}
 
             {/* Bottom Actions */}
             <div className="grid grid-cols-4 gap-1.5 md:gap-2 pt-2 md:pt-3 border-t-[2px] border-black dark:border-white">
