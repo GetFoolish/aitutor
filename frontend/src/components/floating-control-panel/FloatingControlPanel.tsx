@@ -72,6 +72,7 @@ export type FloatingControlPanelProps = {
   mediaMixerCanvasRef: RefObject<HTMLCanvasElement>;
   privacyEnabled?: boolean;
   onTogglePrivacy?: (enabled: boolean) => void;
+  processedEdgesRef?: React.MutableRefObject<any>;
 };
 
 function FloatingControlPanel({

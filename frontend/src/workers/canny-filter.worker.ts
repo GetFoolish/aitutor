@@ -206,7 +206,7 @@ self.onmessage = (e: MessageEvent) => {
       throw new Error(`Invalid data type: ${typeof data}`);
     }
 
-    const imageData = new ImageData(imageDataArray, width, height);
+    const imageData = new (ImageData as any)(imageDataArray as any, width, height);
 
     // Apply Canny edge detection
     const resultImageData = cannyEdgeDetection(
@@ -216,15 +216,15 @@ self.onmessage = (e: MessageEvent) => {
     );
 
     // Use ArrayBuffer for efficient zero-copy transfer
-    const resultBuffer = resultImageData.data.buffer.slice(0);
+    const resultBuffer = resultImageData.data.buffer.slice(0) as ArrayBuffer;
 
-    // Send result with transferable ArrayBuffer for optimal performance
+    // Send result back to main thread
     self.postMessage({
       success: true,
       width: resultImageData.width,
       height: resultImageData.height,
       data: resultBuffer
-    }, [resultBuffer]);
+    });
 
   } catch (error: any) {
     console.error('[Canny Worker] Error:', error);

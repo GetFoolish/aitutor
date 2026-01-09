@@ -328,7 +328,7 @@ const AssessmentFlow: React.FC = () => {
         </div>
         
         <Suspense fallback={null}>
-          <FloatingControlPanel
+            <FloatingControlPanel
             renderCanvasRef={canvasRef}
             videoRef={videoRef}
             supportsVideo={true}
@@ -342,8 +342,8 @@ const AssessmentFlow: React.FC = () => {
             onToggleCamera={setCameraEnabled}
             onToggleScreen={setScreenEnabled}
             mediaMixerCanvasRef={canvasRef}
-            privacyMode={privacyMode}
-            onTogglePrivacy={setPrivacyMode}
+              privacyEnabled={privacyMode}
+              onTogglePrivacy={setPrivacyMode}
             processedEdgesRef={processedEdgesRef}
           />
         </Suspense>
