@@ -85,6 +85,16 @@ async def stripe_webhook(request: Request):
         except Exception as e:
             logger.error(f"[WEBHOOK] Error processing payment success: {str(e)}")
             raise HTTPException(status_code=500, detail="Error processing payment")
+            
+    elif event["type"] == "invoice.paid":
+        logger.info(f"[WEBHOOK] Processing invoice.paid event (subscription renewal)")
+        try:
+            StripePaymentHandler.handle_subscription_renewal(event)
+            logger.info(f"[WEBHOOK] Successfully processed invoice.paid event")
+        except Exception as e:
+            logger.error(f"[WEBHOOK] Error processing subscription renewal: {str(e)}")
+            raise HTTPException(status_code=500, detail="Error processing renewal")
+            
     else:
         logger.info(f"[WEBHOOK] Received unhandled event type: {event['type']}")
 
