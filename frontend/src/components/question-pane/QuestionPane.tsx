@@ -741,7 +741,8 @@ const HintPanel: React.FC<{
 
     // 5.5. Normalize ordered lists to ensure they're recognized as block elements
     // Ensure ordered lists (1., 2., etc.) are preceded by blank lines
-    processed = processed.replace(/(\n)([0-9]+\.\s+)/g, '$1\n$2');
+    // Handle both start of content (^) and after newlines (\n)
+    processed = processed.replace(/(^|\n)([0-9]+\.\s+)/gm, '$1\n$2');
 
     // SETUP MATH PROTECTION (EARLY)
     const katexPlaceholders: string[] = [];

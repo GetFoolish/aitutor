@@ -643,8 +643,32 @@ export const processImageMarkdown = (text: string): string => {
   const toImgTag = (alt: string, url: string): string => {
     let imageUrl = url.trim();
 
-    // For graphie images, create a placeholder that will be replaced with GraphieImage component
+    // For graphie images, check if it's a statistical graph that needs PNG
     if (isGraphieUrl(imageUrl)) {
+      console.log('[Athena] Processing graphie URL:', imageUrl);
+      const lowerUrl = imageUrl.toLowerCase();
+      const isStatisticalGraph = lowerUrl.includes('voting') ||
+        lowerUrl.includes('political') ||
+        lowerUrl.includes('probability') ||
+        lowerUrl.includes('bar') ||
+        lowerUrl.includes('axis') ||
+        lowerUrl.includes('chart') ||
+        lowerUrl.includes('graph');
+
+      console.log('[Athena] Is statistical graph?', isStatisticalGraph, 'URL:', lowerUrl.substring(0, 100));
+      // For statistical graphs, use PNG directly (has rotated axis labels already rendered)
+      if (isStatisticalGraph) {
+        console.log('[Athena] Statistical graph detected, using PNG directly:', imageUrl);
+        let pngUrl = imageUrl;
+        if (pngUrl.startsWith('web+graphie://')) {
+          pngUrl = pngUrl.replace('web+graphie://', 'https://').replace(/\.(png|svg)$/, '') + '.png';
+        } else {
+          pngUrl = pngUrl.replace(/\.(png|svg)$/, '') + '.png';
+        }
+        return `<img src="${pngUrl}" alt="${alt}" class="graphie-image" style="max-width:500px;width:auto;height:auto;display:block;margin:1rem auto;" referrerpolicy="no-referrer" />`;
+      }
+
+      // For other graphie images, create a placeholder that will be replaced with GraphieImage component
       // Normalize the graphie URL (remove extension if present)
       let graphieUrl = imageUrl;
       if (graphieUrl.startsWith('web+graphie://')) {
@@ -715,7 +739,8 @@ export const cleanLegacyContent = (text: string): string => {
 
   // 4.6. Normalize ordered lists to ensure they're recognized as block elements
   // Ensure ordered lists (1., 2., etc.) are preceded by blank lines
-  processedText = processedText.replace(/(\n)([0-9]+\.\s+)/g, '$1\n$2');
+  // Handle both start of content (^) and after newlines (\n)
+  processedText = processedText.replace(/(^|\n)([0-9]+\.\s+)/gm, '$1\n$2');
 
   // 5. Clean up stray pipe characters that aren't part of tables
   // Remove standalone | at start of lines

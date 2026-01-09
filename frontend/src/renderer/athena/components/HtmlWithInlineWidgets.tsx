@@ -14,7 +14,7 @@ interface HtmlWithInlineWidgetsProps {
 
 export const HtmlWithInlineWidgets = React.memo(({ html, keyPrefix, widgets, state: propsState, setAnswer: propsSetAnswer }: HtmlWithInlineWidgetsProps) => {
   const context = useAthena();
-  
+
   // Use props if provided (for nested widgets like GroupWidget), otherwise use context
   const state = propsState || context.state;
   const setAnswer = propsSetAnswer || context.setAnswer;
@@ -94,7 +94,7 @@ export const HtmlWithInlineWidgets = React.memo(({ html, keyPrefix, widgets, sta
         onChange={(value) => !isReadOnly && setAnswer(widgetId, value)}
         readOnly={isReadOnly}
         reviewMode={state.reviewMode}
-        theme={state.theme}
+        theme={propsState?.theme || context.state?.theme || 'light'}
       />,
       el,
       `${keyPrefix}-portal-${idx}`

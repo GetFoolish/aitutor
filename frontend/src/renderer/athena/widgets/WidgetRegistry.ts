@@ -562,7 +562,7 @@ export function registerDefaultWidgets(): void {
   WidgetRegistry.register({
     type: 'graded-group',
     displayName: 'Graded Group',
-    component: React.lazy(() => import('./specialized/PlaceholderWidgets').then(m => ({ default: m.GradedGroupWidget }))),
+    component: React.lazy(() => import('./group/GroupWidget').then(m => ({ default: m.GroupWidget }))),
     gradable: true,
     static: false,
   });

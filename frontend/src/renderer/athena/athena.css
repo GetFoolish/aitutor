@@ -232,6 +232,20 @@
 }
 
 /* ============================================================================
+   PARAGRAPH SPACING
+   ============================================================================ */
+
+/* Ensure proper spacing between paragraphs in question text */
+.athena-inline-widgets-container p {
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+.athena-inline-widgets-container p:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================================================
    WIDGET BASE STYLES
    ============================================================================ */
 
@@ -1431,36 +1445,54 @@
 .graphie-image-container {
   position: relative;
   display: block;
-  max-width: 100%;
+  max-width: 500px;
+  width: auto;
+  margin: 1rem auto 3rem auto;
+  /* Added extra bottom margin to prevent overlap */
+  clear: both;
 }
 
 .graphie-image {
   display: block;
   max-width: 100%;
   height: auto;
+  margin: 0 auto !important;
+  overflow: visible !important;
+}
+
+/* Container centering */
+.graphie-image-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 
 /* Ensure SVG text elements render correctly */
 .graphie-image-container svg text,
 .athena-choice-image svg text,
 .graphie-svg-wrapper svg text {
-  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-family: 'Arial', 'Helvetica', sans-serif !important;
 }
 
 /* Inline SVG wrapper */
 .graphie-svg-wrapper {
-  display: inline-block;
-  max-width: 100%;
+  display: block;
+  max-width: 500px;
+  width: auto;
   line-height: 0;
+  margin: 1rem auto;
+  clear: both;
 }
 
 .graphie-svg-wrapper svg {
   max-width: 100%;
+  width: 100%;
   height: auto;
   display: block;
 }
 
 /* Ensure SVG text is visible - override any hidden/transparent fills */
+/* IMPORTANT: Preserve transform attributes for rotated axis labels */
 .graphie-svg-wrapper svg text,
 .graphie-svg-wrapper svg tspan,
 .athena-choice-image text,
@@ -1469,9 +1501,12 @@
   fill-opacity: 1 !important;
   stroke: none !important;
   font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-size: 14px;
+  font-size: inherit;
   visibility: visible !important;
   opacity: 1 !important;
+  /* Preserve SVG transform attributes (e.g., rotation for Y-axis labels) */
+  transform-origin: inherit;
+  transform-box: fill-box;
 }
 
 .graphie-labels-overlay {
@@ -1490,6 +1525,32 @@
   color: #333;
   white-space: nowrap;
   text-shadow: 0 0 2px white, 0 0 2px white;
+}
+
+/* Ensure widgets are centered blocks when they contain graphs */
+.athena-widget-inline {
+  display: block !important;
+  width: 100% !important;
+  text-align: center !important;
+  margin: 1.5rem auto !important;
+}
+
+.graphie-image-container {
+  position: relative;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  margin: 0 auto !important;
+}
+
+/* Ensure content after graphie elements has proper spacing */
+.graphie-image-container+p,
+.graphie-svg-wrapper+p,
+.graphie-image-container+div,
+.graphie-svg-wrapper+div {
+  margin-top: 1rem;
+  clear: both;
 }
 
 /* Choice images */

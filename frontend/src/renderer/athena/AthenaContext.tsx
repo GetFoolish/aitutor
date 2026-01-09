@@ -275,6 +275,13 @@ export function AthenaProvider({
     [apiOptions, readOnly]
   );
 
+  // Sync theme prop with state
+  React.useEffect(() => {
+    if (theme !== state.theme) {
+      dispatch({ type: 'SET_THEME', payload: theme });
+    }
+  }, [theme, state.theme]);
+
   // Actions
   const setTheme = useCallback(
     (newTheme: 'light' | 'dark' | 'high-contrast') => {
