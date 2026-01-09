@@ -2,7 +2,9 @@
 LiveKit Agent Entry Point for AI Tutor
 
 This is the main entry point for the LiveKit AI Tutor agent.
-Uses Deepgram STT, Gemini LLM, and Cartesia TTS.
+Service Rationalization:
+- Google Gemini: LLM (intelligence), STT (speech-to-text), TTS (text-to-speech)
+- Hedra: Video avatar only
 
 Usage:
     python agent.py dev      # Development mode with auto-reload
@@ -17,7 +19,8 @@ from dotenv import load_dotenv
 
 from livekit import agents, rtc
 from livekit.agents import AgentSession, room_io
-from livekit.plugins import silero, deepgram, google, cartesia, hedra
+from livekit.plugins import silero, google, hedra
+# Note: deepgram and cartesia imports removed - using Gemini for STT/TTS
 
 # Preload VAD model at import time to avoid timeout during worker init
 print("[Agent] Preloading Silero VAD model...")
@@ -40,9 +43,10 @@ load_dotenv(os.path.join(AITUTOR_ROOT, ".env"))
 load_dotenv(os.path.join(PROJECT_ROOT, ".env.local"))
 load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
 
-# Configuration
-DEEPGRAM_MODEL = "nova-2-general"
-GEMINI_MODEL = "gemini-2.0-flash"
+# Configuration - Service Rationalization
+# Using Gemini for LLM/STT/TTS (native audio capabilities)
+# Using Hedra for video avatar only
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 HEDRA_AVATAR_ID = os.getenv("HEDRA_AVATAR_ID", "2e5739d9-3645-490f-89b5-acc8180743ad")
 USE_HEDRA_AVATAR = os.getenv("USE_HEDRA_AVATAR", "true").lower() == "true"
 
@@ -60,24 +64,26 @@ async def entrypoint(ctx: agents.JobContext):
     print(f"[Agent] Starting tutoring session in room: {ctx.room.name}")
     print(f"[Agent] Hedra config: USE_HEDRA={use_hedra}, AVATAR_ID={hedra_avatar_id[:20] if hedra_avatar_id else 'None'}...")
 
-    # Create the agent session with traditional STT + LLM + TTS pipeline
+    # Create the agent session with rationalized services
+    # Service Rationalization: Gemini for LLM/STT/TTS, Hedra for video avatar
+    # Note: Gemini Flash 2.5/3 Live has native audio capabilities (STT/TTS)
+    # For now, using separate plugins but can migrate to Gemini native audio later
     session = AgentSession(
-        # Speech-to-Text: Deepgram Nova 2
-        stt=deepgram.STT(
-            model=DEEPGRAM_MODEL,
+        # Speech-to-Text: Google Gemini (rationalized - using Gemini for STT)
+        stt=google.STT(
             language="en",
         ),
-        # LLM: Google Gemini
+        # LLM: Google Gemini Flash - provides super intelligence
         llm=google.LLM(
             model=GEMINI_MODEL,
             temperature=0.7,
         ),
-        # Text-to-Speech: Cartesia Sonic
-        # IMPORTANT: Use 16000 Hz sample rate to match Hedra avatar requirements
-        tts=cartesia.TTS(
-            model="sonic-2",
-            voice="71a7ad14-091c-4e8e-a314-022ece01c121",  # British Reading Lady
-            sample_rate=16000,  # Must match Hedra's expected sample rate for lip sync
+        # Text-to-Speech: Google Gemini (rationalized - using Gemini for TTS)
+        # Note: Gemini TTS is good enough for now. Cartesia is great for voice moods
+        # but Gemini provides sufficient quality and reduces service dependencies
+        tts=google.TTS(
+            voice="Aoede",  # Default Gemini voice
+            sample_rate=16000,  # Match Hedra's expected sample rate for lip sync
         ),
         # Voice Activity Detection: Silero
         vad=_preloaded_vad,
@@ -144,14 +150,20 @@ async def entrypoint(ctx: agents.JobContext):
 def main():
     """Main function to run the agent server."""
     # Validate required environment variables
+    # Service Rationalization: Only need Gemini and Hedra keys
     required_vars = [
         "LIVEKIT_URL",
         "LIVEKIT_API_KEY",
         "LIVEKIT_API_SECRET",
-        "DEEPGRAM_API_KEY",
-        "GOOGLE_API_KEY",
-        "CARTESIA_API_KEY",
-        "HEDRA_API_KEY",
+        "GOOGLE_API_KEY",  # For Gemini LLM/STT/TTS
+        "HEDRA_API_KEY",  # For video avatar
+        "HEDRA_AVATAR_ID",  # Avatar ID
+    ]
+    
+    # Optional (for future migration to Gemini native audio)
+    optional_vars = [
+        "DEEPGRAM_API_KEY",  # Can be removed after full Gemini migration
+        "CARTESIA_API_KEY",  # Can be removed after full Gemini migration
     ]
 
     missing = [var for var in required_vars if not os.getenv(var)]
