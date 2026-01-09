@@ -69,6 +69,115 @@ function getGraphieBaseUrl(url: string): string {
   return baseUrl;
 }
 
+/**
+ * Restructures the SVG for the voting graph to move legend squares to a side-by-side layout
+ * and adds padding to prevent overlaps.
+ */
+function restructureSvgForVotingGraph(svg: string): string {
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(svg, 'image/svg+xml');
+    const svgEl = doc.querySelector('svg');
+    if (!svgEl) return svg;
+
+    const viewBox = svgEl.getAttribute('viewBox');
+    let svgWidth = 400;
+    let svgHeight = 400;
+
+    if (viewBox) {
+      const parts = viewBox.split(/\s+/);
+      svgWidth = parseFloat(parts[2]) || 400;
+      svgHeight = parseFloat(parts[3]) || 400;
+    }
+
+    // --- EXPAND CANVAS ---
+    const topPadding = 180;    // Area for title (increased for clearance)
+    const bottomPadding = 200; // Room for X-axis label and legend footer
+    const leftPadding = 60;    // Add left padding for Y-axis label
+
+    const newHeight = svgHeight + topPadding + bottomPadding;
+    const newWidth = svgWidth + leftPadding;
+
+    // Update SVG attributes
+    svgEl.setAttribute('viewBox', `0 0 ${newWidth} ${newHeight}`);
+    svgEl.setAttribute('data-original-height', svgHeight.toString());
+    svgEl.setAttribute('data-restructured', 'true');
+    // Ensure it takes full width
+    svgEl.setAttribute('width', '100%');
+    svgEl.removeAttribute('height');
+
+    // --- MOVE GRAPH CONTENT ---
+    // Wrap EVERYTHING that was in the SVG into a translation group
+    const g = doc.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('transform', `translate(${leftPadding}, ${topPadding})`);
+    g.setAttribute('class', 'graph-content-transformed');
+
+    while (svgEl.firstChild) {
+      g.appendChild(svgEl.firstChild);
+    }
+    svgEl.appendChild(g);
+
+    // --- REPOSITION LEGEND BOXES (RECTS AND PATHS) ---
+    const boxes = Array.from(g.querySelectorAll('rect, path'));
+    const barCenter = svgWidth / 2;
+    // legendTopY relative to the transformed group
+    const legendTopY = svgHeight + 68; // Aligned with the text labels
+
+    boxes.forEach(box => {
+      const fill = box.getAttribute('fill') || '';
+      const isGrey = fill === '#b3b3b3' || fill.includes('ccc') || fill === 'gray';
+      const isBlack = fill === '#1a1a1a' || fill === 'black' || fill === '#000';
+
+      if (isGrey || isBlack) {
+        let bbox = { x: 0, y: 0, width: 0, height: 0 };
+        if (box.tagName.toLowerCase() === 'rect') {
+          bbox = {
+            x: parseFloat(box.getAttribute('x') || '0'),
+            y: parseFloat(box.getAttribute('y') || '0'),
+            width: parseFloat(box.getAttribute('width') || '0'),
+            height: parseFloat(box.getAttribute('height') || '0')
+          };
+        } else {
+          // For paths, extract typical legend y from the path data or use known ones
+          const d = box.getAttribute('d') || '';
+          const match = d.match(/M\s*([\d.]+)\s+([\d.]+)/);
+          if (match) {
+            bbox = { x: parseFloat(match[1]), y: parseFloat(match[2]), width: 15, height: 15 };
+          }
+        }
+
+        // CRITICAL: Only move it if it's below the main graph area (y > svgHeight - 50)
+        // This prevents moving the actual data bars!
+        if (bbox.y > svgHeight - 80) {
+          // Vertical Stack: Grey on top, Black below
+          // Align very close to the text (text is at barCenter + 15)
+          let newX = barCenter - 5;
+          let newY = legendTopY;
+
+          if (isBlack) {
+            newY += 25; // Stack below grey
+          }
+
+          const dx = newX - bbox.x;
+          const dy = newY - bbox.y;
+
+          if (box.tagName.toLowerCase() === 'rect') {
+            box.setAttribute('x', newX.toString());
+            box.setAttribute('y', newY.toString());
+          } else {
+            box.setAttribute('transform', `translate(${dx}, ${dy})`);
+          }
+        }
+      }
+    });
+
+    return new XMLSerializer().serializeToString(doc);
+  } catch (err) {
+    console.error('[GraphieImage] Error restructuring SVG:', err);
+    return svg;
+  }
+}
+
 export function GraphieImage({ url, alt = '', className = '', style }: GraphieImageProps) {
   const [svgContent, setSvgContent] = useState<string | null>(null);
   const [pngFallback, setPngFallback] = useState<string | null>(null);
@@ -163,26 +272,47 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         // Add a class to the SVG for styling
         let processedSvg = svg.replace(/<svg/, '<svg class="graphie-svg"');
 
+        // Detect voting graph based on URL
+        const isVotingUrl = baseUrl.toLowerCase().includes('voting') ||
+          baseUrl.toLowerCase().includes('political') ||
+          baseUrl.toLowerCase().includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011');
+
+        if (isVotingUrl) {
+          console.log('[GraphieImage] Voting graph detected by URL, restructuring SVG');
+          processedSvg = restructureSvgForVotingGraph(processedSvg);
+        }
+
         // Inject comprehensive CSS style block to ensure ALL text is visible
         // IMPORTANT: Scope all selectors to .graphie-svg to avoid affecting other page elements
         const styleBlock = `<style>
           /* Force all text elements to be visible - scoped to SVG only */
           .graphie-svg text, .graphie-svg tspan, .graphie-svg .label, svg[class*="graphie"] [class*="label"] {
-            fill: currentColor !important;
+            fill: #000 !important; /* Force high contrast black */
             fill-opacity: 1 !important;
-            font-family: 'Nunito', -apple-system, sans-serif !important;
+            font-family: 'Arial', 'Helvetica', sans-serif !important; /* Academic, crisp font */
+            font-weight: 500 !important; /* Slightly clearer */
             visibility: visible !important;
             display: inline !important;
             opacity: 1 !important;
             stroke: none !important;
+            text-rendering: optimizeLegibility !important; /* Better text rendering */
+          }
+          /* Enhance sharpness of geometric elements */
+          .graphie-svg line, .graphie-svg rect, .graphie-svg polyline {
+            shape-rendering: crispEdges !important; /* Sharp lines for axes and bars */
+          }
+          .graphie-svg path {
+            shape-rendering: geometricPrecision !important; /* Smooth curves, but precise */
           }
           /* Override any hiding attributes */
           text[fill="transparent"], tspan[fill="transparent"],
           text[fill="none"], tspan[fill="none"],
           text[fill="white"], tspan[fill="white"],
           text[fill="#fff"], tspan[fill="#fff"],
+          text[fill="white"], tspan[fill="white"],
+          text[fill="#fff"], tspan[fill="#fff"],
           text[fill="#ffffff"], tspan[fill="#ffffff"] {
-            fill: currentColor !important;
+            fill: #000 !important; /* Force even white text to black in high contrast mode */
           }
           text[style*="opacity"], tspan[style*="opacity"] {
             opacity: 1 !important;
@@ -397,6 +527,21 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       });
   }, [baseUrl]);
 
+  // Trigger restructuring based on graphie data (labels) if URL detection missed it
+  useEffect(() => {
+    if (graphieData && svgContent && !svgContent.includes('data-restructured')) {
+      const isVotingGraph = graphieData.labels?.some(l => {
+        const c = processLabelContent(l.content).toLowerCase();
+        return c.includes('voting') || c.includes('voter') || c.includes('polit') || c.includes('democrat') || c.includes('republic') || c.includes('high information');
+      });
+
+      if (isVotingGraph) {
+        console.log('[GraphieImage] Voting graph detected by labels, restructuring SVG now');
+        setSvgContent(prev => prev ? restructureSvgForVotingGraph(prev) : null);
+      }
+    }
+  }, [graphieData, svgContent]);
+
   // Post-render: Force all text elements to be visible via DOM manipulation
   useEffect(() => {
     if (!containerRef.current || !svgContent) return;
@@ -487,55 +632,163 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     const xMin = xRange[0], xMax = xRange[1];
     const yMin = yRange[0], yMax = yRange[1];
 
-    // Parse SVG dimensions from viewBox or width/height
+    // Parse SVG dimensions and check for restructuring
     const viewBoxMatch = svg.match(/viewBox="([^"]+)"/);
-    const widthMatch = svg.match(/width="([^"]+)"/);
-    const heightMatch = svg.match(/height="([^"]+)"/);
+    // Robust detection: check for the data attribute in the SVG string
+    const isRestructured = svg.includes('data-restructured');
+    const origHeightMatch = svg.match(/data-original-height="([^"]+)"/);
 
     let svgWidth = 400, svgHeight = 400;
+    let coordinateHeight = 400; // The height used for mapping coordinates [yMin, yMax]
+
     if (viewBoxMatch) {
       const parts = viewBoxMatch[1].split(/\s+/);
       svgWidth = parseFloat(parts[2]) || 400;
       svgHeight = parseFloat(parts[3]) || 400;
-    } else if (widthMatch && heightMatch) {
-      svgWidth = parseFloat(widthMatch[1]) || 400;
-      svgHeight = parseFloat(heightMatch[1]) || 400;
+      coordinateHeight = svgHeight;
     }
 
-    // The graphie range maps directly to the SVG viewBox
-    // xRange maps to [0, svgWidth], yRange maps to [svgHeight, 0] (Y inverted)
+    if (isRestructured && origHeightMatch) {
+      // If expanded, the coordinates [yMin, yMax] mapping should still use the ORIGINAL height scale
+      coordinateHeight = parseFloat(origHeightMatch[1]) || 400;
+    }
+
     // Generate SVG text elements for labels
     const labelElements = labels.map((label, index) => {
       const [x, y] = label.coordinates;
+      let svgX = ((x - xMin) / (xMax - xMin)) * svgWidth;
+      let svgY = ((yMax - y) / (yMax - yMin)) * coordinateHeight;
 
-      // Convert graphie coordinates to SVG coordinates
-      // X: xMin -> 0, xMax -> svgWidth
-      const svgX = ((x - xMin) / (xMax - xMin)) * svgWidth;
-      // Y: yMin -> svgHeight, yMax -> 0 (Y is inverted in SVG)
-      const svgY = ((yMax - y) / (yMax - yMin)) * svgHeight;
-
-      // Determine text-anchor based on alignment
       let textAnchor = 'middle';
-      let dy = '0.35em'; // Vertical centering
-      if (label.alignment === 'left') {
-        textAnchor = 'start';
-      } else if (label.alignment === 'right') {
-        textAnchor = 'end';
-      } else if (label.alignment === 'above' || label.alignment === 'top') {
-        dy = '-0.5em';
-      } else if (label.alignment === 'below' || label.alignment === 'bottom') {
-        dy = '1.2em';
+      let dy = '0.35em';
+      let transformAttr = '';
+      let styleStr = 'font-family: Arial, Helvetica, sans-serif; font-size: 16px;';
+
+      // --- LAYOUT RESTRUCTURING SPECIAL FIXES ---
+      // Robust detection of the voting graph
+      const isVotingGraph = labels.some(l => {
+        const c = processLabelContent(l.content).toLowerCase();
+        return c.includes('voting') || c.includes('voter') || c.includes('polit') || c.includes('democrat') || c.includes('republic') || c.includes('information');
+      });
+      const topPadding = 90; // Match the value used in restructureSvgForVotingGraph
+      const barCenter = svgWidth / 2;
+
+      // The "baseline" (y=0 in math coords) is at a specific Y in our coordinateHeight
+      const graphBaselineY = (yMax / (yMax - yMin)) * coordinateHeight;
+
+      // Process content for matching and display
+      const processedContent = processLabelContent(label.content);
+
+      if (index === 0) {
+        console.log('[GraphieImage] Checking voting graph:', isVotingGraph, 'isRestructured:', isRestructured);
+        console.log('[GraphieImage] Label contents:', labels.map(l => processLabelContent(l.content)));
       }
 
-      // Build style string
-      let styleStr = 'font-family: KaTeX_Main, "Times New Roman", serif; font-size: 16px;';
+      if (isVotingGraph && isRestructured) {
+        const lowerContent = processedContent.toLowerCase();
+        if (lowerContent.includes('low information') || lowerContent.includes('high information')) {
+          textAnchor = 'start';
+          // Vertical stack closer to the graph
+          svgX = barCenter + 15;
+          svgY = coordinateHeight + 80; // Relative to group (much tighter)
+
+          if (lowerContent.includes('high')) {
+            svgY += 25;
+          }
+        }
+        // 1. Move Title labels into the top padding area (negative relative Y)
+        else if (
+          (lowerContent.includes('voters') || lowerContent.includes('orientation') || lowerContent.includes('voting') || lowerContent.includes('information') || lowerContent.includes('probability'))
+          && !lowerContent.includes('(')
+          && !lowerContent.includes('%') // Exclude Y-axis label which has (%)
+          && !lowerContent.includes('low information')
+          && !lowerContent.includes('high information')
+        ) {
+          svgX = barCenter;
+          textAnchor = 'middle';
+          // Use negative Y to place them in the topPadding area (now 180px)
+          if (lowerContent.includes('orientation')) svgY = -140;
+          else if (lowerContent.includes('information')) svgY = -115;
+          else if (lowerContent.includes('voting')) svgY = -90;
+          else svgY = -115; // Fallback
+        }
+        // 2. Déplacement du label Y-axis "Probability of voting (%)" à gauche de l'axe
+        else if (lowerContent.includes('probability of voting') || lowerContent.includes('%')) {
+          svgX = 155; // Brought very close to the axis ticks
+          svgY = coordinateHeight / 2.6; // Moved slightly higher as requested
+          textAnchor = 'middle';
+          dy = '0.35em';
+          transformAttr = `rotate(-90 ${svgX} ${svgY})`;
+        }
+        // 3. Ajustement du label X-axis pour être juste en dessous
+        else if (lowerContent.includes('(') || lowerContent.includes('independent') || lowerContent.includes('democrat') || lowerContent.includes('republican')) {
+          svgX = barCenter;
+          textAnchor = 'middle';
+          // Position relative à la ligne de base réelle (y=0 mathématique)
+          if (lowerContent.includes('political orientation')) svgY = graphBaselineY + 65;
+          else if (lowerContent.includes('democrat')) svgY = graphBaselineY + 12;
+          else if (lowerContent.includes('independent')) svgY = graphBaselineY + 22;
+          else if (lowerContent.includes('republican')) svgY = graphBaselineY + 32;
+        }
+        else {
+          // Standard label (axis ticks [0, 10...], [1, 2...]) 
+          // Match the math coordinate mapping perfectly
+          if (label.alignment === 'below') {
+            svgY += 6; // Petit décalage sous la ligne
+          }
+
+          if (label.alignment === 'left') {
+            textAnchor = 'end';
+            svgX -= 10;
+          } else if (label.alignment === 'right') {
+            textAnchor = 'start';
+            svgX += 3;
+          } else if (label.alignment === 'above' || label.alignment === 'top') {
+            dy = '-0.8em';
+          } else if (label.alignment === 'below' || label.alignment === 'bottom') {
+            svgY += 25;
+            dy = '1.2em';
+          }
+        }
+      } else {
+        // Standard non-voting graph logic
+        if (label.alignment === 'left') {
+          textAnchor = 'end';
+          svgX -= 10;
+        } else if (label.alignment === 'right') {
+          textAnchor = 'start';
+          svgX += 3;
+        } else if (label.alignment === 'above' || label.alignment === 'top') {
+          dy = '-0.8em';
+        } else if (label.alignment === 'below' || label.alignment === 'bottom') {
+          svgY += 25;
+          dy = '1.2em';
+        }
+      }
+
       if (label.style) {
         if (label.style['font-weight']) styleStr += ` font-weight: ${label.style['font-weight']};`;
-        if (label.style.transform) styleStr += ` transform-origin: center; transform: ${label.style.transform};`;
+        if (label.style['font-size']) styleStr += ` font-size: ${label.style['font-size']};`;
+
+        // Extract transform for SVG attribute (CSS transform doesn't work on SVG text elements reliably)
+        if (label.style.transform) {
+          // Convert CSS rotate(-90deg) to SVG rotate(-90 x y)
+          const rotateMatch = label.style.transform.match(/rotate\((-?\d+)deg\)/);
+          if (rotateMatch) {
+            const angle = rotateMatch[1];
+            // Rotate around the precise text position
+            transformAttr = `rotate(${angle} ${svgX} ${svgY})`;
+
+            // We want to push it closer to the Y-axis or just keep it centered.
+            dy = '0.35em';
+          } else {
+            // Fallback: strip 'deg' if present, as SVG doesn't use units in rotate()
+            transformAttr = label.style.transform.replace('deg', '');
+          }
+        }
       }
 
-      // Process content: strip disallowed tags like <center> but keep <br> for multiline
-      const processedContent = processLabelContent(label.content);
+      // Processed content is already available from matching logic
 
       // Split by <br> tags to support multiline labels in SVG
       const lines = processedContent.split(/<br\s*\/?>/i);
@@ -552,10 +805,13 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         return `<tspan x="${svgX}" dy="${lineDy}">${escapedLine}</tspan>`;
       }).join('');
 
-      return `<text x="${svgX}" y="${svgY}" text-anchor="${textAnchor}" dy="${dy}" fill="currentColor" style="${styleStr}">${tspanElements}</text>`;
+      return `<text x="${svgX}" y="${svgY}" text-anchor="${textAnchor}" dy="${dy}" fill="currentColor" style="${styleStr}" ${transformAttr ? `transform="${transformAttr}"` : ''}>${tspanElements}</text>`;
     }).join('\n');
 
-    // Insert labels before closing </svg> tag
+    // Insert labels into the transformed group if it exists, otherwise at the end
+    if (svg.includes('class="graph-content-transformed"')) {
+      return svg.replace('</g></svg>', `<g class="graphie-labels">${labelElements}</g></g></svg>`);
+    }
     return svg.replace('</svg>', `<g class="graphie-labels">${labelElements}</g></svg>`);
   }, []);
 
@@ -575,8 +831,14 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       className={`graphie-image-container ${className}`}
       style={{
         position: 'relative',
-        display: 'block',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
         maxWidth: '100%',
+        margin: '2rem auto',
+        textAlign: 'center',
         ...style,
       }}
       role="img"
@@ -610,13 +872,26 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       ) : processedSvgWithLabels ? (
         // Render SVG with labels injected from data.json
         <div
-          className="graphie-svg-wrapper"
           style={{
-            maxWidth: '100%',
-            lineHeight: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            textAlign: 'center', // Ensure text/inline elements are centered
+            width: '100%',
+            marginTop: '1rem',
+            marginBottom: '1rem'
           }}
-          dangerouslySetInnerHTML={{ __html: processedSvgWithLabels }}
-        />
+        >
+          <div
+            className="graphie-svg-wrapper"
+            dangerouslySetInnerHTML={{ __html: processedSvgWithLabels }}
+            style={{
+              display: 'block',
+              margin: '0 auto',
+              maxWidth: '100%',
+              lineHeight: 0,
+            }}
+          />
+        </div>
       ) : (
         // Default fallback to PNG (better than showing "Loading..." forever)
         <img
