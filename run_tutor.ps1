@@ -5,7 +5,7 @@
     Loads environment variables, activates Python venv, starts backend services, and launches frontend.
 #>
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
 $ScriptDir = $PSScriptRoot
 
 # 1. Load .env file
@@ -109,12 +109,18 @@ try {
         
         # Check if backend jobs are still running
         foreach ($Job in $Jobs) {
+            # Check for output and print it (non-blocking)
+            if ($Job.HasMoreData) {
+                Receive-Job $Job | ForEach-Object { Write-Host "[$($Job.Name)] $_" -ForegroundColor Gray }
+            }
+
             if ($Job.State -ne 'Running') {
-                Write-Host "Service $($Job.Id) stopped unexpectedly." -ForegroundColor Red
+                Write-Host "Service $($Job.Id) ($($Job.Name)) stopped unexpectedly." -ForegroundColor Red
+                # Receive remaining output
                 Receive-Job $Job | Write-Host
             }
         }
-        Start-Sleep -Seconds 1
+        Start-Sleep -Milliseconds 500
     }
 }
 finally {
