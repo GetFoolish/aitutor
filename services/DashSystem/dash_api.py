@@ -16,6 +16,8 @@ logging.basicConfig(
         logging.StreamHandler(sys.stdout)
     ]
 )
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning) 
 logger = logging.getLogger(__name__)
 
 # Add the project root to the Python path
@@ -206,23 +208,6 @@ def load_perseus_items_for_dash_questions_from_mongodb(
             continue
         except Exception as e:
             logger.warning(f"Failed to load Perseus from scraped_questions for question_id {question_id}: {e}")
-
-    # --- MOCK DATA INJECTION FOR DEVELOPMENT ---
-    # Inject learningAsset for known questions to verify frontend
-    if perseus_items:
-        # Just pick the first one or a specific ID if you prefer
-        # Example: Inject into the first item so we always see it
-        mock_asset = {
-            "title": "Introduction to Algebra",
-            "thumbnail": "https://img.youtube.com/vi/NybHckSEQBI/mqdefault.jpg",
-            "videoId": "NybHckSEQBI",
-            "duration": "12:30",
-            "category": "Math"
-        }
-        # In real implementation, this would come from `item_data.get('learningAsset')`
-        # For now, we force it on the first item if not present
-        if not perseus_items[0].get('learningAsset'):
-            perseus_items[0]['learningAsset'] = mock_asset
 
     return perseus_items
 
@@ -688,11 +673,77 @@ def get_learning_assets():
             
         logger.info(f"[LEARNING_ASSETS] Generated {len(assets_list)} assets from exercises collection")
         return assets_list
+
     except Exception as e:
         logger.error(f"[ERROR] Failed to fetch learning assets: {e}")
         import traceback
         logger.error(f"[ERROR] Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch learning assets: {e}")
+
+@app.get("/api/learning-assets/search")
+def search_youtube_videos(query: str, limit: int = 10):
+    """
+    Search YouTube for videos matching the query.
+    Returns a list of video objects with title, thumbnail, duration, and ID.
+    """
+    import yt_dlp
+    
+    logger.info(f"Searching YouTube with yt-dlp for: {query}")
+    
+    try:
+        ydl_opts = {
+            'default_search': f'ytsearch{limit}',
+            'quiet': True, 
+            'extract_flat': 'in_playlist',
+            'no_warnings': True
+        }
+        
+        videos = []
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            logger.info(f"Calling yt-dlp extract_info for: {query}")
+            info = ydl.extract_info(query, download=False)
+            
+            # Debug logging
+            logger.info(f"yt-dlp info keys: {info.keys() if info else 'None'}")
+            
+            if 'entries' in info:
+                logger.info(f"yt-dlp found {len(info['entries'])} entries")
+            else:
+                logger.warning("yt-dlp found no 'entries' in info")
+                
+            if 'entries' in info:
+                for entry in info['entries']:
+                    if not entry: continue
+                    video_id = entry.get('id')
+                    duration_seconds = entry.get('duration')
+                    
+                    # FILTER: Exclude Shorts (videos < 60 seconds)
+                    if duration_seconds and int(duration_seconds) < 60:
+                        continue
+                    
+                    # Format duration
+                    duration_str = ""
+                    if duration_seconds:
+                        m, s = divmod(int(duration_seconds), 60)
+                        duration_str = f"{m}:{s:02d}"
+                    
+                    videos.append({
+                        "id": video_id,
+                        "videoId": video_id,
+                        "title": entry.get('title'),
+                        "thumbnail": f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg",
+                        "duration": duration_str,
+                        "link": f"https://www.youtube.com/watch?v={video_id}",
+                        "channel": entry.get('uploader')
+                    })
+            
+        logger.info(f"Returning {len(videos)} videos (Filtered > 60s)")
+        return videos
+    except Exception as e:
+        logger.error(f"YouTube search failed: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return []
 
 if __name__ == "__main__":
     import uvicorn
