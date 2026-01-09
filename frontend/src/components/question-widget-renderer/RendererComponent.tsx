@@ -33,9 +33,10 @@ const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_U
 interface RendererComponentProps {
     onSkillChange?: (skill: string) => void;
     onLearningAssetChange?: (asset: any) => void;
+    onQuestionChange?: (text: string) => void;
 }
 
-const RendererComponent = ({ onSkillChange, onLearningAssetChange }: RendererComponentProps) => {
+const RendererComponent = ({ onSkillChange, onLearningAssetChange, onQuestionChange }: RendererComponentProps) => {
     const { user } = useAuth();
     const { setTotalHints, setCurrentHintIndex, showHints, setShowHints } = useHint();
     const queryClient = useQueryClient();
@@ -162,6 +163,12 @@ const RendererComponent = ({ onSkillChange, onLearningAssetChange }: RendererCom
                 onLearningAssetChange(learningAsset || null);
             }
 
+            // Notify parent of question text change
+            if (onQuestionChange) {
+                const questionContent = (currentItem as any).question?.content || "";
+                onQuestionChange(questionContent);
+            }
+
             // Log question displayed
             apiUtils.post(`${DASH_API_URL}/api/question-displayed`, {
                 question_index: item,
@@ -170,7 +177,7 @@ const RendererComponent = ({ onSkillChange, onLearningAssetChange }: RendererCom
                 console.error('Failed to log question displayed:', err);
             });
         }
-    }, [item, perseusItems, isLoading, user_id, onLearningAssetChange]);
+    }, [item, perseusItems, isLoading, user_id, onLearningAssetChange, onQuestionChange]);
 
     // Mock skill state update
     useEffect(() => {
