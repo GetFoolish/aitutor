@@ -5,6 +5,10 @@ import { TutorProvider, useTutorContext } from '../../features/tutor';
 import AssessmentQuestion from './AssessmentQuestion';
 import AssessmentResults from './AssessmentResults';
 import Header from '../../components/header/Header';
+import BackgroundShapes from '../background-shapes/BackgroundShapes';
+
+/* 🔥 COPY LOGIN BG STYLES */
+import '../auth/auth.scss';
 
 const FloatingControlPanel = lazy(() =>
   import('../../components/floating-control-panel/FloatingControlPanel')
@@ -170,93 +174,78 @@ const AssessmentFlow: React.FC = () => {
   };
 
   /* ----------------------------------------------------
-     Render states
+     Render
   ---------------------------------------------------- */
+  return (
+    <div className="auth-container">
+      <BackgroundShapes />
 
-  if (loading) {
-    return (
-      <>
-        <Header />
+      <Header />
+
+      {loading && (
         <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center' }}>
           Loading…
         </div>
-      </>
-    );
-  }
+      )}
 
-  if (completed) {
-    return (
-      <>
-        <Header />
+      {completed && (
         <AssessmentResults
           score={score}
           total={total}
           subject={subject}
           onContinue={() => history.replace('/app')}
         />
-      </>
-    );
-  }
+      )}
 
-  if (error) {
-    return (
-      <>
-        <Header />
+      {error && (
         <div style={{ padding: 40, color: 'red' }}>{error}</div>
-      </>
-    );
-  }
+      )}
 
-  const currentQuestion = questions[currentIndex];
+      {!loading && !completed && !error && (
+        <div style={{ position: 'relative', minHeight: '100vh' }}>
+          <div style={{ padding: '40px 20px', maxWidth: 800, margin: '0 auto' }}>
+            {submitting && <div>Submitting…</div>}
 
-  /* ----------------------------------------------------
-     Correct layout
-  ---------------------------------------------------- */
-  return (
-    <>
-      <Header />
+            {questions[currentIndex] && (
+              <AssessmentQuestion
+                question={questions[currentIndex]}
+                questionNumber={currentIndex + 1}
+                totalQuestions={questions.length}
+                onAnswer={handleAnswer}
+              />
+            )}
+          </div>
 
-      <div style={{ position: 'relative', minHeight: '100vh' }}>
-        <div style={{ padding: '40px 20px', maxWidth: 800, margin: '0 auto' }}>
-          {submitting && <div>Submitting…</div>}
+          <TutorProvider>
+            {questions[currentIndex] && (
+              <QuestionSender question={questions[currentIndex]} />
+            )}
 
-          {currentQuestion && (
-            <AssessmentQuestion
-              question={currentQuestion}
-              questionNumber={currentIndex + 1}
-              totalQuestions={questions.length}
-              onAnswer={handleAnswer}
-            />
-          )}
+            <Suspense fallback={null}>
+              <FloatingControlPanel
+                renderCanvasRef={mediaMixerCanvasRef}
+                videoRef={videoRef}
+                supportsVideo
+                onVideoStreamChange={() => {}}
+                onMixerStreamChange={() => {}}
+                enableEditingSettings
+                onPaintClick={() => setIsScratchpadOpen(!isScratchpadOpen)}
+                isPaintActive={isScratchpadOpen}
+                cameraEnabled={cameraEnabled}
+                screenEnabled={screenEnabled}
+                onToggleCamera={setCameraEnabled}
+                onToggleScreen={setScreenEnabled}
+                mediaMixerCanvasRef={mediaMixerCanvasRef}
+                privacyMode={privacyMode}
+                onTogglePrivacy={setPrivacyMode}
+                processedEdgesRef={processedEdgesRef}
+                assessmentMode
+              />
+            </Suspense>
+          </TutorProvider>
         </div>
-
-        <TutorProvider>
-          {currentQuestion && <QuestionSender question={currentQuestion} />}
-
-          <Suspense fallback={null}>
-            <FloatingControlPanel
-              renderCanvasRef={mediaMixerCanvasRef}
-              videoRef={videoRef}
-              supportsVideo
-              onVideoStreamChange={() => {}}
-              onMixerStreamChange={() => {}}
-              enableEditingSettings
-              onPaintClick={() => setIsScratchpadOpen(!isScratchpadOpen)}
-              isPaintActive={isScratchpadOpen}
-              cameraEnabled={cameraEnabled}
-              screenEnabled={screenEnabled}
-              onToggleCamera={setCameraEnabled}
-              onToggleScreen={setScreenEnabled}
-              mediaMixerCanvasRef={mediaMixerCanvasRef}
-              privacyMode={privacyMode}
-              onTogglePrivacy={setPrivacyMode}
-              processedEdgesRef={processedEdgesRef}
-              assessmentMode
-            />
-          </Suspense>
-        </TutorProvider>
-      </div>
-    </>
+      )}
+    </div>
   );
 };
 
