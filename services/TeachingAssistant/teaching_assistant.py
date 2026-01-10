@@ -2,8 +2,13 @@
 Teaching Assistant v5 - Cognitive Memory Pipeline
 All state is stored in MongoDB via SessionManager.
 Integrates with Living Biography for personalized tutoring.
+
+v4 improvements integrated:
+- Event processing loop support (running, ongoing)
+- Colored logging
 """
 
+import asyncio
 from typing import Optional, Dict, Any, List
 
 from .greeting_handler import GreetingHandler
@@ -31,7 +36,46 @@ class TeachingAssistant:
         self.session_manager = SessionManager(mongo)
         self.greeting_handler = GreetingHandler()
         self.mongo = mongo
+
+        # v4 improvement: Event processing loop support
+        self.running = False
+
         logger.info("[TEACHING_ASSISTANT] v5 Initialized with Cognitive Memory Pipeline")
+
+    async def ongoing(self):
+        """
+        Event processing loop (v4 improvement).
+        Called by lifespan manager in api.py.
+
+        Handles background tasks like:
+        - Inactivity checks
+        - Memory consolidation
+        - Session cleanup
+        """
+        logger.info("[TEACHING_ASSISTANT] Event processing loop started")
+
+        while self.running:
+            try:
+                # Get all active sessions and check for inactivity
+                active_sessions = self.session_manager.get_all_active_sessions()
+
+                for session in active_sessions:
+                    session_id = session.get("session_id")
+                    if session_id:
+                        # Check for inactivity (this will push prompt if needed)
+                        self.check_inactivity(session_id)
+
+                # Sleep before next check (don't check too frequently)
+                await asyncio.sleep(30)  # Check every 30 seconds
+
+            except asyncio.CancelledError:
+                logger.info("[TEACHING_ASSISTANT] Event processing loop cancelled")
+                break
+            except Exception as e:
+                logger.error(f"[TEACHING_ASSISTANT] Error in event processing loop: {e}")
+                await asyncio.sleep(5)  # Brief pause before retrying
+
+        logger.info("[TEACHING_ASSISTANT] Event processing loop stopped")
 
     def start_session(self, user_id: str, student_name: str = None) -> dict:
         """

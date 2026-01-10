@@ -10,18 +10,28 @@ Features:
 """
 
 import os
+import sys
 import json
 import time
 import threading
 from typing import Dict, List, Set, Optional
 from pathlib import Path
-import logging
 
 from dotenv import load_dotenv
 
+# Add project root to path for imports
+project_root = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(project_root))
+
 load_dotenv()
 
-logger = logging.getLogger(__name__)
+# Try to use shared logging config for colored output
+try:
+    from shared.logging_config import get_logger
+    logger = get_logger(__name__)
+except ImportError:
+    import logging
+    logger = logging.getLogger(__name__)
 
 # Try Gemini for LLM calls
 try:

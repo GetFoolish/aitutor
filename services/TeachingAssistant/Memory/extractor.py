@@ -10,17 +10,28 @@ Features:
 """
 
 import os
+import sys
 import json
 import time
 from typing import List, Dict, Any, Optional
 from datetime import datetime
-import logging
+from pathlib import Path
 
 from dotenv import load_dotenv
 
+# Add project root to path for imports
+project_root = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(project_root))
+
 load_dotenv()
 
-logger = logging.getLogger(__name__)
+# Try to use shared logging config for colored output
+try:
+    from shared.logging_config import get_logger
+    logger = get_logger(__name__)
+except ImportError:
+    import logging
+    logger = logging.getLogger(__name__)
 
 # Try Gemini
 try:
@@ -115,28 +126,37 @@ class MemoryExtractor:
             tutor_text = ex.get("tutor", ex.get("adam", ""))
             exchanges_text += f"[Turn {i+1}]\nSTUDENT: {student_text}\nTUTOR: {tutor_text}\n\n"
 
-        prompt = f"""You are an Expert Memory Extractor for an AI tutoring system.
+        prompt = f"""Analyze these {len(exchanges[-20:])} conversation exchanges to update the Student Profile.
 
-Analyze these student-tutor exchanges and extract meaningful memories about the student.
-
-Conversation:
 {exchanges_text}
 
-EXTRACT:
-1. MEMORIES - Individual facts about the student
-   Types: academic, personal, preference, context, emotional
-   For each: text (the fact), type, importance (0.0-1.0), emotion (if any)
+Task 1: Extract STUDENT MEMORIES.
+**GOLDEN RULE**: You are recording PERMANENT FACTS about the Student. You are NOT summarizing a conversation.
 
-   IMPORTANT:
-   - Focus on FACTS about the student, not conversation mechanics
-   - DO NOT include: "Student said ok", "Student acknowledged", generic responses
-   - DO include: Interests, struggles, preferences, personal info, emotions
+1. **STRICT PROHIBITION (Zero Tolerance)**:
+   - **NEVER** mention "The AI", "The Tutor", "The System", "The Assistant", or "The Conversation".
+   - **NEVER** output meta-commentary like "Student responded to the prompt" or "Student interacted with the system".
+   - **BAD Example**: "Student asked the AI for help with algebra."
+   - **GOOD Example**: "Student requested help with algebra."
+   - **BAD Example**: "Student answered the AI correctly."
+   - **GOOD Example**: "Student demonstrated mastery of [specific concept]."
 
-2. EMOTIONS - Detected student emotions (frustrated, confused, excited, anxious, tired, happy, engaged)
+2. **CRITICAL TRANSCRIPTION HANDLING (Audio Artifacts)**:
+   - The "Student" text comes from realtime audio-to-text. It may contain broken words (e.g., "Cu rrent ly", "chem is try").
+   - **REPAIR**: You MUST mentally repair these fragments to capture the INTENT (e.g. treat "chem is try" as "chemistry").
+   - **NO META-MEMORIES**: DO NOT record memories about the text format (e.g., "Student types with spaces" -> DELETE THIS).
+   - **IGNORE GARBAGE**: If text is unintelligible, IGNORE IT. Do not record "Student text is unclear".
 
-3. BREAKTHROUGHS - Moments of understanding or connection
+3. **CATEGORIES**:
+   - **Academic**: Knowledge gaps, misconceptions, or mastery (e.g., "Understands chain rule", "Confused by integrals").
+   - **Personal**: Hobbies, life details (e.g., "Plays soccer", "Has a dog named Max").
+   - **Preference**: Learning needs (e.g., "Prefers visual examples", "Dislikes long lectures").
+   - **Context**: Emotional state (e.g., "Anxious about upcoming exam").
+   - **Emotional**: Feelings and reactions captured during session.
 
-4. UNFINISHED_TOPICS - Topics that need follow-up
+Task 2: Detect EMOTIONS (frustrated, confused, excited, anxious, tired, happy, engaged, curious, bored, confident, nervous, or neutral).
+Task 3: Identify BREAKTHROUGHS - Moments of understanding or connection.
+Task 4: Identify UNFINISHED_TOPICS - Topics that need follow-up.
 
 Return JSON:
 {{

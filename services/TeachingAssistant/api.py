@@ -4,6 +4,7 @@ import threading
 import requests
 import asyncio
 import time
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
@@ -47,8 +48,41 @@ active_observers: Dict[str, List[WebSocket]] = {}
 # In production, use a more robust auth mechanism
 OBSERVER_API_KEY = os.getenv("OBSERVER_API_KEY", "dev-observer-key-12345")
 
+# Global task for event processing loop (v4 improvement)
+event_processing_task = None
 
-app = FastAPI(title="Teaching Assistant API")
+
+# ============================================================================
+# Lifespan Context Manager (Start/Stop Event Processing Loop) - v4 improvement
+# ============================================================================
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Start and stop event processing loop"""
+    global ta, event_processing_task
+
+    # Start event processing loop if TeachingAssistant has ongoing method
+    if hasattr(ta, 'running') and hasattr(ta, 'ongoing'):
+        ta.running = True
+        event_processing_task = asyncio.create_task(ta.ongoing())
+        logger.info("[API] Started event processing loop")
+
+    yield
+
+    # Shutdown
+    logger.info("[API] Shutting down event processing loop...")
+    if hasattr(ta, 'running'):
+        ta.running = False
+    if event_processing_task:
+        event_processing_task.cancel()
+        try:
+            await event_processing_task
+        except asyncio.CancelledError:
+            pass
+    logger.info("[API] Event processing loop stopped")
+
+
+app = FastAPI(title="Teaching Assistant API", lifespan=lifespan)
 
 # Add timing middleware for performance monitoring (Phase 1)
 app.add_middleware(UnpluggedTimingMiddleware)
@@ -145,6 +179,64 @@ logger.info("[API] v4+v5 Cognitive Memory Pipeline initialized")
 
 # DASH API URL for pre-loading questions
 DASH_API_URL = os.getenv("DASH_API_URL", "http://localhost:8000")
+
+
+# ============================================================================
+# Feed-to-Event Converter (v4 improvement)
+# ============================================================================
+
+def feed_message_to_event(message: dict, session_id: str, user_id: str) -> Optional[Event]:
+    """Convert WebSocket feed message to Event object"""
+    msg_type = message.get("type")
+    timestamp_str = message.get("timestamp")
+    payload = message.get("data", {})
+
+    # Parse timestamp
+    if timestamp_str:
+        try:
+            from datetime import datetime
+            timestamp = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00')).timestamp()
+        except:
+            timestamp = time.time()
+    else:
+        timestamp = time.time()
+
+    # Convert based on message type
+    if msg_type == "transcript":
+        return Event(
+            type=EventType.TEXT,
+            timestamp=timestamp,
+            session_id=session_id,
+            user_id=user_id,
+            data={
+                "speaker": payload.get("speaker", "user"),
+                "text": payload.get("transcript", ""),
+                "timestamp": timestamp_str
+            }
+        )
+    elif msg_type == "audio":
+        return Event(
+            type=EventType.AUDIO,
+            timestamp=timestamp,
+            session_id=session_id,
+            user_id=user_id,
+            data={
+                "audio": payload.get("audio", ""),
+                "timestamp": timestamp_str
+            }
+        )
+    elif msg_type == "media":
+        return Event(
+            type=EventType.MEDIA,
+            timestamp=timestamp,
+            session_id=session_id,
+            user_id=user_id,
+            data={
+                "media": payload.get("media", ""),
+                "timestamp": timestamp_str
+            }
+        )
+    return None
 
 
 # ============================================================================

@@ -6,9 +6,11 @@ Manages:
 - Dynamic skill loading from directory
 - Skill registration and execution
 - Skill state management
+
+v4 improvements integrated:
+- Colored logging
 """
 
-import logging
 import importlib
 import inspect
 from pathlib import Path
@@ -18,7 +20,13 @@ from .core.context import SessionContext
 from .core.config import TeachingAssistantConfig
 from .skills.base import Skill, DEFAULT_SKILLS
 
-logger = logging.getLogger(__name__)
+# Try to use shared logging config for colored output
+try:
+    from shared.logging_config import get_logger
+    logger = get_logger(__name__)
+except ImportError:
+    import logging
+    logger = logging.getLogger(__name__)
 
 
 class SkillsManager:

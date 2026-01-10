@@ -2,6 +2,10 @@
 Session Manager for TeachingAssistant v5
 Manages session state in MongoDB with conversation tracking.
 Integrates with the Cognitive Memory Pipeline for biography updates.
+
+v4 improvements integrated:
+- Config-driven architecture
+- Colored logging
 """
 
 from datetime import datetime, timedelta
@@ -9,6 +13,12 @@ from typing import Optional, Dict, Any, List
 import uuid
 
 from shared.logging_config import get_logger
+
+# Try to import config (v4 improvement)
+try:
+    from .core.config import TeachingAssistantConfig
+except ImportError:
+    TeachingAssistantConfig = None
 
 logger = get_logger(__name__)
 

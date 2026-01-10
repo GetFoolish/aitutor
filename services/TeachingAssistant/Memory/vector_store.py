@@ -18,13 +18,22 @@ from typing import List, Optional, Dict, Any
 from pathlib import Path
 from dataclasses import dataclass
 from datetime import datetime
-import logging
 
 from dotenv import load_dotenv
 
+# Add project root to path for imports
+project_root = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(project_root))
+
 load_dotenv()
 
-logger = logging.getLogger(__name__)
+# Try to use shared logging config for colored output
+try:
+    from shared.logging_config import get_logger
+    logger = get_logger(__name__)
+except ImportError:
+    import logging
+    logger = logging.getLogger(__name__)
 
 # Import Pinecone
 try:
