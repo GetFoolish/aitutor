@@ -61,7 +61,12 @@ async def startup_event():
     logger.info("Initializing DASHSystem...")
     try:
         dash_system = DASHSystem()
-        logger.info(f"DASHSystem initialized: {len(dash_system.skills)} skills, {len(dash_system.question_index)} questions in index")
+        logger.info(f"DASHSystem initialized: {len(dash_system.skills)} skills loaded immediately")
+        logger.info("Khan Academy data loading in background...")
+        
+        # Pre-generate default grading panel for instant cold starts
+        dash_system.generate_default_grading_panel()
+        logger.info("✅ Default grading panel pre-generated and ready for instant cold starts")
     except Exception as e:
         logger.error(f"Failed to initialize DASHSystem: {e}")
         import traceback
@@ -97,12 +102,17 @@ def health_check():
             media_type="application/json",
             status_code=503
         )
-    return {
+    
+    # API is ready even if Khan data is still loading
+    status = {
         "status": "ready",
         "ready": True,
         "skills_count": len(dash_system.skills),
-        "questions_count": len(dash_system.question_index)
+        "khan_loading": dash_system.khan_loading,
+        "khan_loaded": dash_system.khan_loaded
     }
+    
+    return status
 
 
 def load_perseus_items_for_dash_questions_from_mongodb(
@@ -381,15 +391,10 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
             logger.info(f"[SESSION_END] Selected {len(selected_questions)}/{sample_size} questions (no more available)")
             break
     
-    # Development bypass: if no questions selected, just get random ones from DB
-    if not selected_questions and os.getenv("DEV_MODE", "true").lower() == "true":
-        logger.warning(f"[DEV_BYPASS] No DASH questions selected, fetching {sample_size} random questions from Perseus DB")
-        random_perseus = list(dash_system.mongo.perseus_questions.aggregate([
-            {"$sample": {"size": sample_size}}
-        ]))
-        if random_perseus:
-            logger.info(f"[DEV_BYPASS] Found {len(random_perseus)} random Perseus questions")
-            return random_perseus
+    # If no questions were selected, it means no skills had available questions
+    if not selected_questions:
+        logger.error(f"[ERROR] No DASH questions selected - recommended skills have no available questions in database")
+        raise HTTPException(status_code=404, detail="No questions available for recommended skills. Please check database content.")
     
     # Load Perseus items from MongoDB for all DASH-selected questions
     try:
@@ -554,37 +559,84 @@ def submit_answer(request: Request, answer: AnswerSubmission):
 @app.get("/api/grading-panel")
 def get_grading_panel(request: Request):
     """
-    Get grading panel data from Khan Academy hierarchy.
-    Skills = Units, Sub-skills = Lessons (following DASH Integration Plan).
-    
-    Returns student performance mapped to current questions_db structure.
-    This is future-proof: survives questions_db updates without data loss.
+    Get grading panel data with instant cold start and MongoDB caching.
+    Returns cached data instantly if available, generates in background if not.
     """
     ensure_dash_system()
-    # Get user_id from JWT token
     user_id = get_current_user(request)
     
     try:
-        grading_data = dash_system.get_grading_panel_data(user_id)
-        logger.info(f"[GRADING_PANEL] Generated grading data for user {user_id}")
-        return grading_data
+        from managers.mongodb_manager import MongoDBManager
+        from datetime import datetime
+        import threading
+        import time
+        
+        mongo = MongoDBManager()
+        user_doc = mongo.users.find_one({"user_id": user_id})
+        
+        # Check for cached data
+        if user_doc and "cached_grading_panel" in user_doc:
+            cache = user_doc["cached_grading_panel"]
+            cache_time = cache.get("cached_at")
+            
+            if cache_time and isinstance(cache_time, datetime):
+                age_minutes = (datetime.utcnow() - cache_time).total_seconds() / 60
+                
+                # Return cached data if fresh (< 5 minutes)
+                if age_minutes < 5:
+                    logger.info(f"[GRADING_PANEL] ⚡ Returning cached data (age: {age_minutes:.1f}min)")
+                    
+                    # Update cache in background
+                    def update_cache():
+                        try:
+                            fresh_data = dash_system.get_grading_panel_data(user_id)
+                            mongo.users.update_one(
+                                {"user_id": user_id},
+                                {"$set": {"cached_grading_panel": {
+                                    "data": fresh_data,
+                                    "cached_at": datetime.utcnow()
+                                }}}
+                            )
+                            logger.info(f"[GRADING_PANEL] ✅ Cache updated and saved to MongoDB")
+                        except Exception as e:
+                            logger.error(f"[GRADING_PANEL] Background update failed: {e}")
+                    
+                    threading.Thread(target=update_cache, daemon=True).start()
+                    return cache["data"]
+        
+        # COLD START - return pre-generated default instantly
+        logger.info(f"[GRADING_PANEL] ❄️ Cold start - returning pre-generated default")
+        
+        # Generate personalized data in background and SAVE to MongoDB
+        def generate_and_cache():
+            try:
+                logger.info(f"[GRADING_PANEL] 🔄 Generating personalized data in background")
+                personalized_data = dash_system.get_grading_panel_data(user_id)
+                
+                # SAVE TO MONGODB
+                mongo.users.update_one(
+                    {"user_id": user_id},
+                    {"$set": {"cached_grading_panel": {
+                        "data": personalized_data,
+                        "cached_at": datetime.utcnow()
+                    }}},
+                    upsert=True
+                )
+                logger.info(f"[GRADING_PANEL] 💾 Data generated and SAVED to MongoDB")
+            except Exception as e:
+                logger.error(f"[GRADING_PANEL] ❌ Background generation failed: {e}")
+        
+        threading.Thread(target=generate_and_cache, daemon=True).start()
+        
+        # Return pre-generated default panel (instant < 50ms)
+        return dash_system.default_grading_panel
+        
     except Exception as e:
         logger.error(f"[ERROR] Error getting grading panel data: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-    skill_states = {}
-    for skill_id, score_data in scores.items():
-        # Get student state to get last_practice_time
-        state = dash_system.get_student_state(user_id, skill_id)
-        
-        skill_states[skill_id] = {
-            "name": score_data["name"],  # Include skill name
-            "memory_strength": score_data["memory_strength"],
-            "last_practice_time": state.last_practice_time if state.last_practice_time else None,
-            "practice_count": score_data["practice_count"],
-            "correct_count": score_data["correct_count"]
-        }
-    
-    return {"skill_states": skill_states}
+
+
+
 
 @app.post("/api/questions/recommend-next", response_model=List[PerseusQuestion])
 def recommend_next_questions(request: Request, req: RecommendNextRequest):
