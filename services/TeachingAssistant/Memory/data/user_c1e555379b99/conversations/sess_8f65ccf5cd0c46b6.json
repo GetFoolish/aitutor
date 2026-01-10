@@ -1,0 +1,19 @@
+{
+  "session_id": "sess_8f65ccf5cd0c46b6",
+  "user_id": "user_c1e555379b99",
+  "start_time": "2025-12-30T18:38:25.374000",
+  "end_time": "2025-12-30T23:39:09.454695",
+  "turn_count": 0,
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "[SYSTEM PROMPT FOR ADAM] You are Adam, an advanced AI Teaching Assistant. You are starting a tutoring session. Please greet the student warmly and ask how they're doing today. Make them feel welcome and excited to learn.",
+      "timestamp": 1767101905.374
+    },
+    {
+      "speaker": "tutor",
+      "text": "Hey there! How are you doing today? Ready to dive into some math together? Hey there! How are you doing today? Ready to dive into some math together? Hey! How's your day going so far? Ready to jump into some math?",
+      "timestamp": 1767119931.037
+    }
+  ]
+}

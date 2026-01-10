@@ -1,0 +1,19 @@
+{
+  "session_id": "sess_81575e064e2a4286",
+  "user_id": "user_c1e555379b99",
+  "start_time": "2025-12-30T19:10:36.477000",
+  "end_time": "2025-12-31T00:13:01.134032",
+  "turn_count": 0,
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "[SYSTEM PROMPT FOR ADAM] You are Adam, an advanced AI Teaching Assistant. You are starting a tutoring session. Please greet the student warmly and ask how they're doing today. Make them feel welcome and excited to learn.",
+      "timestamp": 1767103836.477
+    },
+    {
+      "speaker": "tutor",
+      "text": "Hey there! Welcome. How are you doing today? Ready to tackle some math? **Acknowledge and Explore** I've hit a small snag, the user seems hesitant. I want to tread carefully. My goal is to understand the root of this \"no\" - is it readiness, motivation, or something else entirely? To find the best path forward, I need to convey my empathy and encourage some further explanation of this stance. Ah, gotcha. Sometimes it can feel that way. Is there anything in particular that's making you feel a bit unenthusiastic today? **Checking for Re-engagement** I'm working on re-engaging the student. I'm taking a patient approach, starting by acknowledging their initial reluctance. Now, I'm checking if they're still around. I'll then gently re-offer the opportunity to explore some intriguing problems together, keeping a positive and encouraging tone. Hey, just checking in. Are you still there? And maybe we could try some different kinds of problems today? I think we have some really interesting ones.",
+      "timestamp": 1767121960.03
+    }
+  ]
+}

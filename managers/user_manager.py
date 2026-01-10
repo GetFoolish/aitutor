@@ -170,9 +170,11 @@ class UserManager:
         at_grade_count = 0
         above_grade_count = 0
         
+        # Define current_grade_value before loop (in case all_skills is empty)
+        current_grade_value = current_grade.value
+        
         for skill_id, skill in all_skills.items():
             skill_grade_value = skill.grade_level.value
-            current_grade_value = current_grade.value
             
             if skill_grade_value < current_grade_value:
                 # Below current grade - assumed mastered
