@@ -13,6 +13,9 @@ interface QuestionDisplayProps {
   assessmentQuestions?: any[];
   onAssessmentAnswer?: (questionId: string, isCorrect: boolean) => void;
   currentQuestionIndex?: number;
+  // Learning assets props
+  onLearningAssetChange?: (asset: any) => void;
+  onQuestionTextChange?: (text: string) => void;
 }
 
 const QuestionDisplay: React.FC<QuestionDisplayProps> = ({ 
@@ -23,7 +26,9 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
   assessmentMode = false,
   assessmentQuestions = [],
   onAssessmentAnswer,
-  currentQuestionIndex = 0
+  currentQuestionIndex = 0,
+  onLearningAssetChange,
+  onQuestionTextChange
 }) => {
   return (
     <div className="w-full flex flex-col items-center bg-transparent">
@@ -37,6 +42,8 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
           assessmentQuestions={assessmentQuestions}
           onAssessmentAnswer={onAssessmentAnswer}
           currentQuestionIndex={currentQuestionIndex}
+          onLearningAssetChange={onLearningAssetChange}
+          onQuestionTextChange={onQuestionTextChange}
         />
       </div>
     </div>

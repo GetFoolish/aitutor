@@ -17,6 +17,8 @@ logging.basicConfig(
         logging.StreamHandler(sys.stdout)
     ]
 )
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning) 
 logger = logging.getLogger(__name__)
 
 # Add the project root to the Python path
@@ -79,6 +81,7 @@ class PerseusQuestion(BaseModel):
     hints: List = Field(description="List of question hints")
     itemDataVersion: Optional[dict] = Field(default=None, description="Perseus item data version")
     dash_metadata: Optional[dict] = Field(default=None, description="DASH metadata for tracking")
+    learningAsset: Optional[dict] = Field(default=None, description="Embedded learning asset (video)")
     
     class Config:
         extra = "allow"  # Allow additional fields that aren't in the model
@@ -711,6 +714,33 @@ async def get_learning_videos(
         raise HTTPException(status_code=500, detail=f"Failed to get learning videos: {str(e)}")
 
 
+# Learning Asset model for general asset browsing
+class LearningAsset(BaseModel):
+    id: str = Field(alias="_id", default="")
+    title: str
+    path: str
+    slug: Optional[str] = ""
+    category: Optional[str] = "General"
+    lessonName: Optional[str] = ""
+    courseName: Optional[str] = ""
+    
+    class Config:
+        extra = "allow"
+        arbitrary_types_allowed = True
+        json_encoders = {
+            object: str
+        }
+
+@app.get("/api/learning-assets", response_model=List[LearningAsset])
+def get_learning_assets():
+    """
+    Get all learning assets directly from the exercises collection.
+    """
+    from managers.mongodb_manager import mongo_db
+    
+    try:
+
+
 # ===== ASSESSMENT ENDPOINTS (PHASE 3) =====
 
 @app.post("/assessment/start/{subject}")
@@ -1278,7 +1308,116 @@ def get_videos_stats(
     except Exception as e:
         logger.error(f"[ADMIN_PANEL] Error fetching video statistics: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch statistics: {str(e)}")
+        logger.info("[LEARNING_ASSETS] Fetching all available assets")
+        
+        # 1. Fetch exercises that have regions/paths (videos)
+        # We limit to a reasonable number to avoid heavy load, but enough to feel "complete"
+        exercises_cursor = mongo_db.db.exercises.find({"status": "CAPTURED"}).limit(100)
+        
+        assets_list = []
+        for exercise in exercises_cursor:
+            # Resolve path (prefer multivariable-calculus or GLOBAL)
+            regions = exercise.get("regions", {})
+            path = None
+            
+            # Use the same priority logic as before
+            if "multivariable-calculus" in regions:
+                path = regions["multivariable-calculus"].get("path")
+            elif "GLOBAL" in regions:
+                path = regions["GLOBAL"].get("path")
+            else:
+                # Fallback to first region with a path
+                for r_data in regions.values():
+                    if isinstance(r_data, dict) and r_data.get("path"):
+                        path = r_data.get("path")
+                        break
+            
+            if not path:
+                continue
+                
+            assets_list.append({
+                "_id": str(exercise.get("_id")),
+                "title": exercise.get("title", "Untitled Asset"),
+                "path": path,
+                "slug": exercise.get("slug", ""),
+                "category": "Mixed", # We don't have courseName/lessonName directly here easily without join
+                "lessonName": "",
+                "courseName": ""
+            })
+            
+        logger.info(f"[LEARNING_ASSETS] Generated {len(assets_list)} assets from exercises collection")
+        return assets_list
 
+    except Exception as e:
+        logger.error(f"[ERROR] Failed to fetch learning assets: {e}")
+        import traceback
+        logger.error(f"[ERROR] Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch learning assets: {e}")
+
+@app.get("/api/learning-assets/search")
+def search_youtube_videos(query: str, limit: int = 10):
+    """
+    Search YouTube for videos matching the query.
+    Returns a list of video objects with title, thumbnail, duration, and ID.
+    """
+    import yt_dlp
+    
+    logger.info(f"Searching YouTube with yt-dlp for: {query}")
+    
+    try:
+        ydl_opts = {
+            'default_search': f'ytsearch{limit}',
+            'quiet': True, 
+            'extract_flat': 'in_playlist',
+            'no_warnings': True
+        }
+        
+        videos = []
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            logger.info(f"Calling yt-dlp extract_info for: {query}")
+            info = ydl.extract_info(query, download=False)
+            
+            # Debug logging
+            logger.info(f"yt-dlp info keys: {info.keys() if info else 'None'}")
+            
+            if 'entries' in info:
+                logger.info(f"yt-dlp found {len(info['entries'])} entries")
+            else:
+                logger.warning("yt-dlp found no 'entries' in info")
+                
+            if 'entries' in info:
+                for entry in info['entries']:
+                    if not entry: continue
+                    video_id = entry.get('id')
+                    duration_seconds = entry.get('duration')
+                    
+                    # FILTER: Exclude Shorts (videos < 60 seconds)
+                    if duration_seconds and int(duration_seconds) < 60:
+                        continue
+                    
+                    # Format duration
+                    duration_str = ""
+                    if duration_seconds:
+                        m, s = divmod(int(duration_seconds), 60)
+                        duration_str = f"{m}:{s:02d}"
+                    
+                    videos.append({
+                        "id": video_id,
+                        "videoId": video_id,
+                        "title": entry.get('title'),
+                        "thumbnail": f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg",
+                        "duration": duration_str,
+                        "link": f"https://www.youtube.com/watch?v={video_id}",
+                        "channel": entry.get('uploader')
+                    })
+            
+        logger.info(f"Returning {len(videos)} videos (Filtered > 60s)")
+        return videos
+    except Exception as e:
+        logger.error(f"YouTube search failed: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return []
 
 if __name__ == "__main__":
     import uvicorn
