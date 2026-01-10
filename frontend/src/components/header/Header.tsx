@@ -76,9 +76,9 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
         <header className="fixed top-0 left-0 right-0 h-[44px] lg:h-[48px] bg-[#FFFDF5] dark:bg-[#000000] border-b-[3px] lg:border-b-[4px] border-black dark:border-white z-40 flex items-center justify-between px-2 md:px-4 lg:px-5 shadow-[0_2px_0_0_rgba(0,0,0,1)] lg:shadow-[0_2px_0_0_rgba(0,0,0,1)] dark:shadow-[0_2px_0_0_rgba(255,255,255,0.3)]">
             {/* Left side - Logo */}
             <div className="flex items-center gap-1.5 md:gap-2 group cursor-pointer">
-                <img 
-                    src={logoSource} 
-                    alt="teachr" 
+                <img
+                    src={logoSource}
+                    alt="teachr"
                     className="h-7 md:h-8 lg:h-9 w-auto group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform duration-100"
                 />
             </div>
@@ -90,7 +90,16 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
                     variant="ghost"
                     size="icon"
                     className="w-7 h-7 md:w-8 md:h-8 lg:w-8 lg:h-8 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 text-black dark:text-white dark:hover:text-black"
-                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                    onClick={() => {
+                        // Cycle: light -> dark -> system -> light
+                        if (theme === 'light') {
+                            setTheme('dark');
+                        } else if (theme === 'dark') {
+                            setTheme('system');
+                        } else {
+                            setTheme('light');
+                        }
+                    }}
                 >
                     <Sun className="h-[0.9rem] w-[0.9rem] md:h-[1rem] md:w-[1rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
                     <Moon className="absolute h-[0.9rem] w-[0.9rem] md:h-[1rem] md:w-[1rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

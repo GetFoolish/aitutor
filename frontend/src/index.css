@@ -1076,3 +1076,34 @@ a[target="lint-help-window"] {
   background-color: #1e1e1e !important;
   border-color: #333 !important;
 }
+
+/* FIX: Robust CSS Override for Graph 69334af9... */
+/* This class is conditionally added by ImageWidget.tsx when the URL matches */
+
+/* Default (Light Mode): Normal rendering */
+.target-graph-fix {
+  filter: none !important;
+  mix-blend-mode: normal !important;
+}
+
+/* Dark Mode: Invert colors + Transparent background */
+/* Targeting all possible dark mode indicators to be safe */
+html.dark .target-graph-fix,
+body.dark .target-graph-fix,
+[data-theme="dark"] .target-graph-fix,
+.dark .target-graph-fix,
+.athena-theme-dark .target-graph-fix {
+  filter: invert(1) hue-rotate(180deg) !important;
+  /* Invert black lines to white */
+  mix-blend-mode: screen !important;
+  /* Make black background transparent */
+  background-color: transparent !important;
+  opacity: 1 !important;
+}
+
+/* Ensure parent containers are transparent so the image can blend */
+.athena-image-container:has(.target-graph-fix),
+.athena-image-figure:has(.target-graph-fix) {
+  background: transparent !important;
+  background-color: transparent !important;
+}

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { useAthena } from '../AthenaContext';
+import AthenaContext from '../AthenaContext';
 import { WidgetFactory } from '../widgets/WidgetFactory';
 import { GraphieImage } from '../widgets/display/GraphieImage';
 
@@ -13,11 +13,21 @@ interface HtmlWithInlineWidgetsProps {
 }
 
 export const HtmlWithInlineWidgets = React.memo(({ html, keyPrefix, widgets, state: propsState, setAnswer: propsSetAnswer }: HtmlWithInlineWidgetsProps) => {
-  const context = useAthena();
+  const context = React.useContext(AthenaContext);
 
   // Use props if provided (for nested widgets like GroupWidget), otherwise use context
-  const state = propsState || context.state;
-  const setAnswer = propsSetAnswer || context.setAnswer;
+  // CRITICAL: We must handle the case where context is null (if used outside provider)
+  // but props are provided.
+  const state = propsState || context?.state;
+  const setAnswer = propsSetAnswer || context?.setAnswer;
+
+  if (!state) {
+    console.error('[Athena] HtmlWithInlineWidgets: No state provided and no context found');
+    return <div className="athena-error">Error: Missing Athena context and state props</div>;
+  }
+  if (!setAnswer && !state.readOnly) {
+    console.warn('[Athena] HtmlWithInlineWidgets: No setAnswer provided in interactive mode');
+  }
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [widgetMounts, setWidgetMounts] = useState<Array<{ el: HTMLElement; widgetId: string }>>([]);
@@ -91,10 +101,10 @@ export const HtmlWithInlineWidgets = React.memo(({ html, keyPrefix, widgets, sta
         widgetId={widgetId}
         widget={safeWidget as any}
         value={userValue}
-        onChange={(value) => !isReadOnly && setAnswer(widgetId, value)}
+        onChange={(value) => !isReadOnly && setAnswer && setAnswer(widgetId, value)}
         readOnly={isReadOnly}
         reviewMode={state.reviewMode}
-        theme={propsState?.theme || context.state?.theme || 'light'}
+        theme={propsState?.theme || context?.state?.theme || 'light'}
       />,
       el,
       `${keyPrefix}-portal-${idx}`

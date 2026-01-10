@@ -15,6 +15,7 @@ import type { ImageOptions } from '../../core/types';
 import { BaseWidgetWrapper } from '../base/BaseWidget';
 import { ImageURLMigrator } from '../../migration/ImageURLMigrator';
 import { GraphieImage } from './GraphieImage';
+import AthenaContext from '../../AthenaContext';
 
 // Base URL for resolving relative asset URLs (from backend API)
 const ASSETS_BASE_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
@@ -104,6 +105,14 @@ export function ImageWidget({
     };
   }, []);
 
+  // Use Context for robust Dark Mode detection
+  const athenaContext = React.useContext(AthenaContext);
+  const isDarkMode = athenaContext?.state?.theme
+    ? athenaContext.state.theme === 'dark'
+    : theme === 'dark'; // Fallback to prop
+
+
+
   // Set a timeout to detect failed loads (images that never fire load or error)
   useEffect(() => {
     if (isLoading && backgroundImage?.url) {
@@ -183,6 +192,19 @@ export function ImageWidget({
     return converted;
   }, [backgroundImage?.url, fallbackAttempt]);
 
+  // Debug log for troubleshooting graph visibility
+  // Moved here to be after imageUrl declaration
+  useEffect(() => {
+    if (widget.options?.backgroundImage?.url?.includes('69334af918bcab85650eed24')) {
+      console.log('[ImageWidget] RENDERING TARGET GRAPH 69334af9', {
+        themeProp: theme,
+        contextTheme: athenaContext?.state?.theme,
+        isDarkMode,
+        finalUrl: imageUrl
+      });
+    }
+  }, [theme, athenaContext?.state?.theme, isDarkMode, imageUrl]);
+
   const handleLoad = useCallback(() => {
     setIsLoading(false);
     if (loadTimeoutRef.current) {
@@ -224,6 +246,33 @@ export function ImageWidget({
   if (!backgroundImage?.url) {
     return (
       <BaseWidgetWrapper widgetId={widgetId} widgetType="image">
+        {/* CSS "NUCLÉAIRE" pour forcer la correction quoi qu'il arrive */}
+        <style>{`
+          /* Cible l'image par son URL partielle - fonctionne même si React échoue */
+          img[src*="69334af918bcab85650eed24"] {
+            /* Par défaut (Light Mode) : pas de filtre */
+            filter: none !important;
+            mix-blend-mode: normal !important;
+          }
+
+          /* Dark Mode : Inversion + Screen */
+          /* On utilise :global pour s'assurer que ça tape large */
+          :root.dark img[src*="69334af918bcab85650eed24"],
+          .dark img[src*="69334af918bcab85650eed24"],
+          [data-theme="dark"] img[src*="69334af918bcab85650eed24"] {
+             filter: invert(1) hue-rotate(180deg) !important;
+             mix-blend-mode: screen !important;
+             opacity: 1 !important;
+             background-color: transparent !important;
+          }
+          
+          /* Force la transparence des parents directs pour éviter le fond noir */
+          .athena-image-container:has(img[src*="69334af918bcab85650eed24"]),
+          .athena-image-figure:has(img[src*="69334af918bcab85650eed24"]) {
+            background: transparent !important;
+            background-color: transparent !important;
+          }
+        `}</style>
         <div className="athena-image-placeholder">
           No image specified
         </div>
@@ -309,7 +358,17 @@ export function ImageWidget({
             height={backgroundImage.height}
             onLoad={handleLoad}
             onError={handleError}
-            className={`athena-image ${isLoading ? 'loading' : ''}`}
+            // Logic: Add 'target-graph-fix' class if:
+            // 1. URL matches the specific broken graph hash (0b4108...)
+            // 2. Alt text contains 'graph' (heuristic)
+            className={`athena-image ${isLoading ? 'loading' : ''} ${imageUrl.includes('0b4108cbcbb425020a161877aa5ead3750ea88d3') ||
+                imageUrl.includes('69334af918bcab85650eed24') ||
+                imageUrl.toLowerCase().includes('graphie') ||
+                imageUrl.toLowerCase().includes('perseus') ||
+                (options.alt && options.alt.toLowerCase().includes('graph'))
+                ? 'target-graph-fix'
+                : ''
+              }`}
             referrerPolicy="no-referrer"
             style={{
               display: hasError ? 'none' : 'block',
@@ -317,6 +376,7 @@ export function ImageWidget({
               height: 'auto',
             }}
           />
+
 
           {/* Labels overlaid on image */}
           {Array.isArray(options.labels) && options.labels.length > 0 && !isLoading && !hasError && (

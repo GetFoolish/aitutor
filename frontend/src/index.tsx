@@ -25,6 +25,7 @@ import "./package/perseus/testing/perseus-init.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import ComingSoonGuard from "./components/coming-soon/ComingSoonGuard"; // Commented out to allow home page access
+import { ThemeProvider } from "./components/theme/theme-provier";
 
 const LoginPage = lazy(() => import("./components/auth/LoginPage"));
 const LandingPageWrapper = lazy(() => import("./components/landing/LandingPageWrapper"));
@@ -144,23 +145,25 @@ root.render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <ComingSoonGuard>
-            <Suspense fallback={<div className="flex items-center justify-center h-screen" style={{ background: '#fff', color: '#333' }}>Loading Athena...</div>}>
-              <Switch>
-                {/* TEST ROUTES - No auth required, exact match */}
-                <Route exact path="/test/simple" component={SimpleTest} />
-                <Route exact path="/test/athena" component={QuestionPane} />
-                {/* Demo Route for specific questions */}
-                <Route path="/question/:questionId" component={QuestionPane} />
-                <Route exact path="/app/auth/setup" component={LoginPage} />
-                <Route exact path="/app/login" component={LoginPage} />
-                <Route exact path="/app" component={LandingPageOrApp} />
-                <Route path="/app" component={App} />
-                <Route exact path="/" component={LandingPageOrApp} />
-                <Route component={LandingPageOrApp} /> {/* Catch-all route */}
-              </Switch>
-            </Suspense>
-          </ComingSoonGuard>
+          <ThemeProvider>
+            <ComingSoonGuard>
+              <Suspense fallback={<div className="flex items-center justify-center h-screen" style={{ background: '#fff', color: '#333' }}>Loading Athena...</div>}>
+                <Switch>
+                  {/* TEST ROUTES - No auth required, exact match */}
+                  <Route exact path="/test/simple" component={SimpleTest} />
+                  <Route exact path="/test/athena" component={QuestionPane} />
+                  {/* Demo Route for specific questions */}
+                  <Route path="/question/:questionId" component={QuestionPane} />
+                  <Route exact path="/app/auth/setup" component={LoginPage} />
+                  <Route exact path="/app/login" component={LoginPage} />
+                  <Route exact path="/app" component={LandingPageOrApp} />
+                  <Route path="/app" component={App} />
+                  <Route exact path="/" component={LandingPageOrApp} />
+                  <Route component={LandingPageOrApp} /> {/* Catch-all route */}
+                </Switch>
+              </Suspense>
+            </ComingSoonGuard>
+          </ThemeProvider>
         </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>

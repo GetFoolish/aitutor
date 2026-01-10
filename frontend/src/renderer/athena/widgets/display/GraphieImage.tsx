@@ -630,7 +630,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       // We already defined VOTING_GRAPH_DATA constant at component scope (lines 220+)
       // But since it's defined inside the component, we can access it here.
       // Wait, scope is fine.
-      setGraphieData(VOTING_GRAPH_DATA);
+      setGraphieData(VOTING_GRAPH_DATA as GraphieData);
       setDataFetchComplete(true);
       return;
     }
@@ -1011,32 +1011,49 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     return injectLabelsIntoSvg(svgContent, graphieData.labels, range);
   }, [svgContent, graphieData, injectLabelsIntoSvg]);
 
-  // FORCE STATIC IMAGE FOR BROKEN VOTING GRAPH (ID: 6933b3176cf86fa761d0a255)
+  // FORCE STATIC IMAGE FOR BROKEN GRAPHS
   // This bypasses all complex SVG restructuring logic as requested by user.
   // Placed HERE to allow all hooks to run first, avoiding "Rendered fewer hooks than expected" error.
-  if (baseUrl.includes('6933b3176cf86fa761d0a255') || baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011')) {
+  // 1. Voting Graph (ID: 6933b...)
+  // 2. Runner Graph (ID: 69334...)
+  if (baseUrl.includes('6933b3176cf86fa761d0a255') || baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011') ||
+    baseUrl.includes('69334af918bcab85650eed24')) {
+
+    // Determine which graph we are rendering to pick the right image
+    const isRunnerGraph = baseUrl.includes('69334af918bcab85650eed24');
+    const imgSrc = isRunnerGraph ? baseUrl + '.png' : "/fixed_graphs/voting_graph.png";
+    const imgClass = isRunnerGraph ? "runner-graph-fix" : "voting-graph-fix";
+
+    console.log('[GraphieImage] HARDCODED BLOCK ENTERED for:', baseUrl, {
+      isRunnerGraph,
+      imgSrc,
+      imgClass,
+      isDarkMode,
+      className: `${imgClass} ${isDarkMode ? 'force-dark' : ''}`
+    });
+
     return (
       <div className={`graphie-container ${className}`} style={{ ...style, width: '100%', maxWidth: '400px', margin: '0 auto', background: 'transparent', padding: 0, border: 'none' }}>
         {/* CSS pour dark mode - ULTRA-SPÉCIFIQUE pour éviter d'affecter d'autres éléments */}
         <style>{`
-          /* Cible UNIQUEMENT l'image avec la classe voting-graph-fix */
-            /* Mode Clair: Multiply pour détourer le blanc (le rend transparent) */
+          /* Cible UNIQUEMENT l'image de ce composant */
           /* Mode Clair: Multiply pour détourer le blanc (le rend transparent) */
-          img.voting-graph-fix {
+          img.${imgClass} {
             filter: none !important;
             mix-blend-mode: multiply !important;
           }
+          
           /* Mode Sombre: Screen pour détourer le noir (le rend transparent) après inversion */
           /* On cible via la classe .force-dark injectée par JS, plus fiable que html.dark */
-          img.voting-graph-fix.force-dark {
+          img.${imgClass}.force-dark {
             filter: invert(1) hue-rotate(180deg) !important;
             mix-blend-mode: screen !important;
           }
         `}</style>
         <img
-          src="/fixed_graphs/voting_graph.png"
-          alt={alt || "Graph showing voters' political orientation"}
-          className={`voting-graph-fix ${isDarkMode ? 'force-dark' : ''}`}
+          src={imgSrc}
+          alt={alt || "Graph showing data"}
+          className={`${imgClass} ${isDarkMode ? 'force-dark' : ''}`}
           style={{
             width: '100%',
             height: 'auto',
@@ -1080,17 +1097,55 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         3. If PNG fallback set -> use PNG
         4. Default to PNG if nothing else works
       */}
+      {/* Styles globaux pour la gestion robuste du mode sombre/clair sur tous les graphes */}
+      <style>{`
+        /* Force la transparence des conteneurs pour permettre le blend mode */
+        .graphie-image-container, .graphie-svg-wrapper {
+          background: transparent !important;
+        }
+        
+        /* Classes dynamiques pour les filtres */
+        /* Mode Sombre : Inversion + Screen (Noir devient transparent) */
+        .graphie-filter-dark {
+          filter: invert(1) hue-rotate(180deg) !important;
+          mix-blend-mode: screen !important;
+          transition: filter 0.3s ease !important;
+        }
+        
+        /* Mode Clair : Standard (Pas de filtre pour éviter les effets indésirables) */
+        .graphie-filter-light {
+          filter: none !important;
+          mix-blend-mode: normal !important;
+          transition: filter 0.3s ease !important;
+        }
+      `}</style>
+
+      {/*
+        Decision tree for rendering:
+        1. If preferring PNG (for labeled images) -> use PNG directly
+        2. If SVG loaded -> render inline SVG
+        3. If PNG fallback set -> use PNG
+        4. Default to PNG if nothing else works
+      */}
       {usePngForLabels ? (
         // Use PNG because labels couldn't be loaded from data.json
         // PNG has labels baked into the image
         <img
           src={baseUrl + '.png'}
           alt={alt}
-          className="graphie-image graphie-png-with-labels"
+          className={`graphie-image graphie-png-with-labels ${isDarkMode ? 'graphie-filter-dark' : 'graphie-filter-light'}`}
           style={{
             maxWidth: '100%',
             height: 'auto',
             display: 'block',
+            // Opacity is handled inline as it depends on props
+            opacity: viewMode === 'comparison' ? 0.8 : 1,
+            background: 'transparent',
+            // FORCE OVERRIDE for the problematic graph to ensure mix-blend-mode applies
+            ...(baseUrl.includes('69334af918bcab85650eed24') && isDarkMode ? {
+              filter: 'invert(1) hue-rotate(180deg)',
+              mixBlendMode: 'plus-lighter', // Try 'plus-lighter' or 'lighten' if screen fails
+            } : {})
           }}
           onError={(e) => {
             // If PNG fails too, show SVG as last resort
@@ -1107,17 +1162,20 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
             textAlign: 'center', // Ensure text/inline elements are centered
             width: '100%',
             marginTop: '1rem',
-            marginBottom: '1rem'
+            marginBottom: '1rem',
+            background: 'transparent'
           }}
         >
           <div
-            className="graphie-svg-wrapper"
+            className={`graphie-svg-wrapper ${isDarkMode ? 'graphie-filter-dark' : 'graphie-filter-light'}`}
             dangerouslySetInnerHTML={{ __html: processedSvgWithLabels }}
             style={{
               display: 'block',
               margin: '0 auto',
               maxWidth: '100%',
               lineHeight: 0,
+              background: 'transparent',
+              opacity: viewMode === 'comparison' ? 0.8 : 1,
             }}
           />
         </div>
@@ -1126,11 +1184,18 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         <img
           src={pngFallback || baseUrl + '.png'}
           alt={alt}
-          className="graphie-image"
+          className={`graphie-image ${isDarkMode ? 'graphie-filter-dark' : 'graphie-filter-light'}`}
           style={{
             maxWidth: '100%',
             height: 'auto',
             display: 'block',
+            opacity: viewMode === 'comparison' ? 0.8 : 1,
+            background: 'transparent',
+            // FORCE OVERRIDE for the problematic graph
+            ...(baseUrl.includes('69334af918bcab85650eed24') && isDarkMode ? {
+              filter: 'invert(1) hue-rotate(180deg)',
+              mixBlendMode: 'plus-lighter',
+            } : {})
           }}
           onError={(e) => {
             // If PNG fails, try SVG as last resort
