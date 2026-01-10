@@ -1,0 +1,95 @@
+{
+  "name": "Leo Takahashi",
+  "age": 17,
+  "grade": "Junior (11th grade)",
+  "location": {
+    "city": "Portland",
+    "state": "Oregon",
+    "neighborhood": "Hawthorne District"
+  },
+  "family": {
+    "father": {
+      "name": "Kenji Takahashi",
+      "occupation": "Landscape Architect"
+    },
+    "mother": {
+      "name": "Elena Rossi",
+      "occupation": "Civil Rights Attorney"
+    },
+    "pet": {
+      "name": "Barnaby",
+      "type": "Wire-haired terrier",
+      "description": "Scruffy and energetic"
+    }
+  },
+  "personality_traits": [
+    "Quiet and observant",
+    "Introspective",
+    "Creative",
+    "Responsible",
+    "Resilient",
+    "Avoids confrontation"
+  ],
+  "interests_and_hobbies": {
+    "film_photography": {
+      "description": "Spends weekends scouting 'liminal spaces' or abandoned urban spots",
+      "equipment": "Vintage 35mm Nikon",
+      "style": "Captures beauty in decaying buildings, quiet city moments at 5AM"
+    },
+    "bouldering": {
+      "frequency": "Three nights a week at local climbing gym",
+      "preference": "Prefers problem-solving aspect over traditional sports"
+    },
+    "lofi_music_production": {
+      "description": "Has a small setup in bedroom",
+      "style": "Mixes ambient city sounds with jazz beats"
+    },
+    "retro_gaming": {
+      "description": "Enjoys restoring old Game Boys",
+      "preference": "Classic RPGs"
+    }
+  },
+  "likes": [
+    "Rainy mornings",
+    "Thrift stores",
+    "Spicy miso ramen",
+    "Public libraries",
+    "Collecting enamel pins"
+  ],
+  "dislikes": [
+    "Large, noisy crowds",
+    "Procrastination (though struggles with it)",
+    "Overly bright fluorescent lighting",
+    "Direct confrontation"
+  ],
+  "key_life_incidents": {
+    "the_great_escape": {
+      "age": 7,
+      "description": "Barnaby escaped through a hole in the fence. Leo spent six hours tracking the dog through a local park using 'scout skills' from a book. Found Barnaby at a nearby ice cream shop.",
+      "impact": "Cemented bond with Barnaby and sense of responsibility"
+    },
+    "the_coastline_project": {
+      "age": 15,
+      "description": "Witnessed massive bloom of invasive species on Oregon coast during family trip. Started a school club for local waterway restoration.",
+      "impact": "Shifted career goals from art toward environmental science"
+    },
+    "the_gallery_rejection": {
+      "age": 16,
+      "description": "Submitted photography to local youth exhibition and was rejected. Used feedback to experiment with lighting.",
+      "impact": "Work eventually featured in local coffee shop's 'Artist of the Month' series"
+    }
+  },
+  "core_motivation": "Driven by a desire to document the world as it is—capturing the beauty in decaying buildings or the quiet of a city at 5:00 AM—before things change or disappear.",
+  "academic_context": {
+    "subjects_of_interest": [
+      "Environmental Science",
+      "Biology",
+      "Art"
+    ],
+    "struggles": [
+      "Math (especially algebra)",
+      "Procrastination on homework"
+    ],
+    "learning_style": "Visual learner, prefers hands-on and project-based learning"
+  }
+}

@@ -3,12 +3,13 @@ import os
 import threading
 import requests
 import asyncio
+import time
 from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List, Dict, Any
 from urllib.parse import parse_qs
 from sse_starlette.sse import EventSourceResponse
 
@@ -19,6 +20,16 @@ from shared.auth_middleware import get_current_user, get_user_from_token
 from shared.cors_config import ALLOWED_ORIGINS, ALLOW_CREDENTIALS, ALLOWED_METHODS, ALLOWED_HEADERS
 from shared.timing_middleware import UnpluggedTimingMiddleware
 from shared.cache_middleware import CacheControlMiddleware
+
+# v4+v5 Cognitive Memory Pipeline imports
+from services.TeachingAssistant.core.config import TeachingAssistantConfig, config as ta_config
+from services.TeachingAssistant.core.context import SessionContext, Event, EventType
+from services.TeachingAssistant.core.event_processor import EventProcessor, ContextManager
+from services.TeachingAssistant.Memory.vector_store import MemoryStore
+from services.TeachingAssistant.Memory.retriever import MemoryRetriever
+from services.TeachingAssistant.Memory.extractor import MemoryExtractor
+from services.TeachingAssistant.skills_manager import SkillsManager
+from services.TeachingAssistant.handlers.injection_manager import InjectionManager
 
 from shared.logging_config import get_logger
 
@@ -99,6 +110,38 @@ async def options_handler(full_path: str):
 
 # Create TeachingAssistant instance (now stateless - all state in MongoDB)
 ta = TeachingAssistant()
+
+# ============================================================================
+# v4+v5 Cognitive Memory Pipeline Components
+# ============================================================================
+
+# Initialize context manager for session state
+context_manager = ContextManager(config=ta_config)
+
+# Initialize skills manager with default skills
+skills_manager = SkillsManager(config=ta_config, load_defaults=True)
+
+# Initialize event processor
+event_processor = EventProcessor(
+    context_manager=context_manager,
+    skills_manager=skills_manager,
+    config=ta_config
+)
+
+# Initialize injection manager
+injection_manager = InjectionManager(
+    session_manager=ta.session_manager,
+    config=ta_config
+)
+
+# Per-user memory stores and retrievers (initialized on session start)
+user_memory_stores: Dict[str, MemoryStore] = {}
+user_memory_retrievers: Dict[str, MemoryRetriever] = {}
+
+# Memory extractor (singleton)
+memory_extractor = MemoryExtractor()
+
+logger.info("[API] v4+v5 Cognitive Memory Pipeline initialized")
 
 # DASH API URL for pre-loading questions
 DASH_API_URL = os.getenv("DASH_API_URL", "http://localhost:8000")
@@ -426,9 +469,46 @@ async def process_media(session_id: str, media_base64: str, timestamp: str):
     })
 
 
+def _get_or_create_memory_components(user_id: str) -> tuple:
+    """Get or create memory store and retriever for a user"""
+    global user_memory_stores, user_memory_retrievers
+
+    if user_id not in user_memory_stores:
+        try:
+            store = MemoryStore(user_id=user_id)
+            user_memory_stores[user_id] = store
+            user_memory_retrievers[user_id] = MemoryRetriever(store)
+            logger.info(f"[MEMORY] Created memory components for user {user_id}")
+        except Exception as e:
+            logger.error(f"[MEMORY] Failed to create memory components: {e}")
+            return None, None
+
+    return user_memory_stores.get(user_id), user_memory_retrievers.get(user_id)
+
+
+def _initialize_session_context(session_id: str, user_id: str, student_name: str = None, biography: str = None) -> SessionContext:
+    """Initialize session context with student info"""
+    context = context_manager.get_or_create_context(
+        session_id=session_id,
+        user_id=user_id,
+        student_name=student_name,
+        biography=biography,
+        is_first_session=(biography is None or biography == "")
+    )
+
+    # Inject biography context if available
+    if biography and ta_config.enable_biographer:
+        injection_manager.inject_biography_context(
+            session_id=session_id,
+            biography=biography,
+            student_name=student_name
+        )
+
+    return context
+
+
 async def process_transcript(session_id: str, transcript: str, timestamp: str, speaker: str = "tutor"):
-    """Process incoming transcript and broadcast to observers"""
-    # TODO: Analyze transcript for instruction generation
+    """Process incoming transcript with memory integration"""
     speaker_label = "USER" if speaker == "user" else "TUTOR"
     logger.debug(f"[TRANSCRIPT] Session {session_id} [{speaker_label}]: {transcript[:100] if transcript else 'empty'}...")
 
@@ -438,6 +518,68 @@ async def process_transcript(session_id: str, transcript: str, timestamp: str, s
         "timestamp": timestamp,
         "data": {"transcript": transcript, "speaker": speaker}
     })
+
+    # Get session info for user_id
+    session = ta.session_manager.get_session_by_id(session_id)
+    if not session:
+        return
+
+    user_id = session.get("user_id")
+    if not user_id:
+        return
+
+    # Get or create memory components
+    memory_store, memory_retriever = _get_or_create_memory_components(user_id)
+
+    # Update context
+    context = context_manager.get_context(session_id)
+    if context:
+        if speaker == "user":
+            context.last_user_text = transcript
+        else:
+            context.last_tutor_text = transcript
+
+    # Process user turns for memory retrieval
+    if speaker == "user" and memory_retriever and ta_config.enable_semantic_search:
+        try:
+            # Trigger memory retrieval
+            memory_retriever.on_user_turn(
+                session_id=session_id,
+                user_id=user_id,
+                user_text=transcript,
+                timestamp=time.time(),
+                tutor_text=context.last_tutor_text if context else ""
+            )
+
+            # Check for memory injection
+            injection = memory_retriever.get_memory_injection(session_id)
+            if injection:
+                # Queue instruction for SSE delivery
+                instruction_id = ta.session_manager.push_instruction(session_id, injection)
+                logger.info(f"[MEMORY] Injected memory context for session {session_id}")
+
+        except Exception as e:
+            logger.error(f"[MEMORY] Memory retrieval error: {e}")
+
+    # Execute skills based on updated context
+    if context and ta_config.enable_skills:
+        try:
+            event = Event(
+                session_id=session_id,
+                user_id=user_id,
+                event_type=EventType.USER_MESSAGE if speaker == "user" else EventType.TUTOR_MESSAGE,
+                user_text=transcript if speaker == "user" else None,
+                tutor_text=transcript if speaker == "tutor" else None
+            )
+
+            injections = event_processor.process_event(event)
+
+            for inj in injections:
+                ta.session_manager.push_instruction(session_id, inj)
+                logger.info(f"[SKILLS] Generated instruction for session {session_id}")
+
+        except Exception as e:
+            logger.error(f"[SKILLS] Error executing skills: {e}")
 
 
 # ============================================================================
@@ -767,6 +909,155 @@ def send_instruction_to_tutor(http_request: Request):
         logger.error(f"Error in send_instruction_to_tutor: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# ============================================================================
+# v5 Cognitive Memory Pipeline Endpoints
+# ============================================================================
+
+class MemorySearchRequest(BaseModel):
+    query: str
+    top_k: int = 10
+    memory_type: Optional[str] = None
+
+
+class MemoryExtractionRequest(BaseModel):
+    exchanges: List[Dict[str, str]]  # List of {student: "...", tutor: "..."}
+
+
+@app.get("/memory/stats")
+def get_memory_stats(http_request: Request):
+    """Get memory system statistics for the current user"""
+    user_id = get_current_user(http_request)
+    try:
+        memory_store, _ = _get_or_create_memory_components(user_id)
+        if not memory_store:
+            return {"enabled": False, "error": "Memory system not available"}
+
+        stats = memory_store.get_stats()
+        return stats
+    except Exception as e:
+        logger.error(f"Error getting memory stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/memory/search")
+def search_memories(http_request: Request, request: MemorySearchRequest):
+    """Search for similar memories"""
+    user_id = get_current_user(http_request)
+    try:
+        memory_store, _ = _get_or_create_memory_components(user_id)
+        if not memory_store:
+            raise HTTPException(status_code=503, detail="Memory system not available")
+
+        from services.TeachingAssistant.Memory.schema import MemoryType
+        mem_type = None
+        if request.memory_type:
+            try:
+                mem_type = MemoryType(request.memory_type)
+            except ValueError:
+                pass
+
+        results = memory_store.search(
+            query=request.query,
+            student_id=user_id,
+            mem_type=mem_type,
+            top_k=request.top_k
+        )
+
+        return {
+            "query": request.query,
+            "results": [
+                {
+                    "text": r["memory"].text,
+                    "type": r["memory"].type.value,
+                    "importance": r["memory"].importance,
+                    "score": r["score"],
+                    "timestamp": r["memory"].timestamp.isoformat() if hasattr(r["memory"].timestamp, 'isoformat') else r["memory"].timestamp
+                }
+                for r in results
+            ]
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error searching memories: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/memory/extract")
+def extract_memories(http_request: Request, request: MemoryExtractionRequest):
+    """Extract memories from conversation exchanges"""
+    user_id = get_current_user(http_request)
+    try:
+        session = ta.get_active_session(user_id)
+        session_id = session["session_id"] if session else "manual-extraction"
+
+        result = memory_extractor.extract_memories_batch(
+            student_id=user_id,
+            session_id=session_id,
+            exchanges=request.exchanges
+        )
+
+        # Save extracted memories to vector store
+        memory_store, _ = _get_or_create_memory_components(user_id)
+        if memory_store and result["memories"]:
+            saved_count = memory_store.save_memories_batch(result["memories"])
+            logger.info(f"[MEMORY] Saved {saved_count} memories for user {user_id}")
+
+        return {
+            "memories_extracted": len(result["memories"]),
+            "emotions_detected": result["emotions"],
+            "breakthroughs": result["breakthroughs"],
+            "unfinished_topics": result["unfinished_topics"],
+            "memories": [
+                {
+                    "text": m.text,
+                    "type": m.type.value,
+                    "importance": m.importance,
+                    "emotion": m.metadata.get("emotion")
+                }
+                for m in result["memories"]
+            ]
+        }
+    except Exception as e:
+        logger.error(f"Error extracting memories: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/student/biography")
+def get_student_biography(http_request: Request):
+    """Get current student biography"""
+    user_id = get_current_user(http_request)
+    try:
+        biography = ta.get_student_biography(user_id)
+        return {
+            "user_id": user_id,
+            "biography": biography,
+            "has_biography": bool(biography)
+        }
+    except Exception as e:
+        logger.error(f"Error getting biography: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/skills/info")
+def get_skills_info():
+    """Get information about registered skills"""
+    return skills_manager.get_info()
+
+
+@app.get("/config/info")
+def get_config_info():
+    """Get current configuration (non-sensitive values)"""
+    return {
+        "config": ta_config.to_dict(),
+        "validation": ta_config.validate()
+    }
+
+
+# ============================================================================
+# Application Entry Point
+# ============================================================================
 
 if __name__ == "__main__":
     import uvicorn
