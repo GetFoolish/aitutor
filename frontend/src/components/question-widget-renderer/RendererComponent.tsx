@@ -323,8 +323,8 @@ const RendererComponent = ({
             
             console.log('[SCORING] User input:', JSON.stringify(userInput, null, 2));
             console.log('[SCORING] Item data keys:', Object.keys(itemData));
-            console.log('[SCORING] Has answer key:', !!(itemData as any).answer);
-            console.log('[SCORING] Answer:', JSON.stringify((itemData as any).answer, null, 2));
+            console.log('[SCORING] Has answer key:', !!itemData.answer);
+            console.log('[SCORING] Answer:', JSON.stringify(itemData.answer, null, 2));
             
             // Custom scoring since Perseus doesn't have answer keys in our questions
             // Score based on the 'correct' property in widget choices
@@ -333,7 +333,7 @@ const RendererComponent = ({
             
             // Check each widget in the user input
             for (const [widgetId, widgetInput] of Object.entries(userInput)) {
-                const widgetDef = (question.widgets as any)?.[widgetId];
+                const widgetDef = question.widgets?.[widgetId];
                 if (!widgetDef) continue;
                 
                 if (widgetDef.type === 'radio') {
@@ -343,9 +343,9 @@ const RendererComponent = ({
                     
                     if (isMultiSelect) {
                         // For multi-select: all selected choices must be correct, and all correct choices must be selected
-                        const correctIndices = (choices as any[])
-                            .map((c: any, i: number) => (c && c.correct) ? i : -1)
-                            .filter((i: number) => i >= 0);
+                        const correctIndices = choices
+                            .map((c, i) => c.correct ? i : -1)
+                            .filter(i => i >= 0);
                         const selectedIndices = selectedIds.map((id: string) => {
                             const match = id.match(/choice-(\d+)-/);
                             return match ? parseInt(match[1]) : -1;
@@ -370,10 +370,10 @@ const RendererComponent = ({
             console.log('[SCORING] Custom score - is correct:', isCorrect);
             
             const scoreResult = {
-                type: 'points' as const,
+                type: isCorrect ? 'points' : 'points',
                 earned: isCorrect ? 1 : 0,
                 total: 1,
-                message: null as string | null
+                message: null
             };
 
             // Continue to include an empty guess for the now defunct answer area.

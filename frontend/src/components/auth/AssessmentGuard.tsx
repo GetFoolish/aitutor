@@ -55,8 +55,7 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
         setAssessmentStatus({
           loading: false,
           completed: false,
-          checkFailed: true,
-          triggered: false
+          checkFailed: true
         });
         return;
       }

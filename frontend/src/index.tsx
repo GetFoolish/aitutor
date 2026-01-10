@@ -13,15 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
+import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-// Keep Perseus init for tests if present
 // @ts-ignore
 import "./package/perseus/testing/perseus-init.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import ComingSoonGuard from "./components/coming-soon/ComingSoonGuard"; // Commented out to allow home page access
+
+const LoginPage = lazy(() => import("./components/auth/LoginPage"));
+const LandingPageWrapper = lazy(() => import("./components/landing/LandingPageWrapper"));
+const AccountPage = lazy(() => import("./components/account/AccountPage"));
+const PricingPage = lazy(() => import("./components/pricing/PricingPage"));
+const AdminVideoPanel = lazy(() => import("./components/admin/AdminVideoPanel"));
+
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
 );
@@ -45,7 +54,30 @@ if (import.meta.env.DEV) {
   };
 }
 
-// We'll render App directly for testing/debugging so the Scratchpad Test Harness appears immediately.
+// Component to decide between landing page and app
+const LandingPageOrApp: React.FC = () => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        background: 'var(--neo-bg, #FFFDF5)'
+      }}>
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <LandingPageWrapper />;
+  }
+
+  return <App />;
+};
 
 // Error boundary component for debugging
 class ErrorBoundary extends React.Component<
@@ -110,7 +142,27 @@ class ErrorBoundary extends React.Component<
 root.render(
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <BrowserRouter>
+        <AuthProvider>
+          <ComingSoonGuard>
+            <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+              <Switch>
+                <Route path="/app/auth/setup" component={LoginPage} />
+                <Route path="/app/login" component={LoginPage} />
+                <Route path="/app/account" component={AccountPage} />
+                <Route path="/app/pricing" component={PricingPage} />
+                <Route path="/pricing" component={PricingPage} />
+                <Route path="/app/admin/videos" component={AdminVideoPanel} />
+                <Route path="/landing/:id" component={LandingPageWrapper} /> {/* Dynamic landing page routes */}
+                <Route path="/app" exact component={LandingPageOrApp} />
+                <Route path="/app" component={App} />
+                <Route path="/" exact render={() => <Redirect to="/comingsoon" />} />
+                <Route component={LandingPageOrApp} /> {/* Catch-all route - fallback to landing page */}
+              </Switch>
+            </Suspense>
+          </ComingSoonGuard>
+        </AuthProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   </ErrorBoundary>
 );
