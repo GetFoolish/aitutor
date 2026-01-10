@@ -521,7 +521,8 @@ const HintPanel: React.FC<{
   darkMode: boolean;
   questionId?: string;
   viewMode?: 'athena' | 'perseus' | 'comparison';
-}> = ({ hints, currentIndex, onNextHint, darkMode, questionId, viewMode = 'perseus' }) => {
+  widgets?: Record<string, any>;
+}> = ({ hints, currentIndex, onNextHint, darkMode, questionId, viewMode = 'perseus', widgets: questionWidgets }) => {
   if (!hints?.length) return null;
 
   const currentHint = hints[currentIndex];
@@ -1099,6 +1100,25 @@ const HintPanel: React.FC<{
       return `<img src="${imageUrl}" alt="${alt}" class="athena-image" style="max-width:100%;height:auto;display:block;margin:1rem 0;" referrerpolicy="no-referrer" />`;
     });
 
+    // Process Perseus widget placeholders [[☃ widget-id]]
+    processed = processed.replace(/\[\[☃\s+([^\]]+)\]\]/g, (_, widgetId) => {
+      widgetId = widgetId.trim();
+      const widget = widgets[widgetId];
+      if (!widget) return `<!-- Missing widget: ${widgetId} -->`;
+
+      if (widget.type === 'image') {
+        const options = widget.options || {};
+        const url = options.backgroundImage?.url || options.url || '';
+        if (!url) return '';
+        // CLEANUP: Remove newlines and quotes from alt text to prevent breaking the HTML tag
+        const alt = (options.alt || 'Hint image').replace(/[\n\r]/g, ' ').replace(/"/g, '&quot;');
+        const finalUrl = convertGraphieUrl(url);
+        return `<div class="my-4 flex justify-center"><img src="${finalUrl}" alt="${alt}" class="athena-image max-w-full h-auto rounded-lg shadow-sm" style="max-height: 480px;" referrerpolicy="no-referrer" /></div>`;
+      }
+
+      return `[[Widget: ${widgetId} (${widget.type})]]`;
+    });
+
     // Process markdown links [text](url) - but not image links
     processed = processed.replace(/(?<!!)\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
       const escapedUrl = escapeHtml(url);
@@ -1131,7 +1151,10 @@ const HintPanel: React.FC<{
     return `<p>${processed}</p>`;
   };
 
-  let processedContent = processHintContent(currentHint?.content || '', hintWidgets);
+  // Merge hint-specific widgets with question-wide widgets
+  const allWidgets = { ...(questionWidgets || {}), ...hintWidgets };
+
+  let processedContent = processHintContent(currentHint?.content || '', allWidgets);
 
   const hintContent = currentHint?.content || '';
 
@@ -1914,6 +1937,7 @@ export const QuestionPane: React.FC = () => {
                     darkMode={darkMode}
                     questionId={currentQuestion._id}
                     viewMode={viewMode}
+                    widgets={currentQuestion.question?.widgets}
                   />
                 )}
 
