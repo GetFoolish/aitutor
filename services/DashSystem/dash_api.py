@@ -66,7 +66,7 @@ async def startup_event():
         
         # Pre-generate default grading panel for instant cold starts
         dash_system.generate_default_grading_panel()
-        logger.info("✅ Default grading panel pre-generated and ready for instant cold starts")
+        logger.info("[OK] Default grading panel pre-generated and ready for instant cold starts")
     except Exception as e:
         logger.error(f"Failed to initialize DASHSystem: {e}")
         import traceback
@@ -597,7 +597,7 @@ def get_grading_panel(request: Request):
                                     "cached_at": datetime.utcnow()
                                 }}}
                             )
-                            logger.info(f"[GRADING_PANEL] ✅ Cache updated and saved to MongoDB")
+                            logger.info(f"[GRADING_PANEL] [OK] Cache updated and saved to MongoDB")
                         except Exception as e:
                             logger.error(f"[GRADING_PANEL] Background update failed: {e}")
                     
@@ -605,12 +605,12 @@ def get_grading_panel(request: Request):
                     return cache["data"]
         
         # COLD START - return pre-generated default instantly
-        logger.info(f"[GRADING_PANEL] ❄️ Cold start - returning pre-generated default")
+        logger.info(f"[GRADING_PANEL] [COLD_START] Returning pre-generated default")
         
         # Generate personalized data in background and SAVE to MongoDB
         def generate_and_cache():
             try:
-                logger.info(f"[GRADING_PANEL] 🔄 Generating personalized data in background")
+                logger.info(f"[GRADING_PANEL] [BACKGROUND] Generating personalized data in background")
                 personalized_data = dash_system.get_grading_panel_data(user_id)
                 
                 # SAVE TO MONGODB
@@ -622,9 +622,9 @@ def get_grading_panel(request: Request):
                     }}},
                     upsert=True
                 )
-                logger.info(f"[GRADING_PANEL] 💾 Data generated and SAVED to MongoDB")
+                logger.info(f"[GRADING_PANEL] [SAVED] Data generated and SAVED to MongoDB")
             except Exception as e:
-                logger.error(f"[GRADING_PANEL] ❌ Background generation failed: {e}")
+                logger.error(f"[GRADING_PANEL] [ERROR] Background generation failed: {e}")
         
         threading.Thread(target=generate_and_cache, daemon=True).start()
         
@@ -791,7 +791,51 @@ def get_learning_assets():
     from managers.mongodb_manager import mongo_db
     
     try:
+        logger.info("[LEARNING_ASSETS] Fetching all available assets")
+        
+        # 1. Fetch exercises that have regions/paths (videos)
+        # We limit to a reasonable number to avoid heavy load, but enough to feel "complete"
+        exercises_cursor = mongo_db.db.exercises.find({"status": "CAPTURED"}).limit(100)
+        
+        assets_list = []
+        for exercise in exercises_cursor:
+            # Resolve path (prefer multivariable-calculus or GLOBAL)
+            regions = exercise.get("regions", {})
+            path = None
+            
+            # Use the same priority logic as before
+            if "multivariable-calculus" in regions:
+                path = regions["multivariable-calculus"].get("path")
+            elif "GLOBAL" in regions:
+                path = regions["GLOBAL"].get("path")
+            else:
+                # Fallback to first region with a path
+                for r_data in regions.values():
+                    if isinstance(r_data, dict) and r_data.get("path"):
+                        path = r_data.get("path")
+                        break
+            
+            if not path:
+                continue
+                
+            assets_list.append({
+                "_id": str(exercise.get("_id")),
+                "title": exercise.get("title", "Untitled Asset"),
+                "path": path,
+                "slug": exercise.get("slug", ""),
+                "category": "Mixed", # We don't have courseName/lessonName directly here easily without join
+                "lessonName": "",
+                "courseName": ""
+            })
+            
+        logger.info(f"[LEARNING_ASSETS] Generated {len(assets_list)} assets from exercises collection")
+        return assets_list
 
+    except Exception as e:
+        logger.error(f"[ERROR] Failed to fetch learning assets: {e}")
+        import traceback
+        logger.error(f"[ERROR] Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch learning assets: {e}")
 
 # ===== ASSESSMENT ENDPOINTS (PHASE 3) =====
 
@@ -1360,51 +1404,6 @@ def get_videos_stats(
     except Exception as e:
         logger.error(f"[ADMIN_PANEL] Error fetching video statistics: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch statistics: {str(e)}")
-        logger.info("[LEARNING_ASSETS] Fetching all available assets")
-        
-        # 1. Fetch exercises that have regions/paths (videos)
-        # We limit to a reasonable number to avoid heavy load, but enough to feel "complete"
-        exercises_cursor = mongo_db.db.exercises.find({"status": "CAPTURED"}).limit(100)
-        
-        assets_list = []
-        for exercise in exercises_cursor:
-            # Resolve path (prefer multivariable-calculus or GLOBAL)
-            regions = exercise.get("regions", {})
-            path = None
-            
-            # Use the same priority logic as before
-            if "multivariable-calculus" in regions:
-                path = regions["multivariable-calculus"].get("path")
-            elif "GLOBAL" in regions:
-                path = regions["GLOBAL"].get("path")
-            else:
-                # Fallback to first region with a path
-                for r_data in regions.values():
-                    if isinstance(r_data, dict) and r_data.get("path"):
-                        path = r_data.get("path")
-                        break
-            
-            if not path:
-                continue
-                
-            assets_list.append({
-                "_id": str(exercise.get("_id")),
-                "title": exercise.get("title", "Untitled Asset"),
-                "path": path,
-                "slug": exercise.get("slug", ""),
-                "category": "Mixed", # We don't have courseName/lessonName directly here easily without join
-                "lessonName": "",
-                "courseName": ""
-            })
-            
-        logger.info(f"[LEARNING_ASSETS] Generated {len(assets_list)} assets from exercises collection")
-        return assets_list
-
-    except Exception as e:
-        logger.error(f"[ERROR] Failed to fetch learning assets: {e}")
-        import traceback
-        logger.error(f"[ERROR] Traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch learning assets: {e}")
 
 @app.get("/api/learning-assets/search")
 def search_youtube_videos(query: str, limit: int = 10):

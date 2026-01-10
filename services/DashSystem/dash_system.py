@@ -1106,7 +1106,7 @@ class DASHSystem:
                 })
             
             self.default_grading_panel = grading_data
-            log_print(f"[DEFAULT_PANEL] ✅ Generated default panel with {len(self.khan_skills)} units")
+            log_print(f"[DEFAULT_PANEL] [OK] Generated default panel with {len(self.khan_skills)} units")
             
         except Exception as e:
             log_print(f"[ERROR] Failed to generate default panel: {e}")
