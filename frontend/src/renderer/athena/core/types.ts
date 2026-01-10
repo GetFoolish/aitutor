@@ -271,6 +271,9 @@ export interface AthenaRendererProps {
 
   // Dependencies (for advanced customization)
   dependencies?: AthenaDependencies;
+
+  // View Mode
+  viewMode?: 'athena' | 'perseus' | 'comparison';
 }
 
 export interface AthenaAPIOptions {

@@ -10,6 +10,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import AthenaContext from '../../AthenaContext';
 
 interface GraphieLabel {
   content: string;
@@ -75,17 +76,22 @@ function getGraphieBaseUrl(url: string): string {
  */
 function restructureSvgForVotingGraph(svg: string): string {
   try {
+    console.log('[GraphieImage] restructureSvgForVotingGraph CALLED for SVG length:', svg.length);
     const parser = new DOMParser();
     const doc = parser.parseFromString(svg, 'image/svg+xml');
     const svgEl = doc.querySelector('svg');
-    if (!svgEl) return svg;
+    if (!svgEl) {
+      console.error('[GraphieImage] RESTRUCTURE FAILED: No SVG element found');
+      return svg;
+    }
 
     const viewBox = svgEl.getAttribute('viewBox');
+    console.log('[GraphieImage] Original ViewBox:', viewBox);
     let svgWidth = 400;
     let svgHeight = 400;
 
     if (viewBox) {
-      const parts = viewBox.split(/\s+/);
+      const parts = viewBox.split(/[\s,]+/);
       svgWidth = parseFloat(parts[2]) || 400;
       svgHeight = parseFloat(parts[3]) || 400;
     }
@@ -171,6 +177,7 @@ function restructureSvgForVotingGraph(svg: string): string {
       }
     });
 
+    console.log('[GraphieImage] RESTRUCTURE SUCCESS! New dimensions:', newWidth, newHeight);
     return new XMLSerializer().serializeToString(doc);
   } catch (err) {
     console.error('[GraphieImage] Error restructuring SVG:', err);
@@ -179,6 +186,88 @@ function restructureSvgForVotingGraph(svg: string): string {
 }
 
 export function GraphieImage({ url, alt = '', className = '', style }: GraphieImageProps) {
+  // Get global context safely (returns null if not in provider)
+  const athenaContext = React.useContext(AthenaContext);
+  // Safe access to viewMode
+  const viewMode = athenaContext?.state?.viewMode || 'athena';
+
+  // STANDALONE Dark Mode Detection (works without ThemeProvider)
+  // We use state only for the standalone detection fallback
+  const [standaloneIsDarkMode, setStandaloneIsDarkMode] = useState(false);
+
+  // EFFECT: Handle standalone detection (listeners)
+  // Only runs once on mount to set up listeners for fallback cases
+  useEffect(() => {
+    const checkStandaloneDarkMode = () => {
+      // 1. Check localStorage first (user preference)
+      const storedTheme = localStorage.getItem('ai-tutor-theme');
+
+      // 2. Check if HTML has dark class (ThemeProvider active)
+      const htmlHasDark = document.documentElement.classList.contains('dark');
+
+      // 3. Check system preference
+      const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      // 4. Determine if dark mode should be active
+      let isDark = false;
+
+      if (storedTheme === 'dark') {
+        isDark = true;
+      } else if (storedTheme === 'light') {
+        isDark = false;
+      } else if (storedTheme === 'system' || !storedTheme) {
+        // Use system preference if theme is 'system' or not set
+        isDark = systemPrefersDark;
+      }
+
+      // Override with HTML class if ThemeProvider is active
+      if (htmlHasDark) {
+        isDark = true;
+      }
+
+      setStandaloneIsDarkMode(isDark);
+    };
+
+    // Initial check
+    checkStandaloneDarkMode();
+
+    // Listen for localStorage changes
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'ai-tutor-theme') {
+        checkStandaloneDarkMode();
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleMediaChange = () => checkStandaloneDarkMode();
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleMediaChange);
+    }
+
+    // Observer for HTML class changes
+    const observer = new MutationObserver(checkStandaloneDarkMode);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleMediaChange);
+      }
+      observer.disconnect();
+    };
+  }, []);
+
+  // DERIVED STATE: Determine final dark mode status
+  // If context is available, use it (INSTANT). Otherwise, use standalone state.
+  const isDarkMode = athenaContext?.state?.theme
+    ? athenaContext.state.theme === 'dark'
+    : standaloneIsDarkMode;
+
   const [svgContent, setSvgContent] = useState<string | null>(null);
   const [pngFallback, setPngFallback] = useState<string | null>(null);
   const [graphieData, setGraphieData] = useState<GraphieData | null>(null);
@@ -191,8 +280,49 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
 
   const baseUrl = getGraphieBaseUrl(url);
 
+  // DEBUG: Check if we are capturing the right ID
+  const isTargetID = url.toLowerCase().includes('6933b3176cf86fa761d0a255') || baseUrl.toLowerCase().includes('6933b3176cf86fa761d0a255') || baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011');
+
+  useEffect(() => {
+    if (isTargetID) {
+      console.log('[[DEBUG TARGET]] Found target voting graph ID!');
+      console.log('[[DEBUG TARGET]] URL:', url);
+      console.log('[[DEBUG TARGET]] BaseURL:', baseUrl);
+    }
+  }, [isTargetID, url, baseUrl]);
+
   // Determine whether to use PNG or SVG based on URL patterns
   // Some images (hundred charts, labeled diagrams) work better with PNG which has text baked in
+  // Hardcoded data for the problematic voting graph (Hash: 6ba2c9076404d0c5e704a2071bec7597bb3dc011)
+  const VOTING_GRAPH_DATA = {
+    "range": [[-1.5086666666666666, 7.3], [-70, 130]],
+    "labels": [
+      { "content": "0", "coordinates": [0, 0], "alignment": "left", "typesetAsMath": true, "style": {} },
+      { "content": "10", "coordinates": [0, 10], "alignment": "left", "typesetAsMath": true, "style": {} },
+      { "content": "20", "coordinates": [0, 20], "alignment": "left", "typesetAsMath": true, "style": {} },
+      { "content": "30", "coordinates": [0, 30], "alignment": "left", "typesetAsMath": true, "style": {} },
+      { "content": "40", "coordinates": [0, 40], "alignment": "left", "typesetAsMath": true, "style": {} },
+      { "content": "50", "coordinates": [0, 50], "alignment": "left", "typesetAsMath": true, "style": {} },
+      { "content": "60", "coordinates": [0, 60], "alignment": "left", "typesetAsMath": true, "style": {} },
+      { "content": "70", "coordinates": [0, 70], "alignment": "left", "typesetAsMath": true, "style": {} },
+      { "content": "80", "coordinates": [0, 80], "alignment": "left", "typesetAsMath": true, "style": {} },
+      { "content": "90", "coordinates": [0, 90], "alignment": "left", "typesetAsMath": true, "style": {} },
+      { "content": "100", "coordinates": [0, 100], "alignment": "left", "typesetAsMath": true, "style": {} },
+      { "content": "<center>1</center>", "coordinates": [0.65, 0], "alignment": "below", "typesetAsMath": false, "style": {} },
+      { "content": "<center>2</center>", "coordinates": [1.65, 0], "alignment": "below", "typesetAsMath": false, "style": {} },
+      { "content": "<center>3</center>", "coordinates": [2.65, 0], "alignment": "below", "typesetAsMath": false, "style": {} },
+      { "content": "<center>4</center>", "coordinates": [3.65, 0], "alignment": "below", "typesetAsMath": false, "style": {} },
+      { "content": "<center>5</center>", "coordinates": [4.65, 0], "alignment": "below", "typesetAsMath": false, "style": {} },
+      { "content": "<center>6</center>", "coordinates": [5.65, 0], "alignment": "below", "typesetAsMath": false, "style": {} },
+      { "content": "<center>7</center>", "coordinates": [6.65, 0], "alignment": "below", "typesetAsMath": false, "style": {} },
+      { "content": "<center>Voters' Political Orientation, Level of<br>Political Information, and Probability<br>of Voting</center>", "coordinates": [2.25, 130], "alignment": "below", "typesetAsMath": false, "style": { "font-weight": "bold", "font-size": "16px" } },
+      { "content": "<center>Voters' political orientation<br>(1 = strong Democrat/liberal;<br>4 = independent;<br>7 = strong Republican/conservative)</center>", "coordinates": [2.8499999999999996, -10.416666666666668], "alignment": "below", "typesetAsMath": false, "style": {} },
+      { "content": "<center>Probability of voting (%)</center>", "coordinates": [-1.3383333333333332, 50], "alignment": "center", "typesetAsMath": false, "style": { "font-weight": "bold", "transform": "rotate(-90deg)" } },
+      { "content": "high information", "coordinates": [2.3649999999999998, -61.66666666666667], "alignment": "right", "typesetAsMath": false, "style": {} },
+      { "content": "low information", "coordinates": [2.3649999999999998, -50.66666666666667], "alignment": "right", "typesetAsMath": false, "style": {} }
+    ]
+  };
+
   useEffect(() => {
     // Check if URL suggests this is a labeled/numbered image that works better with PNG
     const lowerUrl = baseUrl.toLowerCase();
@@ -209,7 +339,19 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     } else {
       setUsePngForLabels(false);
     }
+
     // Note: dataFetchComplete is set by the data.json fetch useEffect
+
+    // FORCE CACHE CLEAR for the problematic voting graph to ensure restructuring applies
+    if (baseUrl.toLowerCase().includes('6933b3176cf86fa761d0a255') || baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011')) {
+      const svgUrl = baseUrl + '.svg';
+      if (svgCache.has(svgUrl)) {
+        console.log('[GraphieImage] Force clearing cache for 6933b... to ensure restructure');
+        svgCache.delete(svgUrl);
+      }
+      // Force SVG usage
+      setUsePngForLabels(false);
+    }
   }, [baseUrl]);
 
   // Fetch SVG content inline to allow text rendering with proper fonts
@@ -249,7 +391,9 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     }, 3000); // 3 second timeout
 
     // Fetch SVG as text to render inline
-    fetch(svgUrl, { mode: 'cors' })
+    // Add cache buster to prevent stale SVG loading
+    const fetchUrl = svgUrl + '?t=' + new Date().getTime();
+    fetch(fetchUrl, { mode: 'cors' })
       .then(res => {
         if (!res.ok) throw new Error('Not found');
         return res.text();
@@ -275,7 +419,8 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         // Detect voting graph based on URL
         const isVotingUrl = baseUrl.toLowerCase().includes('voting') ||
           baseUrl.toLowerCase().includes('political') ||
-          baseUrl.toLowerCase().includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011');
+          baseUrl.toLowerCase().includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011') ||
+          baseUrl.toLowerCase().includes('6933b3176cf86fa761d0a255');
 
         if (isVotingUrl) {
           console.log('[GraphieImage] Voting graph detected by URL, restructuring SVG');
@@ -287,7 +432,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         const styleBlock = `<style>
           /* Force all text elements to be visible - scoped to SVG only */
           .graphie-svg text, .graphie-svg tspan, .graphie-svg .label, svg[class*="graphie"] [class*="label"] {
-            fill: #000 !important; /* Force high contrast black */
+            fill: #000 !important; /* Force high contrast black ALWAYS */
             fill-opacity: 1 !important;
             font-family: 'Arial', 'Helvetica', sans-serif !important; /* Academic, crisp font */
             font-weight: 500 !important; /* Slightly clearer */
@@ -478,6 +623,18 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       return;
     }
 
+    // FORCE HARDCODED DATA for Voting Graph
+    // This bypasses fetch failures and guarantees labels exist for our fix
+    if (baseUrl.toLowerCase().includes('6933b3176cf86fa761d0a255') || baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011')) {
+      console.log('[GraphieImage] Using HARDCODED data for voting graph');
+      // We already defined VOTING_GRAPH_DATA constant at component scope (lines 220+)
+      // But since it's defined inside the component, we can access it here.
+      // Wait, scope is fine.
+      setGraphieData(VOTING_GRAPH_DATA);
+      setDataFetchComplete(true);
+      return;
+    }
+
     // Fetch the data.json file
     fetch(dataUrl, { mode: 'cors' })
       .then(res => {
@@ -527,20 +684,22 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       });
   }, [baseUrl]);
 
+
+
   // Trigger restructuring based on graphie data (labels) if URL detection missed it
   useEffect(() => {
     if (graphieData && svgContent && !svgContent.includes('data-restructured')) {
       const isVotingGraph = graphieData.labels?.some(l => {
         const c = processLabelContent(l.content).toLowerCase();
         return c.includes('voting') || c.includes('voter') || c.includes('polit') || c.includes('democrat') || c.includes('republic') || c.includes('high information');
-      });
+      }) || baseUrl.toLowerCase().includes('6933b3176cf86fa761d0a255');
 
       if (isVotingGraph) {
-        console.log('[GraphieImage] Voting graph detected by labels, restructuring SVG now');
+        console.log('[GraphieImage] Voting graph detected by labels or ID, restructuring SVG now');
         setSvgContent(prev => prev ? restructureSvgForVotingGraph(prev) : null);
       }
     }
-  }, [graphieData, svgContent]);
+  }, [graphieData, svgContent, baseUrl]);
 
   // Post-render: Force all text elements to be visible via DOM manipulation
   useEffect(() => {
@@ -635,7 +794,9 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     // Parse SVG dimensions and check for restructuring
     const viewBoxMatch = svg.match(/viewBox="([^"]+)"/);
     // Robust detection: check for the data attribute in the SVG string
-    const isRestructured = svg.includes('data-restructured');
+    // OR if we know it's our target graph (force it)
+    const isTargetGraph = baseUrl.toLowerCase().includes('6933b3176cf86fa761d0a255') || baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011');
+    const isRestructured = svg.includes('data-restructured') || isTargetGraph;
     const origHeightMatch = svg.match(/data-original-height="([^"]+)"/);
 
     let svgWidth = 400, svgHeight = 400;
@@ -669,7 +830,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       const isVotingGraph = labels.some(l => {
         const c = processLabelContent(l.content).toLowerCase();
         return c.includes('voting') || c.includes('voter') || c.includes('polit') || c.includes('democrat') || c.includes('republic') || c.includes('information');
-      });
+      }) || baseUrl.toLowerCase().includes('6933b3176cf86fa761d0a255') || baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011');
       const topPadding = 90; // Match the value used in restructureSvgForVotingGraph
       const barCenter = svgWidth / 2;
 
@@ -677,77 +838,85 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       const graphBaselineY = (yMax / (yMax - yMin)) * coordinateHeight;
 
       // Process content for matching and display
-      const processedContent = processLabelContent(label.content);
+      let processedContent = processLabelContent(label.content);
 
       if (index === 0) {
-        console.log('[GraphieImage] Checking voting graph:', isVotingGraph, 'isRestructured:', isRestructured);
-        console.log('[GraphieImage] Label contents:', labels.map(l => processLabelContent(l.content)));
+        console.log('[GraphieImage] Checking voting graph:', isVotingGraph, 'isRestructured:', isRestructured, 'isTargetGraph:', isTargetGraph);
+        console.log('[GraphieImage] Label contents examples:', labels.slice(0, 3).map(l => processLabelContent(l.content)));
       }
 
       if (isVotingGraph && isRestructured) {
         const lowerContent = processedContent.toLowerCase();
-        if (lowerContent.includes('low information') || lowerContent.includes('high information')) {
-          textAnchor = 'start';
-          // Vertical stack closer to the graph
-          svgX = barCenter + 15;
-          svgY = coordinateHeight + 80; // Relative to group (much tighter)
 
-          if (lowerContent.includes('high')) {
-            svgY += 25;
-          }
+        // DEBUG: Log every label processed in this block
+        if (index === 0 || index === labels.length - 1) { // Log first and last to avoid spamming too much, or log all if needed
+          console.log(`[GraphieImage] Processing label: "${lowerContent}"`);
         }
-        // 1. Move Title labels into the top padding area (negative relative Y)
-        else if (
-          (lowerContent.includes('voters') || lowerContent.includes('orientation') || lowerContent.includes('voting') || lowerContent.includes('information') || lowerContent.includes('probability'))
-          && !lowerContent.includes('(')
-          && !lowerContent.includes('%') // Exclude Y-axis label which has (%)
-          && !lowerContent.includes('low information')
-          && !lowerContent.includes('high information')
-        ) {
+
+        // SUPER ROBUST MATCHING
+        // Strip common HTML tags for checking
+        const cleanContent = lowerContent.replace(/<[^>]*>/g, ' ');
+
+        // 1. LEGEND (Bottom Right)
+        if (cleanContent.includes('high information') || cleanContent.includes('low information')) {
+          // Revert to using the calculated svgX/svgY so it matches the boxes (which are drawn at math coords)
+          // Original alignment was 'right', but visual is Box [Text], so we want 'start' (left align) 
+          // to place text to the right of the coordinate (assuming coordinate is the box position)
+          textAnchor = 'start';
+
+          // Small nudge if needed. 
+          // Original X (math) ~ 175. Visual box might be there.
+          // Adding a small margin to separate text from box.
+          svgX += 15;
+
+          // Y adjustment: The math Y makes them float too high above the boxes.
+          // We push them down significantly to align "center-ish" with the boxes.
+          // User said "boxes ascend", implying gap. We close it by moving text down.
+          svgY += 35;
+
+          styleStr += ' font-weight: bold; font-size: 14px;';
+        }
+        // 2. MAIN TITLE (Top)
+        // Match specific words known to be in the title
+        else if (cleanContent.includes('level of') || cleanContent.includes('political information') || (cleanContent.includes('probability') && cleanContent.includes('voting') && !cleanContent.includes('%'))) {
           svgX = barCenter;
           textAnchor = 'middle';
-          // Use negative Y to place them in the topPadding area (now 180px)
-          if (lowerContent.includes('orientation')) svgY = -140;
-          else if (lowerContent.includes('information')) svgY = -115;
-          else if (lowerContent.includes('voting')) svgY = -90;
-          else svgY = -115; // Fallback
+          svgY = -115;
+          if (cleanContent.includes('orientation')) svgY = -140; // Top line
+          if (cleanContent.includes('voting')) svgY = -90; // Bottom line
+
+          styleStr += ' font-weight: bold; font-size: 18px !important;';
         }
-        // 2. Déplacement du label Y-axis "Probability of voting (%)" à gauche de l'axe
-        else if (lowerContent.includes('probability of voting') || lowerContent.includes('%')) {
-          svgX = 155; // Brought very close to the axis ticks
-          svgY = coordinateHeight / 2.6; // Moved slightly higher as requested
+        // 3. Y-AXIS LABEL (Left)
+        else if (cleanContent.includes('%') || (cleanContent.includes('probability') && cleanContent.includes('voting'))) {
+          svgX = 155;
+          svgY = coordinateHeight / 2.6;
           textAnchor = 'middle';
           dy = '0.35em';
           transformAttr = `rotate(-90 ${svgX} ${svgY})`;
+
+          styleStr += ' font-weight: bold;';
         }
-        // 3. Ajustement du label X-axis pour être juste en dessous
-        else if (lowerContent.includes('(') || lowerContent.includes('independent') || lowerContent.includes('democrat') || lowerContent.includes('republican')) {
+        // 4. X-AXIS LABEL (Bottom)
+        else if (cleanContent.includes('1 =') || cleanContent.includes('strong') || cleanContent.includes('independent')) {
           svgX = barCenter;
           textAnchor = 'middle';
-          // Position relative à la ligne de base réelle (y=0 mathématique)
-          if (lowerContent.includes('political orientation')) svgY = graphBaselineY + 65;
-          else if (lowerContent.includes('democrat')) svgY = graphBaselineY + 12;
-          else if (lowerContent.includes('independent')) svgY = graphBaselineY + 22;
-          else if (lowerContent.includes('republican')) svgY = graphBaselineY + 32;
+          svgY = graphBaselineY + 65;
+          if (cleanContent.includes('democrat')) svgY = graphBaselineY + 12;
+          if (cleanContent.includes('independent')) svgY = graphBaselineY + 22;
+          if (cleanContent.includes('republican')) svgY = graphBaselineY + 32;
         }
+        // 5. EVERYTHING ELSE (Ticks integers)
         else {
-          // Standard label (axis ticks [0, 10...], [1, 2...]) 
-          // Match the math coordinate mapping perfectly
-          if (label.alignment === 'below') {
-            svgY += 6; // Petit décalage sous la ligne
-          }
+          // Standard positioning logic...
+          if (label.alignment === 'below') svgY += 6;
+          if (label.alignment === 'left') { textAnchor = 'end'; svgX -= 10; }
 
-          if (label.alignment === 'left') {
-            textAnchor = 'end';
-            svgX -= 10;
-          } else if (label.alignment === 'right') {
-            textAnchor = 'start';
-            svgX += 3;
-          } else if (label.alignment === 'above' || label.alignment === 'top') {
-            dy = '-0.8em';
-          } else if (label.alignment === 'below' || label.alignment === 'bottom') {
-            svgY += 25;
-            dy = '1.2em';
+          // Only mark as RED if it contains text characters (not just numbers)
+          // This helps identify "missed" labels
+          if (/[a-z]/.test(cleanContent)) {
+            // Missed text labels - ensure they are visible
+            styleStr += ' font-weight: bold;';
           }
         }
       } else {
@@ -800,20 +969,37 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
           .replace(/</g, '&lt;')
           .replace(/>/g, '&gt;');
 
-        // Use dy for line spacing on subsequent lines
-        const lineDy = lineIdx === 0 ? '0' : '1.2em';
-        return `<tspan x="${svgX}" dy="${lineDy}">${escapedLine}</tspan>`;
+        const lineDy = lineIdx === 0 ? dy : '1.2em';
+
+        // IMPORTANT: Apply the accumulated styles (including debugging colors) here!
+        return `<tspan x="${svgX}" dy="${lineDy}" style="${styleStr}">${escapedLine}</tspan>`;
       }).join('');
 
       return `<text x="${svgX}" y="${svgY}" text-anchor="${textAnchor}" dy="${dy}" fill="currentColor" style="${styleStr}" ${transformAttr ? `transform="${transformAttr}"` : ''}>${tspanElements}</text>`;
     }).join('\n');
 
     // Insert labels into the transformed group if it exists, otherwise at the end
+    // Insert labels into the transformed group if it exists, otherwise at the end
+    // Use robust regex to find the closing tag of the transformed group
     if (svg.includes('class="graph-content-transformed"')) {
-      return svg.replace('</g></svg>', `<g class="graphie-labels">${labelElements}</g></g></svg>`);
+      // Find the last closing </g> which closes the transformed group
+      // We look for the last </g> before </svg>
+      const lastGroupCloseIndex = svg.lastIndexOf('</g>');
+      if (lastGroupCloseIndex !== -1) {
+        return svg.slice(0, lastGroupCloseIndex) + `<g class="graphie-labels">${labelElements}</g>` + svg.slice(lastGroupCloseIndex);
+      }
     }
+
+    // Fallback: If we couldn't insert into the group, or if the group wasn't found but we know it should be restructured
+    if (isRestructured) {
+      // If the SVG is restructured (expanded), the main content is shifted by (60, 180).
+      // If we are appending labels to the root, we MUST apply the same shift so the relative coordinates (like -140) work.
+      // This handles cases where regex failed or the group structure is slightly different.
+      return svg.replace('</svg>', `<g transform="translate(60, 180)" class="graphie-labels">${labelElements}</g></svg>`);
+    }
+
     return svg.replace('</svg>', `<g class="graphie-labels">${labelElements}</g></svg>`);
-  }, []);
+  }, [baseUrl]);
 
   // Get processed SVG with labels
   const processedSvgWithLabels = useMemo(() => {
@@ -824,6 +1010,49 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     console.log('[GraphieImage] Injecting', graphieData.labels.length, 'labels into SVG');
     return injectLabelsIntoSvg(svgContent, graphieData.labels, range);
   }, [svgContent, graphieData, injectLabelsIntoSvg]);
+
+  // FORCE STATIC IMAGE FOR BROKEN VOTING GRAPH (ID: 6933b3176cf86fa761d0a255)
+  // This bypasses all complex SVG restructuring logic as requested by user.
+  // Placed HERE to allow all hooks to run first, avoiding "Rendered fewer hooks than expected" error.
+  if (baseUrl.includes('6933b3176cf86fa761d0a255') || baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011')) {
+    return (
+      <div className={`graphie-container ${className}`} style={{ ...style, width: '100%', maxWidth: '400px', margin: '0 auto', background: 'transparent', padding: 0, border: 'none' }}>
+        {/* CSS pour dark mode - ULTRA-SPÉCIFIQUE pour éviter d'affecter d'autres éléments */}
+        <style>{`
+          /* Cible UNIQUEMENT l'image avec la classe voting-graph-fix */
+            /* Mode Clair: Multiply pour détourer le blanc (le rend transparent) */
+          /* Mode Clair: Multiply pour détourer le blanc (le rend transparent) */
+          img.voting-graph-fix {
+            filter: none !important;
+            mix-blend-mode: multiply !important;
+          }
+          /* Mode Sombre: Screen pour détourer le noir (le rend transparent) après inversion */
+          /* On cible via la classe .force-dark injectée par JS, plus fiable que html.dark */
+          img.voting-graph-fix.force-dark {
+            filter: invert(1) hue-rotate(180deg) !important;
+            mix-blend-mode: screen !important;
+          }
+        `}</style>
+        <img
+          src="/fixed_graphs/voting_graph.png"
+          alt={alt || "Graph showing voters' political orientation"}
+          className={`voting-graph-fix ${isDarkMode ? 'force-dark' : ''}`}
+          style={{
+            width: '100%',
+            height: 'auto',
+            display: 'block',
+            margin: 0,
+            padding: 0,
+            border: 'none',
+            background: 'transparent',
+            transition: 'filter 0.3s ease, opacity 0.3s ease',
+            // Transparence en mode comparaison (géré par JS)
+            opacity: viewMode === 'comparison' ? 0.8 : 1
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div

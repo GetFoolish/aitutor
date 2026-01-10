@@ -1610,7 +1610,7 @@ export const QuestionPane: React.FC = () => {
         timeSpent={Date.now() - startTime}
       />
 
-      
+
       {/* Sticky Progress Header */}
       <ProgressHeader
         current={currentIndex}
@@ -1696,9 +1696,8 @@ export const QuestionPane: React.FC = () => {
                       alert('JSON copied to clipboard! Paste it in the "Dump Perseus data here" box.');
                     });
                   }}
-                  className={`px-3 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1 ${
-                    darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
+                  className={`px-3 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1 ${darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
                   title="Copy JSON & Open Perseus Interactive Viewer"
                 >
                   <ExternalLink className="w-4 h-4" />
@@ -1808,6 +1807,7 @@ export const QuestionPane: React.FC = () => {
                       readOnly={isSubmitted}
                       reviewMode={isSubmitted}
                       theme={darkMode ? 'dark' : 'light'}
+                      viewMode={viewMode}
                     />
                   </RendererErrorBoundary>
                 )}
@@ -1864,6 +1864,7 @@ export const QuestionPane: React.FC = () => {
                           readOnly={isSubmitted}
                           reviewMode={isSubmitted}
                           theme={darkMode ? 'dark' : 'light'}
+                          viewMode="comparison"
                         />
                       </RendererErrorBoundary>
                     </div>
@@ -1961,6 +1962,7 @@ export const QuestionPane: React.FC = () => {
             </div>
 
             {/* Debug: Question ID and Collapsible JSON */}
+            {/* Debug UI Removed as per user request */}
             {currentQuestion && (
               <div className={`mt-4 border rounded z-50 relative ${darkMode
                 ? 'bg-black border-gray-700'
@@ -1970,38 +1972,6 @@ export const QuestionPane: React.FC = () => {
                 <div className="text-center p-2 select-all cursor-text">
                   <span className={`font-bold mr-2 ${darkMode ? 'text-white' : 'text-gray-700'}`}>ID:</span>
                   <span className={`font-mono text-lg font-bold select-all ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>{currentQuestion._id}</span>
-                </div>
-
-                {/* Collapsible JSON Viewer */}
-                <div className={`border-t ${darkMode ? 'border-gray-700' : 'border-yellow-300'}`}>
-                  <button
-                    onClick={() => setIsJsonExpanded(!isJsonExpanded)}
-                    className={`w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
-                      darkMode
-                        ? 'text-gray-300 hover:bg-gray-800'
-                        : 'text-gray-700 hover:bg-yellow-200'
-                    }`}
-                  >
-                    <Code className="w-4 h-4" />
-                    {isJsonExpanded ? 'Hide JSON' : 'Show JSON'}
-                    {isJsonExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                  </button>
-
-                  {isJsonExpanded && (
-                    <div className={`border-t overflow-auto max-h-96 ${darkMode ? 'border-gray-700' : 'border-yellow-300'}`}>
-                      <pre className={`p-4 text-xs font-mono whitespace-pre-wrap break-words ${
-                        darkMode ? 'text-gray-300 bg-gray-900' : 'text-gray-800 bg-yellow-50'
-                      }`}>
-                        {JSON.stringify({
-                          _id: currentQuestion._id,
-                          question: currentQuestion.question,
-                          hints: currentQuestion.hints,
-                          answerArea: currentQuestion.answerArea,
-                          perseusItem: currentQuestion.perseusItem,
-                        }, null, 2)}
-                      </pre>
-                    </div>
-                  )}
                 </div>
               </div>
             )}

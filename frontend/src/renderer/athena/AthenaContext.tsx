@@ -48,6 +48,9 @@ interface AthenaState {
 
   // Errors
   errors: Array<{ widgetId?: string; message: string; timestamp: number }>;
+
+  // View Mode
+  viewMode: 'athena' | 'perseus' | 'comparison';
 }
 
 type AthenaAction =
@@ -63,7 +66,8 @@ type AthenaAction =
   | { type: 'SET_SHOW_SOLUTIONS'; payload: 'none' | 'all' | 'attempted' }
   | { type: 'SET_READ_ONLY'; payload: boolean }
   | { type: 'ADD_ERROR'; payload: { widgetId?: string; message: string } }
-  | { type: 'CLEAR_ERRORS' };
+  | { type: 'CLEAR_ERRORS' }
+  | { type: 'SET_VIEW_MODE'; payload: 'athena' | 'perseus' | 'comparison' };
 
 // ============================================================================
 // CONTEXT TYPES
@@ -83,6 +87,7 @@ interface AthenaContextValue {
   setShowSolutions: (mode: 'none' | 'all' | 'attempted') => void;
   addError: (message: string, widgetId?: string) => void;
   clearErrors: () => void;
+  setViewMode: (mode: 'athena' | 'perseus' | 'comparison') => void;
 
   // Notation engine management
   markEngineLoading: (engine: NotationType) => void;
@@ -116,6 +121,7 @@ const initialState: AthenaState = {
   showSolutions: 'none',
   readOnly: false,
   errors: [],
+  viewMode: 'athena',
 };
 
 // ============================================================================
@@ -203,6 +209,9 @@ function athenaReducer(state: AthenaState, action: AthenaAction): AthenaState {
     case 'CLEAR_ERRORS':
       return { ...state, errors: [] };
 
+    case 'SET_VIEW_MODE':
+      return { ...state, viewMode: action.payload };
+
     default:
       return state;
   }
@@ -229,6 +238,7 @@ interface AthenaProviderProps {
   showSolutions?: 'none' | 'all' | 'attempted';
   readOnly?: boolean;
   onEvent?: (event: AthenaEvent) => void;
+  viewMode?: 'athena' | 'perseus' | 'comparison';
 }
 
 export function AthenaProvider({
@@ -242,6 +252,7 @@ export function AthenaProvider({
   showSolutions = 'none',
   readOnly = false,
   onEvent,
+  viewMode = 'athena',
 }: AthenaProviderProps) {
   const [state, dispatch] = useReducer(athenaReducer, {
     ...initialState,
@@ -251,6 +262,7 @@ export function AthenaProvider({
     reviewMode,
     showSolutions,
     readOnly,
+    viewMode,
   });
 
   // Memoized dependencies with defaults
@@ -281,6 +293,13 @@ export function AthenaProvider({
       dispatch({ type: 'SET_THEME', payload: theme });
     }
   }, [theme, state.theme]);
+
+  // Sync viewMode prop with state
+  React.useEffect(() => {
+    if (viewMode !== state.viewMode) {
+      dispatch({ type: 'SET_VIEW_MODE', payload: viewMode });
+    }
+  }, [viewMode, state.viewMode]);
 
   // Actions
   const setTheme = useCallback(
@@ -329,6 +348,10 @@ export function AthenaProvider({
 
   const clearErrors = useCallback(() => {
     dispatch({ type: 'CLEAR_ERRORS' });
+  }, []);
+
+  const setViewModeAction = useCallback((mode: 'athena' | 'perseus' | 'comparison') => {
+    dispatch({ type: 'SET_VIEW_MODE', payload: mode });
   }, []);
 
   // Engine management
@@ -400,6 +423,7 @@ export function AthenaProvider({
       resolveStaticUrl,
       getLocale,
       getString,
+      setViewMode: setViewModeAction,
     }),
     [
       state,
@@ -421,6 +445,7 @@ export function AthenaProvider({
       resolveStaticUrl,
       getLocale,
       getString,
+      setViewModeAction,
     ]
   );
 

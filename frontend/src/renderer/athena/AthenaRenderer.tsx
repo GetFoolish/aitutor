@@ -37,21 +37,13 @@ import type {
 // CONTENT RENDERER (Internal Component)
 // ============================================================================
 
-interface AthenaRendererProps {
-  item: PerseusItem | AthenaItem;
-  problemNum: number;
-  apiOptions?: Record<string, any>;
-  linterContext?: any;
-  showSolutions?: string;
-  hintsVisible?: number;
-  reviewMode?: boolean;
-  theme?: 'light' | 'dark' | 'high-contrast';
-}
+
 
 interface ContentRendererProps {
   item: PerseusItem | AthenaItem;
   problemNum: number;
   theme?: 'light' | 'dark' | 'high-contrast';
+  viewMode?: 'athena' | 'perseus' | 'comparison';
 }
 
 
@@ -407,6 +399,7 @@ export const AthenaRenderer = forwardRef<AthenaRendererRef, AthenaRendererProps>
       ariaLabel,
       apiOptions = {},
       dependencies = {},
+      viewMode = 'athena',
     },
     ref
   ) {
@@ -453,6 +446,7 @@ export const AthenaRenderer = forwardRef<AthenaRendererRef, AthenaRendererProps>
           reviewMode={reviewMode}
           showSolutions={showSolutions}
           readOnly={readOnly}
+          viewMode={viewMode}
         >
           <div
             className="athena-renderer"
