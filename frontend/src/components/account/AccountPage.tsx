@@ -502,6 +502,15 @@ const AccountPage: React.FC = () => {
                 )}>
                   {getPlanDisplayName(accountInfo.subscription_plan)}
                 </p>
+                
+                {accountInfo.subscription_plan && (
+                  <p className={cn(
+                    "text-xs font-bold text-gray-600 dark:text-gray-400 mt-2 p-2",
+                    "border-[2px] border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 rounded"
+                  )}>
+                    ℹ️ Your subscription renews monthly. Balance resets to plan minutes each month.
+                  </p>
+                )}
               </div>
 
               <div>

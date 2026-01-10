@@ -32,6 +32,28 @@ async def create_checkout_session(request: Request, body: CheckoutSessionRequest
         logger.error("[PAYMENT] User not authenticated for checkout session creation")
         raise HTTPException(status_code=401, detail="User not authenticated")
 
+    # Check if user already has an active subscription
+    user = mongo_db.users.find_one(
+        {"user_id": user_id},
+        {"stripe_subscription_id": 1, "subscription_status": 1, "subscription_plan": 1}
+    )
+    
+    if user:
+        subscription_id = user.get("stripe_subscription_id")
+        subscription_status = user.get("subscription_status")
+        current_plan = user.get("subscription_plan")
+        
+        # Prevent multiple active subscriptions
+        if subscription_id and subscription_status == "active":
+            logger.warning(
+                f"[PAYMENT] User {user_id} attempted to purchase new plan but already has "
+                f"active {current_plan} subscription: {subscription_id}"
+            )
+            raise HTTPException(
+                status_code=400,
+                detail=f"You already have an active {current_plan} subscription. Please cancel your current subscription before purchasing a new plan."
+            )
+
     plan = body.plan
 
     try:
