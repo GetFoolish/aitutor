@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { RiSidebarFoldLine, RiSidebarUnfoldLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import cn from "classnames";
 import { Moon, Sun, User, Settings, LogOut, Terminal, BookOpen } from "lucide-react";
 import { useTheme } from "../theme/theme-provier";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import SettingsDialog from "../settings-dialog/SettingsDialog";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -40,12 +39,12 @@ interface HeaderProps {
     sidebarOpen: boolean;
     onToggleSidebar: () => void;
     isDeveloperMode: boolean;
-    onToggleDeveloperMode: () => void;
 }
 
-export default function Header({ sidebarOpen, onToggleSidebar, isDeveloperMode, onToggleDeveloperMode }: HeaderProps) {
+export default function Header({ sidebarOpen, onToggleSidebar, isDeveloperMode }: HeaderProps) {
     const { theme, setTheme } = useTheme();
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [settingsOpen, setSettingsOpen] = useState(false);
 
     useEffect(() => {
         const checkDarkMode = () => {
@@ -88,6 +87,8 @@ export default function Header({ sidebarOpen, onToggleSidebar, isDeveloperMode, 
 
             {/* Right side - Actions */}
             <div className="flex items-center gap-1.5 md:gap-2">
+                <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} trigger={null} />
+
                 <Button
                     type="button"
                     variant="ghost"
@@ -98,23 +99,6 @@ export default function Header({ sidebarOpen, onToggleSidebar, isDeveloperMode, 
                     <Sun className="h-[0.9rem] w-[0.9rem] md:h-[1rem] md:w-[1rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
                     <Moon className="absolute h-[0.9rem] w-[0.9rem] md:h-[1rem] md:w-[1rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                     <span className="sr-only">Toggle theme</span>
-                </Button>
-
-                <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className={cn(
-                        "w-7 h-7 md:w-8 md:h-8 lg:w-8 lg:h-8 border-[2px] border-black dark:border-white hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100",
-                        isDeveloperMode
-                            ? "bg-[#C4B5FD] dark:bg-[#C4B5FD] text-black dark:text-black"
-                            : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#C4B5FD] dark:hover:bg-[#C4B5FD] dark:hover:text-black"
-                    )}
-                    onClick={onToggleDeveloperMode}
-                    title={isDeveloperMode ? "Disable Developer Mode" : "Enable Developer Mode"}
-                >
-                    <Terminal className="h-[0.9rem] w-[0.9rem] md:h-[1rem] md:w-[1rem]" />
-                    <span className="sr-only">Toggle developer mode</span>
                 </Button>
 
                 <DropdownMenu>
@@ -143,7 +127,10 @@ export default function Header({ sidebarOpen, onToggleSidebar, isDeveloperMode, 
                                     <span>Account</span>
                                 </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                                className="flex items-center"
+                                onSelect={() => setSettingsOpen(true)}
+                            >
                                 <Settings className="mr-2 h-4 w-4" />
                                 <span>Settings</span>
                             </DropdownMenuItem>
@@ -163,11 +150,9 @@ export default function Header({ sidebarOpen, onToggleSidebar, isDeveloperMode, 
                     className="w-7 h-7 md:w-8 md:h-8 lg:w-8 lg:h-8 border-[2px] border-black dark:border-white bg-[#FFD93D] hover:bg-[#FFD93D] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 text-black"
                     onClick={onToggleSidebar}
                 >
-                    {import.meta.env.DEV ? (
-                        /* Developer Mode: Terminal Icon */
+                    {isDeveloperMode ? (
                         <Terminal className={cn("w-5 h-5 md:w-5 md:h-5 transition-transform", sidebarOpen ? "rotate-180" : "")} />
                     ) : (
-                        /* Student Mode: Book/Learning Assets Icon */
                         <BookOpen className={cn("w-5 h-5 md:w-5 md:h-5 transition-transform", sidebarOpen ? "rotate-0" : "")} />
                     )}
                 </Button>
