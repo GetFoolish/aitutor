@@ -28,9 +28,13 @@ type FunctionDeclarationsTool = Tool & {
 export default function SettingsDialog({
   trigger,
   className,
+  open,
+  onOpenChange,
 }: {
-  trigger?: React.ReactNode;
+  trigger?: React.ReactNode | null;
   className?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) {
   const { config, setConfig, connected } = useTutorContext();
   const [userPrompt, setUserPrompt] = useState("");
@@ -110,19 +114,21 @@ export default function SettingsDialog({
 
   return (
     <div className={`settings-dialog z-1002 ${className || ""}`}>
-      <Dialog>
-        <DialogTrigger asChild>
-          {trigger || (
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              className="action-button material-symbols-outlined"
-            >
-              settings
-            </Button>
-          )}
-        </DialogTrigger>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        {trigger === null ? null : (
+          <DialogTrigger asChild>
+            {trigger || (
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="action-button material-symbols-outlined"
+              >
+                settings
+              </Button>
+            )}
+          </DialogTrigger>
+        )}
         <DialogContent className="dialog">
           <DialogHeader>
             <DialogTitle>Settings</DialogTitle>

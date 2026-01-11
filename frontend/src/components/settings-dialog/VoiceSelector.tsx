@@ -58,7 +58,7 @@ export default function VoiceSelector() {
         <SelectTrigger id="voice-selector">
           <SelectValue />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="z-[10002]">
           {voiceOptions.map((option) => (
             <SelectItem key={option.value} value={option.value}>
               {option.label}

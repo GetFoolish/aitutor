@@ -69,12 +69,10 @@
     border: 0;
     padding: 0;
     margin: 0;
-    position: fixed;
-    top: -400px;
-    right: 0;
     width: 696px;
-    height: 593px;
-    transform: translate(-25%, -50%);
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 2rem);
+    overflow: hidden;
   }
 
   .dialog-container {

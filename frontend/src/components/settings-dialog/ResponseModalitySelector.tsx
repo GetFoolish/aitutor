@@ -47,7 +47,7 @@ export default function ResponseModalitySelector() {
         <SelectTrigger id="response-modality-selector">
           <SelectValue />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="z-[10002]">
           {responseOptions.map((option) => (
             <SelectItem key={option.value} value={option.value}>
               {option.label}
