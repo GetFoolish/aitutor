@@ -48,6 +48,11 @@ function convertImageUrl(url: string, usePng: boolean = true): string {
 
   let converted = url;
 
+  // Handle frontend assets specifically (served by Vite/Next.js)
+  if (url.startsWith('/assets/')) {
+    return url;
+  }
+
   // Handle relative URLs (from backend assets)
   if (url.startsWith('/')) {
     converted = ASSETS_BASE_URL + url;
@@ -362,12 +367,12 @@ export function ImageWidget({
             // 1. URL matches the specific broken graph hash (0b4108...)
             // 2. Alt text contains 'graph' (heuristic)
             className={`athena-image ${isLoading ? 'loading' : ''} ${imageUrl.includes('0b4108cbcbb425020a161877aa5ead3750ea88d3') ||
-                imageUrl.includes('69334af918bcab85650eed24') ||
-                imageUrl.toLowerCase().includes('graphie') ||
-                imageUrl.toLowerCase().includes('perseus') ||
-                (options.alt && options.alt.toLowerCase().includes('graph'))
-                ? 'target-graph-fix'
-                : ''
+              imageUrl.includes('69334af918bcab85650eed24') ||
+              imageUrl.toLowerCase().includes('graphie') ||
+              imageUrl.toLowerCase().includes('perseus') ||
+              (options.alt && options.alt.toLowerCase().includes('graph'))
+              ? 'target-graph-fix'
+              : ''
               }`}
             referrerPolicy="no-referrer"
             style={{
