@@ -80,6 +80,12 @@ export class GraphValidator implements Validator {
       return ScoringEngine.incorrectResult(1, 'No correct answer defined');
     }
 
+    // Special handling for dot plots and pictographs
+    // These use count arrays instead of coordinate arrays
+    if (Array.isArray(options.correct) && typeof options.correct[0] === 'number') {
+      return this.validateDotPlot(userGraph, options.correct as number[], options);
+    }
+
     // Validate based on graph type
     const graphType = options.graph?.type || 'point';
 
@@ -369,6 +375,70 @@ export class GraphValidator implements Validator {
     }
 
     return ScoringEngine.partialResult(matches, 2, `${matches} of 2 lines correct`);
+  }
+
+  /**
+   * Validate dot plot or pictograph (count-based)
+   */
+  private validateDotPlot(
+    user: any,
+    correctCounts: number[],
+    options: InteractiveGraphOptions
+  ): ValidatorResult {
+    // Determine user points - could be raw array [[x,y],...] or GraphAnswer object
+    let userPoints: any[] = [];
+    if (Array.isArray(user)) {
+      userPoints = user;
+    } else if (user && typeof user === 'object') {
+      userPoints = user.coords || user.points || [];
+    }
+
+    if (userPoints.length === 0) {
+      return ScoringEngine.emptyResult();
+    }
+
+    // Get x-origin for category mapping (usually 0, but could be different)
+    const xOrigin = (Array.isArray(options.range) && Array.isArray(options.range[0]))
+      ? options.range[0][0]
+      : 0;
+
+    // Convert user points to counts per category
+    // For dot plots, x coordinate represents the category index (offset by xOrigin)
+    const userCounts: number[] = new Array(correctCounts.length).fill(0);
+
+    for (const point of userPoints) {
+      // Extract x coordinate
+      const x = Array.isArray(point) ? point[0] : (point?.x ?? 0);
+      const categoryIndex = Math.round(x - xOrigin);
+
+      // Count points in this category
+      if (categoryIndex >= 0 && categoryIndex < correctCounts.length) {
+        userCounts[categoryIndex]++;
+      }
+    }
+
+    // Compare counts
+    let allMatch = true;
+    let matchCount = 0;
+
+    for (let i = 0; i < correctCounts.length; i++) {
+      if (userCounts[i] === correctCounts[i]) {
+        matchCount++;
+      } else {
+        allMatch = false;
+      }
+    }
+
+    if (allMatch) {
+      return ScoringEngine.correctResult(1);
+    }
+
+    // Provide partial credit if some categories are correct
+    return ScoringEngine.partialResult(
+      matchCount,
+      correctCounts.length,
+      `${matchCount} of ${correctCounts.length} categories correct`
+    );
   }
 
   /**
