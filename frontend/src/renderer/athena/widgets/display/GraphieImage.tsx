@@ -432,7 +432,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         const styleBlock = `<style>
           /* Force all text elements to be visible - scoped to SVG only */
           .graphie-svg text, .graphie-svg tspan, .graphie-svg .label, svg[class*="graphie"] [class*="label"] {
-            fill: #000 !important; /* Force high contrast black ALWAYS */
+            fill: currentColor !important; /* Force theme-aware color ALWAYS */
             fill-opacity: 1 !important;
             font-family: 'Arial', 'Helvetica', sans-serif !important; /* Academic, crisp font */
             font-weight: 500 !important; /* Slightly clearer */
@@ -457,7 +457,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
           text[fill="white"], tspan[fill="white"],
           text[fill="#fff"], tspan[fill="#fff"],
           text[fill="#ffffff"], tspan[fill="#ffffff"] {
-            fill: #000 !important; /* Force even white text to black in high contrast mode */
+            fill: currentColor !important; /* Force even white text to theme color in high contrast mode */
           }
           text[style*="opacity"], tspan[style*="opacity"] {
             opacity: 1 !important;
@@ -793,14 +793,12 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
 
     // Parse SVG dimensions and check for restructuring
     const viewBoxMatch = svg.match(/viewBox="([^"]+)"/);
-    // Robust detection: check for the data attribute in the SVG string
-    // OR if we know it's our target graph (force it)
     const isTargetGraph = baseUrl.toLowerCase().includes('6933b3176cf86fa761d0a255') || baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011');
     const isRestructured = svg.includes('data-restructured') || isTargetGraph;
     const origHeightMatch = svg.match(/data-original-height="([^"]+)"/);
 
     let svgWidth = 400, svgHeight = 400;
-    let coordinateHeight = 400; // The height used for mapping coordinates [yMin, yMax]
+    let coordinateHeight = 400;
 
     if (viewBoxMatch) {
       const parts = viewBoxMatch[1].split(/\s+/);
@@ -810,7 +808,6 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     }
 
     if (isRestructured && origHeightMatch) {
-      // If expanded, the coordinates [yMin, yMax] mapping should still use the ORIGINAL height scale
       coordinateHeight = parseFloat(origHeightMatch[1]) || 400;
     }
 
@@ -825,79 +822,62 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       let transformAttr = '';
       let styleStr = 'font-family: Arial, Helvetica, sans-serif; font-size: 16px;';
 
-      // --- LAYOUT RESTRUCTURING SPECIAL FIXES ---
       // Robust detection of the voting graph
       const isVotingGraph = labels.some(l => {
         const c = processLabelContent(l.content).toLowerCase();
         return c.includes('voting') || c.includes('voter') || c.includes('polit') || c.includes('democrat') || c.includes('republic') || c.includes('information');
       }) || baseUrl.toLowerCase().includes('6933b3176cf86fa761d0a255') || baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011');
-      const topPadding = 90; // Match the value used in restructureSvgForVotingGraph
+
       const barCenter = svgWidth / 2;
-
-      // The "baseline" (y=0 in math coords) is at a specific Y in our coordinateHeight
       const graphBaselineY = (yMax / (yMax - yMin)) * coordinateHeight;
-
-      // Process content for matching and display
       let processedContent = processLabelContent(label.content);
+      const lowerContent = processedContent.toLowerCase();
+      const cleanContent = lowerContent.replace(/<[^>]*>/g, ' ');
 
-      if (index === 0) {
-        console.log('[GraphieImage] Checking voting graph:', isVotingGraph, 'isRestructured:', isRestructured, 'isTargetGraph:', isTargetGraph);
-        console.log('[GraphieImage] Label contents examples:', labels.slice(0, 3).map(l => processLabelContent(l.content)));
+      // Determine if it's a rotated label (usually axis titles)
+      if (label.style?.transform?.includes('rotate(-90')) {
+        transformAttr = `rotate(-90 ${svgX} ${svgY})`;
       }
 
       if (isVotingGraph && isRestructured) {
-        const lowerContent = processedContent.toLowerCase();
-
-        // DEBUG: Log every label processed in this block
-        if (index === 0 || index === labels.length - 1) { // Log first and last to avoid spamming too much, or log all if needed
-          console.log(`[GraphieImage] Processing label: "${lowerContent}"`);
-        }
-
-        // SUPER ROBUST MATCHING
-        // Strip common HTML tags for checking
-        const cleanContent = lowerContent.replace(/<[^>]*>/g, ' ');
-
-        // 1. LEGEND (Bottom Right)
+        // --- VOTING GRAPH SPECIAL FIXES ---
         if (cleanContent.includes('high information') || cleanContent.includes('low information')) {
-          // Revert to using the calculated svgX/svgY so it matches the boxes (which are drawn at math coords)
-          // Original alignment was 'right', but visual is Box [Text], so we want 'start' (left align) 
-          // to place text to the right of the coordinate (assuming coordinate is the box position)
           textAnchor = 'start';
-
-          // Small nudge if needed. 
-          // Original X (math) ~ 175. Visual box might be there.
-          // Adding a small margin to separate text from box.
           svgX += 15;
-
-          // Y adjustment: The math Y makes them float too high above the boxes.
-          // We push them down significantly to align "center-ish" with the boxes.
-          // User said "boxes ascend", implying gap. We close it by moving text down.
           svgY += 35;
-
           styleStr += ' font-weight: bold; font-size: 14px;';
         }
-        // 2. MAIN TITLE (Top)
-        // Match specific words known to be in the title
         else if (cleanContent.includes('level of') || cleanContent.includes('political information') || (cleanContent.includes('probability') && cleanContent.includes('voting') && !cleanContent.includes('%'))) {
           svgX = barCenter;
           textAnchor = 'middle';
           svgY = -115;
-          if (cleanContent.includes('orientation')) svgY = -140; // Top line
-          if (cleanContent.includes('voting')) svgY = -90; // Bottom line
-
+          if (cleanContent.includes('orientation')) svgY = -140;
+          if (cleanContent.includes('voting')) svgY = -90;
           styleStr += ' font-weight: bold; font-size: 18px !important;';
         }
-        // 3. Y-AXIS LABEL (Left)
         else if (cleanContent.includes('%') || (cleanContent.includes('probability') && cleanContent.includes('voting'))) {
           svgX = 155;
           svgY = coordinateHeight / 2.6;
           textAnchor = 'middle';
-          dy = '0.35em';
           transformAttr = `rotate(-90 ${svgX} ${svgY})`;
-
           styleStr += ' font-weight: bold;';
         }
-        // 4. X-AXIS LABEL (Bottom)
+        else if (cleanContent.includes('type') || cleanContent.includes('number of')) {
+          if (transformAttr.includes('rotate(-90')) {
+            const yAxisPixelX = ((-xMin) / (xMax - xMin)) * svgWidth;
+            // Adjusted centering for standard bar charts (move much higher)
+            svgY = coordinateHeight / 6;
+            svgX = yAxisPixelX - 85;
+            textAnchor = 'middle';
+            transformAttr = `rotate(-90 ${svgX} ${svgY})`;
+            styleStr += ' font-weight: bold; font-size: 16px;';
+          } else {
+            svgY = graphBaselineY + 55;
+            textAnchor = 'middle';
+            svgX = barCenter;
+            styleStr += ' font-weight: bold;';
+          }
+        }
         else if (cleanContent.includes('1 =') || cleanContent.includes('strong') || cleanContent.includes('independent')) {
           svgX = barCenter;
           textAnchor = 'middle';
@@ -906,22 +886,31 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
           if (cleanContent.includes('independent')) svgY = graphBaselineY + 22;
           if (cleanContent.includes('republican')) svgY = graphBaselineY + 32;
         }
-        // 5. EVERYTHING ELSE (Ticks integers)
         else {
-          // Standard positioning logic...
           if (label.alignment === 'below') svgY += 6;
           if (label.alignment === 'left') { textAnchor = 'end'; svgX -= 10; }
-
-          // Only mark as RED if it contains text characters (not just numbers)
-          // This helps identify "missed" labels
-          if (/[a-z]/.test(cleanContent)) {
-            // Missed text labels - ensure they are visible
-            styleStr += ' font-weight: bold;';
-          }
+          if (/[a-z]/.test(cleanContent)) styleStr += ' font-weight: bold;';
         }
       } else {
-        // Standard non-voting graph logic
-        if (label.alignment === 'left') {
+        // --- STANDARD GRAPH LOGIC (Includes Grape Type) ---
+        const isVertical = transformAttr.includes('rotate(-90');
+        const isAxisTitle = cleanContent.includes('type') || cleanContent.includes('number of') || label.alignment === 'center';
+
+        if (isVertical && isAxisTitle) {
+          const yAxisPixelX = ((-xMin) / (xMax - xMin)) * svgWidth;
+          // Adjusted centering for standard bar charts (move much higher)
+          svgY = coordinateHeight / 6;
+          svgX = yAxisPixelX - 85;
+          textAnchor = 'middle';
+          transformAttr = `rotate(-90 ${svgX} ${svgY})`;
+          styleStr += ' font-weight: bold; font-size: 16px;';
+        } else if (!isVertical && cleanContent.includes('number of')) {
+          const xAxisPixelY = (yMax / (yMax - yMin)) * coordinateHeight;
+          svgY = xAxisPixelY + 55;
+          svgX = svgWidth / 2;
+          textAnchor = 'middle';
+          styleStr += ' font-weight: bold;';
+        } else if (label.alignment === 'left') {
           textAnchor = 'end';
           svgX -= 10;
         } else if (label.alignment === 'right') {
@@ -938,63 +927,34 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       if (label.style) {
         if (label.style['font-weight']) styleStr += ` font-weight: ${label.style['font-weight']};`;
         if (label.style['font-size']) styleStr += ` font-size: ${label.style['font-size']};`;
-
-        // Extract transform for SVG attribute (CSS transform doesn't work on SVG text elements reliably)
-        if (label.style.transform) {
-          // Convert CSS rotate(-90deg) to SVG rotate(-90 x y)
+        if (label.style.transform && !transformAttr) {
           const rotateMatch = label.style.transform.match(/rotate\((-?\d+)deg\)/);
           if (rotateMatch) {
-            const angle = rotateMatch[1];
-            // Rotate around the precise text position
-            transformAttr = `rotate(${angle} ${svgX} ${svgY})`;
-
-            // We want to push it closer to the Y-axis or just keep it centered.
+            transformAttr = `rotate(${rotateMatch[1]} ${svgX} ${svgY})`;
             dy = '0.35em';
-          } else {
-            // Fallback: strip 'deg' if present, as SVG doesn't use units in rotate()
-            transformAttr = label.style.transform.replace('deg', '');
           }
         }
       }
 
-      // Processed content is already available from matching logic
-
-      // Split by <br> tags to support multiline labels in SVG
       const lines = processedContent.split(/<br\s*\/?>/i);
-
       const tspanElements = lines.map((line, lineIdx) => {
-        // Escape content as it will be inside <tspan>
-        const escapedLine = line
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;');
-
+        const escapedLine = line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         const lineDy = lineIdx === 0 ? dy : '1.2em';
-
-        // IMPORTANT: Apply the accumulated styles (including debugging colors) here!
-        return `<tspan x="${svgX}" dy="${lineDy}" style="${styleStr}">${escapedLine}</tspan>`;
+        // Only set x on tspan if it's NOT the first line, to avoid overriding parent's centering logic for single lines
+        return `<tspan dy="${lineDy}" style="${styleStr}">${escapedLine}</tspan>`;
       }).join('');
 
       return `<text x="${svgX}" y="${svgY}" text-anchor="${textAnchor}" dy="${dy}" fill="currentColor" style="${styleStr}" ${transformAttr ? `transform="${transformAttr}"` : ''}>${tspanElements}</text>`;
     }).join('\n');
 
-    // Insert labels into the transformed group if it exists, otherwise at the end
-    // Insert labels into the transformed group if it exists, otherwise at the end
-    // Use robust regex to find the closing tag of the transformed group
     if (svg.includes('class="graph-content-transformed"')) {
-      // Find the last closing </g> which closes the transformed group
-      // We look for the last </g> before </svg>
       const lastGroupCloseIndex = svg.lastIndexOf('</g>');
       if (lastGroupCloseIndex !== -1) {
         return svg.slice(0, lastGroupCloseIndex) + `<g class="graphie-labels">${labelElements}</g>` + svg.slice(lastGroupCloseIndex);
       }
     }
 
-    // Fallback: If we couldn't insert into the group, or if the group wasn't found but we know it should be restructured
     if (isRestructured) {
-      // If the SVG is restructured (expanded), the main content is shifted by (60, 180).
-      // If we are appending labels to the root, we MUST apply the same shift so the relative coordinates (like -140) work.
-      // This handles cases where regex failed or the group structure is slightly different.
       return svg.replace('</svg>', `<g transform="translate(60, 180)" class="graphie-labels">${labelElements}</g></svg>`);
     }
 
