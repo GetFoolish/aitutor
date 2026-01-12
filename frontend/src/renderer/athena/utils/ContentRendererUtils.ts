@@ -77,6 +77,18 @@ export const renderMath = (text: string): string => {
     .replace(/&#039;/g, "'")
     .replace(/&nbsp;/g, ' ');
 
+  // STEP 1.5: Convert unsupported 'eqnarray' to 'aligned' (KaTeX doesn't support eqnarray)
+  // Handle qquad wrapper: \qquad { \begin{eqnarray} ... \end{eqnarray} }
+  processed = processed.replace(/\\qquad\s*\{\s*\\begin\{eqnarray\}/g, '\\qquad \\begin{aligned}');
+  processed = processed.replace(/\\end\{eqnarray\}\s*\}/g, '\\end{aligned}');
+  processed = processed.replace(/\\begin\{eqnarray\}/g, '\\begin{aligned}');
+  processed = processed.replace(/\\end\{eqnarray\}/g, '\\end{aligned}');
+
+  // Normalize eqnarray alignment markers (&=&) to aligned markers (&=)
+  if (processed.includes('aligned') || processed.includes('eqnarray')) {
+    processed = processed.replace(/&=&/g, '&=');
+  }
+
   // STEP 2: Use placeholders to protect KaTeX output from subsequent processing
   const katexPlaceholders: string[] = [];
   const createPlaceholder = (html: string): string => {
@@ -243,6 +255,20 @@ export const renderMath = (text: string): string => {
 
   // Process regex-based math wrapping for common bare LaTeX patterns
   // This handles cases like "kx^\textcolor{...}" which are math but miss $ delimiters
+
+  // CRITICAL FIX: We must temporarily protect EXISTING inline math ($...$) before running matches for bare math.
+  // Otherwise, the bare math regex (which looks for patterns like [0-9]+\^[...]) might falsely match content 
+  // INSIDE valid latex (e.g., matching "6^{-}" inside "$\lim_{x\to 6^{-}}$").
+  // This causes the regex to wrap the inner part in new $ signs, breaking the outer math block.
+  const inlineMathBlocks: string[] = [];
+  processed = processed.replace(/\$([^$]+)\$/g, (match) => {
+    // Skip if it looks like $$ (should be protected already but safety check)
+    if (match.startsWith('$$')) return match;
+    const idx = inlineMathBlocks.length;
+    inlineMathBlocks.push(match);
+    return `__ATHENA_TEMP_INLINE_MATH_${idx}__`;
+  });
+
   const bareMathPatterns = [
     // Pattern: something^something (exponent) - Supports simple chars, {groups}, or \textcolor{...}{...}
     new RegExp("(?<!\\$)(?<!\\\\)\\b([a-zA-Z0-9]+)\\^(\\{[^}]+\\}|\\\\textcolor\\{[^}]+\\}\\{[^}]+\\}|[a-zA-Z0-9\\\\]+)(?!\\$)", "g"),
@@ -263,6 +289,11 @@ export const renderMath = (text: string): string => {
 
       return `$${match}$`;
     });
+  });
+
+  // Restore protected inline math blocks
+  processed = processed.replace(/__ATHENA_TEMP_INLINE_MATH_(\d+)__/g, (_, idx) => {
+    return inlineMathBlocks[parseInt(idx, 10)];
   });
 
   // Process inline math $...$ (but not $$)

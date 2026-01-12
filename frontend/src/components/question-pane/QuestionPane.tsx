@@ -745,6 +745,22 @@ const HintPanel: React.FC<{
     // Handle both start of content (^) and after newlines (\n)
     processed = processed.replace(/(^|\n)([0-9]+\.\s+)/gm, '$1\n$2');
 
+    // 5.6. Convert unsupported 'eqnarray' to 'aligned' (KaTeX doesn't support eqnarray)
+    // This MUST happen before math protection so the result is protected correctly.
+    // Handle qquad wrapper: \qquad { \begin{eqnarray} ... \end{eqnarray} }
+    processed = processed.replace(/\\qquad\s*\{\s*\\begin\{eqnarray\}/g, '\\qquad \\begin{aligned}');
+    processed = processed.replace(/\\end\{eqnarray\}\s*\}/g, '\\end{aligned}');
+
+    // Standalone eqnarray
+    processed = processed.replace(/\\begin\{eqnarray\}/g, '\\begin{aligned}');
+    processed = processed.replace(/\\end\{eqnarray\}/g, '\\end{aligned}');
+
+    // Normalize eqnarray alignment markers (&=&) to aligned markers (&=)
+    // We only do this if we see aligned/eqnarray in the text to avoid false positives
+    if (processed.includes('aligned') || processed.includes('eqnarray')) {
+      processed = processed.replace(/&=&/g, '&=');
+    }
+
     // SETUP MATH PROTECTION (EARLY)
     const katexPlaceholders: string[] = [];
     const createPlaceholder = (html: string): string => {
@@ -873,22 +889,6 @@ const HintPanel: React.FC<{
 
       processed = processed.split(placeholder).join(rendered);
     }
-
-    // PREPROCESSING: Fix standalone LaTeX that isn't wrapped in $...$
-    // Fix Khan Academy specific patterns
-
-    // Pattern 1: Convert unsupported 'eqnarray' to 'aligned' (KaTeX doesn't support eqnarray)
-    // And remove the \qquad wrapper: \qquad { \begin{eqnarray} ... \end{eqnarray} }
-    // We strictly look for the structure `\qquad { \begin{eqnarray}`
-
-    // First, replace the start pattern
-    processed = processed.replace(/\\qquad\s*\{\s*\\begin\{eqnarray\}/g, '$$\\begin{aligned}');
-    // Replace the end pattern
-    processed = processed.replace(/\\end\{eqnarray\}\s*\}/g, '\\end{aligned}$$');
-
-    // Pattern 2: Convert standalone 'eqnarray' to 'aligned' (without qquad)
-    processed = processed.replace(/\\begin\{eqnarray\}/g, '\\begin{aligned}');
-    processed = processed.replace(/\\end\{eqnarray\}/g, '\\end{aligned}');
 
     // Process LaTeX environments without $ wrappers (e.g., \begin{align}...\end{align})
     const envNames = ['align', 'align\\*', 'aligned', 'equation', 'equation\\*', 'gather', 'gather\\*', 'matrix', 'pmatrix', 'bmatrix', 'cases'];
@@ -1114,6 +1114,24 @@ const HintPanel: React.FC<{
         const alt = (options.alt || 'Hint image').replace(/[\n\r]/g, ' ').replace(/"/g, '&quot;');
         const finalUrl = convertGraphieUrl(url);
         return `<div class="my-4 flex justify-center"><img src="${finalUrl}" alt="${alt}" class="athena-image max-w-full h-auto rounded-lg shadow-sm" style="max-height: 480px;" referrerpolicy="no-referrer" /></div>`;
+      }
+
+      if (widget.type === 'explanation') {
+        const options = widget.options || {};
+        const explanationContent = options.explanation || '';
+        const showPrompt = options.showPrompt || 'Explanation';
+        const nestedWidgets = options.widgets || {};
+
+        // Recursive processing of explanation content
+        // This works because processHintContent is defined in the scope
+        const processedExplanation = processHintContent(explanationContent, nestedWidgets);
+
+        return `<details class="my-4 p-3 bg-indigo-50 border border-indigo-100 rounded-md">
+          <summary class="cursor-pointer font-medium text-indigo-700 hover:text-indigo-800 select-none">${escapeHtml(showPrompt)}</summary>
+          <div class="mt-2 text-gray-800">
+            ${processedExplanation}
+          </div>
+        </details>`;
       }
 
       return `[[Widget: ${widgetId} (${widget.type})]]`;
