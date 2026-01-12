@@ -1148,6 +1148,16 @@ const HintPanel: React.FC<{
       processed = processed.replace(placeholder, html);
     });
 
+    // Final decoding of entities for display (e.g. &dollar; used to escape math)
+    // Handle both &dollar; and double-escaped &amp;dollar;
+    processed = processed.replace(/&amp;dollar;/gi, '$');
+    processed = processed.replace(/&dollar;/gi, '$');
+    processed = processed.replace(/\\$/g, '$'); // Unescape raw backslash-dollar if any remain
+
+    // Fix KaTeX numeric formatting
+    processed = processed.replace(/\{,\}/g, ',');
+
+    console.log('[HintDebug] Final hint processed:', processed);
     return `<p>${processed}</p>`;
   };
 

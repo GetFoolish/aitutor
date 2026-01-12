@@ -812,6 +812,29 @@ export const preprocessCodeBlocks = (text: string): string => {
   return processedText;
 };
 
+// Helper to preprocess basic Markdown formatting
+// This ensures **bold** and # headers are properly handled
+const preprocessMarkdown = (text: string): string => {
+  if (!text) return '';
+
+  let processed = text;
+
+  // Convert **text** to <strong>text</strong> if not already in HTML
+  // But preserve it inside code blocks (already protected)
+  processed = processed.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+  // Convert # headers at start of line
+  // # Header → <h1>Header</h1>
+  // ## Header → <h2>Header</h2>
+  // ### Header → <h3>Header</h3>
+  processed = processed.replace(/^#{1,3}\s+(.+)$/gm, (match, headerText, offset) => {
+    const level = match.indexOf(' ');
+    return `<h${level}>${headerText}</h${level}>`;
+  });
+
+  return processed;
+};
+
 
 // Orchestrator for full content processing
 export const processContent = (content: string): string => {
@@ -830,6 +853,20 @@ export const processContent = (content: string): string => {
 
   // Phase 3: Process tables (now safe from || in math and clean from legacy artifacts)
   processed = processTable(processed);
+
+  // Phase 3.5: Decode problematic HTML entities in plain text (safe after math protection)
+  // This must happen BEFORE any other protection that might catch them
+  if (processed.includes('&dollar;') || processed.includes('{,}')) {
+    console.log('[Athena] Decoding HTML entities:', {
+      before: processed.substring(0, 200),
+      hasDollar: processed.includes('&dollar;'),
+      hasComma: processed.includes('{,}')
+    });
+    // &dollar; → $
+    processed = processed.replace(/&dollar;/g, '$');
+    // {,} → ,
+    processed = processed.replace(/\{,\}/g, ',');
+  }
 
   // Phase 4: Pre-process code blocks
   processed = preprocessCodeBlocks(processed);
@@ -864,6 +901,10 @@ export const processContent = (content: string): string => {
     const html = `<span class="athena-widget-inline" data-widget-id="${widgetId.trim()}"></span>`;
     return addProtection(html);
   });
+
+  // Phase 8.5: Preprocess basic Markdown formatting (before marked parser)
+  // This ensures **bold** and # headers are converted
+  processed = preprocessMarkdown(processed);
 
   // Phase 9: Run Markdown parser on simplified text
   // Enable gfm (GitHub Flavored Markdown) and pedantic for better list handling
