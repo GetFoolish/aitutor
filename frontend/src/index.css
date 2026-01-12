@@ -1014,6 +1014,11 @@ a[target="lint-help-window"] {
   stroke: currentColor;
 }
 
+/* Fix: Restore fill="none" for circles that should be empty (like Radio buttons) to prevent them from becoming solid in Dark Mode */
+.athena-theme-dark .athena-widget svg:not(.graphie-svg) circle[fill="none"] {
+  fill: none !important;
+}
+
 /* 
   Invert BITMAP images (PNG/JPG/WEBP) in dark mode for visibility 
   ONLY if they are explicitly marked as diagrams or are graphie images.
