@@ -62,11 +62,19 @@ app.add_middleware(
 @app.middleware("http")
 async def timeout_middleware(request: Request, call_next):
     try:
-        return await asyncio.wait_for(call_next(request), timeout=30.0)
+        timeout = 60.0 if request.url.path == "/session/livekit-token" else 30.0
+        return await asyncio.wait_for(call_next(request), timeout=timeout)
     except asyncio.TimeoutError:
+        origin = ALLOWED_ORIGINS[0] if ALLOWED_ORIGINS else "*"
         return JSONResponse(
             status_code=504,
-            content={"detail": "Request timeout"}
+            content={"detail": "Request timeout"},
+            headers={
+                "Access-Control-Allow-Origin": origin,
+                "Access-Control-Allow-Credentials": "true",
+                "Access-Control-Allow-Methods": ", ".join(ALLOWED_METHODS),
+                "Access-Control-Allow-Headers": "*",
+            }
         )
 
 # Cache control middleware for static responses (Phase 7)
@@ -82,22 +90,112 @@ async def cache_control_middleware(request: Request, call_next):
     return response
 
 # Explicit OPTIONS handler for Cloud Run compatibility (backup)
-@app.options("/{full_path:path}")
-async def options_handler(full_path: str):
-    """Handle OPTIONS preflight requests explicitly for Cloud Run"""
-    from fastapi.responses import Response
-    # Use first allowed origin or * if none configured
-    origin = ALLOWED_ORIGINS[0] if ALLOWED_ORIGINS else "*"
-    return Response(
-        status_code=200,
-        headers={
-            "Access-Control-Allow-Origin": origin,
-            "Access-Control-Allow-Methods": ", ".join(ALLOWED_METHODS),
-            "Access-Control-Allow-Headers": "*",
+
+# LiveKit token endpoint - must be before OPTIONS handler to avoid route conflicts
+@app.get("/session/livekit-token")
+def get_livekit_token_early(http_request: Request):
+    """Get LiveKit access token for frontend to connect and receive avatar video"""
+    try:
+        # Get authenticated user
+        try:
+            user_id = get_current_user(http_request)
+        except Exception as auth_error:
+            logger.error(f"Authentication error in livekit-token endpoint: {auth_error}")
+            raise HTTPException(status_code=401, detail="Authentication required")
+        
+        session = ta.get_active_session(user_id)
+        if not session:
+            raise HTTPException(status_code=404, detail="No active session")
+        
+        # Get LiveKit configuration
+        livekit_url = os.getenv("LIVEKIT_URL", "")
+        livekit_api_key = os.getenv("LIVEKIT_API_KEY", "")
+        livekit_api_secret = os.getenv("LIVEKIT_API_SECRET", "")
+        
+        if not all([livekit_url, livekit_api_key, livekit_api_secret]):
+            logger.error(f"LiveKit config missing: URL={bool(livekit_url)}, KEY={bool(livekit_api_key)}, SECRET={bool(livekit_api_secret)}")
+            raise HTTPException(
+                status_code=500,
+                detail="LiveKit configuration missing. Check LIVEKIT_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET"
+            )
+        
+        # Generate room name based on session_id (must match what agent uses)
+        room_name = session["session_id"]
+        
+        # Create access token for frontend to join the room
+        # Use PyJWT directly (faster than livekit-api import)
+        try:
+            import jwt
+            import time
+            
+            # LiveKit token structure
+            now = int(time.time())
+            token_payload = {
+                "iss": livekit_api_key,
+                "sub": f"user-{user_id}",
+                "nbf": now,
+                "exp": now + 3600,  # 1 hour expiry
+                "video": {
+                    "room": room_name,
+                    "roomJoin": True,
+                    "canPublish": False,
+                    "canSubscribe": True,
+                }
+            }
+            
+            token = jwt.encode(token_payload, livekit_api_secret, algorithm="HS256")
+            logger.info(f"[LiveKit] Generated token using PyJWT for user {user_id}, room {room_name}")
+        except ImportError:
+            # Fallback: Generate JWT token manually using PyJWT
+            try:
+                import jwt
+                import time
+                
+                # LiveKit token structure
+                now = int(time.time())
+                token_payload = {
+                    "iss": livekit_api_key,
+                    "sub": f"user-{user_id}",
+                    "nbf": now,
+                    "exp": now + 3600,  # 1 hour expiry
+                    "video": {
+                        "room": room_name,
+                        "roomJoin": True,
+                        "canPublish": False,
+                        "canSubscribe": True,
+                    }
+                }
+                
+                token = jwt.encode(token_payload, livekit_api_secret, algorithm="HS256")
+                logger.info(f"[LiveKit] Generated token manually using PyJWT for user {user_id}, room {room_name}")
+            except ImportError:
+                logger.error("Neither livekit-api nor PyJWT available. Install one: pip install livekit-api OR pip install PyJWT")
+                raise HTTPException(
+                    status_code=500,
+                    detail="LiveKit token generation requires either 'livekit-api' or 'PyJWT' package. Install with: pip install livekit-api (or pip install PyJWT)"
+                )
+        except Exception as token_error:
+            logger.error(f"Error creating LiveKit token: {token_error}", exc_info=True)
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to create LiveKit access token: {str(token_error)}"
+            )
+        
+        logger.info(f"[LiveKit] Generated token for user {user_id}, room {room_name}")
+        
+        return {
+            "token": token,
+            "url": livekit_url,
+            "room_name": room_name,
         }
-    )
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error generating LiveKit token: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to generate LiveKit token: {str(e)}")
 
 # Create TeachingAssistant instance (now stateless - all state in MongoDB)
+# Must be defined before routes that use it
 ta = TeachingAssistant()
 
 # DASH API URL for pre-loading questions
@@ -145,12 +243,79 @@ def health_check():
 # Session Management Endpoints
 # ============================================================================
 
-@app.post("/session/start", response_model=PromptResponse)
-def start_session(http_request: Request, request: Optional[StartSessionRequest] = None):
+# Explicitly register the route to ensure it's added
+@app.post("/session/start", response_model=PromptResponse, name="start_session")
+async def start_session(http_request: Request, request: Optional[StartSessionRequest] = None):
     """Start a new tutoring session"""
     user_id = get_current_user(http_request)
     try:
         result = ta.start_session(user_id)
+        session_info = result.get("session_info", {})
+        session_id = session_info.get("session_id", "")
+        
+        logger.info(f"[LiveKit] start_session called, session_id={session_id}")
+        
+        # Dispatch LiveKit agent to join the room
+        if session_id:
+            try:
+                from livekit import api as livekit_api
+                
+                livekit_url = os.getenv("LIVEKIT_URL", "")
+                livekit_api_key = os.getenv("LIVEKIT_API_KEY", "")
+                livekit_api_secret = os.getenv("LIVEKIT_API_SECRET", "")
+                
+                if all([livekit_url, livekit_api_key, livekit_api_secret]):
+                    logger.info(f"[LiveKit] LiveKit config found, creating client...")
+                    # Create LiveKit client
+                    lk_client = livekit_api.LiveKitAPI(livekit_url, livekit_api_key, livekit_api_secret)
+                    
+                    # Get agent name from file (written by agent on startup)
+                    agent_name_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), ".current_agent_name")
+                    logger.info(f"[LiveKit] Looking for agent name in: {agent_name_file}")
+                    agent_name = None
+                    if os.path.exists(agent_name_file):
+                        with open(agent_name_file, "r") as f:
+                            agent_name = f.read().strip()
+                        logger.info(f"[LiveKit] Found agent name: {agent_name}")
+                    else:
+                        logger.warning(f"[LiveKit] Agent name file not found: {agent_name_file}")
+                    
+                    if agent_name:
+                        # Create room if it doesn't exist
+                        try:
+                            # create_room is async, need to await it
+                            await lk_client.room.create_room(
+                                livekit_api.CreateRoomRequest(
+                                    name=session_id,
+                                    empty_timeout=300,
+                                    departure_timeout=30,
+                                )
+                            )
+                            logger.info(f"[LiveKit] Created room: {session_id}")
+                        except Exception as room_error:
+                            # Room might already exist, that's okay
+                            logger.debug(f"[LiveKit] Room creation (may already exist): {room_error}")
+                        
+                        # Dispatch agent job to join the room
+                        try:
+                            # The livekit-api client methods are async
+                            agent_service = lk_client.agent_dispatch
+                            dispatch_request = livekit_api.CreateAgentDispatchRequest(
+                                agent_name=agent_name,
+                                room=session_id,
+                            )
+                            logger.info(f"[LiveKit] Attempting to dispatch agent '{agent_name}' to room '{session_id}'")
+                            dispatch_result = await agent_service.create_dispatch(dispatch_request)
+                            logger.info(f"[LiveKit] Dispatched agent '{agent_name}' to room '{session_id}' - Dispatch ID: {dispatch_result.id if hasattr(dispatch_result, 'id') else 'N/A'}")
+                        except Exception as dispatch_error:
+                            logger.error(f"[LiveKit] Failed to dispatch agent: {dispatch_error}", exc_info=True)
+                    else:
+                        logger.warning(f"[LiveKit] Agent name not found in {agent_name_file}, agent may not be running")
+            except ImportError:
+                logger.debug("[LiveKit] livekit-api not available, skipping agent dispatch")
+            except Exception as e:
+                logger.warning(f"[LiveKit] Error dispatching agent: {e}")
+
         return PromptResponse(
             prompt=result["prompt"],
             session_info=result["session_info"]
@@ -271,6 +436,65 @@ def get_session_info(http_request: Request):
     if not session:
         return {"session_active": False, "user_id": user_id}
     return ta.get_session_info(session["session_id"])
+
+
+@app.get("/session/livekit-token", name="get_livekit_token")
+def get_livekit_token(http_request: Request):
+    """Get LiveKit access token for frontend to connect and receive avatar video"""
+    try:
+        from livekit import api
+        
+        user_id = get_current_user(http_request)
+        session = ta.get_active_session(user_id)
+        if not session:
+            raise HTTPException(status_code=404, detail="No active session")
+        
+        # Get LiveKit configuration
+        livekit_url = os.getenv("LIVEKIT_URL", "")
+        livekit_api_key = os.getenv("LIVEKIT_API_KEY", "")
+        livekit_api_secret = os.getenv("LIVEKIT_API_SECRET", "")
+        
+        if not all([livekit_url, livekit_api_key, livekit_api_secret]):
+            raise HTTPException(
+                status_code=500,
+                detail="LiveKit configuration missing. Check LIVEKIT_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET"
+            )
+        
+        # Generate room name based on session_id (must match what agent uses)
+        # LiveKit agents typically create rooms based on job requests
+        # For now, use session_id as room name - may need to adjust based on agent room naming
+        room_name = session["session_id"]
+        
+        # Alternative: Use user_id if agent uses that for room names
+        # room_name = f"user-{user_id}"
+        
+        # Create access token for frontend to join the room
+        token = api.AccessToken(livekit_api_key, livekit_api_secret) \
+            .with_identity(f"user-{user_id}") \
+            .with_name(f"Student-{user_id}") \
+            .with_grants(api.VideoGrants(
+                room_join=True,
+                room=room_name,
+                can_publish=False,
+                can_subscribe=True,
+            )).to_jwt()
+        
+        logger.info(f"[LiveKit] Generated token for user {user_id}, room {room_name}")
+        
+        return {
+            "token": token,
+            "url": livekit_url,
+            "room_name": room_name,
+        }
+    except ImportError:
+        raise HTTPException(
+            status_code=500,
+            detail="LiveKit Python SDK not installed. Install with: pip install livekit-api"
+        )
+    except Exception as e:
+        logger.error(f"Error generating LiveKit token: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to generate LiveKit token: {str(e)}")
+
 
 
 @app.post("/conversation/turn")
@@ -868,11 +1092,8 @@ async def options_handler(full_path: str):
         }
     )
 
-# Create TeachingAssistant instance (now stateless - all state in MongoDB)
-ta = TeachingAssistant()
-
-# DASH API URL for pre-loading questions
-DASH_API_URL = os.getenv("DASH_API_URL", "http://localhost:8000")
+# DASH API URL for pre-loading questions (duplicate removed - already defined above)
+# DASH_API_URL = os.getenv("DASH_API_URL", "http://localhost:8000")
 
 
 # ============================================================================
@@ -913,22 +1134,8 @@ def health_check():
 
 
 # ============================================================================
-# Session Management Endpoints
+# Session Management Endpoints (duplicate removed - using the one at line 260)
 # ============================================================================
-
-@app.post("/session/start", response_model=PromptResponse)
-def start_session(http_request: Request, request: Optional[StartSessionRequest] = None):
-    """Start a new tutoring session"""
-    user_id = get_current_user(http_request)
-    try:
-        result = ta.start_session(user_id)
-        return PromptResponse(
-            prompt=result["prompt"],
-            session_info=result["session_info"]
-        )
-    except Exception as e:
-        logger.error(f"Error in start_session: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=str(e))
 
 
 def _preload_questions_background(user_id: str, token: str):
@@ -1042,6 +1249,59 @@ def get_session_info(http_request: Request):
     if not session:
         return {"session_active": False, "user_id": user_id}
     return ta.get_session_info(session["session_id"])
+
+
+@app.get("/session/livekit-token")
+def get_livekit_token_duplicate(http_request: Request):
+    """Get LiveKit access token for frontend to connect and receive avatar video (duplicate section)"""
+    try:
+        from livekit import api
+        
+        user_id = get_current_user(http_request)
+        session = ta.get_active_session(user_id)
+        if not session:
+            raise HTTPException(status_code=404, detail="No active session")
+        
+        # Get LiveKit configuration
+        livekit_url = os.getenv("LIVEKIT_URL", "")
+        livekit_api_key = os.getenv("LIVEKIT_API_KEY", "")
+        livekit_api_secret = os.getenv("LIVEKIT_API_SECRET", "")
+        
+        if not all([livekit_url, livekit_api_key, livekit_api_secret]):
+            raise HTTPException(
+                status_code=500,
+                detail="LiveKit configuration missing. Check LIVEKIT_URL, LIVEKIT_API_KEY, LIVEKIT_API_SECRET"
+            )
+        
+        # Generate room name based on session_id (must match what agent uses)
+        room_name = session["session_id"]
+        
+        # Create access token for frontend to join the room
+        token = api.AccessToken(livekit_api_key, livekit_api_secret) \
+            .with_identity(f"user-{user_id}") \
+            .with_name(f"Student-{user_id}") \
+            .with_grants(api.VideoGrants(
+                room_join=True,
+                room=room_name,
+                can_publish=False,
+                can_subscribe=True,
+            )).to_jwt()
+        
+        logger.info(f"[LiveKit] Generated token for user {user_id}, room {room_name}")
+        
+        return {
+            "token": token,
+            "url": livekit_url,
+            "room_name": room_name,
+        }
+    except ImportError:
+        raise HTTPException(
+            status_code=500,
+            detail="LiveKit Python SDK not installed. Install with: pip install livekit-api"
+        )
+    except Exception as e:
+        logger.error(f"Error generating LiveKit token: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to generate LiveKit token: {str(e)}")
 
 
 @app.post("/conversation/turn")
@@ -1540,6 +1800,19 @@ def send_instruction_to_tutor(http_request: Request):
 
 
 if __name__ == "__main__":
+    # Explicitly ensure the start_session route is registered
+    # This is a workaround for a route registration issue
+    from services.TeachingAssistant.api import start_session, PromptResponse, StartSessionRequest
+    from fastapi import Request
+    from typing import Optional
+    
+    # Re-register the route to ensure it's in the app
+    if not any(r.path == "/session/start" and "POST" in getattr(r, "methods", set()) for r in app.routes):
+        @app.post("/session/start", response_model=PromptResponse, name="start_session_fixed")
+        async def start_session_fixed(http_request: Request, request: Optional[StartSessionRequest] = None):
+            return await start_session(http_request, request)
+        logger.info("[FIX] Manually registered /session/start route")
+    
     import uvicorn
     # Explicitly use TEACHING_ASSISTANT_PORT, ignore PORT env var to avoid conflicts
     port = int(os.getenv("TEACHING_ASSISTANT_PORT", "8002"))

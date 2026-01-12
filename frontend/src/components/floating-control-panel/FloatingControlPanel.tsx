@@ -21,6 +21,7 @@ import { feedWebSocketService } from "../../services/feed-websocket-service";
 import { instructionSSEService } from "../../services/instruction-sse-service";
 import { LiveServerContent } from '@google/genai';
 import { AvatarVideoDisplay } from "../avatar";
+import { Room, RoomEvent, RemoteParticipant, Track } from 'livekit-client';
 
 /**
  * Extract transcript text from Gemini content event
@@ -121,6 +122,7 @@ function FloatingControlPanel({
   // Agent state and video track (for LiveKit integration)
   const [agentState, setAgentState] = useState<string>("disconnected");
   const [agentVideoTrack, setAgentVideoTrack] = useState<any>(null);
+  const livekitRoomRef = useRef<Room | null>(null);
 
   // Dark mode detection for logo
   useEffect(() => {
@@ -485,6 +487,19 @@ function FloatingControlPanel({
       try {
         interruptAudio();
 
+        // Disconnect LiveKit room
+        if (livekitRoomRef.current) {
+          try {
+            await livekitRoomRef.current.disconnect();
+            livekitRoomRef.current = null;
+            setAgentVideoTrack(null);
+            setAgentState('disconnected');
+            console.log('[LiveKit] Disconnected from room');
+          } catch (e) {
+            console.warn('[LiveKit] Error disconnecting:', e);
+          }
+        }
+
         // Disconnect WebSocket and SSE first (optional - may not be connected)
         try {
           feedWebSocketService.disconnect();
@@ -648,6 +663,97 @@ function FloatingControlPanel({
               instructionSSEService.connect();
             } catch (sseError) {
               console.warn('Failed to connect SSE instruction service (optional):', sseError);
+            }
+
+            // Connect to LiveKit room to receive Hedra avatar video
+            try {
+              const token = jwtUtils.getToken();
+              if (token) {
+                const livekitResponse = await fetch(`${TEACHING_ASSISTANT_API_URL}/session/livekit-token`, {
+                  headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                  },
+                });
+
+                if (livekitResponse.ok) {
+                  const livekitData = await livekitResponse.json();
+                  const { token: livekitToken, url: livekitUrl, room_name } = livekitData;
+
+                  console.log('[LiveKit] Connecting to room:', room_name);
+                  setAgentState('connecting');
+
+                  const room = new Room();
+                  livekitRoomRef.current = room;
+
+                  // Subscribe to ALL video tracks from remote participants
+                  // The Hedra avatar will be the only remote participant publishing video
+                  room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
+                    console.log('[LiveKit] Track subscribed:', track.kind, 'from:', participant.identity, 'name:', participant.name);
+                    // Subscribe to any video track from remote participants (avatar should be the only one)
+                    if (track.kind === Track.Kind.Video && participant !== room.localParticipant) {
+                      console.log('[LiveKit] Found remote video track! Identity:', participant.identity, 'Name:', participant.name);
+                      setAgentVideoTrack({ track, publication, participant });
+                      setAgentState('connected');
+                    }
+                  });
+
+                  room.on(RoomEvent.ParticipantConnected, (participant) => {
+                    console.log('[LiveKit] Participant connected:', participant.identity, 'name:', participant.name);
+                    // Subscribe to video tracks from any remote participant (avatar should be the only one)
+                    if (participant !== room.localParticipant) {
+                      console.log('[LiveKit] Remote participant detected, checking for video tracks...');
+                      participant.videoTrackPublications.forEach((pub) => {
+                        console.log('[LiveKit] Video publication:', pub.trackSid, 'kind:', pub.kind, 'subscribed:', pub.isSubscribed);
+                        if (pub.track && pub.kind === Track.Kind.Video) {
+                          console.log('[LiveKit] Found existing video track from participant:', participant.identity);
+                          setAgentVideoTrack({ track: pub.track, publication: pub, participant });
+                          setAgentState('connected');
+                        } else if (pub.kind === Track.Kind.Video) {
+                          // Track exists but not subscribed yet - subscribe to it
+                          console.log('[LiveKit] Subscribing to video track:', pub.trackSid);
+                          participant.setSubscribed(pub.trackSid, true);
+                        }
+                      });
+                    }
+                  });
+
+                  room.on(RoomEvent.Disconnected, () => {
+                    console.log('[LiveKit] Disconnected from room');
+                    setAgentState('disconnected');
+                    setAgentVideoTrack(null);
+                  });
+
+                  await room.connect(livekitUrl, livekitToken);
+                  console.log('[LiveKit] Connected to room:', room_name);
+                  console.log('[LiveKit] Local participant:', room.localParticipant.identity);
+                  console.log('[LiveKit] Remote participants count:', room.remoteParticipants.size);
+                  
+                  // Check for existing participants (avatar might already be in room)
+                  console.log('[LiveKit] Checking for existing remote participants...');
+                  room.remoteParticipants.forEach((participant) => {
+                    console.log('[LiveKit] Existing remote participant:', participant.identity, 'name:', participant.name);
+                    // Subscribe to any video tracks from remote participants
+                    participant.videoTrackPublications.forEach((pub) => {
+                      console.log('[LiveKit] Video publication:', pub.trackSid, 'kind:', pub.kind, 'has track:', !!pub.track);
+                      if (pub.track && pub.kind === Track.Kind.Video) {
+                        console.log('[LiveKit] Found existing video track, setting as avatar track');
+                        setAgentVideoTrack({ track: pub.track, publication: pub, participant });
+                        setAgentState('connected');
+                      } else if (pub.kind === Track.Kind.Video) {
+                        // Track exists but not subscribed yet - subscribe to it
+                        console.log('[LiveKit] Subscribing to existing video track:', pub.trackSid);
+                        participant.setSubscribed(pub.trackSid, true);
+                      }
+                    });
+                  });
+                } else {
+                  console.warn('[LiveKit] Failed to get LiveKit token:', livekitResponse.status);
+                }
+              }
+            } catch (livekitError) {
+              console.warn('[LiveKit] Failed to connect to LiveKit room (avatar video may not be available):', livekitError);
+              // Don't fail the entire connection if LiveKit fails
             }
 
             // Send greeting if available
