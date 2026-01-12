@@ -60,7 +60,6 @@ const katexOptions = {
   throwOnError: false,
   macros: katexMacros,
   trust: true,
-  output: 'html' as const, // Force only HTML output to avoid MathML duplication issues
 };
 
 // Helper function to render math with KaTeX
@@ -610,8 +609,7 @@ export const processTable = (text: string): string => {
   }
 
   // Convert any remaining widget placeholders to inline markers (for non-table content)
-  // IMPORTANT: Ensure table is followed by a blank line to avoid merging with subsequent blocks (like headers)
-  let finalResult = result.join('\n') + '\n\n';
+  let finalResult = result.join('\n');
   finalResult = finalResult.replace(/\[\[☃\s+([^\]]+)\]\]/g, (_, widgetId) => {
     return `<span class="athena-widget-inline" data-widget-id="${widgetId.trim()}"></span>`;
   });
@@ -643,37 +641,8 @@ export const processImageMarkdown = (text: string): string => {
   const toImgTag = (alt: string, url: string): string => {
     let imageUrl = url.trim();
 
-    // For graphie images, check if it's a statistical graph that needs PNG
+    // For graphie images, create a placeholder that will be replaced with GraphieImage component
     if (isGraphieUrl(imageUrl)) {
-      console.log('[Athena] Processing graphie URL:', imageUrl);
-      const lowerUrl = imageUrl.toLowerCase();
-
-      // Refined heuristic: check for statistical keywords
-      // Ensure "graph" is matched as more than just a substring of "graphie" 
-      // by checking for common statistical terms or specific URL patterns
-      const isStatisticalGraph =
-        lowerUrl.includes('voting') ||
-        lowerUrl.includes('political') ||
-        lowerUrl.includes('probability') ||
-        lowerUrl.includes('bar-') ||
-        lowerUrl.includes('axis') ||
-        lowerUrl.includes('chart') ||
-        (/\bgraph\b/.test(lowerUrl.replace('graphie', ' '))); // Match "graph" but not in "graphie"
-
-      console.log('[Athena] Is statistical graph?', isStatisticalGraph, 'URL:', lowerUrl.substring(0, 100));
-      // For statistical graphs, use PNG directly (has rotated axis labels already rendered)
-      if (isStatisticalGraph) {
-        console.log('[Athena] Statistical graph detected, using PNG directly:', imageUrl);
-        let pngUrl = imageUrl;
-        if (pngUrl.startsWith('web+graphie://')) {
-          pngUrl = pngUrl.replace('web+graphie://', 'https://').replace(/\.(png|svg)$/, '') + '.png';
-        } else {
-          pngUrl = pngUrl.replace(/\.(png|svg)$/, '') + '.png';
-        }
-        return `<img src="${pngUrl}" alt="${alt}" class="graphie-image" style="max-width:500px;width:auto;height:auto;display:block;margin:1rem auto;" referrerpolicy="no-referrer" />`;
-      }
-
-      // For other graphie images, create a placeholder that will be replaced with GraphieImage component
       // Normalize the graphie URL (remove extension if present)
       let graphieUrl = imageUrl;
       if (graphieUrl.startsWith('web+graphie://')) {
@@ -699,14 +668,14 @@ export const processImageMarkdown = (text: string): string => {
     return `<img src="${imageUrl}" alt="${alt}" class="athena-image" style="max-width:100%;height:auto;display:block;margin:1rem 0;" referrerpolicy="no-referrer" />`;
   };
 
-  // Pattern 1: Standard ![alt] (url) with optional whitespace and closing paren
-  processed = processed.replace(/!\[([\s\S]*?)\]\s*\(\s*([\s\S]*?)\s*\)/g, (_, alt, url) => {
+  // Pattern 1: Standard ![alt](url) with closing paren
+  processed = processed.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
     console.log('[Athena] Early processing: Standard image:', url.substring(0, 80));
-    return toImgTag(alt, url.trim());
+    return toImgTag(alt, url);
   });
 
-  // Pattern 2: Truncated URL without closing paren, allowing whitespace
-  processed = processed.replace(/!\[([^\]]*)\]\s*\((https?:\/\/[^\s\n<]+)/g, (_, alt, url) => {
+  // Pattern 2: Truncated URL without closing paren
+  processed = processed.replace(/!\[([^\]]*)\]\((https?:\/\/[^\s\n<]+)/g, (_, alt, url) => {
     console.log('[Athena] Early processing: Truncated image:', url.substring(0, 80));
     return toImgTag(alt, url.replace(/[)\s]+$/, ''));
   });
@@ -717,39 +686,9 @@ export const processImageMarkdown = (text: string): string => {
 // Helper to clean up legacy content artifacts (stray pipes, etc.)
 export const cleanLegacyContent = (text: string): string => {
   let processedText = text;
-
-  // 1. Remove stray blockquote markers ">" that appear at the start of table cells or lines
-  // MUST happen before header normalization so we see the # characters correctly
-  processedText = processedText.replace(/([\|\n]|^)\s*>+\s*/gm, '$1');
-  // Also handle stray ">" immediately before headers or images within a line
-  processedText = processedText.replace(/(\s+)>+(#{1,6}|!\[)/g, '$1$2');
-
-  // 2. Handle headers with trailing hashes (e.g., "##Which Pet?##" -> "## Which Pet?")
-  // Ensure they are surrounded by blank lines so marked.parse() recognizes them as block elements
-  // We use a broader regex that handles both cases with and without trailing hashes
-  processedText = processedText.replace(/(^|[\n|])\s*(#{1,6})\s*([^#|\n]+?)\s*#*\s*(?=[\|\n]|$)/g, '$1\n\n$2 $3\n\n');
-
-  // 3. Unescape escaped dollar signs (e.g., "\$212" -> "$212")
-  // Use HTML entity &dollar; to avoid accidentally triggering KaTeX math rendering later
-  // MUST happen before math protection in Phase 2
-  processedText = processedText.replace(/\\(\$)/g, '&dollar;');
-
-  // 4. Normalize legacy double-pipe delimiters "||"
-  // Try to break them into newlines to separate sections or rows
-  processedText = processedText.replace(/\s*\|\|\s*/g, '\n\n');
-
-  // 4.5. Detect mangled table rows joined on one line (e.g. "Col1 | Col2 | - | - | Row2_1 | Row2_2")
-  // If we see a separator pattern followed by more pipes on the same line, break it
-  processedText = processedText.replace(/(\|\s*[:\-]{2,}\s*\|\s*[:\-]{2,}\s*\|)\s*/g, '$1\n');
-
-  // 4.6. Normalize ordered lists to ensure they're recognized as block elements
-  // Ensure ordered lists (1., 2., etc.) are preceded by blank lines
-  // Handle both start of content (^) and after newlines (\n)
-  processedText = processedText.replace(/(^|\n)([0-9]+\.\s+)/gm, '$1\n$2');
-
-  // 5. Clean up stray pipe characters that aren't part of tables
-  // Remove standalone | at start of lines
-  processedText = processedText.replace(/^\|\s*$/gm, '');
+  // Clean up stray pipe characters that aren't part of tables
+  // Remove standalone || at start of lines
+  processedText = processedText.replace(/^\|\|\s*$/gm, '');
   // Remove lines that are just dashes, pipes, colons and spaces (table alignment patterns like "-:|-: | :-")
   processedText = processedText.replace(/^[\s\-:|]+$/gm, '');
   // Remove table alignment pattern lines (e.g., "-:|-:|:-" or "---|---|---")
@@ -760,16 +699,16 @@ export const cleanLegacyContent = (text: string): string => {
   processedText = processedText.replace(/\|=/g, '=');
   // Remove standalone | characters that appear alone on lines
   processedText = processedText.replace(/^\s*\|\s*$/gm, '');
+  // Remove trailing || at end of lines (but keep content before)
+  processedText = processedText.replace(/\|\|\s*$/gm, '');
   // Remove trailing | at end of lines after content
   processedText = processedText.replace(/\s*\|\s*$/gm, '');
-
-  // 6. Handle "Step N| content" patterns - remove pipe after "Step N"
+  // Handle "Step N| content" patterns - remove pipe after "Step N"
   processedText = processedText.replace(/(Step\s*\d+)\|\s*/gi, '$1 ');
   // Handle leading pipes before content (like "|28" -> "28")
   processedText = processedText.replace(/^\|(\d)/gm, '$1');
   // Handle "| × " patterns
   processedText = processedText.replace(/\|\s*×/g, '×');
-
   return processedText;
 };
 
@@ -817,73 +756,62 @@ export const preprocessCodeBlocks = (text: string): string => {
 export const processContent = (content: string): string => {
   if (!content) return '';
 
-  // Phase 1: Clean legacy content (IMPORTANT: must happen first to unescape \$ and fix mangled structure)
-  let processed = cleanLegacyContent(content);
-
-  // Phase 2: Protect raw math from table parser
-  const mathBlocks: string[] = [];
-  processed = processed.replace(/\$\$([\s\S]+?)\$\$|\$([^$]+)\$/g, (match) => {
-    const placeholder = `__ATHENA_MATH_RAW_${mathBlocks.length}__`;
-    mathBlocks.push(match);
-    return placeholder;
-  });
-
-  // Phase 3: Process tables (now safe from || in math and clean from legacy artifacts)
-  processed = processTable(processed);
-
-  // Phase 4: Pre-process code blocks
-  processed = preprocessCodeBlocks(processed);
-
-  // Phase 5: Process images
-  processed = processImageMarkdown(processed);
-
-  // Phase 6: Render math and protect the HTML output
-  const htmlProtected: string[] = [];
-  const addProtection = (html: string): string => {
-    const placeholder = `ATHENAHTMLSAFE${htmlProtected.length}ENDMARKER`;
-    htmlProtected.push(html);
+  const placeholders: string[] = [];
+  const addPlaceholder = (html: string): string => {
+    const placeholder = `__ATHENA_HTML_PROTECT_${placeholders.length}__`;
+    placeholders.push(html);
     return placeholder;
   };
 
-  // Render each math block and protect the resulting HTML
-  mathBlocks.forEach((math, idx) => {
-    const renderedMath = renderMath(math);
-    const protectedPlaceholder = addProtection(renderedMath);
-    console.log(`[Athena] Math ${idx}: ${math} -> ${protectedPlaceholder}`);
-    processed = processed.replace(`__ATHENA_MATH_RAW_${idx}__`, protectedPlaceholder);
+  let processed = content;
+
+  // 1. PROTECT raw math blocks (don't render yet!)
+  const mathBlocks: string[] = [];
+  processed = processed.replace(/\$\$([\s\S]+?)\$\$|\$([^$]+)\$/g, (match) => {
+    const mathPlaceholder = `__ATHENA_MATH_RAW_${mathBlocks.length}__`;
+    mathBlocks.push(match);
+    return mathPlaceholder;
   });
 
-  // Phase 7: Protect other HTML elements from Markdown
-  processed = processed.replace(/<table[\s\S]*?<\/table>/g, (match) => addProtection(match));
-  processed = processed.replace(/<(pre|code)[\s\S]*?<\/\1>/g, (match) => addProtection(match));
-  processed = processed.replace(/<img[^>]+>/g, (match) => addProtection(match));
-  processed = processed.replace(/<span[^>]*class="athena-graphie-placeholder"[^>]*>[\s\S]*?<\/span>/g, (match) => addProtection(match));
+  // 2. Process tables (now safe from || in math)
+  processed = processTable(processed);
 
-  // Phase 8: Convert widget placeholders to HTML and protect them
+  // 3. Pre-process code blocks
+  processed = preprocessCodeBlocks(processed);
+
+  // 4. Clean legacy content
+  processed = cleanLegacyContent(processed);
+
+  // 5. Process images
+  processed = processImageMarkdown(processed);
+
+  // 6. RESTORE and RENDER math blocks
+  mathBlocks.forEach((math, idx) => {
+    processed = processed.replace(`__ATHENA_MATH_RAW_${idx}__`, () => {
+      const renderedMath = renderMath(math);
+      return addPlaceholder(renderedMath);
+    });
+  });
+
+  // 7. Protect tables, code, images from Markdown
+  processed = processed.replace(/<table[\s\S]*?<\/table>/g, (match) => addPlaceholder(match));
+  processed = processed.replace(/<(pre|code)[\s\S]*?<\/\1>/g, (match) => addPlaceholder(match));
+  processed = processed.replace(/<img[^>]+>/g, (match) => addPlaceholder(match));
+  processed = processed.replace(/<span[^>]*class="athena-graphie-placeholder"[^>]*>[\s\S]*?<\/span>/g, (match) => addPlaceholder(match));
+
+  // 8. Convert widget placeholders
   processed = processed.replace(/\[\[☃\s+([^\]]+)\]\]/g, (_, widgetId) => {
     const html = `<span class="athena-widget-inline" data-widget-id="${widgetId.trim()}"></span>`;
-    return addProtection(html);
+    return addPlaceholder(html);
   });
 
-  // Phase 9: Run Markdown parser on simplified text
-  // Enable gfm (GitHub Flavored Markdown) and pedantic for better list handling
-  let finalHtml = marked.parse(processed, {
-    breaks: true,
-    gfm: true,
-    pedantic: false
-  }) as string;
+  // 9. Final markdown parse
+  let finalHtml = marked.parse(processed, { breaks: true }) as string;
 
-  // Phase 10: Restore all protected HTML
-  // Phase 10: Restore all protected HTML
-  // IMPORTANT: Restore in REVERSE order (Last-In, First-Out)
-  // This is critical because outer blocks (like tables) are protected AFTER inner blocks (like math).
-  // Restoring the outer block first (higher index) exposes the inner placeholders (lower index) to be caught by subsequent iterations.
-  console.log(`[Athena] Restoring ${htmlProtected.length} protected HTML blocks`);
-  for (let idx = htmlProtected.length - 1; idx >= 0; idx--) {
-    const html = htmlProtected[idx];
-    const placeholder = `ATHENAHTMLSAFE${idx}ENDMARKER`;
-    finalHtml = finalHtml.split(placeholder).join(html);
-  }
+  // 10. Restore all protected HTML
+  placeholders.forEach((html, idx) => {
+    finalHtml = finalHtml.replace(`__ATHENA_HTML_PROTECT_${idx}__`, () => html);
+  });
 
   return finalHtml;
 };
