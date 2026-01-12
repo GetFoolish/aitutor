@@ -1,5 +1,5 @@
-// @ts-ignore
 import katex from 'katex';
+import 'katex/dist/contrib/mhchem.mjs';
 import { marked } from 'marked';
 
 // KaTeX macros for Khan Academy color commands

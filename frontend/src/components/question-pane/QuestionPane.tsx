@@ -40,6 +40,7 @@ import '../../renderer/athena/athena.css';
 import type { AthenaItem } from '../../services/athenaAPI';
 // @ts-ignore
 import katex from 'katex';
+import 'katex/dist/contrib/mhchem.mjs';
 
 // Initialize scoring engine
 const scoringEngine = new ScoringEngine();
