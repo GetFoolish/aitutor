@@ -924,6 +924,7 @@
   margin: 0;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.5rem;
 }
 
@@ -1531,8 +1532,8 @@
 .athena-widget-inline {
   display: inline-block !important;
   max-width: 100%;
-  vertical-align: middle;
-  margin: 0.5rem 0.25rem !important;
+  vertical-align: baseline;
+  margin: 0 0.125rem !important;
 }
 
 .graphie-image-container {
