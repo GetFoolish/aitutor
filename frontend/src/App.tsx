@@ -66,6 +66,10 @@ function App() {
   const [assessmentQuestions, setAssessmentQuestions] = useState<any[]>([]);
   const [assessmentCurrentIndex, setAssessmentCurrentIndex] = useState(0);
   const [assessmentAnswers, setAssessmentAnswers] = useState<any[]>([]);
+  
+  // Learning assets state
+  const [currentLearningAsset, setCurrentLearningAsset] = useState<any | null>(null);
+  const [currentQuestionText, setCurrentQuestionText] = useState<string>("");
 
   // Ref to hold mediaMixer instance for use in callbacks
   const mediaMixerRef = useRef<any>(null);
@@ -239,6 +243,8 @@ function App() {
                     <LearningAssetsPanel
                       open={isSidebarOpen}
                       onToggle={toggleSidebar}
+                      currentAsset={currentLearningAsset}
+                      questionText={currentQuestionText}
                     />
                   )}
                   <GradingSidebar
@@ -287,6 +293,8 @@ function App() {
                                 }, 2000);
                               }
                             }}
+                            onLearningAssetChange={setCurrentLearningAsset}
+                            onQuestionTextChange={setCurrentQuestionText}
                           />
                           {isScratchpadOpen && (
                             <div className="scratchpad-container">
