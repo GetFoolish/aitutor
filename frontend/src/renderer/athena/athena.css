@@ -1527,12 +1527,12 @@
   text-shadow: 0 0 2px white, 0 0 2px white;
 }
 
-/* Ensure widgets are centered blocks when they contain graphs */
+/* Ensure widgets can stay inline when requested */
 .athena-widget-inline {
-  display: block !important;
-  width: 100% !important;
-  text-align: center !important;
-  margin: 1.5rem auto !important;
+  display: inline-block !important;
+  max-width: 100%;
+  vertical-align: middle;
+  margin: 0.5rem 0.25rem !important;
 }
 
 .graphie-image-container {
