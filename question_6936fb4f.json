@@ -1,0 +1,240 @@
+﻿[32mINFO[0m | Loading .env from: C:\Users\lenovo\Downloads\WorkTask_aitutor\aitutor\.env | mongodb_manager.py:21
+[32mINFO[0m | [MONGODB] Connected to database: ai_tutor | mongodb_manager.py:65
+{
+  "_id": "6936fb4fb753254d0bf6feb6",
+  "questionId": "28.1.1.2.2_xb2701af35b2f240e",
+  "courseIdx": 28,
+  "courseName": "Precalculus",
+  "courseDirName": "28_Precalculus",
+  "courseUrl": "https://www.khanacademy.org/science",
+  "unitIdx": 1,
+  "unitName": "Composite and inverse functions",
+  "unitDirName": "28.1_Composite_and_inverse_functions",
+  "lessonIdx": 1,
+  "lessonName": "Composing functions",
+  "lessonDirName": "28.1.1_Composing_functions",
+  "exerciseIdx": 2,
+  "exerciseName": "Evaluate composite functions: graphs & tables",
+  "exerciseDirName": "28.1.1.2_Evaluate_composite_functions:_graphs_&_tables",
+  "exerciseId": "xffeb1695",
+  "itemId": "xb2701af35b2f240e",
+  "assessmentData": {
+    "data": {
+      "assessmentItem": {
+        "__typename": "AssessmentItemOrError",
+        "error": null,
+        "item": {
+          "__typename": "AssessmentItem",
+          "id": "xb2701af35b2f240e",
+          "isContextInaccessible": false,
+          "itemData": "{\"answerArea\": {\"calculator\": false, \"chi2Table\": false, \"periodicTable\": false, \"tTable\": false, \"zTable\": false}, \"hints\": [{\"content\": \"###Strategy\\n\\nWe take the output from the inner function, $h$, and input it into the outer function, $g$.\\n\\nTo evaluate $g(\\\\purpleD{h(1)})$, let's first evaluate $\\\\purpleD{h(1)}$. Then we'll input that result into $g$ to find the output value.\", \"images\": {}, \"replace\": false, \"widgets\": {}}, {\"content\": \"###Evaluating $\\\\purpleD{h(1)}$ \\n\\nThe best approximation of $h(1)$ is $0$ because the graph of $y=h(x)$ seems to pass through the point $(1, 0)$.\\n\\n[[\\u2603 image 1]]\", \"images\": {}, \"replace\": false, \"widgets\": {\"image 1\": {\"alignment\": \"block\", \"graded\": true, \"options\": {\"alt\": \"A Cartesian coordinate plane showing two curves. The grid has labeled axes with the x, and y-axes ranging from negative 7 to 7 in increments of 1. The first curve, labeled 'g,' is a line that passes through approximately (negative 2.5, 0) and (0, negative 5). The second curve, labeled 'h,' is a concave-down, increasing curve that starts in the third quadrant, crosses the x-axis at (1, 0), and rises sharply into the first quadrant through (6, 2).\", \"backgroundImage\": {\"height\": 345, \"url\": \"web+graphie://cdn.kastatic.org/ka-perseus-graphie/5a47a08889360079f5445bea7e45c902047e8c77\", \"width\": 345}, \"box\": [345, 345], \"caption\": \"\", \"labels\": [], \"range\": [[0, 10], [0, 10]], \"static\": false, \"title\": \"\"}, \"static\": false, \"type\": \"image\", \"version\": {\"major\": 0, \"minor\": 0}}}}, {\"content\": \"###Evaluating $g(\\\\purpleD{h(1)})$\\n\\nWe now know that $g(\\\\purpleD{h(1)}) \\\\approx g(\\\\purpleD{0})$.\\n\\nThe best approximation of $g(0)$ is $-5$ because the graph of $y=g(x)$ seems to pass through the point $(0, -5)$.\\n\\n[[\\u2603 image 1]]\", \"images\": {}, \"replace\": false, \"widgets\": {\"image 1\": {\"alignment\": \"block\", \"graded\": true, \"options\": {\"alt\": \"A Cartesian coordinate plane showing two curves. The grid has labeled axes with the x, and y-axes ranging from negative 7 to 7 in increments of 1. The first curve, labeled 'g,' is a line that passes through approximately (negative 2.5, 0) and (0, negative 5). The second curve, labeled 'h,' is a concave-down, increasing curve that starts in the third quadrant, crosses the x-axis at (1, 0), and rises sharply into the first quadrant through (6, 2).\", \"backgroundImage\": {\"height\": 345, \"url\": \"web+graphie://cdn.kastatic.org/ka-perseus-graphie/0697e93301abb80aec05d730c7762555b53cbdaf\", \"width\": 345}, \"box\": [345, 345], \"caption\": \"\", \"labels\": [], \"range\": [[0, 10], [0, 10]], \"static\": false, \"title\": \"\"}, \"static\": false, \"type\": \"image\", \"version\": {\"major\": 0, \"minor\": 0}}}}, {\"content\": \"The answer:\\n\\n$g(h(1)) \\\\approx -5$\", \"images\": {}, \"replace\": false, \"widgets\": {}}], \"itemDataVersion\": {\"major\": 0, \"minor\": 1}, \"question\": {\"content\": \"The graphs of the equations $y=g(x)$ and $y=h(x)$ are shown in the grid below.\\n\\n[[\\u2603 image 1]]\\n\\n**Which of the following best approximates the value of $g(h(1))$?**\\n\\n[[\\u2603 radio 1]]\", \"images\": {}, \"widgets\": {\"image 1\": {\"alignment\": \"block\", \"graded\": true, \"options\": {\"alt\": \"A Cartesian coordinate plane showing two curves. The grid has labeled axes with the x, and y-axes ranging from negative 7 to 7 in increments of 1. The first curve, labeled 'g,' is a line that passes through approximately (negative 2.5, 0) and (0, negative 5). The second curve, labeled 'h,' is a concave-down, increasing curve that starts in the third quadrant, crosses the x-axis at (1, 0), and rises sharply into the first quadrant through (6, 2).\", \"backgroundImage\": {\"height\": 345, \"url\": \"web+graphie://cdn.kastatic.org/ka-perseus-graphie/aa300284c4fa3c8bcf8c42617556f434f55e5edd\", \"width\": 345}, \"box\": [345, 345], \"caption\": \"\", \"labels\": [], \"range\": [[0, 10], [0, 10]], \"static\": false, \"title\": \"\"}, \"static\": false, \"type\": \"image\", \"version\": {\"major\": 0, \"minor\": 0}}, \"radio 1\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"choices\": [{\"content\": \"$-7$\", \"correct\": false}, {\"content\": \"$-5$\", \"correct\": true}, {\"content\": \"$0$\", \"correct\": false, \"isNoneOfTheAbove\": false}, {\"content\": \"$2$\", \"correct\": false, \"isNoneOfTheAbove\": false}], \"countChoices\": false, \"deselectEnabled\": false, \"displayCount\": null, \"hasNoneOfTheAbove\": false, \"multipleSelect\": false, \"randomize\": false}, \"static\": false, \"type\": \"radio\", \"version\": {\"major\": 1, \"minor\": 0}}}}}",
+          "problemType": "1. Graph f(g(x))",
+          "requiresScreenOrMouse": true,
+          "sha": "fd0abc98a93fa66573c1c7c93d294e1b2f162765"
+        }
+      }
+    }
+  },
+  "scrapedAt": "2025-12-08 16:22:39.542000",
+  "difficulty": 0.75,
+  "expected_time_seconds": 85,
+  "inferred_grade": "11",
+  "grade_level": "12",
+  "grade_order": 13,
+  "learning_order": 1301102,
+  "age": 17,
+  "sequence_order": 421,
+  "total_in_course": 543,
+  "answerArea": {
+    "calculator": false,
+    "chi2Table": false,
+    "periodicTable": false,
+    "tTable": false,
+    "zTable": false
+  },
+  "fixedAt": "2025-12-21_v2",
+  "hints": [
+    {
+      "content": "###Strategy\n\nWe take the output from the inner function, $h$, and input it into the outer function, $g$.\n\nTo evaluate $g(\\purpleD{h(1)})$, let's first evaluate $\\purpleD{h(1)}$. Then we'll input that result into $g$ to find the output value.",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    },
+    {
+      "content": "###Evaluating $\\purpleD{h(1)}$ \n\nThe best approximation of $h(1)$ is $0$ because the graph of $y=h(x)$ seems to pass through the point $(1, 0)$.\n\n[[\u2603 image 1]]",
+      "images": {},
+      "replace": false,
+      "widgets": {
+        "image 1": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "A Cartesian coordinate plane showing two curves. The grid has labeled axes with the x, and y-axes ranging from negative 7 to 7 in increments of 1. The first curve, labeled 'g,' is a line that passes through approximately (negative 2.5, 0) and (0, negative 5). The second curve, labeled 'h,' is a concave-down, increasing curve that starts in the third quadrant, crosses the x-axis at (1, 0), and rises sharply into the first quadrant through (6, 2).",
+            "backgroundImage": {
+              "height": 345,
+              "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/5a47a08889360079f5445bea7e45c902047e8c77",
+              "width": 345
+            },
+            "box": [
+              345,
+              345
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 0,
+            "minor": 0
+          }
+        }
+      }
+    },
+    {
+      "content": "###Evaluating $g(\\purpleD{h(1)})$\n\nWe now know that $g(\\purpleD{h(1)}) \\approx g(\\purpleD{0})$.\n\nThe best approximation of $g(0)$ is $-5$ because the graph of $y=g(x)$ seems to pass through the point $(0, -5)$.\n\n[[\u2603 image 1]]",
+      "images": {},
+      "replace": false,
+      "widgets": {
+        "image 1": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "A Cartesian coordinate plane showing two curves. The grid has labeled axes with the x, and y-axes ranging from negative 7 to 7 in increments of 1. The first curve, labeled 'g,' is a line that passes through approximately (negative 2.5, 0) and (0, negative 5). The second curve, labeled 'h,' is a concave-down, increasing curve that starts in the third quadrant, crosses the x-axis at (1, 0), and rises sharply into the first quadrant through (6, 2).",
+            "backgroundImage": {
+              "height": 345,
+              "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/0697e93301abb80aec05d730c7762555b53cbdaf",
+              "width": 345
+            },
+            "box": [
+              345,
+              345
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 0,
+            "minor": 0
+          }
+        }
+      }
+    },
+    {
+      "content": "The answer:\n\n$g(h(1)) \\approx -5$",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    }
+  ],
+  "itemDataVersion": {
+    "major": 0,
+    "minor": 1
+  },
+  "question": {
+    "content": "The graphs of the equations $y=g(x)$ and $y=h(x)$ are shown in the grid below.\n\n[[\u2603 image 1]]\n\n**Which of the following best approximates the value of $g(h(1))$?**\n\n[[\u2603 radio 1]]",
+    "images": {},
+    "widgets": {
+      "image 1": {
+        "alignment": "block",
+        "graded": true,
+        "options": {
+          "alt": "A Cartesian coordinate plane showing two curves. The grid has labeled axes with the x, and y-axes ranging from negative 7 to 7 in increments of 1. The first curve, labeled 'g,' is a line that passes through approximately (negative 2.5, 0) and (0, negative 5). The second curve, labeled 'h,' is a concave-down, increasing curve that starts in the third quadrant, crosses the x-axis at (1, 0), and rises sharply into the first quadrant through (6, 2).",
+          "backgroundImage": {
+            "height": 345,
+            "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/aa300284c4fa3c8bcf8c42617556f434f55e5edd",
+            "width": 345
+          },
+          "box": [
+            345,
+            345
+          ],
+          "caption": "",
+          "labels": [],
+          "range": [
+            [
+              0,
+              10
+            ],
+            [
+              0,
+              10
+            ]
+          ],
+          "static": false,
+          "title": ""
+        },
+        "static": false,
+        "type": "image",
+        "version": {
+          "major": 0,
+          "minor": 0
+        }
+      },
+      "radio 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "choices": [
+            {
+              "content": "$-7$",
+              "correct": false
+            },
+            {
+              "content": "$-5$",
+              "correct": true
+            },
+            {
+              "content": "$0$",
+              "correct": false,
+              "isNoneOfTheAbove": false
+            },
+            {
+              "content": "$2$",
+              "correct": false,
+              "isNoneOfTheAbove": false
+            }
+          ],
+          "countChoices": false,
+          "deselectEnabled": false,
+          "displayCount": null,
+          "hasNoneOfTheAbove": false,
+          "multipleSelect": false,
+          "randomize": false
+        },
+        "static": false,
+        "type": "radio",
+        "version": {
+          "major": 1,
+          "minor": 0
+        }
+      }
+    }
+  }
+}

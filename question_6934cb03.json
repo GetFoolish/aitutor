@@ -1,0 +1,144 @@
+﻿[32mINFO[0m | Loading .env from: C:\Users\lenovo\Downloads\WorkTask_aitutor\aitutor\.env | mongodb_manager.py:21
+[32mINFO[0m | [MONGODB] Connected to database: ai_tutor | mongodb_manager.py:65
+{
+  "_id": "6934cb0364942dd77a11246c",
+  "questionId": "35.1.4.1.7_xa4740f3de046c50d",
+  "courseIdx": 35,
+  "courseName": "AP\u00ae\ufe0e/College Microeconomics",
+  "courseDirName": "35_AP\u00ae\ufe0e/College_Microeconomics",
+  "courseUrl": "https://www.khanacademy.org/economics-finance-domain/ap-microeconomics",
+  "unitIdx": 1,
+  "unitName": "Basic Economic Concepts",
+  "unitDirName": "35.1_Basic_Economic_Concepts",
+  "lessonIdx": 4,
+  "lessonName": "Production possibilities curve (PPC)",
+  "lessonDirName": "35.1.4_Production_possibilities_curve_(PPC)",
+  "exerciseIdx": 1,
+  "exerciseName": "Interpreting graphs of the production possibilities curve (PPC)",
+  "exerciseDirName": "35.1.4.1_Interpreting_graphs_of_the_production_possibilities_curve_(PPC)",
+  "exerciseId": "x57b7b05f2cfaf2af",
+  "itemId": "xa4740f3de046c50d",
+  "assessmentData": {
+    "data": {
+      "assessmentItem": {
+        "__typename": "AssessmentItemOrError",
+        "error": null,
+        "item": {
+          "__typename": "AssessmentItem",
+          "id": "xa4740f3de046c50d",
+          "isContextInaccessible": false,
+          "itemData": "{\"answerArea\": {\"calculator\": false, \"chi2Table\": false, \"periodicTable\": false, \"tTable\": false, \"zTable\": false}, \"hints\": [], \"itemDataVersion\": {\"major\": 0, \"minor\": 1}, \"question\": {\"content\": \"The graph here shows the production possibilities of two goods, R and S. \\n\\n[[\\u2603 image 1]]\\n\\n**How does the opportunity cost of Good S change as output of S increases?**\\n\\n[[\\u2603 radio 1]]\\n\\n\", \"images\": {}, \"widgets\": {\"image 1\": {\"alignment\": \"block\", \"graded\": true, \"options\": {\"alt\": \"A line graph on a coordinate plane. The vertical axis, labeled Good R, ranges from 0 to 10 with increments of 1. The horizontal axis, labeled Good S, ranges from 0 to 10 with increments of 1. The curve decreases from (0, 10) on the y-axis to (10, 0) on the X-axis.\", \"backgroundImage\": {\"height\": 334, \"url\": \"web+graphie://cdn.kastatic.org/ka-perseus-graphie/22f2d6f65ed6956fe51bd02288899db6648611d2\", \"width\": 340}, \"box\": [340, 334], \"caption\": \"\", \"labels\": [], \"range\": [[0, 10], [0, 10]], \"static\": false, \"title\": \"\"}, \"static\": false, \"type\": \"image\", \"version\": {\"major\": 0, \"minor\": 0}}, \"radio 1\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"choices\": [{\"clue\": \"To produce the first unit of Good S, about $4$ units of Good R are given up. For the second unit of Good S only about $2$ units of Good R are given up. Going from $9$ to $10$ units of Good S costs almost no units of Good R. This illustrates decreasing opportunity costs, as illustrated by a PPC bowed inward toward the origin.\", \"content\": \"It decreases\", \"correct\": true}, {\"clue\": \"An increasing opportunity cost PPC would be bowed outwards from the origin; on this graph it is bowed in.\", \"content\": \"It increases\", \"correct\": false}, {\"clue\": \"A constant opportunity cost PPC would be a straight line from a point on the vertical axis to a point on the horizontal axis.\", \"content\": \"It is constant\", \"isNoneOfTheAbove\": false}, {\"clue\": \"If the opportunity cost of Good S in terms of R were $0$, then the PPC would be a horizontal line, as more of S could be produced without giving up any of R.\", \"content\": \"It is zero\", \"isNoneOfTheAbove\": false}, {\"clue\": \"A negative opportunity cost would mean that MORE of one good would be enjoyed as resources were allocated towards the other good. Such a PPC, theoretically, would be an upward sloping line; but in reality this is impossible due to the scarcity of resources.\", \"content\": \"It becomes negative\", \"isNoneOfTheAbove\": false}], \"countChoices\": false, \"deselectEnabled\": false, \"displayCount\": null, \"hasNoneOfTheAbove\": false, \"multipleSelect\": false, \"randomize\": true}, \"static\": false, \"type\": \"radio\", \"version\": {\"major\": 1, \"minor\": 0}}}}}",
+          "problemType": "The shape of the PPC and OC",
+          "requiresScreenOrMouse": true,
+          "sha": "68e5d1e5fe58b0b93c834a7349e43f75c985ba76"
+        }
+      }
+    }
+  },
+  "scrapedAt": "2025-12-07 00:32:03.866000",
+  "difficulty": 0.5,
+  "expected_time_seconds": 60,
+  "inferred_grade": "8",
+  "sequence_order": 313,
+  "total_in_course": 350,
+  "answerArea": {
+    "calculator": false,
+    "chi2Table": false,
+    "periodicTable": false,
+    "tTable": false,
+    "zTable": false
+  },
+  "fixedAt": "2025-12-21_v2",
+  "hints": [],
+  "itemDataVersion": {
+    "major": 0,
+    "minor": 1
+  },
+  "question": {
+    "content": "The graph here shows the production possibilities of two goods, R and S. \n\n[[\u2603 image 1]]\n\n**How does the opportunity cost of Good S change as output of S increases?**\n\n[[\u2603 radio 1]]\n\n",
+    "images": {},
+    "widgets": {
+      "image 1": {
+        "alignment": "block",
+        "graded": true,
+        "options": {
+          "alt": "A line graph on a coordinate plane. The vertical axis, labeled Good R, ranges from 0 to 10 with increments of 1. The horizontal axis, labeled Good S, ranges from 0 to 10 with increments of 1. The curve decreases from (0, 10) on the y-axis to (10, 0) on the X-axis.",
+          "backgroundImage": {
+            "height": 334,
+            "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/22f2d6f65ed6956fe51bd02288899db6648611d2",
+            "width": 340
+          },
+          "box": [
+            340,
+            334
+          ],
+          "caption": "",
+          "labels": [],
+          "range": [
+            [
+              0,
+              10
+            ],
+            [
+              0,
+              10
+            ]
+          ],
+          "static": false,
+          "title": ""
+        },
+        "static": false,
+        "type": "image",
+        "version": {
+          "major": 0,
+          "minor": 0
+        }
+      },
+      "radio 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "choices": [
+            {
+              "clue": "To produce the first unit of Good S, about $4$ units of Good R are given up. For the second unit of Good S only about $2$ units of Good R are given up. Going from $9$ to $10$ units of Good S costs almost no units of Good R. This illustrates decreasing opportunity costs, as illustrated by a PPC bowed inward toward the origin.",
+              "content": "It decreases",
+              "correct": true
+            },
+            {
+              "clue": "An increasing opportunity cost PPC would be bowed outwards from the origin; on this graph it is bowed in.",
+              "content": "It increases",
+              "correct": false
+            },
+            {
+              "clue": "A constant opportunity cost PPC would be a straight line from a point on the vertical axis to a point on the horizontal axis.",
+              "content": "It is constant",
+              "isNoneOfTheAbove": false
+            },
+            {
+              "clue": "If the opportunity cost of Good S in terms of R were $0$, then the PPC would be a horizontal line, as more of S could be produced without giving up any of R.",
+              "content": "It is zero",
+              "isNoneOfTheAbove": false
+            },
+            {
+              "clue": "A negative opportunity cost would mean that MORE of one good would be enjoyed as resources were allocated towards the other good. Such a PPC, theoretically, would be an upward sloping line; but in reality this is impossible due to the scarcity of resources.",
+              "content": "It becomes negative",
+              "isNoneOfTheAbove": false
+            }
+          ],
+          "countChoices": false,
+          "deselectEnabled": false,
+          "displayCount": null,
+          "hasNoneOfTheAbove": false,
+          "multipleSelect": false,
+          "randomize": true
+        },
+        "static": false,
+        "type": "radio",
+        "version": {
+          "major": 1,
+          "minor": 0
+        }
+      }
+    }
+  }
+}

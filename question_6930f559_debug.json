@@ -1,0 +1,141 @@
+﻿[32mINFO[0m | Loading .env from: C:\Users\lenovo\Downloads\WorkTask_aitutor\aitutor\.env | mongodb_manager.py:21
+[32mINFO[0m | [MONGODB] Connected to database: ai_tutor | mongodb_manager.py:65
+{
+  "_id": "6930f5599c4e25280b1a447f",
+  "questionId": "43.1.2.1.9_x6e0a0220335954c4",
+  "courseIdx": 43,
+  "courseName": "AP\u00ae\ufe0e/College Calculus BC",
+  "courseDirName": "43_AP\u00ae\ufe0e/College_Calculus_BC",
+  "courseUrl": "https://www.khanacademy.org/math/ap-calculus-bc",
+  "unitIdx": 1,
+  "unitName": "Limits and continuity",
+  "unitDirName": "43.1_Limits_and_continuity",
+  "lessonIdx": 2,
+  "lessonName": "Defining limits and using limit notation",
+  "lessonDirName": "43.1.2_Defining_limits_and_using_limit_notation",
+  "exerciseIdx": 1,
+  "exerciseName": "Limits intro",
+  "exerciseDirName": "43.1.2.1_Limits_intro",
+  "exerciseId": "xa1732f1ea0357977",
+  "itemId": "x6e0a0220335954c4",
+  "assessmentData": {
+    "data": {
+      "assessmentItem": {
+        "__typename": "AssessmentItemOrError",
+        "error": null,
+        "item": {
+          "__typename": "AssessmentItem",
+          "id": "x6e0a0220335954c4",
+          "isContextInaccessible": false,
+          "itemData": "{\"answerArea\": {\"calculator\": false, \"chi2Table\": false, \"periodicTable\": false, \"tTable\": false, \"zTable\": false}, \"hints\": [{\"content\": \"A limit is the value that a function \\\"approaches\\\" as the input approaches some value.\\n\\n$\\\\displaystyle \\\\lim_{x\\\\to 4}f(x)$ is the limit of $f(x)$ as $x$ approaches $4$.\\n\\nLet's look at the graph and see if the $y$-values seem to approach a distinct value as the $x$-values approach $4$.\", \"images\": {}, \"replace\": false, \"widgets\": {}}, {\"content\": \"If we approach $x=4$ from the left, the $y$-values get closer and closer to $3$. If we approach $x=4$ from the right, the $y$-values get closer and closer to $6$.\\n\\nThe function does not approach the same value from both directions.\\n\\n![The graph of function f has an arrow pointing up to the right along the first curve to the closed circle at (4, 3). Another arrow points up to the left along the second curve to the open circle at (4, 6).](web+graphie://cdn.kastatic.org/ka-perseus-graphie/4ffa6c704abe92693793bf0ab678d7e9fcb70da5)\", \"images\": {\"web+graphie://cdn.kastatic.org/ka-perseus-graphie/4ffa6c704abe92693793bf0ab678d7e9fcb70da5\": {\"height\": 325, \"width\": 325}}, \"replace\": false, \"widgets\": {}}, {\"content\": \"The limit $\\\\displaystyle\\\\lim_{x\\\\to 4}f(x)$ doesn't exist.\", \"images\": {}, \"replace\": false, \"widgets\": {}}], \"itemDataVersion\": {\"major\": 0, \"minor\": 1}, \"question\": {\"content\": \"The function $f$ is defined for all real numbers.\\n\\n![Function f is graphed. The x-axis goes from negative 8 to 8. The graph consists of 2 curves. The first curve starts at about (negative 8, negative 4.5), moves upward to about (negative 5, 3.8), moves downward to about (1, negative 5.3), moves upward, and ends at a closed circle at (4, 3). The second curve starts at an open circle at (4, 6), moves downward, and ends at about (8, 2).](web+graphie://cdn.kastatic.org/ka-perseus-graphie/a5a556ada1aba9d4ac3351fb326a59882dff77ca)\\n\\n**What is a reasonable estimate for $\\\\displaystyle\\\\lim_{x\\\\to 4}f(x)$?**\\n\\n[[\\u2603 radio 1]]\\n\", \"images\": {\"web+graphie://cdn.kastatic.org/ka-perseus-graphie/a5a556ada1aba9d4ac3351fb326a59882dff77ca\": {\"height\": 325, \"width\": 325}}, \"widgets\": {\"radio 1\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"choices\": [{\"content\": \"$3$\", \"correct\": false}, {\"content\": \"$4$\", \"correct\": false}, {\"content\": \"$6$\", \"correct\": false, \"isNoneOfTheAbove\": false}, {\"content\": \"The limit doesn't exist\", \"correct\": true, \"isNoneOfTheAbove\": false}], \"countChoices\": false, \"deselectEnabled\": false, \"displayCount\": null, \"hasNoneOfTheAbove\": false, \"multipleSelect\": false, \"randomize\": false}, \"static\": false, \"type\": \"radio\", \"version\": {\"major\": 1, \"minor\": 0}}}}}",
+          "problemType": "3. Graph (doesn't exist)",
+          "requiresScreenOrMouse": false,
+          "sha": "3ace63499281645e4a77d682550dc855836ddf10"
+        }
+      }
+    }
+  },
+  "scrapedAt": "2025-12-04 02:43:37.753000",
+  "difficulty": 0.85,
+  "expected_time_seconds": 95,
+  "inferred_grade": "12",
+  "grade_level": "12",
+  "grade_order": 13,
+  "learning_order": 1301201,
+  "age": 17,
+  "sequence_order": 73,
+  "total_in_course": 340,
+  "answerArea": {
+    "calculator": false,
+    "chi2Table": false,
+    "periodicTable": false,
+    "tTable": false,
+    "zTable": false
+  },
+  "fixedAt": "2025-12-21_v2",
+  "hints": [
+    {
+      "content": "A limit is the value that a function \"approaches\" as the input approaches some value.\n\n$\\displaystyle \\lim_{x\\to 4}f(x)$ is the limit of $f(x)$ as $x$ approaches $4$.\n\nLet's look at the graph and see if the $y$-values seem to approach a distinct value as the $x$-values approach $4$.",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    },
+    {
+      "content": "If we approach $x=4$ from the left, the $y$-values get closer and closer to $3$. If we approach $x=4$ from the right, the $y$-values get closer and closer to $6$.\n\nThe function does not approach the same value from both directions.\n\n![The graph of function f has an arrow pointing up to the right along the first curve to the closed circle at (4, 3). Another arrow points up to the left along the second curve to the open circle at (4, 6).](web+graphie://cdn.kastatic.org/ka-perseus-graphie/4ffa6c704abe92693793bf0ab678d7e9fcb70da5)",
+      "images": {
+        "web+graphie://cdn.kastatic.org/ka-perseus-graphie/4ffa6c704abe92693793bf0ab678d7e9fcb70da5": {
+          "height": 325,
+          "width": 325
+        }
+      },
+      "replace": false,
+      "widgets": {}
+    },
+    {
+      "content": "The limit $\\displaystyle\\lim_{x\\to 4}f(x)$ doesn't exist.",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    }
+  ],
+  "itemDataVersion": {
+    "major": 0,
+    "minor": 1
+  },
+  "question": {
+    "content": "The function $f$ is defined for all real numbers.\n\n![Function f is graphed. The x-axis goes from negative 8 to 8. The graph consists of 2 curves. The first curve starts at about (negative 8, negative 4.5), moves upward to about (negative 5, 3.8), moves downward to about (1, negative 5.3), moves upward, and ends at a closed circle at (4, 3). The second curve starts at an open circle at (4, 6), moves downward, and ends at about (8, 2).](web+graphie://cdn.kastatic.org/ka-perseus-graphie/a5a556ada1aba9d4ac3351fb326a59882dff77ca)\n\n**What is a reasonable estimate for $\\displaystyle\\lim_{x\\to 4}f(x)$?**\n\n[[\u2603 radio 1]]\n",
+    "images": {
+      "web+graphie://cdn.kastatic.org/ka-perseus-graphie/a5a556ada1aba9d4ac3351fb326a59882dff77ca": {
+        "height": 325,
+        "width": 325
+      }
+    },
+    "widgets": {
+      "radio 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "choices": [
+            {
+              "content": "$3$",
+              "correct": false
+            },
+            {
+              "content": "$4$",
+              "correct": false
+            },
+            {
+              "content": "$6$",
+              "correct": false,
+              "isNoneOfTheAbove": false
+            },
+            {
+              "content": "The limit doesn't exist",
+              "correct": true,
+              "isNoneOfTheAbove": false
+            }
+          ],
+          "countChoices": false,
+          "deselectEnabled": false,
+          "displayCount": null,
+          "hasNoneOfTheAbove": false,
+          "multipleSelect": false,
+          "randomize": false
+        },
+        "static": false,
+        "type": "radio",
+        "version": {
+          "major": 1,
+          "minor": 0
+        }
+      },
+      "image 1": {
+        "options": {
+          "backgroundImage": {
+            "url": "/assets/images/replacements/uploaded_image_1768259303195.png"
+          }
+        }
+      }
+    }
+  }
+}
