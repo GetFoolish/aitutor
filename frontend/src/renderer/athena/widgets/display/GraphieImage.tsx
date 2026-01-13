@@ -272,7 +272,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
   // We want to invert diagrams (charts, graphs) but NOT realistic illustrations (eggs, pizzas, etc.)
   const shouldSkipInversion = useMemo(() => {
     const lowerAlt = alt.toLowerCase();
-    const skipKeywords = ['egg', 'oeuf', 'pizza', 'apple', 'fruit', 'animal', 'bread', 'pain', 'pomme'];
+    const skipKeywords = ['egg', 'oeuf', 'pizza', 'apple', 'fruit', 'animal', 'bread', 'pain', 'pomme', 'acorn', 'gland'];
     return skipKeywords.some(keyword => lowerAlt.includes(keyword));
   }, [alt]);
 
