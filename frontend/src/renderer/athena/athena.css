@@ -1332,6 +1332,11 @@
   display: block;
   margin: 0.5rem 0;
   border-radius: 0.25rem;
+  transition: filter 0.3s ease;
+}
+
+.athena-theme-dark .athena-choice-image {
+  filter: invert(0.9) hue-rotate(180deg) brightness(1.2);
 }
 
 /* ============================================================================
@@ -1501,7 +1506,7 @@
 .graphie-svg-wrapper svg tspan,
 .athena-choice-image text,
 .athena-radio-content svg text {
-  fill: #333 !important;
+  fill: var(--athena-text, #333) !important;
   fill-opacity: 1 !important;
   stroke: none !important;
   font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif !important;
@@ -1526,9 +1531,9 @@
   font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 12px;
   font-weight: 600;
-  color: #333;
+  color: var(--athena-text, #333);
   white-space: nowrap;
-  text-shadow: 0 0 2px white, 0 0 2px white;
+  text-shadow: 0 0 2px var(--athena-bg, white), 0 0 2px var(--athena-bg, white);
 }
 
 /* Ensure widgets can stay inline when requested */

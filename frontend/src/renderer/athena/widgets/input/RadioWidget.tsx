@@ -38,7 +38,7 @@ async function ensureKaTeX() {
   }
 }
 
-export interface RadioWidgetProps extends WidgetProps<RadioOptions> {}
+export interface RadioWidgetProps extends WidgetProps<RadioOptions> { }
 
 export function RadioWidget({
   widgetId,
@@ -198,17 +198,17 @@ export function RadioWidget({
             else alignments.push('center');
           });
           // Build table
-          let html = '<table class="athena-choice-table" style="border-collapse:collapse;margin:0.5rem 0;font-size:0.9rem;"><thead><tr>';
+          let html = '<table class="athena-choice-table" style="border-collapse:collapse;margin:0.5rem 0;font-size:0.9rem;width:100%;"><thead><tr>';
           const headerCells = tableLines[0].split('|').filter(c => c.trim());
           headerCells.forEach((cell, idx) => {
-            html += `<th style="padding:6px 10px;border:1px solid #ddd;background:#f5f5f5;text-align:${alignments[idx] || 'center'}">${cell.trim()}</th>`;
+            html += `<th style="padding:6px 10px;border:1px solid var(--athena-border, #ddd);background:var(--athena-inline-code-bg, #f5f5f5);color:var(--athena-text);text-align:${alignments[idx] || 'center'}">${cell.trim()}</th>`;
           });
           html += '</tr></thead><tbody>';
           for (let k = separatorIndex + 1; k < tableLines.length; k++) {
             html += '<tr>';
             const cells = tableLines[k].split('|').filter(c => c.trim());
             cells.forEach((cell, idx) => {
-              html += `<td style="padding:6px 10px;border:1px solid #ddd;text-align:${alignments[idx] || 'center'}">${cell.trim()}</td>`;
+              html += `<td style="padding:6px 10px;border:1px solid var(--athena-border, #ddd);color:var(--athena-text);text-align:${alignments[idx] || 'center'}">${cell.trim()}</td>`;
             });
             html += '</tr>';
           }
@@ -244,7 +244,7 @@ export function RadioWidget({
         }
         // Add CDN extension if missing
         if ((imageUrl.includes('cdn.kastatic.org') || imageUrl.includes('ka-perseus')) &&
-            !imageUrl.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i)) {
+          !imageUrl.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i)) {
           imageUrl = imageUrl + '.png';
         }
         return `<img src="${imageUrl}" alt="${alt}" class="athena-choice-image" data-fallback-base="${url.replace('web+graphie://', 'https://').replace(/\.(png|svg)$/, '')}" style="max-width:100%;height:auto;display:block;margin:0.5rem 0;" referrerpolicy="no-referrer" />`;
@@ -397,7 +397,7 @@ export function RadioWidget({
             marginBottom: '12px',
             fontSize: '15px',
             fontWeight: 500,
-            color: '#333',
+            color: 'var(--athena-text, #333)',
           }}
         >
           {isMultiSelect ? 'Choose all answers that apply:' : 'Choose 1 answer:'}

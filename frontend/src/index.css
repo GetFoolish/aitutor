@@ -903,6 +903,10 @@ a[target="lint-help-window"] {
   border: 1px solid #333333 !important;
 }
 
+.athena-theme-dark .athena-choice-image {
+  filter: invert(0.9) hue-rotate(180deg) brightness(1.2) !important;
+}
+
 .athena-theme-dark .athena-radio-label {
   color: #ffffff !important;
 }
