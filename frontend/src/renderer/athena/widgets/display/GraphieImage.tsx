@@ -268,6 +268,18 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     ? athenaContext.state.theme === 'dark'
     : standaloneIsDarkMode;
 
+  // Heuristic: Should we invert this image in dark mode?
+  // We want to invert diagrams (charts, graphs) but NOT realistic illustrations (eggs, pizzas, etc.)
+  const shouldSkipInversion = useMemo(() => {
+    const lowerAlt = alt.toLowerCase();
+    const skipKeywords = ['egg', 'oeuf', 'pizza', 'apple', 'fruit', 'animal', 'bread', 'pain', 'pomme'];
+    return skipKeywords.some(keyword => lowerAlt.includes(keyword));
+  }, [alt]);
+
+  const filterClass = isDarkMode
+    ? (shouldSkipInversion ? 'graphie-filter-light' : 'graphie-filter-dark')
+    : 'graphie-filter-light';
+
   const [svgContent, setSvgContent] = useState<string | null>(null);
   const [pngFallback, setPngFallback] = useState<string | null>(null);
   const [graphieData, setGraphieData] = useState<GraphieData | null>(null);
@@ -1093,7 +1105,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         <img
           src={baseUrl + '.png'}
           alt={alt}
-          className={`graphie-image graphie-png-with-labels ${isDarkMode ? 'graphie-filter-dark' : 'graphie-filter-light'}`}
+          className={`graphie-image graphie-png-with-labels ${filterClass}`}
           style={{
             maxWidth: '100%',
             height: 'auto',
@@ -1127,7 +1139,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
           }}
         >
           <div
-            className={`graphie-svg-wrapper ${isDarkMode ? 'graphie-filter-dark' : 'graphie-filter-light'}`}
+            className={`graphie-svg-wrapper ${filterClass}`}
             dangerouslySetInnerHTML={{ __html: processedSvgWithLabels }}
             style={{
               display: 'block',
@@ -1144,7 +1156,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         <img
           src={pngFallback || baseUrl + '.png'}
           alt={alt}
-          className={`graphie-image ${isDarkMode ? 'graphie-filter-dark' : 'graphie-filter-light'}`}
+          className={`graphie-image ${filterClass}`}
           style={{
             maxWidth: '100%',
             height: 'auto',
