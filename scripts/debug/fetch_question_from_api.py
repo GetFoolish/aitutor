@@ -23,4 +23,6 @@ def fetch_question(question_id):
         print(f"Error fetching question: {e}")
 
 if __name__ == "__main__":
-    fetch_question("69326b802a4ca36772842d03")
+    import sys
+    question_id = sys.argv[1] if len(sys.argv) > 1 else "69326b802a4ca36772842d03"
+    fetch_question(question_id)
