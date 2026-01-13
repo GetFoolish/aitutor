@@ -20,8 +20,6 @@ import "./index.css";
 import "katex/dist/katex.min.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-// @ts-ignore
-import "./package/perseus/testing/perseus-init.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import ComingSoonGuard from "./components/coming-soon/ComingSoonGuard"; // Commented out to allow home page access
@@ -37,23 +35,6 @@ const root = ReactDOM.createRoot(
 );
 
 const queryClient = new QueryClient();
-
-// Suppress Perseus library warnings (known issues in the library)
-if (import.meta.env.DEV) {
-  const originalWarn = console.warn;
-  console.warn = (...args: any[]) => {
-    // Filter out known Perseus warnings
-    const message = args[0]?.toString() || '';
-    if (
-      message.includes('findDOMNode is deprecated') ||
-      message.includes('Multiple versions of @khanacademy') ||
-      message.includes('Blocked aria-hidden')
-    ) {
-      return; // Suppress these warnings
-    }
-    originalWarn.apply(console, args);
-  };
-}
 
 // Component to decide between landing page and app
 const LandingPageOrApp: React.FC = () => {

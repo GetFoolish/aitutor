@@ -9,15 +9,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { ServerItemRenderer } from "../../package/perseus/src/server-item-renderer";
-import type { PerseusItem } from "@khanacademy/perseus-core";
-import { storybookDependenciesV2 } from "../../package/perseus/testing/test-dependencies";
-import { scorePerseusItem } from "@khanacademy/perseus-score";
-import { keScoreFromPerseusScore } from "../../package/perseus/src/util/scoring";
-import { RenderStateRoot } from "@khanacademy/wonder-blocks-core";
-import { PerseusI18nContextProvider } from "../../package/perseus/src/components/i18n-context";
-import { mockStrings } from "../../package/perseus/src/strings";
-import { KEScore } from "@khanacademy/perseus-core";
 import { toast } from "sonner";
 import { CheckCircle2, XCircle, Sparkles } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
@@ -26,22 +17,68 @@ import { apiUtils } from "../../lib/api-utils";
 import { jwtUtils } from "../../lib/jwt-utils";
 import HintDisplay from "../hint-display/HintDisplay";
 import HintButton from "../hint-button/HintButton";
+import { AthenaRenderer, ScoringEngine } from '../../renderer/athena';
+import '../../renderer/athena/athena.css';
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
 
+// Initialize scoring engine
+const scoringEngine = new ScoringEngine();
+
+// Sound effect utility
+const playSound = (type: 'correct' | 'wrong') => {
+  try {
+    const audio = new Audio(type === 'correct' ? '/correct.mp3' : '/wrong.mp3');
+    audio.volume = 0.5;
+    audio.play().catch(err => console.warn('Sound playback failed:', err));
+  } catch (err) {
+    console.warn('Sound initialization failed:', err);
+  }
+};
+
 interface RendererComponentProps {
     onSkillChange?: (skill: string) => void;
+}
+
+// Perseus question format from DASH API
+interface QuestionData {
+    question: {
+        content: string;
+        widgets: Record<string, any>;
+        images?: Record<string, any>;
+    };
+    hints: Array<{
+        content: string;
+        widgets?: Record<string, any>;
+        images?: Record<string, any>;
+        replace?: boolean;
+    }>;
+    answerArea?: {
+        calculator?: boolean;
+        periodicTable?: boolean;
+        chi2Table?: boolean;
+        tTable?: boolean;
+        zTable?: boolean;
+    };
+    itemDataVersion?: {
+        major: number;
+        minor: number;
+    };
+    dash_metadata?: {
+        dash_question_id?: string;
+        skill_ids?: string[];
+    };
 }
 
 const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
     const { user } = useAuth();
     const { setTotalHints, setCurrentHintIndex, showHints, setShowHints } = useHint();
     const queryClient = useQueryClient();
-    const [perseusItems, setPerseusItems] = useState<PerseusItem[]>([]);
+    const [questions, setQuestions] = useState<QuestionData[]>([]);
     const [item, setItem] = useState(0);
     const [endOfTest, setEndOfTest] = useState(false);
-    const [score, setScore] = useState<KEScore>();
+    const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
     const [isAnswered, setIsAnswered] = useState(false);
     const [startTime, setStartTime] = useState<number>(Date.now());
     const [showFeedback, setShowFeedback] = useState(false);
@@ -49,18 +86,8 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
     const [isError, setIsError] = useState(false);
     const [error, setError] = useState<Error | null>(null);
     const [isLoadingNextBatch, setIsLoadingNextBatch] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
+    const [userAnswers, setUserAnswers] = useState<Record<string, any>>({});
 
-    useEffect(() => {
-        const checkMobile = () => {
-            setIsMobile(window.innerWidth < 768);
-        };
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
-    }, []);
-
-    const rendererRef = useRef<ServerItemRenderer>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     // Get user_id from auth context
@@ -89,7 +116,7 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                     if (preloadedResponse.ok) {
                         const preloadedData = await preloadedResponse.json();
                         if (preloadedData && preloadedData.length > 0) {
-                            setPerseusItems(preloadedData);
+                            setQuestions(preloadedData);
                             setItem(0);
                             setEndOfTest(false);
                             setIsAnswered(false);
@@ -111,7 +138,7 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                     }
 
                     const data = await response.json();
-                    setPerseusItems(data);
+                    setQuestions(data);
                     setItem(0);
                     setEndOfTest(false);
                     setIsAnswered(false);
@@ -162,8 +189,8 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
 
     // Log when question is displayed (once per item change)
     useEffect(() => {
-        if (perseusItems.length > 0 && !isLoading) {
-            const currentItem = perseusItems[item];
+        if (questions.length > 0 && !isLoading) {
+            const currentItem = questions[item];
             const metadata = (currentItem as any).dash_metadata || {};
 
             // Log question displayed
@@ -174,7 +201,7 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                 console.error('Failed to log question displayed:', err);
             });
         }
-    }, [item, perseusItems, isLoading, user_id]);
+    }, [item, questions, isLoading, user_id]);
 
     // Mock skill state update
     useEffect(() => {
@@ -195,11 +222,9 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
         }
     }, [isAnswered]);
 
-    // Auto-scroll removed - scrolling is now handled by the home screen container
-
     // Load next batch of questions when approaching end
     const loadNextBatch = async () => {
-        if (perseusItems.length === 0) return;
+        if (questions.length === 0) return;
         
         // Prevent concurrent calls
         if (isLoadingNextBatch) {
@@ -210,7 +235,7 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
         
         try {
             // Get current question IDs
-            const currentQuestionIds = perseusItems.map(
+            const currentQuestionIds = questions.map(
                 (item: any) => item.dash_metadata?.dash_question_id || ''
             ).filter(Boolean);
             
@@ -235,7 +260,7 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
             
             // Only update if we got new questions (non-empty response means questions changed)
             if (newQuestions.length > 0) {
-                setPerseusItems(prev => [...prev, ...newQuestions]);
+                setQuestions(prev => [...prev, ...newQuestions]);
             }
         } catch (err) {
             console.error('Error loading next batch:', err);
@@ -248,97 +273,109 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
         setItem((prev) => {
             const index = prev + 1;
 
-            if (index >= perseusItems.length) {
+            if (index >= questions.length) {
                 setEndOfTest(true);
                 return prev; // stay at last valid index
             }
 
             // Load next batch when 2 questions remaining
-            if (index === perseusItems.length - 2) {
+            if (index === questions.length - 2) {
                 loadNextBatch();
             }
 
-            if (index === perseusItems.length - 1) {
+            if (index === questions.length - 1) {
                 setEndOfTest(true);
             }
 
             setIsAnswered(false);
+            setIsCorrect(null);
             setShowFeedback(false);
             setStartTime(Date.now()); // Reset timer for next question
+            setUserAnswers({}); // Clear user answers for next question
             return index;
         });
     };
 
     const handleSubmit = async () => {
-        if (rendererRef.current) {
-            const userInput = rendererRef.current.getUserInput();
-            const question = perseusItem.question;
-            const scoreResult = scorePerseusItem(question, userInput, "en");
+        const currentQuestion = questions[item];
+        if (!currentQuestion) return;
 
-            // Continue to include an empty guess for the now defunct answer area.
-            const maxCompatGuess = [rendererRef.current.getUserInputLegacy(), []];
-            const keScore = keScoreFromPerseusScore(
-                scoreResult,
-                maxCompatGuess,
-                rendererRef.current.getSerializedState().question,
-            );
+        // Score using Athena's scoring engine
+        const scoreResult = scoringEngine.scoreItem(
+            {
+                question: currentQuestion.question,
+                hints: currentQuestion.hints,
+                answerArea: currentQuestion.answerArea,
+            },
+            userAnswers
+        );
 
-            // Calculate response time
-            const responseTimeSeconds = (Date.now() - startTime) / 1000;
+        const isAnswerCorrect = scoreResult.correct;
+        setIsCorrect(isAnswerCorrect);
 
-            // Submit answer to DASH API for tracking and adaptive difficulty
-            try {
-                const currentItem = perseusItems[item];
-                const metadata = (currentItem as any).dash_metadata || {};
+        // Play sound effect
+        playSound(isAnswerCorrect ? 'correct' : 'wrong');
 
-                await apiUtils.post(`${DASH_API_URL}/api/submit-answer`, {
-                    user_id: user_id,
-                    question_id: metadata.dash_question_id || `q_${item}`,
-                    skill_ids: metadata.skill_ids || ["counting_1_10"],
-                    is_correct: keScore.correct,
-                    response_time_seconds: responseTimeSeconds
-                });
-                
-                // Invalidate skill-scores cache to trigger refetch with updated data
-                queryClient.invalidateQueries({ queryKey: ["skill-scores"] });
-            } catch (err) {
-                console.error("Failed to submit answer to DASH:", err);
-            }
+        // Calculate response time
+        const responseTimeSeconds = (Date.now() - startTime) / 1000;
 
-            // Display score to user
-            setIsAnswered(true);
-            setScore(keScore);
-            console.log("Score:", keScore);
+        // Submit answer to DASH API for tracking and adaptive difficulty
+        try {
+            const metadata = (currentQuestion as any).dash_metadata || {};
 
-            // Record question answer with TeachingAssistant
-            try {
-                const currentItem = perseusItems[item];
-                const metadata = (currentItem as any).dash_metadata || {};
-                const questionId = metadata.dash_question_id || `q_${item}_${Date.now()}`;
+            await apiUtils.post(`${DASH_API_URL}/api/submit-answer`, {
+                user_id: user_id,
+                question_id: metadata.dash_question_id || `q_${item}`,
+                skill_ids: metadata.skill_ids || ["counting_1_10"],
+                is_correct: isAnswerCorrect,
+                response_time_seconds: responseTimeSeconds
+            });
+            
+            // Invalidate skill-scores cache to trigger refetch with updated data
+            queryClient.invalidateQueries({ queryKey: ["skill-scores"] });
+        } catch (err) {
+            console.error("Failed to submit answer to DASH:", err);
+        }
 
-                await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/question/answered`, {
-                    question_id: questionId,
-                    is_correct: keScore.correct || false
-                });
-            } catch (err) {
-                console.error("Error recording question answer:", err);
-            }
+        // Display score to user
+        setIsAnswered(true);
+        console.log("Score:", scoreResult);
+
+        // Record question answer with TeachingAssistant
+        try {
+            const metadata = (currentQuestion as any).dash_metadata || {};
+            const questionId = metadata.dash_question_id || `q_${item}_${Date.now()}`;
+
+            await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/question/answered`, {
+                question_id: questionId,
+                is_correct: isAnswerCorrect || false
+            });
+        } catch (err) {
+            console.error("Error recording question answer:", err);
         }
     };
 
-    const perseusItem = perseusItems[item] || {};
-    const progressPercentage = perseusItems.length > 0
-        ? ((item + 1) / perseusItems.length) * 100
+    const currentQuestion = questions[item] || null;
+    const progressPercentage = questions.length > 0
+        ? ((item + 1) / questions.length) * 100
         : 0;
 
     // Extract hints from current question
-    const hints = (perseusItem as any)?.hints || [];
+    const hints = currentQuestion?.hints || [];
 
     // Reset hint index and close hints when question changes
     useEffect(() => {
         setCurrentHintIndex(0);
         setShowHints(false); // Auto-close hints when question changes
     }, [item, setCurrentHintIndex, setShowHints]);
+
+    // Handle answer changes from Athena renderer
+    const handleAnswerChange = (widgetId: string, value: any) => {
+        setUserAnswers(prev => ({
+            ...prev,
+            [widgetId]: value
+        }));
+    };
 
     return (
         <div className="framework-perseus relative flex min-h-screen w-full items-center justify-center py-4 md:py-6 px-3 md:px-4">
@@ -370,14 +407,14 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
 
                         {/* Neo-Brutalist Progress Badge */}
                         <div className="flex items-center gap-2 md:gap-3">
-                            {!isLoading && perseusItems.length > 0 && (
+                            {!isLoading && questions.length > 0 && (
                                 <>
                                     <div className="text-right hidden sm:block">
                                         <div className="text-[10px] md:text-xs font-black uppercase tracking-wider text-black mb-0.5">
                                             Progress
                                         </div>
                                         <div className="text-xs md:text-sm font-black text-black">
-                                            Q <span className="text-[#FF6B6B]">{item + 1}</span>/{perseusItems.length}
+                                            Q <span className="text-[#FF6B6B]">{item + 1}</span>/{questions.length}
                                         </div>
                                     </div>
                                     <div className="px-3 md:px-4 py-2 md:py-3 border-[2px] md:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]">
@@ -416,7 +453,7 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                                             onClick={() => {
                                                 setItem(0);
                                                 setEndOfTest(false);
-                                                setScore(undefined);
+                                                setIsCorrect(null);
                                                 setIsAnswered(false);
                                                 setIsError(false);
                                             }}
@@ -448,32 +485,19 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                                     Loading questions...
                                 </p>
                             </div>
-                        ) : perseusItems.length > 0 ? (
+                        ) : questions.length > 0 && currentQuestion ? (
                             <div className="space-y-4 md:space-y-6 py-3 md:py-4">
                                 <div id="question-content-container" className="border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white p-4 md:p-5 lg:p-6 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]">
-                                    <PerseusI18nContextProvider locale="en" strings={mockStrings}>
-                                        <RenderStateRoot>
-                                            <ServerItemRenderer
-                                                ref={rendererRef}
-                                                problemNum={0}
-                                                item={perseusItem}
-                                                dependencies={storybookDependenciesV2}
-                                                apiOptions={{
-                                                    isMobile,
-                                                    customKeypad: isMobile,
-                                                }}
-                                                linterContext={{
-                                                    contentType: "",
-                                                    highlightLint: true,
-                                                    paths: [],
-                                                    stack: [],
-                                                }}
-                                                showSolutions="none"
-                                                hintsVisible={0}
-                                                reviewMode={false}
-                                            />
-                                        </RenderStateRoot>
-                                    </PerseusI18nContextProvider>
+                                    <AthenaRenderer
+                                        key={`question-${currentQuestion.dash_metadata?.dash_question_id || item}`}
+                                        item={{
+                                            question: currentQuestion.question,
+                                            hints: currentQuestion.hints,
+                                            answerArea: currentQuestion.answerArea,
+                                        }}
+                                        onAnswerChange={handleAnswerChange}
+                                        reviewMode={false}
+                                    />
                                 </div>
 
                                 {/* Hints Display */}
@@ -486,11 +510,11 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                                     <div
                                         className="fixed top-[60px] lg:top-[64px] left-1/2 transform -translate-x-1/2 z-[200] animate-in slide-in-from-top-4 duration-300"
                                     >
-                                        <div className={`flex items-center gap-2 md:gap-3 px-5 md:px-6 py-3 md:py-4 border-[3px] md:border-[4px] border-black dark:border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] md:shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] ${score?.correct
+                                        <div className={`flex items-center gap-2 md:gap-3 px-5 md:px-6 py-3 md:py-4 border-[3px] md:border-[4px] border-black dark:border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] md:shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] ${isCorrect
                                             ? "bg-[#ADFF2F]"
                                             : "bg-[#FF006E]"
                                             }`}>
-                                            {score?.correct ? (
+                                            {isCorrect ? (
                                                 <div className="p-1.5 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-900">
                                                     <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-black dark:text-white flex-shrink-0 font-bold" />
                                                 </div>
@@ -499,11 +523,11 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                                                     <XCircle className="w-5 h-5 md:w-6 md:h-6 text-black flex-shrink-0 font-bold" />
                                                 </div>
                                             )}
-                                            <span className={`text-base md:text-lg font-black uppercase tracking-tight ${score?.correct
+                                            <span className={`text-base md:text-lg font-black uppercase tracking-tight ${isCorrect
                                                 ? "text-black"
                                                 : "text-white"
                                                 }`}>
-                                                {score?.correct ? "🎯 Correct!" : "📚 Not quite!"}
+                                                {isCorrect ? "🎯 Correct!" : "📚 Not quite!"}
                                             </span>
                                         </div>
                                     </div>
@@ -529,7 +553,7 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                             type="button"
                             size="sm"
                             onClick={handleSubmit}
-                            disabled={isLoading || endOfTest || perseusItems.length === 0}
+                            disabled={isLoading || endOfTest || questions.length === 0}
                             className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-[#C4B5FD] hover:bg-[#C4B5FD] text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:hover:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
                         >
                             Submit
@@ -539,7 +563,7 @@ const RendererComponent = ({ onSkillChange }: RendererComponentProps) => {
                             variant="outline"
                             size="sm"
                             onClick={handleNext}
-                            disabled={isLoading || endOfTest || perseusItems.length === 0}
+                            disabled={isLoading || endOfTest || questions.length === 0}
                             className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-800 hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
                         >
                             Next →

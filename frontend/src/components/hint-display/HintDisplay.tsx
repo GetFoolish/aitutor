@@ -1,10 +1,4 @@
 import React from 'react';
-import Renderer from '../../package/perseus/src/renderer';
-import { PerseusI18nContextProvider } from '../../package/perseus/src/components/i18n-context';
-import { DependenciesContext } from '../../package/perseus/src/dependencies';
-import { mockStrings } from '../../package/perseus/src/strings';
-import { storybookDependenciesV2 } from '../../package/perseus/testing/test-dependencies';
-import { RenderStateRoot } from '@khanacademy/wonder-blocks-core';
 import { useHint } from '../../contexts/HintContext';
 import { ChevronLeft, ChevronRight, Lightbulb } from 'lucide-react';
 import { AthenaRenderer } from '../../renderer/athena';
@@ -19,10 +13,9 @@ interface Hint {
 
 interface HintDisplayProps {
   hints: Hint[];
-  viewMode?: 'athena' | 'perseus' | 'comparison';
 }
 
-const HintDisplay: React.FC<HintDisplayProps> = ({ hints, viewMode = 'perseus' }) => {
+const HintDisplay: React.FC<HintDisplayProps> = ({ hints }) => {
   const { showHints, currentHintIndex, setCurrentHintIndex, totalHints, setTotalHints } = useHint();
 
   React.useEffect(() => {
@@ -56,52 +49,6 @@ const HintDisplay: React.FC<HintDisplayProps> = ({ hints, viewMode = 'perseus' }
       setCurrentHintIndex(currentHintIndex + 1);
     }
   };
-
-  // Standard Perseus API options
-  const apiOptions = {
-    isMobile: true,
-    mapIndex: 0,
-    groupExternalWidgets: false,
-    highlightLint: false,
-    readOnly: true,
-    answerableCallback: () => { },
-    interactionCallback: () => { },
-  };
-
-  const renderPerseusHint = () => (
-    <DependenciesContext.Provider value={storybookDependenciesV2}>
-      <PerseusI18nContextProvider locale="en" strings={mockStrings}>
-        <RenderStateRoot>
-          <div className="perseus-renderer-container">
-            <Renderer
-              content={currentHint.content}
-              widgets={currentHint.widgets || {}}
-              images={currentHint.images || {}}
-              apiOptions={apiOptions}
-              linterContext={{
-                contentType: "",
-                highlightLint: false,
-                paths: [],
-                stack: [],
-              }}
-              strings={mockStrings}
-              {...storybookDependenciesV2}
-            />
-          </div>
-        </RenderStateRoot>
-      </PerseusI18nContextProvider>
-    </DependenciesContext.Provider>
-  );
-
-  const renderAthenaHint = () => (
-    <AthenaRenderer
-      content={currentHint.content}
-      widgets={currentHint.widgets || {}}
-      images={currentHint.images || {}}
-      onAnswerChange={() => { }}
-      reviewMode={true}
-    />
-  );
 
   return (
     <div className="mt-4 md:mt-6 border-[3px] md:border-[4px] border-black dark:border-white bg-[#FFE500] dark:bg-[#FFD93D] shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)]">
@@ -150,26 +97,22 @@ const HintDisplay: React.FC<HintDisplayProps> = ({ hints, viewMode = 'perseus' }
           </div>
         </div>
 
-        {/* Hint Content */}
-        {viewMode === 'comparison' ? (
-          <div className="grid grid-cols-2 gap-4">
-            {/* Athena Hint */}
-            <div className="bg-white dark:bg-neutral-900 p-4 md:p-6 border-[2px] md:border-[3px] border-black dark:border-white shadow-[inner_2px_2px_0_0_rgba(0,0,0,0.1)]">
-              <div className="text-xs font-bold text-green-600 dark:text-green-400 mb-2 uppercase tracking-wide">Athena</div>
-              {renderAthenaHint()}
-            </div>
-
-            {/* Perseus Hint */}
-            <div className="bg-white dark:bg-neutral-900 p-4 md:p-6 border-[2px] md:border-[3px] border-black dark:border-white shadow-[inner_2px_2px_0_0_rgba(0,0,0,0.1)]">
-              <div className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-2 uppercase tracking-wide">Perseus</div>
-              {renderPerseusHint()}
-            </div>
-          </div>
-        ) : (
-          <div className="bg-white dark:bg-neutral-900 p-4 md:p-6 border-[2px] md:border-[3px] border-black dark:border-white shadow-[inner_2px_2px_0_0_rgba(0,0,0,0.1)]">
-            {viewMode === 'athena' ? renderAthenaHint() : renderPerseusHint()}
-          </div>
-        )}
+        {/* Hint Content - Athena Only */}
+        <div className="bg-white dark:bg-neutral-900 p-4 md:p-6 border-[2px] md:border-[3px] border-black dark:border-white shadow-[inner_2px_2px_0_0_rgba(0,0,0,0.1)]">
+          <AthenaRenderer
+            item={{
+              question: {
+                content: currentHint.content,
+                widgets: currentHint.widgets || {},
+                images: currentHint.images || {},
+              },
+              hints: [],
+              answerArea: {},
+            }}
+            onAnswerChange={() => { }}
+            reviewMode={true}
+          />
+        </div>
       </div>
     </div>
   );

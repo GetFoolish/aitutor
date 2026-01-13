@@ -36,6 +36,11 @@ interface OrdererOptions {
   height?: 'normal' | 'auto';
 }
 
+interface IndexedCard {
+  index: number;
+  content: string;
+}
+
 export interface OrdererWidgetProps extends WidgetProps<OrdererOptions> { }
 
 export function OrdererWidget({
@@ -53,6 +58,18 @@ export function OrdererWidget({
   // Load KaTeX
   const [katex, setKatex] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('[OrdererWidget] Initialized:', {
+      widgetId,
+      options,
+      value,
+      readOnly,
+      disabled,
+      reviewMode,
+    });
+  }, []);
 
   useEffect(() => {
     ensureKaTeX().then(k => setKatex(k));
@@ -116,13 +133,34 @@ export function OrdererWidget({
   // Get available cards
   const getAvailableCards = (): string[] => {
     try {
-      if (Array.isArray(options.options) && options.options.length > 0) {
-        return options.options.map(getContentString);
+      // Priority 1: Use correctOptions + otherOptions if correctOptions exists (Perseus format)
+      if (Array.isArray(options.correctOptions) && options.correctOptions.length > 0) {
+        const correct = options.correctOptions.map(getContentString);
+        const other = (options.otherOptions || []).map(getContentString);
+        const combined = [...correct, ...other];
+        console.log('[OrdererWidget] Available cards from correctOptions + otherOptions:', {
+          correct,
+          other,
+          combined,
+        });
+        return combined;
       }
-      // Fallback: combine correctOptions and otherOptions
-      const correct = (options.correctOptions || []).map(getContentString);
+      
+      // Priority 2: Fallback to options array (legacy/test format)
+      if (Array.isArray(options.options) && options.options.length > 0) {
+        const cards = options.options.map(getContentString);
+        console.log('[OrdererWidget] Available cards from options.options:', cards);
+        return cards;
+      }
+      
+      // Priority 3: Try otherOptions alone if correctOptions was empty but exists
       const other = (options.otherOptions || []).map(getContentString);
-      return [...correct, ...other];
+      if (other.length > 0) {
+        console.log('[OrdererWidget] Available cards from otherOptions only:', other);
+        return other;
+      }
+      
+      return [];
     } catch (e) {
       console.error('Error getting available cards:', e);
       return [];
@@ -142,89 +180,147 @@ export function OrdererWidget({
     }
   };
 
-  const allCards = getAvailableCards();
+  const allCardsContent = getAvailableCards();
   const correctSequence = getCorrectSequence();
   const isHorizontal = options.layout === 'horizontal';
   const isDisabled = readOnly || disabled;
 
-  // State: which cards are in the answer area and which are available
-  const [selectedCards, setSelectedCards] = useState<string[]>(() => {
+  // Create indexed cards to handle duplicates
+  const allCards: IndexedCard[] = allCardsContent.map((content, index) => ({
+    index,
+    content,
+  }));
+
+  // State: track selected card indices instead of content strings
+  const [selectedIndices, setSelectedIndices] = useState<number[]>(() => {
     if (value && Array.isArray(value)) {
-      return value as string[];
+      console.log('[OrdererWidget] Initial value:', value);
+      // Map initial values to indices based on content matching
+      const indices: number[] = [];
+      (value as string[]).forEach(selectedContent => {
+        const cardIndex = allCards.findIndex(
+          card => card.content === selectedContent && !indices.includes(card.index)
+        );
+        if (cardIndex !== -1) {
+          indices.push(cardIndex);
+        }
+      });
+      return indices;
     }
     return [];
   });
 
-  // Compute available cards (not yet selected)
-  const availableCards = allCards.filter(card => !selectedCards.includes(card));
+  // Compute available cards (not yet selected by index)
+  const availableCards = allCards.filter(card => !selectedIndices.includes(card.index));
+  
+  // Get selected cards in order
+  const selectedCards = selectedIndices.map(idx => allCards[idx]);
 
-  // Drag state
-  const [draggedCard, setDraggedCard] = useState<string | null>(null);
+  // Debug logging for state changes
+  useEffect(() => {
+    console.log('[OrdererWidget] State update:', {
+      allCards: allCards.length,
+      selectedIndices: selectedIndices.length,
+      availableCards: availableCards.length,
+      isDisabled,
+      selectedCardsPreview: selectedCards.slice(0, 2).map(c => c.content.substring(0, 50)),
+      availableCardsPreview: availableCards.slice(0, 2).map(c => c.content.substring(0, 50)),
+    });
+  }, [selectedIndices, allCards.length, availableCards.length, isDisabled]);
+
+  // Drag state (now tracking by card index)
+  const [draggedCardIndex, setDraggedCardIndex] = useState<number | null>(null);
   const [dragSource, setDragSource] = useState<'available' | 'selected' | null>(null);
   const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null);
 
-  const handleDragStart = useCallback((card: string, source: 'available' | 'selected') => {
+  const handleDragStart = useCallback((cardIndex: number, source: 'available' | 'selected') => {
     if (isDisabled) return;
-    setDraggedCard(card);
+    setDraggedCardIndex(cardIndex);
     setDragSource(source);
   }, [isDisabled]);
 
   const handleDragEnd = useCallback(() => {
-    setDraggedCard(null);
+    setDraggedCardIndex(null);
     setDragSource(null);
     setDropTargetIndex(null);
   }, []);
 
   const handleDropOnAnswer = useCallback((dropIndex: number) => {
-    if (isDisabled || !draggedCard) return;
+    if (isDisabled || draggedCardIndex === null) return;
 
-    let newSelected = [...selectedCards];
+    console.log('[OrdererWidget] handleDropOnAnswer:', {
+      dropIndex,
+      draggedCardIndex,
+      dragSource,
+      currentSelected: selectedIndices.length,
+    });
+
+    let newSelectedIndices = [...selectedIndices];
 
     if (dragSource === 'available') {
-      // Add card from available pool
-      newSelected.splice(dropIndex, 0, draggedCard);
+      // Add card index from available pool
+      newSelectedIndices.splice(dropIndex, 0, draggedCardIndex);
+      console.log('[OrdererWidget] Added card from available, new count:', newSelectedIndices.length);
     } else if (dragSource === 'selected') {
       // Reorder within selected
-      const currentIndex = newSelected.indexOf(draggedCard);
+      const currentIndex = newSelectedIndices.indexOf(draggedCardIndex);
       if (currentIndex !== -1) {
-        newSelected.splice(currentIndex, 1);
+        newSelectedIndices.splice(currentIndex, 1);
         const adjustedIndex = dropIndex > currentIndex ? dropIndex - 1 : dropIndex;
-        newSelected.splice(adjustedIndex, 0, draggedCard);
+        newSelectedIndices.splice(adjustedIndex, 0, draggedCardIndex);
+        console.log('[OrdererWidget] Reordered within selected');
       }
     }
 
-    setSelectedCards(newSelected);
-    onChange?.(newSelected);
+    setSelectedIndices(newSelectedIndices);
+    // Convert indices back to content strings for onChange callback
+    const selectedContent = newSelectedIndices.map(idx => allCards[idx].content);
+    onChange?.(selectedContent);
     handleDragEnd();
-  }, [isDisabled, draggedCard, dragSource, selectedCards, onChange, handleDragEnd]);
+  }, [isDisabled, draggedCardIndex, dragSource, selectedIndices, onChange, handleDragEnd, allCards]);
 
   const handleDropOnAvailable = useCallback(() => {
-    if (isDisabled || !draggedCard || dragSource !== 'selected') return;
+    if (isDisabled || draggedCardIndex === null || dragSource !== 'selected') return;
 
-    const newSelected = selectedCards.filter(c => c !== draggedCard);
-    setSelectedCards(newSelected);
-    onChange?.(newSelected);
+    const newSelectedIndices = selectedIndices.filter(idx => idx !== draggedCardIndex);
+    setSelectedIndices(newSelectedIndices);
+    // Convert indices back to content strings for onChange callback
+    const selectedContent = newSelectedIndices.map(idx => allCards[idx].content);
+    onChange?.(selectedContent);
     handleDragEnd();
-  }, [isDisabled, draggedCard, dragSource, selectedCards, onChange, handleDragEnd]);
+  }, [isDisabled, draggedCardIndex, dragSource, selectedIndices, onChange, handleDragEnd, allCards]);
 
   // Click handlers for touch/mobile support
-  const handleCardClick = useCallback((card: string, source: 'available' | 'selected') => {
+  const handleCardClick = useCallback((cardIndex: number, source: 'available' | 'selected') => {
     if (isDisabled) return;
 
-    if (source === 'available') {
-      const newSelected = [...selectedCards, card];
-      setSelectedCards(newSelected);
-      onChange?.(newSelected);
-    } else {
-      const newSelected = selectedCards.filter(c => c !== card);
-      setSelectedCards(newSelected);
-      onChange?.(newSelected);
-    }
-  }, [isDisabled, selectedCards, onChange]);
+    console.log('[OrdererWidget] handleCardClick:', {
+      source,
+      cardIndex,
+      currentSelected: selectedIndices.length,
+    });
 
-  // Check correctness in review mode
-  const isCorrect = reviewMode && JSON.stringify(selectedCards) === JSON.stringify(correctSequence);
-  const isIncorrect = reviewMode && !isCorrect && selectedCards.length > 0;
+    if (source === 'available') {
+      const newSelectedIndices = [...selectedIndices, cardIndex];
+      console.log('[OrdererWidget] Added via click, new count:', newSelectedIndices.length);
+      setSelectedIndices(newSelectedIndices);
+      // Convert indices back to content strings for onChange callback
+      const selectedContent = newSelectedIndices.map(idx => allCards[idx].content);
+      onChange?.(selectedContent);
+    } else {
+      const newSelectedIndices = selectedIndices.filter(idx => idx !== cardIndex);
+      console.log('[OrdererWidget] Removed via click, new count:', newSelectedIndices.length);
+      setSelectedIndices(newSelectedIndices);
+      // Convert indices back to content strings for onChange callback
+      const selectedContent = newSelectedIndices.map(idx => allCards[idx].content);
+      onChange?.(selectedContent);
+    }
+  }, [isDisabled, selectedIndices, onChange, allCards]);
+
+  // Check correctness in review mode (compare content strings)
+  const selectedContent = selectedIndices.map(idx => allCards[idx].content);
+  const isCorrect = reviewMode && JSON.stringify(selectedContent) === JSON.stringify(correctSequence);
+  const isIncorrect = reviewMode && !isCorrect && selectedIndices.length > 0;
 
   // Error state
   if (error) {
@@ -353,31 +449,31 @@ export function OrdererWidget({
               {isDisabled ? 'No cards selected' : 'Drop cards here or click to add'}
             </span>
           ) : (
-            selectedCards.map((card, index) => (
+            selectedCards.map((card, displayIndex) => (
               <div
-                key={`selected-${index}`}
+                key={`selected-${card.index}`}
                 draggable={!isDisabled}
-                onDragStart={() => handleDragStart(card, 'selected')}
+                onDragStart={() => handleDragStart(card.index, 'selected')}
                 onDragEnd={handleDragEnd}
                 onDragOver={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  if (!isDisabled) setDropTargetIndex(index);
+                  if (!isDisabled) setDropTargetIndex(displayIndex);
                 }}
                 onDrop={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  handleDropOnAnswer(index);
+                  handleDropOnAnswer(displayIndex);
                 }}
-                onClick={() => handleCardClick(card, 'selected')}
+                onClick={() => handleCardClick(card.index, 'selected')}
                 style={{
                   ...cardStyle,
-                  backgroundColor: draggedCard === card ? themeStyles.highlight : themeStyles.cardBg,
-                  color: draggedCard === card ? '#fff' : themeStyles.text,
-                  opacity: draggedCard === card ? 0.6 : 1,
-                  borderColor: dropTargetIndex === index ? themeStyles.highlight : themeStyles.cardBorder,
+                  backgroundColor: draggedCardIndex === card.index ? themeStyles.highlight : themeStyles.cardBg,
+                  color: draggedCardIndex === card.index ? '#fff' : themeStyles.text,
+                  opacity: draggedCardIndex === card.index ? 0.6 : 1,
+                  borderColor: dropTargetIndex === displayIndex ? themeStyles.highlight : themeStyles.cardBorder,
                 }}
-                dangerouslySetInnerHTML={{ __html: renderContent(card) }}
+                dangerouslySetInnerHTML={{ __html: renderContent(card.content) }}
               />
             ))
           )}
@@ -418,20 +514,20 @@ export function OrdererWidget({
             <span style={{ marginRight: '12px', fontSize: '14px', color: themeStyles.labelColor, fontWeight: 500 }}>
               Available:
             </span>
-            {availableCards.map((card, index) => (
+            {availableCards.map((card) => (
               <div
-                key={`available-${index}`}
+                key={`available-${card.index}`}
                 draggable={!isDisabled}
-                onDragStart={() => handleDragStart(card, 'available')}
+                onDragStart={() => handleDragStart(card.index, 'available')}
                 onDragEnd={handleDragEnd}
-                onClick={() => handleCardClick(card, 'available')}
+                onClick={() => handleCardClick(card.index, 'available')}
                 style={{
                   ...cardStyle,
-                  opacity: draggedCard === card ? 0.6 : 1,
-                  backgroundColor: draggedCard === card ? themeStyles.highlight : themeStyles.cardBg,
-                  color: draggedCard === card ? '#fff' : themeStyles.text,
+                  opacity: draggedCardIndex === card.index ? 0.6 : 1,
+                  backgroundColor: draggedCardIndex === card.index ? themeStyles.highlight : themeStyles.cardBg,
+                  color: draggedCardIndex === card.index ? '#fff' : themeStyles.text,
                 }}
-                dangerouslySetInnerHTML={{ __html: renderContent(card) }}
+                dangerouslySetInnerHTML={{ __html: renderContent(card.content) }}
               />
             ))}
           </div>

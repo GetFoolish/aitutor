@@ -31,7 +31,6 @@ import {
   Check,
   ChevronDown,
   ChevronUp,
-  ExternalLink,
   Code,
 } from 'lucide-react';
 
@@ -49,13 +48,6 @@ import {
   fetchQuestions,
   checkHealth,
 } from '../../services/athenaAPI';
-
-// Perseus imports for comparison
-import { ServerItemRenderer } from '../../package/perseus/src/server-item-renderer';
-import { storybookDependenciesV2 } from '../../package/perseus/testing/test-dependencies';
-import { RenderStateRoot } from '@khanacademy/wonder-blocks-core';
-import { PerseusI18nContextProvider } from '../../package/perseus/src/components/i18n-context';
-import { mockStrings } from '../../package/perseus/src/strings';
 
 // Initialize Athena widgets
 registerDefaultWidgets();
@@ -75,7 +67,6 @@ const playSound = (type: 'correct' | 'wrong') => {
 // TYPES
 // ============================================================================
 
-type ViewMode = 'athena' | 'perseus' | 'comparison';
 type QuizMode = 'practice' | 'test';
 type AttemptState = 'idle' | 'checked_correct' | 'checked_incorrect' | 'showing_answer';
 
@@ -520,9 +511,8 @@ const HintPanel: React.FC<{
   onNextHint: () => void;
   darkMode: boolean;
   questionId?: string;
-  viewMode?: 'athena' | 'perseus' | 'comparison';
   widgets?: Record<string, any>;
-}> = ({ hints, currentIndex, onNextHint, darkMode, questionId, viewMode = 'perseus', widgets: questionWidgets }) => {
+}> = ({ hints, currentIndex, onNextHint, darkMode, questionId, widgets: questionWidgets }) => {
   if (!hints?.length) return null;
 
   const currentHint = hints[currentIndex];
@@ -1231,49 +1221,6 @@ const HintPanel: React.FC<{
     processedContent = processedContent.replace(/class=&quot;max-w-full[^&]*&quot;[^>]*\/>/g, '');
   }
 
-  // In comparison mode, show both Athena and Perseus hints side-by-side
-  if (viewMode === 'comparison') {
-    return (
-      <div className={`mt-4 rounded-2xl px-5 py-4 animate-fadeInUp ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-[#F3F4FF]'}`}>
-        <div className="flex items-center gap-2 mb-3">
-          <Lightbulb className={`w-5 h-5 ${darkMode ? 'text-yellow-400' : 'text-[#2F7BF6]'}`} />
-          <span className={`brilliant-label ${darkMode ? 'text-gray-300' : 'text-[#2F7BF6]'}`}>
-            Hint {currentIndex + 1} of {hints.length}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          {/* Athena Hint */}
-          <div className={`p-4 rounded-xl border-2 ${darkMode ? 'bg-green-900/20 border-green-600' : 'bg-green-50 border-green-500'}`}>
-            <div className="text-xs font-bold text-green-600 dark:text-green-400 mb-2 uppercase tracking-wide">Athena (New)</div>
-            <div
-              className={`brilliant-option-text ${darkMode ? 'text-white' : 'text-slate-700'}`}
-              dangerouslySetInnerHTML={{ __html: processedContent }}
-            />
-          </div>
-
-          {/* Perseus Hint */}
-          <div className={`p-4 rounded-xl border-2 ${darkMode ? 'bg-blue-900/20 border-blue-600' : 'bg-blue-50 border-blue-500'}`}>
-            <div className="text-xs font-bold text-blue-600 dark:text-blue-400 mb-2 uppercase tracking-wide">Perseus (Original)</div>
-            <div
-              className={`brilliant-option-text ${darkMode ? 'text-white' : 'text-slate-700'}`}
-              dangerouslySetInnerHTML={{ __html: processedContent }}
-            />
-          </div>
-        </div>
-
-        {currentIndex < hints.length - 1 && (
-          <button
-            onClick={onNextHint}
-            className={`mt-3 brilliant-btn-text underline-offset-2 hover:underline ${darkMode ? 'text-blue-300' : 'text-[#2F7BF6]'}`}
-          >
-            Next hint →
-          </button>
-        )}
-      </div>
-    );
-  }
-
   return (
     <div className={`mt-4 rounded-2xl px-5 py-4 animate-fadeInUp ${darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-[#F3F4FF]'}`}>
       <div className="flex items-center gap-2 mb-3">
@@ -1308,7 +1255,6 @@ export const QuestionPane: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [objectIdInput, setObjectIdInput] = useState('');
-  const [viewMode, setViewMode] = useState<ViewMode>('athena');
   const [showCalculator, setShowCalculator] = useState(false);
   const [currentHintIndex, setCurrentHintIndex] = useState(0);
   const [showHints, setShowHints] = useState(false);
@@ -1332,7 +1278,6 @@ export const QuestionPane: React.FC = () => {
   const [showSummary, setShowSummary] = useState(false);
   const [startTime] = useState(Date.now());
   const [rendererKey, setRendererKey] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
   const [isJsonExpanded, setIsJsonExpanded] = useState(false);
 
 
@@ -1362,25 +1307,9 @@ export const QuestionPane: React.FC = () => {
   const isSubmitted = attemptState !== 'idle';
   const isShowingAnswer = attemptState === 'showing_answer';
 
-  const hasGradedGroup = useMemo(() => {
-    if (!currentQuestion) return false;
-    const widgets = (currentQuestion.perseusItem?.question?.widgets) ||
-      ((currentQuestion.question as any)?.widgets) || {};
-    return Object.values(widgets).some((w: any) => w.type === 'graded-group');
-  }, [currentQuestion]);
-
   // ============================================================================
   // EFFECTS
   // ============================================================================
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768 || (currentQuestion?._id === '6932cb575853fec4a5597201'));
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, [currentQuestion]);
 
   // Load saved progress
   useEffect(() => {
@@ -1417,14 +1346,6 @@ export const QuestionPane: React.FC = () => {
       loadQuestions();
     }
   }, [questionId]);
-
-  // Automatically switch to Perseus view for unsupported widgets
-  useEffect(() => {
-    // Only force switch for specific broken IDs if needed
-    if (hasGradedGroup && viewMode !== 'perseus') {
-      setViewMode('perseus');
-    }
-  }, [hasGradedGroup, currentQuestion, viewMode]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -1717,44 +1638,6 @@ export const QuestionPane: React.FC = () => {
                   <option key={type} value={type}>{type === 'all' ? '🎯 All Widgets' : type}</option>
                 ))}
               </select>
-
-
-              {/* View mode toggles */}
-              <div className="flex gap-1">
-                {(['athena', 'perseus', 'comparison'] as ViewMode[]).map((mode) => (
-                  <button
-                    key={mode}
-                    onClick={() => setViewMode(mode)}
-                    className={`px-3 py-2 rounded-xl text-sm font-bold transition-all ${viewMode === mode
-                      ? mode === 'athena' ? 'bg-[var(--brilliant-accent)] text-white' : mode === 'perseus' ? 'bg-orange-500 text-white' : 'bg-purple-500 text-white'
-                      : darkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
-                      }`}
-                  >
-                    {mode === 'athena' ? 'Athena' : mode === 'perseus' ? 'Perseus' : 'Compare'}
-                  </button>
-                ))}
-                {/* Input Window button */}
-                <button
-                  onClick={() => {
-                    const jsonData = JSON.stringify({
-                      question: currentQuestion?.question,
-                      hints: currentQuestion?.hints || [],
-                      answerArea: currentQuestion?.answerArea || {},
-                      itemDataVersion: { major: 0, minor: 1 }
-                    }, null, 2);
-                    navigator.clipboard.writeText(jsonData).then(() => {
-                      window.open('https://khan.github.io/perseus/?path=/story/renderers-server-item-renderer--interactive', '_blank');
-                      alert('JSON copied to clipboard! Paste it in the "Dump Perseus data here" box.');
-                    });
-                  }}
-                  className={`px-3 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-1 ${darkMode ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  title="Copy JSON & Open Perseus Interactive Viewer"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  Input Window
-                </button>
-              </div>
             </div>
           </div>
 
@@ -1806,7 +1689,7 @@ export const QuestionPane: React.FC = () => {
             </div>
           </div>
         ) : currentQuestion ? (
-          <div className={`w-full ${viewMode === 'comparison' ? 'max-w-[1400px]' : 'max-w-[720px]'}`}>
+          <div className="w-full max-w-[720px]">
             {/* Tools Row */}
             <div className="flex justify-between items-center mb-4">
               {hasCalculator ? (
@@ -1841,122 +1724,26 @@ export const QuestionPane: React.FC = () => {
                 } ${darkMode ? 'bg-gray-800' : 'bg-[var(--brilliant-bg-card)]'}`}
             >
               <div className="px-6 py-6 md:px-8 md:py-8">
-                {/* Athena Renderer */}
-                {viewMode === 'athena' && (
-                  <RendererErrorBoundary
-                    key={`athena-${currentQuestion._id}-${rendererKey}`}
-                    name="Athena"
-                    onRetry={() => setRendererKey(k => k + 1)}
-                  >
-                    <AthenaRenderer
-                      item={{
-                        question: currentQuestion.question as any,
-                        hints: currentQuestion.hints as any,
-                        answerArea: currentQuestion.answerArea,
-                      }}
-                      onAnswerChange={handleAnswerChange}
-                      readOnly={isSubmitted}
-                      reviewMode={isSubmitted}
-                      theme={darkMode ? 'dark' : 'light'}
-                      viewMode={viewMode}
-                    />
-                  </RendererErrorBoundary>
-                )}
-
-                {/* Perseus Renderer */}
-                {viewMode === 'perseus' && (
-                  <div className="framework-perseus">
-                    <RendererErrorBoundary
-                      key={`perseus-${currentQuestion._id}-${rendererKey}`}
-                      name="Perseus"
-                      onRetry={() => setRendererKey(k => k + 1)}
-                    >
-                      <PerseusI18nContextProvider locale="en" strings={mockStrings}>
-                        <RenderStateRoot>
-                          <ServerItemRenderer
-                            problemNum={0}
-                            item={(currentQuestion.perseusItem && currentQuestion.perseusItem.question) ? currentQuestion.perseusItem : {
-                              question: currentQuestion.question as any,
-                              hints: currentQuestion.hints as any,
-                              answerArea: currentQuestion.answerArea as any,
-                              itemDataVersion: { major: 2, minor: 0 }
-                            }}
-                            dependencies={storybookDependenciesV2}
-                            apiOptions={{
-                              isMobile,
-                              customKeypad: isMobile,
-                            }}
-                            linterContext={{ contentType: "", highlightLint: false, paths: [], stack: [] }}
-                            showSolutions="none"
-                            hintsVisible={0}
-                            reviewMode={isSubmitted}
-                          />
-                        </RenderStateRoot>
-                      </PerseusI18nContextProvider>
-                    </RendererErrorBoundary>
-                  </div>
-                )}
-
-                {/* Comparison Mode - Responsive side by side */}
-                {viewMode === 'comparison' && (
-                  <div className="comparison-container">
-                    {/* Athena Panel */}
-                    <div className={`comparison-panel comparison-panel-athena ${darkMode ? 'bg-gray-700' : ''}`}>
-                      <div className="sticky top-0 z-10 mb-4 pb-2 border-b border-[var(--brilliant-accent)]/30" style={{ background: 'inherit' }}>
-                        <h3 className="text-center font-bold text-[var(--brilliant-accent)] text-sm flex items-center justify-center gap-2">
-                          <span className="w-2 h-2 rounded-full bg-[var(--brilliant-accent)]"></span>
-                          Athena (New)
-                        </h3>
-                      </div>
-                      <RendererErrorBoundary key={`athena-cmp-${currentQuestion._id}-${rendererKey}`} name="Athena" onRetry={() => setRendererKey(k => k + 1)}>
-                        <AthenaRenderer
-                          item={{ question: currentQuestion.question as any, hints: currentQuestion.hints as any, answerArea: currentQuestion.answerArea }}
-                          onAnswerChange={handleAnswerChange}
-                          readOnly={isSubmitted}
-                          reviewMode={isSubmitted}
-                          theme={darkMode ? 'dark' : 'light'}
-                          viewMode="comparison"
-                        />
-                      </RendererErrorBoundary>
-                    </div>
-                    {/* Perseus Panel */}
-                    <div className={`comparison-panel comparison-panel-perseus framework-perseus ${darkMode ? 'bg-gray-700' : ''}`}>
-                      <div className="sticky top-0 z-10 mb-4 pb-2 border-b border-orange-500/30" style={{ background: 'inherit' }}>
-                        <h3 className="text-center font-bold text-orange-500 text-sm flex items-center justify-center gap-2">
-                          <span className="w-2 h-2 rounded-full bg-orange-500"></span>
-                          Perseus (Original)
-                        </h3>
-                      </div>
-                      <RendererErrorBoundary key={`perseus-cmp-${currentQuestion._id}-${rendererKey}`} name="Perseus" onRetry={() => setRendererKey(k => k + 1)}>
-                        <PerseusI18nContextProvider locale="en" strings={mockStrings}>
-                          <RenderStateRoot>
-                            <ServerItemRenderer
-                              problemNum={0}
-                              item={(currentQuestion.perseusItem && currentQuestion.perseusItem.question) ? currentQuestion.perseusItem : {
-                                question: currentQuestion.question as any,
-                                hints: currentQuestion.hints as any,
-                                answerArea: currentQuestion.answerArea as any,
-                                itemDataVersion: { major: 2, minor: 0 }
-                              }}
-                              dependencies={storybookDependenciesV2}
-                              apiOptions={{
-                                isMobile,
-                                customKeypad: isMobile,
-                              }}
-                              linterContext={{ contentType: "", highlightLint: false, paths: [], stack: [] }}
-                              showSolutions="none"
-                              hintsVisible={0}
-                              reviewMode={isSubmitted}
-                            />
-                          </RenderStateRoot>
-                        </PerseusI18nContextProvider>
-                      </RendererErrorBoundary>
-                    </div>
-                  </div>
-                )}
+                {/* Athena Renderer Only */}
+                <RendererErrorBoundary
+                  key={`athena-${currentQuestion._id}-${rendererKey}`}
+                  name="Athena"
+                  onRetry={() => setRendererKey(k => k + 1)}
+                >
+                  <AthenaRenderer
+                    item={{
+                      question: currentQuestion.question as any,
+                      hints: currentQuestion.hints as any,
+                      answerArea: currentQuestion.answerArea,
+                    }}
+                    onAnswerChange={handleAnswerChange}
+                    readOnly={isSubmitted}
+                    reviewMode={isSubmitted}
+                    theme={darkMode ? 'dark' : 'light'}
+                  />
+                </RendererErrorBoundary>
 
                 {/* Hint Panel - shown when "Why?" is clicked */}
-
                 {showHints && currentQuestion.hints?.length > 0 && (
                   <HintPanel
                     hints={currentQuestion.hints}
@@ -1964,7 +1751,6 @@ export const QuestionPane: React.FC = () => {
                     onNextHint={() => setCurrentHintIndex(i => i + 1)}
                     darkMode={darkMode}
                     questionId={currentQuestion._id}
-                    viewMode={viewMode}
                     widgets={currentQuestion.question?.widgets}
                   />
                 )}
