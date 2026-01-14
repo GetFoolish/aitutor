@@ -630,10 +630,9 @@ def get_practice_history(request: Request, page: int = 1, limit: int = 10):
                     "skills_practiced": [str]
                 }
             ],
-            "total_sessions": int,
+            "total_count": int,
             "page": int,
-            "limit": int,
-            "total_pages": int
+            "limit": int
         }
     """
     ensure_dash_system()
@@ -652,10 +651,9 @@ def get_practice_history(request: Request, page: int = 1, limit: int = 10):
         logger.warning(f"[PRACTICE_HISTORY] User not found: {user_id}")
         return {
             "sessions": [],
-            "total_sessions": 0,
+            "total_count": 0,
             "page": page,
-            "limit": limit,
-            "total_pages": 0
+            "limit": limit
         }
 
     # Get question history and sort by timestamp
@@ -665,10 +663,9 @@ def get_practice_history(request: Request, page: int = 1, limit: int = 10):
         logger.info("[PRACTICE_HISTORY] No question history found")
         return {
             "sessions": [],
-            "total_sessions": 0,
+            "total_count": 0,
             "page": page,
-            "limit": limit,
-            "total_pages": 0
+            "limit": limit
         }
 
     # Sort by timestamp (oldest first for processing)
