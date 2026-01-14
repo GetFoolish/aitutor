@@ -754,6 +754,180 @@ def get_practice_history(request: Request, page: int = 1, limit: int = 10):
         "limit": limit
     }
 
+@app.get("/api/practice-history/{session_id}")
+def get_session_details(request: Request, session_id: str):
+    """
+    Get detailed information about a specific practice session.
+    Returns all questions from the session with full details.
+
+    Args:
+        request: FastAPI request object (for JWT extraction)
+        session_id: Session identifier (e.g., "session_0", "session_1")
+
+    Returns:
+        {
+            "session_id": str,
+            "metadata": {
+                "date": float (timestamp),
+                "duration": float (seconds),
+                "question_count": int,
+                "accuracy": float (0-1),
+                "skills_practiced": [str]
+            },
+            "questions": [
+                {
+                    "question_id": str,
+                    "skill_ids": [str],
+                    "skill_names": [str],
+                    "is_correct": bool,
+                    "response_time_seconds": float,
+                    "timestamp": float,
+                    "question_text": str (if available)
+                }
+            ]
+        }
+    """
+    ensure_dash_system()
+    # Get user_id from JWT token
+    user_id = get_current_user(request)
+
+    logger.info(f"\n{'='*80}")
+    logger.info(f"[SESSION_DETAILS] User: {user_id}, Session: {session_id}")
+    logger.info(f"{'='*80}\n")
+
+    # Load user profile
+    from managers.mongodb_manager import mongo_db
+    user_data = mongo_db.users.find_one({"user_id": user_id})
+
+    if not user_data:
+        logger.warning(f"[SESSION_DETAILS] User not found: {user_id}")
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Get question history and sort by timestamp
+    question_history = user_data.get("question_history", [])
+
+    if not question_history:
+        logger.info("[SESSION_DETAILS] No question history found")
+        raise HTTPException(status_code=404, detail="No question history found")
+
+    # Sort by timestamp (oldest first for processing)
+    sorted_history = sorted(question_history, key=lambda x: x.get("timestamp", 0))
+
+    # Group questions into sessions (30-minute gap = new session)
+    SESSION_GAP_SECONDS = 30 * 60  # 30 minutes
+    sessions = []
+    current_session = []
+
+    for attempt in sorted_history:
+        if not current_session:
+            # Start new session
+            current_session.append(attempt)
+        else:
+            # Check time gap with last question in current session
+            last_timestamp = current_session[-1].get("timestamp", 0)
+            current_timestamp = attempt.get("timestamp", 0)
+
+            if current_timestamp - last_timestamp > SESSION_GAP_SECONDS:
+                # Gap too large, save current session and start new one
+                sessions.append(current_session)
+                current_session = [attempt]
+            else:
+                # Continue current session
+                current_session.append(attempt)
+
+    # Don't forget the last session
+    if current_session:
+        sessions.append(current_session)
+
+    # Reverse sessions (most recent first)
+    sessions.reverse()
+
+    # Extract session index from session_id (e.g., "session_0" -> 0)
+    try:
+        session_index = int(session_id.split('_')[-1])
+    except (ValueError, IndexError):
+        logger.warning(f"[SESSION_DETAILS] Invalid session_id format: {session_id}")
+        raise HTTPException(status_code=400, detail="Invalid session_id format")
+
+    # Validate session index
+    if session_index < 0 or session_index >= len(sessions):
+        logger.warning(f"[SESSION_DETAILS] Session not found: {session_id} (index {session_index}, total {len(sessions)})")
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    # Get the requested session
+    session_attempts = sessions[session_index]
+
+    # Calculate session metadata
+    start_time = session_attempts[0].get("timestamp", 0)
+    end_time = session_attempts[-1].get("timestamp", 0)
+    duration = end_time - start_time
+
+    question_count = len(session_attempts)
+    correct_count = sum(1 for attempt in session_attempts if attempt.get("is_correct", False))
+    accuracy = correct_count / question_count if question_count > 0 else 0
+
+    # Get unique skills practiced
+    skills_practiced = set()
+    for attempt in session_attempts:
+        skill_ids = attempt.get("skill_ids", [])
+        skills_practiced.update(skill_ids)
+
+    # Build detailed question data
+    detailed_questions = []
+    for attempt in session_attempts:
+        question_id = attempt.get("question_id", "")
+        skill_ids = attempt.get("skill_ids", [])
+
+        # Get skill names from DASH system
+        skill_names = []
+        for skill_id in skill_ids:
+            skill = dash_system.skills.get(skill_id)
+            if skill:
+                skill_names.append(skill.name)
+            else:
+                skill_names.append(skill_id)  # Fallback to skill_id if not found
+
+        # Try to get question text from scraped_questions
+        question_text = None
+        try:
+            scraped_question = mongo_db.scraped_questions.find_one({"questionId": question_id})
+            if scraped_question:
+                assessment_data = scraped_question.get('assessmentData', {})
+                if assessment_data:
+                    item_data_str = assessment_data.get('data', {}).get('assessmentItem', {}).get('item', {}).get('itemData', '')
+                    if item_data_str:
+                        item_data = json.loads(item_data_str)
+                        # Extract first text content from question.content
+                        question_content = item_data.get('question', {}).get('content', '')
+                        if question_content:
+                            question_text = question_content
+        except Exception as e:
+            logger.warning(f"[SESSION_DETAILS] Failed to load question text for {question_id}: {e}")
+
+        detailed_questions.append({
+            "question_id": question_id,
+            "skill_ids": skill_ids,
+            "skill_names": skill_names,
+            "is_correct": attempt.get("is_correct", False),
+            "response_time_seconds": attempt.get("response_time_seconds", 0),
+            "timestamp": attempt.get("timestamp", 0),
+            "question_text": question_text
+        })
+
+    logger.info(f"[SESSION_DETAILS] Found session with {question_count} questions, accuracy {accuracy:.1%}")
+
+    return {
+        "session_id": session_id,
+        "metadata": {
+            "date": start_time,
+            "duration": duration,
+            "question_count": question_count,
+            "accuracy": accuracy,
+            "skills_practiced": list(skills_practiced)
+        },
+        "questions": detailed_questions
+    }
+
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("DASH_PORT", 8000))  # DASH API on 8000
