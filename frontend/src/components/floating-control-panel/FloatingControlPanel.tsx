@@ -20,6 +20,8 @@ import { useTheme } from "../theme/theme-provier";
 import { feedWebSocketService } from "../../services/feed-websocket-service";
 import { instructionSSEService } from "../../services/instruction-sse-service";
 import { LiveServerContent } from '@google/genai';
+import { AvatarVideoDisplay } from "../avatar";
+import { Room, RoomEvent, RemoteParticipant, Track } from 'livekit-client';
 
 /**
  * Extract transcript text from Gemini content event
@@ -89,7 +91,7 @@ function FloatingControlPanel({
   privacyEnabled = false,
   onTogglePrivacy,
 }: FloatingControlPanelProps) {
-  const { client, connected, connect, disconnect, interruptAudio } = useTutorContext();
+  const { client, connected, connect, disconnect, interruptAudio, volume, setOutputAudioEnabled } = useTutorContext();
   const { theme } = useTheme();
   const dragControls = useDragControls();
   // const { client, connected, connect, disconnect, interruptAudio } = useTutorContext(); // Commented out - duplicate declaration, already declared above
@@ -112,6 +114,73 @@ function FloatingControlPanel({
   }>({ isConnected: true, error: null }); // Default to connected since it's frontend-based now
   const turnCompleteRef = useRef(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  
+  // Avatar video expansion state
+  const [isVideoExpanded, setIsVideoExpanded] = useState(false);
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  
+  // LiveKit connection state (separate from speaking/listening UI state)
+  const [livekitState, setLivekitState] = useState<string>("disconnected");
+  // Agent display state (speaking/listening/thinking/connecting/disconnected)
+  const [agentState, setAgentState] = useState<string>("disconnected");
+  const [agentVideoTrack, setAgentVideoTrack] = useState<any>(null);
+  const [agentAudioTrack, setAgentAudioTrack] = useState<any>(null);
+  const livekitAudioElRef = useRef<HTMLAudioElement>(null);
+  const livekitRoomRef = useRef<Room | null>(null);
+
+  // Attach/detach LiveKit audio so the student hears the same audio that drives Hedra lip-sync.
+  useEffect(() => {
+    const audioEl = livekitAudioElRef.current;
+    if (!audioEl) return;
+
+    if (agentAudioTrack?.track?.attach) {
+      try {
+        // Autoplay usually works because the user clicked "Connect".
+        audioEl.autoplay = true;
+        audioEl.muted = false;
+        agentAudioTrack.track.attach(audioEl);
+
+        // Prefer LiveKit audio over the browser Gemini audio to avoid doubling.
+        setOutputAudioEnabled(false);
+      } catch (e) {
+        console.warn('[LiveKit] Failed to attach audio track:', e);
+      }
+
+      return () => {
+        try {
+          agentAudioTrack.track.detach(audioEl);
+        } catch {
+          // ignore
+        }
+      };
+    }
+
+    // If no LiveKit audio, keep Gemini audio enabled.
+    setOutputAudioEnabled(true);
+  }, [agentAudioTrack, setOutputAudioEnabled]);
+
+  // Make the avatar feel "live" immediately: infer speaking/listening from tutor output volume.
+  // This is purely UI state; actual lip-sync is handled by the Hedra/LiveKit pipeline.
+  useEffect(() => {
+    if (!connected) {
+      setAgentState('disconnected');
+      return;
+    }
+
+    if (livekitState === 'connecting') {
+      setAgentState('connecting');
+      return;
+    }
+
+    // Treat missing video track as still connecting the avatar.
+    if (livekitState === 'connected' && !agentVideoTrack) {
+      setAgentState('connecting');
+      return;
+    }
+
+    const SPEAKING_THRESHOLD = 0.03;
+    setAgentState(volume > SPEAKING_THRESHOLD ? 'speaking' : 'listening');
+  }, [connected, volume, livekitState, agentVideoTrack]);
 
   // Dark mode detection for logo
   useEffect(() => {
@@ -173,25 +242,134 @@ function FloatingControlPanel({
   }, []);
 
   useEffect(() => {
+    // Track if cleanup has been triggered to prevent sending
+    let cleanupTriggered = false;
+
     const onData = (base64: string) => {
-      // Send to Gemini (existing functionality)
-      client.sendRealtimeInput([
-        {
-          mimeType: "audio/pcm;rate=16000",
-          data: base64,
-        },
-      ]);
+      // Validate audio data before processing
+      if (!base64 || base64.length === 0) {
+        return;
+      }
+
+      // Early exit if cleanup has been triggered
+      if (cleanupTriggered) {
+        return;
+      }
+
+      // Only send audio if client is connected and session is active
+      // Add multiple checks to prevent sending when disconnected
+      // CRITICAL: Never send when muted - empty/non-audio sends cause "Cannot extract voices" error
+      if (!client || client.status !== "connected" || !connected || muted) {
+        return;
+      }
+
+      // Additional validation: ensure we have valid audio data
+      // Empty or invalid audio data can cause Gemini to reject the request
+      if (!base64 || base64.length < 100) {
+        // Audio chunks should be substantial - skip tiny/empty chunks
+        // Minimum ~100 bytes base64 = ~25ms of PCM audio at 16kHz
+        return;
+      }
+
+      // Validate base64 format - ensure it's valid base64 encoded PCM audio
+      const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
+      if (!base64Regex.test(base64)) {
+        // Invalid base64 - skip this chunk
+        console.debug('Invalid base64 audio data detected, skipping');
+        return;
+      }
+
+      // Ensure audio data is not corrupted or empty
+      // Base64 decoded length should be reasonable for PCM audio
+      try {
+        const decodedLength = Math.floor(base64.length * 3 / 4);
+        if (decodedLength < 50) {
+          // Too small even after decoding - skip
+          return;
+        }
+      } catch (e) {
+        // Base64 decode check failed - skip this chunk
+        return;
+      }
+
+      // Additional check - if service indicates it's closing, don't send
+      if (client.service && (client.service as any)._isClosing) {
+        cleanupTriggered = true;
+        return;
+      }
+
+      try {
+        // Send to Gemini (existing functionality)
+        // sendRealtimeInput handles WebSocket state errors internally
+        client.sendRealtimeInput([
+          {
+            mimeType: "audio/pcm;rate=16000",
+            data: base64,
+          },
+        ]);
+      } catch (error) {
+        // Silently handle errors (connection might be closing)
+        // Most errors are already handled in sendRealtimeInput
+        // This catch is a safety net for any errors that bubble up
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        if (!errorMsg.includes("CLOSING") && 
+            !errorMsg.includes("CLOSED") && 
+            !errorMsg.includes("WebSocket") &&
+            !errorMsg.includes("already in") &&
+            !errorMsg.includes("Cannot extract voices")) {
+          // Only log unexpected errors
+          console.debug("Error sending audio to Gemini:", errorMsg);
+        }
+      }
 
       // Also send via WebSocket (batched, non-blocking)
-      feedWebSocketService.sendAudio(base64);
+      try {
+        feedWebSocketService.sendAudio(base64);
+      } catch (error) {
+        // WebSocket errors are non-critical
+        console.warn("Error sending audio to WebSocket:", error);
+      }
     };
+
+    // Register cleanup callback to stop audio recorder when WebSocket closes
+    let cleanupUnregister: (() => void) | null = null;
+    if (client && client.service) {
+      cleanupUnregister = client.service.onCleanup(() => {
+        // Mark cleanup as triggered to prevent further sends
+        cleanupTriggered = true;
+        // Stop audio recorder when WebSocket closes
+        if (audioRecorder) {
+          audioRecorder.stop();
+        }
+      });
+    }
+
+    // CRITICAL: Only start audio recorder AFTER connection is fully established
+    // Wait a small delay to ensure Gemini is ready to receive audio
+    let startDelay: NodeJS.Timeout | null = null;
+    
     if (connected && !muted && audioRecorder) {
-      audioRecorder.on("data", onData).start(selectedAudioDevice);
+      // Small delay to ensure connection is fully ready
+      // This prevents sending audio before Gemini is ready to extract voices
+      startDelay = setTimeout(() => {
+        if (connected && !muted && client && client.status === "connected") {
+          audioRecorder.on("data", onData).start(selectedAudioDevice);
+        }
+      }, 500); // 500ms delay to ensure connection is ready
     } else {
       audioRecorder.stop();
     }
+    
+    // Single cleanup function for all cases
     return () => {
+      if (startDelay) {
+        clearTimeout(startDelay);
+      }
       audioRecorder.off("data", onData);
+      audioRecorder.stop();
+      if (cleanupUnregister) {
+        cleanupUnregister();
+      }
     };
   }, [connected, client, muted, audioRecorder, selectedAudioDevice]);
 
@@ -308,7 +486,10 @@ function FloatingControlPanel({
     };
   }, [client, connected]);
 
-  // Video handling - capture full MediaMixer canvas and send to tutor as JPEG
+  // Video handling - capture full MediaMixer canvas and send to Media Feed as JPEG
+  // NOTE: We intentionally do NOT send these video frames to Gemini Live API anymore.
+  // Sending non-audio media via sendRealtimeInput causes
+  // "Cannot extract voices from a non-audio request" and closes the connection.
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.srcObject = activeVideoStream;
@@ -326,13 +507,12 @@ function FloatingControlPanel({
       const canvas = mediaMixerCanvasRef.current;
       if (canvas && canvas.width + canvas.height > 0) {
         const base64 = canvas.toDataURL("image/jpeg", 1.0);
-        const data = base64.slice(base64.indexOf(",") + 1, Infinity);
+        const imageData = base64.slice(base64.indexOf(",") + 1, Infinity);
 
-        // Send to Gemini (existing functionality)
-        client.sendRealtimeInput([{ mimeType: "image/jpeg", data }]);
-
-        // Also send via WebSocket (fire-and-forget, non-blocking)
-        feedWebSocketService.sendMedia(data);
+        // Send via WebSocket (fire-and-forget, non-blocking) to Media Feed / TeachingAssistant
+        // We DO NOT send these frames to Gemini directly anymore to avoid
+        // non-audio realtimeInput requests.
+        feedWebSocketService.sendMedia(imageData);
       }
 
       // Schedule next frame only if still connected and running
@@ -364,6 +544,20 @@ function FloatingControlPanel({
       // Handle disconnect with TeachingAssistant session end
       try {
         interruptAudio();
+
+        // Disconnect LiveKit room
+        if (livekitRoomRef.current) {
+          try {
+            await livekitRoomRef.current.disconnect();
+            livekitRoomRef.current = null;
+            setAgentVideoTrack(null);
+            setAgentAudioTrack(null);
+            setLivekitState('disconnected');
+            console.log('[LiveKit] Disconnected from room');
+          } catch (e) {
+            console.warn('[LiveKit] Error disconnecting:', e);
+          }
+        }
 
         // Disconnect WebSocket and SSE first (optional - may not be connected)
         try {
@@ -530,6 +724,112 @@ function FloatingControlPanel({
               console.warn('Failed to connect SSE instruction service (optional):', sseError);
             }
 
+            // Connect to LiveKit room to receive Hedra avatar video
+            try {
+              const token = jwtUtils.getToken();
+              if (token) {
+                const livekitResponse = await fetch(`${TEACHING_ASSISTANT_API_URL}/session/livekit-token`, {
+                  headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                  },
+                });
+
+                if (livekitResponse.ok) {
+                  const livekitData = await livekitResponse.json();
+                  const { token: livekitToken, url: livekitUrl, room_name } = livekitData;
+
+                  console.log('[LiveKit] Connecting to room:', room_name);
+                  setLivekitState('connecting');
+
+                  const room = new Room();
+                  livekitRoomRef.current = room;
+
+                  // Subscribe to ALL video tracks from remote participants
+                  // The Hedra avatar will be the only remote participant publishing video
+                  room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
+                    console.log('[LiveKit] Track subscribed:', track.kind, 'from:', participant.identity, 'name:', participant.name);
+                    // Subscribe to any video track from remote participants (avatar should be the only one)
+                    if (track.kind === Track.Kind.Video) {
+                      console.log('[LiveKit] Found remote video track! Identity:', participant.identity, 'Name:', participant.name);
+                      setAgentVideoTrack({ track, publication, participant });
+                      setLivekitState('connected');
+                    }
+
+                    // If the agent publishes audio, attach it so the student hears the lipsynced voice.
+                    if (track.kind === Track.Kind.Audio) {
+                      console.log('[LiveKit] Found remote audio track! Identity:', participant.identity, 'Name:', participant.name);
+                      setAgentAudioTrack({ track, publication, participant });
+                    }
+                  });
+
+                  room.on(RoomEvent.ParticipantConnected, (participant) => {
+                    console.log('[LiveKit] Participant connected:', participant.identity, 'name:', participant.name);
+                    // Subscribe to video tracks from any remote participant (avatar should be the only one)
+                    console.log('[LiveKit] Remote participant detected, checking for tracks...');
+
+                    participant.videoTrackPublications.forEach((pub) => {
+                      console.log('[LiveKit] Video publication:', pub.trackSid, 'kind:', pub.kind, 'subscribed:', pub.isSubscribed);
+                      if (pub.track && pub.kind === Track.Kind.Video) {
+                        console.log('[LiveKit] Found existing video track from participant:', participant.identity);
+                        setAgentVideoTrack({ track: pub.track, publication: pub, participant });
+                        setLivekitState('connected');
+                      } else if (pub.kind === Track.Kind.Video) {
+                        console.log('[LiveKit] Subscribing to video track:', pub.trackSid);
+                        pub.setSubscribed(true);
+                      }
+                    });
+
+                    participant.audioTrackPublications.forEach((pub) => {
+                      if (pub.track && pub.kind === Track.Kind.Audio) {
+                        console.log('[LiveKit] Found existing audio track from participant:', participant.identity);
+                        setAgentAudioTrack({ track: pub.track, publication: pub, participant });
+                      } else if (pub.kind === Track.Kind.Audio) {
+                        console.log('[LiveKit] Subscribing to audio track:', pub.trackSid);
+                        pub.setSubscribed(true);
+                      }
+                    });
+                  });
+
+                  room.on(RoomEvent.Disconnected, () => {
+                    console.log('[LiveKit] Disconnected from room');
+                    setLivekitState('disconnected');
+                    setAgentVideoTrack(null);
+                    setAgentAudioTrack(null);
+                  });
+
+                  await room.connect(livekitUrl, livekitToken);
+                  console.log('[LiveKit] Connected to room:', room_name);
+                  console.log('[LiveKit] Local participant:', room.localParticipant.identity);
+                  console.log('[LiveKit] Remote participants count:', room.remoteParticipants.size);
+                  
+                  // Check for existing participants (avatar might already be in room)
+                  console.log('[LiveKit] Checking for existing remote participants...');
+                  room.remoteParticipants.forEach((participant) => {
+                    console.log('[LiveKit] Existing remote participant:', participant.identity, 'name:', participant.name);
+                    // Subscribe to any video tracks from remote participants
+                    participant.videoTrackPublications.forEach((pub) => {
+                      console.log('[LiveKit] Video publication:', pub.trackSid, 'kind:', pub.kind, 'has track:', !!pub.track);
+                      if (pub.track && pub.kind === Track.Kind.Video) {
+                        console.log('[LiveKit] Found existing video track, setting as avatar track');
+                        setAgentVideoTrack({ track: pub.track, publication: pub, participant });
+                        setLivekitState('connected');
+                      } else if (pub.kind === Track.Kind.Video) {
+                        // Track exists but not subscribed yet - subscribe to it
+                        console.log('[LiveKit] Subscribing to existing video track:', pub.trackSid);
+                        pub.setSubscribed(true);
+                      }
+                    });
+                  });
+                } else {
+                  console.warn('[LiveKit] Failed to get LiveKit token:', livekitResponse.status);
+                }
+              }
+            } catch (livekitError) {
+              console.warn('[LiveKit] Failed to connect to LiveKit room (avatar video may not be available):', livekitError);
+              // Don't fail the entire connection if LiveKit fails
+            }
+
             // Send greeting if available
             if (data.prompt && client.status === 'connected') {
               client.send({ text: data.prompt });
@@ -615,6 +915,14 @@ function FloatingControlPanel({
     setIsCollapsed(!isCollapsed);
   }, [isCollapsed]);
 
+  const handleVideoClick = useCallback(() => {
+    setIsVideoExpanded(!isVideoExpanded);
+  }, [isVideoExpanded]);
+
+  const toggleMoreMenu = useCallback(() => {
+    setMoreMenuOpen(!moreMenuOpen);
+  }, [moreMenuOpen]);
+
   const handleMute = useCallback(() => {
     setMuted(!muted);
   }, [muted]);
@@ -628,16 +936,19 @@ function FloatingControlPanel({
   }, [sharedMediaOpen, updatePopoverPosition]);
 
   // Memoize panel classes to avoid recalculating on every render
+  // Panel expands to 2x width when video is expanded
   const panelClasses = useMemo(
     () =>
       cn(
-        "fixed z-[1000] bg-[#FFFDF5] dark:bg-[#000000] border-[2px] md:border-[3px] border-black dark:border-white rounded-lg md:rounded-xl",
+        "fixed z-[1000] bg-[#FFFDF5] dark:bg-[#000000] border-[2px] md:border-[3px] border-black dark:border-white rounded-lg md:rounded-xl transition-all duration-300",
         isCollapsed
           ? "w-[50px] md:w-[55px] py-2 md:py-2.5 px-1 md:px-1.5 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)]"
+          : isVideoExpanded
+          ? "w-[440px] md:w-[500px] p-2.5 md:p-3 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1),_6px_6px_16px_rgba(0,0,0,0.15),_12px_12px_32px_rgba(0,0,0,0.1)]"
           : "w-[220px] md:w-[250px] p-2.5 md:p-3 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1),_6px_6px_16px_rgba(0,0,0,0.15),_12px_12px_32px_rgba(0,0,0,0.1)]",
         "hover:shadow-[2px_2px_0_0_rgba(0,0,0,1),_6px_6px_16px_rgba(0,0,0,0.15),_12px_12px_32px_rgba(0,0,0,0.1)] md:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1),_8px_8px_20px_rgba(0,0,0,0.18),_16px_16px_40px_rgba(0,0,0,0.12)]",
       ),
-    [isCollapsed],
+    [isCollapsed, isVideoExpanded],
   );
 
   return (
@@ -652,7 +963,7 @@ function FloatingControlPanel({
       dragConstraints={{
         left: 0,
         top: 0,
-        right: typeof window !== "undefined" ? window.innerWidth - (isCollapsed ? 55 : 250) : 1000,
+        right: typeof window !== "undefined" ? window.innerWidth - (isCollapsed ? 55 : isVideoExpanded ? 500 : 250) : 1000,
         bottom: typeof window !== "undefined" ? window.innerHeight - 100 : 800,
       }}
       onDragEnd={handleDragEnd}
@@ -687,6 +998,9 @@ function FloatingControlPanel({
         height={2160}
         style={{ display: 'none' }}
       />
+
+      {/* Hidden audio element for LiveKit teacher voice (if published) */}
+      <audio ref={livekitAudioElRef} style={{ display: 'none' }} />
 
       {/* Drag Handle & Header */}
       <div
@@ -874,6 +1188,15 @@ function FloatingControlPanel({
       ) : (
         // EXPANDED VIEW
         <div className="flex flex-col gap-1.5 md:gap-2">
+          {/* Avatar Video Display - Centered at top */}
+          <AvatarVideoDisplay
+            isConnected={connected}
+            isExpanded={isVideoExpanded}
+            onToggleExpand={handleVideoClick}
+            videoTrack={agentVideoTrack}
+            agentState={agentState}
+          />
+
           {/* Audio Control */}
           <div
             onClick={handleMute}
@@ -1086,47 +1409,13 @@ function FloatingControlPanel({
             )}
           </button>
 
-          {/* Bottom Actions */}
-          <div className="grid grid-cols-4 gap-1.5 md:gap-2 pt-2 md:pt-3 border-t-[2px] border-black dark:border-white">
-            {enableEditingSettings && (
-              <SettingsDialog
-                className="w-full"
-                trigger={
-                  <button className="flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FF6B6B] text-black dark:text-white hover:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group w-full">
-                    <div className="p-1 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#FF6B6B] transition-colors">
-                      <Settings className="w-3 h-3 md:w-4 md:h-4 font-bold" />
-                    </div>
-                    <span className="text-[7px] md:text-[8px] font-black uppercase">Settings</span>
-                  </button>
-                }
-              />
-            )}
+          {/* More Menu Button and Dropdown */}
+          <div className="relative pt-2 md:pt-3 border-t-[2px] border-black dark:border-white">
             <button
-              onClick={onPaintClick}
+              onClick={toggleMoreMenu}
               className={cn(
-                "flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group",
-                isPaintActive
-                  ? "bg-[#FFD93D] text-black"
-                  : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D]",
-              )}
-            >
-              <div
-                className={cn(
-                  "p-1 border-[2px] border-black dark:border-white transition-colors",
-                  isPaintActive
-                    ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
-                    : "bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#FFD93D]",
-                )}
-              >
-                <PenTool className="w-3 h-3 md:w-4 md:h-4 font-bold" />
-              </div>
-              <span className="text-[7px] md:text-[8px] font-black uppercase">Canvas</span>
-            </button>
-            <button
-              onClick={toggleSharedMedia}
-              className={cn(
-                "flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group",
-                sharedMediaOpen
+                "w-full flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group",
+                moreMenuOpen
                   ? "bg-[#C4B5FD] text-black"
                   : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#C4B5FD]",
               )}
@@ -1134,21 +1423,58 @@ function FloatingControlPanel({
               <div
                 className={cn(
                   "p-1 border-[2px] border-black dark:border-white transition-colors",
-                  sharedMediaOpen
+                  moreMenuOpen
                     ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
                     : "bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#C4B5FD]",
                 )}
               >
-                <Eye className="w-3 h-3 md:w-4 md:h-4 font-bold" />
-              </div>
-              <span className="text-[7px] md:text-[8px] font-black uppercase">View</span>
-            </button>
-            <button className="flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#C4B5FD] text-black dark:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group">
-              <div className="p-1 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#C4B5FD] transition-colors">
                 <MoreHorizontal className="w-3 h-3 md:w-4 md:h-4 font-bold" />
               </div>
               <span className="text-[7px] md:text-[8px] font-black uppercase">More</span>
             </button>
+
+            {/* More Menu Dropdown */}
+            {moreMenuOpen && (
+              <div className="absolute bottom-full left-0 right-0 mb-2 bg-[#FFFDF5] dark:bg-[#000000] border-[2px] border-black dark:border-white rounded-lg shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] overflow-hidden z-[1002]">
+                {enableEditingSettings && (
+                  <SettingsDialog
+                    className="w-full"
+                    trigger={
+                      <button className="w-full flex items-center gap-2 p-2 md:p-2.5 border-b-[2px] border-black dark:border-white hover:bg-[#FF6B6B] text-black dark:text-white hover:text-white transition-all group">
+                        <Settings className="w-4 h-4 font-bold" />
+                        <span className="text-[9px] md:text-[10px] font-black uppercase">Settings</span>
+                      </button>
+                    }
+                  />
+                )}
+                <button
+                  onClick={() => {
+                    onPaintClick();
+                    setMoreMenuOpen(false);
+                  }}
+                  className={cn(
+                    "w-full flex items-center gap-2 p-2 md:p-2.5 border-b-[2px] border-black dark:border-white hover:bg-[#FFD93D] text-black dark:text-white transition-all group",
+                    isPaintActive && "bg-[#FFD93D]",
+                  )}
+                >
+                  <PenTool className="w-4 h-4 font-bold" />
+                  <span className="text-[9px] md:text-[10px] font-black uppercase">Canvas</span>
+                </button>
+                <button
+                  onClick={() => {
+                    toggleSharedMedia();
+                    setMoreMenuOpen(false);
+                  }}
+                  className={cn(
+                    "w-full flex items-center gap-2 p-2 md:p-2.5 hover:bg-[#C4B5FD] text-black dark:text-white transition-all group",
+                    sharedMediaOpen && "bg-[#C4B5FD]",
+                  )}
+                >
+                  <Eye className="w-4 h-4 font-bold" />
+                  <span className="text-[9px] md:text-[10px] font-black uppercase">View Media</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )
