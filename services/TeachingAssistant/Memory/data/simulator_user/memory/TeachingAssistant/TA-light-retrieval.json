@@ -1,0 +1,3016 @@
+[
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519154.402482,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519163.153209,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519170.7730439,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519178.086436,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519186.313282,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519194.8417149,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519202.257361,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519210.29217,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519219.184591,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519226.942699,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519234.385874,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519242.310678,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519250.26966,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519258.274077,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519266.4117289,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519274.2441869,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519282.453303,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519290.155357,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519298.350664,
+    "results": []
+  },
+  {
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": 1766519306.374785,
+    "results": []
+  },
+  {
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": 1766519376.935099,
+    "results": []
+  },
+  {
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": 1766519384.8387141,
+    "results": []
+  },
+  {
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": 1766519395.735446,
+    "results": [
+      {
+        "memory": {
+          "id": "77555553-51f3-426a-9899-300eea53044e",
+          "type": "academic",
+          "text": "Can identify the coefficients a, b, and c in a quadratic equation.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:38.710017",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "quadratic equations"
+          },
+          "counter": 3,
+          "first_epoch": 1766519175.332007,
+          "last_epoch": 1766519198.710019
+        },
+        "score": 0.7250323274719745
+      },
+      {
+        "memory": {
+          "id": "5ef1d1a5-1893-4f26-8fa3-76fcc3e499f3",
+          "type": "context",
+          "text": "Experiences anxiety before tests.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:47:15.531019",
+          "metadata": {
+            "emotion": "anxious",
+            "topic": "general"
+          },
+          "counter": 2,
+          "first_epoch": 1766519235.531,
+          "last_epoch": 1766519235.531022
+        },
+        "score": 0.7131977812671404
+      },
+      {
+        "memory": {
+          "id": "b3381c47-2ce0-4d6a-8bd0-ed572e552b75",
+          "type": "academic",
+          "text": "Requests help with quadratic equations.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:47:51.455254",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "quadratic equations"
+          },
+          "counter": 2,
+          "first_epoch": 1766519211.451053,
+          "last_epoch": 1766519271.455265
+        },
+        "score": 0.7101403305674984
+      },
+      {
+        "memory": {
+          "id": "aa53d65e-95da-4e30-9fa8-949108ed87d6",
+          "type": "academic",
+          "text": "Understands the concept of roots in the context of a parabola.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:26.824666",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519186.824678,
+          "last_epoch": 1766519186.824684
+        },
+        "score": 0.705749151331325
+      },
+      {
+        "memory": {
+          "id": "11638eda-c551-420b-84a7-2c3560a03c87",
+          "type": "academic",
+          "text": "Understands basic algebraic manipulation, specifically adding a constant to both sides of an equation to maintain balance.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:48:03.011047",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519283.011065,
+          "last_epoch": 1766519283.011072
+        },
+        "score": 0.7034508219152973
+      },
+      {
+        "memory": {
+          "id": "d092a73d-0a60-4f60-a7d8-28c3e654369c",
+          "type": "academic",
+          "text": "Can perform basic arithmetic operations (squaring, multiplication, subtraction).",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:51.451036",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519211.45104,
+          "last_epoch": 1766519211.451043
+        },
+        "score": 0.7017027732806682
+      },
+      {
+        "memory": {
+          "id": "38b66695-5451-4e00-a71d-a5fde681a168",
+          "type": "academic",
+          "text": "Can perform the square of 3 and arrives at the number 9 in the first turn.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:48:03.011097",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519283.0111,
+          "last_epoch": 1766519283.011103
+        },
+        "score": 0.699942788492591
+      },
+      {
+        "memory": {
+          "id": "2e37e242-2e07-40c0-a5d6-7c7a4270b8ee",
+          "type": "academic",
+          "text": "Understands the concept of completing the square.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:48:14.612051",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519294.612055,
+          "last_epoch": 1766519294.612057
+        },
+        "score": 0.6985616119309184
+      },
+      {
+        "memory": {
+          "id": "f170092c-00cb-4569-ba49-007d9e20f707",
+          "type": "preference",
+          "text": "Prefers visual examples to understand concepts.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:47:26.854779",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519246.854786,
+          "last_epoch": 1766519246.854789
+        },
+        "score": 0.6936311598672782
+      },
+      {
+        "memory": {
+          "id": "2e96ce07-a4e9-4cd6-a818-94ddd57131e7",
+          "type": "academic",
+          "text": "Can visualize a parabola's shape.",
+          "importance": 0.7,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:26.824708",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519186.82471,
+          "last_epoch": 1766519186.824714
+        },
+        "score": 0.6878678201140241
+      }
+    ]
+  },
+  {
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": 1766519401.520263,
+    "results": []
+  },
+  {
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": 1766519408.978921,
+    "results": []
+  },
+  {
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": 1766519417.041641,
+    "results": []
+  },
+  {
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": 1766519425.046826,
+    "results": []
+  },
+  {
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": 1766519432.900785,
+    "results": []
+  },
+  {
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": 1766519441.292619,
+    "results": []
+  },
+  {
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": 1766519449.978168,
+    "results": [
+      {
+        "memory": {
+          "id": "56822c18-9acb-41e2-9b10-a7d3c85b96d6",
+          "type": "academic",
+          "text": "Requests help with quadratic equations.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:47:51.455254",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "quadratic equations"
+          },
+          "counter": 2,
+          "first_epoch": 1766519211.451053,
+          "last_epoch": 1766519271.455265
+        },
+        "score": 0.762451452774535
+      },
+      {
+        "memory": {
+          "id": "2817107d-4016-469c-a5fe-33fa9ca6d5ea",
+          "type": "academic",
+          "text": "Applies the quadratic formula but makes mistakes.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:15.331975",
+          "metadata": {
+            "emotion": "confused",
+            "topic": "quadratics"
+          },
+          "counter": 2,
+          "first_epoch": 1766519175.331943,
+          "last_epoch": 1766519175.331981
+        },
+        "score": 0.7480410544342063
+      },
+      {
+        "memory": {
+          "id": "a247918e-0981-4094-babe-bbc6b1d97eed",
+          "type": "academic",
+          "text": "Understands basic algebraic manipulation, specifically adding a constant to both sides of an equation to maintain balance.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:48:03.011047",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519283.011065,
+          "last_epoch": 1766519283.011072
+        },
+        "score": 0.7257409903371457
+      },
+      {
+        "memory": {
+          "id": "4b4b6f03-85b4-43d5-8270-213b18782fb1",
+          "type": "academic",
+          "text": "Can perform the square of 3 and arrives at the number 9 in the first turn.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:48:03.011097",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519283.0111,
+          "last_epoch": 1766519283.011103
+        },
+        "score": 0.7247713277581742
+      },
+      {
+        "memory": {
+          "id": "54d8858c-b9d3-4d20-9ffc-dec05bd18e04",
+          "type": "academic",
+          "text": "Can perform basic arithmetic operations (squaring, multiplication, subtraction).",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:51.451036",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519211.45104,
+          "last_epoch": 1766519211.451043
+        },
+        "score": 0.7195325113449673
+      },
+      {
+        "memory": {
+          "id": "ae162e57-6668-4f74-8bcc-13cc86be3328",
+          "type": "context",
+          "text": "Dreads math.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:02.929081",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519162.929082,
+          "last_epoch": 1766519162.929083
+        },
+        "score": 0.7151947726204235
+      },
+      {
+        "memory": {
+          "id": "779b03e5-9e78-40bc-b054-b5d7eba87de4",
+          "type": "academic",
+          "text": "Calculates the discriminant correctly.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:51.451061",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519211.451061,
+          "last_epoch": 1766519211.451063
+        },
+        "score": 0.7119079307330294
+      },
+      {
+        "memory": {
+          "id": "2b788062-a2c1-4b89-a951-b0f29a5fb84f",
+          "type": "academic",
+          "text": "Understands the concept of roots in the context of a parabola.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:26.824666",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519186.824678,
+          "last_epoch": 1766519186.824684
+        },
+        "score": 0.7107372055960264
+      },
+      {
+        "memory": {
+          "id": "7a7d3752-6587-4f87-8cfe-86c48e548780",
+          "type": "preference",
+          "text": "Prefers visual examples to understand concepts.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:47:26.854779",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519246.854786,
+          "last_epoch": 1766519246.854789
+        },
+        "score": 0.6974883009133681
+      },
+      {
+        "memory": {
+          "id": "b47030d3-d579-45d8-bb16-10757019b0fa",
+          "type": "academic",
+          "text": "Understands the concept of moving constants to isolate variables.",
+          "importance": 0.7,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:47:51.455275",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519271.455276,
+          "last_epoch": 1766519271.455277
+        },
+        "score": 0.6964415045258935
+      }
+    ]
+  },
+  {
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": 1766519457.2997398,
+    "results": []
+  },
+  {
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": 1766519466.182643,
+    "results": [
+      {
+        "memory": {
+          "id": "ddc2fb26-b812-460f-90f1-1e4938caa606",
+          "type": "academic",
+          "text": "Requests help with quadratic equations.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:47:51.455254",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "quadratic equations"
+          },
+          "counter": 2,
+          "first_epoch": 1766519211.451053,
+          "last_epoch": 1766519271.455265
+        },
+        "score": 0.7424946636889639
+      },
+      {
+        "memory": {
+          "id": "430b40a8-dbbd-456e-bcc0-7723b8f5e519",
+          "type": "academic",
+          "text": "Can perform basic arithmetic operations (squaring, multiplication, subtraction).",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:51.451036",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519211.45104,
+          "last_epoch": 1766519211.451043
+        },
+        "score": 0.7233192839290912
+      },
+      {
+        "memory": {
+          "id": "3906e22a-f924-4975-81b0-2ec84ef10bf4",
+          "type": "academic",
+          "text": "Understands basic algebraic manipulation, specifically adding a constant to both sides of an equation to maintain balance.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:48:03.011047",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519283.011065,
+          "last_epoch": 1766519283.011072
+        },
+        "score": 0.7194263026095054
+      },
+      {
+        "memory": {
+          "id": "d01f7409-1f0b-4be8-8d32-acaf989eee46",
+          "type": "academic",
+          "text": "Calculates the discriminant correctly.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:51.451061",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519211.451061,
+          "last_epoch": 1766519211.451063
+        },
+        "score": 0.7119459044912338
+      },
+      {
+        "memory": {
+          "id": "8abe0f11-27f3-43e4-b5fc-2daf5543d053",
+          "type": "context",
+          "text": "Dreads math.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:02.929081",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519162.929082,
+          "last_epoch": 1766519162.929083
+        },
+        "score": 0.7108350272025216
+      },
+      {
+        "memory": {
+          "id": "85a9feb0-e36a-4774-b36f-e12df0839a7f",
+          "type": "preference",
+          "text": "Prefers visual examples to understand concepts.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:47:26.854779",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519246.854786,
+          "last_epoch": 1766519246.854789
+        },
+        "score": 0.7023437135175
+      },
+      {
+        "memory": {
+          "id": "3bddd58c-c7e3-4965-bf0e-5200c2bc1ee7",
+          "type": "academic",
+          "text": "Can perform the square of 3 and arrives at the number 9 in the first turn.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:48:03.011097",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519283.0111,
+          "last_epoch": 1766519283.011103
+        },
+        "score": 0.7009544035818898
+      },
+      {
+        "memory": {
+          "id": "f499bceb-1858-493b-96f7-04858ad8883c",
+          "type": "context",
+          "text": "Expresses a lack of enthusiasm for math.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:02.929040",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519162.929061,
+          "last_epoch": 1766519162.929065
+        },
+        "score": 0.6985459587610074
+      },
+      {
+        "memory": {
+          "id": "9c235feb-b2ef-4f19-a443-190df39228b6",
+          "type": "academic",
+          "text": "Understands the concept of roots in the context of a parabola.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:26.824666",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519186.824678,
+          "last_epoch": 1766519186.824684
+        },
+        "score": 0.6937424167983559
+      },
+      {
+        "memory": {
+          "id": "f4462a5d-7cb3-48a6-b308-2902233510a2",
+          "type": "academic",
+          "text": "Identifies the coefficient of the x term.",
+          "importance": 0.7,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:47:51.455284",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519271.455285,
+          "last_epoch": 1766519271.455286
+        },
+        "score": 0.6925264355108031
+      }
+    ]
+  },
+  {
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": 1766519473.7043278,
+    "results": []
+  },
+  {
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": 1766519481.4274418,
+    "results": []
+  },
+  {
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": 1766519490.052066,
+    "results": [
+      {
+        "memory": {
+          "id": "3222c937-4591-42b2-8589-9e26f9d1f34a",
+          "type": "academic",
+          "text": "Requests help with quadratic equations.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:47:51.455254",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "quadratic equations"
+          },
+          "counter": 2,
+          "first_epoch": 1766519211.451053,
+          "last_epoch": 1766519271.455265
+        },
+        "score": 0.767878939835786
+      },
+      {
+        "memory": {
+          "id": "565109ac-340b-4df2-9140-afc02a6041a1",
+          "type": "academic",
+          "text": "Can perform basic arithmetic operations (squaring, multiplication, subtraction).",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:51.451036",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519211.45104,
+          "last_epoch": 1766519211.451043
+        },
+        "score": 0.7398883756973436
+      },
+      {
+        "memory": {
+          "id": "1fa36453-a68d-4af1-8b32-54d1b996b075",
+          "type": "context",
+          "text": "Dreads math.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:02.929081",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519162.929082,
+          "last_epoch": 1766519162.929083
+        },
+        "score": 0.7344794755586763
+      },
+      {
+        "memory": {
+          "id": "2ab78868-045c-4e70-9973-a45abbd05ddf",
+          "type": "academic",
+          "text": "Understands basic algebraic manipulation, specifically adding a constant to both sides of an equation to maintain balance.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:48:03.011047",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519283.011065,
+          "last_epoch": 1766519283.011072
+        },
+        "score": 0.7336332301023443
+      },
+      {
+        "memory": {
+          "id": "4dea25a5-3649-4dbc-a92f-c0297f3cc37f",
+          "type": "academic",
+          "text": "Calculates the discriminant correctly.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:51.451061",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519211.451061,
+          "last_epoch": 1766519211.451063
+        },
+        "score": 0.727679971504335
+      },
+      {
+        "memory": {
+          "id": "5d218fce-cea7-4dc4-aeba-a2048b76e072",
+          "type": "academic",
+          "text": "Understands the concept of roots in the context of a parabola.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:26.824666",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519186.824678,
+          "last_epoch": 1766519186.824684
+        },
+        "score": 0.7266655328412719
+      },
+      {
+        "memory": {
+          "id": "84d6f22d-0a0f-4174-b9ed-d94cc156ede4",
+          "type": "academic",
+          "text": "Can perform the square of 3 and arrives at the number 9 in the first turn.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:48:03.011097",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519283.0111,
+          "last_epoch": 1766519283.011103
+        },
+        "score": 0.7236325343163503
+      },
+      {
+        "memory": {
+          "id": "7d4e85ea-dcca-4595-8d26-31a808888335",
+          "type": "context",
+          "text": "Expresses a lack of enthusiasm for math.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:02.929040",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519162.929061,
+          "last_epoch": 1766519162.929065
+        },
+        "score": 0.7072432785221148
+      },
+      {
+        "memory": {
+          "id": "0c98b0b9-e778-4083-8bca-062ede66e721",
+          "type": "academic",
+          "text": "Understands the concept of moving constants to isolate variables.",
+          "importance": 0.7,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:47:51.455275",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519271.455276,
+          "last_epoch": 1766519271.455277
+        },
+        "score": 0.7043936296011919
+      },
+      {
+        "memory": {
+          "id": "337bee5e-8faa-4ad5-ba1a-ec1b13eba214",
+          "type": "academic",
+          "text": "Identifies the coefficient of the x term.",
+          "importance": 0.7,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:47:51.455284",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519271.455285,
+          "last_epoch": 1766519271.455286
+        },
+        "score": 0.704137057608605
+      }
+    ]
+  },
+  {
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": 1766519497.055722,
+    "results": []
+  },
+  {
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": 1766519569.21865,
+    "results": []
+  },
+  {
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": 1766519577.333431,
+    "results": []
+  },
+  {
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": 1766519585.466089,
+    "results": []
+  },
+  {
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": 1766519593.450829,
+    "results": []
+  },
+  {
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": 1766519601.882816,
+    "results": [
+      {
+        "memory": {
+          "id": "8551b0ce-c21c-48d7-bd0a-79f57c45ec99",
+          "type": "academic",
+          "text": "Can manipulate quadratic equations to isolate x terms.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:50:34.020325",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 4,
+          "first_epoch": 1766519175.332007,
+          "last_epoch": 1766519434.020328
+        },
+        "score": 0.7982367040533357
+      },
+      {
+        "memory": {
+          "id": "aa36d7aa-d35b-4b90-9b7c-cab7c2fa8d88",
+          "type": "academic",
+          "text": "Demonstrates understanding of fraction division.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:51:10.355855",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "fractions"
+          },
+          "counter": 4,
+          "first_epoch": 1766519271.455294,
+          "last_epoch": 1766519470.35587
+        },
+        "score": 0.7845311099639041
+      },
+      {
+        "memory": {
+          "id": "b1a5a05a-8b4c-4659-b4f9-fc17e565efea",
+          "type": "academic",
+          "text": "Solves for x in an equation involving a square root.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:51:37.732026",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 2,
+          "first_epoch": 1766519422.081704,
+          "last_epoch": 1766519497.732031
+        },
+        "score": 0.7630247040622054
+      },
+      {
+        "memory": {
+          "id": "85c4c235-f719-4a9f-916a-e014e51a0553",
+          "type": "academic",
+          "text": "Requests help with quadratic equations.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:47:51.455254",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "quadratic equations"
+          },
+          "counter": 2,
+          "first_epoch": 1766519211.451053,
+          "last_epoch": 1766519271.455265
+        },
+        "score": 0.7592677748570463
+      },
+      {
+        "memory": {
+          "id": "95a0fe82-0f9e-4920-aeeb-148d50d75a51",
+          "type": "academic",
+          "text": "Understands the concept of the discriminant and its relationship to the number of real solutions of a quadratic equation.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:49:58.316624",
+          "metadata": {
+            "emotion": "excited",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1766519398.31663,
+          "last_epoch": 1766519398.316634
+        },
+        "score": 0.7589600797002081
+      },
+      {
+        "memory": {
+          "id": "5be81e6b-c50e-41c5-be40-38aa1f33bc2e",
+          "type": "academic",
+          "text": "Understands basic algebraic manipulation, specifically adding a constant to both sides of an equation to maintain balance.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:48:03.011047",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519283.011065,
+          "last_epoch": 1766519283.011072
+        },
+        "score": 0.7459757885075691
+      },
+      {
+        "memory": {
+          "id": "6dbb250d-2ee2-4297-a78a-2cd4361ff17c",
+          "type": "context",
+          "text": "Experienced anxiety before and during a math test.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:49:58.316657",
+          "metadata": {
+            "emotion": "anxious",
+            "topic": "math test"
+          },
+          "counter": 2,
+          "first_epoch": 1766519235.531033,
+          "last_epoch": 1766519398.31666
+        },
+        "score": 0.739418842282905
+      },
+      {
+        "memory": {
+          "id": "4823a1c2-c7a2-49f4-a737-25fa43c0e922",
+          "type": "academic",
+          "text": "Understands square root basics.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:50:22.081640",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 2,
+          "first_epoch": 1766519306.906981,
+          "last_epoch": 1766519422.081653
+        },
+        "score": 0.7391252411221081
+      },
+      {
+        "memory": {
+          "id": "4842a5f6-24a7-49e5-88b3-35edcbe4b674",
+          "type": "context",
+          "text": "Dreads math.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:02.929081",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519162.929082,
+          "last_epoch": 1766519162.929083
+        },
+        "score": 0.7381459838829932
+      },
+      {
+        "memory": {
+          "id": "cb5df9b9-6b0a-4c32-a004-215fa4a713c8",
+          "type": "academic",
+          "text": "Can perform basic arithmetic operations (squaring, multiplication, subtraction).",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:51.451036",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519211.45104,
+          "last_epoch": 1766519211.451043
+        },
+        "score": 0.7320730565824629
+      }
+    ]
+  },
+  {
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": 1766519609.5796201,
+    "results": []
+  },
+  {
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": 1766519618.2785559,
+    "results": [
+      {
+        "memory": {
+          "id": "6d919356-e2f9-4c33-b9fc-c666452cb6ef",
+          "type": "academic",
+          "text": "Demonstrates understanding of fraction division.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:51:10.355855",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "fractions"
+          },
+          "counter": 4,
+          "first_epoch": 1766519271.455294,
+          "last_epoch": 1766519470.35587
+        },
+        "score": 0.7603302077168937
+      },
+      {
+        "memory": {
+          "id": "8947ba20-5be4-40a9-9bcc-ab90c8a9aad2",
+          "type": "academic",
+          "text": "Can manipulate quadratic equations to isolate x terms.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:50:34.020325",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 4,
+          "first_epoch": 1766519175.332007,
+          "last_epoch": 1766519434.020328
+        },
+        "score": 0.7574123167837808
+      },
+      {
+        "memory": {
+          "id": "21e4662e-ad8c-42d2-a0c1-5773be463eef",
+          "type": "academic",
+          "text": "Understands the concept of square roots.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:51:37.732036",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 5,
+          "first_epoch": 1766519294.612055,
+          "last_epoch": 1766519497.732037
+        },
+        "score": 0.755444438391881
+      },
+      {
+        "memory": {
+          "id": "e38595e5-f301-4582-8aaf-50ec2394ac01",
+          "type": "personal",
+          "text": "Plays basketball.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:49:45.654959",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 3,
+          "first_epoch": 1766519223.116732,
+          "last_epoch": 1766519385.654965
+        },
+        "score": 0.74723285835007
+      },
+      {
+        "memory": {
+          "id": "2ace7686-9bc7-42ab-b45f-1915cc2e3bae",
+          "type": "context",
+          "text": "Experiences anxiety before tests.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:47:15.531019",
+          "metadata": {
+            "emotion": "anxious",
+            "topic": "general"
+          },
+          "counter": 2,
+          "first_epoch": 1766519235.531,
+          "last_epoch": 1766519235.531022
+        },
+        "score": 0.7243169734648063
+      },
+      {
+        "memory": {
+          "id": "7fdfbb3e-5170-48e9-a056-520e72dab9a0",
+          "type": "context",
+          "text": "Experienced anxiety before and during a math test.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:49:58.316657",
+          "metadata": {
+            "emotion": "anxious",
+            "topic": "math test"
+          },
+          "counter": 2,
+          "first_epoch": 1766519235.531033,
+          "last_epoch": 1766519398.31666
+        },
+        "score": 0.7169278418937207
+      },
+      {
+        "memory": {
+          "id": "12f792a9-28bb-4d43-8a0c-cd3fc1df8e08",
+          "type": "academic",
+          "text": "Can perform basic arithmetic operations (squaring, multiplication, subtraction).",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:51.451036",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519211.45104,
+          "last_epoch": 1766519211.451043
+        },
+        "score": 0.7143118197692566
+      },
+      {
+        "memory": {
+          "id": "54d64407-dea0-4438-b6bd-26e10053098f",
+          "type": "academic",
+          "text": "Understands basic algebraic manipulation, specifically adding a constant to both sides of an equation to maintain balance.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:48:03.011047",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519283.011065,
+          "last_epoch": 1766519283.011072
+        },
+        "score": 0.7116443051022718
+      },
+      {
+        "memory": {
+          "id": "5dfe3118-185b-4179-ad8e-b8b1ae88fec3",
+          "type": "academic",
+          "text": "Understands the concept of the discriminant and its relationship to the number of real solutions of a quadratic equation.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:49:58.316624",
+          "metadata": {
+            "emotion": "excited",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1766519398.31663,
+          "last_epoch": 1766519398.316634
+        },
+        "score": 0.7093977225703195
+      },
+      {
+        "memory": {
+          "id": "12d3f8e8-7fcd-43dd-b7c4-57e139e0bc5e",
+          "type": "personal",
+          "text": "Has a basketball game this Friday.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:47:03.116783",
+          "metadata": {
+            "emotion": "excited",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519223.116785,
+          "last_epoch": 1766519223.116789
+        },
+        "score": 0.705583615373117
+      }
+    ]
+  },
+  {
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": 1766519625.306188,
+    "results": []
+  },
+  {
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": 1766519633.516433,
+    "results": []
+  },
+  {
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": 1766519641.187669,
+    "results": []
+  },
+  {
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": 1766519650.103221,
+    "results": [
+      {
+        "memory": {
+          "id": "ab494399-f46a-4ca1-9017-f377ca602ddd",
+          "type": "academic",
+          "text": "Can manipulate quadratic equations to isolate x terms.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:50:34.020325",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 4,
+          "first_epoch": 1766519175.332007,
+          "last_epoch": 1766519434.020328
+        },
+        "score": 0.7854286775149595
+      },
+      {
+        "memory": {
+          "id": "4e417489-bca8-4d25-ae76-66adb708de28",
+          "type": "academic",
+          "text": "Demonstrates understanding of fraction division.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:51:10.355855",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "fractions"
+          },
+          "counter": 4,
+          "first_epoch": 1766519271.455294,
+          "last_epoch": 1766519470.35587
+        },
+        "score": 0.767426972594921
+      },
+      {
+        "memory": {
+          "id": "b0589d07-d853-4131-8311-6526dce8df75",
+          "type": "academic",
+          "text": "Requests help with quadratic equations.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:47:51.455254",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "quadratic equations"
+          },
+          "counter": 2,
+          "first_epoch": 1766519211.451053,
+          "last_epoch": 1766519271.455265
+        },
+        "score": 0.7598713911892371
+      },
+      {
+        "memory": {
+          "id": "c2b77270-ae44-4da5-b5a3-e0ff8c0feb12",
+          "type": "academic",
+          "text": "Solves for x in an equation involving a square root.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:51:37.732026",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 2,
+          "first_epoch": 1766519422.081704,
+          "last_epoch": 1766519497.732031
+        },
+        "score": 0.7387655247135836
+      },
+      {
+        "memory": {
+          "id": "a40ce9d2-c5d4-4cf5-86cc-75d0c4359a12",
+          "type": "academic",
+          "text": "Understands square root basics.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:50:22.081640",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 2,
+          "first_epoch": 1766519306.906981,
+          "last_epoch": 1766519422.081653
+        },
+        "score": 0.7284454093298893
+      },
+      {
+        "memory": {
+          "id": "41b56984-9634-47a1-bc91-c2e44cfbab5b",
+          "type": "academic",
+          "text": "Understands the concept of the discriminant and its relationship to the number of real solutions of a quadratic equation.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:49:58.316624",
+          "metadata": {
+            "emotion": "excited",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1766519398.31663,
+          "last_epoch": 1766519398.316634
+        },
+        "score": 0.7282596777924539
+      },
+      {
+        "memory": {
+          "id": "81d762c8-b937-4c0d-9675-d3f936b2c193",
+          "type": "academic",
+          "text": "Understands basic algebraic manipulation, specifically adding a constant to both sides of an equation to maintain balance.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:48:03.011047",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519283.011065,
+          "last_epoch": 1766519283.011072
+        },
+        "score": 0.7274056650677589
+      },
+      {
+        "memory": {
+          "id": "f3809c8c-03a0-4af3-a351-c4f9d69ce51b",
+          "type": "context",
+          "text": "Dreads math.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:02.929081",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519162.929082,
+          "last_epoch": 1766519162.929083
+        },
+        "score": 0.7203504564516601
+      },
+      {
+        "memory": {
+          "id": "b059301a-bf32-4e36-9f1b-dc44f807eb9d",
+          "type": "academic",
+          "text": "Identifies the coefficient of the x term.",
+          "importance": 0.7,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:47:51.455284",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519271.455285,
+          "last_epoch": 1766519271.455286
+        },
+        "score": 0.7183463989929298
+      },
+      {
+        "memory": {
+          "id": "21408ca1-9ca1-488e-b577-57efbe1e1de7",
+          "type": "academic",
+          "text": "Can perform basic arithmetic operations (squaring, multiplication, subtraction).",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:51.451036",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519211.45104,
+          "last_epoch": 1766519211.451043
+        },
+        "score": 0.7105069357698639
+      }
+    ]
+  },
+  {
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": 1766519657.434359,
+    "results": []
+  },
+  {
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": 1766519665.3171809,
+    "results": []
+  },
+  {
+    "session_id": "sess_b1550c7e8ae74c19",
+    "timestamp": 1766519742.5585651,
+    "results": []
+  },
+  {
+    "session_id": "sess_b1550c7e8ae74c19",
+    "timestamp": 1766519751.455728,
+    "results": [
+      {
+        "memory": {
+          "id": "c3c66618-0507-41b8-9563-4bf4fabd28f9",
+          "type": "academic",
+          "text": "Can identify coefficients a and b in a quadratic equation.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:54:10.376608",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 5,
+          "first_epoch": 1766519175.332007,
+          "last_epoch": 1766519650.376609
+        },
+        "score": 0.7804020679860808
+      },
+      {
+        "memory": {
+          "id": "98768331-dbda-4101-b29f-e8c88d6ba5a9",
+          "type": "academic",
+          "text": "Understands the concept of square roots.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:51:37.732036",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 5,
+          "first_epoch": 1766519294.612055,
+          "last_epoch": 1766519497.732037
+        },
+        "score": 0.7620945573066866
+      },
+      {
+        "memory": {
+          "id": "9acefa8a-fafd-4835-924a-9a37a57a493e",
+          "type": "academic",
+          "text": "Experiences difficulty with mathematical concepts presented in decimal form.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:53:10.179621",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "physics"
+          },
+          "counter": 4,
+          "first_epoch": 1766519175.331943,
+          "last_epoch": 1766519590.179623
+        },
+        "score": 0.761682735522884
+      },
+      {
+        "memory": {
+          "id": "bb3d260f-d8c3-4513-9e2c-5d89580f9781",
+          "type": "academic",
+          "text": "Can use the formula -b/2a to find the x-coordinate of the vertex.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:54:10.376613",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519650.376613,
+          "last_epoch": 1766519650.376614
+        },
+        "score": 0.7284584222414168
+      },
+      {
+        "memory": {
+          "id": "95022aba-14cc-41ec-8218-2acab344f802",
+          "type": "personal",
+          "text": "Has a dog named Max.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:54:36.412890",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 5,
+          "first_epoch": 1766519246.854798,
+          "last_epoch": 1766519676.412891
+        },
+        "score": 0.7229062744197676
+      },
+      {
+        "memory": {
+          "id": "a9dda089-0b60-42e5-be88-1f470ffa5d29",
+          "type": "academic",
+          "text": "Understands the concept of the discriminant and its relationship to the number of real solutions of a quadratic equation.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:49:58.316624",
+          "metadata": {
+            "emotion": "excited",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1766519398.31663,
+          "last_epoch": 1766519398.316634
+        },
+        "score": 0.7214640346255593
+      },
+      {
+        "memory": {
+          "id": "65020d36-60d8-41b0-af7d-d79484f57a30",
+          "type": "academic",
+          "text": "Understands vertex as the maximum height of a curve.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:54:10.376597",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519650.3766,
+          "last_epoch": 1766519650.376602
+        },
+        "score": 0.7147329412030121
+      },
+      {
+        "memory": {
+          "id": "ba860321-2710-4764-a8bb-a6a07df9213d",
+          "type": "academic",
+          "text": "Identifies common factors in equations.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:53:21.987904",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519601.98791,
+          "last_epoch": 1766519601.987912
+        },
+        "score": 0.7123415467195817
+      },
+      {
+        "memory": {
+          "id": "bd60eb40-bc9f-4e34-a4e0-f2fd5b418a6e",
+          "type": "context",
+          "text": "Dreads math.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:02.929081",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519162.929082,
+          "last_epoch": 1766519162.929083
+        },
+        "score": 0.7102726277888097
+      },
+      {
+        "memory": {
+          "id": "2ac85d1a-ed37-4e9a-bd3b-2e9cd0b27e83",
+          "type": "academic",
+          "text": "Understands basic algebraic manipulation, specifically adding a constant to both sides of an equation to maintain balance.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:48:03.011047",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519283.011065,
+          "last_epoch": 1766519283.011072
+        },
+        "score": 0.7101258385116636
+      }
+    ]
+  },
+  {
+    "session_id": "sess_b1550c7e8ae74c19",
+    "timestamp": 1766519759.059247,
+    "results": [
+      {
+        "memory": {
+          "id": "dfd6836e-8474-4d5a-9bab-f71cbbdf9f02",
+          "type": "academic",
+          "text": "Can identify coefficients a and b in a quadratic equation.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:54:10.376608",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 5,
+          "first_epoch": 1766519175.332007,
+          "last_epoch": 1766519650.376609
+        },
+        "score": 0.7836079078049673
+      },
+      {
+        "memory": {
+          "id": "4abb5480-0e4c-4d8f-b3e1-993da96e6c22",
+          "type": "academic",
+          "text": "Experiences difficulty with mathematical concepts presented in decimal form.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:53:10.179621",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "physics"
+          },
+          "counter": 4,
+          "first_epoch": 1766519175.331943,
+          "last_epoch": 1766519590.179623
+        },
+        "score": 0.7607104504163454
+      },
+      {
+        "memory": {
+          "id": "f129870d-5643-42f8-a0c4-ad41ad415e6b",
+          "type": "academic",
+          "text": "Understands the concept of roots in the context of a parabola.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:26.824666",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519186.824678,
+          "last_epoch": 1766519186.824684
+        },
+        "score": 0.7319495657504083
+      },
+      {
+        "memory": {
+          "id": "72ffccc5-0599-4998-9186-651717a0c8b8",
+          "type": "academic",
+          "text": "Can use the formula -b/2a to find the x-coordinate of the vertex.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:54:10.376613",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519650.376613,
+          "last_epoch": 1766519650.376614
+        },
+        "score": 0.7267028908227212
+      },
+      {
+        "memory": {
+          "id": "a937abfb-f0e0-4ce8-adcb-3ed0759d6521",
+          "type": "academic",
+          "text": "Can visualize a parabola's shape.",
+          "importance": 0.7,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:26.824708",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519186.82471,
+          "last_epoch": 1766519186.824714
+        },
+        "score": 0.7228326920239367
+      },
+      {
+        "memory": {
+          "id": "9f9cf56d-36c8-4af2-9715-c25b0cf7af78",
+          "type": "academic",
+          "text": "Understands the concept of the discriminant and its relationship to the number of real solutions of a quadratic equation.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:49:58.316624",
+          "metadata": {
+            "emotion": "excited",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1766519398.31663,
+          "last_epoch": 1766519398.316634
+        },
+        "score": 0.7218917906267257
+      },
+      {
+        "memory": {
+          "id": "2456f865-1899-4d27-af9d-1e3c8dae7ea7",
+          "type": "academic",
+          "text": "Identifies common factors in equations.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:53:21.987904",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519601.98791,
+          "last_epoch": 1766519601.987912
+        },
+        "score": 0.7128895464312526
+      },
+      {
+        "memory": {
+          "id": "76a187cb-7670-4935-a645-61b54bc62b12",
+          "type": "academic",
+          "text": "Understands basic algebraic manipulation, specifically adding a constant to both sides of an equation to maintain balance.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:48:03.011047",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519283.011065,
+          "last_epoch": 1766519283.011072
+        },
+        "score": 0.7112023300430996
+      },
+      {
+        "memory": {
+          "id": "a016c88f-da1c-4a5d-a64d-cbdbd4d1503c",
+          "type": "context",
+          "text": "Dreads math.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:02.929081",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519162.929082,
+          "last_epoch": 1766519162.929083
+        },
+        "score": 0.7080538647315291
+      },
+      {
+        "memory": {
+          "id": "e9c74e00-a298-40b1-9b56-1612aa574fc5",
+          "type": "academic",
+          "text": "Understands vertex as the maximum height of a curve.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:54:10.376597",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519650.3766,
+          "last_epoch": 1766519650.376602
+        },
+        "score": 0.7078884005616148
+      }
+    ]
+  },
+  {
+    "session_id": "sess_b1550c7e8ae74c19",
+    "timestamp": 1766519766.661323,
+    "results": []
+  },
+  {
+    "session_id": "sess_b1550c7e8ae74c19",
+    "timestamp": 1766519775.065582,
+    "results": [
+      {
+        "memory": {
+          "id": "b6868187-76a7-4f45-b8cf-2614e11cfbf5",
+          "type": "academic",
+          "text": "Can identify coefficients a and b in a quadratic equation.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:54:10.376608",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 5,
+          "first_epoch": 1766519175.332007,
+          "last_epoch": 1766519650.376609
+        },
+        "score": 0.7849079937578913
+      },
+      {
+        "memory": {
+          "id": "6249acb8-6318-4a05-a567-79a2fbce564a",
+          "type": "academic",
+          "text": "Experiences difficulty with mathematical concepts presented in decimal form.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:53:10.179621",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "physics"
+          },
+          "counter": 4,
+          "first_epoch": 1766519175.331943,
+          "last_epoch": 1766519590.179623
+        },
+        "score": 0.7578067090971632
+      },
+      {
+        "memory": {
+          "id": "f7a2915f-3bfd-4951-9856-f15e0db26de5",
+          "type": "academic",
+          "text": "Identifies common factors in equations.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:53:21.987904",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519601.98791,
+          "last_epoch": 1766519601.987912
+        },
+        "score": 0.7212865743807666
+      },
+      {
+        "memory": {
+          "id": "604052d1-c95c-4249-b30d-399a8a8bc833",
+          "type": "academic",
+          "text": "Understands the concept of the discriminant and its relationship to the number of real solutions of a quadratic equation.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:49:58.316624",
+          "metadata": {
+            "emotion": "excited",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1766519398.31663,
+          "last_epoch": 1766519398.316634
+        },
+        "score": 0.7202274811576134
+      },
+      {
+        "memory": {
+          "id": "e4bb5254-2034-41b4-8fcc-310cc3e70179",
+          "type": "academic",
+          "text": "Can use the formula -b/2a to find the x-coordinate of the vertex.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:54:10.376613",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519650.376613,
+          "last_epoch": 1766519650.376614
+        },
+        "score": 0.715003644333953
+      },
+      {
+        "memory": {
+          "id": "c532c838-8c66-47da-8a7a-d4e1757d8890",
+          "type": "personal",
+          "text": "Interested in basketball.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:53:45.398404",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 4,
+          "first_epoch": 1766519223.116732,
+          "last_epoch": 1766519625.398417
+        },
+        "score": 0.7143669911573955
+      },
+      {
+        "memory": {
+          "id": "5f3f99b9-3570-42c9-bc31-586a73552a6b",
+          "type": "academic",
+          "text": "Understands basic algebraic manipulation, specifically adding a constant to both sides of an equation to maintain balance.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:48:03.011047",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519283.011065,
+          "last_epoch": 1766519283.011072
+        },
+        "score": 0.7136204156854196
+      },
+      {
+        "memory": {
+          "id": "2c74caaa-41b7-416f-9758-6e38873c85cb",
+          "type": "context",
+          "text": "Expresses frustration with the math problem.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:53:34.586039",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "general"
+          },
+          "counter": 2,
+          "first_epoch": 1766519162.929061,
+          "last_epoch": 1766519614.586065
+        },
+        "score": 0.7083505264653033
+      },
+      {
+        "memory": {
+          "id": "595aec32-2fd4-4205-ae7c-5df980f5f392",
+          "type": "context",
+          "text": "Feels tired of the subject.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:51:10.355943",
+          "metadata": {
+            "emotion": "tired",
+            "topic": "general"
+          },
+          "counter": 2,
+          "first_epoch": 1766519470.355896,
+          "last_epoch": 1766519470.355949
+        },
+        "score": 0.7066594421177311
+      },
+      {
+        "memory": {
+          "id": "95b1f467-53ce-45d8-a76f-f008ad997f64",
+          "type": "context",
+          "text": "Dreads math.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:02.929081",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519162.929082,
+          "last_epoch": 1766519162.929083
+        },
+        "score": 0.7063285858023949
+      }
+    ]
+  },
+  {
+    "session_id": "sess_b1550c7e8ae74c19",
+    "timestamp": 1766519783.2240598,
+    "results": [
+      {
+        "memory": {
+          "id": "5a4083c0-7ef9-424a-b924-bec7c8a71ce4",
+          "type": "academic",
+          "text": "Can identify coefficients a and b in a quadratic equation.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:54:10.376608",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 5,
+          "first_epoch": 1766519175.332007,
+          "last_epoch": 1766519650.376609
+        },
+        "score": 0.7903157278721779
+      },
+      {
+        "memory": {
+          "id": "27bbb5d4-e52d-4d73-a2d7-ab990fde1180",
+          "type": "academic",
+          "text": "Experiences difficulty with mathematical concepts presented in decimal form.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:53:10.179621",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "physics"
+          },
+          "counter": 4,
+          "first_epoch": 1766519175.331943,
+          "last_epoch": 1766519590.179623
+        },
+        "score": 0.7672555720445745
+      },
+      {
+        "memory": {
+          "id": "c18d5bd2-2c37-45ff-8359-f0100cd199fe",
+          "type": "academic",
+          "text": "Calculates the value of a quadratic expression for a given input.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:54:22.083649",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 3,
+          "first_epoch": 1766519211.451053,
+          "last_epoch": 1766519662.083655
+        },
+        "score": 0.7517284265561416
+      },
+      {
+        "memory": {
+          "id": "a80a9b3d-9754-4867-9200-310283275283",
+          "type": "context",
+          "text": "Expresses frustration with the math problem.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:53:34.586039",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "general"
+          },
+          "counter": 2,
+          "first_epoch": 1766519162.929061,
+          "last_epoch": 1766519614.586065
+        },
+        "score": 0.7372335374330288
+      },
+      {
+        "memory": {
+          "id": "a2622035-9903-470a-b6b2-a43bfdcf84f7",
+          "type": "context",
+          "text": "Experienced anxiety before and during a math test.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:49:58.316657",
+          "metadata": {
+            "emotion": "anxious",
+            "topic": "math test"
+          },
+          "counter": 2,
+          "first_epoch": 1766519235.531033,
+          "last_epoch": 1766519398.31666
+        },
+        "score": 0.7359572027127211
+      },
+      {
+        "memory": {
+          "id": "c3560f38-5ca2-40d8-8187-d535970ed04b",
+          "type": "context",
+          "text": "Feeling overwhelmed due to parental pressure regarding grades.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:52:58.274296",
+          "metadata": {
+            "emotion": "overwhelmed",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519578.274304,
+          "last_epoch": 1766519578.274307
+        },
+        "score": 0.7343586448910637
+      },
+      {
+        "memory": {
+          "id": "ec474646-34a9-415e-a7ac-21f184169e25",
+          "type": "academic",
+          "text": "Understands the concept of the discriminant and its relationship to the number of real solutions of a quadratic equation.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:49:58.316624",
+          "metadata": {
+            "emotion": "excited",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1766519398.31663,
+          "last_epoch": 1766519398.316634
+        },
+        "score": 0.7295770715853367
+      },
+      {
+        "memory": {
+          "id": "f43e7596-19db-49f3-a7a9-0095241bd2bc",
+          "type": "personal",
+          "text": "Interested in basketball.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:53:45.398404",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 4,
+          "first_epoch": 1766519223.116732,
+          "last_epoch": 1766519625.398417
+        },
+        "score": 0.7290978772039836
+      },
+      {
+        "memory": {
+          "id": "edfef904-3885-4804-a7e1-9d41ead76456",
+          "type": "context",
+          "text": "Dreads math.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:02.929081",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519162.929082,
+          "last_epoch": 1766519162.929083
+        },
+        "score": 0.7266412984358229
+      },
+      {
+        "memory": {
+          "id": "f2ae923f-57e0-4d59-9149-8374bbb2aba2",
+          "type": "academic",
+          "text": "Can perform basic arithmetic operations (squaring, multiplication, subtraction).",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:51.451036",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519211.45104,
+          "last_epoch": 1766519211.451043
+        },
+        "score": 0.7261702735654807
+      }
+    ]
+  },
+  {
+    "session_id": "sess_b1550c7e8ae74c19",
+    "timestamp": 1766519790.772789,
+    "results": []
+  },
+  {
+    "session_id": "sess_b1550c7e8ae74c19",
+    "timestamp": 1766519798.343782,
+    "results": []
+  },
+  {
+    "session_id": "sess_b1550c7e8ae74c19",
+    "timestamp": 1766519806.7087831,
+    "results": []
+  },
+  {
+    "session_id": "sess_b1550c7e8ae74c19",
+    "timestamp": 1766519814.376786,
+    "results": []
+  },
+  {
+    "session_id": "sess_a8266728a56b4b3b",
+    "timestamp": 1766519891.692631,
+    "results": []
+  },
+  {
+    "session_id": "sess_a8266728a56b4b3b",
+    "timestamp": 1766519899.405312,
+    "results": []
+  },
+  {
+    "session_id": "sess_a8266728a56b4b3b",
+    "timestamp": 1766519907.3731961,
+    "results": []
+  },
+  {
+    "session_id": "sess_a8266728a56b4b3b",
+    "timestamp": 1766519915.277171,
+    "results": []
+  },
+  {
+    "session_id": "sess_a8266728a56b4b3b",
+    "timestamp": 1766519924.4069738,
+    "results": [
+      {
+        "memory": {
+          "id": "3a7e2089-3ab6-4bd3-bc5d-3fc1febabe7a",
+          "type": "academic",
+          "text": "Understands how to solve for x given a quadratic equation.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_b1550c7e8ae74c19",
+          "timestamp": "2025-12-23T14:56:55.411792",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 7,
+          "first_epoch": 1766519175.332007,
+          "last_epoch": 1766519815.411805
+        },
+        "score": 0.8106760004285255
+      },
+      {
+        "memory": {
+          "id": "f5f04a42-db2d-4692-b073-60c9406ba26a",
+          "type": "academic",
+          "text": "Experiences difficulty with mathematical concepts presented in decimal form.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:53:10.179621",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "physics"
+          },
+          "counter": 4,
+          "first_epoch": 1766519175.331943,
+          "last_epoch": 1766519590.179623
+        },
+        "score": 0.7673445456809284
+      },
+      {
+        "memory": {
+          "id": "83d05cb2-cf12-45e3-aad2-c3cc3864ba8a",
+          "type": "academic",
+          "text": "Can identify the number of intersections between a line and a parabola.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_b1550c7e8ae74c19",
+          "timestamp": "2025-12-23T14:56:03.042489",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519763.042491,
+          "last_epoch": 1766519763.042494
+        },
+        "score": 0.757361025566312
+      },
+      {
+        "memory": {
+          "id": "20e91f6a-0284-4261-aab8-4e6666c79751",
+          "type": "personal",
+          "text": "Has a dog named Max.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_b1550c7e8ae74c19",
+          "timestamp": "2025-12-23T14:55:51.173742",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 6,
+          "first_epoch": 1766519246.854798,
+          "last_epoch": 1766519751.173769
+        },
+        "score": 0.7415826590062533
+      },
+      {
+        "memory": {
+          "id": "1ffcfd74-35d7-4944-89e0-015b08d0d3fc",
+          "type": "academic",
+          "text": "Can set up equations to solve for intersection points.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_b1550c7e8ae74c19",
+          "timestamp": "2025-12-23T14:56:43.355016",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519803.355022,
+          "last_epoch": 1766519803.355028
+        },
+        "score": 0.7341642923918348
+      },
+      {
+        "memory": {
+          "id": "e2f02cba-881f-431d-9a7a-2033e2562d7d",
+          "type": "academic",
+          "text": "Can use the formula -b/2a to find the x-coordinate of the vertex.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:54:10.376613",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519650.376613,
+          "last_epoch": 1766519650.376614
+        },
+        "score": 0.7262634255070842
+      },
+      {
+        "memory": {
+          "id": "26ca503a-6c0b-4031-a022-f5c2e503a655",
+          "type": "academic",
+          "text": "Understands the concept of intersection in a geometric context.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_b1550c7e8ae74c19",
+          "timestamp": "2025-12-23T14:56:03.042453",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519763.042461,
+          "last_epoch": 1766519763.042466
+        },
+        "score": 0.7250129316863105
+      },
+      {
+        "memory": {
+          "id": "f4cdac12-a6f5-42cc-970f-ae9505b84892",
+          "type": "academic",
+          "text": "Understands the concept of roots in the context of a parabola.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:26.824666",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519186.824678,
+          "last_epoch": 1766519186.824684
+        },
+        "score": 0.7240288427305617
+      },
+      {
+        "memory": {
+          "id": "100e059f-caac-4ff4-84ba-8b2aab5c848c",
+          "type": "preference",
+          "text": "Processes math visually, translating it to real-world examples.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_b1550c7e8ae74c19",
+          "timestamp": "2025-12-23T14:56:28.049322",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519788.049325,
+          "last_epoch": 1766519788.049329
+        },
+        "score": 0.721636461468484
+      },
+      {
+        "memory": {
+          "id": "f362356d-4579-4f15-8be3-2155e6d40951",
+          "type": "academic",
+          "text": "Understands the concept of the discriminant and its relationship to the number of real solutions of a quadratic equation.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:49:58.316624",
+          "metadata": {
+            "emotion": "excited",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1766519398.31663,
+          "last_epoch": 1766519398.316634
+        },
+        "score": 0.7208297065155732
+      }
+    ]
+  },
+  {
+    "session_id": "sess_a8266728a56b4b3b",
+    "timestamp": 1766519932.166893,
+    "results": [
+      {
+        "memory": {
+          "id": "7d6881f6-afff-444c-a7ef-9a742f2b296c",
+          "type": "academic",
+          "text": "Understands how to solve for x given a quadratic equation.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_b1550c7e8ae74c19",
+          "timestamp": "2025-12-23T14:56:55.411792",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 7,
+          "first_epoch": 1766519175.332007,
+          "last_epoch": 1766519815.411805
+        },
+        "score": 0.8477656730996248
+      },
+      {
+        "memory": {
+          "id": "f9b56f49-f30c-4e7c-b749-d1a9a52ef063",
+          "type": "academic",
+          "text": "Understands quadratic equations.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_b1550c7e8ae74c19",
+          "timestamp": "2025-12-23T14:56:43.355053",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 4,
+          "first_epoch": 1766519211.451053,
+          "last_epoch": 1766519803.355059
+        },
+        "score": 0.8109397002335355
+      },
+      {
+        "memory": {
+          "id": "492739ae-03e6-4da4-9c48-9e90aa0b3800",
+          "type": "academic",
+          "text": "Experiences difficulty with mathematical concepts presented in decimal form.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:53:10.179621",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "physics"
+          },
+          "counter": 4,
+          "first_epoch": 1766519175.331943,
+          "last_epoch": 1766519590.179623
+        },
+        "score": 0.7859953891767278
+      },
+      {
+        "memory": {
+          "id": "fd72ad8b-f72d-4f90-a426-1e91de939a37",
+          "type": "academic",
+          "text": "Understands the concept of the discriminant and its relationship to the number of real solutions of a quadratic equation.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:49:58.316624",
+          "metadata": {
+            "emotion": "excited",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1766519398.31663,
+          "last_epoch": 1766519398.316634
+        },
+        "score": 0.7465086753438975
+      },
+      {
+        "memory": {
+          "id": "661098e1-95b7-4b29-9baa-da895123403b",
+          "type": "academic",
+          "text": "Understands basic algebraic manipulation, specifically adding a constant to both sides of an equation to maintain balance.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:48:03.011047",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519283.011065,
+          "last_epoch": 1766519283.011072
+        },
+        "score": 0.744862910216952
+      },
+      {
+        "memory": {
+          "id": "700fd23b-7496-41f1-acc5-1edb49597bf9",
+          "type": "academic",
+          "text": "Understands square root basics.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:50:22.081640",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 2,
+          "first_epoch": 1766519306.906981,
+          "last_epoch": 1766519422.081653
+        },
+        "score": 0.7350131567945586
+      },
+      {
+        "memory": {
+          "id": "b645ec9b-16d5-4c0b-ad95-401f88ea2ef2",
+          "type": "academic",
+          "text": "Can use the formula -b/2a to find the x-coordinate of the vertex.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:54:10.376613",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519650.376613,
+          "last_epoch": 1766519650.376614
+        },
+        "score": 0.7315253776012253
+      },
+      {
+        "memory": {
+          "id": "8c6cc88e-0d42-4bbb-8104-b57028e3d80d",
+          "type": "preference",
+          "text": "Processes math visually, translating it to real-world examples.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_b1550c7e8ae74c19",
+          "timestamp": "2025-12-23T14:56:28.049322",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519788.049325,
+          "last_epoch": 1766519788.049329
+        },
+        "score": 0.7262186279452377
+      },
+      {
+        "memory": {
+          "id": "59ea6d8b-0176-4880-907c-11e7711e2dda",
+          "type": "academic",
+          "text": "Can perform basic arithmetic operations (squaring, multiplication, subtraction).",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:51.451036",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519211.45104,
+          "last_epoch": 1766519211.451043
+        },
+        "score": 0.7259463105708868
+      },
+      {
+        "memory": {
+          "id": "1d5400c9-f52b-4f8a-89b4-c759a6377be8",
+          "type": "context",
+          "text": "Dreads math.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_04ad26bf155042b3",
+          "timestamp": "2025-12-23T14:46:02.929081",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519162.929082,
+          "last_epoch": 1766519162.929083
+        },
+        "score": 0.7211991888131558
+      }
+    ]
+  },
+  {
+    "session_id": "sess_a8266728a56b4b3b",
+    "timestamp": 1766519939.988642,
+    "results": [
+      {
+        "memory": {
+          "id": "aabfc2c5-7afe-453f-a630-e6e0c36ec2da",
+          "type": "academic",
+          "text": "Understands how to solve for x given a quadratic equation.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_b1550c7e8ae74c19",
+          "timestamp": "2025-12-23T14:56:55.411792",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 7,
+          "first_epoch": 1766519175.332007,
+          "last_epoch": 1766519815.411805
+        },
+        "score": 0.7874176576628167
+      },
+      {
+        "memory": {
+          "id": "f1aaa79a-e879-4bc2-8088-9942de3bd9c4",
+          "type": "academic",
+          "text": "Understands the concept of square roots.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:51:37.732036",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 5,
+          "first_epoch": 1766519294.612055,
+          "last_epoch": 1766519497.732037
+        },
+        "score": 0.7538767678296114
+      },
+      {
+        "memory": {
+          "id": "a85c5c24-7175-4cfd-bd22-91642f3e0ff5",
+          "type": "academic",
+          "text": "Experiences difficulty with mathematical concepts presented in decimal form.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:53:10.179621",
+          "metadata": {
+            "emotion": "frustrated",
+            "topic": "physics"
+          },
+          "counter": 4,
+          "first_epoch": 1766519175.331943,
+          "last_epoch": 1766519590.179623
+        },
+        "score": 0.7476199210560146
+      },
+      {
+        "memory": {
+          "id": "d088ed88-45d5-4762-afb9-57444ed0dc6e",
+          "type": "academic",
+          "text": "Understands the concept of intersection in a geometric context.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_b1550c7e8ae74c19",
+          "timestamp": "2025-12-23T14:56:03.042453",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519763.042461,
+          "last_epoch": 1766519763.042466
+        },
+        "score": 0.7263578381975673
+      },
+      {
+        "memory": {
+          "id": "182df919-3453-4259-8863-d567de3dbe76",
+          "type": "academic",
+          "text": "Can set up equations to solve for intersection points.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_b1550c7e8ae74c19",
+          "timestamp": "2025-12-23T14:56:43.355016",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519803.355022,
+          "last_epoch": 1766519803.355028
+        },
+        "score": 0.7212201719523521
+      },
+      {
+        "memory": {
+          "id": "8eb09a07-1fa2-47aa-9b77-2847ce493449",
+          "type": "academic",
+          "text": "Can identify the number of intersections between a line and a parabola.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_b1550c7e8ae74c19",
+          "timestamp": "2025-12-23T14:56:03.042489",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519763.042491,
+          "last_epoch": 1766519763.042494
+        },
+        "score": 0.718839980814881
+      },
+      {
+        "memory": {
+          "id": "67531c48-53f7-43d5-96c8-cf69e74a3433",
+          "type": "context",
+          "text": "Feels tired of the subject.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:51:10.355943",
+          "metadata": {
+            "emotion": "tired",
+            "topic": "general"
+          },
+          "counter": 2,
+          "first_epoch": 1766519470.355896,
+          "last_epoch": 1766519470.355949
+        },
+        "score": 0.7020687920276386
+      },
+      {
+        "memory": {
+          "id": "55a6bad2-fd8f-4586-9212-9e4031be215d",
+          "type": "academic",
+          "text": "Understands the concept of the discriminant and its relationship to the number of real solutions of a quadratic equation.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_92667d5684364c0d",
+          "timestamp": "2025-12-23T14:49:58.316624",
+          "metadata": {
+            "emotion": "excited",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1766519398.31663,
+          "last_epoch": 1766519398.316634
+        },
+        "score": 0.7016453610278809
+      },
+      {
+        "memory": {
+          "id": "e18e6722-00ba-4045-9d97-af21e830ffe0",
+          "type": "context",
+          "text": "States they are unable to think and requests to pause the session.",
+          "importance": 0.9,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:53:34.586091",
+          "metadata": {
+            "emotion": "tired",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1766519614.586093,
+          "last_epoch": 1766519614.586096
+        },
+        "score": 0.6983830538765736
+      },
+      {
+        "memory": {
+          "id": "b2622f98-ec80-458f-887b-913c72950ce6",
+          "type": "academic",
+          "text": "Understands vertex as the maximum height of a curve.",
+          "importance": 0.8,
+          "student_id": "simulator_user",
+          "session_id": "sess_816cd07b79d748c7",
+          "timestamp": "2025-12-23T14:54:10.376597",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "algebra"
+          },
+          "counter": 1,
+          "first_epoch": 1766519650.3766,
+          "last_epoch": 1766519650.376602
+        },
+        "score": 0.6955854703729447
+      }
+    ]
+  },
+  {
+    "session_id": "sess_a8266728a56b4b3b",
+    "timestamp": 1766519947.379658,
+    "results": []
+  },
+  {
+    "session_id": "sess_a8266728a56b4b3b",
+    "timestamp": 1766519955.416768,
+    "results": []
+  }
+]

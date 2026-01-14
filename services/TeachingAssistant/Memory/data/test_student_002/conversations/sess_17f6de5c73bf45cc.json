@@ -1,0 +1,29 @@
+{
+  "session_id": "sess_17f6de5c73bf45cc",
+  "user_id": "test_student_002",
+  "start_time": "2025-12-18T03:43:41.323000",
+  "end_time": "2025-12-17T22:43:47.175845",
+  "turn_count": 2,
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "[SYSTEM PROMPT FOR ADAM] [MEMORY AND INJECTION HANDLING] During this session, you will receive 'System Updates' with retrieved memories. - If an update arrives while you are speaking or just finished: DO NOT hallucinate a new user turn. - If you have just finished a response, simply maintain consistency with that response. - Do not let internal system updates disrupt the natural flow of conversation. Hi there! Great job expressing your gratitude at the end of our last session – it really meant a lot. We're going to tackle completing the square today, so hopefully, we can build on the progress you made with the discriminant! Last time we worked on: The student made progress understanding quadratic equations, particularly the discriminant, but ended the session confused about the completing the square process. The session was marked by a rollercoaster of emotions, starting with anxiety and ending in confusion. Unfinished topics: Exploring the student's specific challenges with mathematical symbols., Investigating what aspects of textbook explanations are difficult to understand., Quadratics (topic suggested by the AI) Personal context available.",
+      "timestamp": 1766047421.323
+    },
+    {
+      "speaker": "user",
+      "text": "tired. so tired.",
+      "timestamp": 1766029421.622985
+    },
+    {
+      "speaker": "tutor",
+      "text": "I bet. You had the double-header Friday right? The math test and the basketball game. Did you survive?",
+      "timestamp": 1766029424.62426
+    },
+    {
+      "speaker": "user",
+      "text": "barely. practice today was brutal because coach was running us hard.",
+      "timestamp": 1766029425.625453
+    }
+  ]
+}

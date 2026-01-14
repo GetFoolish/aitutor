@@ -32,7 +32,11 @@ mkdir -p "$SCRIPT_DIR/logs"
 # Detect Python environment
 if [[ -z "$VIRTUAL_ENV" ]]; then
     # Not already in a virtual environment
-    if [[ -d "$SCRIPT_DIR/env" ]]; then
+    if [[ -d "$SCRIPT_DIR/venv" ]]; then
+        echo "Activating local venv..."
+        # shellcheck source=/dev/null
+        source "$SCRIPT_DIR/venv/bin/activate"
+    elif [[ -d "$SCRIPT_DIR/env" ]]; then
         echo "Activating local env..."
         # shellcheck source=/dev/null
         source "$SCRIPT_DIR/env/bin/activate"
@@ -163,6 +167,41 @@ AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT:-8003}
 
 # Start the Node.js frontend in the background (after backend services are ready)
 echo "Starting Node.js frontend... Logs -> logs/frontend.log"
+
+# Check Node.js version
+NODE_VERSION=$(node --version 2>/dev/null | sed 's/v//' | cut -d. -f1)
+REQUIRED_NODE_VERSION=20
+
+if [ -z "$NODE_VERSION" ] || [ "$NODE_VERSION" -lt "$REQUIRED_NODE_VERSION" ]; then
+    echo "⚠️  Warning: Node.js version is too old (found: $(node --version 2>/dev/null || echo 'unknown'), required: 20.19+ or 22.12+)"
+    echo "   Frontend may not start. Please upgrade Node.js or use nvm:"
+    echo "   nvm install 20 && nvm use 20"
+    echo ""
+    echo "   Attempting to start anyway..."
+fi
+
+# Try to use nvm if available
+if [ -s "$HOME/.nvm/nvm.sh" ]; then
+    echo "Using nvm to set Node.js version..."
+    # shellcheck source=/dev/null
+    source "$HOME/.nvm/nvm.sh"
+    # Try to use Node 20 if available
+    if command -v nvm >/dev/null 2>&1 || type nvm >/dev/null 2>&1; then
+        if nvm list 20 2>/dev/null | grep -q "v20"; then
+            nvm use 20 >/dev/null 2>&1
+            echo "✅ Switched to Node.js $(node --version) via nvm"
+        elif nvm list 22 2>/dev/null | grep -q "v22"; then
+            nvm use 22 >/dev/null 2>&1
+            echo "✅ Switched to Node.js $(node --version) via nvm"
+        else
+            echo "⚠️  Node.js 20 or 22 not found. Installing Node 20..."
+            nvm install 20 >/dev/null 2>&1
+            nvm use 20 >/dev/null 2>&1
+            echo "✅ Installed and using Node.js $(node --version)"
+        fi
+    fi
+fi
+
 (cd "$SCRIPT_DIR/frontend" && npm run dev) > "$SCRIPT_DIR/logs/frontend.log" 2>&1 &
 pids+=($!)
 

@@ -1,0 +1,3330 @@
+[
+  {
+    "id": "2e18528d-cf81-4d5b-9baf-bd775cb617d2",
+    "type": "academic",
+    "text": "Student struggles with understanding mathematical symbols and complex explanations in the textbook.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_affe2362343948d4",
+    "timestamp": "2025-12-17T22:31:10.257948",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "2bfeab48-55a7-445d-a35d-2ffda78727c1",
+    "type": "academic",
+    "text": "Student struggles with math symbols and textbook explanations.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:31:33.291717",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "3601a660-c6ab-471d-8179-ea65730a727f",
+    "type": "academic",
+    "text": "Understands the basic shape of quadratics (U-shape) but struggles with formulas, particularly the discriminant.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:31:44.838166",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "1e9a6b47-1b50-4147-ba6e-eefa00beab41",
+    "type": "academic",
+    "text": "Struggles with plugging numbers into the discriminant formula, resulting in incorrect answers.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:31:44.838173",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "f0a78929-5d00-4ffe-9612-c7c69bfddc38",
+    "type": "academic",
+    "text": "Student is learning about roots of a parabola.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:31:56.963268",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "roots of a parabola"
+    }
+  },
+  {
+    "id": "bd2f3d56-ffe5-4bd9-8d32-2f60a26ec24b",
+    "type": "academic",
+    "text": "Student likely has a conceptual understanding of roots/zeros in a quadratic equation.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:32:09.241066",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "52fee9c3-e1f4-4c31-8e0b-a925cb264e73",
+    "type": "academic",
+    "text": "Student appears to be able to identify coefficients a, b, and c in a quadratic equation.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:32:09.241074",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "7c67b388-f6de-4b52-a2cc-67fb97890872",
+    "type": "academic",
+    "text": "Student is correctly applying the quadratic formula, but may need further practice with the calculation process.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:32:21.255711",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic formula"
+    }
+  },
+  {
+    "id": "e387dd8b-7fae-483b-9d2b-572136839e3b",
+    "type": "academic",
+    "text": "Student correctly calculates 4 squared and the product of 4, 1, and 5.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:32:21.255716",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic formula"
+    }
+  },
+  {
+    "id": "8266ba85-d2bd-4393-914a-a1db4682d6a4",
+    "type": "academic",
+    "text": "Student correctly calculates the final result (-4).",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:32:21.255718",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic formula"
+    }
+  },
+  {
+    "id": "9c4ba0f7-b750-4932-8ea0-a73ec7d4b622",
+    "type": "academic",
+    "text": "Student is learning about concepts related to negative numbers and analogies.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:32:33.504731",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "b230422a-d130-45a4-8fc3-4be5262150d7",
+    "type": "academic",
+    "text": "Student understands the concept of $b^2-4ac < 0$ (discriminant) and can relate it to a visual analogy (airball).",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:32:57.134852",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "discriminants"
+    }
+  },
+  {
+    "id": "26ecdea9-f8a3-4b6e-910f-f0b59f15b638",
+    "type": "academic",
+    "text": "Student is learning about completing the square in math.",
+    "importance": 0.5,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:33:08.351800",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "math"
+    }
+  },
+  {
+    "id": "a908ad60-6670-4906-8ab0-178b5d478190",
+    "type": "academic",
+    "text": "Student attempts to solve a quadratic equation, showing understanding of moving the constant term.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:33:20.583693",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "0477a026-8f20-4829-bedb-6d486abee352",
+    "type": "academic",
+    "text": "Student correctly identifies half of 6.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:33:20.583706",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "completing the square"
+    }
+  },
+  {
+    "id": "185e10de-80fc-4e9c-aeec-fce2512c6ebb",
+    "type": "academic",
+    "text": "Student likely working on solving a quadratic equation and understands the concept of adding to both sides to maintain balance.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:33:32.668769",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "a237cb3a-9546-48d5-b408-628535381b99",
+    "type": "academic",
+    "text": "Student knows that the answer to 3 squared is 9.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:33:32.668779",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "exponents"
+    }
+  },
+  {
+    "id": "172377e3-d7d0-4914-8b2b-f4f1ec743391",
+    "type": "academic",
+    "text": "Student is learning about completing the square, specifically the process of rewriting a quadratic expression.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:33:44.653728",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "completing the square"
+    }
+  },
+  {
+    "id": "fb830263-7c0d-49bb-ac5e-f97ad140017c",
+    "type": "academic",
+    "text": "Student asks about square roots.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:33:57.437298",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "square roots"
+    }
+  },
+  {
+    "id": "d130ab92-0774-4123-a219-2cc5b601551d",
+    "type": "academic",
+    "text": "Student understood and applied the concept of the discriminant to solve a quadratic equation.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:35:24.936502",
+    "metadata": {
+      "emotion": "excited",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "ee8f18df-c3c1-4132-8142-bf5fd5841e5f",
+    "type": "academic",
+    "text": "Student utilized a memory aid ('airball thing') to recall a math concept.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:35:24.936506",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "bb6cf5e8-dda8-4a0b-b5ff-3b4e956aceb7",
+    "type": "academic",
+    "text": "Student is working on completing the square, indicating a current math topic.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:35:36.424913",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "completing the square"
+    }
+  },
+  {
+    "id": "4b251c5e-093e-4c16-a04d-8abfdc054e92",
+    "type": "academic",
+    "text": "Student recalling parts of the completing the square process like brackets and a '4'.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:35:36.424924",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "completing the square"
+    }
+  },
+  {
+    "id": "43fe1777-59d0-403f-913b-713916a3704d",
+    "type": "academic",
+    "text": "Student understands the concept of square roots resulting in both positive and negative solutions.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:35:48.413507",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "square roots"
+    }
+  },
+  {
+    "id": "fba94b2c-66a1-4fe5-9d91-425055ee7c22",
+    "type": "academic",
+    "text": "Student likely misunderstands the application of square roots to equations involving absolute values, or is making a calculation error.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:35:48.413515",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "solving equations"
+    }
+  },
+  {
+    "id": "1e5ecc8f-ea20-4b73-9667-bc536437a2d9",
+    "type": "academic",
+    "text": "Student correctly solves for x in a simple equation.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:35:48.413525",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "solving equations"
+    }
+  },
+  {
+    "id": "617a9009-c975-4b63-a926-7d9edd64e19f",
+    "type": "academic",
+    "text": "Student correctly subtracted 3 from -2.",
+    "importance": 0.5,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:36:00.022177",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "basic arithmetic"
+    }
+  },
+  {
+    "id": "03749b81-a617-491d-b6e1-916de6a33125",
+    "type": "academic",
+    "text": "Student understands the relationship between completing the square and factoring to find roots.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:36:00.022190",
+    "metadata": {
+      "emotion": "happy",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "72d46268-c1a5-4055-a689-94a747c16cff",
+    "type": "academic",
+    "text": "Student correctly manipulates an equation to prepare for completing the square.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:36:00.022199",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "completing the square"
+    }
+  },
+  {
+    "id": "ee7086ca-e71c-4538-ad6f-b29bbfdbac60",
+    "type": "academic",
+    "text": "Student struggles with fraction addition, particularly adding a negative integer and a fraction.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:36:23.193312",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "fractions"
+    }
+  },
+  {
+    "id": "298a5bcf-3a53-4fbb-80ec-78eed305c1e2",
+    "type": "academic",
+    "text": "Student is working on fractions.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:36:36.541247",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "fractions"
+    }
+  },
+  {
+    "id": "9937f8fa-72c0-4309-a2e7-8a3113cba83d",
+    "type": "academic",
+    "text": "Student likely understands the concept of free throws and muscle memory in the context of basketball",
+    "importance": 0.3,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:36:48.846239",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "83bdc104-f8f1-4d7a-b0d4-14ddecb47fc8",
+    "type": "academic",
+    "text": "Student seems to be working on a problem involving square roots and algebraic manipulation.",
+    "importance": 0.5,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:37:00.013582",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "413b5b7b-a214-494f-a390-34ed63360aa8",
+    "type": "academic",
+    "text": "Student provides the correct answer to a square root calculation.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:37:00.013587",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "5d5b7181-9043-43c2-a7d2-a4df84c1607a",
+    "type": "academic",
+    "text": "The student is working on a math problem involving square roots and potentially quadratic equations.",
+    "importance": 0.3,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:37:06.123712",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "8665484a-8e2d-46c4-aa70-3d0f7a048c85",
+    "type": "academic",
+    "text": "Student struggles with word problems and decimals in physics.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_db94129053af4805",
+    "timestamp": "2025-12-17T22:38:30.930932",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "physics"
+    }
+  },
+  {
+    "id": "018143a8-b9d5-4181-b980-bc57db4fb6db",
+    "type": "academic",
+    "text": "Student understands the concept of height being zero when an object hits the ground.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_db94129053af4805",
+    "timestamp": "2025-12-17T22:38:30.930940",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "physics"
+    }
+  },
+  {
+    "id": "d8b6a5c5-c898-42ed-9953-09cfb806495b",
+    "type": "academic",
+    "text": "Student struggles with understanding mathematical symbols.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:40:14.696051",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "5697e69d-27f0-4a0a-8d30-dd2bab33d4c9",
+    "type": "academic",
+    "text": "Student struggles with understanding textbook explanations.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:40:14.696060",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "faa77ed0-5a63-43d7-a887-a53dceb6aa14",
+    "type": "academic",
+    "text": "Understands the basic shape of a quadratic function (U-shape).",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:40:26.778681",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "80dec0f0-1276-4bbe-a6ca-156cb467ceed",
+    "type": "academic",
+    "text": "Struggles with the formulas related to quadratics, specifically the discriminant.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:40:26.778692",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "8561a1ab-ed42-4386-bb20-f0570dde910b",
+    "type": "academic",
+    "text": "Makes errors when plugging numbers into formulas.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:40:26.778705",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "ba5dfc6a-842c-4a05-9562-abf16d05bb7d",
+    "type": "academic",
+    "text": "Unable to correctly use the discriminant to determine the number of real roots.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:40:26.778715",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "75a704ec-ba3f-4a47-9b3b-2c65d27cd2f3",
+    "type": "academic",
+    "text": "The student is exploring the concept of roots in the context of parabolas.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:40:37.993082",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "roots of quadratic equations"
+    }
+  },
+  {
+    "id": "5d02974f-61ef-4071-a98c-eea7aa934f0a",
+    "type": "academic",
+    "text": "Student likely has a basic understanding of quadratic equations, roots, and the concept of a discriminant, but may have some gaps in their understanding regarding the relationship between the discriminant and the number of roots.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:40:50.219762",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "666978c4-cddc-496f-83a1-888aa9212bc6",
+    "type": "academic",
+    "text": "Student correctly identifies the coefficients a, b, and c in a quadratic equation.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:40:50.219767",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "8060c213-d58d-42aa-b2b4-31cbbbba2d7b",
+    "type": "academic",
+    "text": "Student is correctly applying the quadratic formula, demonstrating understanding of the base calculation.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:41:01.998217",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "349b2908-c56c-42bc-ab42-a03bd745840d",
+    "type": "academic",
+    "text": "Student needs help walking through the math steps.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:41:01.998224",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "608dd3bc-2d6c-476d-84bc-01b45f2fae4f",
+    "type": "academic",
+    "text": "Student is learning about negative numbers and their relationship to a concept (likely roots of an equation).",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:41:14.788995",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "7a08b19f-f865-40f5-a7b1-b127c153ccb9",
+    "type": "academic",
+    "text": "Student understands the concept of $b^2-4ac < 0$ leading to no real roots in a quadratic equation.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:41:38.819785",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "036c0122-57d0-4069-90da-6cb005e8b093",
+    "type": "academic",
+    "text": "Student is about to learn about 'Completing the square'.",
+    "importance": 0.5,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:41:49.532898",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "math"
+    }
+  },
+  {
+    "id": "94eeb733-9163-4d26-924d-64ff9771382e",
+    "type": "academic",
+    "text": "Student is working on completing the square, likely for a quadratic equation.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:42:02.239188",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "abe73ad4-b8f7-427b-916c-7426454c79f2",
+    "type": "academic",
+    "text": "Student correctly identifies half of 6 as 3.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:42:02.239194",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "completing the square"
+    }
+  },
+  {
+    "id": "1414bf52-afdd-4dc4-a8c7-b365e4042193",
+    "type": "academic",
+    "text": "Student likely working on solving a quadratic equation and understands the concept of adding to both sides to maintain balance.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:42:14.080362",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "6d5bd981-f96d-4a3e-b33f-6ee01e55014f",
+    "type": "academic",
+    "text": "Student able to provide the square root of 9.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:42:14.080371",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "basic arithmetic"
+    }
+  },
+  {
+    "id": "122a5506-9b96-4cfe-8d86-71ca85843b41",
+    "type": "academic",
+    "text": "Student likely has a gap in understanding the process of completing the square, specifically how to identify the constant term needed.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:42:26.003286",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "completing the square"
+    }
+  },
+  {
+    "id": "816aca8a-b85f-4fca-b27f-4769a62a101b",
+    "type": "academic",
+    "text": "Student asks about square roots, indicating a potential knowledge gap or area for review.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:42:38.918832",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "73a1aa49-ed97-4c4b-8963-ef026e73470a",
+    "type": "academic",
+    "text": "Student made progress understanding quadratic equations, particularly the discriminant, but ended the session confused about the completing the square process.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_17f6de5c73bf45cc",
+    "timestamp": "2025-12-17T22:43:49.564323",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "853d21cd-6110-4db7-9a29-79a1ea1258d2",
+    "type": "academic",
+    "text": "Student struggles with mathematical symbols.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_f4622c7f4f424617",
+    "timestamp": "2025-12-17T22:47:26.753825",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "4bacd753-2e82-4d5d-aac2-cd2d2d4d5adb",
+    "type": "academic",
+    "text": "Student finds textbook explanations difficult to understand.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_f4622c7f4f424617",
+    "timestamp": "2025-12-17T22:47:26.753839",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "1c88eb39-4a1c-461c-b077-87b1914d5913",
+    "type": "academic",
+    "text": "Understands the basic shape of a quadratic function (U-shape).",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_f4622c7f4f424617",
+    "timestamp": "2025-12-17T22:47:39.137926",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "ebdb0bfd-b8e4-4bfa-b3bd-5834431c08e8",
+    "type": "academic",
+    "text": "Struggles with the formulas related to quadratic functions, specifically the discriminant.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_f4622c7f4f424617",
+    "timestamp": "2025-12-17T22:47:39.137934",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "df8fefb8-490a-4041-a2e8-6f9aaf44a209",
+    "type": "academic",
+    "text": "Makes errors when plugging numbers into the quadratic formula.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_f4622c7f4f424617",
+    "timestamp": "2025-12-17T22:47:39.137954",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "quadratic formula"
+    }
+  },
+  {
+    "id": "e5a77619-22de-45a5-b309-ac39599b0ae5",
+    "type": "academic",
+    "text": "Unsure how to use the discriminant to determine the number of real roots.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_f4622c7f4f424617",
+    "timestamp": "2025-12-17T22:47:39.137963",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "discriminant and real roots"
+    }
+  },
+  {
+    "id": "7d970db7-13cd-43c2-9e85-843a53a14fa8",
+    "type": "academic",
+    "text": "The student is learning about roots of a quadratic equation.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_f4622c7f4f424617",
+    "timestamp": "2025-12-17T22:47:50.300803",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "3d800b70-1d2a-43fb-9290-c3356abda286",
+    "type": "academic",
+    "text": "Student likely has a general understanding of quadratic equations, but might need further clarification on the relationship between the discriminant and the roots.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_f4622c7f4f424617",
+    "timestamp": "2025-12-17T22:48:02.157943",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "420a7c1c-a407-427a-8fe6-67f8ec994daa",
+    "type": "academic",
+    "text": "Student able to identify coefficients a, b, and c in a quadratic equation.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_f4622c7f4f424617",
+    "timestamp": "2025-12-17T22:48:02.157950",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "476cb801-b8e0-46de-9dda-266b29183912",
+    "type": "academic",
+    "text": "Student is correctly applying the quadratic formula, demonstrating understanding of its components.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_f4622c7f4f424617",
+    "timestamp": "2025-12-17T22:48:14.753423",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic formula"
+    }
+  },
+  {
+    "id": "c824aef0-ffd3-4e16-b9f2-9ef394772ee5",
+    "type": "academic",
+    "text": "Student correctly calculates 4 squared as 16.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_f4622c7f4f424617",
+    "timestamp": "2025-12-17T22:48:14.753433",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "order of operations"
+    }
+  },
+  {
+    "id": "3ac24e9b-8204-4b1f-ad8c-c9e7c4785715",
+    "type": "academic",
+    "text": "Student correctly calculates 4 times 1 times 5 as 20.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_f4622c7f4f424617",
+    "timestamp": "2025-12-17T22:48:14.753446",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "multiplication"
+    }
+  },
+  {
+    "id": "7008ed09-7321-4916-827e-d270e63839db",
+    "type": "academic",
+    "text": "Student correctly subtracts 20 from 16 to get -4.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_f4622c7f4f424617",
+    "timestamp": "2025-12-17T22:48:14.753453",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "subtraction"
+    }
+  },
+  {
+    "id": "72a8e2ba-b934-4814-a47f-a96d1b823a91",
+    "type": "academic",
+    "text": "Struggles with quadratic equations, particularly the discriminant, the quadratic formula, and related concepts.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_44438b8f9593416a",
+    "timestamp": "2025-12-17T23:01:43.282122",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "f82048f4-693e-4e87-8b38-c1baab4e3cda",
+    "type": "academic",
+    "text": "Finds mathematical symbols confusing.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_44438b8f9593416a",
+    "timestamp": "2025-12-17T23:01:43.282135",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "mathematical symbols"
+    }
+  },
+  {
+    "id": "07ec44ec-defe-4f37-9ba9-3cba8721a590",
+    "type": "academic",
+    "text": "Student struggles with the discriminant formula.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_44438b8f9593416a",
+    "timestamp": "2025-12-17T23:01:54.872863",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "f2de25fd-9253-40e4-b189-284d3cf71fe9",
+    "type": "academic",
+    "text": "Student is able to identify the basic shape (U-shape) of a quadratic function.",
+    "importance": 0.5,
+    "student_id": "test_student_002",
+    "session_id": "sess_44438b8f9593416a",
+    "timestamp": "2025-12-17T23:01:54.872877",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "6132d5e3-91e2-4eee-acdc-a137cfddff7b",
+    "type": "academic",
+    "text": "Student struggles with plugging numbers into the discriminant formula.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_44438b8f9593416a",
+    "timestamp": "2025-12-17T23:01:54.872891",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "8fa4d210-cab1-423a-a96d-5d991bd9242c",
+    "type": "academic",
+    "text": "Student attempts to apply the discriminant to determine the number of real roots for a quadratic equation.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_44438b8f9593416a",
+    "timestamp": "2025-12-17T23:01:54.872897",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "c2cbca6a-8583-471c-a719-98147124e4fa",
+    "type": "academic",
+    "text": "Student appears to be learning about the concept of roots of a parabola.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_44438b8f9593416a",
+    "timestamp": "2025-12-17T23:02:06.187686",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "roots of a parabola"
+    }
+  },
+  {
+    "id": "b9393ba1-6eff-4f3a-95c3-5eb1a4cee076",
+    "type": "academic",
+    "text": "Student likely has a general understanding of quadratic equations, likely with some uncertainty.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_44438b8f9593416a",
+    "timestamp": "2025-12-17T23:02:18.081917",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "39b89441-9657-4018-bde5-25061e2a0c8f",
+    "type": "academic",
+    "text": "Student demonstrates an understanding that a negative answer (discriminant) means the quadratic equation does not intersect the x-axis.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_44438b8f9593416a",
+    "timestamp": "2025-12-17T23:02:18.081921",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "bf0a0d58-44a8-42f0-bd2c-a87266362c77",
+    "type": "academic",
+    "text": "Student is able to calculate the expression $b^2 - 4ac$ with provided values.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_44438b8f9593416a",
+    "timestamp": "2025-12-17T23:02:30.339019",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "e0494440-adcc-4a89-a266-c691a55e14c6",
+    "type": "academic",
+    "text": "Student correctly calculates $4^2$ and the product of 4, 1, and 5.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_44438b8f9593416a",
+    "timestamp": "2025-12-17T23:02:30.339028",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "cf9b1b8c-5d89-4c9b-a45d-0de06123cbc4",
+    "type": "academic",
+    "text": "Student correctly calculates the final result: -4.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_44438b8f9593416a",
+    "timestamp": "2025-12-17T23:02:30.339037",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "cecb8dd3-035c-4d84-908f-412b033b2773",
+    "type": "academic",
+    "text": "Student struggles with understanding mathematical symbols.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_1248894d45df49b7",
+    "timestamp": "2025-12-17T23:04:21.616457",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "a75daf7d-5a1c-4b38-a05b-ca0be0a45903",
+    "type": "academic",
+    "text": "Student struggles with understanding math symbols.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_6e8f9d84a79c441f",
+    "timestamp": "2025-12-17T23:06:04.546008",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "2324c270-871f-49df-a2ea-bd9cfce0783c",
+    "type": "academic",
+    "text": "Student finds textbook explanations difficult to understand, leading to mental shutdown.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_6e8f9d84a79c441f",
+    "timestamp": "2025-12-17T23:06:04.546018",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "a79be9e7-5cea-4bd3-b5dd-3748a92c4a8c",
+    "type": "academic",
+    "text": "Student struggles with the discriminant formula.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_6e8f9d84a79c441f",
+    "timestamp": "2025-12-17T23:06:16.405666",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "ded994b1-7591-471a-a666-80276cdc02e0",
+    "type": "academic",
+    "text": "Student understands the basic shape of a quadratic function ('the U thing').",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_6e8f9d84a79c441f",
+    "timestamp": "2025-12-17T23:06:16.405681",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "64b0bb7a-1cd8-4704-a708-a27963be022f",
+    "type": "academic",
+    "text": "Student has difficulty correctly applying the discriminant formula.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_6e8f9d84a79c441f",
+    "timestamp": "2025-12-17T23:06:16.405686",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "20d2663b-25c3-48d7-922d-b1e9df63e4c4",
+    "type": "academic",
+    "text": "Student attempts to use the discriminant to determine the number of real roots.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_6e8f9d84a79c441f",
+    "timestamp": "2025-12-17T23:06:16.405700",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "5228beb7-c754-4ddd-8737-33409aa6335e",
+    "type": "academic",
+    "text": "Student is learning about roots of a parabola.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_6e8f9d84a79c441f",
+    "timestamp": "2025-12-17T23:06:27.787687",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "roots of a parabola"
+    }
+  },
+  {
+    "id": "e24bcf45-5b7c-438b-b82c-b8db7f4ab423",
+    "type": "academic",
+    "text": "Student demonstrates understanding of quadratic equations and the relationship between the discriminant and the roots of an equation.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_6e8f9d84a79c441f",
+    "timestamp": "2025-12-17T23:06:39.110314",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "49820a29-c4c5-4771-9c14-ce2995105655",
+    "type": "academic",
+    "text": "Student is correctly applying the quadratic formula.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_6e8f9d84a79c441f",
+    "timestamp": "2025-12-17T23:06:52.327528",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic formula"
+    }
+  },
+  {
+    "id": "ba704c0c-672e-4b76-85bd-724dd67653fc",
+    "type": "academic",
+    "text": "Student correctly calculated 4 squared as 16.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_6e8f9d84a79c441f",
+    "timestamp": "2025-12-17T23:06:52.327535",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic formula"
+    }
+  },
+  {
+    "id": "3cf390a2-ee1c-4e13-925d-244adc591535",
+    "type": "academic",
+    "text": "Student correctly calculated 4 times 1 times 5 as 20.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_6e8f9d84a79c441f",
+    "timestamp": "2025-12-17T23:06:52.327549",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic formula"
+    }
+  },
+  {
+    "id": "e3b18c8e-0f47-4160-9b56-00dcc4670ac1",
+    "type": "academic",
+    "text": "Student successfully simplified 16-20 to -4.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_6e8f9d84a79c441f",
+    "timestamp": "2025-12-17T23:06:52.327558",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic formula"
+    }
+  },
+  {
+    "id": "02407f44-c0b3-4995-83a1-71a829fd8f5e",
+    "type": "academic",
+    "text": "Student is learning about concepts related to negative numbers and the analogy of an airball.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_6e8f9d84a79c441f",
+    "timestamp": "2025-12-17T23:07:04.504151",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "negative numbers/airball analogy"
+    }
+  },
+  {
+    "id": "3d641b68-17da-480f-9006-3c9f390512ca",
+    "type": "academic",
+    "text": "Student understands the concept of $b^2-4ac < 0$ leading to no real roots after visualizing it as an airball.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_6e8f9d84a79c441f",
+    "timestamp": "2025-12-17T23:07:28.699726",
+    "metadata": {
+      "emotion": "excited",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "d0e99ba8-c90d-41c1-8079-3ec68648b75a",
+    "type": "academic",
+    "text": "Student struggles with understanding mathematical symbols.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_4f0d1c1a2ce745e4",
+    "timestamp": "2025-12-17T23:09:44.543305",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "symbol comprehension"
+    }
+  },
+  {
+    "id": "9e59a632-09b5-4ec4-9e7a-f6e99e669efa",
+    "type": "academic",
+    "text": "Student struggles with textbook explanations.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_4f0d1c1a2ce745e4",
+    "timestamp": "2025-12-17T23:09:44.543313",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "textbook comprehension"
+    }
+  },
+  {
+    "id": "605843bb-d160-44ca-b001-1db0fa26e570",
+    "type": "academic",
+    "text": "Student understands the basic shape of quadratics (the 'U' thing).",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_4f0d1c1a2ce745e4",
+    "timestamp": "2025-12-17T23:09:56.905226",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "06218e06-ae68-4e42-a680-a758e87831f4",
+    "type": "academic",
+    "text": "Student is struggling with the formulas related to quadratics, specifically the discriminant.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_4f0d1c1a2ce745e4",
+    "timestamp": "2025-12-17T23:09:56.905233",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "85b3746e-9640-4edf-a8c1-66351bd89ae6",
+    "type": "academic",
+    "text": "Student has difficulty correctly applying the discriminant formula.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_4f0d1c1a2ce745e4",
+    "timestamp": "2025-12-17T23:09:56.905241",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "9dd8b2b9-b45b-4837-bc92-07a50e279ef5",
+    "type": "academic",
+    "text": "Student is working on a problem that involves finding the number of real roots of a quadratic equation.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_4f0d1c1a2ce745e4",
+    "timestamp": "2025-12-17T23:09:56.905244",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "29ef5927-1f97-4e3d-b921-6356bf0e9c7f",
+    "type": "academic",
+    "text": "The student is learning about roots of a quadratic equation.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_4f0d1c1a2ce745e4",
+    "timestamp": "2025-12-17T23:10:08.014801",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "ba30d047-e00c-4ab8-b535-e38905e632f0",
+    "type": "academic",
+    "text": "Student likely has a basic understanding of quadratic equations, roots, and the concept of a discriminant, but may need reinforcement.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_4f0d1c1a2ce745e4",
+    "timestamp": "2025-12-17T23:10:19.789909",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "ed56463c-575a-45f3-b3f6-392175b314de",
+    "type": "academic",
+    "text": "Student is able to identify the coefficients a, b, and c in a quadratic equation.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_4f0d1c1a2ce745e4",
+    "timestamp": "2025-12-17T23:10:19.789917",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "8db3e5fa-e12d-4405-a781-47a0984dac80",
+    "type": "academic",
+    "text": "Student is attempting to solve a quadratic equation using the quadratic formula and appears to be correctly identifying the values of a, b, and c.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_4f0d1c1a2ce745e4",
+    "timestamp": "2025-12-17T23:10:32.254426",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic formula"
+    }
+  },
+  {
+    "id": "7e684718-8ebc-4775-ad48-19d144b43bfc",
+    "type": "academic",
+    "text": "Student correctly calculates 4 squared.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_4f0d1c1a2ce745e4",
+    "timestamp": "2025-12-17T23:10:32.254433",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic formula"
+    }
+  },
+  {
+    "id": "d517fdb7-05c3-4091-97b9-2f4a350a722d",
+    "type": "academic",
+    "text": "Student correctly calculates the product of 4, 1, and 5.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_4f0d1c1a2ce745e4",
+    "timestamp": "2025-12-17T23:10:32.254442",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic formula"
+    }
+  },
+  {
+    "id": "d7f3f05e-d73a-4f59-aa66-770dd8873ad1",
+    "type": "academic",
+    "text": "Student arrives at the correct answer of -4.",
+    "importance": 1.0,
+    "student_id": "test_student_002",
+    "session_id": "sess_4f0d1c1a2ce745e4",
+    "timestamp": "2025-12-17T23:10:32.254446",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic formula"
+    }
+  },
+  {
+    "id": "bf282313-41e6-4ba3-b124-b8608024b1e9",
+    "type": "academic",
+    "text": "Student appears to struggle with the concept being discussed, as indicated by the question about whether something 'touches the ground'.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_4f0d1c1a2ce745e4",
+    "timestamp": "2025-12-17T23:10:44.524715",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "57e5c87c-9791-4b63-bff7-c71a7b7f533f",
+    "type": "academic",
+    "text": "Student understands the concept of $b^2-4ac < 0$ (discriminant) and can relate it to a visual analogy.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_4f0d1c1a2ce745e4",
+    "timestamp": "2025-12-17T23:11:08.333858",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "7db79568-8dbc-4393-9811-a1edb8d1baae",
+    "type": "academic",
+    "text": "Student finds math difficult due to the use of symbols.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_e2ad797742a948d6",
+    "timestamp": "2025-12-18T11:32:38.473501",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "math"
+    }
+  },
+  {
+    "id": "9bc34e67-19bc-464a-b899-f2d2379025dd",
+    "type": "academic",
+    "text": "Student struggles with mathematical symbols.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:33:31.620735",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "c83dce33-e00c-40da-9748-da82cd357c0a",
+    "type": "academic",
+    "text": "Student struggles with textbook explanations (large paragraphs).",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:33:31.620738",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "7f55e22f-aa9c-45a5-a82d-8e082bfc4718",
+    "type": "academic",
+    "text": "Student struggles with the discriminant formula.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:33:43.983059",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "0cebfd9c-0a22-47e6-b5bd-6f6d8eb3ecd8",
+    "type": "academic",
+    "text": "Student understands the basic shape (U-shape) of a quadratic function.",
+    "importance": 0.5,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:33:43.983070",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "90293710-c0c6-4471-9d42-c82ffe368c4a",
+    "type": "academic",
+    "text": "Student has difficulty correctly applying the discriminant in practice, plugging numbers in and getting the wrong answer.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:33:43.983074",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "286ed697-ea15-4713-955c-65d84bc51fcf",
+    "type": "academic",
+    "text": "Student is able to identify parts of a quadratic equation. e.g. identifies y = x^2 + 4x + 5.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:33:43.983078",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "643183bd-ec82-49bb-94cd-59d8a4b48b84",
+    "type": "academic",
+    "text": "Student is learning about roots of a parabola.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:33:55.297671",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "roots of a parabola"
+    }
+  },
+  {
+    "id": "0618cc3b-33c9-495f-9c91-3781507a7196",
+    "type": "academic",
+    "text": "Student demonstrates understanding of the relationship between the discriminant and the number of roots of a quadratic equation.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:34:06.743063",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "4bb91350-7ced-4452-8c39-211884bbd44c",
+    "type": "academic",
+    "text": "Student correctly identifies the coefficients a, b, and c in a quadratic equation.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:34:06.743068",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "7da8b826-d740-4fec-b275-9dd20e1b1526",
+    "type": "academic",
+    "text": "Student is correctly applying the quadratic formula, demonstrating an understanding of its initial components.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:34:19.331696",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic formula"
+    }
+  },
+  {
+    "id": "bdb0894b-31e8-45d2-92b7-89ebea20928b",
+    "type": "academic",
+    "text": "Student correctly calculated the components of the discriminant and accurately performed the subtraction.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:34:19.331706",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic formula"
+    }
+  },
+  {
+    "id": "1f385974-9a92-4694-9fbe-c4bfad5651a1",
+    "type": "academic",
+    "text": "Student arrived at a correct final numerical answer for the discriminant calculation.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:34:19.331719",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic formula"
+    }
+  },
+  {
+    "id": "a9846ec6-2b73-4e32-af1c-5ba8221c2ac0",
+    "type": "academic",
+    "text": "Student is grappling with the concept of negative numbers in relation to a mathematical concept (likely roots or solutions).",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:34:32.141923",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "84393511-b3bd-4fa8-817b-4d8f28d24968",
+    "type": "academic",
+    "text": "Student understands the concept of $b^2-4ac < 0$ (discriminant) at a conceptual level (though likely still needs practice applying it).",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:34:55.597848",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "217dd0c2-5328-4982-8b77-4183fa7f9414",
+    "type": "academic",
+    "text": "Student is working on completing the square, but needs guidance on the process.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:35:18.864330",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "completing the square"
+    }
+  },
+  {
+    "id": "57deca23-a97f-41ff-9a5c-332b9dd619db",
+    "type": "academic",
+    "text": "Student correctly identifies that half of 6 is 3.",
+    "importance": 0.5,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:35:18.864337",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "completing the square"
+    }
+  },
+  {
+    "id": "46e181fd-8eb0-42ad-a4f5-2782c1f136df",
+    "type": "academic",
+    "text": "Student likely working on a quadratic equation and solving for x, understanding the concept of adding to both sides to maintain equality.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:35:31.475971",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "8afb1fa3-1570-4a2d-89a5-343d4526bde6",
+    "type": "academic",
+    "text": "Student able to provide a correct answer '9' and '4' suggesting they are progressing through the problem.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:35:31.475977",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "basic arithmetic, potentially related to equation solving."
+    }
+  },
+  {
+    "id": "9bb7909e-81b8-444d-8a5d-14a0672767a4",
+    "type": "academic",
+    "text": "Student is learning about completing the square, specifically the step of rewriting the left side of the equation as a squared binomial.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:35:43.198348",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "completing the square"
+    }
+  },
+  {
+    "id": "7b121a44-6dbd-43c9-8e2d-b1cae2f5371b",
+    "type": "academic",
+    "text": "Student correctly identifies the 'half' number (3) in the context of completing the square.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:35:43.198356",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "completing the square"
+    }
+  },
+  {
+    "id": "7a2eade6-245f-4220-abf3-5bb6d9999a2a",
+    "type": "academic",
+    "text": "Student asks a question about square roots.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:35:56.069706",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "square roots"
+    }
+  },
+  {
+    "id": "b5130096-33a7-4187-a46e-0130d3b6f15d",
+    "type": "academic",
+    "text": "Student understands the concept of square roots in the context of solving an equation. ",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:35:56.069716",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "square roots"
+    }
+  },
+  {
+    "id": "da024ab3-a373-4667-8ff1-7b64d2fd47ec",
+    "type": "academic",
+    "text": "Student remembers and applies the concept of the discriminant to solve a quadratic equation question.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:37:21.248798",
+    "metadata": {
+      "emotion": "excited",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "14145ce4-4899-44bb-8cc6-70a6c850302a",
+    "type": "academic",
+    "text": "Student is able to recall and apply a previously discussed strategy (airball thing) to a problem.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:37:21.248812",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "2554dc31-5b81-4880-9d8a-ca8c4f41c81c",
+    "type": "academic",
+    "text": "Student is working on completing the square.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:37:33.265896",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "completing the square"
+    }
+  },
+  {
+    "id": "78ba2c60-b71e-438c-a042-5f2cad47a14d",
+    "type": "academic",
+    "text": "Student understands the concept of square roots resulting in both positive and negative solutions.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:37:45.246456",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "square roots"
+    }
+  },
+  {
+    "id": "da98ab67-bcfa-4ff6-80cf-f39f5b4e1c93",
+    "type": "academic",
+    "text": "Student needs review on the relationship between the discriminant and the number of solutions.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:37:45.246465",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "403375e4-8e37-4a1f-adc0-66d29cec3120",
+    "type": "academic",
+    "text": "Student correctly solves for x in one of the resulting equations (x+3=2).",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:37:45.246476",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "solving equations"
+    }
+  },
+  {
+    "id": "fe4b4d71-9722-40bb-ad37-16e8a66e2589",
+    "type": "academic",
+    "text": "Student correctly subtracts 3 from -2 to get -5.",
+    "importance": 0.2,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:37:57.036930",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "basic arithmetic"
+    }
+  },
+  {
+    "id": "45a69276-a86b-4849-8c29-06ef36f75c7b",
+    "type": "academic",
+    "text": "Student correctly identifies the roots of the equation.",
+    "importance": 0.4,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:37:57.036945",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "f14b646c-a068-4d78-8373-9856660908fc",
+    "type": "academic",
+    "text": "Student recognizes the connection between completing the square and factoring, and the equivalence of the roots.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:37:57.036948",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "e246a141-a299-4a04-899d-44c5c168040a",
+    "type": "academic",
+    "text": "Student correctly calculated half of 5 as 2.5.",
+    "importance": 0.3,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:38:09.152601",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "fractions and squaring"
+    }
+  },
+  {
+    "id": "2ce82ae9-8283-4a76-9be7-2f43024efa42",
+    "type": "academic",
+    "text": "Student attempts to square a fraction by squaring the top and bottom.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:38:09.152609",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "fractions and squaring"
+    }
+  },
+  {
+    "id": "a8b7d6ce-0fe5-437a-ba6b-ad14eb211ac8",
+    "type": "academic",
+    "text": "Student demonstrates potential confusion with adding fractions.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:38:20.948066",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "fractions"
+    }
+  },
+  {
+    "id": "67b05bd4-c9e2-466a-9157-4450acf50185",
+    "type": "academic",
+    "text": "Student's solution includes an incomplete understanding of perfect square formation.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:38:20.948087",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "completing the square"
+    }
+  },
+  {
+    "id": "e3966efb-a88d-4c3d-ad41-cf197eed59d5",
+    "type": "academic",
+    "text": "Student likely working with fractions, specifically adding or subtracting them.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:38:33.747981",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "fractions"
+    }
+  },
+  {
+    "id": "ada33ced-b895-4780-a9b0-638d102be2df",
+    "type": "academic",
+    "text": "Student likely understands the concept of free throws and practice in the context of basketball as an analogy for math reps.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:38:45.226306",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "math concepts"
+    }
+  },
+  {
+    "id": "6cfa8005-15f5-4fae-bd0d-110cccf116b3",
+    "type": "academic",
+    "text": "Student understood a previous lesson involving diagrams.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:38:45.226316",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "math concepts"
+    }
+  },
+  {
+    "id": "c553c432-3ab7-4864-8708-e5a23ec224fa",
+    "type": "academic",
+    "text": "Student attempts to solve a problem involving a square root.",
+    "importance": 0.5,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:38:56.762349",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "7df2a0eb-9a7a-40f5-b6da-6151ed67ff80",
+    "type": "academic",
+    "text": "Student provides the correct answer to a calculation.",
+    "importance": 0.4,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:38:56.762361",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "36ae4fc6-1f17-42d0-8265-35389a5002cb",
+    "type": "academic",
+    "text": "The student is working on a math problem involving square roots and potentially quadratic equations.",
+    "importance": 0.3,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:39:03.290153",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "eab6702d-bd2f-4be2-a346-1f0a92fa3f91",
+    "type": "academic",
+    "text": "Student successfully applied the discriminant and completing the square.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_a6a88e5b37fc45f7",
+    "timestamp": "2025-12-18T12:40:18.849092",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "math concepts"
+    }
+  },
+  {
+    "id": "e5c9fb2a-ec72-4530-9dfd-259bf113bf9f",
+    "type": "academic",
+    "text": "Student struggled with fractions.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_a6a88e5b37fc45f7",
+    "timestamp": "2025-12-18T12:40:18.849103",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "math concepts"
+    }
+  },
+  {
+    "id": "6854713e-b6b0-4e93-bfdd-4952fe66ba24",
+    "type": "academic",
+    "text": "Student is able to set up the equation to solve for the time when the rocket hits the ground.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_a6a88e5b37fc45f7",
+    "timestamp": "2025-12-18T12:40:29.760477",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "physics"
+    }
+  },
+  {
+    "id": "ffbd7027-7a89-4e51-a239-29879b4abdbf",
+    "type": "academic",
+    "text": "Student correctly identifies 't' as a common factor in an equation.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_a6a88e5b37fc45f7",
+    "timestamp": "2025-12-18T12:40:41.420583",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "factoring"
+    }
+  },
+  {
+    "id": "b34e61bc-6761-402d-af56-9f35a99fd02a",
+    "type": "academic",
+    "text": "Student correctly sets up the equation  $t(-4.9t + 19.6) = 0$.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_a6a88e5b37fc45f7",
+    "timestamp": "2025-12-18T12:40:41.420610",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "53927873-1353-40bf-83a4-844bbe915b6e",
+    "type": "academic",
+    "text": "Student struggles with the division of -19.6 by -4.9 and needs to do it without a calculator.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_a6a88e5b37fc45f7",
+    "timestamp": "2025-12-18T12:40:54.975879",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "solving equations"
+    }
+  },
+  {
+    "id": "1ea64214-696f-4db0-8c16-aba1908ef7dd",
+    "type": "academic",
+    "text": "Student struggles with mental calculation and requests to skip the problem.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_a6a88e5b37fc45f7",
+    "timestamp": "2025-12-18T12:40:54.975934",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "solving equations"
+    }
+  },
+  {
+    "id": "b30236ea-126f-4dcc-99b2-897bf5c4620e",
+    "type": "academic",
+    "text": "Student is discussing 'hang time' related to a ball in the air which suggests they're working on a physics or projectile motion problem.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_a6a88e5b37fc45f7",
+    "timestamp": "2025-12-18T12:41:18.455082",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "0e7eba45-e538-4b03-a7bb-4e0e514cb999",
+    "type": "academic",
+    "text": "Student demonstrates an understanding of the vertex as related to the maximum height of a curve.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_a6a88e5b37fc45f7",
+    "timestamp": "2025-12-18T12:41:29.862178",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic functions"
+    }
+  },
+  {
+    "id": "1f039b11-102a-4de0-bbde-13355f23beb3",
+    "type": "academic",
+    "text": "Student correctly identifies values for 'a' and 'b' in a quadratic equation.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_a6a88e5b37fc45f7",
+    "timestamp": "2025-12-18T12:41:29.862187",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic functions"
+    }
+  },
+  {
+    "id": "e10f07bc-05a5-4a1f-ac55-31cfc02e5716",
+    "type": "academic",
+    "text": "Student correctly performs a calculation to find the x-coordinate of the vertex.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_a6a88e5b37fc45f7",
+    "timestamp": "2025-12-18T12:41:29.862195",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic functions"
+    }
+  },
+  {
+    "id": "2cf68d8a-ebb2-42bf-a479-4935c9437db0",
+    "type": "academic",
+    "text": "Student understands the concept of time (seconds) and relating it to a position (top) in a general context.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_a6a88e5b37fc45f7",
+    "timestamp": "2025-12-18T12:41:42.445921",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "817ebb7b-7e37-4a84-a632-3b926e606e03",
+    "type": "academic",
+    "text": "Student correctly performs arithmetic operations: $-(2)^2 + 4(2) + 2 = -4 + 8 + 2$.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_a6a88e5b37fc45f7",
+    "timestamp": "2025-12-18T12:41:42.445924",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "0296e97e-0b6b-4c9b-aa86-e61d2f4e6b21",
+    "type": "academic",
+    "text": "Student correctly added 4 + 2 and provided the correct answer, but appears to be unsure about the units, asking 'feet? meters?'.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_a6a88e5b37fc45f7",
+    "timestamp": "2025-12-18T12:41:42.445927",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "89df93a5-0f9f-4238-b525-3e60f17fa67d",
+    "type": "academic",
+    "text": "Student demonstrates an understanding of patterns.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_a6a88e5b37fc45f7",
+    "timestamp": "2025-12-18T12:41:53.075512",
+    "metadata": {
+      "emotion": "happy",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "16001ea3-dd1c-4845-98aa-eff44135b658",
+    "type": "academic",
+    "text": "Student understands the concept of where two lines cross on a graph.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_f13b1cb9e7cf436b",
+    "timestamp": "2025-12-18T12:43:07.059385",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "systems of equations"
+    }
+  },
+  {
+    "id": "dd00684c-d601-4d4f-a8e2-2428fada9959",
+    "type": "academic",
+    "text": "Student demonstrates an understanding of the concept of intersection (possibly relating to routes/paths)",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_f13b1cb9e7cf436b",
+    "timestamp": "2025-12-18T12:43:19.188443",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "d856edd5-c0e8-4a5c-bd0c-3c17f22aea52",
+    "type": "academic",
+    "text": "Student is exploring the intersections of geometric shapes, possibly lines and parabolas, and analyzing the number of intersections.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_f13b1cb9e7cf436b",
+    "timestamp": "2025-12-18T12:43:19.188449",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "f37a4d5b-5808-4268-940b-ea8e6717b6b0",
+    "type": "academic",
+    "text": "Student understands the concept of solving systems of equations.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_f13b1cb9e7cf436b",
+    "timestamp": "2025-12-18T12:43:30.673730",
+    "metadata": {
+      "emotion": "excited",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "89f01c91-9a21-43c6-a62b-23d02a8c0dfc",
+    "type": "academic",
+    "text": "Student believes they are 'dumb' due to difficulty memorizing textbook definitions.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_f13b1cb9e7cf436b",
+    "timestamp": "2025-12-18T12:43:44.051491",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "math ability self-perception"
+    }
+  },
+  {
+    "id": "84eb1045-358d-4e83-afa0-dab50a9c8bdc",
+    "type": "academic",
+    "text": "Student demonstrates understanding of the concept of setting equations equal to find intersections.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_f13b1cb9e7cf436b",
+    "timestamp": "2025-12-18T12:43:55.370000",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "intersections of functions"
+    }
+  },
+  {
+    "id": "cdedb212-9613-4c69-b897-19db03644f48",
+    "type": "academic",
+    "text": "Student correctly transforms the equation to standard quadratic form.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_f13b1cb9e7cf436b",
+    "timestamp": "2025-12-18T12:43:55.370017",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "89da6c32-a547-476f-b077-6bb40c0f1baa",
+    "type": "academic",
+    "text": "The student struggles with factoring quadratic equations. The student provided incorrect numbers to factor.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_f13b1cb9e7cf436b",
+    "timestamp": "2025-12-18T12:44:07.830607",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "factoring quadratics"
+    }
+  },
+  {
+    "id": "0c5e60be-a227-4a2f-af72-45327c1dfe44",
+    "type": "academic",
+    "text": "The student correctly identified the factors of the quadratic equation.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_f13b1cb9e7cf436b",
+    "timestamp": "2025-12-18T12:44:07.830614",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "factoring quadratics"
+    }
+  },
+  {
+    "id": "405c9290-0cc2-4960-a6d7-9f4e3f4ffe13",
+    "type": "academic",
+    "text": "Student has a dislike of fractions.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_0b1d3885288c4624",
+    "timestamp": "2025-12-18T12:45:44.890997",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "fractions"
+    }
+  },
+  {
+    "id": "3a1c4396-713f-4e41-a7e6-6ced7e51ad1a",
+    "type": "academic",
+    "text": "Student may need a review of intersections of parabolas and lines, as it's identified as 'the laser problem from last time'.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_0b1d3885288c4624",
+    "timestamp": "2025-12-18T12:45:57.858620",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "math: parabolas and lines"
+    }
+  },
+  {
+    "id": "23739eb5-3d4c-4009-9c9d-e30b21a7979f",
+    "type": "academic",
+    "text": "Student attempts to solve a quadratic equation.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_0b1d3885288c4624",
+    "timestamp": "2025-12-18T12:46:08.608481",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "94954528-f8cf-417c-a147-5ec3bbef7711",
+    "type": "academic",
+    "text": "Student understands the concept of factoring out x.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_0b1d3885288c4624",
+    "timestamp": "2025-12-18T12:46:08.608488",
+    "metadata": {
+      "emotion": "excited",
+      "topic": "factoring"
+    }
+  },
+  {
+    "id": "3be325bf-3918-4a93-a16a-8c162025e8e2",
+    "type": "academic",
+    "text": "Student understands the concept of intersection and its relation to a collision.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_0b1d3885288c4624",
+    "timestamp": "2025-12-18T12:46:21.640543",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "projectile motion"
+    }
+  },
+  {
+    "id": "02e8b3f4-ef7b-45a2-a8d7-975e9b7c86a8",
+    "type": "academic",
+    "text": "Student is unsure how to adjust the equation to change the height of the rover's trajectory.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_0b1d3885288c4624",
+    "timestamp": "2025-12-18T12:46:21.640552",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations, projectile motion"
+    }
+  },
+  {
+    "id": "2fc44c94-d69c-4f1a-a62f-010eba12c5cd",
+    "type": "academic",
+    "text": "Student initially struggled with understanding the discriminant.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_0b1d3885288c4624",
+    "timestamp": "2025-12-18T12:46:33.380086",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "3e470c24-50db-4638-9978-c51d2d5101bd",
+    "type": "academic",
+    "text": "The student is working on quadratics.",
+    "importance": 0.4,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:51:40.913108",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "419d9b59-5014-4029-b7ef-fa3e1826544c",
+    "type": "academic",
+    "text": "Student understands the basic shape of a quadratic function (U-shape).",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:51:53.435795",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "986bda93-18a9-4b48-91d8-84ea4e2ccbd8",
+    "type": "academic",
+    "text": "Student struggles with formulas, specifically the discriminant part of the quadratic formula.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:51:53.435808",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "7833e605-7745-48ed-9c3f-ba841ec7cd5f",
+    "type": "academic",
+    "text": "Student has difficulty correctly applying the quadratic formula.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:51:53.435820",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "quadratic formula"
+    }
+  },
+  {
+    "id": "67c63db3-ffde-488d-8348-d92728ec00dd",
+    "type": "academic",
+    "text": "Student struggles with interpreting the discriminant's role in determining the number of real roots.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:51:53.435823",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "27a1e93c-193f-463a-9f09-558da64d2194",
+    "type": "academic",
+    "text": "Student is learning about roots of a parabola.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:52:03.908575",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "roots of a parabola"
+    }
+  },
+  {
+    "id": "affe1487-72e1-4cc8-95c7-5209a7c4aebb",
+    "type": "academic",
+    "text": "Student likely has a foundational misunderstanding of quadratic equations and the relationship between the discriminant and the roots.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:52:16.587679",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "8438fbed-99e2-4aa6-a98d-5d732fc489b6",
+    "type": "academic",
+    "text": "Student demonstrates the ability to identify the coefficients a, b, and c in a quadratic equation.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:52:16.587687",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "84013733-e809-47c6-9c37-80e2aaea2898",
+    "type": "academic",
+    "text": "Student is able to calculate the expression  $4^2 - 4(1)(5)$ but may need further explanation of its context.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:52:28.443638",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "b2d182f9-c62f-40c4-a5e0-ddc2ab423e00",
+    "type": "academic",
+    "text": "Student correctly calculates $4^2$ as 16 and 4 times 1 times 5 as 20.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:52:28.443643",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "1b9cc6f1-31cc-415f-a648-97a2060195e3",
+    "type": "academic",
+    "text": "Student correctly solves 16 - 20 = -4.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:52:28.443647",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "90903f70-ef71-4642-8d13-5b1f8f6c9e79",
+    "type": "academic",
+    "text": "Student is learning about negative numbers and their relationship to a concept (likely math-related) that 'doesn't touch the ground'.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:52:40.838644",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "negative numbers/math concept"
+    }
+  },
+  {
+    "id": "05353105-5202-4ba9-b964-7f08b9528cd5",
+    "type": "academic",
+    "text": "Student understands the concept of $b^2-4ac < 0$ (discriminant) and can relate it to a visual analogy.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:53:04.364703",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "discriminants"
+    }
+  },
+  {
+    "id": "f30b3899-3f03-446e-8143-3b409420b1c2",
+    "type": "academic",
+    "text": "Student is about to start learning the method of Completing the Square.",
+    "importance": 0.5,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:53:15.734597",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "math"
+    }
+  },
+  {
+    "id": "ffc7092d-c108-4ad6-a281-f3c652644b7a",
+    "type": "academic",
+    "text": "Student is working on completing the square to solve a quadratic equation.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:53:28.157068",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "f28aee8f-e5a1-478f-8121-1f2f08b99966",
+    "type": "academic",
+    "text": "Student needs guidance on the process of completing the square, specifically identifying the 'magic number'.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:53:28.157076",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "completing the square"
+    }
+  },
+  {
+    "id": "77598ce8-e6a0-40cf-b625-0b6fe7b0dd82",
+    "type": "academic",
+    "text": "Student likely working on completing the square, demonstrated by the equation they present.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:53:40.096483",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "completing the square"
+    }
+  },
+  {
+    "id": "7f74315b-43ac-409a-874f-db267c5a1d38",
+    "type": "academic",
+    "text": "Student able to simplify an expression and solve for a variable.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:53:40.096488",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "solving equations"
+    }
+  },
+  {
+    "id": "7e00015f-8346-4ab5-b5bc-e054e8863dc5",
+    "type": "academic",
+    "text": "Student is unsure how a specific result was obtained, indicating a potential gap in understanding of the previous steps or a misunderstanding of a concept.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:53:52.831488",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "algebra"
+    }
+  },
+  {
+    "id": "f34c16b1-295f-4b57-bf7e-b578f91db5de",
+    "type": "academic",
+    "text": "Student correctly identifies the concept being used (completing the square).",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:53:52.831499",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "algebra"
+    }
+  },
+  {
+    "id": "86ea783b-bd20-4b72-8a4b-e0bcf1d1bcb6",
+    "type": "academic",
+    "text": "Student expresses understanding of the concept after the explanation.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:53:52.831507",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "algebra"
+    }
+  },
+  {
+    "id": "60bdd00f-91c9-4754-8588-9c1b0b1c8161",
+    "type": "academic",
+    "text": "Student asks about square roots, indicating a potential knowledge gap or area of focus.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:54:05.038792",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "square roots"
+    }
+  },
+  {
+    "id": "651e9139-2ed1-4756-9ae8-dbe8fe42c60c",
+    "type": "academic",
+    "text": "Student understood and applied the concept of the discriminant to determine the number of real solutions.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:55:30.233999",
+    "metadata": {
+      "emotion": "excited",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "7c7b3fa2-f095-4b7d-b93b-29bec33213d6",
+    "type": "academic",
+    "text": "Student used an 'airball thing' (likely a mnemonic or visualization technique) related to a math concept to help them.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:55:30.234009",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "problem-solving strategies"
+    }
+  },
+  {
+    "id": "1b05f99f-22db-4b3b-b431-af4713b966ca",
+    "type": "academic",
+    "text": "Student correctly wrote 'no real solutions' based on a negative discriminant.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:55:30.234012",
+    "metadata": {
+      "emotion": "excited",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "02c00a63-9143-48ce-9d92-83173728fc99",
+    "type": "academic",
+    "text": "Student is working on completing the square.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:55:41.645685",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "completing the square"
+    }
+  },
+  {
+    "id": "a03420a8-de4f-44b4-8ee6-21f8c5076a98",
+    "type": "academic",
+    "text": "Student understands the concept of square roots resulting in both positive and negative solutions.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:55:54.506751",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "square roots"
+    }
+  },
+  {
+    "id": "a15050a2-c5b3-4b7e-9471-d8ff38f915f6",
+    "type": "academic",
+    "text": "Student correctly solves for x in the first equation (x+3=2).",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:55:54.506765",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "solving equations"
+    }
+  },
+  {
+    "id": "c221591c-f279-4a4b-8765-45511bfdaf20",
+    "type": "academic",
+    "text": "Student likely needs review on the relationship between the discriminant and the number of solutions in a quadratic equation.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:55:54.506874",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "discriminant"
+    }
+  },
+  {
+    "id": "cbad0907-2b91-4792-aaed-83a731c6a1c4",
+    "type": "academic",
+    "text": "Student correctly subtracts 3 from -2.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:56:05.455576",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "basic arithmetic"
+    }
+  },
+  {
+    "id": "16889311-8909-4208-8f11-509d6500d77e",
+    "type": "academic",
+    "text": "Student understands the relationship between completing the square and factoring.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:56:05.455585",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "completing the square/factoring"
+    }
+  },
+  {
+    "id": "f4f5e751-392f-47e0-97fe-b214eddf9a22",
+    "type": "academic",
+    "text": "Student sets up the equation correctly to complete the square.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:56:05.455590",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "completing the square"
+    }
+  },
+  {
+    "id": "32b7fab9-48ff-440f-a569-779a305a38e8",
+    "type": "academic",
+    "text": "Student understands how to calculate half of a number.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:56:17.669428",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "15f34cfa-9d17-45e1-9d60-1ee476186aff",
+    "type": "academic",
+    "text": "Student is struggling with fractions.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:56:17.669432",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "41f02bb1-b842-49ff-956b-8582637322dc",
+    "type": "academic",
+    "text": "Student understands the concept of squaring a fraction (squaring top and bottom).",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:56:17.669444",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "1a06c072-fa92-48cd-a222-310e58276393",
+    "type": "academic",
+    "text": "Student demonstrates potential difficulty with fraction addition.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:56:29.157172",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "fractions"
+    }
+  },
+  {
+    "id": "17dca019-bdce-4451-9cf9-68c16aef47a7",
+    "type": "academic",
+    "text": "Student is working on fractions.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:56:42.653302",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "fractions"
+    }
+  },
+  {
+    "id": "07bc19d9-69aa-48b3-8d06-83a3da846e47",
+    "type": "academic",
+    "text": "Student understands the concept of practice and muscle memory in relation to math problems, drawing a parallel to free throws in basketball.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:56:55.712930",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "ca13de8d-0a50-4776-8796-7e4a30900613",
+    "type": "academic",
+    "text": "Student has prior experience with diagrams in math.",
+    "importance": 0.4,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:56:55.712936",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "477b732e-c55b-43e3-9b84-9ad441584544",
+    "type": "academic",
+    "text": "Student is solving a problem involving square roots and algebraic manipulation.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:57:04.915762",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "faa9db2e-c63e-44dd-bdcf-e0f9102d0298",
+    "type": "academic",
+    "text": "Student is working on a math problem involving square roots and potentially quadratic equations.",
+    "importance": 0.3,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:57:11.793937",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "a973560d-7554-4cbb-b676-d74971be52f4",
+    "type": "academic",
+    "text": "Student struggles with word problems and decimals.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_70cfdbb1b55342c2",
+    "timestamp": "2025-12-18T12:58:36.720373",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "word problems, decimals"
+    }
+  },
+  {
+    "id": "5c786817-4835-4c0b-9945-d2307dbf83dc",
+    "type": "academic",
+    "text": "Student understands the concept of height being zero when an object hits the ground.",
+    "importance": 0.5,
+    "student_id": "test_student_002",
+    "session_id": "sess_70cfdbb1b55342c2",
+    "timestamp": "2025-12-18T12:58:36.720382",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "physics - projectile motion"
+    }
+  },
+  {
+    "id": "93fb9830-4341-4905-b5c7-12cb672b9750",
+    "type": "academic",
+    "text": "Student is able to identify common factors in an equation.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_70cfdbb1b55342c2",
+    "timestamp": "2025-12-18T12:58:48.423897",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "factoring"
+    }
+  },
+  {
+    "id": "4c46b147-e75b-4e2b-a967-b031a6495412",
+    "type": "academic",
+    "text": "Student correctly factors out 't' from the given equation.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_70cfdbb1b55342c2",
+    "timestamp": "2025-12-18T12:58:48.423905",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "factoring"
+    }
+  },
+  {
+    "id": "84360a23-417a-4800-ab76-161753815171",
+    "type": "academic",
+    "text": "Student correctly states one part of the solution when the product is 0.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_70cfdbb1b55342c2",
+    "timestamp": "2025-12-18T12:58:48.423908",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "solving equations"
+    }
+  },
+  {
+    "id": "8c6f2b81-55c3-40a3-98a3-d189ebbc5b55",
+    "type": "academic",
+    "text": "Student struggles with the algebraic manipulation of equations (isolating 't' and division).",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_70cfdbb1b55342c2",
+    "timestamp": "2025-12-18T12:59:00.999140",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "solving equations"
+    }
+  },
+  {
+    "id": "4e4738e8-3f11-4364-9aab-c217304ec668",
+    "type": "academic",
+    "text": "Student demonstrates understanding of the concept of vertex as the maximum height of a curve.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_70cfdbb1b55342c2",
+    "timestamp": "2025-12-18T12:59:36.229706",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "parabolas"
+    }
+  },
+  {
+    "id": "c53c3235-e216-4929-bb46-5c45d3a2fa2f",
+    "type": "academic",
+    "text": "Student correctly identifies the values of 'a' and 'b' in the quadratic equation.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_70cfdbb1b55342c2",
+    "timestamp": "2025-12-18T12:59:36.229713",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "4e23cc97-9d9f-4362-b4d9-5ac7ba077af6",
+    "type": "academic",
+    "text": "Student understands the concept of time (seconds) and relating it to a position (top) in a general context, likely related to a quadratic equation describing a projectile.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_70cfdbb1b55342c2",
+    "timestamp": "2025-12-18T12:59:48.996462",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "8d28849e-0d48-428f-a498-06649ba87703",
+    "type": "academic",
+    "text": "Student correctly performs arithmetic operations but needs to fully interpret the result within the context of the problem, likely related to projectile height calculation.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_70cfdbb1b55342c2",
+    "timestamp": "2025-12-18T12:59:48.996471",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "5b869f71-ae4e-487a-84e0-f9f3ce34b5b9",
+    "type": "academic",
+    "text": "Student is unsure about the units of the solution (feet or meters), suggesting a need for a review of units of measurement related to the problem context.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_70cfdbb1b55342c2",
+    "timestamp": "2025-12-18T12:59:48.996481",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "0b7e28d2-9ba2-4ee3-8f9b-f5d093aa3326",
+    "type": "academic",
+    "text": "Student demonstrates understanding of a pattern.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_70cfdbb1b55342c2",
+    "timestamp": "2025-12-18T12:59:59.902289",
+    "metadata": {
+      "emotion": "happy",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "0a55081a-a49d-470e-9e84-3da8ec095531",
+    "type": "academic",
+    "text": "Student asks about the intersection of lines on a graph in the context of systems of equations.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_04b3209f25ea4fff",
+    "timestamp": "2025-12-18T13:01:14.147558",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "0d4b3c6e-82ba-471f-b786-6f116027f992",
+    "type": "academic",
+    "text": "Student likely misunderstands the concept of intersecting lines and shapes (parabola, line).",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_04b3209f25ea4fff",
+    "timestamp": "2025-12-18T13:01:26.133009",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "linear-quadratic systems"
+    }
+  },
+  {
+    "id": "ef0fae98-991f-4d75-99e4-eca9b4cc9d69",
+    "type": "academic",
+    "text": "Student likely misunderstands the concept of a line's relationship to a U-shaped curve, possibly related to parabolas or quadratics.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_04b3209f25ea4fff",
+    "timestamp": "2025-12-18T13:01:38.622452",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "72a80439-f212-49db-ab7a-3a2051d72e5c",
+    "type": "academic",
+    "text": "Student understands that solving systems of equations can be used in the context of space travel.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_04b3209f25ea4fff",
+    "timestamp": "2025-12-18T13:01:38.622461",
+    "metadata": {
+      "emotion": "excited",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "392d4979-3a9e-4835-b907-6a5ba3ce1f8c",
+    "type": "academic",
+    "text": "Student struggles with textbook definitions and feels 'dumb' due to it.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_04b3209f25ea4fff",
+    "timestamp": "2025-12-18T13:01:50.749850",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "math self-perception"
+    }
+  },
+  {
+    "id": "8f11c9b4-c331-4af2-9d47-73c2fd809e00",
+    "type": "academic",
+    "text": "Student demonstrates understanding of setting equations equal to find intersections.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_04b3209f25ea4fff",
+    "timestamp": "2025-12-18T13:02:01.953847",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "99f34b19-c392-4c41-811e-67eb3a4fb020",
+    "type": "academic",
+    "text": "Student correctly subtracts terms to set up a quadratic equation.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_04b3209f25ea4fff",
+    "timestamp": "2025-12-18T13:02:01.953860",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "6a22debd-a607-4676-bd92-55e4f96a37a0",
+    "type": "academic",
+    "text": "Student is learning to factor quadratic expressions.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_04b3209f25ea4fff",
+    "timestamp": "2025-12-18T13:02:13.846695",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "factoring quadratics"
+    }
+  },
+  {
+    "id": "7e271674-d856-4c28-aec4-bd4ebdf530c3",
+    "type": "academic",
+    "text": "Student attempts to solve for roots after factoring.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_04b3209f25ea4fff",
+    "timestamp": "2025-12-18T13:02:13.846702",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "solving quadratic equations"
+    }
+  },
+  {
+    "id": "ca0e08b5-6865-40f8-8329-638a705764a3",
+    "type": "academic",
+    "text": "Student struggles with fractions (based on Freudian slip).",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_ed05d7e5e2334281",
+    "timestamp": "2025-12-18T13:03:53.439610",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "fractions"
+    }
+  },
+  {
+    "id": "65437b4e-00a0-43c9-aefb-7024e3177c07",
+    "type": "academic",
+    "text": "Student is working on a problem involving parabolas and intersections.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_ed05d7e5e2334281",
+    "timestamp": "2025-12-18T13:04:04.839965",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "math"
+    }
+  },
+  {
+    "id": "d3e13ab4-d9ce-4dee-96ea-13ddf54e98a7",
+    "type": "academic",
+    "text": "Student attempts to solve a quadratic equation.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_ed05d7e5e2334281",
+    "timestamp": "2025-12-18T13:04:16.903842",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "392ac7d4-192a-45de-b1fc-9c82d043637c",
+    "type": "academic",
+    "text": "Student understands the concept of setting a quadratic equation equal to zero.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_ed05d7e5e2334281",
+    "timestamp": "2025-12-18T13:04:16.903852",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "ae5e4d9a-5d19-4db6-ad73-173e52b4c4fd",
+    "type": "academic",
+    "text": "Student attempts factoring to solve the quadratic equation.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_ed05d7e5e2334281",
+    "timestamp": "2025-12-18T13:04:16.903856",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "factoring quadratic equations"
+    }
+  },
+  {
+    "id": "848ba24d-2d34-4efd-aaa7-90f25e96b832",
+    "type": "academic",
+    "text": "Student understands the concept of intersection and its relation to 'touching' or 'crashing'.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_ed05d7e5e2334281",
+    "timestamp": "2025-12-18T13:04:29.265363",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "Intersections"
+    }
+  },
+  {
+    "id": "5ec77f70-bd96-4483-a89b-4edcfb41a29d",
+    "type": "academic",
+    "text": "Student is able to connect mathematical concepts (like the equation affecting height of an object) with real-world scenarios like aerospace engineering.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_ed05d7e5e2334281",
+    "timestamp": "2025-12-18T13:04:29.265375",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "Aerospace Engineering, Quadratic Functions"
+    }
+  },
+  {
+    "id": "a0e1c569-0eb7-4ea7-aa2d-419ef1d54680",
+    "type": "academic",
+    "text": "Student initially didn't know what a discriminant was.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_ed05d7e5e2334281",
+    "timestamp": "2025-12-18T13:04:40.491773",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  }
+]

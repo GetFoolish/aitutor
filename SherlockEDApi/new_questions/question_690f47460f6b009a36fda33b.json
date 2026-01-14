@@ -1,0 +1,232 @@
+{
+  "answerArea": {
+    "calculator": false,
+    "chi2Table": false,
+    "periodicTable": false,
+    "tTable": false,
+    "zTable": false
+  },
+  "hints": [
+    {
+      "content": "The number line counts by thirds.\n\n\n[[\u2603 image 1]]\n\n",
+      "images": {},
+      "replace": false,
+      "widgets": {
+        "image 1": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "A clear, educational diagram showing a horizontal number line marked from 0 to seven-thirds. Each tick mark on the line is precisely spaced to represent one-third. Above the number line, seven identical, rectangular blocks are arranged in sequence. Each block is labeled 'one-third', representing a fractional unit. The third and sixth rectangles from the left are slightly elevated, visually indicating accumulation to a whole number. This illustration demonstrates how thirds combine along the number line. Image size: 256x256 pixels.",
+            "backgroundImage": {
+              "height": 160,
+              "url": "/assets/1765812787769-0.0992792093643391.png",
+              "width": 380
+            },
+            "box": [
+              380,
+              160
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 2,
+            "minor": 0
+          }
+        }
+      }
+    },
+    {
+      "content": "$3$ thirds equals $1$ whole. So, $6$ thirds equals $2$ wholes.\n\n\n\n[[\u2603 image 1]]\n\n\n\n",
+      "images": {},
+      "replace": false,
+      "widgets": {
+        "image 1": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "An illustrative number line, extending from 0 to seven-thirds, clearly marked with divisions for each third. Point A is prominently located at the position representing three-thirds, which is explicitly labeled as '1' (one whole). A bold arrow extends from 0 to Point A, visually representing the span of one whole unit. Above this segment, three identical rectangular blocks, each labeled 'one-third', are neatly placed and fully shaded to indicate their combined value. This diagram clarifies that three-thirds constitute one whole. Image size: 256x256 pixels.",
+            "backgroundImage": {
+              "height": 160,
+              "url": "/assets/1765812814579-0.20054104803547046.png",
+              "width": 380
+            },
+            "box": [
+              380,
+              160
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 2,
+            "minor": 0
+          }
+        }
+      }
+    },
+    {
+      "content": "Point $\\blueD{D}$ is at $\\dfrac63$, which equals $2$.\n\n\n\n[[\u2603 image 1]]\n\n",
+      "images": {},
+      "replace": false,
+      "widgets": {
+        "image 1": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "A clean, minimalist number line stretching horizontally. It begins with a clear '0' mark and progresses with distinct, equally spaced tick marks representing fractional thirds. The line extends to include marks for one-third, two-thirds, three-thirds (labeled as 1), four-thirds, five-thirds. Point D is clearly highlighted and positioned precisely at the tick mark corresponding to six-thirds (or 2), which is also explicitly labeled '2'. The style is simple and direct for easy comprehension. Image size: 256x256 pixels.",
+            "backgroundImage": {
+              "height": 100,
+              "url": "/assets/1765812838045-0.5070414323125219.png",
+              "width": 380
+            },
+            "box": [
+              380,
+              100
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 2,
+            "minor": 0
+          }
+        }
+      }
+    }
+  ],
+  "itemDataVersion": {
+    "major": 2,
+    "minor": 0
+  },
+  "question": {
+    "content": "**Which point represents $2$ on the number line?**  \n\n\n\n[[\u2603 image 1]]\n\n[[\u2603 radio 2]]",
+    "images": {},
+    "widgets": {
+      "image 1": {
+        "alignment": "block",
+        "graded": true,
+        "options": {
+          "alt": "A clean, modern number line extends horizontally, marked from 0 to seven-thirds. Each major tick mark represents one-third, with smaller, evenly spaced divisions. Labeled points include: '0' at the start, 'one-third' at the first tick, 'two-thirds' at the second. Point A is clearly marked at the three-thirds (or 1) position. Point B is at the four-thirds position. Point C is at the five-thirds position. Point D is prominently marked at the six-thirds (or 2) position. The line is black against a clean white background. Image size: 256x256 pixels.",
+          "backgroundImage": {
+            "height": 100,
+            "url": "/assets/1765812855547-0.9178304293084255.png",
+            "width": 380
+          },
+          "box": [
+            380,
+            100
+          ],
+          "caption": "",
+          "labels": [],
+          "range": [
+            [
+              0,
+              10
+            ],
+            [
+              0,
+              10
+            ]
+          ],
+          "static": false,
+          "title": ""
+        },
+        "static": false,
+        "type": "image",
+        "version": {
+          "major": 2,
+          "minor": 0
+        }
+      },
+      "radio 2": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "choices": [
+            {
+              "content": "$\\greenE{A}$",
+              "correct": false,
+              "id": "b7030681-9144-42d9-bbe6-6fa387b5643c",
+              "alt": "The letter A in bold green font."
+            },
+            {
+              "content": "$\\purpleD{B}$",
+              "correct": false,
+              "id": "daf2f44f-bbc2-4ebc-a282-3f8c25bc8341",
+              "alt": "The letter B in bold purple font."
+            },
+            {
+              "content": "$\\redE{C}$",
+              "correct": false,
+              "id": "1a63d86f-b91f-47d7-9e58-668f0282aa15",
+              "alt": "The letter C in bold red font."
+            },
+            {
+              "content": "$\\blueD{D}$",
+              "correct": true,
+              "id": "2c1c33a2-0224-4036-a2bb-3c0920074825",
+              "alt": "The letter D in bold blue font."
+            }
+          ],
+          "countChoices": false,
+          "deselectEnabled": false,
+          "displayCount": null,
+          "hasNoneOfTheAbove": false,
+          "multipleSelect": false,
+          "randomize": false
+        },
+        "static": false,
+        "type": "radio",
+        "version": {
+          "major": 2,
+          "minor": 0
+        }
+      }
+    }
+  },
+  "status": "pending_approval",
+  "human_approved": false
+}

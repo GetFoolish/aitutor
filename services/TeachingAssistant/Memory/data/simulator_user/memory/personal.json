@@ -1,0 +1,434 @@
+[
+  {
+    "id": "a42d0171-e716-4121-b027-ac975635c5da",
+    "type": "personal",
+    "text": "Plays basketball.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": "2025-12-23T14:47:03.116725",
+    "metadata": {
+      "emotion": "excited",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519223.116732,
+    "last_epoch": 1766519223.116738
+  },
+  {
+    "id": "56048d2c-3052-4a36-958d-5ac31f398ca1",
+    "type": "personal",
+    "text": "Plays point guard.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": "2025-12-23T14:47:03.116759",
+    "metadata": {
+      "emotion": "excited",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519223.116762,
+    "last_epoch": 1766519223.116765
+  },
+  {
+    "id": "374aaf6e-3d46-4d8e-b6bd-bab4f0136bb9",
+    "type": "personal",
+    "text": "Has a basketball game this Friday.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": "2025-12-23T14:47:03.116783",
+    "metadata": {
+      "emotion": "excited",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519223.116785,
+    "last_epoch": 1766519223.116789
+  },
+  {
+    "id": "dedfafee-71e3-4a70-9e96-356964634051",
+    "type": "personal",
+    "text": "Has a dog named Max.",
+    "importance": 0.3,
+    "student_id": "simulator_user",
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": "2025-12-23T14:47:26.854798",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519246.854798,
+    "last_epoch": 1766519246.8548
+  },
+  {
+    "id": "ef79795b-73dd-4b31-bb8f-5b40c9489930",
+    "type": "personal",
+    "text": "Has a dog named Max.",
+    "importance": 0.2,
+    "student_id": "simulator_user",
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": "2025-12-23T14:47:38.550193",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519258.5502,
+    "last_epoch": 1766519258.550205
+  },
+  {
+    "id": "8ddabef8-663a-4ed8-9f08-65a384067b4b",
+    "type": "personal",
+    "text": "Plays a sport and has practice.",
+    "importance": 0.6,
+    "student_id": "simulator_user",
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": "2025-12-23T14:48:26.906996",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519306.906997,
+    "last_epoch": 1766519306.906999
+  },
+  {
+    "id": "143178de-f7bb-4100-899a-7e6429fcd866",
+    "type": "personal",
+    "text": "Plays basketball.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": "2025-12-23T14:49:45.654959",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519385.654961,
+    "last_epoch": 1766519385.654965
+  },
+  {
+    "id": "a4195c20-4c8f-40fe-aedb-2159b0db6161",
+    "type": "personal",
+    "text": "Team won a basketball game with a score of 54-50.",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": "2025-12-23T14:49:45.654982",
+    "metadata": {
+      "emotion": "happy",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519385.654984,
+    "last_epoch": 1766519385.654988
+  },
+  {
+    "id": "2ec4acd3-6a4b-4052-9969-24d7bcd2fcf7",
+    "type": "personal",
+    "text": "Has a dog named Max.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": "2025-12-23T14:51:25.721027",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519485.721033,
+    "last_epoch": 1766519485.721038
+  },
+  {
+    "id": "05993c03-6fe9-40ea-99ab-6809869c9400",
+    "type": "personal",
+    "text": "Max steals socks and enjoys being chased.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_92667d5684364c0d",
+    "timestamp": "2025-12-23T14:51:25.721062",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519485.721064,
+    "last_epoch": 1766519485.721068
+  },
+  {
+    "id": "972c67bf-d475-49df-bf10-9167262b2f22",
+    "type": "personal",
+    "text": "Interested in basketball.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": "2025-12-23T14:53:45.398404",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519625.398411,
+    "last_epoch": 1766519625.398417
+  },
+  {
+    "id": "773af41f-f8d3-4abf-9bca-0f39220b1b7f",
+    "type": "personal",
+    "text": "Has a dog named Max.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": "2025-12-23T14:53:57.954226",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519637.954237,
+    "last_epoch": 1766519637.954241
+  },
+  {
+    "id": "9cdb71fd-0886-49ca-bb93-5e8166c58c1a",
+    "type": "personal",
+    "text": "Lives in a loud household.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": "2025-12-23T14:53:57.954249",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519637.95425,
+    "last_epoch": 1766519637.954251
+  },
+  {
+    "id": "e8d81c69-122d-4de2-8caa-a86d06cb7119",
+    "type": "personal",
+    "text": "Has a dog named Max.",
+    "importance": 0.2,
+    "student_id": "simulator_user",
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": "2025-12-23T14:54:36.412890",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519676.412891,
+    "last_epoch": 1766519676.412891
+  },
+  {
+    "id": "52cf9614-5b05-4ecb-b39c-c5cc1f23caee",
+    "type": "personal",
+    "text": "Has a dog named Max.",
+    "importance": 0.3,
+    "student_id": "simulator_user",
+    "session_id": "sess_b1550c7e8ae74c19",
+    "timestamp": "2025-12-23T14:55:51.173742",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519751.173762,
+    "last_epoch": 1766519751.173769
+  },
+  {
+    "id": "ee3d5a49-ca42-416a-bd48-cc58abe180b5",
+    "type": "personal",
+    "text": "Watches SpaceX launches.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_b1550c7e8ae74c19",
+    "timestamp": "2025-12-23T14:56:15.009810",
+    "metadata": {
+      "emotion": "excited",
+      "topic": "space travel"
+    },
+    "counter": 1,
+    "first_epoch": 1766519775.009813,
+    "last_epoch": 1766519775.009814
+  },
+  {
+    "id": "6fbc573e-5761-4528-9213-4be8834d95cb",
+    "type": "personal",
+    "text": "Loves space stuff.",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_b1550c7e8ae74c19",
+    "timestamp": "2025-12-23T14:56:15.009828",
+    "metadata": {
+      "emotion": "excited",
+      "topic": "space travel"
+    },
+    "counter": 1,
+    "first_epoch": 1766519775.009828,
+    "last_epoch": 1766519775.009829
+  },
+  {
+    "id": "5bad5eaa-824e-4b5e-b24d-bf2c590b8536",
+    "type": "personal",
+    "text": "Interested in engineering, possibly aerospace.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_b1550c7e8ae74c19",
+    "timestamp": "2025-12-23T14:56:28.049220",
+    "metadata": {
+      "emotion": "excited",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519788.04923,
+    "last_epoch": 1766519788.049236
+  },
+  {
+    "id": "59809e54-12b6-4527-aff2-0752f8e70de9",
+    "type": "personal",
+    "text": "Father wants them to focus on business due to perceived math abilities.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_b1550c7e8ae74c19",
+    "timestamp": "2025-12-23T14:56:28.049266",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519788.049268,
+    "last_epoch": 1766519788.049271
+  },
+  {
+    "id": "4dfc57cc-c800-4773-8610-f44d5fd1bb9e",
+    "type": "personal",
+    "text": "Father is an accountant and enjoys numbers.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_b1550c7e8ae74c19",
+    "timestamp": "2025-12-23T14:56:55.411824",
+    "metadata": {
+      "emotion": "happy",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519815.411825,
+    "last_epoch": 1766519815.411826
+  },
+  {
+    "id": "6d79b372-db85-4408-b057-a6803a0512cb",
+    "type": "personal",
+    "text": "Plays sports; practice is physically demanding.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_a8266728a56b4b3b",
+    "timestamp": "2025-12-23T14:58:20.321170",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519900.321191,
+    "last_epoch": 1766519900.321196
+  },
+  {
+    "id": "ca4dafab-1a82-4a19-9617-52b61989a8db",
+    "type": "personal",
+    "text": "Team is playing a home game.",
+    "importance": 0.6,
+    "student_id": "simulator_user",
+    "session_id": "sess_a8266728a56b4b3b",
+    "timestamp": "2025-12-23T14:58:20.321213",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519900.321214,
+    "last_epoch": 1766519900.321217
+  },
+  {
+    "id": "b39ca06a-f2cf-4fe8-9bff-d67ddb636cf1",
+    "type": "personal",
+    "text": "Has a quiz in history and homework check in math.",
+    "importance": 0.4,
+    "student_id": "simulator_user",
+    "session_id": "sess_a8266728a56b4b3b",
+    "timestamp": "2025-12-23T14:58:20.321229",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519900.32123,
+    "last_epoch": 1766519900.321232
+  },
+  {
+    "id": "e4073be8-5841-47be-881e-481b49cc2be4",
+    "type": "personal",
+    "text": "Enjoys basketball.",
+    "importance": 0.6,
+    "student_id": "simulator_user",
+    "session_id": "sess_a8266728a56b4b3b",
+    "timestamp": "2025-12-23T14:58:31.836089",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "basketball"
+    },
+    "counter": 1,
+    "first_epoch": 1766519911.83609,
+    "last_epoch": 1766519911.836093
+  },
+  {
+    "id": "4209f32c-9f61-48fd-957a-1ea4ccdf9923",
+    "type": "personal",
+    "text": "Has a dog named Max.",
+    "importance": 0.8,
+    "student_id": "simulator_user",
+    "session_id": "sess_a8266728a56b4b3b",
+    "timestamp": "2025-12-23T14:58:43.823604",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519923.823613,
+    "last_epoch": 1766519923.823622
+  },
+  {
+    "id": "c46a73b6-8a71-4c60-9a13-65c91fcc1f46",
+    "type": "personal",
+    "text": "Has a dad who may be knowledgeable in calculus concepts.",
+    "importance": 0.5,
+    "student_id": "simulator_user",
+    "session_id": "sess_a8266728a56b4b3b",
+    "timestamp": "2025-12-23T14:59:08.286202",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519948.286203,
+    "last_epoch": 1766519948.286203
+  },
+  {
+    "id": "7116bfde-c401-41a1-b4fc-c3122a1f82a5",
+    "type": "personal",
+    "text": "Plays a game involving rover crashes.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_a8266728a56b4b3b",
+    "timestamp": "2025-12-23T14:59:19.918347",
+    "metadata": {
+      "emotion": "excited",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519959.918353,
+    "last_epoch": 1766519959.918359
+  }
+]

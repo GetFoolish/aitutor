@@ -10,6 +10,8 @@ interface MediaMixerDisplayProps {
   isCameraEnabled?: boolean;
   isScreenShareEnabled?: boolean;
   isCanvasEnabled?: boolean;
+  privacyMode?: boolean;
+  processedEdgesRef?: RefObject<ImageData | null>;
 }
 
 const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
@@ -18,6 +20,8 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
   isCameraEnabled = true,
   isScreenShareEnabled = true,
   isCanvasEnabled = true,
+  privacyMode = false,
+  processedEdgesRef,
 }) => {
   const [isConnected, setIsConnected] = useState(true); // Frontend-based, always "connected"
   const [error, setError] = useState<string | null>(null);
@@ -83,20 +87,20 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
     displayCanvas.height = sourceCanvas.height;
 
     // Function to update canvas display size
-    const updateDisplaySize = () => {
-      if (sourceCanvas.width > 0 && sourceCanvas.height > 0 && container) {
+    const updateDisplaySize = (width: number, height: number) => {
+      if (width > 0 && height > 0 && container) {
         const containerRect = container.getBoundingClientRect();
-        const { width, height } = calculateCanvasSize(
-          sourceCanvas.width,
-          sourceCanvas.height,
+        const { width: displayWidth, height: displayHeight } = calculateCanvasSize(
+          width,
+          height,
           containerRect.width,
           containerRect.height
         );
-        
+
         // Set CSS size for display (fills container completely, maintains aspect ratio)
         // Position absolutely to fill container with no white space
-        displayCanvas.style.width = `${width}px`;
-        displayCanvas.style.height = `${height}px`;
+        displayCanvas.style.width = `${displayWidth}px`;
+        displayCanvas.style.height = `${displayHeight}px`;
         displayCanvas.style.position = 'absolute';
         displayCanvas.style.top = '50%';
         displayCanvas.style.left = '50%';
@@ -108,32 +112,44 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
       }
     };
 
-    // Initial size update
-    updateDisplaySize();
-
-    // Resize observer to handle container size changes
-    const resizeObserver = new ResizeObserver(() => {
-      updateDisplaySize();
-    });
-    resizeObserver.observe(container);
-
     let lastDrawTime = 0;
     const targetFPS = 10; // Match MediaMixer FPS
     const frameInterval = 1000 / targetFPS;
 
     const drawFrame = (timestamp: number) => {
       if (timestamp - lastDrawTime >= frameInterval) {
-        // Only draw if source canvas has content
-        if (sourceCanvas.width > 0 && sourceCanvas.height > 0) {
-          // Update display canvas internal size if source changed
-          if (displayCanvas.width !== sourceCanvas.width || displayCanvas.height !== sourceCanvas.height) {
-            displayCanvas.width = sourceCanvas.width;
-            displayCanvas.height = sourceCanvas.height;
-            updateDisplaySize();
-          }
+        // Always use source canvas dimensions (1280x2160) to maintain layout
+        if (displayCanvas.width !== sourceCanvas.width || displayCanvas.height !== sourceCanvas.height) {
+          displayCanvas.width = sourceCanvas.width;
+          displayCanvas.height = sourceCanvas.height;
+          updateDisplaySize(sourceCanvas.width, sourceCanvas.height);
+        }
 
-          // Clear and draw the source canvas onto the display canvas
-          ctx.clearRect(0, 0, displayCanvas.width, displayCanvas.height);
+        // Clear canvas
+        ctx.clearRect(0, 0, displayCanvas.width, displayCanvas.height);
+
+        // If privacy mode is ON and we have processed edges, display edges in camera section only
+        if (privacyMode && processedEdgesRef?.current) {
+          const edges = processedEdgesRef.current;
+          const sectionHeight = sourceCanvas.height / 3;
+
+          // Draw the source canvas normally (all three sections)
+          ctx.drawImage(sourceCanvas, 0, 0, displayCanvas.width, displayCanvas.height);
+
+          // Overlay processed edges in the camera section (bottom third) only
+          if (edges.width > 0 && edges.height > 0) {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = edges.width;
+            tempCanvas.height = edges.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            if (tempCtx) {
+              tempCtx.putImageData(edges, 0, 0);
+              // Draw edges in the camera section (bottom third)
+              ctx.drawImage(tempCanvas, 0, 2 * sectionHeight, sourceCanvas.width, sectionHeight);
+            }
+          }
+        } else {
+          // Normal mode: display MediaMixer canvas at full resolution (1280x2160)
           ctx.drawImage(sourceCanvas, 0, 0, displayCanvas.width, displayCanvas.height);
         }
         lastDrawTime = timestamp;
@@ -141,6 +157,24 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
 
       animationFrameRef.current = requestAnimationFrame(drawFrame);
     };
+
+    // Initial size update - always use source canvas (privacy mode doesn't affect display)
+    if (sourceCanvas.width > 0 && sourceCanvas.height > 0) {
+      displayCanvas.width = sourceCanvas.width;
+      displayCanvas.height = sourceCanvas.height;
+      updateDisplaySize(sourceCanvas.width, sourceCanvas.height);
+    }
+
+    // Resize observer to handle container size changes
+    const resizeObserver = new ResizeObserver(() => {
+      // Always use source canvas dimensions to maintain layout (1280x2160)
+      if (sourceCanvas.width > 0 && sourceCanvas.height > 0) {
+        displayCanvas.width = sourceCanvas.width;
+        displayCanvas.height = sourceCanvas.height;
+        updateDisplaySize(sourceCanvas.width, sourceCanvas.height);
+      }
+    });
+    resizeObserver.observe(container);
 
     // Start the render loop
     animationFrameRef.current = requestAnimationFrame(drawFrame);
@@ -153,11 +187,11 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
       }
       resizeObserver.disconnect();
     };
-  }, [canvasRef]);
+  }, [canvasRef, privacyMode, processedEdgesRef]);
 
   return (
     <div className="flex flex-col w-full h-full bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white overflow-hidden transition-colors duration-300 p-0 m-0">
-      <div 
+      <div
         ref={containerRef}
         className="flex flex-col w-full h-full min-h-[500px] md:min-h-[500px] bg-[#FFFDF5] dark:bg-[#000000] relative overflow-hidden group transition-colors duration-300 p-0 m-0"
       >
@@ -180,32 +214,51 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
         {isConnected && (
           <canvas
             ref={displayCanvasRef}
-            style={{ 
+            style={{
               display: 'block'
             }}
           />
         )}
 
-        {/* Status indicators - Neo-Brutalist style */}
-        <div className="absolute bottom-2 left-2 flex gap-2 z-10">
-          {isCameraEnabled && (
-            <div className="flex items-center gap-1 px-2 py-1 border-[2px] border-black dark:border-white bg-[#C4B5FD] text-black dark:text-white text-[10px] font-black uppercase shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]">
+        {/* Segment Labels - Positioned in each 1/3 section */}
+        <div className="absolute inset-0 pointer-events-none z-10">
+          {/* Privacy indicator (if enabled) */}
+          {privacyMode && (
+            <div className="absolute top-2 left-2">
+              <div className="flex items-center gap-1 px-2 py-1 border-[2px] border-black dark:border-white bg-[#FF6B6B] text-white text-[10px] font-black uppercase shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]">
+                <span className="w-1.5 h-1.5 bg-white animate-pulse" />
+                Privacy
+              </div>
+            </div>
+          )}
+          
+          {/* Top 1/3: Question Page */}
+          <div className="absolute bottom-[69%] left-2 mb-2">
+            <div className="flex items-center gap-1 px-2 py-1 border-[2px] border-black dark:border-white bg-[#FF6B6B] text-black dark:text-white text-[8px] font-black uppercase shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]">
               <span className="w-1.5 h-1.5 bg-black dark:bg-white animate-pulse" />
-              Camera
+              Question Page
             </div>
-          )}
-          {isScreenShareEnabled && (
-            <div className="flex items-center gap-1 px-2 py-1 border-[2px] border-black dark:border-white bg-[#FFD93D] text-black text-[10px] font-black uppercase shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]">
-              <span className="w-1.5 h-1.5 bg-black dark:bg-white animate-pulse" />
-              Screen
-            </div>
-          )}
-          {isCanvasEnabled && (
-            <div className="flex items-center gap-1 px-2 py-1 border-[2px] border-black dark:border-white bg-[#FF6B6B] text-white text-[10px] font-black uppercase shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]">
-              <span className="w-1.5 h-1.5 bg-white animate-pulse" />
-              Canvas
-            </div>
-          )}
+          </div>
+
+          {/* Middle 1/3: Screen Share */}
+          <div className="absolute bottom-[32%] left-2 mb-2">
+            {isScreenShareEnabled && (
+              <div className="flex items-center gap-1 px-2 py-1 border-[2px] border-black dark:border-white bg-[#FFD93D] text-black text-[10px] font-black uppercase shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]">
+                <span className="w-1.5 h-1.5 bg-black animate-pulse" />
+                Screen Share
+              </div>
+            )}
+          </div>
+
+          {/* Bottom 1/3: Camera Feed */}
+          <div className="absolute bottom-2 left-2">
+            {isCameraEnabled && (
+              <div className="flex items-center gap-1 px-2 py-1 border-[2px] border-black dark:border-white bg-[#C4B5FD] text-black dark:text-white text-[10px] font-black uppercase shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]">
+                <span className="w-1.5 h-1.5 bg-black dark:bg-white animate-pulse" />
+                Camera Feed
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

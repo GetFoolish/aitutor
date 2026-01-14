@@ -1,0 +1,112 @@
+{
+  "answerArea": {
+    "calculator": false,
+    "chi2Table": false,
+    "periodicTable": false,
+    "tTable": false,
+    "zTable": false
+  },
+  "hints": [
+    {
+      "content": "Let's visualize to help us solve.",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    },
+    {
+      "content": "The array shows $\\blueD{3}$ rows with $\\maroonD{5}$ squares in each row.\n\n\n[[\u2603 image 1]]\n\n",
+      "images": {},
+      "replace": false,
+      "widgets": {
+        "image 1": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "A pristine, educational illustration suitable for a 256x256 pixel canvas, showcasing a clear array of simple, identical squares. The array is perfectly structured with 3 distinct rows and 5 squares in each row. Each square is a uniform, calming pastel blue, clean and unshaded. The squares are evenly spaced and neatly aligned. A subtle, thin dashed line horizontally separates each row to emphasize the row count. On the left side of the array, the rows are numerically labeled with clear, bold blue digits '1', '2', and '3'. Along the top, the columns of squares are labeled with bold maroon digits '1' through '5'. The background is plain white, ensuring maximum focus on the array. The style is flat, graphic, and highly legible, optimized for instructional clarity and ease of understanding for elementary students.",
+            "backgroundImage": {
+              "height": 256,
+              "url": "/assets/1765812176021-0.021188797174387375.png",
+              "width": 256
+            },
+            "box": [
+              256,
+              256
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 2,
+            "minor": 0
+          }
+        }
+      }
+    },
+    {
+      "content": "$\\blueD{3} \\times \\maroonD{5} = \\underbrace{\\maroonD{5} + \\maroonD{5} + \\maroonD{5}}_{\\blueD{3}\\maroonD{\\text{ fives}}} = \\purpleD{15}$",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    },
+    {
+      "content": "$\\Large\\blueD{3}\\times\\maroonD{5}={}\\purpleD{15}$",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    }
+  ],
+  "itemDataVersion": {
+    "major": 2,
+    "minor": 0
+  },
+  "question": {
+    "content": "**Multiply.**\n\n$\\Large\\blueD{3}\\times\\maroonD{5}={}$[[\u2603 numeric-input 1]]",
+    "images": {},
+    "widgets": {
+      "numeric-input 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "answers": [
+            {
+              "maxError": 0,
+              "message": "",
+              "simplify": true,
+              "status": "correct",
+              "strict": false,
+              "value": 15
+            }
+          ],
+          "coefficient": false,
+          "labelText": "",
+          "multipleNumberInput": false,
+          "rightAlign": false,
+          "size": "normal",
+          "static": false
+        },
+        "static": false,
+        "type": "numeric-input",
+        "version": {
+          "major": 2,
+          "minor": 0
+        }
+      }
+    }
+  },
+  "status": "pending_approval",
+  "human_approved": false
+}
