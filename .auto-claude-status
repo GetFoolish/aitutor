@@ -1,0 +1,25 @@
+{
+  "active": true,
+  "spec": "001-practice-history-dashboard",
+  "state": "building",
+  "subtasks": {
+    "completed": 6,
+    "total": 9,
+    "in_progress": 1,
+    "failed": 0
+  },
+  "phase": {
+    "current": "Frontend UI Components",
+    "id": null,
+    "total": 3
+  },
+  "workers": {
+    "active": 0,
+    "max": 1
+  },
+  "session": {
+    "number": 8,
+    "started_at": "2026-01-14T14:44:04.894409"
+  },
+  "last_update": "2026-01-14T15:09:03.291801"
+}
