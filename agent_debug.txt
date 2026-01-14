@@ -1,0 +1,23 @@
+﻿python.exe : Traceback (most recent 
+call last):
+At line:1 char:1
++ & $PythonBin 
+services\LiveKitAgent\agent.py dev 
+*>&1 | Out-File -File ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpe 
+   cified: (Traceback (most recent   
+  call last)::String) [], RemoteEx   
+ ception
+    + FullyQualifiedErrorId : Native 
+   CommandError
+ 
+  File "C:\Users\tuf\Desktop\FILES\up
+work\aitutor\services\LiveKitAgent\ag
+ent.py", line 22, in <module>
+    from livekit.plugins import 
+silero, google, hedra
+ImportError: cannot import name 
+'hedra' from 'livekit.plugins' 
+(unknown location)
