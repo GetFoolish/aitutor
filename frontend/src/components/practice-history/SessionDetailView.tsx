@@ -22,7 +22,7 @@ const formatResponseTime = (seconds: number) => {
 };
 
 export default function SessionDetailView({ sessionId }: SessionDetailViewProps) {
-    const { data: sessionData, isLoading, error } = useSessionDetail({
+    const { data: sessionData, isLoading, isError } = useSessionDetail({
         sessionId,
         enabled: !!sessionId,
     });
@@ -37,7 +37,7 @@ export default function SessionDetailView({ sessionId }: SessionDetailViewProps)
         );
     }
 
-    if (error) {
+    if (isError) {
         return (
             <div className="px-4 py-3 text-center">
                 <div className="text-xs font-bold text-red-600 dark:text-red-400">
@@ -103,12 +103,14 @@ export default function SessionDetailView({ sessionId }: SessionDetailViewProps)
                         </div>
 
                         {/* Question text */}
-                        <div className={cn(
-                            "text-xs font-bold leading-relaxed mb-2",
-                            question.is_correct ? "text-black" : "text-white"
-                        )}>
-                            {question.question_text}
-                        </div>
+                        {question.question_text && (
+                            <div className={cn(
+                                "text-xs font-bold leading-relaxed mb-2",
+                                question.is_correct ? "text-black" : "text-white"
+                            )}>
+                                {question.question_text}
+                            </div>
+                        )}
 
                         {/* Skills */}
                         {question.skill_names && question.skill_names.length > 0 && (
