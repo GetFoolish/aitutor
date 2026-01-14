@@ -164,6 +164,8 @@ class UserManager:
         except KeyError:
             logger.warning(f"[COLD_START] Invalid grade '{current_grade_str}', defaulting to K")
             current_grade = GradeLevel.K
+
+        current_grade_value = current_grade.value
         
         skill_states = {}
         below_grade_count = 0
@@ -172,7 +174,6 @@ class UserManager:
         
         for skill_id, skill in all_skills.items():
             skill_grade_value = skill.grade_level.value
-            current_grade_value = current_grade.value
             
             if skill_grade_value < current_grade_value:
                 # Below current grade - assumed mastered
