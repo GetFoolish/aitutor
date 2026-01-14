@@ -125,6 +125,11 @@ echo "Starting Auth Service API server... Logs -> logs/auth_service.log"
 (cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/AuthService/auth_api.py) > "$SCRIPT_DIR/logs/auth_service.log" 2>&1 &
 pids+=($!)
 
+# Start the LiveKit Agent in the background
+echo "Starting LiveKit Agent... Logs -> logs/livekit_agent.log"
+(cd "$SCRIPT_DIR/services/LiveKitAgent" && "$PYTHON_BIN" agent.py dev) > "$SCRIPT_DIR/logs/livekit_agent.log" 2>&1 &
+pids+=($!)
+
 # Extract ports dynamically from configuration files
 FRONTEND_PORT=$(grep -o '"port":[[:space:]]*[0-9]*' "$SCRIPT_DIR/frontend/vite.config.ts" 2>/dev/null | grep -o '[0-9]*' || echo "3000")
 DASH_API_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/DashSystem/dash_api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8000")
@@ -217,6 +222,7 @@ echo "  🔧 DASH API:           http://localhost:$DASH_API_PORT"
 echo "  🕵️  SherlockED API:     http://localhost:$SHERLOCKED_API_PORT"
 echo "  👨‍🏫 TeachingAssistant:  http://localhost:$TEACHING_ASSISTANT_PORT"
 echo "  🎓 Tutor Service:      (integrated in frontend)"
+echo "  🎥 LiveKit Agent:      (running in background, logs -> logs/livekit_agent.log)"
 echo ""
 echo "Press Ctrl+C to stop."
 echo "You can view the logs for each service in the 'logs' directory."
