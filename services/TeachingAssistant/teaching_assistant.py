@@ -57,7 +57,7 @@ class TeachingAssistant:
         while self.running:
             try:
                 # Get all active sessions and check for inactivity
-                active_sessions = self.session_manager.get_all_active_sessions()
+                active_sessions = self.session_manager.list_active_sessions()
 
                 for session in active_sessions:
                     session_id = session.get("session_id")

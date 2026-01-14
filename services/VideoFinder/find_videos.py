@@ -17,7 +17,7 @@ import sys
 import argparse
 from pathlib import Path
 from typing import List, Dict, Any
-import google.generativeai as genai
+from google import genai
 from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api._errors import TranscriptsDisabled, NoTranscriptFound
@@ -48,8 +48,8 @@ class VideoFinder:
             raise ValueError("YOUTUBE_API_KEY environment variable not set. Get key from: https://console.cloud.google.com/apis/credentials")
 
         # Initialize Gemini
-        genai.configure(api_key=self.gemini_api_key)
-        self.gemini_model = genai.GenerativeModel('models/gemini-2.5-pro')
+        self.gemini_client = genai.Client(api_key=self.gemini_api_key)
+        self.gemini_model_name = 'models/gemini-2.5-pro'
 
         # Initialize YouTube API
         self.youtube = build('youtube', 'v3', developerKey=self.youtube_api_key)
@@ -214,7 +214,10 @@ Generate {num_queries} search queries that will find:
 Return ONLY the search queries, one per line, without numbering or extra text."""
 
         try:
-            response = self.gemini_model.generate_content(prompt)
+            response = self.gemini_client.models.generate_content(
+                model=self.gemini_model_name,
+                contents=prompt
+            )
             queries = [q.strip() for q in response.text.strip().split('\n') if q.strip()]
             return queries[:num_queries]
         except Exception as e:
@@ -368,7 +371,10 @@ RELEVANCE: [High/Medium/Low]
 TEACHING_STYLE: [style]"""
 
         try:
-            response = self.gemini_model.generate_content(prompt)
+            response = self.gemini_client.models.generate_content(
+                model=self.gemini_model_name,
+                contents=prompt
+            )
             text = response.text.strip()
             
             # Parse response

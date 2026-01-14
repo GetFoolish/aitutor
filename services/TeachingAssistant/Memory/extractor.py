@@ -35,7 +35,7 @@ except ImportError:
 
 # Try Gemini
 try:
-    import google.generativeai as genai
+    from google import genai
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
@@ -57,16 +57,16 @@ class MemoryExtractor:
 
     def __init__(self):
         self.enabled = False
-        self._gemini_model = None
+        self._gemini_client = None
+        self._gemini_model_name = None
 
         gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
         if gemini_key and GEMINI_AVAILABLE:
             try:
-                genai.configure(api_key=gemini_key)
-                model_name = os.getenv("GEMINI_TEXT_MODEL", "gemini-2.0-flash")
-                self._gemini_model = genai.GenerativeModel(model_name)
+                self._gemini_client = genai.Client(api_key=gemini_key)
+                self._gemini_model_name = os.getenv("GEMINI_TEXT_MODEL", "gemini-2.0-flash")
                 self.enabled = True
-                logger.info(f"[MEMORY_EXTRACTOR] Initialized with Gemini ({model_name})")
+                logger.info(f"[MEMORY_EXTRACTOR] Initialized with Gemini ({self._gemini_model_name})")
             except Exception as e:
                 logger.warning(f"[MEMORY_EXTRACTOR] Gemini init failed: {e}")
 
@@ -76,12 +76,13 @@ class MemoryExtractor:
             return None
 
         try:
-            response = self._gemini_model.generate_content(
-                prompt,
-                generation_config=genai.types.GenerationConfig(
-                    temperature=0.3,
-                    max_output_tokens=2000,
-                )
+            response = self._gemini_client.models.generate_content(
+                model=self._gemini_model_name,
+                contents=prompt,
+                config={
+                    'temperature': 0.3,
+                    'max_output_tokens': 2000
+                }
             )
             return response.text
         except Exception as e:
@@ -342,5 +343,22 @@ If no breakthroughs, return: []"""
         return []
 
 
-# Singleton instance
-memory_extractor = MemoryExtractor()
+# Singleton instance - lazy initialization to ensure .env is loaded first
+_memory_extractor_instance = None
+
+def get_memory_extractor():
+    """Get or create the singleton MemoryExtractor instance"""
+    global _memory_extractor_instance
+    if _memory_extractor_instance is None:
+        _memory_extractor_instance = MemoryExtractor()
+    return _memory_extractor_instance
+
+# For backward compatibility, create a property that lazily initializes
+class _MemoryExtractorProxy:
+    def __getattr__(self, name):
+        return getattr(get_memory_extractor(), name)
+    
+    def __call__(self, *args, **kwargs):
+        return get_memory_extractor()(*args, **kwargs)
+
+memory_extractor = _MemoryExtractorProxy()

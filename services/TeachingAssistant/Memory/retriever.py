@@ -35,7 +35,7 @@ except ImportError:
 
 # Try Gemini for LLM calls
 try:
-    import google.generativeai as genai
+    from google import genai
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
@@ -71,11 +71,10 @@ class MemoryRetriever:
         gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
         if gemini_key and GEMINI_AVAILABLE:
             try:
-                genai.configure(api_key=gemini_key)
-                model_name = os.getenv("GEMINI_TEXT_MODEL", "gemini-2.0-flash")
-                self._gemini_model = genai.GenerativeModel(model_name)
+                self._gemini_client = genai.Client(api_key=gemini_key)
+                self._gemini_model_name = os.getenv("GEMINI_TEXT_MODEL", "gemini-2.0-flash")
                 self._llm_enabled = True
-                logger.info(f"[MEMORY_RETRIEVER] Initialized with Gemini ({model_name})")
+                logger.info(f"[MEMORY_RETRIEVER] Initialized with Gemini ({self._gemini_model_name})")
             except Exception as e:
                 logger.warning(f"[MEMORY_RETRIEVER] Gemini init failed: {e}")
 
@@ -85,12 +84,13 @@ class MemoryRetriever:
             return None
 
         try:
-            response = self._gemini_model.generate_content(
-                prompt,
-                generation_config=genai.types.GenerationConfig(
-                    temperature=0.3,
-                    max_output_tokens=500,
-                )
+            response = self._gemini_client.models.generate_content(
+                model=self._gemini_model_name,
+                contents=prompt,
+                config={
+                    'temperature': 0.3,
+                    'max_output_tokens': 500
+                }
             )
             return response.text
         except Exception as e:

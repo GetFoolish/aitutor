@@ -1,5 +1,26 @@
 import sys
 import os
+
+# ============================================================================
+# Load Environment Variables FIRST (CRITICAL for Biographer and Memory system)
+# ============================================================================
+from dotenv import load_dotenv
+from pathlib import Path
+
+# Get project root (2 levels up: api.py -> TeachingAssistant -> services -> root)
+_current_file = Path(__file__).resolve()
+_project_root = _current_file.parent.parent.parent
+_env_path = _project_root / '.env'
+
+# Load .env file explicitly
+if _env_path.exists():
+    load_dotenv(dotenv_path=_env_path, override=False)
+    print(f"[API] Loaded environment variables from: {_env_path}")
+else:
+    print(f"[API] WARNING: .env file not found at: {_env_path}")
+    load_dotenv()  # Try to load from current directory as fallback
+
+# Continue with other imports...
 import threading
 import requests
 import asyncio

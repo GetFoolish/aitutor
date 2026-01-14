@@ -18,7 +18,7 @@ import logging
 
 # Try Gemini first (primary)
 try:
-    import google.generativeai as genai
+    from google import genai
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
@@ -61,19 +61,19 @@ class BiographerAgent:
         """
         self.enabled = False
         self.provider = None
-        self.gemini_model = None
+        self.gemini_client = None
+        self.gemini_model_name = None
         self.openai_client = None
 
         # Try Gemini first
         gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
         if gemini_key and GEMINI_AVAILABLE:
             try:
-                genai.configure(api_key=gemini_key)
-                model_name = os.getenv("GEMINI_TEXT_MODEL", "gemini-2.0-flash")
-                self.gemini_model = genai.GenerativeModel(model_name)
+                self.gemini_client = genai.Client(api_key=gemini_key)
+                self.gemini_model_name = os.getenv("GEMINI_TEXT_MODEL", "gemini-2.0-flash")
                 self.enabled = True
                 self.provider = "gemini"
-                logger.info(f"[BIOGRAPHER] Initialized with Gemini ({model_name})")
+                logger.info(f"[BIOGRAPHER] Initialized with Gemini ({self.gemini_model_name})")
             except Exception as e:
                 logger.warning(f"[BIOGRAPHER] Gemini initialization failed: {e}")
 
@@ -111,13 +111,14 @@ class BiographerAgent:
             return None
 
         try:
-            if self.provider == "gemini" and self.gemini_model:
-                response = self.gemini_model.generate_content(
-                    prompt,
-                    generation_config=genai.types.GenerationConfig(
-                        temperature=0.7,
-                        max_output_tokens=1500,
-                    )
+            if self.provider == "gemini" and self.gemini_client:
+                response = self.gemini_client.models.generate_content(
+                    model=self.gemini_model_name,
+                    contents=prompt,
+                    config={
+                        'temperature': 0.7,
+                        'max_output_tokens': 1500
+                    }
                 )
                 return response.text
 
@@ -421,5 +422,22 @@ If there are no significant moments, return "No notable key moments"."""
         return []
 
 
-# Singleton instance
-biographer_agent = BiographerAgent()
+# Singleton instance - lazy initialization to ensure .env is loaded first
+_biographer_agent_instance = None
+
+def get_biographer_agent():
+    """Get or create the singleton BiographerAgent instance"""
+    global _biographer_agent_instance
+    if _biographer_agent_instance is None:
+        _biographer_agent_instance = BiographerAgent()
+    return _biographer_agent_instance
+
+# For backward compatibility, create a property that lazily initializes
+class _BiographerAgentProxy:
+    def __getattr__(self, name):
+        return getattr(get_biographer_agent(), name)
+    
+    def __call__(self, *args, **kwargs):
+        return get_biographer_agent()(*args, **kwargs)
+
+biographer_agent = _BiographerAgentProxy()

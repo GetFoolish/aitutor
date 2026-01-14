@@ -23,7 +23,7 @@ except ImportError:
 
 # Try Gemini for embeddings (primary)
 try:
-    import google.generativeai as genai
+    from google import genai
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
@@ -69,6 +69,7 @@ class PineconeClient:
         self.pc = None
         self.index = None
         self.embedding_provider = None
+        self.gemini_client = None
         self.gemini_model = None
         self.openai_client = None
         self.embedding_dimension = 768  # Default for Gemini
@@ -118,7 +119,7 @@ class PineconeClient:
         gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
         if gemini_key and GEMINI_AVAILABLE:
             try:
-                genai.configure(api_key=gemini_key)
+                self.gemini_client = genai.Client(api_key=gemini_key)
                 # Use text-embedding model
                 self.gemini_model = "models/text-embedding-004"
                 self.embedding_provider = "gemini"
@@ -167,12 +168,11 @@ class PineconeClient:
 
         try:
             if self.embedding_provider == "gemini":
-                result = genai.embed_content(
+                result = self.gemini_client.models.embed_content(
                     model=self.gemini_model,
-                    content=text,
-                    task_type="retrieval_document"
+                    contents=text
                 )
-                return result['embedding']
+                return result.embeddings[0].values
 
             elif self.embedding_provider == "openai" and self.openai_client:
                 response = self.openai_client.embeddings.create(
@@ -192,12 +192,11 @@ class PineconeClient:
 
         try:
             if self.embedding_provider == "gemini":
-                result = genai.embed_content(
+                result = self.gemini_client.models.embed_content(
                     model=self.gemini_model,
-                    content=text,
-                    task_type="retrieval_query"  # Different task type for queries
+                    contents=text
                 )
-                return result['embedding']
+                return result.embeddings[0].values
 
             elif self.embedding_provider == "openai" and self.openai_client:
                 response = self.openai_client.embeddings.create(

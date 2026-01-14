@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 # Try Gemini first (primary)
 try:
-    import google.generativeai as genai
+    from google import genai
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
@@ -39,6 +39,7 @@ except ImportError:
 
 # Global state for embedding provider
 _embedding_provider = None
+_gemini_client = None
 _gemini_model = None
 _pinecone_client = None
 _openai_client = None
@@ -47,7 +48,7 @@ _embedding_dimension = 768  # Default for Gemini
 
 def _init_embedding_provider():
     """Initialize the embedding provider (called once)"""
-    global _embedding_provider, _gemini_model, _pinecone_client, _openai_client, _embedding_dimension
+    global _embedding_provider, _gemini_client, _gemini_model, _pinecone_client, _openai_client, _embedding_dimension
 
     if _embedding_provider is not None:
         return
@@ -56,7 +57,7 @@ def _init_embedding_provider():
     gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
     if gemini_key and GEMINI_AVAILABLE:
         try:
-            genai.configure(api_key=gemini_key)
+            _gemini_client = genai.Client(api_key=gemini_key)
             _gemini_model = "models/text-embedding-004"
             _embedding_provider = "gemini"
             _embedding_dimension = int(os.getenv("EMBEDDING_DIMENSION", "768"))
@@ -102,7 +103,6 @@ def get_embedding_dimension() -> int:
 def get_query_embedding(text: str) -> Optional[List[float]]:
     """
     Generate embedding for a query text.
-    Uses task_type="retrieval_query" for Gemini.
 
     Args:
         text: Query text to embed
@@ -118,12 +118,11 @@ def get_query_embedding(text: str) -> Optional[List[float]]:
 
     try:
         if _embedding_provider == "gemini":
-            result = genai.embed_content(
+            result = _gemini_client.models.embed_content(
                 model=_gemini_model,
-                content=text,
-                task_type="retrieval_query"
+                contents=text
             )
-            return result['embedding']
+            return result.embeddings[0].values
 
         elif _embedding_provider == "pinecone" and _pinecone_client:
             result = _pinecone_client.inference.embed(
@@ -150,7 +149,6 @@ def get_query_embedding(text: str) -> Optional[List[float]]:
 def get_embeddings_batch(texts: List[str]) -> List[Optional[List[float]]]:
     """
     Generate embeddings for a batch of texts.
-    Uses task_type="retrieval_document" for Gemini.
 
     Args:
         texts: List of texts to embed
@@ -176,12 +174,11 @@ def get_embeddings_batch(texts: List[str]) -> List[Optional[List[float]]]:
                     embeddings.append(None)
                     continue
                 try:
-                    result = genai.embed_content(
+                    result = _gemini_client.models.embed_content(
                         model=_gemini_model,
-                        content=text,
-                        task_type="retrieval_document"
+                        contents=text
                     )
-                    embeddings.append(result['embedding'])
+                    embeddings.append(result.embeddings[0].values)
                 except Exception as e:
                     logger.error(f"[EMBEDDINGS] Failed to embed text: {e}")
                     embeddings.append(None)

@@ -19,7 +19,7 @@ import logging
 
 # Try Gemini first (primary)
 try:
-    import google.generativeai as genai
+    from google import genai
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
@@ -60,19 +60,19 @@ class MemoryExtractor:
         """
         self.enabled = False
         self.provider = None
-        self.gemini_model = None
+        self.gemini_client = None
+        self.gemini_model_name = None
         self.openai_client = None
 
         # Try Gemini first
         gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
         if gemini_key and GEMINI_AVAILABLE:
             try:
-                genai.configure(api_key=gemini_key)
-                model_name = os.getenv("GEMINI_TEXT_MODEL", "gemini-2.0-flash")
-                self.gemini_model = genai.GenerativeModel(model_name)
+                self.gemini_client = genai.Client(api_key=gemini_key)
+                self.gemini_model_name = os.getenv("GEMINI_TEXT_MODEL", "gemini-2.0-flash")
                 self.enabled = True
                 self.provider = "gemini"
-                logger.info(f"[MEMORY_EXTRACTOR] Initialized with Gemini ({model_name})")
+                logger.info(f"[MEMORY_EXTRACTOR] Initialized with Gemini ({self.gemini_model_name})")
             except Exception as e:
                 logger.warning(f"[MEMORY_EXTRACTOR] Gemini initialization failed: {e}")
 
@@ -97,13 +97,14 @@ class MemoryExtractor:
             return None
 
         try:
-            if self.provider == "gemini" and self.gemini_model:
-                response = self.gemini_model.generate_content(
-                    prompt,
-                    generation_config=genai.types.GenerationConfig(
-                        temperature=0.3,
-                        max_output_tokens=2000,
-                    )
+            if self.provider == "gemini" and self.gemini_client:
+                response = self.gemini_client.models.generate_content(
+                    model=self.gemini_model_name,
+                    contents=prompt,
+                    config={
+                        'temperature': 0.3,
+                        'max_output_tokens': 2000
+                    }
                 )
                 return response.text
 
@@ -432,5 +433,22 @@ Return ONLY the JSON, no other text."""
             return []
 
 
-# Singleton instance
-memory_extractor = MemoryExtractor()
+# Singleton instance - lazy initialization to ensure .env is loaded first
+_memory_extractor_instance = None
+
+def get_memory_extractor():
+    """Get or create the singleton MemoryExtractor instance"""
+    global _memory_extractor_instance
+    if _memory_extractor_instance is None:
+        _memory_extractor_instance = MemoryExtractor()
+    return _memory_extractor_instance
+
+# For backward compatibility, create a property that lazily initializes
+class _MemoryExtractorProxy:
+    def __getattr__(self, name):
+        return getattr(get_memory_extractor(), name)
+    
+    def __call__(self, *args, **kwargs):
+        return get_memory_extractor()(*args, **kwargs)
+
+memory_extractor = _MemoryExtractorProxy()
