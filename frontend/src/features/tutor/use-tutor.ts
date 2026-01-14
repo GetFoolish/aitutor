@@ -31,6 +31,8 @@ export type UseTutorResults = {
   disconnect: () => Promise<void>;
   interruptAudio: () => void;
   volume: number;
+  outputAudioEnabled: boolean;
+  setOutputAudioEnabled: (enabled: boolean) => void;
 };
 
 export function useTutor(): UseTutorResults {
@@ -41,6 +43,7 @@ export function useTutor(): UseTutorResults {
   const [config, setConfig] = useState<LiveConnectConfig>({});
   const [connected, setConnected] = useState(false);
   const [volume, setVolume] = useState(0);
+  const [outputAudioEnabled, setOutputAudioEnabled] = useState(true);
 
   // register audio for streaming server -> speakers
   useEffect(() => {
@@ -82,8 +85,10 @@ export function useTutor(): UseTutorResults {
 
     const stopAudioStreamer = () => audioStreamerRef.current?.stop();
 
-    const onAudio = (data: ArrayBuffer) =>
+    const onAudio = (data: ArrayBuffer) => {
+      if (!outputAudioEnabled) return;
       audioStreamerRef.current?.addPCM16(new Uint8Array(data));
+    };
 
     client
       .on("error", onError)
@@ -101,7 +106,7 @@ export function useTutor(): UseTutorResults {
         .off("audio", onAudio)
         .disconnect();
     };
-  }, [client]);
+  }, [client, outputAudioEnabled]);
 
   const connect = useCallback(async () => {
     if (!config) {
@@ -131,6 +136,8 @@ export function useTutor(): UseTutorResults {
     disconnect,
     interruptAudio,
     volume,
+    outputAudioEnabled,
+    setOutputAudioEnabled,
   };
 }
 
