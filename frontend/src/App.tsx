@@ -159,7 +159,7 @@ function App() {
                   privacyMode={privacyMode}
                   onTogglePrivacy={setPrivacyMode}
                   processedEdgesRef={processedEdgesRef}
-                  assessmentMode={true}
+                  assessmentMode={false}
                 />
 
                 <div className="streaming-console">

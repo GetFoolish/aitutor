@@ -167,6 +167,8 @@ const AssessmentFlow: React.FC = () => {
       setScore(data.score);
       setTotal(data.total);
       setCompleted(true);
+      
+      // Note: Tutor disconnect will be handled by AssessmentResults component
     } catch (err) {
       setError('Failed to submit assessment');
       setSubmitting(false);
@@ -216,7 +218,7 @@ const AssessmentFlow: React.FC = () => {
             )}
           </div>
 
-          <TutorProvider>
+          <TutorProvider assessmentMode={true}>
             {questions[currentIndex] && (
               <QuestionSender question={questions[currentIndex]} />
             )}
@@ -239,7 +241,7 @@ const AssessmentFlow: React.FC = () => {
                 privacyMode={privacyMode}
                 onTogglePrivacy={setPrivacyMode}
                 processedEdgesRef={processedEdgesRef}
-                assessmentMode
+                assessmentMode={true}
               />
             </Suspense>
           </TutorProvider>

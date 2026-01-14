@@ -421,20 +421,25 @@ function FloatingControlPanel({
 
         interruptAudio();
 
-        try {
-          feedWebSocketService.disconnect();
-        } catch (e) {}
+        // Skip Teaching Assistant integration during assessment mode
+        if (!assessmentMode) {
+          try {
+            feedWebSocketService.disconnect();
+          } catch (e) {}
 
-        try {
-          instructionSSEService.disconnect();
-        } catch (e) {}
+          try {
+            instructionSSEService.disconnect();
+          } catch (e) {}
+        }
 
         await new Promise((resolve) => setTimeout(resolve, 300));
 
-        const token = jwtUtils.getToken();
-        if (token) {
-          try {
-            const response = await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/session/end`, { interrupt_audio: true });
+        // Skip Teaching Assistant session end call during assessment mode
+        if (!assessmentMode) {
+          const token = jwtUtils.getToken();
+          if (token) {
+            try {
+              const response = await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/session/end`, { interrupt_audio: true });
 
             if (response.ok) {
               const data = await response.json();
@@ -482,13 +487,16 @@ function FloatingControlPanel({
                 client.off('turncomplete', onTurnComplete);
               }
             }
-          } catch (taError: any) {
-            if (taError.message?.includes('Failed to fetch') || taError.message?.includes('ERR_CONNECTION_REFUSED')) {
-              console.warn('TeachingAssistant service is not available during disconnect - continuing');
-            } else {
-              console.error('Failed to get goodbye from TeachingAssistant:', taError);
+            } catch (taError: any) {
+              if (taError.message?.includes('Failed to fetch') || taError.message?.includes('ERR_CONNECTION_REFUSED')) {
+                console.warn('TeachingAssistant service is not available during disconnect - continuing');
+              } else {
+                console.error('Failed to get goodbye from TeachingAssistant:', taError);
+              }
             }
           }
+        } else {
+          console.log('[ASSESSMENT MODE] Skipping Teaching Assistant session end - assessment mode active');
         }
       } catch (error) {
         console.error('Error during disconnect:', error);
@@ -550,6 +558,13 @@ function FloatingControlPanel({
         await waitForSetupComplete();
         await new Promise((resolve) => setTimeout(resolve, 500));
         
+        // Skip Teaching Assistant integration during assessment mode
+        // Assessment mode only needs Gemini connection without backend memory/context features
+        if (assessmentMode) {
+          console.log('[ASSESSMENT MODE] Skipping Teaching Assistant integration - using assessment prompt only');
+          return;
+        }
+        
         const token = jwtUtils.getToken();
         if (!token) {
           console.error('No authentication token for TeachingAssistant session start');
@@ -594,7 +609,7 @@ function FloatingControlPanel({
         setupCompleteResolver = null;
       }
     }
-  }, [connected, connect, disconnect, client, interruptAudio, flushUserTranscript, flushTutorTranscript]);
+  }, [connected, connect, disconnect, client, interruptAudio, flushUserTranscript, flushTutorTranscript, assessmentMode]);
 
   const [verticalAlign, setVerticalAlign] = useState<"top" | "bottom">("top");
 
@@ -734,6 +749,11 @@ function FloatingControlPanel({
                 alt="teachr" 
                 className="h-6 md:h-7 w-auto"
               />
+              {assessmentMode && (
+                <div className="px-2 py-0.5 bg-[#FF6B6B] border-[2px] border-black text-white text-[8px] md:text-[9px] font-black uppercase tracking-wide">
+                  Assessment
+                </div>
+              )}
             </div>
           )}
           <button

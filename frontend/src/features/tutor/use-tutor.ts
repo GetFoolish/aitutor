@@ -32,9 +32,10 @@ export type UseTutorResults = {
   disconnect: () => Promise<void>;
   interruptAudio: () => void;
   volume: number;
+  assessmentMode?: boolean;
 };
 
-export function useTutor(): UseTutorResults {
+export function useTutor(assessmentMode?: boolean): UseTutorResults {
   const client = useMemo(() => new TutorClient(), []);
   const audioStreamerRef = useRef<AudioStreamer | null>(null);
   const { user } = useAuth();
@@ -127,10 +128,10 @@ export function useTutor(): UseTutorResults {
       throw new Error("config has not been set");
     }
     client.disconnect();
-    // Pass preferred language from user context
+    // Pass preferred language and assessment mode from context
     const preferredLanguage = user?.preferred_language || "English";
-    await client.connect(config, preferredLanguage);
-  }, [client, config, user?.preferred_language]);
+    await client.connect(config, preferredLanguage, assessmentMode);
+  }, [client, config, user?.preferred_language, assessmentMode]);
 
   const disconnect = useCallback(async () => {
     client.disconnect();
@@ -150,6 +151,7 @@ export function useTutor(): UseTutorResults {
     disconnect,
     interruptAudio,
     volume,
+    assessmentMode,
   };
 }
 
