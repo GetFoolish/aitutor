@@ -32,6 +32,7 @@ import { useMediaCapture } from "./hooks/useMediaCapture";
 // Lazy load heavy components
 const SidePanel = lazy(() => import("./components/side-panel/SidePanel"));
 const GradingSidebar = lazy(() => import("./components/grading-sidebar/GradingSidebar"));
+const PracticeHistoryPanel = lazy(() => import("./components/practice-history/PracticeHistoryPanel"));
 const ScratchpadCapture = lazy(() => import("./components/scratchpad-capture/ScratchpadCapture"));
 const FloatingControlPanel = lazy(() => import("./components/floating-control-panel/FloatingControlPanel"));
 
@@ -47,6 +48,7 @@ function App() {
   const [isScratchpadOpen, setScratchpadOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isGradingSidebarOpen, setIsGradingSidebarOpen] = useState(false);
+  const [isPracticeHistoryOpen, setIsPracticeHistoryOpen] = useState(false);
   const [currentSkill, setCurrentSkill] = useState<string | null>(null);
 
   // Ref to hold mediaMixer instance for use in callbacks
@@ -92,13 +94,26 @@ function App() {
   }, [mediaMixer]);
 
   const toggleSidebar = () => {
-    if (!isSidebarOpen) setIsGradingSidebarOpen(false);
+    if (!isSidebarOpen) {
+      setIsGradingSidebarOpen(false);
+      setIsPracticeHistoryOpen(false);
+    }
     setIsSidebarOpen(!isSidebarOpen);
   };
 
   const toggleGradingSidebar = () => {
-    if (!isGradingSidebarOpen) setIsSidebarOpen(false);
+    if (!isGradingSidebarOpen) {
+      setIsSidebarOpen(false);
+      setIsPracticeHistoryOpen(false);
+    }
     setIsGradingSidebarOpen(!isGradingSidebarOpen);
+  };
+
+  const togglePracticeHistory = () => {
+    if (!isPracticeHistoryOpen) {
+      setIsSidebarOpen(false);
+    }
+    setIsPracticeHistoryOpen(!isPracticeHistoryOpen);
   };
 
   useEffect(() => {
@@ -128,8 +143,12 @@ function App() {
                     onToggle={toggleGradingSidebar}
                     currentSkill={currentSkill}
                   />
+                  <PracticeHistoryPanel
+                    open={isPracticeHistoryOpen}
+                    onToggle={togglePracticeHistory}
+                  />
                   <main style={{
-                    marginRight: isSidebarOpen ? "260px" : "0",
+                    marginRight: isSidebarOpen ? "260px" : isPracticeHistoryOpen ? "320px" : "0",
                     marginLeft: isGradingSidebarOpen ? "260px" : "40px",
                     transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
                   }}>
