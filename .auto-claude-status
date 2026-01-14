@@ -1,0 +1,25 @@
+{
+  "active": true,
+  "spec": "002-mastery-badges-gamification",
+  "state": "planning",
+  "subtasks": {
+    "completed": 0,
+    "total": 0,
+    "in_progress": 1,
+    "failed": 0
+  },
+  "phase": {
+    "current": "Backend Badge System",
+    "id": null,
+    "total": 4
+  },
+  "workers": {
+    "active": 0,
+    "max": 1
+  },
+  "session": {
+    "number": 2,
+    "started_at": "2026-01-14T16:07:55.651260"
+  },
+  "last_update": "2026-01-14T16:12:20.876594"
+}

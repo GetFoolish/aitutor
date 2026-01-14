@@ -48,3 +48,6 @@ questionbankscrapper/
 
 # Build output
 frontend/build/
+
+# Auto Claude data directory
+.auto-claude/
