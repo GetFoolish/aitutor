@@ -9,6 +9,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import SessionDetailView from "./SessionDetailView";
 
 interface PracticeHistoryPanelProps {
     open: boolean;
@@ -242,7 +243,20 @@ export default function PracticeHistoryPanel({ open, onToggle }: PracticeHistory
                                                                     </div>
                                                                 </div>
                                                             )}
+
+                                                            {/* Divider */}
+                                                            <div className="mt-3 mb-2 border-t-[3px] border-black dark:border-white"></div>
+
+                                                            {/* Question Details Header */}
+                                                            <div className="px-4 mb-2">
+                                                                <h3 className="text-[10px] font-black uppercase text-black dark:text-white">
+                                                                    Question Details
+                                                                </h3>
+                                                            </div>
                                                         </div>
+
+                                                        {/* Session Detail View - Question List */}
+                                                        <SessionDetailView sessionId={session.session_id} />
                                                     </AccordionContent>
                                                 </div>
                                             </AccordionItem>
