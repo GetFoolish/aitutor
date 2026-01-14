@@ -83,6 +83,10 @@ class UserProfile:
     student_notes: Dict = field(default_factory=dict)
     age: int = 5  # Default kindergarten age
     current_grade: str = "K"  # Calculated from age
+    current_streak: int = 0  # Current daily streak
+    longest_streak: int = 0  # Longest streak achieved
+    last_practice_date: Optional[str] = None  # Last practice date (YYYY-MM-DD)
+    streak_history: List = field(default_factory=list)  # History of streak milestones
     
     def to_dict(self):
         result = {
@@ -93,7 +97,11 @@ class UserProfile:
             'question_history': [asdict(attempt) for attempt in self.question_history],
             'student_notes': self.student_notes,
             'age': self.age,
-            'current_grade': self.current_grade
+            'current_grade': self.current_grade,
+            'current_streak': self.current_streak,
+            'longest_streak': self.longest_streak,
+            'last_practice_date': self.last_practice_date,
+            'streak_history': self.streak_history
         }
         # Include preloaded_question_ids if it exists (for MongoDB storage)
         if hasattr(self, 'preloaded_question_ids'):
@@ -104,7 +112,7 @@ class UserProfile:
     def from_dict(cls, data):
         skill_states = {k: SkillState.from_dict(v) for k, v in data['skill_states'].items()}
         question_history = [QuestionAttempt(**attempt) for attempt in data['question_history']]
-        
+
         user_profile = cls(
             user_id=data['user_id'],
             created_at=data['created_at'],
@@ -113,7 +121,11 @@ class UserProfile:
             question_history=question_history,
             student_notes=data.get('student_notes', {}),
             age=data.get('age', 5),
-            current_grade=data.get('current_grade', 'K')
+            current_grade=data.get('current_grade', 'K'),
+            current_streak=data.get('current_streak', 0),
+            longest_streak=data.get('longest_streak', 0),
+            last_practice_date=data.get('last_practice_date', None),
+            streak_history=data.get('streak_history', [])
         )
         # Handle preloaded_question_ids if present (optional field)
         if 'preloaded_question_ids' in data:

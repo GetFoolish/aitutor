@@ -1,0 +1,39 @@
+{
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true
+  },
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Read(./**)",
+      "Write(./**)",
+      "Edit(./**)",
+      "Glob(./**)",
+      "Grep(./**)",
+      "Read(/Users/gaganarora/Desktop/ai_tutor/.auto-claude/worktrees/tasks/003-daily-streak-tracker/**)",
+      "Write(/Users/gaganarora/Desktop/ai_tutor/.auto-claude/worktrees/tasks/003-daily-streak-tracker/**)",
+      "Edit(/Users/gaganarora/Desktop/ai_tutor/.auto-claude/worktrees/tasks/003-daily-streak-tracker/**)",
+      "Glob(/Users/gaganarora/Desktop/ai_tutor/.auto-claude/worktrees/tasks/003-daily-streak-tracker/**)",
+      "Grep(/Users/gaganarora/Desktop/ai_tutor/.auto-claude/worktrees/tasks/003-daily-streak-tracker/**)",
+      "Read(/Users/gaganarora/Desktop/ai_tutor/.auto-claude/worktrees/tasks/003-daily-streak-tracker/.auto-claude/specs/003-daily-streak-tracker/**)",
+      "Write(/Users/gaganarora/Desktop/ai_tutor/.auto-claude/worktrees/tasks/003-daily-streak-tracker/.auto-claude/specs/003-daily-streak-tracker/**)",
+      "Edit(/Users/gaganarora/Desktop/ai_tutor/.auto-claude/worktrees/tasks/003-daily-streak-tracker/.auto-claude/specs/003-daily-streak-tracker/**)",
+      "Read(/Users/gaganarora/Desktop/ai_tutor/.auto-claude/**)",
+      "Write(/Users/gaganarora/Desktop/ai_tutor/.auto-claude/**)",
+      "Edit(/Users/gaganarora/Desktop/ai_tutor/.auto-claude/**)",
+      "Glob(/Users/gaganarora/Desktop/ai_tutor/.auto-claude/**)",
+      "Grep(/Users/gaganarora/Desktop/ai_tutor/.auto-claude/**)",
+      "Bash(*)",
+      "WebFetch(*)",
+      "WebSearch(*)",
+      "mcp__context7__resolve-library-id(*)",
+      "mcp__context7__get-library-docs(*)",
+      "mcp__graphiti-memory__search_nodes(*)",
+      "mcp__graphiti-memory__search_facts(*)",
+      "mcp__graphiti-memory__add_episode(*)",
+      "mcp__graphiti-memory__get_episodes(*)",
+      "mcp__graphiti-memory__get_entity_edge(*)"
+    ]
+  }
+}
