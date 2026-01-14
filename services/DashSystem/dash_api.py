@@ -545,26 +545,26 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
     Recommend next questions based on currently loaded questions.
     Takes existing question IDs and recommends next batch using DASH intelligence.
     Only returns questions if they differ from current ones.
-    
+
     Args:
         request: FastAPI request object (for JWT extraction)
         req: Request body containing current question IDs and count
     """
     ensure_dash_system()
     user_id = get_current_user(request)
-    
+
     logger.info(f"\n{'='*80}")
     logger.info(f"[RECOMMEND_NEXT] User: {user_id}, Current questions: {len(req.current_question_ids)}, Requesting: {req.count}")
     logger.info(f"{'='*80}\n")
-    
+
     # Ensure the user exists and is loaded
     user_profile = dash_system.load_user_or_create(user_id)
     current_time = time.time()
-    
+
     # Get next questions using DASH, excluding current ones
     selected_questions = []
     exclude_ids = set(req.current_question_ids)
-    
+
     for i in range(req.count):
         next_question = dash_system.get_next_question_flexible(
             user_id,
@@ -577,35 +577,185 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
         else:
             logger.info(f"[RECOMMEND_NEXT] No more questions available after {len(selected_questions)}")
             break
-    
+
     if not selected_questions:
         logger.info("[RECOMMEND_NEXT] No new questions available")
         return []  # Return empty if no new questions
-    
+
     # Load Perseus items for selected questions
     try:
         perseus_items = load_perseus_items_for_dash_questions_from_mongodb(selected_questions)
         logger.info(f"[RECOMMEND_NEXT] Loaded {len(perseus_items)} new questions")
-        
+
         # Verify no overlap with current questions (should not happen due to exclusion, but check for safety)
         new_question_ids = {item.get('dash_metadata', {}).get('dash_question_id') for item in perseus_items if item.get('dash_metadata', {}).get('dash_question_id')}
         current_question_ids_set = set(req.current_question_ids)
-        
+
         # Check for any overlap (should not happen, but log warning if it does)
         overlap = new_question_ids.intersection(current_question_ids_set)
         if overlap:
             logger.warning(f"[RECOMMEND_NEXT] Warning: {len(overlap)} recommended questions overlap with current (should not happen)")
             # Filter out overlapping questions
-            perseus_items = [item for item in perseus_items 
+            perseus_items = [item for item in perseus_items
                            if item.get('dash_metadata', {}).get('dash_question_id') not in overlap]
             if not perseus_items:
                 logger.info("[RECOMMEND_NEXT] All recommended questions were duplicates, returning empty")
                 return []
-        
+
         return perseus_items
     except Exception as e:
         logger.error(f"[ERROR] Failed to load recommended questions: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to load recommended questions: {e}")
+
+@app.get("/api/practice-history")
+def get_practice_history(request: Request, page: int = 1, limit: int = 10):
+    """
+    Get paginated list of practice sessions for the current user.
+    Groups question attempts into sessions based on time gaps (30 minutes).
+
+    Args:
+        request: FastAPI request object (for JWT extraction)
+        page: Page number (1-indexed)
+        limit: Number of sessions per page
+
+    Returns:
+        {
+            "sessions": [
+                {
+                    "session_id": str,
+                    "date": float (timestamp),
+                    "duration": float (seconds),
+                    "question_count": int,
+                    "accuracy": float (0-1),
+                    "skills_practiced": [str]
+                }
+            ],
+            "total_sessions": int,
+            "page": int,
+            "limit": int,
+            "total_pages": int
+        }
+    """
+    ensure_dash_system()
+    # Get user_id from JWT token
+    user_id = get_current_user(request)
+
+    logger.info(f"\n{'='*80}")
+    logger.info(f"[PRACTICE_HISTORY] User: {user_id}, Page: {page}, Limit: {limit}")
+    logger.info(f"{'='*80}\n")
+
+    # Load user profile
+    from managers.mongodb_manager import mongo_db
+    user_data = mongo_db.users.find_one({"user_id": user_id})
+
+    if not user_data:
+        logger.warning(f"[PRACTICE_HISTORY] User not found: {user_id}")
+        return {
+            "sessions": [],
+            "total_sessions": 0,
+            "page": page,
+            "limit": limit,
+            "total_pages": 0
+        }
+
+    # Get question history and sort by timestamp
+    question_history = user_data.get("question_history", [])
+
+    if not question_history:
+        logger.info("[PRACTICE_HISTORY] No question history found")
+        return {
+            "sessions": [],
+            "total_sessions": 0,
+            "page": page,
+            "limit": limit,
+            "total_pages": 0
+        }
+
+    # Sort by timestamp (oldest first for processing)
+    sorted_history = sorted(question_history, key=lambda x: x.get("timestamp", 0))
+
+    # Group questions into sessions (30-minute gap = new session)
+    SESSION_GAP_SECONDS = 30 * 60  # 30 minutes
+    sessions = []
+    current_session = []
+
+    for attempt in sorted_history:
+        if not current_session:
+            # Start new session
+            current_session.append(attempt)
+        else:
+            # Check time gap with last question in current session
+            last_timestamp = current_session[-1].get("timestamp", 0)
+            current_timestamp = attempt.get("timestamp", 0)
+
+            if current_timestamp - last_timestamp > SESSION_GAP_SECONDS:
+                # Gap too large, save current session and start new one
+                sessions.append(current_session)
+                current_session = [attempt]
+            else:
+                # Continue current session
+                current_session.append(attempt)
+
+    # Don't forget the last session
+    if current_session:
+        sessions.append(current_session)
+
+    # Reverse sessions (most recent first)
+    sessions.reverse()
+
+    # Calculate session metadata
+    session_data = []
+    for idx, session_attempts in enumerate(sessions):
+        if not session_attempts:
+            continue
+
+        # Calculate session metrics
+        start_time = session_attempts[0].get("timestamp", 0)
+        end_time = session_attempts[-1].get("timestamp", 0)
+        duration = end_time - start_time
+
+        question_count = len(session_attempts)
+        correct_count = sum(1 for attempt in session_attempts if attempt.get("is_correct", False))
+        accuracy = correct_count / question_count if question_count > 0 else 0
+
+        # Get unique skills practiced
+        skills_practiced = set()
+        for attempt in session_attempts:
+            skill_ids = attempt.get("skill_ids", [])
+            skills_practiced.update(skill_ids)
+
+        session_data.append({
+            "session_id": f"session_{idx}",
+            "date": start_time,
+            "duration": duration,
+            "question_count": question_count,
+            "accuracy": accuracy,
+            "skills_practiced": list(skills_practiced)
+        })
+
+    # Paginate results
+    total_sessions = len(session_data)
+    total_pages = (total_sessions + limit - 1) // limit  # Ceiling division
+
+    # Validate page number
+    if page < 1:
+        page = 1
+    if page > total_pages and total_pages > 0:
+        page = total_pages
+
+    # Calculate pagination slice
+    start_idx = (page - 1) * limit
+    end_idx = start_idx + limit
+    paginated_sessions = session_data[start_idx:end_idx]
+
+    logger.info(f"[PRACTICE_HISTORY] Found {total_sessions} sessions, returning page {page}/{total_pages}")
+
+    return {
+        "sessions": paginated_sessions,
+        "total_count": total_sessions,
+        "page": page,
+        "limit": limit
+    }
 
 if __name__ == "__main__":
     import uvicorn
