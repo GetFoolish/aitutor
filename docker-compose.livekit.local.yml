@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: ai_tutor_livekit
+    command: --config /etc/livekit.yaml
+    ports:
+      # HTTP + WebSocket (client URL uses ws://localhost:7880)
+      - "7880:7880"
+      # WebRTC UDP
+      - "7881:7881/udp"
+      # Some environments may need TCP as well
+      - "7881:7881/tcp"
+    volumes:
+      - ./livekit.local.yaml:/etc/livekit.yaml:ro
+    restart: unless-stopped
