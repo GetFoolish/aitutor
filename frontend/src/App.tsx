@@ -106,14 +106,14 @@ function App() {
     mediaMixerRef.current = mediaMixer;
   }, [mediaMixer]);
 
-  // Start mixer when component mounts and canvas is available
+  // Start mixer when component mounts.
+  // The hidden canvas is created inside FloatingControlPanel and assigned to this ref later;
+  // starting the loop eagerly ensures frames begin mixing as soon as the ref is set.
   useEffect(() => {
-    if (mediaMixer.canvasRef.current) {
-      mediaMixer.setIsRunning(true);
-      return () => {
-        mediaMixer.setIsRunning(false);
-      };
-    }
+    mediaMixer.setIsRunning(true);
+    return () => {
+      mediaMixer.setIsRunning(false);
+    };
   }, [mediaMixer]);
 
   const toggleSidebar = () => {
