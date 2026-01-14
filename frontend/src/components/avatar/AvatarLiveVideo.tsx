@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import cn from "classnames";
 
 export interface AvatarLiveVideoProps {
@@ -18,32 +18,18 @@ export default function AvatarLiveVideo({
   agentState = "disconnected",
   isLive = false,
 }: AvatarLiveVideoProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  
   // Check if videoTrack is a valid LiveKit TrackReference
   const hasValidTrack = videoTrack && videoTrack.track;
-
-  // Attach/detach video track when it changes
-  useEffect(() => {
-    const videoEl = videoRef.current;
-    if (!videoEl) return;
-
-    if (hasValidTrack && videoTrack.track) {
-      console.log('[AvatarLiveVideo] Attaching video track to element');
-      videoTrack.track.attach(videoEl);
-      
-      return () => {
-        console.log('[AvatarLiveVideo] Detaching video track');
-        videoTrack.track.detach(videoEl);
-      };
-    }
-  }, [videoTrack, hasValidTrack]);
 
   return (
     <div className="w-full h-full flex items-center justify-center bg-black relative">
       {hasValidTrack ? (
         <video
-          ref={videoRef}
+          ref={(el) => {
+            if (el && videoTrack?.track) {
+              videoTrack.track.attach(el);
+            }
+          }}
           className="w-full h-full object-cover object-top"
           autoPlay
           playsInline
