@@ -40,9 +40,6 @@ interface RendererComponentProps {
     assessmentQuestions?: any[];
     onAssessmentAnswer?: (questionId: string, isCorrect: boolean) => void;
     currentQuestionIndex?: number;
-    // Learning assets props
-    onLearningAssetChange?: (asset: any) => void;
-    onQuestionTextChange?: (text: string) => void;
 }
 
 const RendererComponent = ({ 
@@ -53,9 +50,7 @@ const RendererComponent = ({
     assessmentMode = false,
     assessmentQuestions = [],
     onAssessmentAnswer,
-    currentQuestionIndex = 0,
-    onLearningAssetChange,
-    onQuestionTextChange
+    currentQuestionIndex = 0
 }: RendererComponentProps) => {
     const { user } = useAuth();
     const { setTotalHints, setCurrentHintIndex, showHints, setShowHints } = useHint();
@@ -103,7 +98,7 @@ const RendererComponent = ({
             // Retry logic for connection errors with exponential backoff
             const maxRetries = 3;
             let retryCount = 0;
-
+            
             const attemptFetch = async (): Promise<void> => {
                 try {
                     // First, check for pre-loaded questions
@@ -123,10 +118,10 @@ const RendererComponent = ({
                         // 422 means validation error, but we can still try fallback
                         console.warn('Pre-loaded questions endpoint returned 422, using fallback');
                     }
-
+                    
                     // Fallback: Load initial 5 questions
                     const response = await apiUtils.get(`${DASH_API_URL}/api/questions/5`);
-
+                    
                     if (!response.ok) {
                         // Don't retry on HTTP error codes (401, 403, 404, 500, etc.)
                         throw new Error(`Failed to fetch questions: ${response.status}`);
@@ -140,11 +135,11 @@ const RendererComponent = ({
                     setStartTime(Date.now());
                 } catch (err) {
                     // Check if it's a network/connection error that we should retry
-                    const isNetworkError = err instanceof TypeError &&
-                        (err.message.includes('Failed to fetch') ||
-                            err.message.includes('NetworkError') ||
-                            err.message.includes('ERR_CONNECTION_REFUSED'));
-
+                    const isNetworkError = err instanceof TypeError && 
+                        (err.message.includes('Failed to fetch') || 
+                         err.message.includes('NetworkError') ||
+                         err.message.includes('ERR_CONNECTION_REFUSED'));
+                    
                     if (isNetworkError && retryCount < maxRetries) {
                         retryCount++;
                         const backoffDelay = Math.pow(2, retryCount) * 1000; // Exponential backoff: 2s, 4s, 8s
@@ -152,7 +147,7 @@ const RendererComponent = ({
                         await new Promise(resolve => setTimeout(resolve, backoffDelay));
                         return attemptFetch(); // Retry
                     }
-
+                    
                     // Not a retryable error or max retries reached
                     throw err;
                 }
@@ -188,21 +183,9 @@ const RendererComponent = ({
             const currentItem = perseusItems[item];
             const metadata = (currentItem as any).dash_metadata || {};
             const dashQuestionId = metadata.dash_question_id || null;
-            const learningAsset = (currentItem as any).learningAsset;
 
-            // Emit question ID change for video tracking
+            // Emit question ID change for LearningAssetsPanel
             onQuestionChange?.(dashQuestionId);
-
-            // Notify parent of learning asset change
-            if (onLearningAssetChange) {
-                onLearningAssetChange(learningAsset || null);
-            }
-
-            // Notify parent of question text change
-            if (onQuestionTextChange) {
-                const questionContent = (currentItem as any).question?.content || "";
-                onQuestionTextChange(questionContent);
-            }
 
             // Log question displayed
             apiUtils.post(`${DASH_API_URL}/api/question-displayed`, {
@@ -215,7 +198,7 @@ const RendererComponent = ({
             // No question loaded, emit null
             onQuestionChange?.(null);
         }
-    }, [item, perseusItems, isLoading, user_id, onQuestionChange, onLearningAssetChange, onQuestionTextChange]);
+    }, [item, perseusItems, isLoading, user_id, onQuestionChange]);
 
     // Update current module (unit_id) and URL when question changes
     useEffect(() => {
@@ -263,39 +246,39 @@ const RendererComponent = ({
     // Load next batch of questions when approaching end
     const loadNextBatch = async () => {
         if (perseusItems.length === 0) return;
-
+        
         // Prevent concurrent calls
         if (isLoadingNextBatch) {
             return;
         }
-
+        
         setIsLoadingNextBatch(true);
-
+        
         try {
             // Get current question IDs
             const currentQuestionIds = perseusItems.map(
                 (item: any) => item.dash_metadata?.dash_question_id || ''
             ).filter(Boolean);
-
+            
             if (currentQuestionIds.length === 0) {
                 setIsLoadingNextBatch(false);
                 return; // No valid question IDs
             }
-
+            
             // Request next 5 questions
             const response = await apiUtils.post(`${DASH_API_URL}/api/questions/recommend-next`, {
                 current_question_ids: currentQuestionIds,
                 count: 5
             });
-
+            
             if (!response.ok) {
                 console.warn('Failed to fetch next batch:', response.status);
                 setIsLoadingNextBatch(false);
                 return;
             }
-
+            
             const newQuestions = await response.json();
-
+            
             // Only update if we got new questions (non-empty response means questions changed)
             if (newQuestions.length > 0) {
                 setPerseusItems(prev => [...prev, ...newQuestions]);
@@ -339,28 +322,58 @@ const RendererComponent = ({
             const itemData = perseusItem; // Full item with question AND answer
             
             console.log('[SCORING] User input:', JSON.stringify(userInput, null, 2));
-            console.log('[SCORING] Question widgets:', Object.keys(itemData.question.widgets || {}));
+            console.log('[SCORING] Item data keys:', Object.keys(itemData));
+            console.log('[SCORING] Has answer key:', !!itemData.answer);
+            console.log('[SCORING] Answer:', JSON.stringify(itemData.answer, null, 2));
             
-            // Use Perseus's built-in scoring for ALL widget types
-            // scorePerseusItem handles radio, orderer, numeric-input, expression, etc.
-            const perseusScore = scorePerseusItem(
-                itemData.question,  // PerseusRenderer with widgets
-                userInput,          // UserInputMap from getUserInput()
-                'en'                // locale
-            );
+            // Custom scoring since Perseus doesn't have answer keys in our questions
+            // Score based on the 'correct' property in widget choices
+            let isCorrect = false;
+            const question = itemData.question;
             
-            console.log('[SCORING] Perseus score:', perseusScore);
+            // Check each widget in the user input
+            for (const [widgetId, widgetInput] of Object.entries(userInput)) {
+                const widgetDef = question.widgets?.[widgetId];
+                if (!widgetDef) continue;
+                
+                if (widgetDef.type === 'radio') {
+                    const choices = widgetDef.options?.choices || [];
+                    const selectedIds = (widgetInput as any).selectedChoiceIds || [];
+                    const isMultiSelect = widgetDef.options?.multipleSelect || false;
+                    
+                    if (isMultiSelect) {
+                        // For multi-select: all selected choices must be correct, and all correct choices must be selected
+                        const correctIndices = choices
+                            .map((c, i) => c.correct ? i : -1)
+                            .filter(i => i >= 0);
+                        const selectedIndices = selectedIds.map((id: string) => {
+                            const match = id.match(/choice-(\d+)-/);
+                            return match ? parseInt(match[1]) : -1;
+                        }).filter((i: number) => i >= 0);
+                        
+                        isCorrect = correctIndices.length === selectedIndices.length &&
+                                   correctIndices.every((idx: number) => selectedIndices.includes(idx));
+                    } else {
+                        // For single-select: the one selected choice must be correct
+                        if (selectedIds.length === 1) {
+                            const selectedId = selectedIds[0];
+                            const match = selectedId.match(/choice-(\d+)-/);
+                            if (match) {
+                                const selectedIndex = parseInt(match[1]);
+                                isCorrect = choices[selectedIndex]?.correct === true;
+                            }
+                        }
+                    }
+                }
+            }
             
-            // Convert Perseus score to our score format
-            const isCorrect = perseusScore.type === 'points' && 
-                             perseusScore.earned === perseusScore.total &&
-                             perseusScore.total > 0;
+            console.log('[SCORING] Custom score - is correct:', isCorrect);
             
             const scoreResult = {
-                type: 'points',
+                type: isCorrect ? 'points' : 'points',
                 earned: isCorrect ? 1 : 0,
                 total: 1,
-                message: perseusScore.message || null
+                message: null
             };
 
             // Continue to include an empty guess for the now defunct answer area.
@@ -408,7 +421,7 @@ const RendererComponent = ({
                     is_correct: keScore.correct,
                     response_time_seconds: responseTimeSeconds
                 });
-
+                
                 // Invalidate skill-scores cache to trigger refetch with updated data
                 queryClient.invalidateQueries({ queryKey: ["skill-scores"] });
                 
@@ -455,7 +468,7 @@ const RendererComponent = ({
     return (
         <div className="framework-perseus relative flex w-full h-full items-start justify-center px-3 md:px-4">
             {/* Neo-Brutalism Card */}
-            <Card id="practice-session-card" className="relative flex w-full max-w-4xl md:max-w-5xl my-4 md:my-6 h-auto flex-col border-[4px] md:border-[5px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-200">
+            <Card className="relative flex w-full max-w-4xl md:max-w-5xl my-4 md:my-6 flex-col border-[4px] md:border-[5px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-200">
                 {/* Progress bar at top */}
                 <div className="absolute top-0 left-0 right-0 h-2 md:h-3 bg-[#FFFDF5] dark:bg-[#000000] border-b-[2px] md:border-b-[3px] border-black dark:border-white">
                     <div

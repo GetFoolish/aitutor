@@ -17,8 +17,6 @@ logging.basicConfig(
         logging.StreamHandler(sys.stdout)
     ]
 )
-import warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning) 
 logger = logging.getLogger(__name__)
 
 # Add the project root to the Python path
@@ -61,12 +59,7 @@ async def startup_event():
     logger.info("Initializing DASHSystem...")
     try:
         dash_system = DASHSystem()
-        logger.info(f"DASHSystem initialized: {len(dash_system.skills)} skills loaded immediately")
-        logger.info("Khan Academy data loading in background...")
-        
-        # Pre-generate default grading panel for instant cold starts
-        dash_system.generate_default_grading_panel()
-        logger.info("[OK] Default grading panel pre-generated and ready for instant cold starts")
+        logger.info(f"DASHSystem initialized: {len(dash_system.skills)} skills, {len(dash_system.question_index)} questions in index")
     except Exception as e:
         logger.error(f"Failed to initialize DASHSystem: {e}")
         import traceback
@@ -86,7 +79,6 @@ class PerseusQuestion(BaseModel):
     hints: List = Field(description="List of question hints")
     itemDataVersion: Optional[dict] = Field(default=None, description="Perseus item data version")
     dash_metadata: Optional[dict] = Field(default=None, description="DASH metadata for tracking")
-    learningAsset: Optional[dict] = Field(default=None, description="Embedded learning asset (video)")
     
     class Config:
         extra = "allow"  # Allow additional fields that aren't in the model
@@ -102,17 +94,12 @@ def health_check():
             media_type="application/json",
             status_code=503
         )
-    
-    # API is ready even if Khan data is still loading
-    status = {
+    return {
         "status": "ready",
         "ready": True,
         "skills_count": len(dash_system.skills),
-        "khan_loading": dash_system.khan_loading,
-        "khan_loaded": dash_system.khan_loaded
+        "questions_count": len(dash_system.question_index)
     }
-    
-    return status
 
 
 def load_perseus_items_for_dash_questions_from_mongodb(
@@ -391,10 +378,15 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
             logger.info(f"[SESSION_END] Selected {len(selected_questions)}/{sample_size} questions (no more available)")
             break
     
-    # If no questions were selected, it means no skills had available questions
-    if not selected_questions:
-        logger.error(f"[ERROR] No DASH questions selected - recommended skills have no available questions in database")
-        raise HTTPException(status_code=404, detail="No questions available for recommended skills. Please check database content.")
+    # Development bypass: if no questions selected, just get random ones from DB
+    if not selected_questions and os.getenv("DEV_MODE", "true").lower() == "true":
+        logger.warning(f"[DEV_BYPASS] No DASH questions selected, fetching {sample_size} random questions from Perseus DB")
+        random_perseus = list(dash_system.mongo.perseus_questions.aggregate([
+            {"$sample": {"size": sample_size}}
+        ]))
+        if random_perseus:
+            logger.info(f"[DEV_BYPASS] Found {len(random_perseus)} random Perseus questions")
+            return random_perseus
     
     # Load Perseus items from MongoDB for all DASH-selected questions
     try:
@@ -559,84 +551,37 @@ def submit_answer(request: Request, answer: AnswerSubmission):
 @app.get("/api/grading-panel")
 def get_grading_panel(request: Request):
     """
-    Get grading panel data with instant cold start and MongoDB caching.
-    Returns cached data instantly if available, generates in background if not.
+    Get grading panel data from Khan Academy hierarchy.
+    Skills = Units, Sub-skills = Lessons (following DASH Integration Plan).
+    
+    Returns student performance mapped to current questions_db structure.
+    This is future-proof: survives questions_db updates without data loss.
     """
     ensure_dash_system()
+    # Get user_id from JWT token
     user_id = get_current_user(request)
     
     try:
-        from managers.mongodb_manager import MongoDBManager
-        from datetime import datetime
-        import threading
-        import time
-        
-        mongo = MongoDBManager()
-        user_doc = mongo.users.find_one({"user_id": user_id})
-        
-        # Check for cached data
-        if user_doc and "cached_grading_panel" in user_doc:
-            cache = user_doc["cached_grading_panel"]
-            cache_time = cache.get("cached_at")
-            
-            if cache_time and isinstance(cache_time, datetime):
-                age_minutes = (datetime.utcnow() - cache_time).total_seconds() / 60
-                
-                # Return cached data if fresh (< 5 minutes)
-                if age_minutes < 5:
-                    logger.info(f"[GRADING_PANEL] ⚡ Returning cached data (age: {age_minutes:.1f}min)")
-                    
-                    # Update cache in background
-                    def update_cache():
-                        try:
-                            fresh_data = dash_system.get_grading_panel_data(user_id)
-                            mongo.users.update_one(
-                                {"user_id": user_id},
-                                {"$set": {"cached_grading_panel": {
-                                    "data": fresh_data,
-                                    "cached_at": datetime.utcnow()
-                                }}}
-                            )
-                            logger.info(f"[GRADING_PANEL] [OK] Cache updated and saved to MongoDB")
-                        except Exception as e:
-                            logger.error(f"[GRADING_PANEL] Background update failed: {e}")
-                    
-                    threading.Thread(target=update_cache, daemon=True).start()
-                    return cache["data"]
-        
-        # COLD START - return pre-generated default instantly
-        logger.info(f"[GRADING_PANEL] [COLD_START] Returning pre-generated default")
-        
-        # Generate personalized data in background and SAVE to MongoDB
-        def generate_and_cache():
-            try:
-                logger.info(f"[GRADING_PANEL] [BACKGROUND] Generating personalized data in background")
-                personalized_data = dash_system.get_grading_panel_data(user_id)
-                
-                # SAVE TO MONGODB
-                mongo.users.update_one(
-                    {"user_id": user_id},
-                    {"$set": {"cached_grading_panel": {
-                        "data": personalized_data,
-                        "cached_at": datetime.utcnow()
-                    }}},
-                    upsert=True
-                )
-                logger.info(f"[GRADING_PANEL] [SAVED] Data generated and SAVED to MongoDB")
-            except Exception as e:
-                logger.error(f"[GRADING_PANEL] [ERROR] Background generation failed: {e}")
-        
-        threading.Thread(target=generate_and_cache, daemon=True).start()
-        
-        # Return pre-generated default panel (instant < 50ms)
-        return dash_system.default_grading_panel
-        
+        grading_data = dash_system.get_grading_panel_data(user_id)
+        logger.info(f"[GRADING_PANEL] Generated grading data for user {user_id}")
+        return grading_data
     except Exception as e:
         logger.error(f"[ERROR] Error getting grading panel data: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-
-
-
+    skill_states = {}
+    for skill_id, score_data in scores.items():
+        # Get student state to get last_practice_time
+        state = dash_system.get_student_state(user_id, skill_id)
+        
+        skill_states[skill_id] = {
+            "name": score_data["name"],  # Include skill name
+            "memory_strength": score_data["memory_strength"],
+            "last_practice_time": state.last_practice_time if state.last_practice_time else None,
+            "practice_count": score_data["practice_count"],
+            "correct_count": score_data["correct_count"]
+        }
+    
+    return {"skill_states": skill_states}
 
 @app.post("/api/questions/recommend-next", response_model=List[PerseusQuestion])
 def recommend_next_questions(request: Request, req: RecommendNextRequest):
@@ -765,77 +710,6 @@ async def get_learning_videos(
         logger.error(f"[ERROR] Failed to get learning videos for question {question_id}: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to get learning videos: {str(e)}")
 
-
-# Learning Asset model for general asset browsing
-class LearningAsset(BaseModel):
-    id: str = Field(alias="_id", default="")
-    title: str
-    path: str
-    slug: Optional[str] = ""
-    category: Optional[str] = "General"
-    lessonName: Optional[str] = ""
-    courseName: Optional[str] = ""
-    
-    class Config:
-        extra = "allow"
-        arbitrary_types_allowed = True
-        json_encoders = {
-            object: str
-        }
-
-@app.get("/api/learning-assets", response_model=List[LearningAsset])
-def get_learning_assets():
-    """
-    Get all learning assets directly from the exercises collection.
-    """
-    from managers.mongodb_manager import mongo_db
-    
-    try:
-        logger.info("[LEARNING_ASSETS] Fetching all available assets")
-        
-        # 1. Fetch exercises that have regions/paths (videos)
-        # We limit to a reasonable number to avoid heavy load, but enough to feel "complete"
-        exercises_cursor = mongo_db.db.exercises.find({"status": "CAPTURED"}).limit(100)
-        
-        assets_list = []
-        for exercise in exercises_cursor:
-            # Resolve path (prefer multivariable-calculus or GLOBAL)
-            regions = exercise.get("regions", {})
-            path = None
-            
-            # Use the same priority logic as before
-            if "multivariable-calculus" in regions:
-                path = regions["multivariable-calculus"].get("path")
-            elif "GLOBAL" in regions:
-                path = regions["GLOBAL"].get("path")
-            else:
-                # Fallback to first region with a path
-                for r_data in regions.values():
-                    if isinstance(r_data, dict) and r_data.get("path"):
-                        path = r_data.get("path")
-                        break
-            
-            if not path:
-                continue
-                
-            assets_list.append({
-                "_id": str(exercise.get("_id")),
-                "title": exercise.get("title", "Untitled Asset"),
-                "path": path,
-                "slug": exercise.get("slug", ""),
-                "category": "Mixed", # We don't have courseName/lessonName directly here easily without join
-                "lessonName": "",
-                "courseName": ""
-            })
-            
-        logger.info(f"[LEARNING_ASSETS] Generated {len(assets_list)} assets from exercises collection")
-        return assets_list
-
-    except Exception as e:
-        logger.error(f"[ERROR] Failed to fetch learning assets: {e}")
-        import traceback
-        logger.error(f"[ERROR] Traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch learning assets: {e}")
 
 # ===== ASSESSMENT ENDPOINTS (PHASE 3) =====
 
@@ -1405,70 +1279,6 @@ def get_videos_stats(
         logger.error(f"[ADMIN_PANEL] Error fetching video statistics: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch statistics: {str(e)}")
 
-@app.get("/api/learning-assets/search")
-def search_youtube_videos(query: str, limit: int = 10):
-    """
-    Search YouTube for videos matching the query.
-    Returns a list of video objects with title, thumbnail, duration, and ID.
-    """
-    import yt_dlp
-    
-    logger.info(f"Searching YouTube with yt-dlp for: {query}")
-    
-    try:
-        ydl_opts = {
-            'default_search': f'ytsearch{limit}',
-            'quiet': True, 
-            'extract_flat': 'in_playlist',
-            'no_warnings': True
-        }
-        
-        videos = []
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            logger.info(f"Calling yt-dlp extract_info for: {query}")
-            info = ydl.extract_info(query, download=False)
-            
-            # Debug logging
-            logger.info(f"yt-dlp info keys: {info.keys() if info else 'None'}")
-            
-            if 'entries' in info:
-                logger.info(f"yt-dlp found {len(info['entries'])} entries")
-            else:
-                logger.warning("yt-dlp found no 'entries' in info")
-                
-            if 'entries' in info:
-                for entry in info['entries']:
-                    if not entry: continue
-                    video_id = entry.get('id')
-                    duration_seconds = entry.get('duration')
-                    
-                    # FILTER: Exclude Shorts (videos < 60 seconds)
-                    if duration_seconds and int(duration_seconds) < 60:
-                        continue
-                    
-                    # Format duration
-                    duration_str = ""
-                    if duration_seconds:
-                        m, s = divmod(int(duration_seconds), 60)
-                        duration_str = f"{m}:{s:02d}"
-                    
-                    videos.append({
-                        "id": video_id,
-                        "videoId": video_id,
-                        "title": entry.get('title'),
-                        "thumbnail": f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg",
-                        "duration": duration_str,
-                        "link": f"https://www.youtube.com/watch?v={video_id}",
-                        "channel": entry.get('uploader')
-                    })
-            
-        logger.info(f"Returning {len(videos)} videos (Filtered > 60s)")
-        return videos
-    except Exception as e:
-        logger.error(f"YouTube search failed: {e}")
-        import traceback
-        logger.error(traceback.format_exc())
-        return []
 
 if __name__ == "__main__":
     import uvicorn

@@ -66,4 +66,3 @@ yarl==1.22.0
 passlib[bcrypt]==1.7.4
 bcrypt==4.2.1
 livekit-api>=1.0.0
-yt-dlp

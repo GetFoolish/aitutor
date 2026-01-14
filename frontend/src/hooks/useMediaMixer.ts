@@ -38,64 +38,61 @@ export const useMediaMixer = (config: MediaMixerConfig) => {
 
     const sectionHeight = config.height / 3;
 
-    // 1. Draw Section Backgrounds and Media
+    // Clear canvas with appropriate backgrounds
+    // We can skip clearing if we are going to overwrite everything, but let's keep it for safety
+    // or just fill the whole thing once if we want to be super optimized, but sections have different colors.
 
     // Scratchpad Section
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, config.width, sectionHeight);
+
     if (scratchpadCanvasRef.current) {
       try {
         ctx.drawImage(scratchpadCanvasRef.current, 0, 0, config.width, sectionHeight);
-      } catch (error) { }
+      } catch (error) {
+        // console.error('Error drawing scratchpad frame:', error);
+      }
     }
 
     // Screen Section
     ctx.fillStyle = 'black';
     ctx.fillRect(0, sectionHeight, config.width, sectionHeight);
+
     if (showScreen && config.screenVideoRef?.current) {
       try {
         const video = config.screenVideoRef.current;
-        if (video.readyState >= 2) {
+        if (video.readyState >= 2) { // HAVE_CURRENT_DATA
+          // Draw directly from video element
+          // Maintain aspect ratio or fill? The original code did a resize via temp canvas.
+          // We'll draw to fill the section (1280x720)
           ctx.drawImage(video, 0, sectionHeight, config.width, sectionHeight);
         }
-      } catch (error) { }
+      } catch (error) {
+        // console.error('Error drawing screen frame:', error);
+      }
     }
 
     // Camera Section
     ctx.fillStyle = '#404040';
     ctx.fillRect(0, 2 * sectionHeight, config.width, sectionHeight);
+
     if (showCamera && config.cameraVideoRef?.current) {
       try {
         const video = config.cameraVideoRef.current;
         if (video.readyState >= 2) {
           if (config.privacyEnabled && filterRef.current) {
+            // Apply Canny Edge Filter
             const filteredCanvas = filterRef.current.process(video);
             ctx.drawImage(filteredCanvas, 0, 2 * sectionHeight, config.width, sectionHeight);
           } else {
+            // Normal Camera Feed
             ctx.drawImage(video, 0, 2 * sectionHeight, config.width, sectionHeight);
           }
         }
-      } catch (error) { }
+      } catch (error) {
+        // console.error('Error drawing camera frame:', error);
+      }
     }
-
-    // 2. Draw Overlays (Borders and Labels) - Draw LAST
-
-    // Draw Separator Borders (Red)
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 14;
-
-    ctx.beginPath();
-    ctx.moveTo(0, sectionHeight);
-    ctx.lineTo(config.width, sectionHeight);
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(0, 2 * sectionHeight);
-    ctx.lineTo(config.width, 2 * sectionHeight);
-    ctx.stroke();
-
-    // Draw Stickers (Bottom-Left of each section) removed per user request to avoid double labeling.
-    // The red separator lines remain for LLM to identify segments.
   }, [config.width, config.height, showCamera, showScreen, config.cameraVideoRef, config.screenVideoRef, config.privacyEnabled]);
 
   // Update frame buffers

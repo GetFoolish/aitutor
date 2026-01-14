@@ -4,7 +4,6 @@ import json
 import os
 import sys
 import logging
-from threading import Thread
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass, field
 from enum import Enum
@@ -91,9 +90,6 @@ class DASHSystem:
         self.khan_skills: Dict[str, KhanSkill] = {}  # New: Khan Academy units as skills
         self.khan_sub_skills: Dict[str, KhanSubSkill] = {}  # New: Khan Academy lessons as sub-skills
         self.student_states: Dict[str, Dict[str, StudentSkillState]] = {}
-        self.khan_loaded = False
-        self.khan_loading = False
-        self.default_grading_panel = None  # Pre-generated default for instant cold starts
         # Lightweight index structures for efficient question loading
         self.question_index: Dict[str, str] = {}  # Maps question_id → skill_id
         self.skill_question_index: Dict[str, List[str]] = {}  # Maps skill_id → [question_ids]
@@ -121,33 +117,13 @@ class DASHSystem:
         # Load skills and questions from MongoDB
         if self.use_mongodb and self.mongo:
             if self.use_khan_hierarchy:
-                log_print(f"[KHAN] Starting background load of Khan Academy hierarchy for {region} - {subject}")
-                # Start background thread for Khan loading
-                self.khan_loading = True
-                thread = Thread(target=self._load_khan_background, daemon=True)
-                thread.start()
-                log_print("[KHAN] Background loading initiated - API will be ready immediately")
+                log_print(f"[KHAN] Loading Khan Academy hierarchy for {region} - {subject}")
+                self._load_from_khan_hierarchy()
             else:
                 log_print("[LEGACY] Loading from generated_skills collection")
                 self._load_from_mongodb()
         else:
             raise RuntimeError("MongoDB is required. Please configure MONGODB_URI in .env file.")
-    
-    def _load_khan_background(self):
-        """Background thread wrapper for Khan Academy loading"""
-        try:
-            self._load_from_khan_hierarchy()
-            self.khan_loaded = True
-            self.khan_loading = False
-            log_print("[KHAN] Background loading complete - Khan Academy data ready")
-            
-            # Regenerate default panel now that khan_skills are loaded
-            self.generate_default_grading_panel()
-        except Exception as e:
-            log_print(f"[ERROR] Background Khan loading failed: {e}")
-            self.khan_loading = False
-            import traceback
-            traceback.print_exc()
     
     def _load_from_khan_hierarchy(self):
         """
@@ -174,47 +150,7 @@ class DASHSystem:
                 log_print(f"[WARNING] No {self.subject} courses found for region {self.region}")
                 return
             
-            # OPTIMIZATION: Load ALL data in bulk queries instead of nested loops
-            course_ids = [c['course_id'] for c in relevant_courses]
-            
-            log_print(f"[KHAN] Loading units for {len(course_ids)} courses (bulk query)...")
-            all_units = list(self.mongo.units.find({"course_id": {"$in": course_ids}}).sort([("course_id", 1), ("order_in_course", 1)]))
-            log_print(f"[KHAN] Loaded {len(all_units)} units")
-            
-            units_by_course = {}
-            unit_ids = []
-            for unit in all_units:
-                cid = unit['course_id']
-                if cid not in units_by_course:
-                    units_by_course[cid] = []
-                units_by_course[cid].append(unit)
-                unit_ids.append(unit['unit_id'])
-            
-            log_print(f"[KHAN] Loading lessons for {len(unit_ids)} units (bulk query)...")
-            all_lessons = list(self.mongo.lessons.find({"unit_id": {"$in": unit_ids}}).sort([("unit_id", 1), ("order_in_unit", 1)]))
-            log_print(f"[KHAN] Loaded {len(all_lessons)} lessons")
-            
-            lessons_by_unit = {}
-            lesson_ids = []
-            for lesson in all_lessons:
-                uid = lesson['unit_id']
-                if uid not in lessons_by_unit:
-                    lessons_by_unit[uid] = []
-                lessons_by_unit[uid].append(lesson)
-                lesson_ids.append(lesson['lesson_id'])
-            
-            log_print(f"[KHAN] Loading exercises for {len(lesson_ids)} lessons (bulk query)...")
-            all_exercises = list(self.mongo.exercises.find({"lesson_id": {"$in": lesson_ids}}))
-            log_print(f"[KHAN] Loaded {len(all_exercises)} exercises")
-            
-            exercises_by_lesson = {}
-            for exercise in all_exercises:
-                lid = exercise['lesson_id']
-                if lid not in exercises_by_lesson:
-                    exercises_by_lesson[lid] = []
-                exercises_by_lesson[lid].append(exercise)
-            
-            log_print(f"[KHAN] Building skill hierarchy...")
+            # Load units (skills) for each course
             total_units = 0
             total_lessons = 0
             total_exercises = 0
@@ -228,8 +164,8 @@ class DASHSystem:
                     course.get('order_in_region', 0)
                 )
                 
-                # Get units from pre-loaded data
-                units = units_by_course.get(course_id, [])
+                # Get units for this course
+                units = list(self.mongo.units.find({"course_id": course_id}).sort("order_in_course", 1))
                 
                 for unit in units:
                     unit_id = unit['unit_id']
@@ -240,8 +176,8 @@ class DASHSystem:
                         if u.get('order_in_course', 0) < unit.get('order_in_course', 0)
                     ]
                     
-                    # Get lessons from pre-loaded data
-                    lessons = lessons_by_unit.get(unit_id, [])
+                    # Get lessons (sub-skills) for this unit
+                    lessons = list(self.mongo.lessons.find({"unit_id": unit_id}).sort("order_in_unit", 1))
                     sub_skill_ids = [lesson['lesson_id'] for lesson in lessons]
                     
                     # Create KhanSkill (Unit → Skill mapping)
@@ -276,8 +212,8 @@ class DASHSystem:
                     for lesson in lessons:
                         lesson_id = lesson['lesson_id']
                         
-                        # Get exercises from pre-loaded data
-                        exercises = exercises_by_lesson.get(lesson_id, [])
+                        # Get exercises for this lesson
+                        exercises = list(self.mongo.exercises.find({"lesson_id": lesson_id}))
                         exercise_ids = [ex['exercise_id'] for ex in exercises]
                         
                         khan_sub_skill = KhanSubSkill(
@@ -1069,55 +1005,6 @@ class DASHSystem:
             import traceback
             traceback.print_exc()
             raise
-    
-    def generate_default_grading_panel(self) -> None:
-        """Generate default grading panel structure from khan_skills for instant cold starts"""
-        try:
-            log_print("[DEFAULT_PANEL] Generating pre-generated default grading panel...")
-            
-            # Build structure from khan_skills (already loaded in memory)
-            grading_data = {
-                "subjects": {},
-                "overall_grade": "N/A",
-                "overall_mastery": 0
-            }
-            
-            # Group khan_skills by subject and grade
-            for skill_id, skill in self.khan_skills.items():
-                subject = skill.subject
-                grade_level = str(skill.grade_level.value) if hasattr(skill.grade_level, 'value') else str(skill.grade_level)
-                
-                # Initialize subject
-                if subject not in grading_data["subjects"]:
-                    grading_data["subjects"][subject] = {"grade_levels": {}}
-                
-                # Initialize grade level
-                if grade_level not in grading_data["subjects"][subject]["grade_levels"]:
-                    grading_data["subjects"][subject]["grade_levels"][grade_level] = {"units": []}
-                
-                # Add unit with zero progress
-                grading_data["subjects"][subject]["grade_levels"][grade_level]["units"].append({
-                    "id": skill_id,
-                    "name": skill.name,
-                    "mastery": 0,
-                    "questions_answered": 0,
-                    "questions_correct": 0,
-                    "sub_skills": []  # Will be empty for default panel
-                })
-            
-            self.default_grading_panel = grading_data
-            log_print(f"[DEFAULT_PANEL] [OK] Generated default panel with {len(self.khan_skills)} units")
-            
-        except Exception as e:
-            log_print(f"[ERROR] Failed to generate default panel: {e}")
-            import traceback
-            traceback.print_exc()
-            # Set empty default to prevent crashes
-            self.default_grading_panel = {
-                "subjects": {},
-                "overall_grade": "N/A",
-                "overall_mastery": 0
-            }
     
     def get_recommended_skills(
         self, 
