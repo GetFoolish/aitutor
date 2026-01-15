@@ -173,17 +173,20 @@ export function OrdererWidget({
 
   // Drag state
   const [draggedCard, setDraggedCard] = useState<string | null>(null);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragSource, setDragSource] = useState<'available' | 'selected' | null>(null);
   const [dropTargetIndex, setDropTargetIndex] = useState<number | null>(null);
 
-  const handleDragStart = useCallback((card: string, source: 'available' | 'selected') => {
+  const handleDragStart = useCallback((card: string, source: 'available' | 'selected', index?: number) => {
     if (isDisabled) return;
     setDraggedCard(card);
+    setDraggedIndex(index !== undefined ? index : null);
     setDragSource(source);
   }, [isDisabled]);
 
   const handleDragEnd = useCallback(() => {
     setDraggedCard(null);
+    setDraggedIndex(null);
     setDragSource(null);
     setDropTargetIndex(null);
   }, []);
@@ -196,40 +199,42 @@ export function OrdererWidget({
     if (dragSource === 'available') {
       // Add card from available pool
       newSelected.splice(dropIndex, 0, draggedCard);
-    } else if (dragSource === 'selected') {
-      // Reorder within selected
-      const currentIndex = newSelected.indexOf(draggedCard);
-      if (currentIndex !== -1) {
-        newSelected.splice(currentIndex, 1);
-        const adjustedIndex = dropIndex > currentIndex ? dropIndex - 1 : dropIndex;
-        newSelected.splice(adjustedIndex, 0, draggedCard);
-      }
+    } else if (dragSource === 'selected' && draggedIndex !== null) {
+      // Reorder within selected using index to handle identical items
+      newSelected.splice(draggedIndex, 1);
+      const adjustedIndex = dropIndex > draggedIndex ? dropIndex - 1 : dropIndex;
+      newSelected.splice(adjustedIndex, 0, draggedCard);
     }
 
     setSelectedCards(newSelected);
     onChange?.(newSelected);
     handleDragEnd();
-  }, [isDisabled, draggedCard, dragSource, selectedCards, onChange, handleDragEnd]);
+  }, [isDisabled, draggedCard, dragSource, draggedIndex, selectedCards, onChange, handleDragEnd]);
 
   const handleDropOnAvailable = useCallback(() => {
-    if (isDisabled || !draggedCard || dragSource !== 'selected') return;
+    if (isDisabled || !draggedCard || dragSource !== 'selected' || draggedIndex === null) return;
 
-    const newSelected = selectedCards.filter(c => c !== draggedCard);
+    // Remove only the specific instance being dragged
+    const newSelected = [...selectedCards];
+    newSelected.splice(draggedIndex, 1);
+
     setSelectedCards(newSelected);
     onChange?.(newSelected);
     handleDragEnd();
-  }, [isDisabled, draggedCard, dragSource, selectedCards, onChange, handleDragEnd]);
+  }, [isDisabled, draggedCard, dragSource, draggedIndex, selectedCards, onChange, handleDragEnd]);
 
   // Click handlers for touch/mobile support
-  const handleCardClick = useCallback((card: string, source: 'available' | 'selected') => {
+  const handleCardClick = useCallback((card: string, source: 'available' | 'selected', index?: number) => {
     if (isDisabled) return;
 
     if (source === 'available') {
       const newSelected = [...selectedCards, card];
       setSelectedCards(newSelected);
       onChange?.(newSelected);
-    } else {
-      const newSelected = selectedCards.filter(c => c !== card);
+    } else if (index !== undefined) {
+      // Remove only the clicked instance
+      const newSelected = [...selectedCards];
+      newSelected.splice(index, 1);
       setSelectedCards(newSelected);
       onChange?.(newSelected);
     }
@@ -370,7 +375,7 @@ export function OrdererWidget({
               <div
                 key={`selected-${index}`}
                 draggable={!isDisabled}
-                onDragStart={() => handleDragStart(card, 'selected')}
+                onDragStart={() => handleDragStart(card, 'selected', index)}
                 onDragEnd={handleDragEnd}
                 onDragOver={(e) => {
                   e.preventDefault();
@@ -382,7 +387,7 @@ export function OrdererWidget({
                   e.stopPropagation();
                   handleDropOnAnswer(index);
                 }}
-                onClick={() => handleCardClick(card, 'selected')}
+                onClick={() => handleCardClick(card, 'selected', index)}
                 style={{
                   ...cardStyle,
                   backgroundColor: draggedCard === card ? themeStyles.highlight : themeStyles.cardBg,
