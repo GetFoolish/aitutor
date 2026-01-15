@@ -563,6 +563,47 @@ def get_streak(request: Request):
         "streak_history": user_profile.streak_history
     }
 
+@app.get("/api/streak/calendar")
+def get_streak_calendar(request: Request):
+    """
+    Get practice calendar data for the past 30 days.
+    Returns a list of practice dates in ISO format.
+    """
+    ensure_dash_system()
+    # Get user_id from JWT token
+    user_id = get_current_user(request)
+
+    # Load user profile
+    user_profile = dash_system.load_user_or_create(user_id)
+    if not user_profile:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Get streak history (already contains ISO date strings)
+    from datetime import datetime, timedelta
+
+    # Calculate date 30 days ago
+    today = datetime.utcnow().date()
+    thirty_days_ago = today - timedelta(days=30)
+
+    # Filter practice dates to last 30 days
+    practice_dates = []
+    for date_str in user_profile.streak_history:
+        try:
+            # Parse ISO date string (format: YYYY-MM-DD)
+            practice_date = datetime.fromisoformat(date_str).date()
+            # Only include dates within last 30 days
+            if practice_date >= thirty_days_ago:
+                practice_dates.append(date_str)
+        except (ValueError, AttributeError) as e:
+            logger.warning(f"[STREAK_CALENDAR] Invalid date format in streak_history: {date_str}")
+            continue
+
+    logger.info(f"[STREAK_CALENDAR] Returning {len(practice_dates)} practice dates for user {user_id} (last 30 days)")
+
+    return {
+        "practice_dates": practice_dates
+    }
+
 @app.post("/api/questions/recommend-next", response_model=List[PerseusQuestion])
 def recommend_next_questions(request: Request, req: RecommendNextRequest):
     """
