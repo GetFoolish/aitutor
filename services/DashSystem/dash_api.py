@@ -510,25 +510,25 @@ def get_skill_scores(request: Request):
     ensure_dash_system()
     # Get user_id from JWT token
     user_id = get_current_user(request)
-    
+
     # Get user profile to ensure it exists and sync skill states
     user_profile = dash_system.load_user_or_create(user_id)
     if not user_profile:
         raise HTTPException(status_code=404, detail="User not found")
-    
+
     # Get current time for calculations
     current_time = time.time()
-    
+
     # Get all skill scores from DASH system
     scores = dash_system.get_skill_scores(user_id, current_time)
-    
+
     # Transform to format expected by frontend
     # Frontend expects: { skill_id: { name, memory_strength, last_practice_time, practice_count, correct_count } }
     skill_states = {}
     for skill_id, score_data in scores.items():
         # Get student state to get last_practice_time
         state = dash_system.get_student_state(user_id, skill_id)
-        
+
         skill_states[skill_id] = {
             "name": score_data["name"],  # Include skill name
             "memory_strength": score_data["memory_strength"],
@@ -536,8 +536,32 @@ def get_skill_scores(request: Request):
             "practice_count": score_data["practice_count"],
             "correct_count": score_data["correct_count"]
         }
-    
+
     return {"skill_states": skill_states}
+
+@app.get("/api/streak")
+def get_streak(request: Request):
+    """
+    Get current streak information for the user.
+    Returns current streak count, longest streak, last practice date, and streak history.
+    """
+    ensure_dash_system()
+    # Get user_id from JWT token
+    user_id = get_current_user(request)
+
+    # Load user profile
+    user_profile = dash_system.load_user_or_create(user_id)
+    if not user_profile:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    logger.info(f"[STREAK] Getting streak info for user {user_id}: current={user_profile.current_streak}, longest={user_profile.longest_streak}")
+
+    return {
+        "current_streak": user_profile.current_streak,
+        "longest_streak": user_profile.longest_streak,
+        "last_practice_date": user_profile.last_practice_date,
+        "streak_history": user_profile.streak_history
+    }
 
 @app.post("/api/questions/recommend-next", response_model=List[PerseusQuestion])
 def recommend_next_questions(request: Request, req: RecommendNextRequest):
