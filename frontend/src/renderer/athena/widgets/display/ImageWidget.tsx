@@ -427,7 +427,12 @@ export function ImageWidget({
               imageUrl.includes('fixed_graphs') ||
               (options.alt && options.alt.toLowerCase().includes('graph'))) &&
               // EXCLUDE beavers/castors from inversion fix
-              !(options.alt && (options.alt.toLowerCase().includes('beaver') || options.alt.toLowerCase().includes('castor')))
+              !(options.alt && (
+                options.alt.toLowerCase().includes('beaver') ||
+                options.alt.toLowerCase().includes('castor') ||
+                options.alt.toLowerCase().includes('samurai') ||
+                options.alt.toLowerCase().includes('photograph')
+              ))
               ? 'target-graph-fix'
               : ''
               }`}

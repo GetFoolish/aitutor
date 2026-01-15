@@ -1103,7 +1103,12 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
   const isIllustrativeQuestion =
     baseUrl.includes('bb0459b2b58513d63d21f1fbf35dac7395a01783') || // Cows
     baseUrl.includes('e25b96c9d939310eaf88a2c23c34152d47f03cc1') || // Beavers
-    (alt && (alt.toLowerCase().includes('beaver') || alt.toLowerCase().includes('castor')));
+    (alt && (
+      alt.toLowerCase().includes('beaver') ||
+      alt.toLowerCase().includes('castor') ||
+      alt.toLowerCase().includes('samurai') ||
+      alt.toLowerCase().includes('photograph')
+    ));
 
   // Determine filter class: force light (no filter) if it's illustrative, otherwise follow dark mode
   const computedFilterClass = isIllustrativeQuestion ? 'graphie-filter-light' : (isDarkMode ? 'graphie-filter-dark' : 'graphie-filter-light');
