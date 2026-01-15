@@ -187,6 +187,12 @@ export function ImageWidget({
       console.log('[ImageWidget] Fixing Triangle Graph');
       return '/fixed_graphs/triangle_fix_693396fb.png?v=fixed3';
     }
+    // 3. Linear Graph (6936f...)
+    const isLinearGraph = url.includes('a73f94') || alt.includes('(1,40)');
+    if (isLinearGraph) {
+      console.log('[ImageWidget] Fixing Linear Graph (6936f)');
+      return '/fixed_graphs/linear_graph_6936fda6.png?v=fixed1';
+    }
 
     let converted = convertImageUrl(backgroundImage.url);
 
@@ -311,7 +317,9 @@ export function ImageWidget({
   const isCurvedGraphFixed = backgroundImage.url.includes('e5659') ||
     (altText.includes('Good S') && altText.includes('Good R'));
 
-  const isBrokenGraph = isCurvedGraphFixed ||
+  const isLinearGraphFixed = backgroundImage.url.includes('a73f94') || altText.includes('(1,40)');
+
+  const isBrokenGraph = isCurvedGraphFixed || isLinearGraphFixed ||
     backgroundImage.url.includes('4d5a7152eb4a9381f6727326fe960fe5c818498b');
 
   const isGraphieImage = !isBrokenGraph && (
