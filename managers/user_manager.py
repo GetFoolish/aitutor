@@ -83,6 +83,8 @@ class UserProfile:
     student_notes: Dict = field(default_factory=dict)
     age: int = 5  # Default kindergarten age
     current_grade: str = "K"  # Calculated from age
+    earned_badges: List[str] = field(default_factory=list)  # List of earned badge IDs
+    badge_progress: Dict = field(default_factory=dict)  # Progress toward earning badges
     
     def to_dict(self):
         result = {
@@ -93,7 +95,9 @@ class UserProfile:
             'question_history': [asdict(attempt) for attempt in self.question_history],
             'student_notes': self.student_notes,
             'age': self.age,
-            'current_grade': self.current_grade
+            'current_grade': self.current_grade,
+            'earned_badges': self.earned_badges,
+            'badge_progress': self.badge_progress
         }
         # Include preloaded_question_ids if it exists (for MongoDB storage)
         if hasattr(self, 'preloaded_question_ids'):
@@ -104,7 +108,7 @@ class UserProfile:
     def from_dict(cls, data):
         skill_states = {k: SkillState.from_dict(v) for k, v in data['skill_states'].items()}
         question_history = [QuestionAttempt(**attempt) for attempt in data['question_history']]
-        
+
         user_profile = cls(
             user_id=data['user_id'],
             created_at=data['created_at'],
@@ -113,7 +117,9 @@ class UserProfile:
             question_history=question_history,
             student_notes=data.get('student_notes', {}),
             age=data.get('age', 5),
-            current_grade=data.get('current_grade', 'K')
+            current_grade=data.get('current_grade', 'K'),
+            earned_badges=data.get('earned_badges', []),
+            badge_progress=data.get('badge_progress', {})
         )
         # Handle preloaded_question_ids if present (optional field)
         if 'preloaded_question_ids' in data:
