@@ -35,7 +35,7 @@ import {
   Code,
 } from 'lucide-react';
 
-import { AthenaRenderer, registerDefaultWidgets, ScoringEngine } from '../../renderer/athena';
+import { AthenaRenderer, registerDefaultWidgets, ScoringEngine, AthenaRendererRef } from '../../renderer/athena';
 import '../../renderer/athena/athena.css';
 import type { AthenaItem } from '../../services/athenaAPI';
 // @ts-ignore
@@ -1341,6 +1341,7 @@ export const QuestionPane: React.FC = () => {
   const { questionId } = useParams<{ questionId?: string }>();
 
   const cardRef = useRef<HTMLDivElement>(null);
+  const athenaRef = useRef<AthenaRendererRef>(null);
 
   // Debug UI toggle
   const showDebugUI = import.meta.env.DEV || window.location.search.includes('debug=true');
@@ -1507,14 +1508,20 @@ export const QuestionPane: React.FC = () => {
   const handleSubmit = () => {
     if (!currentQuestion || !hasAnswers) return;
 
-    const result = scoringEngine.scoreItem(
-      {
-        question: currentQuestion.question as any,
-        hints: currentQuestion.hints as any,
-        answerArea: currentQuestion.answerArea,
-      },
-      answers
-    );
+    // Use AthenaRenderer's score if available and in athena view
+    let result;
+    if (viewMode === 'athena' && athenaRef.current) {
+      result = athenaRef.current.score();
+    } else {
+      result = scoringEngine.scoreItem(
+        {
+          question: currentQuestion.question as any,
+          hints: currentQuestion.hints as any,
+          answerArea: currentQuestion.answerArea,
+        },
+        answers
+      );
+    }
 
     const correct = result.correct;
     setAttemptState(correct ? 'checked_correct' : 'checked_incorrect');
@@ -1850,6 +1857,7 @@ export const QuestionPane: React.FC = () => {
                     onRetry={() => setRendererKey(k => k + 1)}
                   >
                     <AthenaRenderer
+                      ref={athenaRef}
                       item={{
                         question: currentQuestion.question as any,
                         hints: currentQuestion.hints as any,

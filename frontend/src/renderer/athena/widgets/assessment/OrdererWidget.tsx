@@ -34,6 +34,7 @@ interface OrdererOptions {
   otherOptions?: OrdererOptionItem[];
   layout?: 'horizontal' | 'vertical';
   height?: 'normal' | 'auto';
+  infinite?: boolean;
 }
 
 export interface OrdererWidgetProps extends WidgetProps<OrdererOptions> { }
@@ -156,7 +157,19 @@ export function OrdererWidget({
   });
 
   // Compute available cards (not yet selected)
-  const availableCards = allCards.filter(card => !selectedCards.includes(card));
+  // If "infinite" option is enabled, available cards are never removed.
+  // Otherwise, remove selected instances from the available pool.
+  const isInfinite = !!widget?.options?.infinite;
+  const availableCards = isInfinite ? [...allCards] : [...allCards];
+
+  if (!isInfinite) {
+    selectedCards.forEach(selected => {
+      const index = availableCards.indexOf(selected);
+      if (index !== -1) {
+        availableCards.splice(index, 1);
+      }
+    });
+  }
 
   // Drag state
   const [draggedCard, setDraggedCard] = useState<string | null>(null);
@@ -341,8 +354,8 @@ export function OrdererWidget({
               ? isCorrect ? 'rgba(76, 175, 80, 0.1)' : isIncorrect ? 'rgba(244, 67, 54, 0.1)' : themeStyles.dropZoneBg
               : themeStyles.dropZoneBg,
             border: `2px dashed ${reviewMode
-                ? isCorrect ? themeStyles.correct : isIncorrect ? themeStyles.incorrect : themeStyles.dropZoneBorder
-                : dropTargetIndex !== null ? themeStyles.highlight : themeStyles.dropZoneBorder
+              ? isCorrect ? themeStyles.correct : isIncorrect ? themeStyles.incorrect : themeStyles.dropZoneBorder
+              : dropTargetIndex !== null ? themeStyles.highlight : themeStyles.dropZoneBorder
               }`,
             borderRadius: '8px',
             transition: 'all 0.2s ease',

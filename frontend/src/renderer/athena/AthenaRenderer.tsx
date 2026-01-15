@@ -167,7 +167,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
 
     // Scoring (basic implementation - will be enhanced in Phase 4)
     const score = useCallback((): ScoringResult => {
-      const widgets = item.question?.widgets || {};
+      const widgets = processedWidgets || {};
       const details: WidgetScoreDetail[] = [];
       let totalEarned = 0;
       let totalPossible = 0;
@@ -219,6 +219,31 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
               Math.abs(numericAnswer - ans.value) <= tolerance
             );
           });
+        } else if (widgetType === 'orderer' && widget.options) {
+          const options = widget.options as any;
+          const correctOptions = options.correctOptions || [];
+          const currentAnswer = Array.isArray(userAnswer) ? userAnswer : [];
+
+          if (currentAnswer.length !== correctOptions.length) {
+            correct = false;
+          } else {
+            // Compare each item content with robustness
+            correct = correctOptions.every((opt: any, index: number) => {
+              const expected = (typeof opt === 'string' ? opt : opt?.content || '').trim();
+              const actual = String(currentAnswer[index] || '').trim();
+
+              if (expected === actual) return true;
+
+              // Normalize image URLs (strip protocol and ignore alt text differences)
+              const normalize = (s: string) => {
+                const imgMatch = s.match(/!\[.*\]\((.*)\)/);
+                const url = imgMatch ? imgMatch[1] : s;
+                return url.replace(/^https?:\/\//, '').replace(/^web\+graphie:\/\//, '').replace(/\.(svg|png|jpg|jpeg)$/, '');
+              };
+
+              return normalize(expected) === normalize(actual);
+            });
+          }
         }
 
         if (correct) {
@@ -243,7 +268,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         total: totalPossible,
         details,
       };
-    }, [item.question?.widgets, state.answers]);
+    }, [processedWidgets, state.answers]);
 
     // Expose ref methods
     useImperativeHandle(

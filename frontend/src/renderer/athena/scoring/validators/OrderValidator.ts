@@ -115,10 +115,13 @@ export class OrderValidator implements Validator {
       return ScoringEngine.emptyResult();
     }
 
-    const correct = (options.correctOptions || options.correct) as string[];
-    if (!correct || !Array.isArray(correct)) {
+    const correctRaw = (options.correctOptions || options.correct) as any[];
+    if (!correctRaw || !Array.isArray(correctRaw)) {
       return ScoringEngine.incorrectResult(1, 'No correct answer defined');
     }
+
+    // Extract content strings from potential objects
+    const correct = correctRaw.map(opt => typeof opt === 'string' ? opt : opt?.content || '');
 
     // Must select all correct items in order
     if (userAnswer.length !== correct.length) {
@@ -272,7 +275,25 @@ export class OrderValidator implements Validator {
 
     // String comparison (trim and case-insensitive)
     if (typeof a === 'string' && typeof b === 'string') {
-      return a.trim().toLowerCase() === b.trim().toLowerCase();
+      const s1 = a.trim().toLowerCase();
+      const s2 = b.trim().toLowerCase();
+
+      if (s1 === s2) return true;
+
+      // Robust URL normalization
+      const normalize = (s: string) => {
+        // Extract URL from markdown image syntax ![alt](url)
+        const imgMatch = s.match(/!\[.*\]\((.*)\)/);
+        const url = imgMatch ? imgMatch[1] : s;
+
+        return url
+          .replace(/^https?:\/\//, '')
+          .replace(/^web\+graphie:\/\//, '')
+          .replace(/\.(svg|png|jpg|jpeg|gif|webp)$/, '')
+          .trim();
+      };
+
+      return normalize(s1) === normalize(s2);
     }
 
     // Index comparison
