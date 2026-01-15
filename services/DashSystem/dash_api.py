@@ -456,6 +456,9 @@ def submit_answer(request: Request, answer: AnswerSubmission):
     Previous latency: 4-8 seconds. Target: < 500ms.
     """
     ensure_dash_system()
+    if badge_system is None:
+        raise HTTPException(status_code=503, detail="BadgeSystem not initialized")
+
     # Get user_id from JWT token
     user_id = get_current_user(request)
 
@@ -498,12 +501,43 @@ def submit_answer(request: Request, answer: AnswerSubmission):
     accuracy = (correct_count / total_attempts * 100) if total_attempts > 0 else 0
 
     logger.info(f"\n[PROGRESS] Total:{total_attempts} questions | Accuracy:{accuracy:.1f}% ({correct_count}/{total_attempts})")
+
+    # Check for newly earned badges
+    newly_earned_ids, badge_progress = badge_system.check_badges_earned(user_profile)
+
+    # Update user profile with newly earned badges
+    newly_earned_badges = []
+    if newly_earned_ids:
+        # Ensure earned_badges field exists
+        if not hasattr(user_profile, 'earned_badges'):
+            user_profile.earned_badges = []
+
+        # Add newly earned badges to user profile
+        for badge_id in newly_earned_ids:
+            if badge_id not in user_profile.earned_badges:
+                user_profile.earned_badges.append(badge_id)
+
+        # Update badge progress
+        user_profile.badge_progress = badge_progress
+
+        # Save updated profile
+        dash_system.user_manager.save_user(user_profile)
+
+        # Get full badge details for newly earned badges
+        for badge_id in newly_earned_ids:
+            badge = badge_system.get_badge_by_id(badge_id)
+            if badge:
+                newly_earned_badges.append(badge.to_dict())
+
+        logger.info(f"[BADGES] User {user_id} earned {len(newly_earned_ids)} new badges: {newly_earned_ids}")
+
     logger.info(f"{'-'*80}\n")
 
     return {
         "success": True,
         "affected_skills": affected_skills,
-        "message": "Answer recorded successfully"
+        "message": "Answer recorded successfully",
+        "newly_earned_badges": newly_earned_badges
     }
 
 @app.get("/api/skill-scores")
