@@ -354,14 +354,18 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
 
     // Note: dataFetchComplete is set by the data.json fetch useEffect
 
-    // FORCE CACHE CLEAR for the problematic voting graph to ensure restructuring applies
-    if (baseUrl.toLowerCase().includes('6933b3176cf86fa761d0a255') || baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011')) {
-      const svgUrl = baseUrl + '.svg';
-      if (svgCache.has(svgUrl)) {
-        console.log('[GraphieImage] Force clearing cache for 6933b... to ensure restructure');
-        svgCache.delete(svgUrl);
+    // FORCE CACHE CLEAR for graphs that need custom positioning
+    if (baseUrl.toLowerCase().includes('6933b3176cf86fa761d0a255') ||
+      baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011') ||
+      baseUrl.includes('d638c1e1fee8df2a93bbbb569d809df60bf9a52a') ||
+      baseUrl.includes('bb0459b2b58513d63d21f1fbf35dac7395a01783')) {
+
+      const svgUrl = baseUrl + '.svg?v=debug4'; // Force fresh fetch
+      if (svgCache.has(baseUrl + '.svg')) {
+        console.log('[GraphieImage] Force clearing cache for broken entity:', baseUrl);
+        svgCache.delete(baseUrl + '.svg');
       }
-      // Force SVG usage
+      // Force SVG usage (transparent background)
       setUsePngForLabels(false);
     }
   }, [baseUrl]);
@@ -846,8 +850,39 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       const lowerContent = processedContent.toLowerCase();
       const cleanContent = lowerContent.replace(/<[^>]*>/g, ' ');
 
-      // Determine if it's a rotated label (usually axis titles)
-      if (label.style?.transform?.includes('rotate(-90')) {
+      // DEBUG LOGGING - INSPECT ALL LABELS
+      console.log(`[GraphieImage] Label [${index}]:`, {
+        raw: label.content,
+        processed: processedContent,
+        clean: cleanContent,
+        includesGoodL: cleanContent.includes('good l'),
+        hasTransform: label.style?.transform
+      });
+
+
+      // EARLY DETECTION: Economics graphs (Good L, Good M, L, M)
+      const isEconomicsGraph = cleanContent === 'l' || cleanContent === 'm' ||
+        cleanContent.includes('good l') || cleanContent.includes('good m');
+
+      if (isEconomicsGraph) {
+        if (cleanContent === 'l' || cleanContent.includes('good l')) {
+          // BRUTE FORCE: Center L vertically
+          svgY = coordinateHeight / 2;
+          const yAxisPixelX = ((-xMin) / (xMax - xMin)) * svgWidth;
+          svgX = yAxisPixelX + 50;
+          textAnchor = 'middle';
+          transformAttr = `rotate(-90 ${svgX} ${svgY})`;
+          // DEBUG: RED + !important to confirm
+          styleStr += ' font-weight: bold; font-size: 16px;'; // Removed red for final product, trust the force
+        } else if (cleanContent === 'm' || cleanContent.includes('good m')) {
+          // Position M below the x-axis
+          const xAxisPixelY = (yMax / (yMax - yMin)) * coordinateHeight;
+          svgY = xAxisPixelY + 40;
+          svgX = svgWidth / 2;
+          textAnchor = 'middle';
+          styleStr += ' font-weight: bold; font-size: 16px;';
+        }
+      } else if (label.style?.transform?.includes('rotate(-90')) {
         transformAttr = `rotate(-90 ${svgX} ${svgY})`;
       }
 
@@ -906,12 +941,14 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       } else {
         // --- STANDARD GRAPH LOGIC (Includes Grape Type) ---
         const isVertical = transformAttr.includes('rotate(-90');
-        const isAxisTitle = cleanContent.includes('type') || cleanContent.includes('number of') || label.alignment === 'center';
+        const isAxisTitle = cleanContent.includes('type') ||
+          cleanContent.includes('number of') ||
+          label.alignment === 'center';
 
         if (isVertical && isAxisTitle) {
           const yAxisPixelX = ((-xMin) / (xMax - xMin)) * svgWidth;
-          // Adjusted centering for standard bar charts (move much higher)
-          svgY = coordinateHeight / 6;
+          // Standard vertical axis title positioning
+          svgY = coordinateHeight / 2;
           svgX = yAxisPixelX - 85;
           textAnchor = 'middle';
           transformAttr = `rotate(-90 ${svgX} ${svgY})`;
@@ -931,7 +968,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         } else if (label.alignment === 'above' || label.alignment === 'top') {
           dy = '-0.8em';
         } else if (label.alignment === 'below' || label.alignment === 'bottom') {
-          svgY += 25;
+          svgY += 15; // Reduced from 25 to move x-axis tick labels higher
           dy = '1.2em';
         }
       }
@@ -1043,6 +1080,12 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     );
   }
 
+  // --- VISUAL FIXES ---
+  // Fix specific for question 6933a3ad (Cows): Do not invert colors in dark mode because the cows are colored illustrations.
+  const isCowQuestion = baseUrl.includes('bb0459b2b58513d63d21f1fbf35dac7395a01783');
+  // Determine filter class: force light (no filter) if it's the cow question, otherwise follow dark mode
+  const computedFilterClass = isCowQuestion ? 'graphie-filter-light' : (isDarkMode ? 'graphie-filter-dark' : 'graphie-filter-light');
+
   return (
     <div
       ref={containerRef}
@@ -1105,7 +1148,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         <img
           src={baseUrl + '.png'}
           alt={alt}
-          className={`graphie-image graphie-png-with-labels ${filterClass}`}
+          className={`graphie-image graphie-png-with-labels ${computedFilterClass}`}
           style={{
             maxWidth: '100%',
             height: 'auto',
@@ -1139,7 +1182,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
           }}
         >
           <div
-            className={`graphie-svg-wrapper ${filterClass}`}
+            className={`graphie-svg-wrapper ${computedFilterClass}`}
             dangerouslySetInnerHTML={{ __html: processedSvgWithLabels }}
             style={{
               display: 'block',
@@ -1156,7 +1199,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         <img
           src={pngFallback || baseUrl + '.png'}
           alt={alt}
-          className={`graphie-image ${filterClass}`}
+          className={`graphie-image ${computedFilterClass}`}
           style={{
             maxWidth: '100%',
             height: 'auto',
