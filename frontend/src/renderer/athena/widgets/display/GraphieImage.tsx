@@ -1026,12 +1026,15 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
   // 1. Voting Graph (ID: 6933b...)
   // 2. Runner Graph (ID: 69334...)
   // 3. Triangle Graph (ID: 69339...) - Hash: 4d5a7152eb4a9381f6727326fe960fe5c818498b
+  // 4. Curved Graph (ID: 6935f...) - Hash: e56592233959955896323533818e3126305a755c
   if (baseUrl.includes('6933b3176cf86fa761d0a255') || baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011') ||
-    baseUrl.includes('69334af918bcab85650eed24') || baseUrl.includes('4d5a7152eb4a9381f6727326fe960fe5c818498b')) {
+    baseUrl.includes('69334af918bcab85650eed24') || baseUrl.includes('4d5a7152eb4a9381f6727326fe960fe5c818498b') ||
+    baseUrl.includes('e56592233959955896323533818e3126305a755c')) {
 
     // Determine which graph we are rendering to pick the right image
     const isRunnerGraph = baseUrl.includes('69334af918bcab85650eed24');
     const isTriangleGraph = baseUrl.includes('4d5a7152eb4a9381f6727326fe960fe5c818498b');
+    const isCurvedGraph = baseUrl.includes('e56592233959955896323533818e3126305a755c');
 
     let imgSrc = "/fixed_graphs/voting_graph.png"; // Default fallback (voting)
     let imgClass = "voting-graph-fix";
@@ -1042,6 +1045,9 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     } else if (isTriangleGraph) {
       imgSrc = "/fixed_graphs/triangle_fix_693396fb.png";
       imgClass = "graphie-image-triangle"; // Use standard class format
+    } else if (isCurvedGraph) {
+      imgSrc = "/fixed_graphs/curved_graph_6935f1b5.png?v=fixed2";
+      imgClass = "graphie-image-curved";
     }
 
     console.log('[GraphieImage] HARDCODED BLOCK ENTERED for:', baseUrl, {

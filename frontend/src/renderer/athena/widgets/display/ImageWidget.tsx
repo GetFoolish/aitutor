@@ -169,6 +169,25 @@ export function ImageWidget({
   // Convert the URL if needed (handles web+graphie://, relative URLs, etc.)
   const imageUrl = useMemo(() => {
     if (!backgroundImage?.url) return '';
+
+    // --- BROKEN GRAPH FIXES ---
+    // 1. Curved Graph (6935f...)
+    // Check by Partial Hash OR by Alt Text keywords (very broad fallback)
+    const url = backgroundImage.url;
+    const alt = options.alt || '';
+    const isCurvedGraph = url.includes('e5659') ||
+      (alt.includes('Good S') && alt.includes('Good R'));
+
+    if (isCurvedGraph) {
+      console.log('[ImageWidget] Fixing Curved Graph (Broad Match)');
+      return '/fixed_graphs/curved_graph_6935f1b5.png?v=fixed7';
+    }
+    // 2. Triangle Graph (69339...)
+    if (backgroundImage.url.includes('4d5a7152eb4a9381f6727326fe960fe5c818498b')) {
+      console.log('[ImageWidget] Fixing Triangle Graph');
+      return '/fixed_graphs/triangle_fix_693396fb.png?v=fixed3';
+    }
+
     let converted = convertImageUrl(backgroundImage.url);
 
     // Apply fallback attempts - try different extensions
@@ -195,7 +214,7 @@ export function ImageWidget({
     });
 
     return converted;
-  }, [backgroundImage?.url, fallbackAttempt]);
+  }, [backgroundImage?.url, fallbackAttempt, options.alt]);
 
   // Debug log for troubleshooting graph visibility
   // Moved here to be after imageUrl declaration
@@ -286,9 +305,20 @@ export function ImageWidget({
   }
 
   // Check if this is a graphie image that needs labels from data.json
-  const isGraphieImage = backgroundImage.url.startsWith('web+graphie://') ||
+  // EXCLUDE fixed graphs from this check to ensure they use the standard <img> tag with our override URL
+  // Sync detection logic with imageUrl calculation
+  const altText = options.alt || '';
+  const isCurvedGraphFixed = backgroundImage.url.includes('e5659') ||
+    (altText.includes('Good S') && altText.includes('Good R'));
+
+  const isBrokenGraph = isCurvedGraphFixed ||
+    backgroundImage.url.includes('4d5a7152eb4a9381f6727326fe960fe5c818498b');
+
+  const isGraphieImage = !isBrokenGraph && (
+    backgroundImage.url.startsWith('web+graphie://') ||
     backgroundImage.url.includes('ka-perseus-graphie') ||
-    (backgroundImage.url.includes('kastatic.org') && backgroundImage.url.includes('graphie'));
+    (backgroundImage.url.includes('kastatic.org') && backgroundImage.url.includes('graphie'))
+  );
 
   // Use GraphieImage component for graphie images to properly render labels from data.json
   if (isGraphieImage) {
@@ -317,6 +347,22 @@ export function ImageWidget({
   return (
     <BaseWidgetWrapper widgetId={widgetId} widgetType="image">
       <figure className="athena-image-figure">
+        {/* CSS INJECTION FOR STATIC GRAPH FIXES */}
+        <style>{`
+          /* Dark Mode: Invert colors for fixed graphs (white background -> black) */
+          :root.dark .target-graph-fix,
+          .dark .target-graph-fix,
+          [data-theme="dark"] .target-graph-fix {
+            filter: invert(1) hue-rotate(180deg) !important;
+            mix-blend-mode: screen !important;
+            background-color: transparent !important;
+          }
+          
+          /* Light Mode: No filter */
+          .target-graph-fix {
+            transition: filter 0.3s ease;
+          }
+        `}</style>
         {/* Loading state */}
         {isLoading && (
           <div
@@ -370,6 +416,7 @@ export function ImageWidget({
               imageUrl.includes('69334af918bcab85650eed24') ||
               imageUrl.toLowerCase().includes('graphie') ||
               imageUrl.toLowerCase().includes('perseus') ||
+              imageUrl.includes('fixed_graphs') ||
               (options.alt && options.alt.toLowerCase().includes('graph'))
               ? 'target-graph-fix'
               : ''
