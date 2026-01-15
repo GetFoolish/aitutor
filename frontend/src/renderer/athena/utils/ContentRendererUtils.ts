@@ -75,7 +75,8 @@ export const renderMath = (text: string): string => {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#039;/g, "'")
-    .replace(/&nbsp;/g, ' ');
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&dollar;/g, '$');
 
   // STEP 1.5: Convert unsupported 'eqnarray' to 'aligned' (KaTeX doesn't support eqnarray)
   // Handle qquad wrapper: \qquad { \begin{eqnarray} ... \end{eqnarray} }
@@ -876,7 +877,9 @@ export const processContent = (content: string): string => {
 
   // Phase 2: Protect raw math from table parser
   const mathBlocks: string[] = [];
-  processed = processed.replace(/\$\$([\s\S]+?)\$\$|\$([^$]+)\$/g, (match) => {
+  // Use a more restricted regex for inline math ($) to avoid matching across multiple lines
+  // which often causes document-spanning math errors and wipes out spaces.
+  processed = processed.replace(/\$\$([\s\S]+?)\$\$|\$([^$\n]+)\$/g, (match) => {
     const placeholder = `__ATHENA_MATH_RAW_${mathBlocks.length}__`;
     mathBlocks.push(match);
     return placeholder;
