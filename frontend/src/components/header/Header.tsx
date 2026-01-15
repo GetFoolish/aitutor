@@ -34,6 +34,8 @@ import {
     AvatarFallback,
     AvatarImage,
 } from "@/components/ui/avatar";
+import StreakDisplay from "@/components/streak/StreakDisplay";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface HeaderProps {
     sidebarOpen: boolean;
@@ -42,6 +44,7 @@ interface HeaderProps {
 
 export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
     const { theme, setTheme } = useTheme();
+    const { user } = useAuth();
     const [isDarkMode, setIsDarkMode] = useState(false);
 
     useEffect(() => {
@@ -85,6 +88,8 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
 
             {/* Right side - Actions */}
             <div className="flex items-center gap-1.5 md:gap-2">
+                {user && <StreakDisplay userId={user.user_id} />}
+
                 <Button
                     type="button"
                     variant="ghost"
