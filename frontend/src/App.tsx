@@ -28,6 +28,7 @@ import { HintProvider } from "./contexts/HintContext";
 import { Toaster } from "@/components/ui/sonner";
 import { useMediaMixer } from "./hooks/useMediaMixer";
 import { useMediaCapture } from "./hooks/useMediaCapture";
+// BadgesDialog is integrated into Header component for displaying all badges and achievements
 
 // Lazy load heavy components
 const SidePanel = lazy(() => import("./components/side-panel/SidePanel"));
