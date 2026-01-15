@@ -420,12 +420,14 @@ export function ImageWidget({
             // Logic: Add 'target-graph-fix' class if:
             // 1. URL matches the specific broken graph hash (0b4108...)
             // 2. Alt text contains 'graph' (heuristic)
-            className={`athena-image ${isLoading ? 'loading' : ''} ${imageUrl.includes('0b4108cbcbb425020a161877aa5ead3750ea88d3') ||
+            className={`athena-image ${isLoading ? 'loading' : ''} ${(imageUrl.includes('0b4108cbcbb425020a161877aa5ead3750ea88d3') ||
               imageUrl.includes('69334af918bcab85650eed24') ||
               imageUrl.toLowerCase().includes('graphie') ||
               imageUrl.toLowerCase().includes('perseus') ||
               imageUrl.includes('fixed_graphs') ||
-              (options.alt && options.alt.toLowerCase().includes('graph'))
+              (options.alt && options.alt.toLowerCase().includes('graph'))) &&
+              // EXCLUDE beavers/castors from inversion fix
+              !(options.alt && (options.alt.toLowerCase().includes('beaver') || options.alt.toLowerCase().includes('castor')))
               ? 'target-graph-fix'
               : ''
               }`}

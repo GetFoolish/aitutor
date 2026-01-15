@@ -1098,10 +1098,15 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
   }
 
   // --- VISUAL FIXES ---
-  // Fix specific for question 6933a3ad (Cows): Do not invert colors in dark mode because the cows are colored illustrations.
-  const isCowQuestion = baseUrl.includes('bb0459b2b58513d63d21f1fbf35dac7395a01783');
-  // Determine filter class: force light (no filter) if it's the cow question, otherwise follow dark mode
-  const computedFilterClass = isCowQuestion ? 'graphie-filter-light' : (isDarkMode ? 'graphie-filter-dark' : 'graphie-filter-light');
+  // Fix for illustrative questions (Cows, Beavers, etc.): 
+  // Do not invert colors in dark mode because they are colored illustrations.
+  const isIllustrativeQuestion =
+    baseUrl.includes('bb0459b2b58513d63d21f1fbf35dac7395a01783') || // Cows
+    baseUrl.includes('e25b96c9d939310eaf88a2c23c34152d47f03cc1') || // Beavers
+    (alt && (alt.toLowerCase().includes('beaver') || alt.toLowerCase().includes('castor')));
+
+  // Determine filter class: force light (no filter) if it's illustrative, otherwise follow dark mode
+  const computedFilterClass = isIllustrativeQuestion ? 'graphie-filter-light' : (isDarkMode ? 'graphie-filter-dark' : 'graphie-filter-light');
 
   return (
     <div
