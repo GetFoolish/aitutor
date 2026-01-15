@@ -723,7 +723,7 @@ export const processImageMarkdown = (text: string): string => {
     } else if ((imageUrl.includes('cdn.kastatic.org') || imageUrl.includes('ka-perseus')) &&
       !imageUrl.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i)) {
       imageUrl = imageUrl + '.png';
-    } else if (imageUrl.startsWith('/')) {
+    } else if (imageUrl.startsWith('/') && !imageUrl.startsWith('/fixed_graphs/')) {
       const ASSETS_BASE_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
       imageUrl = ASSETS_BASE_URL + imageUrl;
     }
