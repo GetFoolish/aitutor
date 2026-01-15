@@ -467,6 +467,11 @@ def submit_answer(request: Request, answer: AnswerSubmission):
         answer.is_correct, answer.response_time_seconds
     )
 
+    # Update daily streak
+    streak_info = dash_system.user_manager.update_streak(user_profile)
+    if streak_info['streak_updated']:
+        logger.info(f"[STREAK] Updated: current={streak_info['current_streak']}, longest={streak_info['longest_streak']}")
+
     # OPTIMIZED: Only get scores for affected skills, not all 126 skills
     # This reduces 126 calculations to just 1-5 calculations
     current_time = time.time()
