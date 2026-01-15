@@ -1025,13 +1025,24 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
   // Placed HERE to allow all hooks to run first, avoiding "Rendered fewer hooks than expected" error.
   // 1. Voting Graph (ID: 6933b...)
   // 2. Runner Graph (ID: 69334...)
+  // 3. Triangle Graph (ID: 69339...) - Hash: 4d5a7152eb4a9381f6727326fe960fe5c818498b
   if (baseUrl.includes('6933b3176cf86fa761d0a255') || baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011') ||
-    baseUrl.includes('69334af918bcab85650eed24')) {
+    baseUrl.includes('69334af918bcab85650eed24') || baseUrl.includes('4d5a7152eb4a9381f6727326fe960fe5c818498b')) {
 
     // Determine which graph we are rendering to pick the right image
     const isRunnerGraph = baseUrl.includes('69334af918bcab85650eed24');
-    const imgSrc = isRunnerGraph ? baseUrl + '.png' : "/fixed_graphs/voting_graph.png";
-    const imgClass = isRunnerGraph ? "runner-graph-fix" : "voting-graph-fix";
+    const isTriangleGraph = baseUrl.includes('4d5a7152eb4a9381f6727326fe960fe5c818498b');
+
+    let imgSrc = "/fixed_graphs/voting_graph.png"; // Default fallback (voting)
+    let imgClass = "voting-graph-fix";
+
+    if (isRunnerGraph) {
+      imgSrc = baseUrl + '.png';
+      imgClass = "runner-graph-fix";
+    } else if (isTriangleGraph) {
+      imgSrc = "/fixed_graphs/triangle_fix_693396fb.png";
+      imgClass = "graphie-image-triangle"; // Use standard class format
+    }
 
     console.log('[GraphieImage] HARDCODED BLOCK ENTERED for:', baseUrl, {
       isRunnerGraph,
