@@ -247,7 +247,10 @@ export function RadioWidget({
           !imageUrl.match(/\.(png|svg|jpg|jpeg|gif|webp)$/i)) {
           imageUrl = imageUrl + '.png';
         }
-        return `<img src="${imageUrl}" alt="${alt}" class="athena-choice-image" data-fallback-base="${url.replace('web+graphie://', 'https://').replace(/\.(png|svg)$/, '')}" style="max-width:100%;height:auto;display:block;margin:0.5rem 0;" referrerpolicy="no-referrer" />`;
+        const isFixedGraph = imageUrl.includes('fixed_graphs');
+        const extraClass = isFixedGraph ? ' target-graph-fix' : '';
+
+        return `<img src="${imageUrl}" alt="${alt}" class="athena-choice-image${extraClass}" data-fallback-base="${url.replace('web+graphie://', 'https://').replace(/\.(png|svg)$/, '')}" style="max-width:100%;height:auto;display:block;margin:0.5rem 0;" referrerpolicy="no-referrer" />`;
       });
 
       // 2. Handle display math $$...$$
@@ -390,6 +393,16 @@ export function RadioWidget({
         role={isMultiSelect ? 'group' : 'radiogroup'}
         aria-labelledby={`${groupId}-label`}
       >
+        <style>{`
+          /* Specific fix for fixed graphs in dark mode */
+          :root.dark .target-graph-fix,
+          .dark .target-graph-fix,
+          [data-theme="dark"] .target-graph-fix {
+            filter: invert(1) hue-rotate(180deg) !important;
+            mix-blend-mode: screen !important;
+            background-color: transparent !important;
+          }
+        `}</style>
         {/* Instruction text */}
         <div
           className="athena-radio-instruction"
