@@ -3,13 +3,13 @@
   "spec": "003-daily-streak-tracker",
   "state": "building",
   "subtasks": {
-    "completed": 1,
+    "completed": 5,
     "total": 10,
     "in_progress": 1,
     "failed": 0
   },
   "phase": {
-    "current": "Backend Streak Tracking",
+    "current": "Frontend React Query Hooks",
     "id": null,
     "total": 2
   },
@@ -18,8 +18,8 @@
     "max": 1
   },
   "session": {
-    "number": 187,
+    "number": 191,
     "started_at": "2026-01-14T16:07:52.936489"
   },
-  "last_update": "2026-01-14T18:59:51.662285"
+  "last_update": "2026-01-14T19:22:45.487939"
 }
