@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { HomeworkUpload } from "./HomeworkUpload"
+import { HomeworkChat } from "./HomeworkChat"
 import { homeworkService, type HomeworkItem } from "@/services/homework-service"
 
 interface HomeworkPanelProps {
@@ -204,17 +205,9 @@ const HomeworkPanel = React.forwardRef<HTMLDivElement, HomeworkPanelProps>(
             )}
           </TabsContent>
 
-          <TabsContent value="chat" className="flex-1 mt-3">
+          <TabsContent value="chat" className="flex-1 mt-3 overflow-hidden">
             {selectedHomework ? (
-              <div className="flex items-center justify-center h-full text-center px-4">
-                <div>
-                  <MessageSquare className="h-12 w-12 text-muted-foreground mb-3 mx-auto" />
-                  <p className="text-sm font-bold text-foreground mb-1">Chat coming soon</p>
-                  <p className="text-xs text-muted-foreground">
-                    AI chat interface will be implemented in the next subtask
-                  </p>
-                </div>
-              </div>
+              <HomeworkChat homeworkId={selectedHomework} className="h-full" />
             ) : (
               <div className="flex items-center justify-center h-full text-center px-4">
                 <p className="text-sm text-muted-foreground">
