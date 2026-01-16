@@ -20,6 +20,7 @@ import { useTheme } from "../theme/theme-provier";
 import { feedWebSocketService } from "../../services/feed-websocket-service";
 import { instructionSSEService } from "../../services/instruction-sse-service";
 import { LiveServerContent } from '@google/genai';
+import { HomeworkPanel } from "../homework-panel/HomeworkPanel";
 
 /**
  * Extract transcript text from Gemini content event
@@ -1242,10 +1243,7 @@ function FloatingControlPanel({
               </button>
             </div>
             <div className="flex-1 min-h-0 bg-[#FFFDF5] dark:bg-[#000000] overflow-hidden p-3 md:p-4">
-              {/* HomeworkPanel content will be added in future subtasks */}
-              <div className="flex items-center justify-center h-full text-black dark:text-white text-xs md:text-sm font-bold">
-                Homework panel content coming soon...
-              </div>
+              <HomeworkPanel />
             </div>
           </div>
         )}
