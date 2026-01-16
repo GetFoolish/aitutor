@@ -1,0 +1,266 @@
+"use client"
+
+import * as React from "react"
+import { Upload, X, FileText, File } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Progress } from "@/components/ui/progress"
+
+interface HomeworkUploadProps {
+  onFileSelect?: (file: File) => void
+  onUpload?: (file: File) => Promise<void>
+  className?: string
+}
+
+const ACCEPTED_FILE_TYPES = {
+  'application/pdf': ['.pdf'],
+  'image/jpeg': ['.jpg', '.jpeg'],
+  'image/png': ['.png'],
+  'application/msword': ['.doc'],
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+  'text/plain': ['.txt']
+}
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+
+const HomeworkUpload = React.forwardRef<HTMLDivElement, HomeworkUploadProps>(
+  ({ onFileSelect, onUpload, className }, ref) => {
+    const [isDragging, setIsDragging] = React.useState(false)
+    const [selectedFile, setSelectedFile] = React.useState<File | null>(null)
+    const [uploadProgress, setUploadProgress] = React.useState(0)
+    const [isUploading, setIsUploading] = React.useState(false)
+    const [error, setError] = React.useState<string | null>(null)
+    const fileInputRef = React.useRef<HTMLInputElement>(null)
+
+    const validateFile = (file: File): string | null => {
+      const acceptedTypes = Object.keys(ACCEPTED_FILE_TYPES)
+      const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase()
+
+      const isValidType = acceptedTypes.some(type =>
+        file.type === type ||
+        ACCEPTED_FILE_TYPES[type as keyof typeof ACCEPTED_FILE_TYPES].includes(fileExtension)
+      )
+
+      if (!isValidType) {
+        return 'Unsupported file type. Please upload PDF, JPG, PNG, DOCX, or TXT files.'
+      }
+
+      if (file.size > MAX_FILE_SIZE) {
+        return 'File size exceeds 10MB limit.'
+      }
+
+      return null
+    }
+
+    const handleFileChange = (file: File) => {
+      const validationError = validateFile(file)
+
+      if (validationError) {
+        setError(validationError)
+        setSelectedFile(null)
+        return
+      }
+
+      setError(null)
+      setSelectedFile(file)
+      onFileSelect?.(file)
+    }
+
+    const handleDragEnter = (e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setIsDragging(true)
+    }
+
+    const handleDragLeave = (e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setIsDragging(false)
+    }
+
+    const handleDragOver = (e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+
+    const handleDrop = (e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setIsDragging(false)
+
+      const files = e.dataTransfer.files
+      if (files && files.length > 0) {
+        handleFileChange(files[0])
+      }
+    }
+
+    const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = e.target.files
+      if (files && files.length > 0) {
+        handleFileChange(files[0])
+      }
+    }
+
+    const handleBrowseClick = () => {
+      fileInputRef.current?.click()
+    }
+
+    const handleRemoveFile = () => {
+      setSelectedFile(null)
+      setError(null)
+      setUploadProgress(0)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+
+    const handleUpload = async () => {
+      if (!selectedFile || !onUpload) return
+
+      setIsUploading(true)
+      setUploadProgress(0)
+
+      try {
+        // Simulate upload progress
+        const progressInterval = setInterval(() => {
+          setUploadProgress(prev => {
+            if (prev >= 90) {
+              clearInterval(progressInterval)
+              return prev
+            }
+            return prev + 10
+          })
+        }, 100)
+
+        await onUpload(selectedFile)
+
+        clearInterval(progressInterval)
+        setUploadProgress(100)
+
+        // Reset after successful upload
+        setTimeout(() => {
+          setSelectedFile(null)
+          setUploadProgress(0)
+          setIsUploading(false)
+          if (fileInputRef.current) {
+            fileInputRef.current.value = ''
+          }
+        }, 1000)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Upload failed. Please try again.')
+        setIsUploading(false)
+        setUploadProgress(0)
+      }
+    }
+
+    const getFileIcon = () => {
+      if (!selectedFile) return null
+
+      const extension = selectedFile.name.split('.').pop()?.toLowerCase()
+
+      if (extension === 'pdf' || extension === 'txt' || extension === 'doc' || extension === 'docx') {
+        return <FileText className="h-8 w-8 text-muted-foreground" />
+      }
+
+      return <File className="h-8 w-8 text-muted-foreground" />
+    }
+
+    const formatFileSize = (bytes: number): string => {
+      if (bytes < 1024) return bytes + ' B'
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
+    }
+
+    return (
+      <div ref={ref} className={cn("space-y-4", className)}>
+        <input
+          ref={fileInputRef}
+          type="file"
+          className="hidden"
+          accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.txt"
+          onChange={handleFileInputChange}
+        />
+
+        {!selectedFile ? (
+          <div
+            onDragEnter={handleDragEnter}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={cn(
+              "relative flex flex-col items-center justify-center rounded-lg border-[3px] border-dashed p-8 transition-colors",
+              isDragging
+                ? "border-primary bg-primary/5"
+                : "border-border hover:border-primary/50",
+              "cursor-pointer"
+            )}
+            onClick={handleBrowseClick}
+          >
+            <Upload className="h-12 w-12 text-muted-foreground mb-4" />
+            <p className="text-sm font-medium text-center mb-2">
+              Drop your homework here or click to browse
+            </p>
+            <p className="text-xs text-muted-foreground text-center">
+              Supports PDF, JPG, PNG, DOCX, TXT (max 10MB)
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 p-4 rounded-lg border-[3px] border-border bg-background">
+              {getFileIcon()}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">
+                  {selectedFile.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {formatFileSize(selectedFile.size)}
+                </p>
+              </div>
+              {!isUploading && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleRemoveFile}
+                  className="h-8 w-8 shrink-0"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+
+            {isUploading && (
+              <div className="space-y-2">
+                <Progress value={uploadProgress} className="h-2" />
+                <p className="text-xs text-center text-muted-foreground">
+                  Uploading... {uploadProgress}%
+                </p>
+              </div>
+            )}
+
+            {!isUploading && onUpload && (
+              <Button
+                onClick={handleUpload}
+                className="w-full border-[3px] border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition-all"
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Upload Homework
+              </Button>
+            )}
+          </div>
+        )}
+
+        {error && (
+          <div className="p-3 rounded-lg border-[3px] border-destructive bg-destructive/10">
+            <p className="text-sm text-destructive font-medium">
+              {error}
+            </p>
+          </div>
+        )}
+      </div>
+    )
+  }
+)
+
+HomeworkUpload.displayName = "HomeworkUpload"
+
+export { HomeworkUpload }
