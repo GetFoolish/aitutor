@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Upload, BookOpen, MessageSquare, FileText, Image as ImageIcon, File, Trash2, X } from "lucide-react"
+import { Upload, BookOpen, MessageSquare, FileText, Image as ImageIcon, File, Trash2, X, ArrowUp } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -275,11 +275,24 @@ const HomeworkPanel = React.forwardRef<HTMLDivElement, HomeworkPanelProps>(
               </div>
             ) : homeworkList.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center px-4">
-                <BookOpen className="h-12 w-12 text-muted-foreground mb-3" />
-                <p className="text-sm font-bold text-foreground mb-1">No homework yet</p>
-                <p className="text-xs text-muted-foreground">
-                  Upload your first assignment to get started!
-                </p>
+                <div className="p-6 rounded-lg border-[3px] border-border bg-background/50 max-w-xs">
+                  <BookOpen className="h-12 w-12 text-muted-foreground mb-3 mx-auto" />
+                  <p className="text-sm font-bold text-foreground mb-2">No homework yet</p>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Upload your first assignment and get AI-powered help with your homework!
+                  </p>
+                  <Button
+                    onClick={() => setSelectedTab("upload")}
+                    className="w-full border-[3px] border-black dark:border-white bg-[#FFD93D] hover:bg-[#FFD93D]/90 text-black font-black text-xs uppercase shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0_0_rgba(255,255,255,0.5)] transition-all"
+                  >
+                    <Upload className="h-3.5 w-3.5 mr-2" />
+                    Go to Upload Tab
+                  </Button>
+                  <div className="flex items-center justify-center mt-3 gap-1">
+                    <ArrowUp className="h-4 w-4 text-primary animate-bounce" />
+                    <p className="text-[10px] text-primary font-bold">Click here to get started!</p>
+                  </div>
+                </div>
               </div>
             ) : (
               <div className="h-full overflow-y-auto pr-2 space-y-2">
