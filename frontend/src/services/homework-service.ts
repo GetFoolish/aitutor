@@ -254,6 +254,37 @@ export class HomeworkService {
       throw error;
     }
   }
+
+  /**
+   * Fetch homework file content with authentication
+   *
+   * Downloads the file content and returns it as a Blob.
+   * Used for displaying image thumbnails and PDF previews.
+   *
+   * @param homeworkId - Homework ID
+   * @returns Blob containing the file content
+   * @throws Error if file not found or request fails
+   */
+  async getFileBlob(homeworkId: string): Promise<Blob> {
+    try {
+      const response = await apiUtils.authenticatedFetch(`${HOMEWORK_SERVICE_URL}/homework/${homeworkId}/file`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('File not found');
+        }
+        throw new Error(`Failed to fetch file: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      return blob;
+    } catch (error) {
+      console.error('Error fetching file:', error);
+      throw error;
+    }
+  }
 }
 
 // Export singleton instance

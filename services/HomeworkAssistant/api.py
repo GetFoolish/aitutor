@@ -393,6 +393,71 @@ async def delete_homework(
 
 
 # ============================================================================
+# Homework File Download Endpoint
+# ============================================================================
+
+@app.get("/homework/{homework_id}/file")
+async def download_homework_file(
+    http_request: Request,
+    homework_id: str
+):
+    """
+    Download the original uploaded homework file
+
+    Returns the file content with appropriate content-type header.
+    Used for previewing images and PDFs in the frontend.
+
+    Args:
+        homework_id: Homework ID
+
+    Returns:
+        File content with appropriate headers
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        # Get homework metadata
+        homework = file_processor.get_homework(homework_id, user_id)
+
+        if not homework:
+            logger.warning(f"[HOMEWORK] Homework not found: {homework_id} for user {user_id}")
+            raise HTTPException(status_code=404, detail="Homework not found")
+
+        # Get file from GridFS
+        if 'file_id' not in homework:
+            raise HTTPException(status_code=404, detail="File not found")
+
+        try:
+            grid_out = file_processor.fs.get(homework['file_id'])
+            file_content = grid_out.read()
+        except Exception as e:
+            logger.error(f"[HOMEWORK] Error reading file from GridFS: {e}")
+            raise HTTPException(status_code=404, detail="File not found in storage")
+
+        # Determine content type
+        content_type = grid_out.content_type or 'application/octet-stream'
+
+        logger.info(f"[HOMEWORK] Downloaded file for {homework_id} by user {user_id}")
+
+        # Return file with appropriate headers
+        from fastapi.responses import Response
+        return Response(
+            content=file_content,
+            media_type=content_type,
+            headers={
+                'Content-Disposition': f'inline; filename="{homework["filename"]}"',
+                'Cache-Control': 'private, max-age=3600'
+            }
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[HOMEWORK] Error in download_homework_file: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to download file: {str(e)}")
+
+
+# ============================================================================
 # Main entry point (for local development)
 # ============================================================================
 
