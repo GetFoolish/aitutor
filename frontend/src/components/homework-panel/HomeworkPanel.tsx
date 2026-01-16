@@ -231,28 +231,28 @@ const HomeworkPanel = React.forwardRef<HTMLDivElement, HomeworkPanelProps>(
     return (
       <div ref={ref} className={cn("h-full flex flex-col", className)}>
         <Tabs value={selectedTab} onValueChange={handleTabChange} className="flex-1 flex flex-col">
-          <TabsList className="grid w-full grid-cols-3 border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] p-1 rounded-none">
+          <TabsList className="grid w-full grid-cols-3 border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] p-1 rounded-none min-h-[48px]">
             <TabsTrigger
               value="upload"
-              className="data-[state=active]:bg-[#FFD93D] data-[state=active]:text-black text-black dark:text-white border-[2px] border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white font-black text-xs uppercase rounded-none shadow-none data-[state=active]:shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
+              className="data-[state=active]:bg-[#FFD93D] data-[state=active]:text-black text-black dark:text-white border-[2px] border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white font-black text-xs sm:text-sm uppercase rounded-none shadow-none data-[state=active]:shadow-[2px_2px_0_0_rgba(0,0,0,1)] min-h-[44px] px-2"
             >
-              <Upload className="h-3.5 w-3.5 mr-1.5" />
-              Upload
+              <Upload className="h-4 w-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">Upload</span>
             </TabsTrigger>
             <TabsTrigger
               value="list"
-              className="data-[state=active]:bg-[#C4B5FD] data-[state=active]:text-black text-black dark:text-white border-[2px] border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white font-black text-xs uppercase rounded-none shadow-none data-[state=active]:shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
+              className="data-[state=active]:bg-[#C4B5FD] data-[state=active]:text-black text-black dark:text-white border-[2px] border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white font-black text-xs sm:text-sm uppercase rounded-none shadow-none data-[state=active]:shadow-[2px_2px_0_0_rgba(0,0,0,1)] min-h-[44px] px-2"
             >
-              <BookOpen className="h-3.5 w-3.5 mr-1.5" />
-              My Homework
+              <BookOpen className="h-4 w-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">My Homework</span>
             </TabsTrigger>
             <TabsTrigger
               value="chat"
-              className="data-[state=active]:bg-[#ADFF2F] data-[state=active]:text-black text-black dark:text-white border-[2px] border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white font-black text-xs uppercase rounded-none shadow-none data-[state=active]:shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
+              className="data-[state=active]:bg-[#ADFF2F] data-[state=active]:text-black text-black dark:text-white border-[2px] border-transparent data-[state=active]:border-black dark:data-[state=active]:border-white font-black text-xs sm:text-sm uppercase rounded-none shadow-none data-[state=active]:shadow-[2px_2px_0_0_rgba(0,0,0,1)] min-h-[44px] px-2"
               disabled={!selectedHomework}
             >
-              <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
-              Chat
+              <MessageSquare className="h-4 w-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">Chat</span>
             </TabsTrigger>
           </TabsList>
 
@@ -275,22 +275,22 @@ const HomeworkPanel = React.forwardRef<HTMLDivElement, HomeworkPanelProps>(
               </div>
             ) : homeworkList.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center px-4">
-                <div className="p-6 rounded-lg border-[3px] border-border bg-background/50 max-w-xs">
-                  <BookOpen className="h-12 w-12 text-muted-foreground mb-3 mx-auto" />
-                  <p className="text-sm font-bold text-foreground mb-2">No homework yet</p>
-                  <p className="text-xs text-muted-foreground mb-4">
+                <div className="p-4 sm:p-6 rounded-lg border-[3px] border-border bg-background/50 max-w-xs w-full">
+                  <BookOpen className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mb-3 mx-auto" />
+                  <p className="text-sm sm:text-base font-bold text-foreground mb-2">No homework yet</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-4">
                     Upload your first assignment and get AI-powered help with your homework!
                   </p>
                   <Button
                     onClick={() => setSelectedTab("upload")}
-                    className="w-full border-[3px] border-black dark:border-white bg-[#FFD93D] hover:bg-[#FFD93D]/90 text-black font-black text-xs uppercase shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0_0_rgba(255,255,255,0.5)] transition-all"
+                    className="w-full min-h-[44px] border-[3px] border-black dark:border-white bg-[#FFD93D] hover:bg-[#FFD93D]/90 text-black font-black text-xs sm:text-sm uppercase shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0_0_rgba(255,255,255,0.5)] transition-all"
                   >
-                    <Upload className="h-3.5 w-3.5 mr-2" />
+                    <Upload className="h-4 w-4 mr-2" />
                     Go to Upload Tab
                   </Button>
                   <div className="flex items-center justify-center mt-3 gap-1">
                     <ArrowUp className="h-4 w-4 text-primary animate-bounce" />
-                    <p className="text-[10px] text-primary font-bold">Click here to get started!</p>
+                    <p className="text-[10px] sm:text-xs text-primary font-bold">Click here to get started!</p>
                   </div>
                 </div>
               </div>
@@ -301,7 +301,7 @@ const HomeworkPanel = React.forwardRef<HTMLDivElement, HomeworkPanelProps>(
                     key={item.homework_id}
                     onClick={() => handleHomeworkClick(item.homework_id)}
                     className={cn(
-                      "flex items-center gap-3 p-3 rounded-lg border-[3px] border-border bg-background cursor-pointer transition-all hover:border-primary hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]",
+                      "flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg border-[3px] border-border bg-background cursor-pointer transition-all hover:border-primary hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] min-h-[68px]",
                       selectedHomework === item.homework_id && "border-primary bg-primary/5"
                     )}
                   >
@@ -309,15 +309,15 @@ const HomeworkPanel = React.forwardRef<HTMLDivElement, HomeworkPanelProps>(
                       {getFilePreviewOrIcon(item)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold truncate text-foreground">
+                      <p className="text-sm sm:text-base font-bold truncate text-foreground">
                         {item.filename}
                       </p>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <p className="text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1 sm:gap-2 mt-0.5">
+                        <p className="text-xs sm:text-sm text-muted-foreground">
                           {formatDate(item.uploaded_at)}
                         </p>
-                        <span className="text-xs text-muted-foreground">•</span>
-                        <p className="text-xs text-muted-foreground">
+                        <span className="text-xs sm:text-sm text-muted-foreground">•</span>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
                           {formatFileSize(item.file_size)}
                         </p>
                       </div>
@@ -326,9 +326,9 @@ const HomeworkPanel = React.forwardRef<HTMLDivElement, HomeworkPanelProps>(
                       variant="ghost"
                       size="icon"
                       onClick={(e) => handleDeleteHomework(item.homework_id, e)}
-                      className="h-8 w-8 shrink-0 hover:bg-destructive hover:text-destructive-foreground border-[2px] border-transparent hover:border-destructive"
+                      className="h-11 w-11 min-w-[44px] min-h-[44px] shrink-0 hover:bg-destructive hover:text-destructive-foreground border-[2px] border-transparent hover:border-destructive"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-5 w-5" />
                     </Button>
                   </div>
                 ))}
@@ -351,28 +351,28 @@ const HomeworkPanel = React.forwardRef<HTMLDivElement, HomeworkPanelProps>(
 
         {/* File Preview Dialog */}
         <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-          <DialogContent className="max-w-4xl w-[90vw] h-[90vh] p-0 border-[3px] border-black dark:border-white rounded-none shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.5)]">
+          <DialogContent className="max-w-4xl w-[95vw] sm:w-[90vw] h-[90vh] p-0 border-[3px] border-black dark:border-white rounded-none shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.5)]">
             <DialogTitle className="sr-only">
               {previewItem?.filename || 'File Preview'}
             </DialogTitle>
             <div className="relative w-full h-full flex flex-col">
               {/* Header with filename and close button */}
-              <div className="flex items-center justify-between p-4 border-b-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]">
-                <p className="text-sm font-bold truncate flex-1 pr-4 text-foreground">
+              <div className="flex items-center justify-between p-3 sm:p-4 border-b-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]">
+                <p className="text-xs sm:text-sm font-bold truncate flex-1 pr-2 sm:pr-4 text-foreground">
                   {previewItem?.filename}
                 </p>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setPreviewOpen(false)}
-                  className="h-8 w-8 shrink-0 border-[2px] border-black dark:border-white hover:bg-destructive hover:text-destructive-foreground hover:border-destructive rounded-none"
+                  className="h-11 w-11 min-w-[44px] min-h-[44px] shrink-0 border-[2px] border-black dark:border-white hover:bg-destructive hover:text-destructive-foreground hover:border-destructive rounded-none"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-5 w-5" />
                 </Button>
               </div>
 
               {/* Preview content */}
-              <div className="flex-1 overflow-auto p-4 bg-muted/30">
+              <div className="flex-1 overflow-auto p-2 sm:p-4 bg-muted/30">
                 {previewItem?.file_type === 'image' && previewUrl && (
                   <div className="flex items-center justify-center h-full">
                     <img

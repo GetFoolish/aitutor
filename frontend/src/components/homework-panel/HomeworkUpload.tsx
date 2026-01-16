@@ -196,7 +196,7 @@ const HomeworkUpload = React.forwardRef<HTMLDivElement, HomeworkUploadProps>(
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             className={cn(
-              "relative flex flex-col items-center justify-center rounded-lg border-[3px] border-dashed p-8 transition-colors",
+              "relative flex flex-col items-center justify-center rounded-lg border-[3px] border-dashed p-6 sm:p-8 min-h-[200px] transition-colors",
               isDragging
                 ? "border-primary bg-primary/5"
                 : "border-border hover:border-primary/50",
@@ -204,23 +204,23 @@ const HomeworkUpload = React.forwardRef<HTMLDivElement, HomeworkUploadProps>(
             )}
             onClick={handleBrowseClick}
           >
-            <Upload className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-sm font-medium text-center mb-2">
+            <Upload className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mb-3 sm:mb-4" />
+            <p className="text-sm sm:text-base font-medium text-center mb-2 px-2">
               Drop your homework here or click to browse
             </p>
-            <p className="text-xs text-muted-foreground text-center">
+            <p className="text-xs sm:text-sm text-muted-foreground text-center px-2">
               Supports PDF, JPG, PNG, DOCX, TXT (max 10MB)
             </p>
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="flex items-center gap-3 p-4 rounded-lg border-[3px] border-border bg-background">
+            <div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg border-[3px] border-border bg-background min-h-[68px]">
               {getFileIcon()}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">
+                <p className="text-sm sm:text-base font-medium truncate">
                   {selectedFile.name}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   {formatFileSize(selectedFile.size)}
                 </p>
               </div>
@@ -229,9 +229,9 @@ const HomeworkUpload = React.forwardRef<HTMLDivElement, HomeworkUploadProps>(
                   variant="ghost"
                   size="icon"
                   onClick={handleRemoveFile}
-                  className="h-8 w-8 shrink-0"
+                  className="h-11 w-11 min-w-[44px] min-h-[44px] shrink-0 hover:bg-destructive/10 hover:text-destructive"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-5 w-5" />
                 </Button>
               )}
             </div>
@@ -239,7 +239,7 @@ const HomeworkUpload = React.forwardRef<HTMLDivElement, HomeworkUploadProps>(
             {isUploading && (
               <div className="space-y-2">
                 <Progress value={uploadProgress} className="h-2" />
-                <p className="text-xs text-center text-muted-foreground">
+                <p className="text-xs sm:text-sm text-center text-muted-foreground font-medium">
                   Uploading... {uploadProgress}%
                 </p>
               </div>
@@ -248,9 +248,9 @@ const HomeworkUpload = React.forwardRef<HTMLDivElement, HomeworkUploadProps>(
             {!isUploading && onUpload && (
               <Button
                 onClick={handleUpload}
-                className="w-full border-[3px] border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition-all"
+                className="w-full min-h-[48px] border-[3px] border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition-all text-sm sm:text-base font-bold"
               >
-                <Upload className="h-4 w-4 mr-2" />
+                <Upload className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                 Upload Homework
               </Button>
             )}
@@ -258,25 +258,25 @@ const HomeworkUpload = React.forwardRef<HTMLDivElement, HomeworkUploadProps>(
         )}
 
         {error && (
-          <div className="p-4 rounded-lg border-[3px] border-destructive bg-destructive/10 shadow-[2px_2px_0_0] shadow-destructive/50">
-            <div className="flex items-start gap-3">
+          <div className="p-3 sm:p-4 rounded-lg border-[3px] border-destructive bg-destructive/10 shadow-[2px_2px_0_0] shadow-destructive/50">
+            <div className="flex items-start gap-2 sm:gap-3">
               <div className="flex-shrink-0 mt-0.5">
                 <X className="h-5 w-5 text-destructive" />
               </div>
-              <div className="flex-1">
-                <p className="text-sm text-destructive font-semibold mb-1">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm text-destructive font-semibold mb-1">
                   Error
                 </p>
-                <p className="text-sm text-destructive">
+                <p className="text-xs sm:text-sm text-destructive break-words">
                   {error}
                 </p>
               </div>
               <button
                 onClick={() => setError(null)}
-                className="flex-shrink-0 text-destructive hover:text-destructive/80 transition-colors"
+                className="flex-shrink-0 text-destructive hover:text-destructive/80 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center -m-2"
                 aria-label="Dismiss error"
               >
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5" />
               </button>
             </div>
           </div>
