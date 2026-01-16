@@ -49,7 +49,7 @@ function convertImageUrl(url: string, usePng: boolean = true): string {
   let converted = url;
 
   // Handle frontend assets specifically (served by Vite/Next.js)
-  if (url.startsWith('/assets/')) {
+  if (url.startsWith('/assets/') || url.startsWith('/fixed_graphs/')) {
     return url;
   }
 
