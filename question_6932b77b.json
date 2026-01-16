@@ -1,0 +1,308 @@
+{
+    "_id": "6932b77bcf05997b77546db5",
+    "slug": "",
+    "skill_prefix": "",
+    "question": {
+        "content": "Given the measure of an acute angle in a right triangle, we can tell the ratios of the lengths of the triangle's sides relative to that acute angle.\n\nHere are the approximate ratios for angle measures $55\\degree$, $65\\degree$, and $75\\degree$.\n\nAngle | $55\\degree$ | $65\\degree$ | $75\\degree$\n:-: | :-: | :-: | :-:\n$\\dfrac{\\text{adjacent leg length}}{\\text{hypotenuse length}}$ | $0.57$ | $0.42$ | $0.26$\n$\\dfrac{\\text{opposite leg length}}{\\text{hypotenuse length}}$ | $0.82$ | $0.91$ | $0.97$\n$\\dfrac{\\text{opposite leg length}}{\\text{adjacent leg length}}$ | $1.43$ | $2.14$ | $3.73$\n\n**Use the table to approximate $GH$ in the triangle below.**\n\n\n\n[[☃ image 1]]\n\n[[☃ radio 1]]",
+        "widgets": {
+            "image 1": {
+                "type": "image",
+                "options": {
+                    "alt": "Triangle G H I. Side H I is three units. Angle H is a right angle. Angle I is sixty-five degrees. ",
+                    "backgroundImage": {
+                        "height": 227,
+                        "url": "https://cdn.kastatic.org/ka-perseus-graphie/398b806e971ebf7c10dce6fbbf789fe4dfa9a0a9.svg",
+                        "width": 320
+                    },
+                    "box": [
+                        320,
+                        227
+                    ],
+                    "caption": "",
+                    "labels": [],
+                    "range": [
+                        [
+                            0,
+                            10
+                        ],
+                        [
+                            0,
+                            10
+                        ]
+                    ],
+                    "static": false,
+                    "title": ""
+                },
+                "alignment": "block",
+                "graded": true,
+                "static": false,
+                "version": {
+                    "major": 0,
+                    "minor": 0
+                }
+            },
+            "radio 1": {
+                "type": "radio",
+                "options": {
+                    "choices": [
+                        {
+                            "content": "$2.14$ units",
+                            "correct": false
+                        },
+                        {
+                            "content": "$3.3$ units",
+                            "correct": false
+                        },
+                        {
+                            "content": "$6.4$ units",
+                            "correct": true,
+                            "isNoneOfTheAbove": false
+                        },
+                        {
+                            "content": "$7.1$ units",
+                            "correct": false,
+                            "isNoneOfTheAbove": false
+                        }
+                    ],
+                    "countChoices": false,
+                    "deselectEnabled": false,
+                    "displayCount": null,
+                    "hasNoneOfTheAbove": false,
+                    "multipleSelect": false,
+                    "randomize": false
+                },
+                "alignment": "default",
+                "graded": true,
+                "static": false,
+                "version": {
+                    "major": 1,
+                    "minor": 0
+                }
+            }
+        },
+        "images": {}
+    },
+    "hints": [
+        {
+            "content": "The side whose length we want to find, $\\blueE{\\overline{GH}}$, is the side opposite to the given angle, $\\angle I$. \n\nThe side whose length we know, $\\goldE{\\overline{HI}}$, is the side adjacent to the given angle.\n\n\n\n[[☃ image 1]]\n\nWe can use the ratio of these side lengths to calculate the length $\\blueE{GH}$.",
+            "widgets": {
+                "image 1": {
+                    "type": "image",
+                    "options": {
+                        "alt": "Triangle G H I. Side H I is three units. Angle H is a right angle. Angle I is sixty-five degrees. A dashed arrow points from angle I to side G H.",
+                        "backgroundImage": {
+                            "height": 227,
+                            "url": "https://cdn.kastatic.org/ka-perseus-graphie/b22943dacb2c73a1a56a1e9782c299f2c0510b9f.svg",
+                            "width": 320
+                        },
+                        "box": [
+                            320,
+                            227
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "alignment": "block",
+                    "graded": true,
+                    "static": false,
+                    "version": {
+                        "major": 0,
+                        "minor": 0
+                    }
+                }
+            },
+            "images": {},
+            "replace": false
+        },
+        {
+            "content": "The given angle measures $65\\degree$, and we need to relate the opposite side to the adjacent side.\n\nAngle | $55\\degree$ | $\\purpleD{65\\degree}$ | $75\\degree$\n:-: | :-: | :-: | :-:\n$\\dfrac{\\text{adjacent leg length}}{\\text{hypotenuse length}}$ | $0.57$ | $0.42$ | $0.26$\n$\\dfrac{\\text{opposite leg length}}{\\text{hypotenuse length}}$ | $0.82$ | $0.91$ | $0.97$\n$\\purpleD{\\dfrac{\\text{opposite leg length}}{\\text{adjacent leg length}}}$ | $1.43$ | $\\boxed{\\purpleD{2.14}}$ | $3.73$\n\n$\\begin{align}\n\\purpleD{\\dfrac{\\text{opposite leg length}}{\\text{adjacent leg length}}} &\\approx \\purpleD{2.14}\\\\\\\\\n\\dfrac{GH}{HI} &\\approx \\purpleD{2.14}\\\\\\\\\n\\dfrac{GH}{3} &\\approx \\purpleD{2.14}\\\\\\\\\n\\cancel{3}\\cdot \\dfrac{GH}{\\cancel{3}} &\\approx 3\\cdot \\purpleD{2.14}\\\\\\\\\nGH &\\approx 6.4\n\\end{align}$",
+            "widgets": {},
+            "images": {},
+            "replace": false
+        },
+        {
+            "content": "The best estimate for $GH$ is $6.4$ units.",
+            "widgets": {},
+            "images": {},
+            "replace": false
+        }
+    ],
+    "answerArea": {
+        "calculator": true,
+        "periodicTable": false,
+        "chi2Table": false,
+        "tTable": false,
+        "zTable": false,
+        "financialCalculator": false
+    },
+    "itemDataVersion": {
+        "major": 0,
+        "minor": 1
+    },
+    "widgetTypes": [
+        "image",
+        "radio"
+    ],
+    "perseusItem": {
+        "question": {
+            "content": "Given the measure of an acute angle in a right triangle, we can tell the ratios of the lengths of the triangle's sides relative to that acute angle.\n\nHere are the approximate ratios for angle measures $55\\degree$, $65\\degree$, and $75\\degree$.\n\nAngle | $55\\degree$ | $65\\degree$ | $75\\degree$\n:-: | :-: | :-: | :-:\n$\\dfrac{\\text{adjacent leg length}}{\\text{hypotenuse length}}$ | $0.57$ | $0.42$ | $0.26$\n$\\dfrac{\\text{opposite leg length}}{\\text{hypotenuse length}}$ | $0.82$ | $0.91$ | $0.97$\n$\\dfrac{\\text{opposite leg length}}{\\text{adjacent leg length}}$ | $1.43$ | $2.14$ | $3.73$\n\n**Use the table to approximate $GH$ in the triangle below.**\n\n\n\n[[☃ image 1]]\n\n[[☃ radio 1]]",
+            "images": {},
+            "widgets": {
+                "image 1": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "Triangle G H I. Side H I is three units. Angle H is a right angle. Angle I is sixty-five degrees. ",
+                        "backgroundImage": {
+                            "height": 227,
+                            "url": "https://cdn.kastatic.org/ka-perseus-graphie/398b806e971ebf7c10dce6fbbf789fe4dfa9a0a9.svg",
+                            "width": 320
+                        },
+                        "box": [
+                            320,
+                            227
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 0,
+                        "minor": 0
+                    }
+                },
+                "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                        "choices": [
+                            {
+                                "content": "$2.14$ units",
+                                "correct": false
+                            },
+                            {
+                                "content": "$3.3$ units",
+                                "correct": false
+                            },
+                            {
+                                "content": "$6.4$ units",
+                                "correct": true,
+                                "isNoneOfTheAbove": false
+                            },
+                            {
+                                "content": "$7.1$ units",
+                                "correct": false,
+                                "isNoneOfTheAbove": false
+                            }
+                        ],
+                        "countChoices": false,
+                        "deselectEnabled": false,
+                        "displayCount": null,
+                        "hasNoneOfTheAbove": false,
+                        "multipleSelect": false,
+                        "randomize": false
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                        "major": 1,
+                        "minor": 0
+                    }
+                }
+            }
+        },
+        "hints": [
+            {
+                "content": "The side whose length we want to find, $\\blueE{\\overline{GH}}$, is the side opposite to the given angle, $\\angle I$. \n\nThe side whose length we know, $\\goldE{\\overline{HI}}$, is the side adjacent to the given angle.\n\n\n\n[[☃ image 1]]\n\nWe can use the ratio of these side lengths to calculate the length $\\blueE{GH}$.",
+                "images": {},
+                "replace": false,
+                "widgets": {
+                    "image 1": {
+                        "alignment": "block",
+                        "graded": true,
+                        "options": {
+                            "alt": "Triangle G H I. Side H I is three units. Angle H is a right angle. Angle I is sixty-five degrees. A dashed arrow points from angle I to side G H.",
+                            "backgroundImage": {
+                                "height": 227,
+                                "url": "https://cdn.kastatic.org/ka-perseus-graphie/b22943dacb2c73a1a56a1e9782c299f2c0510b9f.svg",
+                                "width": 320
+                            },
+                            "box": [
+                                320,
+                                227
+                            ],
+                            "caption": "",
+                            "labels": [],
+                            "range": [
+                                [
+                                    0,
+                                    10
+                                ],
+                                [
+                                    0,
+                                    10
+                                ]
+                            ],
+                            "static": false,
+                            "title": ""
+                        },
+                        "static": false,
+                        "type": "image",
+                        "version": {
+                            "major": 0,
+                            "minor": 0
+                        }
+                    }
+                }
+            },
+            {
+                "content": "The given angle measures $65\\degree$, and we need to relate the opposite side to the adjacent side.\n\nAngle | $55\\degree$ | $\\purpleD{65\\degree}$ | $75\\degree$\n:-: | :-: | :-: | :-:\n$\\dfrac{\\text{adjacent leg length}}{\\text{hypotenuse length}}$ | $0.57$ | $0.42$ | $0.26$\n$\\dfrac{\\text{opposite leg length}}{\\text{hypotenuse length}}$ | $0.82$ | $0.91$ | $0.97$\n$\\purpleD{\\dfrac{\\text{opposite leg length}}{\\text{adjacent leg length}}}$ | $1.43$ | $\\boxed{\\purpleD{2.14}}$ | $3.73$\n\n$\\begin{align}\n\\purpleD{\\dfrac{\\text{opposite leg length}}{\\text{adjacent leg length}}} &\\approx \\purpleD{2.14}\\\\\\\\\n\\dfrac{GH}{HI} &\\approx \\purpleD{2.14}\\\\\\\\\n\\dfrac{GH}{3} &\\approx \\purpleD{2.14}\\\\\\\\\n\\cancel{3}\\cdot \\dfrac{GH}{\\cancel{3}} &\\approx 3\\cdot \\purpleD{2.14}\\\\\\\\\nGH &\\approx 6.4\n\\end{align}$",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+            },
+            {
+                "content": "The best estimate for $GH$ is $6.4$ units.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+            }
+        ],
+        "answerArea": {
+            "calculator": true,
+            "chi2Table": false,
+            "periodicTable": false,
+            "tTable": false,
+            "zTable": false
+        },
+        "itemDataVersion": {
+            "major": 0,
+            "minor": 1
+        }
+    }
+}

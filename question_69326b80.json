@@ -1,0 +1,300 @@
+{
+    "_id": "69326b802a4ca36772842d03",
+    "slug": "",
+    "skill_prefix": "",
+    "question": {
+        "content": "\n[[☃ image 1]]\n\n**_Bless Me, Ultima_ was published in 1972 by Rudolfo Anaya.**\n\nMy heart sank. When I thought of leaving my mother and going to school a warm, sick feeling came to my stomach. To get rid of it I ran to the pens we kept by the [[☃ definition 1]] to feed the animals. I had fed the rabbits that night and they already had alfalfa and so I only changed their water. I scattered some grain for the hungry chickens and watched their mad scramble as the rooster called them to peck. I milked the cow and turned her loose. During the day she would [[☃ definition 2]] along the highway where the grass was thick and green, then she would return at nightfall. She was a good cow and there were very few times when I had to run and bring her back in the evening. Then I dreaded it, because she might wander into the hills where the bats flew at dusk and there was only the sound of heart beating as I ran and it made me sad and frightened to be alone. \nI collected three eggs in the chicken house and returned for breakfast. \n“Antonio,” my mother smiled and took the eggs and milk, “come and eat your breakfast.”\n\n**According to the text, what makes Antonio afraid?**\n\n\n[[☃ radio 1]]\n\n[[☃ explanation 1]]\n\n",
+        "widgets": {
+            "definition 1": {
+                "type": "definition",
+                "options": {
+                    "definition": "*Molino* is the Spanish word for \"mill,\" a place where grain is ground to make flour.\n",
+                    "static": false,
+                    "togglePrompt": "molino"
+                },
+                "alignment": "default",
+                "graded": true,
+                "static": false,
+                "version": {
+                    "major": 0,
+                    "minor": 0
+                }
+            },
+            "definition 2": {
+                "type": "definition",
+                "options": {
+                    "definition": "for·age (FORE-ij): search for food\n",
+                    "static": false,
+                    "togglePrompt": "forage"
+                },
+                "alignment": "default",
+                "graded": true,
+                "static": false,
+                "version": {
+                    "major": 0,
+                    "minor": 0
+                }
+            },
+            "explanation 1": {
+                "type": "explanation",
+                "options": {
+                    "explanation": "\nText source: Excerpt from *Bless Me, Ultima* by Rudolfo Anaya, Grand Central Publishing, © 2012 \n\nPublic domain image provided by Unsplash under [the Unsplash license](https://unsplash.com/license)\n",
+                    "hidePrompt": "Hide attribution",
+                    "showPrompt": "Attribution",
+                    "static": false,
+                    "widgets": {}
+                },
+                "alignment": "default",
+                "graded": true,
+                "static": false,
+                "version": {
+                    "major": 0,
+                    "minor": 0
+                }
+            },
+            "image 1": {
+                "type": "image",
+                "options": {
+                    "alt": "chickens",
+                    "backgroundImage": {
+                        "height": 1288,
+                        "url": "https://cdn.kastatic.org/ka-content-images/e3e18efa62662b3c7177dcfae7ac81e6a6cb6231.png",
+                        "width": 1936
+                    },
+                    "box": [
+                        1936,
+                        1288
+                    ],
+                    "caption": "",
+                    "labels": [],
+                    "range": [
+                        [
+                            0,
+                            10
+                        ],
+                        [
+                            0,
+                            10
+                        ]
+                    ],
+                    "static": false,
+                    "title": ""
+                },
+                "alignment": "block",
+                "graded": true,
+                "static": false,
+                "version": {
+                    "major": 0,
+                    "minor": 0
+                }
+            },
+            "radio 1": {
+                "type": "radio",
+                "options": {
+                    "choices": [
+                        {
+                            "clue": "**This is the best choice.** Antonio says he “dreaded” going “into the hills where the bats flew at dusk” and that doing so made him feel “frightened.”  \n",
+                            "content": "going into the hills alone at dusk to fetch his cow\n",
+                            "correct": true
+                        },
+                        {
+                            "clue": "This isn’t what makes Antonio afraid. Antonio says that the thought of “leaving [his] mother and going to school” gives him a “warm, sick feeling”—but a warm, sick feeling isn’t necessarily a feeling of fear. Also, according to the text, it’s the idea of going to school, not the sick feeling itself, that upsets Antonio.\n",
+                            "content": "having a sick feeling in his stomach\n",
+                            "correct": false
+                        },
+                        {
+                            "clue": "This isn’t what makes Antonio afraid. The text says that the cow would walk along the grassy highway, not that Antonio would. Antonio doesn’t mention being afraid of the edge of the highway,\n",
+                            "content": "walking along the grassy edge of the highway\n",
+                            "correct": false
+                        },
+                        {
+                            "clue": "This isn’t what makes Antonio afraid. The text doesn’t mention how Antonio feels about feeding the chickens. \n",
+                            "content": "scattering food for the hungry chickens\n",
+                            "correct": false
+                        }
+                    ],
+                    "countChoices": false,
+                    "deselectEnabled": false,
+                    "displayCount": null,
+                    "hasNoneOfTheAbove": false,
+                    "multipleSelect": false,
+                    "randomize": false
+                },
+                "alignment": "default",
+                "graded": true,
+                "static": false,
+                "version": {
+                    "major": 1,
+                    "minor": 0
+                }
+            }
+        },
+        "images": {}
+    },
+    "hints": [],
+    "answerArea": {
+        "calculator": false,
+        "periodicTable": false,
+        "chi2Table": false,
+        "tTable": false,
+        "zTable": false,
+        "financialCalculator": false
+    },
+    "itemDataVersion": {
+        "major": 0,
+        "minor": 1
+    },
+    "widgetTypes": [
+        "definition",
+        "radio",
+        "image",
+        "explanation"
+    ],
+    "perseusItem": {
+        "question": {
+            "content": "\n[[☃ image 1]]\n\n**_Bless Me, Ultima_ was published in 1972 by Rudolfo Anaya.**\n\nMy heart sank. When I thought of leaving my mother and going to school a warm, sick feeling came to my stomach. To get rid of it I ran to the pens we kept by the [[☃ definition 1]] to feed the animals. I had fed the rabbits that night and they already had alfalfa and so I only changed their water. I scattered some grain for the hungry chickens and watched their mad scramble as the rooster called them to peck. I milked the cow and turned her loose. During the day she would [[☃ definition 2]] along the highway where the grass was thick and green, then she would return at nightfall. She was a good cow and there were very few times when I had to run and bring her back in the evening. Then I dreaded it, because she might wander into the hills where the bats flew at dusk and there was only the sound of heart beating as I ran and it made me sad and frightened to be alone. \nI collected three eggs in the chicken house and returned for breakfast. \n“Antonio,” my mother smiled and took the eggs and milk, “come and eat your breakfast.”\n\n**According to the text, what makes Antonio afraid?**\n\n\n[[☃ radio 1]]\n\n[[☃ explanation 1]]\n\n",
+            "images": {},
+            "widgets": {
+                "definition 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                        "definition": "*Molino* is the Spanish word for \"mill,\" a place where grain is ground to make flour.\n",
+                        "static": false,
+                        "togglePrompt": "molino"
+                    },
+                    "static": false,
+                    "type": "definition",
+                    "version": {
+                        "major": 0,
+                        "minor": 0
+                    }
+                },
+                "definition 2": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                        "definition": "for·age (FORE-ij): search for food\n",
+                        "static": false,
+                        "togglePrompt": "forage"
+                    },
+                    "static": false,
+                    "type": "definition",
+                    "version": {
+                        "major": 0,
+                        "minor": 0
+                    }
+                },
+                "explanation 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                        "explanation": "\nText source: Excerpt from *Bless Me, Ultima* by Rudolfo Anaya, Grand Central Publishing, © 2012 \n\nPublic domain image provided by Unsplash under [the Unsplash license](https://unsplash.com/license)\n",
+                        "hidePrompt": "Hide attribution",
+                        "showPrompt": "Attribution",
+                        "static": false,
+                        "widgets": {}
+                    },
+                    "static": false,
+                    "type": "explanation",
+                    "version": {
+                        "major": 0,
+                        "minor": 0
+                    }
+                },
+                "image 1": {
+                    "alignment": "block",
+                    "graded": true,
+                    "options": {
+                        "alt": "chickens",
+                        "backgroundImage": {
+                            "height": 1288,
+                            "url": "https://cdn.kastatic.org/ka-content-images/e3e18efa62662b3c7177dcfae7ac81e6a6cb6231.png",
+                            "width": 1936
+                        },
+                        "box": [
+                            1936,
+                            1288
+                        ],
+                        "caption": "",
+                        "labels": [],
+                        "range": [
+                            [
+                                0,
+                                10
+                            ],
+                            [
+                                0,
+                                10
+                            ]
+                        ],
+                        "static": false,
+                        "title": ""
+                    },
+                    "static": false,
+                    "type": "image",
+                    "version": {
+                        "major": 0,
+                        "minor": 0
+                    }
+                },
+                "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                        "choices": [
+                            {
+                                "clue": "**This is the best choice.** Antonio says he “dreaded” going “into the hills where the bats flew at dusk” and that doing so made him feel “frightened.”  \n",
+                                "content": "going into the hills alone at dusk to fetch his cow\n",
+                                "correct": true
+                            },
+                            {
+                                "clue": "This isn’t what makes Antonio afraid. Antonio says that the thought of “leaving [his] mother and going to school” gives him a “warm, sick feeling”—but a warm, sick feeling isn’t necessarily a feeling of fear. Also, according to the text, it’s the idea of going to school, not the sick feeling itself, that upsets Antonio.\n",
+                                "content": "having a sick feeling in his stomach\n",
+                                "correct": false
+                            },
+                            {
+                                "clue": "This isn’t what makes Antonio afraid. The text says that the cow would walk along the grassy highway, not that Antonio would. Antonio doesn’t mention being afraid of the edge of the highway,\n",
+                                "content": "walking along the grassy edge of the highway\n",
+                                "correct": false
+                            },
+                            {
+                                "clue": "This isn’t what makes Antonio afraid. The text doesn’t mention how Antonio feels about feeding the chickens. \n",
+                                "content": "scattering food for the hungry chickens\n",
+                                "correct": false
+                            }
+                        ],
+                        "countChoices": false,
+                        "deselectEnabled": false,
+                        "displayCount": null,
+                        "hasNoneOfTheAbove": false,
+                        "multipleSelect": false,
+                        "randomize": false
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                        "major": 1,
+                        "minor": 0
+                    }
+                }
+            }
+        },
+        "hints": [],
+        "answerArea": {
+            "calculator": false,
+            "chi2Table": false,
+            "financialCalculatorMonthlyPayment": false,
+            "financialCalculatorTimeToPayOff": false,
+            "financialCalculatorTotalAmount": false,
+            "periodicTable": false,
+            "periodicTableWithKey": false,
+            "tTable": false,
+            "zTable": false
+        },
+        "itemDataVersion": {
+            "major": 0,
+            "minor": 1
+        }
+    }
+}

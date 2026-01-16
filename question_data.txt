@@ -1,0 +1,8 @@
+﻿[32mINFO[0m | Loading .env from: C:\Users\lenovo\Downloads\WorkTask_aitutor\aitutor\.env | mongodb_manager.py:21
+[32mINFO[0m | [MONGODB] Connected to database: ai_tutor | mongodb_manager.py:65
+SEARCHING FOR ID: 6935efb23038188721d6fd2d
+FOUND QUESTION:
+ID: 6935efb23038188721d6fd2d
+Title: N/A
+----------------------------------------
+CONTENT:

@@ -1,0 +1,277 @@
+{
+  "_id": "693572b62a2c00b355a230d6",
+  "questionId": "32.1.2.1.6_xe8a77acc81c67c42",
+  "courseIdx": 32,
+  "courseName": "Get ready for AP\u00ae Statistics",
+  "courseDirName": "32_Get_ready_for_AP\u00ae_Statistics",
+  "courseUrl": "https://www.khanacademy.org/math/get-ready-for-ap-statistics",
+  "unitIdx": 1,
+  "unitName": "Get ready for exploring categorical data",
+  "unitDirName": "32.1_Get_ready_for_exploring_categorical_data",
+  "lessonIdx": 2,
+  "lessonName": "Bar graphs",
+  "lessonDirName": "32.1.2_Bar_graphs",
+  "exerciseIdx": 1,
+  "exerciseName": "Create bar graphs ",
+  "exerciseDirName": "32.1.2.1_Create_bar_graphs_",
+  "exerciseId": "458428444",
+  "itemId": "xe8a77acc81c67c42",
+  "assessmentData": {
+    "data": {
+      "assessmentItem": {
+        "__typename": "AssessmentItemOrError",
+        "error": null,
+        "item": {
+          "__typename": "AssessmentItem",
+          "id": "xe8a77acc81c67c42",
+          "isContextInaccessible": false,
+          "itemData": "{\"answerArea\": {\"calculator\": false, \"chi2Table\": false, \"periodicTable\": false, \"tTable\": false, \"zTable\": false}, \"hints\": [{\"content\": \"The information in the table ranges from $\\\\blueD{22}$ to $\\\\greenD{40}$.\\n\\nSalamander name |  Number of bugs eaten\\n:- | :-: | :-:\\nSally | $24$\\nFrazier | $\\\\blueD{22}$\\nNewton | $30$\\nCaptain | $\\\\greenD{40}$\\n\\nLet's find a scale that allows us to show all the numbers within this range in a reasonable way.\", \"images\": {}, \"replace\": false, \"widgets\": {}}, {\"content\": \"The scale does not go high enough to graph all the numbers  in our table.\\n\\n\\n[[\\u2603 image 1]]\\n\\nThis scale is too small.\", \"images\": {}, \"replace\": false, \"widgets\": {\"image 1\": {\"alignment\": \"block\", \"graded\": true, \"options\": {\"alt\": \"A blank bar graph shows the horizontal axis labeled Salamander and the vertical axis labeled Number of bugs eaten. The horizontal axis is labeled, from left to right: Sally, Frazier, Newton, and Captain. The vertical axis is labeled from the bottom of the axis to the top of the axis as follows: 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, and 20.\", \"backgroundImage\": {\"height\": 314, \"url\": \"web+graphie://cdn.kastatic.org/ka-perseus-graphie/868272369fe4690d5f0a672444ea19e0fa742a51\", \"width\": 362}, \"box\": [362, 314], \"caption\": \"\", \"labels\": [], \"range\": [[0, 10], [0, 10]], \"static\": false, \"title\": \"\"}, \"static\": false, \"type\": \"image\", \"version\": {\"major\": 0, \"minor\": 0}}}}, {\"content\": \"We can graph the numbers between $\\\\blueD{22}$ to $\\\\greenD{40}$ on this scale, but the bars would be small and hard to read.\\n\\n\\n[[\\u2603 image 1]]\\n\\nThis scale is too large.\", \"images\": {}, \"replace\": false, \"widgets\": {\"image 1\": {\"alignment\": \"block\", \"graded\": true, \"options\": {\"alt\": \"A blank bar graph shows the horizontal axis labeled Salamander and the vertical axis labeled Number of bugs eaten. The horizontal axis is labeled, from left to right: Sally, Frazier, Newton, and Captain. The vertical axis is labeled from the bottom of the axis to the top of the axis as follows: 0, 40, 80, and 120.\", \"backgroundImage\": {\"height\": 314, \"url\": \"web+graphie://cdn.kastatic.org/ka-perseus-graphie/9447fc28a0fdeff79229b5bb62503da5c452b953\", \"width\": 362}, \"box\": [362, 314], \"caption\": \"\", \"labels\": [], \"range\": [[0, 10], [0, 10]], \"static\": false, \"title\": \"\"}, \"static\": false, \"type\": \"image\", \"version\": {\"major\": 0, \"minor\": 0}}}}, {\"content\": \"We can graph the numbers between $\\\\blueD{22}$ to $\\\\greenD{40}$, and the bars would be clear to read.\\n\\n\\n[[\\u2603 image 1]]\\n\\nThis scale works!\", \"images\": {}, \"replace\": false, \"widgets\": {\"image 1\": {\"alignment\": \"block\", \"graded\": true, \"options\": {\"alt\": \"A blank bar graph shows the horizontal axis labeled Salamander and the vertical axis labeled Number of bugs eaten. The horizontal axis is labeled, from left to right: Sally, Frazier, Newton, and Captain. The vertical axis is labeled from the bottom of the axis to the top of the axis as follows: 0, 4, 8, 12, 16, 20, 24, 28, 32, 36, and 40.\", \"backgroundImage\": {\"height\": 314, \"url\": \"web+graphie://cdn.kastatic.org/ka-perseus-graphie/4b72402c5644a42d46c5a50665a9235ea70caf0f\", \"width\": 362}, \"box\": [362, 314], \"caption\": \"\", \"labels\": [], \"range\": [[0, 10], [0, 10]], \"static\": false, \"title\": \"\"}, \"static\": false, \"type\": \"image\", \"version\": {\"major\": 0, \"minor\": 0}}}}, {\"content\": \"This graph shows the most reasonable scale for the table:\\n\\n\\n[[\\u2603 image 1]]\\n\\n\", \"images\": {}, \"replace\": false, \"widgets\": {\"image 1\": {\"alignment\": \"block\", \"graded\": true, \"options\": {\"alt\": \"A blank bar graph shows the horizontal axis labeled Salamander and the vertical axis labeled Number of bugs eaten. The horizontal axis is labeled, from left to right: Sally, Frazier, Newton, and Captain. The vertical axis is labeled from the bottom of the axis to the top of the axis as follows: 0, 4, 8, 12, 16, 20, 24, 28, 32, 36, and 40.\", \"backgroundImage\": {\"height\": 314, \"url\": \"web+graphie://cdn.kastatic.org/ka-perseus-graphie/4b72402c5644a42d46c5a50665a9235ea70caf0f\", \"width\": 362}, \"box\": [362, 314], \"caption\": \"\", \"labels\": [], \"range\": [[0, 10], [0, 10]], \"static\": false, \"title\": \"\"}, \"static\": false, \"type\": \"image\", \"version\": {\"major\": 0, \"minor\": 0}}}}], \"itemDataVersion\": {\"major\": 0, \"minor\": 1}, \"question\": {\"content\": \"The table below shows the number of bugs eaten by $4$ different salamanders.\\n\\nSalamander name |  Number of bugs eaten\\n:- | :-: | :-:\\nSally | $24$\\nFrazier | $22$\\nNewton | $30$\\nCaptain | $40$\\n\\n\\n**Which graph below shows the most *reasonable* scale for the information in the table?**\\n\\n[[\\u2603 radio 1]]\\n\\n\", \"images\": {}, \"widgets\": {\"radio 1\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"choices\": [{\"content\": \"![A blank bar graph shows the horizontal axis labeled Salamander and the vertical axis labeled Number of bugs eaten. The horizontal axis is labeled, from left to right: Sally, Frazier, Newton, and Captain. The vertical axis is labeled from the bottom of the axis to the top of the axis as follows: 0, 40, 80, and 120.](web+graphie://cdn.kastatic.org/ka-perseus-graphie/9447fc28a0fdeff79229b5bb62503da5c452b953)\", \"correct\": false}, {\"content\": \"![A blank bar graph shows the horizontal axis labeled Salamander and the vertical axis labeled Number of bugs eaten. The horizontal axis is labeled, from left to right: Sally, Frazier, Newton, and Captain. The vertical axis is labeled from the bottom of the axis to the top of the axis as follows: 0, 4, 8, 12, 16, 20, 24, 28, 32, 36, and 40.](web+graphie://cdn.kastatic.org/ka-perseus-graphie/4b72402c5644a42d46c5a50665a9235ea70caf0f)\", \"correct\": true}, {\"content\": \"![A blank bar graph shows the horizontal axis labeled Salamander and the vertical axis labeled Number of bugs eaten. The horizontal axis is labeled, from left to right: Sally, Frazier, Newton, and Captain. The vertical axis is labeled from the bottom of the axis to the top of the axis as follows: 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, and 20.](web+graphie://cdn.kastatic.org/ka-perseus-graphie/868272369fe4690d5f0a672444ea19e0fa742a51)\", \"correct\": false, \"isNoneOfTheAbove\": false}], \"countChoices\": false, \"deselectEnabled\": false, \"displayCount\": null, \"hasNoneOfTheAbove\": false, \"multipleSelect\": false, \"randomize\": false}, \"static\": false, \"type\": \"radio\", \"version\": {\"major\": 1, \"minor\": 0}}}}}",
+          "problemType": "Type 3-Select reasonable scale",
+          "requiresScreenOrMouse": false,
+          "sha": "5b2d29e2685c3e8396bb0081301aa0aff84bfe63"
+        }
+      }
+    }
+  },
+  "scrapedAt": "2025-12-07T12:27:34.506000",
+  "difficulty": 0.7,
+  "expected_time_seconds": 80,
+  "inferred_grade": "10",
+  "grade_level": "11",
+  "grade_order": 12,
+  "learning_order": 1201201,
+  "age": 16,
+  "sequence_order": 343,
+  "total_in_course": 348,
+  "answerArea": {
+    "calculator": false,
+    "chi2Table": false,
+    "periodicTable": false,
+    "tTable": false,
+    "zTable": false
+  },
+  "fixedAt": "2025-12-21_v2",
+  "hints": [
+    {
+      "content": "The information in the table ranges from $\\blueD{22}$ to $\\greenD{40}$.\n\nSalamander name |  Number of bugs eaten\n:- | :-: | :-:\nSally | $24$\nFrazier | $\\blueD{22}$\nNewton | $30$\nCaptain | $\\greenD{40}$\n\nLet's find a scale that allows us to show all the numbers within this range in a reasonable way.",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    },
+    {
+      "content": "The scale does not go high enough to graph all the numbers  in our table.\n\n\n[[\u2603 image 1]]\n\nThis scale is too small.",
+      "images": {},
+      "replace": false,
+      "widgets": {
+        "image 1": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "A blank bar graph shows the horizontal axis labeled Salamander and the vertical axis labeled Number of bugs eaten. The horizontal axis is labeled, from left to right: Sally, Frazier, Newton, and Captain. The vertical axis is labeled from the bottom of the axis to the top of the axis as follows: 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, and 20.",
+            "backgroundImage": {
+              "height": 314,
+              "url": "/assets/images/questions/693572b6/scale_20.png",
+              "width": 362
+            },
+            "box": [
+              362,
+              314
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 0,
+            "minor": 0
+          }
+        }
+      }
+    },
+    {
+      "content": "We can graph the numbers between $\\blueD{22}$ to $\\greenD{40}$ on this scale, but the bars would be small and hard to read.\n\n\n[[\u2603 image 1]]\n\nThis scale is too large.",
+      "images": {},
+      "replace": false,
+      "widgets": {
+        "image 1": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "A blank bar graph shows the horizontal axis labeled Salamander and the vertical axis labeled Number of bugs eaten. The horizontal axis is labeled, from left to right: Sally, Frazier, Newton, and Captain. The vertical axis is labeled from the bottom of the axis to the top of the axis as follows: 0, 40, 80, and 120.",
+            "backgroundImage": {
+              "height": 314,
+              "url": "/assets/images/questions/693572b6/scale_120.png",
+              "width": 362
+            },
+            "box": [
+              362,
+              314
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 0,
+            "minor": 0
+          }
+        }
+      }
+    },
+    {
+      "content": "We can graph the numbers between $\\blueD{22}$ to $\\greenD{40}$, and the bars would be clear to read.\n\n\n[[\u2603 image 1]]\n\nThis scale works!",
+      "images": {},
+      "replace": false,
+      "widgets": {
+        "image 1": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "A blank bar graph shows the horizontal axis labeled Salamander and the vertical axis labeled Number of bugs eaten. The horizontal axis is labeled, from left to right: Sally, Frazier, Newton, and Captain. The vertical axis is labeled from the bottom of the axis to the top of the axis as follows: 0, 4, 8, 12, 16, 20, 24, 28, 32, 36, and 40.",
+            "backgroundImage": {
+              "height": 314,
+              "url": "/assets/images/questions/693572b6/scale_40.png",
+              "width": 362
+            },
+            "box": [
+              362,
+              314
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 0,
+            "minor": 0
+          }
+        }
+      }
+    },
+    {
+      "content": "This graph shows the most reasonable scale for the table:\n\n\n[[\u2603 image 1]]\n\n",
+      "images": {},
+      "replace": false,
+      "widgets": {
+        "image 1": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "A blank bar graph shows the horizontal axis labeled Salamander and the vertical axis labeled Number of bugs eaten. The horizontal axis is labeled, from left to right: Sally, Frazier, Newton, and Captain. The vertical axis is labeled from the bottom of the axis to the top of the axis as follows: 0, 4, 8, 12, 16, 20, 24, 28, 32, 36, and 40.",
+            "backgroundImage": {
+              "height": 314,
+              "url": "/assets/images/questions/693572b6/scale_40.png",
+              "width": 362
+            },
+            "box": [
+              362,
+              314
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 0,
+            "minor": 0
+          }
+        }
+      }
+    }
+  ],
+  "itemDataVersion": {
+    "major": 0,
+    "minor": 1
+  },
+  "question": {
+    "content": "The table below shows the number of bugs eaten by $4$ different salamanders.\n\nSalamander name |  Number of bugs eaten\n:- | :-: | :-:\nSally | $24$\nFrazier | $22$\nNewton | $30$\nCaptain | $40$\n\n\n**Which graph below shows the most *reasonable* scale for the information in the table?**\n\n[[\u2603 radio 1]]\n\n",
+    "images": {},
+    "widgets": {
+      "radio 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "choices": [
+            {
+              "content": "![Graphie Image](/assets/images/questions/693572b6/scale_120.png)",
+              "correct": false
+            },
+            {
+              "content": "![Graphie Image](/assets/images/questions/693572b6/scale_40.png)",
+              "correct": true
+            },
+            {
+              "content": "![Graphie Image](/assets/images/questions/693572b6/scale_20.png)",
+              "correct": false,
+              "isNoneOfTheAbove": false
+            }
+          ],
+          "countChoices": false,
+          "deselectEnabled": false,
+          "displayCount": null,
+          "hasNoneOfTheAbove": false,
+          "multipleSelect": false,
+          "randomize": false
+        },
+        "static": false,
+        "type": "radio",
+        "version": {
+          "major": 1,
+          "minor": 0
+        }
+      }
+    }
+  }
+}

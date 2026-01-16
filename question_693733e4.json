@@ -1,0 +1,175 @@
+{
+    "_id": "693733e4d416931ff461ba00",
+    "slug": "",
+    "skill_prefix": "",
+    "question": {
+        "content": "Which lines of HTML/CSS in the following webpage are invalid? Paste the HTML in http://validator.w3.org to see what it says.\n\n```\n<!DOCTYPE html>\n<html lang=\"en\">\n    <head>\n        <title>Aquarium Emporium</title>\n        <meta charset=\"utf-8\">\n        <style>\n            body {\n                background-color: salmon;\n            }\n        </style>\n    </head>\n    <body>\n       <img src=\"fishies.jpg\" alt=\"clownfish in tank\">\n       <h1>Come on down and meet our fintastic fish!</h1>\n       <p>You <em>whaley need to meet them!</p>\n    </body>\n</html>```\n\n[[☃ radio 1]]",
+        "widgets": {
+            "radio 1": {
+                "type": "radio",
+                "options": {
+                    "choices": [
+                        {
+                            "clue": "An `<em>` tag needs a closing tag, and this one doesn't have one.",
+                            "content": "`<p>You <em>whaley need to meet them!</p>`",
+                            "correct": true
+                        },
+                        {
+                            "clue": "This is the correct way to use an `<h1>` tag.",
+                            "content": "`<h1>Come on down and meet our fintastic fish!</h1>`",
+                            "correct": false
+                        },
+                        {
+                            "clue": "This is a valid image tag, it has a `src` and an `alt`.",
+                            "content": "`<img src=\"fishies.jpg\" alt=\"clownfish in tank\">`",
+                            "correct": false
+                        },
+                        {
+                            "clue": "This is a valid way to specify a background color, as `salmon` is a standard web color name.",
+                            "content": "`background-color: salmon;`",
+                            "correct": false
+                        },
+                        {
+                            "clue": "This is the correct way to specify the character encoding of a webpage.",
+                            "content": "`<meta charset=\"utf-8\">`",
+                            "correct": false
+                        }
+                    ],
+                    "countChoices": false,
+                    "deselectEnabled": false,
+                    "displayCount": null,
+                    "hasNoneOfTheAbove": false,
+                    "multipleSelect": true,
+                    "randomize": true
+                },
+                "alignment": "default",
+                "graded": true,
+                "static": false,
+                "version": {
+                    "major": 1,
+                    "minor": 0
+                }
+            }
+        },
+        "images": {}
+    },
+    "hints": [
+        {
+            "content": "Paste the HTML into the direct input box at http://validator.w3.org and scroll down to see the errors.",
+            "widgets": {},
+            "images": {},
+            "replace": false
+        },
+        {
+            "content": "There are multiple errors displayed. When we see multiple errors from the validator, it's best to start at the top, because some later errors are just a consequence of earlier ones confusing the parser.\n\nThe first error says \"End tag p seen, but there were open elements\", for this line:\n\n`<p>You <em>whaley need to meet them!</p>`\n\nThe open element is the `<em>` tag. That's confirmed by the next error \"Unclosed element em\", reported for the same line.\n\nThe final error is reported for the line after, and results from the earlier unclosed tag: \"End tag for  body seen, but there were unclosed elements.\"\n\nTo fix all the errors, we simply need to add an end tag for `<em>`, like so:\n\n`<p>You <em>whaley</em> need to meet them!</p>`",
+            "widgets": {},
+            "images": {},
+            "replace": false
+        },
+        {
+            "content": "Thus, the invalid line of HTML in the given webpage is:\n\n```<p>You <em>whaley need to meet them!</p>```",
+            "widgets": {},
+            "images": {},
+            "replace": false
+        }
+    ],
+    "answerArea": {
+        "calculator": false,
+        "periodicTable": false,
+        "chi2Table": false,
+        "tTable": false,
+        "zTable": false,
+        "financialCalculator": false
+    },
+    "itemDataVersion": {
+        "major": 0,
+        "minor": 1
+    },
+    "widgetTypes": [
+        "radio"
+    ],
+    "perseusItem": {
+        "question": {
+            "content": "Which lines of HTML/CSS in the following webpage are invalid? Paste the HTML in http://validator.w3.org to see what it says.\n\n```\n<!DOCTYPE html>\n<html lang=\"en\">\n    <head>\n        <title>Aquarium Emporium</title>\n        <meta charset=\"utf-8\">\n        <style>\n            body {\n                background-color: salmon;\n            }\n        </style>\n    </head>\n    <body>\n       <img src=\"fishies.jpg\" alt=\"clownfish in tank\">\n       <h1>Come on down and meet our fintastic fish!</h1>\n       <p>You <em>whaley need to meet them!</p>\n    </body>\n</html>```\n\n[[☃ radio 1]]",
+            "images": {},
+            "widgets": {
+                "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                        "choices": [
+                            {
+                                "clue": "An `<em>` tag needs a closing tag, and this one doesn't have one.",
+                                "content": "`<p>You <em>whaley need to meet them!</p>`",
+                                "correct": true
+                            },
+                            {
+                                "clue": "This is the correct way to use an `<h1>` tag.",
+                                "content": "`<h1>Come on down and meet our fintastic fish!</h1>`",
+                                "correct": false
+                            },
+                            {
+                                "clue": "This is a valid image tag, it has a `src` and an `alt`.",
+                                "content": "`<img src=\"fishies.jpg\" alt=\"clownfish in tank\">`",
+                                "correct": false
+                            },
+                            {
+                                "clue": "This is a valid way to specify a background color, as `salmon` is a standard web color name.",
+                                "content": "`background-color: salmon;`",
+                                "correct": false
+                            },
+                            {
+                                "clue": "This is the correct way to specify the character encoding of a webpage.",
+                                "content": "`<meta charset=\"utf-8\">`",
+                                "correct": false
+                            }
+                        ],
+                        "countChoices": false,
+                        "deselectEnabled": false,
+                        "displayCount": null,
+                        "hasNoneOfTheAbove": false,
+                        "multipleSelect": true,
+                        "randomize": true
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                        "major": 1,
+                        "minor": 0
+                    }
+                }
+            }
+        },
+        "hints": [
+            {
+                "content": "Paste the HTML into the direct input box at http://validator.w3.org and scroll down to see the errors.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+            },
+            {
+                "content": "There are multiple errors displayed. When we see multiple errors from the validator, it's best to start at the top, because some later errors are just a consequence of earlier ones confusing the parser.\n\nThe first error says \"End tag p seen, but there were open elements\", for this line:\n\n`<p>You <em>whaley need to meet them!</p>`\n\nThe open element is the `<em>` tag. That's confirmed by the next error \"Unclosed element em\", reported for the same line.\n\nThe final error is reported for the line after, and results from the earlier unclosed tag: \"End tag for  body seen, but there were unclosed elements.\"\n\nTo fix all the errors, we simply need to add an end tag for `<em>`, like so:\n\n`<p>You <em>whaley</em> need to meet them!</p>`",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+            },
+            {
+                "content": "Thus, the invalid line of HTML in the given webpage is:\n\n```<p>You <em>whaley need to meet them!</p>```",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+            }
+        ],
+        "answerArea": {
+            "calculator": false,
+            "chi2Table": false,
+            "periodicTable": false,
+            "tTable": false,
+            "zTable": false
+        },
+        "itemDataVersion": {
+            "major": 0,
+            "minor": 1
+        }
+    }
+}

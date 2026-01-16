@@ -1,0 +1,103 @@
+﻿[32mINFO[0m | Loading .env from: C:\Users\lenovo\Downloads\WorkTask_aitutor\aitutor\.env | mongodb_manager.py:21
+[32mINFO[0m | [MONGODB] Connected to database: ai_tutor | mongodb_manager.py:65
+{
+  "_id": "6935fbad873c3cc68bc9d149",
+  "questionId": "21.1.2.2.4_x83a816c7c4a47b28",
+  "courseIdx": 21,
+  "courseName": "Middle school physics",
+  "courseDirName": "21_Middle_school_physics",
+  "courseUrl": "https://www.khanacademy.org/science/ms-physics",
+  "unitIdx": 1,
+  "unitName": "Motion and forces",
+  "unitDirName": "21.1_Motion_and_forces",
+  "lessonIdx": 2,
+  "lessonName": "Forces",
+  "lessonDirName": "21.1.2_Forces",
+  "exerciseIdx": 2,
+  "exerciseName": "Apply: forces and Newton's third law",
+  "exerciseDirName": "21.1.2.2_Apply:_forces_and_Newton's_third_law",
+  "exerciseId": "xe380430b850d3c19",
+  "itemId": "x83a816c7c4a47b28",
+  "assessmentData": {
+    "data": {
+      "assessmentItem": {
+        "__typename": "AssessmentItemOrError",
+        "error": null,
+        "item": {
+          "__typename": "AssessmentItem",
+          "id": "x83a816c7c4a47b28",
+          "isContextInaccessible": false,
+          "itemData": "{\"answerArea\": {\"calculator\": false, \"chi2Table\": false, \"financialCalculatorMonthlyPayment\": false, \"financialCalculatorTimeToPayOff\": false, \"financialCalculatorTotalAmount\": false, \"periodicTable\": false, \"periodicTableWithKey\": false, \"tTable\": false, \"zTable\": false}, \"hints\": [], \"question\": {\"content\": \"The diagrams below model the horizontal forces acting on four different boxes. Two of the boxes each experience a net force of $15\\\\,\\\\text{N}.$\\n\\n**Select the two boxes which experience a net force of $15\\\\,\\\\text{N}.$**\\n\\n[[\\u2603 radio 1]]\\n\\n\", \"images\": {}, \"widgets\": {\"radio 1\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"choices\": [{\"clue\": \"When two forces are in *opposite* directions, we *subtract* them to find the net force.$10\\\\,\\\\text{N}-5\\\\,\\\\text{N}=5\\\\,\\\\text{N}.$ So, the net force on this box is $5\\\\,\\\\text{N}.$\", \"content\": \"![A box has an arrow labeled 5 N pointing from its left edge to the left. A longer arrow, labeled 10 N, points from the right edge of the box to the right.](https://cdn.kastatic.org/ka-content-images/ab6581750886c5bdef004de7f86a494989246d43.svg)\"}, {\"clue\": \"When two forces are in *opposite* directions, we *subtract* them to find the net force. $15\\\\,\\\\text{N}-15\\\\,\\\\text{N}=0\\\\,\\\\text{N}.$ So, the net force on this box is $0\\\\,\\\\text{N}.$\", \"content\": \"![A box has an arrow labeled 15 N pointing from its left edge to the left. An equal-length arrow, also labeled 15 N, points from the right edge of the box to the right.](https://cdn.kastatic.org/ka-content-images/21dd1966aa6e36f4f4bb66afd5cb9679bd99a659.svg)\"}, {\"clue\": \"When two forces are in *opposite* directions, we *subtract* them to find the net force. $25\\\\,\\\\text{N}-10\\\\,\\\\text{N}=15\\\\,\\\\text{N}.$\", \"content\": \"![A box has an arrow labeled 10 N pointing from its left edge to the left. A longer arrow, labeled 25 N, points from the right edge of the box to the right.](https://cdn.kastatic.org/ka-content-images/4f81c472ff2c9f7ad3dbf21ab27104eded21257b.svg)\", \"correct\": true}, {\"clue\": \"When two forces are in the *same* direction, we *add* them to find the net force. $10\\\\,\\\\text{N}+5\\\\,\\\\text{N}=15\\\\,\\\\text{N}.$\", \"content\": \"![A box has two arrows pointing from its right edge to the right. One is labeled 5 N. The other is twice as long and is labeled 10 N.](https://cdn.kastatic.org/ka-content-images/9fae8f5406c2a7959e37c08611961477e70ae0de.svg)\", \"correct\": true}], \"countChoices\": true, \"deselectEnabled\": false, \"displayCount\": null, \"hasNoneOfTheAbove\": false, \"multipleSelect\": true, \"numCorrect\": 2, \"randomize\": true}, \"static\": false, \"type\": \"radio\", \"version\": {\"major\": 2, \"minor\": 0}}}}}",
+          "problemType": "Type 2",
+          "requiresScreenOrMouse": false,
+          "sha": "57a83428e7e812925461f6753f606e0e963c7cf9"
+        }
+      }
+    }
+  },
+  "scrapedAt": "2025-12-07 22:11:57.872000",
+  "difficulty": 0.5,
+  "expected_time_seconds": 60,
+  "inferred_grade": "8",
+  "sequence_order": 345,
+  "total_in_course": 350,
+  "answerArea": {
+    "calculator": false,
+    "chi2Table": false,
+    "financialCalculatorMonthlyPayment": false,
+    "financialCalculatorTimeToPayOff": false,
+    "financialCalculatorTotalAmount": false,
+    "periodicTable": false,
+    "periodicTableWithKey": false,
+    "tTable": false,
+    "zTable": false
+  },
+  "fixedAt": "2025-12-21_v2",
+  "hints": [],
+  "itemDataVersion": {},
+  "question": {
+    "content": "The diagrams below model the horizontal forces acting on four different boxes. Two of the boxes each experience a net force of $15\\,\\text{N}.$\n\n**Select the two boxes which experience a net force of $15\\,\\text{N}.$**\n\n[[\u2603 radio 1]]\n\n",
+    "images": {},
+    "widgets": {
+      "radio 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "choices": [
+            {
+              "clue": "When two forces are in *opposite* directions, we *subtract* them to find the net force.$10\\,\\text{N}-5\\,\\text{N}=5\\,\\text{N}.$ So, the net force on this box is $5\\,\\text{N}.$",
+              "content": "![A box has an arrow labeled 5 N pointing from its left edge to the left. A longer arrow, labeled 10 N, points from the right edge of the box to the right.](https://cdn.kastatic.org/ka-content-images/ab6581750886c5bdef004de7f86a494989246d43.svg)"
+            },
+            {
+              "clue": "When two forces are in *opposite* directions, we *subtract* them to find the net force. $15\\,\\text{N}-15\\,\\text{N}=0\\,\\text{N}.$ So, the net force on this box is $0\\,\\text{N}.$",
+              "content": "![A box has an arrow labeled 15 N pointing from its left edge to the left. An equal-length arrow, also labeled 15 N, points from the right edge of the box to the right.](https://cdn.kastatic.org/ka-content-images/21dd1966aa6e36f4f4bb66afd5cb9679bd99a659.svg)"
+            },
+            {
+              "clue": "When two forces are in *opposite* directions, we *subtract* them to find the net force. $25\\,\\text{N}-10\\,\\text{N}=15\\,\\text{N}.$",
+              "content": "![A box has an arrow labeled 10 N pointing from its left edge to the left. A longer arrow, labeled 25 N, points from the right edge of the box to the right.](https://cdn.kastatic.org/ka-content-images/4f81c472ff2c9f7ad3dbf21ab27104eded21257b.svg)",
+              "correct": true
+            },
+            {
+              "clue": "When two forces are in the *same* direction, we *add* them to find the net force. $10\\,\\text{N}+5\\,\\text{N}=15\\,\\text{N}.$",
+              "content": "![A box has two arrows pointing from its right edge to the right. One is labeled 5 N. The other is twice as long and is labeled 10 N.](https://cdn.kastatic.org/ka-content-images/9fae8f5406c2a7959e37c08611961477e70ae0de.svg)",
+              "correct": true
+            }
+          ],
+          "countChoices": true,
+          "deselectEnabled": false,
+          "displayCount": null,
+          "hasNoneOfTheAbove": false,
+          "multipleSelect": true,
+          "numCorrect": 2,
+          "randomize": true
+        },
+        "static": false,
+        "type": "radio",
+        "version": {
+          "major": 2,
+          "minor": 0
+        }
+      }
+    }
+  }
+}

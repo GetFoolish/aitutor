@@ -1,0 +1,33 @@
+﻿972d09db fix: Replace graph with reference image for 6930d524 and fix renderer for local assets
+frontend/public/fixed_graphs/graph_6930d524.png
+frontend/src/renderer/athena/utils/ContentRendererUtils.ts
+scripts/debug/fix_question_6930d524.py
+576645e4 fix: Prevent dark mode inversion for samurai photographs
+frontend/src/renderer/athena/widgets/display/GraphieImage.tsx
+frontend/src/renderer/athena/widgets/display/ImageWidget.tsx
+095e932b fix: Improved math regex to prevent multiline matching and added dollar entity decoding (Juice boxes fix)
+frontend/src/renderer/athena/utils/ContentRendererUtils.ts
+scripts/debug/fix_question_6933fab0.py
+scripts/debug/trace_render.js
+c2507a87 fix: Allow individual item removal in OrdererWidget (Bananas fix)
+frontend/src/renderer/athena/widgets/assessment/OrdererWidget.tsx
+7ae9eece fix: Disable dark mode inversion for illustrative images (Beavers)
+frontend/src/renderer/athena/widgets/display/GraphieImage.tsx
+frontend/src/renderer/athena/widgets/display/ImageWidget.tsx
+52cff78a fix: Replace linear graph for question 6936fda6
+frontend/public/fixed_graphs/linear_graph_6936fda6.png
+frontend/src/renderer/athena/widgets/display/ImageWidget.tsx
+828c24de fix: Replace choice images for question 693751e5
+frontend/public/fixed_graphs/bar_chart_choice_1_693751e5.png
+frontend/public/fixed_graphs/bar_chart_choice_2_693751e5.png
+frontend/src/renderer/athena/widgets/input/RadioWidget.tsx
+services/athenaAPI/fix_693751e5.py
+d12a39a5 fix: Replace curved graph for question 6935f1b5 with static image
+frontend/public/fixed_graphs/curved_graph_6935f1b5.png
+frontend/src/renderer/athena/widgets/display/GraphieImage.tsx
+frontend/src/renderer/athena/widgets/display/ImageWidget.tsx
+971a29fc Fix(GraphieImage): Replace triangle graph (693396fb) with static reference image
+frontend/public/fixed_graphs/triangle_fix_693396fb.png
+frontend/src/renderer/athena/widgets/display/GraphieImage.tsx
+54eaf898 Fix(GraphieImage): Force SVG rendering and disable dark mode inversion for Cow Question (6933a3ad)
+frontend/src/renderer/athena/widgets/display/GraphieImage.tsx

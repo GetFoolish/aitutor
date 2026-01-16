@@ -431,7 +431,9 @@ export function ImageWidget({
                 options.alt.toLowerCase().includes('beaver') ||
                 options.alt.toLowerCase().includes('castor') ||
                 options.alt.toLowerCase().includes('samurai') ||
-                options.alt.toLowerCase().includes('photograph')
+                options.alt.toLowerCase().includes('photograph') ||
+                options.alt.toLowerCase().includes('forest') ||
+                imageUrl.includes('question_69324cd9_forest')
               ))
               ? 'target-graph-fix'
               : ''
