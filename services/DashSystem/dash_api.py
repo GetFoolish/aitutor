@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from services.DashSystem.dash_system import DASHSystem, Question, GradeLevel
+from services.DashSystem.badges import BadgeSystem
 from shared.auth_middleware import get_current_user
 from shared.cache_middleware import CacheControlMiddleware
 from shared.cors_config import ALLOWED_ORIGINS, ALLOW_CREDENTIALS, ALLOWED_METHODS, ALLOWED_HEADERS
@@ -34,6 +35,7 @@ logger = get_logger(__name__)
 
 app = FastAPI()
 dash_system = None  # Initialize as None, will be set in startup event
+badge_system = None  # Initialize as None, will be set in startup event
 
 # Configure CORS with secure origins from environment
 app.add_middleware(
@@ -54,14 +56,17 @@ def ensure_dash_system():
 # Startup event to initialize DASH system
 @app.on_event("startup")
 async def startup_event():
-    """Initialize DASHSystem on startup"""
-    global dash_system
+    """Initialize DASHSystem and BadgeSystem on startup"""
+    global dash_system, badge_system
     logger.info("Initializing DASHSystem...")
     try:
         dash_system = DASHSystem()
         logger.info(f"DASHSystem initialized: {len(dash_system.skills)} skills, {len(dash_system.question_index)} questions in index")
+
+        badge_system = BadgeSystem()
+        logger.info(f"BadgeSystem initialized: {len(badge_system.badges)} badges available")
     except Exception as e:
-        logger.error(f"Failed to initialize DASHSystem: {e}")
+        logger.error(f"Failed to initialize DASHSystem or BadgeSystem: {e}")
         import traceback
         logger.error(f"Traceback: {traceback.format_exc()}")
         raise
@@ -467,10 +472,12 @@ def submit_answer(request: Request, answer: AnswerSubmission):
     Previous latency: 4-8 seconds. Target: < 500ms.
     """
     ensure_dash_system()
-    
+    if badge_system is None:
+        raise HTTPException(status_code=503, detail="BadgeSystem not initialized")
+
     # Import mongo_db at function level
     from managers.mongodb_manager import mongo_db
-    
+
     # Get user_id from JWT token
     user_id = get_current_user(request)
 
@@ -540,12 +547,43 @@ def submit_answer(request: Request, answer: AnswerSubmission):
     accuracy = (correct_count / total_attempts * 100) if total_attempts > 0 else 0
 
     logger.info(f"\n[PROGRESS] Total:{total_attempts} questions | Accuracy:{accuracy:.1f}% ({correct_count}/{total_attempts})")
+
+    # Check for newly earned badges
+    newly_earned_ids, badge_progress = badge_system.check_badges_earned(user_profile)
+
+    # Update user profile with newly earned badges
+    newly_earned_badges = []
+    if newly_earned_ids:
+        # Ensure earned_badges field exists
+        if not hasattr(user_profile, 'earned_badges'):
+            user_profile.earned_badges = []
+
+        # Add newly earned badges to user profile
+        for badge_id in newly_earned_ids:
+            if badge_id not in user_profile.earned_badges:
+                user_profile.earned_badges.append(badge_id)
+
+        # Update badge progress
+        user_profile.badge_progress = badge_progress
+
+        # Save updated profile
+        dash_system.user_manager.save_user(user_profile)
+
+        # Get full badge details for newly earned badges
+        for badge_id in newly_earned_ids:
+            badge = badge_system.get_badge_by_id(badge_id)
+            if badge:
+                newly_earned_badges.append(badge.to_dict())
+
+        logger.info(f"[BADGES] User {user_id} earned {len(newly_earned_ids)} new badges: {newly_earned_ids}")
+
     logger.info(f"{'-'*80}\n")
 
     return {
         "success": True,
         "affected_skills": affected_skills,
-        "message": "Answer recorded successfully"
+        "message": "Answer recorded successfully",
+        "newly_earned_badges": newly_earned_badges
     }
 
 @app.get("/api/grading-panel")
@@ -582,6 +620,130 @@ def get_grading_panel(request: Request):
         }
     
     return {"skill_states": skill_states}
+
+# ===== BADGE ENDPOINTS =====
+@app.get("/api/badges")
+def get_badges(request: Request):
+    """
+    Get all available badges with user progress.
+    Returns badge definitions, user's earned badges, and progress toward each badge.
+    """
+    ensure_dash_system()
+    if badge_system is None:
+        raise HTTPException(status_code=503, detail="BadgeSystem not initialized")
+
+    # Get user_id from JWT token
+    user_id = get_current_user(request)
+
+    # Load user profile
+    user_profile = dash_system.user_manager.load_user(user_id)
+    if not user_profile:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Get all badges
+    all_badges = [badge.to_dict() for badge in badge_system.get_all_badges()]
+
+    # Get badge progress for this user
+    user_progress = badge_system.get_badge_progress(user_profile)
+
+    # Get earned badges
+    earned_badges = getattr(user_profile, 'earned_badges', [])
+
+    logger.info(f"[BADGES] User {user_id} has {len(earned_badges)} earned badges, progress calculated for {len(user_progress)} badges")
+
+    return {
+        "available_badges": all_badges,
+        "user_progress": user_progress,
+        "earned_badges": earned_badges
+    }
+
+@app.get("/api/badges/earned")
+def get_earned_badges(request: Request):
+    """
+    Get user's earned badges with full badge details.
+    """
+    ensure_dash_system()
+    if badge_system is None:
+        raise HTTPException(status_code=503, detail="BadgeSystem not initialized")
+
+    # Get user_id from JWT token
+    user_id = get_current_user(request)
+
+    # Load user profile
+    user_profile = dash_system.user_manager.load_user(user_id)
+    if not user_profile:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Get earned badge IDs
+    earned_badge_ids = getattr(user_profile, 'earned_badges', [])
+
+    # Get full badge details for earned badges
+    earned_badges = []
+    for badge_id in earned_badge_ids:
+        badge = badge_system.get_badge_by_id(badge_id)
+        if badge:
+            earned_badges.append(badge.to_dict())
+
+    logger.info(f"[BADGES] User {user_id} has earned {len(earned_badges)} badges")
+
+    return {
+        "earned_badges": earned_badges,
+        "total_count": len(earned_badges)
+    }
+
+@app.post("/api/badges/check")
+def check_badges(request: Request):
+    """
+    Check and award new badges for the user.
+    Called after question submission to detect newly earned badges.
+    Returns newly earned badges and updated progress.
+    """
+    ensure_dash_system()
+    if badge_system is None:
+        raise HTTPException(status_code=503, detail="BadgeSystem not initialized")
+
+    # Get user_id from JWT token
+    user_id = get_current_user(request)
+
+    # Load user profile
+    user_profile = dash_system.user_manager.load_user(user_id)
+    if not user_profile:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Check for newly earned badges
+    newly_earned_ids, badge_progress = badge_system.check_badges_earned(user_profile)
+
+    # Update user profile with newly earned badges
+    if newly_earned_ids:
+        # Ensure earned_badges field exists
+        if not hasattr(user_profile, 'earned_badges'):
+            user_profile.earned_badges = []
+
+        # Add newly earned badges to user profile
+        for badge_id in newly_earned_ids:
+            if badge_id not in user_profile.earned_badges:
+                user_profile.earned_badges.append(badge_id)
+
+        # Update badge progress
+        user_profile.badge_progress = badge_progress
+
+        # Save updated profile
+        dash_system.user_manager.save_user(user_profile)
+
+        logger.info(f"[BADGES] User {user_id} earned {len(newly_earned_ids)} new badges: {newly_earned_ids}")
+
+    # Get full badge details for newly earned badges
+    newly_earned_badges = []
+    for badge_id in newly_earned_ids:
+        badge = badge_system.get_badge_by_id(badge_id)
+        if badge:
+            newly_earned_badges.append(badge.to_dict())
+
+    return {
+        "newly_earned_badges": newly_earned_badges,
+        "badge_progress": badge_progress,
+        "total_earned_count": len(getattr(user_profile, 'earned_badges', []))
+    }
 
 @app.post("/api/questions/recommend-next", response_model=List[PerseusQuestion])
 def recommend_next_questions(request: Request, req: RecommendNextRequest):

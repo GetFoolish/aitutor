@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { apiUtils } from "../../lib/api-utils";
+import { showBadgeNotifications } from "../../components/badges/BadgeNotification";
+import type { Badge } from "./useBadges";
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
@@ -22,6 +24,13 @@ interface LogQuestionDisplayedPayload {
 interface TeachingAssistantQuestionAnsweredPayload {
   questionId: string;
   isCorrect: boolean;
+}
+
+interface SubmitDashAnswerResponse {
+  success: boolean;
+  skill_id?: string;
+  correct_count?: number;
+  newly_earned_badges?: Badge[];
 }
 
 export function useDashAnswerMutations() {
@@ -48,11 +57,21 @@ export function useDashAnswerMutations() {
         throw new Error(`Failed to submit answer (${res.status})`);
       }
 
-      return res.json();
+      return res.json() as Promise<SubmitDashAnswerResponse>;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       // Invalidate related questions, so next fetch can reflect updated state if needed
       queryClient.invalidateQueries({ queryKey: ["dash-questions"] });
+
+      // Check if any new badges were earned
+      if (data.newly_earned_badges && data.newly_earned_badges.length > 0) {
+        // Show badge notifications for newly earned badges
+        showBadgeNotifications(data.newly_earned_badges);
+
+        // Invalidate badge queries to refresh badge display and header count
+        queryClient.invalidateQueries({ queryKey: ["badges"] });
+        queryClient.invalidateQueries({ queryKey: ["earned-badges"] });
+      }
     },
     onError: (error: unknown) => {
       const message =

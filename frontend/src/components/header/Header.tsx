@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import React from "react";
 import { RiSidebarFoldLine, RiSidebarUnfoldLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import cn from "classnames";
@@ -35,6 +36,8 @@ import {
     AvatarFallback,
     AvatarImage,
 } from "@/components/ui/avatar";
+import { useEarnedBadges } from "@/hooks/query-hooks/useBadges";
+import BadgesDialog from "@/components/badges/BadgesDialog";
 
 interface HeaderProps {
     sidebarOpen: boolean;
@@ -46,6 +49,12 @@ interface HeaderProps {
 export default function Header({ sidebarOpen, onToggleSidebar, isDeveloperMode, onToggleDeveloperMode }: HeaderProps) {
     const { theme, setTheme } = useTheme();
     const [isDarkMode, setIsDarkMode] = useState(false);
+
+    // Fetch earned badges (backend extracts user_id from JWT token)
+    const { data: earnedBadgesData } = useEarnedBadges({
+        userId: "current", // Placeholder - backend uses JWT token
+        enabled: true
+    });
 
     useEffect(() => {
         const checkDarkMode = () => {
@@ -74,6 +83,8 @@ export default function Header({ sidebarOpen, onToggleSidebar, isDeveloperMode, 
     }, [theme]);
 
     const logoSource = isDarkMode ? '/logo_white.png' : '/logo.png';
+
+    const badgeCount = earnedBadgesData?.total_count || 0;
 
     return (
         <header className="fixed top-0 left-0 right-0 h-[44px] lg:h-[48px] bg-[#FFFDF5] dark:bg-[#000000] border-b-[3px] lg:border-b-[4px] border-black dark:border-white z-40 flex items-center justify-between px-2 md:px-4 lg:px-5 shadow-[0_2px_0_0_rgba(0,0,0,1)] lg:shadow-[0_2px_0_0_rgba(0,0,0,1)] dark:shadow-[0_2px_0_0_rgba(255,255,255,0.3)]">
@@ -116,6 +127,9 @@ export default function Header({ sidebarOpen, onToggleSidebar, isDeveloperMode, 
                     <Terminal className="h-[0.9rem] w-[0.9rem] md:h-[1rem] md:w-[1rem]" />
                     <span className="sr-only">Toggle developer mode</span>
                 </Button>
+
+                {/* Badge Summary - Opens full badges dialog */}
+                <BadgesDialog badgeCount={badgeCount} />
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
