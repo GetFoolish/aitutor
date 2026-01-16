@@ -1,12 +1,13 @@
 import sys
 import os
 import asyncio
+from datetime import datetime
 from fastapi import FastAPI, HTTPException, Request, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
@@ -102,6 +103,35 @@ class AssistResponse(BaseModel):
     response: str
     homework_id: str
     timestamp: str
+
+
+class HomeworkItem(BaseModel):
+    homework_id: str
+    filename: str
+    file_type: str
+    file_size: int
+    status: str
+    uploaded_at: str
+
+
+class HomeworkListResponse(BaseModel):
+    homework_items: List[HomeworkItem]
+    total: int
+
+
+class HomeworkDetailResponse(BaseModel):
+    homework_id: str
+    filename: str
+    file_type: str
+    file_size: int
+    status: str
+    uploaded_at: str
+    conversation_history: List[dict]
+
+
+class DeleteResponse(BaseModel):
+    success: bool
+    message: str
 
 
 # ============================================================================
@@ -214,6 +244,152 @@ async def homework_assist(
     except Exception as e:
         logger.error(f"[HOMEWORK] Error in homework_assist: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Failed to process question: {str(e)}")
+
+
+# ============================================================================
+# Homework List Endpoint
+# ============================================================================
+
+@app.get("/homework/list", response_model=HomeworkListResponse, status_code=200)
+async def list_homework(http_request: Request):
+    """
+    List all homework for the authenticated user
+
+    Returns a list of uploaded homework files with metadata.
+    Does not include full extracted text or conversation history.
+
+    Returns:
+        HomeworkListResponse with array of homework items and total count
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        # Get homework list from FileProcessor
+        homework_list = file_processor.list_homework(user_id, limit=50)
+
+        # Convert to response model
+        homework_items = []
+        for homework in homework_list:
+            homework_items.append(HomeworkItem(
+                homework_id=homework["homework_id"],
+                filename=homework["filename"],
+                file_type=homework["file_type"],
+                file_size=homework["file_size"],
+                status=homework["status"],
+                uploaded_at=homework["uploaded_at"].isoformat() if isinstance(homework["uploaded_at"], datetime) else homework["uploaded_at"]
+            ))
+
+        logger.info(f"[HOMEWORK] Listed {len(homework_items)} homework items for user {user_id}")
+
+        return HomeworkListResponse(
+            homework_items=homework_items,
+            total=len(homework_items)
+        )
+
+    except Exception as e:
+        logger.error(f"[HOMEWORK] Error in list_homework: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to list homework: {str(e)}")
+
+
+# ============================================================================
+# Homework Detail Endpoint
+# ============================================================================
+
+@app.get("/homework/{homework_id}", response_model=HomeworkDetailResponse, status_code=200)
+async def get_homework(
+    http_request: Request,
+    homework_id: str
+):
+    """
+    Get detailed information about a specific homework
+
+    Includes conversation history but not the full extracted text content.
+
+    Args:
+        homework_id: Homework ID
+
+    Returns:
+        HomeworkDetailResponse with homework details and conversation history
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        # Get homework from FileProcessor
+        homework = file_processor.get_homework(homework_id, user_id)
+
+        if not homework:
+            logger.warning(f"[HOMEWORK] Homework not found: {homework_id} for user {user_id}")
+            raise HTTPException(status_code=404, detail="Homework not found")
+
+        # Convert conversation history timestamps to ISO format
+        conversation_history = []
+        for turn in homework.get("conversation_history", []):
+            turn_copy = turn.copy()
+            if "timestamp" in turn_copy and isinstance(turn_copy["timestamp"], datetime):
+                turn_copy["timestamp"] = turn_copy["timestamp"].isoformat()
+            conversation_history.append(turn_copy)
+
+        logger.info(f"[HOMEWORK] Retrieved homework details for {homework_id} by user {user_id}")
+
+        return HomeworkDetailResponse(
+            homework_id=homework["homework_id"],
+            filename=homework["filename"],
+            file_type=homework["file_type"],
+            file_size=homework["file_size"],
+            status=homework["status"],
+            uploaded_at=homework["uploaded_at"].isoformat() if isinstance(homework["uploaded_at"], datetime) else homework["uploaded_at"],
+            conversation_history=conversation_history
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[HOMEWORK] Error in get_homework: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve homework: {str(e)}")
+
+
+# ============================================================================
+# Homework Delete Endpoint
+# ============================================================================
+
+@app.delete("/homework/{homework_id}", response_model=DeleteResponse, status_code=200)
+async def delete_homework(
+    http_request: Request,
+    homework_id: str
+):
+    """
+    Delete a homework and its associated file
+
+    Removes the homework document and GridFS file from MongoDB.
+
+    Args:
+        homework_id: Homework ID
+
+    Returns:
+        DeleteResponse with success status and message
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        # Delete homework via FileProcessor
+        success = file_processor.delete_homework(homework_id, user_id)
+
+        if not success:
+            logger.warning(f"[HOMEWORK] Homework not found for deletion: {homework_id} for user {user_id}")
+            raise HTTPException(status_code=404, detail="Homework not found")
+
+        logger.info(f"[HOMEWORK] Deleted homework {homework_id} for user {user_id}")
+
+        return DeleteResponse(
+            success=True,
+            message=f"Homework {homework_id} deleted successfully"
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[HOMEWORK] Error in delete_homework: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to delete homework: {str(e)}")
 
 
 # ============================================================================
