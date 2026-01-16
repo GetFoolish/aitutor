@@ -63,6 +63,9 @@ export function useDashAnswerMutations() {
       // Invalidate related questions, so next fetch can reflect updated state if needed
       queryClient.invalidateQueries({ queryKey: ["dash-questions"] });
 
+      // Invalidate streak query to refresh streak display in header
+      queryClient.invalidateQueries({ queryKey: ["streak"] });
+
       // Check if any new badges were earned
       if (data.newly_earned_badges && data.newly_earned_badges.length > 0) {
         // Show badge notifications for newly earned badges

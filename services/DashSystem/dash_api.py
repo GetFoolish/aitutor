@@ -60,7 +60,9 @@ async def startup_event():
     global dash_system, badge_system
     logger.info("Initializing DASHSystem...")
     try:
-        dash_system = DASHSystem()
+        # Disable Khan hierarchy since courses/units/lessons collections don't exist in Atlas
+        # Use legacy generated_skills collection instead
+        dash_system = DASHSystem(use_khan_hierarchy=False)
         logger.info(f"DASHSystem initialized: {len(dash_system.skills)} skills, {len(dash_system.question_index)} questions in index")
 
         badge_system = BadgeSystem()
@@ -110,12 +112,12 @@ def health_check():
 def load_perseus_items_for_dash_questions_from_mongodb(
     dash_questions: List[Question]
 ) -> List[Dict]:
-    """Load Perseus items from questions_db.questions collection matching DASH-selected questions.
+    """Load Perseus items from scraped_questions collection matching DASH-selected questions.
 
     OPTIMIZED: Uses batch query with $in instead of one query per question.
+    Note: Uses scraped_questions collection which has embedded Perseus data.
     """
     from managers.mongodb_manager import mongo_db
-    import json
 
     if not dash_questions:
         return []
@@ -124,38 +126,17 @@ def load_perseus_items_for_dash_questions_from_mongodb(
     dash_lookup = {q.question_id: q for q in dash_questions}
     question_ids = list(dash_lookup.keys())
 
-    # BATCH QUERY: Fetch all questions in one MongoDB call from questions_db
-    question_docs = list(mongo_db.questions.find(
-        {"question_id": {"$in": question_ids}}
+    # BATCH QUERY: Fetch all questions from scraped_questions collection
+    # Note: scraped_questions uses 'questionId' field (camelCase), not 'question_id'
+    question_docs = list(mongo_db.scraped_questions.find(
+        {"questionId": {"$in": question_ids}}
     ))
 
-    # Build lookup for question docs
-    question_lookup = {doc.get('question_id'): doc for doc in question_docs}
-
-    # Collect all unique unit_ids, lesson_ids, exercise_ids for batch fetching
-    unit_ids = set()
-    lesson_ids = set()
-    exercise_ids = set()
-    for doc in question_docs:
-        if doc.get('unit_id'):
-            unit_ids.add(doc.get('unit_id'))
-        if doc.get('lesson_id'):
-            lesson_ids.add(doc.get('lesson_id'))
-        if doc.get('exercise_id'):
-            exercise_ids.add(doc.get('exercise_id'))
-
-    # BATCH QUERY: Fetch units, lessons, exercises
-    unit_docs = list(mongo_db.units.find({"unit_id": {"$in": list(unit_ids)}})) if unit_ids else []
-    lesson_docs = list(mongo_db.lessons.find({"lesson_id": {"$in": list(lesson_ids)}})) if lesson_ids else []
-    exercise_docs = list(mongo_db.exercises.find({"exercise_id": {"$in": list(exercise_ids)}})) if exercise_ids else []
-
-    # Build lookups
-    unit_lookup = {doc.get('unit_id'): doc for doc in unit_docs}
-    lesson_lookup = {doc.get('lesson_id'): doc for doc in lesson_docs}
-    exercise_lookup = {doc.get('exercise_id'): doc for doc in exercise_docs}
+    # Build lookup for question docs using questionId field
+    question_lookup = {doc.get('questionId'): doc for doc in question_docs}
 
     perseus_items = []
-    
+
     # Ensure dash_system is available
     if dash_system is None:
         logger.error("DASH system not initialized when loading Perseus items")
@@ -165,43 +146,27 @@ def load_perseus_items_for_dash_questions_from_mongodb(
         question_doc = question_lookup.get(question_id)
 
         if not question_doc:
-            logger.warning(f"No question found in questions_db for question_id {question_id}")
+            logger.warning(f"No question found in scraped_questions for questionId {question_id}")
             continue
 
-        # Extract perseus_json (already parsed in questions_db)
-        perseus_json = question_doc.get('perseus_json', {})
-        if not perseus_json:
-            logger.warning(f"No perseus_json found for question_id {question_id}")
-            continue
-
-        # Get unit, lesson, exercise names (before try block)
-        unit_doc = unit_lookup.get(question_doc.get('unit_id'))
-        lesson_doc = lesson_lookup.get(question_doc.get('lesson_id'))
-        exercise_doc = exercise_lookup.get(question_doc.get('exercise_id'))
-        
-        logger.info(f"[METADATA_LOOKUP] Q:{question_id} | unit_id={question_doc.get('unit_id')} | unit_doc={'Found' if unit_doc else 'None'} | lesson_id={question_doc.get('lesson_id')} | lesson_doc={'Found' if lesson_doc else 'None'} | exercise_id={question_doc.get('exercise_id')} | exercise_doc={'Found' if exercise_doc else 'None'}")
-
-        # Extract required fields from perseus_json
+        # Extract Perseus data from embedded fields in scraped_questions
+        # scraped_questions has: question, answerArea, hints, itemDataVersion embedded
         try:
-            question = perseus_json.get('question', {})
-            answer_area = perseus_json.get('answerArea', {})
-            hints = perseus_json.get('hints', [])
-            item_data_version = perseus_json.get('itemDataVersion', {})
+            question = question_doc.get('question', {})
+            answer_area = question_doc.get('answerArea', {})
+            hints = question_doc.get('hints', [])
+            item_data_version = question_doc.get('itemDataVersion', {})
 
             # Validate required fields
             if not question:
-                logger.warning(f"Missing 'question' field in itemData for question_id {question_id}")
+                logger.warning(f"Missing 'question' field for questionId {question_id}")
                 continue
 
             # Extract slug from questionId (numeric prefix before underscore)
             # Example: "41.1.1.1.1_xde8147b8edb82294" -> "41.1.1.1.1"
             slug = question_id.split('_')[0] if '_' in question_id else question_id
 
-            # Build Perseus data structure
-            # Note: Perseus scoring uses the 'correct' property in widget choices
-            # We don't need a separate answer key
-            logger.info(f"[PERSEUS_LOAD] Building item for {question_id} - NO ANSWER KEY")
-            
+            # Build Perseus data structure with metadata from scraped_questions
             perseus_data = {
                 "question": question,
                 "answerArea": answer_area,
@@ -215,20 +180,20 @@ def load_perseus_items_for_dash_questions_from_mongodb(
                     'slug': slug,
                     'skill_names': [dash_system.skills[sid].name for sid in dash_q.skill_ids
                                    if sid in dash_system.skills],
-                    'unit_id': question_doc.get('unit_id'),  # Current module (unit) ID
-                    'lesson_id': question_doc.get('lesson_id'),  # Sub-skill ID
-                    'exercise_id': question_doc.get('exercise_id'),
-                    'mongodb_id': str(question_doc.get('_id')),  # MongoDB ObjectId
-                    'unit_name': unit_doc.get('title', 'Unknown Unit') if unit_doc else 'Unknown Unit',
-                    'lesson_name': lesson_doc.get('title', 'Unknown Lesson') if lesson_doc else 'Unknown Lesson',
-                    'exercise_name': exercise_doc.get('title', 'Unknown Exercise') if exercise_doc else 'Unknown Exercise'
+                    # Use hierarchical names from scraped_questions
+                    'unit_name': question_doc.get('unitName', 'Unknown Unit'),
+                    'lesson_name': question_doc.get('lessonName', 'Unknown Lesson'),
+                    'exercise_name': question_doc.get('exerciseName', 'Unknown Exercise'),
+                    'course_name': question_doc.get('courseName', 'Unknown Course'),
+                    'exercise_id': question_doc.get('exerciseId'),
+                    'mongodb_id': str(question_doc.get('_id')),
                 }
             }
 
             perseus_items.append(perseus_data)
 
         except Exception as e:
-            logger.warning(f"Failed to load Perseus from questions_db for question_id {question_id}: {e}")
+            logger.warning(f"Failed to load Perseus from scraped_questions for questionId {question_id}: {e}")
             continue
 
     return perseus_items
@@ -548,6 +513,11 @@ def submit_answer(request: Request, answer: AnswerSubmission):
 
     logger.info(f"\n[PROGRESS] Total:{total_attempts} questions | Accuracy:{accuracy:.1f}% ({correct_count}/{total_attempts})")
 
+    # Update daily streak
+    streak_result = dash_system.user_manager.update_streak(user_profile)
+    if streak_result.get('streak_updated'):
+        logger.info(f"[STREAK] Updated streak for {user_id}: current={streak_result['current_streak']}, longest={streak_result['longest_streak']}")
+
     # Check for newly earned badges
     newly_earned_ids, badge_progress = badge_system.check_badges_earned(user_profile)
 
@@ -583,7 +553,12 @@ def submit_answer(request: Request, answer: AnswerSubmission):
         "success": True,
         "affected_skills": affected_skills,
         "message": "Answer recorded successfully",
-        "newly_earned_badges": newly_earned_badges
+        "newly_earned_badges": newly_earned_badges,
+        "streak": {
+            "current_streak": streak_result.get('current_streak', 0),
+            "longest_streak": streak_result.get('longest_streak', 0),
+            "streak_updated": streak_result.get('streak_updated', False)
+        }
     }
 
 @app.get("/api/grading-panel")
@@ -1184,11 +1159,21 @@ def complete_assessment(
 
         logger.info(f"[ASSESSMENT_COMPLETE] Initialized {len(user_profile.skill_states)} skill states")
 
+        # Update daily streak after assessment completion
+        streak_result = dash_system.user_manager.update_streak(user_profile)
+        if streak_result.get('streak_updated'):
+            logger.info(f"[STREAK] Updated streak for {user_id}: current={streak_result['current_streak']}, longest={streak_result['longest_streak']}")
+
         return {
             "status": "completed",
             "score": correct_count,
             "total": len(answers),
-            "percentage": (correct_count / len(answers) * 100) if answers else 0
+            "percentage": (correct_count / len(answers) * 100) if answers else 0,
+            "streak": {
+                "current_streak": streak_result.get('current_streak', 0),
+                "longest_streak": streak_result.get('longest_streak', 0),
+                "streak_updated": streak_result.get('streak_updated', False)
+            }
         }
 
     except Exception as e:

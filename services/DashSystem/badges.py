@@ -211,7 +211,8 @@ class BadgeSystem:
         mastery_progress = {}
         for skill_id, skill_state in user_profile.skill_states.items():
             # Memory strength is typically 0-1, convert to percentage
-            mastery_percent = skill_state.memory_strength * 100.0
+            # Cap at 100% to handle edge cases where memory_strength > 1.0
+            mastery_percent = min(100.0, skill_state.memory_strength * 100.0)
             mastery_progress[skill_id] = mastery_percent
         return mastery_progress
 
