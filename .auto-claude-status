@@ -1,0 +1,25 @@
+{
+  "active": true,
+  "spec": "019-homework",
+  "state": "building",
+  "subtasks": {
+    "completed": 1,
+    "total": 16,
+    "in_progress": 1,
+    "failed": 0
+  },
+  "phase": {
+    "current": "Homework Backend Service",
+    "id": null,
+    "total": 4
+  },
+  "workers": {
+    "active": 0,
+    "max": 1
+  },
+  "session": {
+    "number": 3,
+    "started_at": "2026-01-16T16:17:15.062148"
+  },
+  "last_update": "2026-01-16T16:25:58.558669"
+}

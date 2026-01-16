@@ -1,7 +1,7 @@
 import sys
 import os
 import asyncio
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
@@ -14,9 +14,13 @@ from shared.auth_middleware import get_current_user
 from shared.cors_config import ALLOWED_ORIGINS, ALLOW_CREDENTIALS, ALLOWED_METHODS, ALLOWED_HEADERS
 from shared.timing_middleware import UnpluggedTimingMiddleware
 from shared.logging_config import get_logger
+from managers.mongodb_manager import mongo_db
+from services.HomeworkAssistant.file_processor import FileProcessor
 
 logger = get_logger(__name__)
 
+# Initialize FileProcessor
+file_processor = FileProcessor(mongo_db)
 
 app = FastAPI(title="Homework Assistant API")
 
@@ -75,6 +79,19 @@ async def options_handler(full_path: str):
 
 
 # ============================================================================
+# Request/Response Models
+# ============================================================================
+
+class UploadResponse(BaseModel):
+    homework_id: str
+    file_type: str
+    status: str
+    filename: str
+    file_size: int
+    uploaded_at: str
+
+
+# ============================================================================
 # Health Check
 # ============================================================================
 
@@ -82,6 +99,59 @@ async def options_handler(full_path: str):
 def health_check():
     """Health check endpoint for service monitoring"""
     return {"status": "healthy", "service": "HomeworkAssistant"}
+
+
+# ============================================================================
+# Homework Upload Endpoint
+# ============================================================================
+
+@app.post("/homework/upload", response_model=UploadResponse, status_code=201)
+async def upload_homework(
+    http_request: Request,
+    file: UploadFile = File(...)
+):
+    """
+    Upload homework file with multi-format support
+
+    Supported formats:
+    - PDF (.pdf)
+    - Images (.jpg, .jpeg, .png, .gif, .bmp)
+    - Text files (.txt)
+    - Word documents (.doc, .docx)
+
+    Args:
+        file: Uploaded file (multipart/form-data)
+
+    Returns:
+        UploadResponse with homework_id, file_type, and status
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        # Read file content
+        file_content = await file.read()
+
+        if not file_content:
+            raise HTTPException(status_code=400, detail="Empty file uploaded")
+
+        # Process and store file
+        result = await file_processor.process_and_store_file(
+            filename=file.filename,
+            file_content=file_content,
+            user_id=user_id
+        )
+
+        logger.info(f"[HOMEWORK] File uploaded successfully: {result['homework_id']} by user {user_id}")
+
+        return UploadResponse(**result)
+
+    except ValueError as e:
+        # Validation errors (file size, type, etc.)
+        logger.warning(f"[HOMEWORK] Validation error: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"[HOMEWORK] Error in upload_homework: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
 
 
 # ============================================================================
