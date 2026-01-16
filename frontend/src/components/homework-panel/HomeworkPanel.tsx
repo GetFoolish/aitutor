@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+import { Skeleton } from "@/components/ui/skeleton"
 import { HomeworkUpload } from "./HomeworkUpload"
 import { HomeworkChat } from "./HomeworkChat"
 import { homeworkService, type HomeworkItem } from "@/services/homework-service"
@@ -215,6 +216,18 @@ const HomeworkPanel = React.forwardRef<HTMLDivElement, HomeworkPanelProps>(
       onTabChange?.(value)
     }
 
+    // Skeleton loading component for homework items
+    const HomeworkItemSkeleton = () => (
+      <div className="flex items-center gap-3 p-3 rounded-lg border-[3px] border-border bg-background">
+        <Skeleton className="h-16 w-16 rounded-lg shrink-0" />
+        <div className="flex-1 min-w-0 space-y-2">
+          <Skeleton className="h-4 w-3/4" />
+          <Skeleton className="h-3 w-1/2" />
+        </div>
+        <Skeleton className="h-8 w-8 rounded shrink-0" />
+      </div>
+    )
+
     return (
       <div ref={ref} className={cn("h-full flex flex-col", className)}>
         <Tabs value={selectedTab} onValueChange={handleTabChange} className="flex-1 flex flex-col">
@@ -249,8 +262,10 @@ const HomeworkPanel = React.forwardRef<HTMLDivElement, HomeworkPanelProps>(
 
           <TabsContent value="list" className="flex-1 mt-3 overflow-hidden">
             {isLoading ? (
-              <div className="flex items-center justify-center h-full">
-                <p className="text-sm text-muted-foreground font-medium">Loading homework...</p>
+              <div className="h-full overflow-y-auto pr-2 space-y-2">
+                <HomeworkItemSkeleton />
+                <HomeworkItemSkeleton />
+                <HomeworkItemSkeleton />
               </div>
             ) : error ? (
               <div className="flex items-center justify-center h-full p-4">
