@@ -16,11 +16,13 @@ from shared.timing_middleware import UnpluggedTimingMiddleware
 from shared.logging_config import get_logger
 from managers.mongodb_manager import mongo_db
 from services.HomeworkAssistant.file_processor import FileProcessor
+from services.HomeworkAssistant.homework_assistant import HomeworkAssistant
 
 logger = get_logger(__name__)
 
-# Initialize FileProcessor
+# Initialize FileProcessor and HomeworkAssistant
 file_processor = FileProcessor(mongo_db)
+homework_assistant = HomeworkAssistant(mongo_db)
 
 app = FastAPI(title="Homework Assistant API")
 
@@ -91,6 +93,17 @@ class UploadResponse(BaseModel):
     uploaded_at: str
 
 
+class AssistRequest(BaseModel):
+    homework_id: str
+    question: str
+
+
+class AssistResponse(BaseModel):
+    response: str
+    homework_id: str
+    timestamp: str
+
+
 # ============================================================================
 # Health Check
 # ============================================================================
@@ -152,6 +165,55 @@ async def upload_homework(
     except Exception as e:
         logger.error(f"[HOMEWORK] Error in upload_homework: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
+
+
+# ============================================================================
+# Homework Assistance Endpoint
+# ============================================================================
+
+@app.post("/homework/assist", response_model=AssistResponse, status_code=200)
+async def homework_assist(
+    http_request: Request,
+    request: AssistRequest
+):
+    """
+    Get AI assistance for homework questions
+
+    Ask questions about uploaded homework and receive AI-powered guidance.
+    Maintains conversation history for follow-up questions.
+
+    Args:
+        request: AssistRequest with homework_id and question
+
+    Returns:
+        AssistResponse with AI response, homework_id, and timestamp
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        # Get AI response
+        result = homework_assistant.ask_question(
+            homework_id=request.homework_id,
+            user_id=user_id,
+            question=request.question
+        )
+
+        # Check for errors
+        if "error" in result and result["error"]:
+            if "not found" in result["error"].lower():
+                raise HTTPException(status_code=404, detail=result["error"])
+            else:
+                raise HTTPException(status_code=500, detail=result["error"])
+
+        logger.info(f"[HOMEWORK] Provided assistance for {request.homework_id} by user {user_id}")
+
+        return AssistResponse(**result)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[HOMEWORK] Error in homework_assist: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to process question: {str(e)}")
 
 
 # ============================================================================
