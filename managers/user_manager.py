@@ -85,6 +85,10 @@ class UserProfile:
     current_grade: str = "K"  # Calculated from age
     earned_badges: List[str] = field(default_factory=list)  # List of earned badge IDs
     badge_progress: Dict = field(default_factory=dict)  # Progress toward earning badges
+    current_streak: int = 0  # Current daily streak
+    longest_streak: int = 0  # Longest streak achieved
+    last_practice_date: Optional[str] = None  # Last practice date (YYYY-MM-DD)
+    streak_history: List = field(default_factory=list)  # History of streak milestones
     
     def to_dict(self):
         result = {
@@ -97,7 +101,11 @@ class UserProfile:
             'age': self.age,
             'current_grade': self.current_grade,
             'earned_badges': self.earned_badges,
-            'badge_progress': self.badge_progress
+            'badge_progress': self.badge_progress,
+            'current_streak': self.current_streak,
+            'longest_streak': self.longest_streak,
+            'last_practice_date': self.last_practice_date,
+            'streak_history': self.streak_history
         }
         # Include preloaded_question_ids if it exists (for MongoDB storage)
         if hasattr(self, 'preloaded_question_ids'):
@@ -119,7 +127,11 @@ class UserProfile:
             age=data.get('age', 5),
             current_grade=data.get('current_grade', 'K'),
             earned_badges=data.get('earned_badges', []),
-            badge_progress=data.get('badge_progress', {})
+            badge_progress=data.get('badge_progress', {}),
+            current_streak=data.get('current_streak', 0),
+            longest_streak=data.get('longest_streak', 0),
+            last_practice_date=data.get('last_practice_date', None),
+            streak_history=data.get('streak_history', [])
         )
         # Handle preloaded_question_ids if present (optional field)
         if 'preloaded_question_ids' in data:
@@ -601,7 +613,7 @@ class UserManager:
         """Update last login timestamp"""
         if not self.use_mongodb or not self.mongo:
             return
-        
+
         try:
             self.mongo.users.update_one(
                 {"user_id": user_id},
@@ -609,3 +621,82 @@ class UserManager:
             )
         except Exception as e:
             logger.error(f"[ERROR] Error updating last login for {user_id}: {e}")
+
+    def update_streak(self, user_profile: UserProfile) -> Dict[str, int]:
+        """
+        Update user's daily streak based on practice activity.
+
+        Logic:
+        - If practicing today for the first time, check continuity
+        - If last practice was yesterday, increment streak
+        - If last practice was today, no change (already counted)
+        - If last practice was >1 day ago (or never), reset to 1
+        - Update longest_streak if current_streak exceeds it
+
+        Args:
+            user_profile: User profile to update
+
+        Returns:
+            Dict with streak info: {'current_streak': int, 'longest_streak': int, 'streak_updated': bool}
+        """
+        from datetime import datetime, timedelta
+
+        # Get today's date in YYYY-MM-DD format
+        today = datetime.now().strftime('%Y-%m-%d')
+
+        # Initialize result
+        result = {
+            'current_streak': user_profile.current_streak,
+            'longest_streak': user_profile.longest_streak,
+            'streak_updated': False
+        }
+
+        # If already practiced today, no update needed
+        if user_profile.last_practice_date == today:
+            logger.info(f"[STREAK] User {user_profile.user_id} already practiced today, streak unchanged: {user_profile.current_streak}")
+            return result
+
+        # Calculate yesterday's date
+        yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+
+        # Update streak based on last practice date
+        if user_profile.last_practice_date is None:
+            # First time practicing - start streak
+            user_profile.current_streak = 1
+            logger.info(f"[STREAK] User {user_profile.user_id} started new streak: 1")
+        elif user_profile.last_practice_date == yesterday:
+            # Consecutive day - increment streak
+            user_profile.current_streak += 1
+            logger.info(f"[STREAK] User {user_profile.user_id} continued streak: {user_profile.current_streak}")
+        else:
+            # Gap in practice - reset streak
+            user_profile.current_streak = 1
+            logger.info(f"[STREAK] User {user_profile.user_id} broke streak, resetting to: 1")
+
+        # Update longest streak if current exceeds it
+        if user_profile.current_streak > user_profile.longest_streak:
+            user_profile.longest_streak = user_profile.current_streak
+            logger.info(f"[STREAK] User {user_profile.user_id} new longest streak: {user_profile.longest_streak}")
+
+            # Add milestone to streak history
+            milestone = {
+                'date': today,
+                'streak': user_profile.longest_streak,
+                'timestamp': time.time()
+            }
+            user_profile.streak_history.append(milestone)
+
+        # Update last practice date
+        user_profile.last_practice_date = today
+
+        # Prepare result
+        result = {
+            'current_streak': user_profile.current_streak,
+            'longest_streak': user_profile.longest_streak,
+            'streak_updated': True
+        }
+
+        # Save updated profile
+        self.save_user(user_profile)
+
+        return result

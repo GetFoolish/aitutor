@@ -38,6 +38,8 @@ import {
 } from "@/components/ui/avatar";
 import { useEarnedBadges } from "@/hooks/query-hooks/useBadges";
 import BadgesDialog from "@/components/badges/BadgesDialog";
+import StreakDisplay from "@/components/streak/StreakDisplay";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface HeaderProps {
     sidebarOpen: boolean;
@@ -48,6 +50,7 @@ interface HeaderProps {
 
 export default function Header({ sidebarOpen, onToggleSidebar, isDeveloperMode, onToggleDeveloperMode }: HeaderProps) {
     const { theme, setTheme } = useTheme();
+    const { user } = useAuth();
     const [isDarkMode, setIsDarkMode] = useState(false);
 
     // Fetch earned badges (backend extracts user_id from JWT token)
@@ -99,6 +102,8 @@ export default function Header({ sidebarOpen, onToggleSidebar, isDeveloperMode, 
 
             {/* Right side - Actions */}
             <div className="flex items-center gap-1.5 md:gap-2">
+                {user && <StreakDisplay userId={user.user_id} />}
+
                 <Button
                     type="button"
                     variant="ghost"

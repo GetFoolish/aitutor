@@ -745,6 +745,63 @@ def check_badges(request: Request):
         "total_earned_count": len(getattr(user_profile, 'earned_badges', []))
     }
 
+# ===== STREAK ENDPOINTS =====
+@app.get("/api/streak")
+def get_streak(request: Request):
+    """
+    Get current streak information for the user.
+    Returns current streak count, longest streak, last practice date, and streak history.
+    """
+    ensure_dash_system()
+    user_id = get_current_user(request)
+
+    user_profile = dash_system.load_user_or_create(user_id)
+    if not user_profile:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    logger.info(f"[STREAK] Getting streak info for user {user_id}: current={user_profile.current_streak}, longest={user_profile.longest_streak}")
+
+    return {
+        "current_streak": user_profile.current_streak,
+        "longest_streak": user_profile.longest_streak,
+        "last_practice_date": user_profile.last_practice_date,
+        "streak_history": user_profile.streak_history
+    }
+
+@app.get("/api/streak/calendar")
+def get_streak_calendar(request: Request):
+    """
+    Get practice calendar data for the past 30 days.
+    Returns a list of practice dates in ISO format.
+    """
+    ensure_dash_system()
+    user_id = get_current_user(request)
+
+    user_profile = dash_system.load_user_or_create(user_id)
+    if not user_profile:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    from datetime import datetime, timedelta
+
+    today = datetime.utcnow().date()
+    thirty_days_ago = today - timedelta(days=30)
+
+    practice_dates = []
+    for date_str in user_profile.streak_history:
+        try:
+            practice_date = datetime.fromisoformat(date_str).date()
+            if practice_date >= thirty_days_ago:
+                practice_dates.append(date_str)
+        except (ValueError, AttributeError) as e:
+            logger.warning(f"[STREAK_CALENDAR] Invalid date format in streak_history: {date_str}")
+            continue
+
+    logger.info(f"[STREAK_CALENDAR] Returning {len(practice_dates)} practice dates for user {user_id}")
+
+    return {
+        "practice_dates": practice_dates
+    }
+
 @app.post("/api/questions/recommend-next", response_model=List[PerseusQuestion])
 def recommend_next_questions(request: Request, req: RecommendNextRequest):
     """
