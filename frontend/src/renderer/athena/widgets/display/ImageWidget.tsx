@@ -426,15 +426,22 @@ export function ImageWidget({
               imageUrl.toLowerCase().includes('perseus') ||
               imageUrl.includes('fixed_graphs') ||
               (options.alt && options.alt.toLowerCase().includes('graph'))) &&
-              // EXCLUDE beavers/castors from inversion fix
-              !(options.alt && (
-                options.alt.toLowerCase().includes('beaver') ||
-                options.alt.toLowerCase().includes('castor') ||
-                options.alt.toLowerCase().includes('samurai') ||
-                options.alt.toLowerCase().includes('photograph') ||
-                options.alt.toLowerCase().includes('forest') ||
+              // EXCLUDE photographs and natural images from inversion fix
+              !(
+                (imageUrl.toLowerCase().match(/\.jpe?g($|\?)/)) ||
+                (options.alt && (
+                  options.alt.toLowerCase().includes('beaver') ||
+                  options.alt.toLowerCase().includes('castor') ||
+                  options.alt.toLowerCase().includes('samurai') ||
+                  options.alt.toLowerCase().includes('photograph') ||
+                  options.alt.toLowerCase().includes('photo') ||
+                  options.alt.toLowerCase().includes('forest') ||
+                  options.alt.toLowerCase().includes('star') ||
+                  options.alt.toLowerCase().includes('sky') ||
+                  options.alt.toLowerCase().includes('night')
+                )) ||
                 imageUrl.includes('question_69324cd9_forest')
-              ))
+              )
               ? 'target-graph-fix'
               : ''
               }`}
