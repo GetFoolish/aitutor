@@ -119,6 +119,7 @@ const HomeworkUpload = React.forwardRef<HTMLDivElement, HomeworkUploadProps>(
 
       setIsUploading(true)
       setUploadProgress(0)
+      setError(null) // Clear any previous errors
 
       try {
         // Simulate upload progress
@@ -147,7 +148,14 @@ const HomeworkUpload = React.forwardRef<HTMLDivElement, HomeworkUploadProps>(
           }
         }, 1000)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Upload failed. Please try again.')
+        // Display user-friendly error message
+        let errorMessage = 'Upload failed. Please try again.'
+
+        if (err instanceof Error) {
+          errorMessage = err.message
+        }
+
+        setError(errorMessage)
         setIsUploading(false)
         setUploadProgress(0)
       }
@@ -250,10 +258,27 @@ const HomeworkUpload = React.forwardRef<HTMLDivElement, HomeworkUploadProps>(
         )}
 
         {error && (
-          <div className="p-3 rounded-lg border-[3px] border-destructive bg-destructive/10">
-            <p className="text-sm text-destructive font-medium">
-              {error}
-            </p>
+          <div className="p-4 rounded-lg border-[3px] border-destructive bg-destructive/10 shadow-[2px_2px_0_0] shadow-destructive/50">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-0.5">
+                <X className="h-5 w-5 text-destructive" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-destructive font-semibold mb-1">
+                  Error
+                </p>
+                <p className="text-sm text-destructive">
+                  {error}
+                </p>
+              </div>
+              <button
+                onClick={() => setError(null)}
+                className="flex-shrink-0 text-destructive hover:text-destructive/80 transition-colors"
+                aria-label="Dismiss error"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         )}
       </div>

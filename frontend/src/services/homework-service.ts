@@ -116,15 +116,36 @@ export class HomeworkService {
       });
 
       if (!response.ok) {
+        // Handle different error status codes with user-friendly messages
+        if (response.status === 413) {
+          throw new Error('File size exceeds server limit. Please upload a file smaller than 10MB.');
+        }
+        if (response.status === 415) {
+          throw new Error('Unsupported file type. Please upload PDF, JPG, PNG, DOCX, or TXT files.');
+        }
+        if (response.status === 401 || response.status === 403) {
+          throw new Error('Authentication required. Please sign in and try again.');
+        }
+        if (response.status === 503) {
+          throw new Error('Service temporarily unavailable. Please try again in a few moments.');
+        }
+        if (response.status >= 500) {
+          throw new Error('Server error occurred. Please try again later.');
+        }
+
         const errorData = await response.json().catch(() => ({ detail: 'Upload failed' }));
         throw new Error(errorData.detail || `Upload failed with status ${response.status}`);
       }
 
       const data: UploadResponse = await response.json();
-      console.log(`Homework uploaded successfully: ${data.homework_id}`);
       return data;
     } catch (error) {
-      console.error('Error uploading homework:', error);
+      // Handle network errors separately from API errors
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error. Please check your internet connection and try again.');
+      }
+
+      // Re-throw other errors (including our custom error messages)
       throw error;
     }
   }
@@ -143,15 +164,27 @@ export class HomeworkService {
       const response = await apiUtils.get(`${HOMEWORK_SERVICE_URL}/homework/list`);
 
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          throw new Error('Authentication required. Please sign in and try again.');
+        }
+        if (response.status === 503) {
+          throw new Error('Service temporarily unavailable. Please try again in a few moments.');
+        }
+        if (response.status >= 500) {
+          throw new Error('Server error occurred. Please try again later.');
+        }
+
         const errorData = await response.json().catch(() => ({ detail: 'Failed to list homework' }));
         throw new Error(errorData.detail || `Request failed with status ${response.status}`);
       }
 
       const data: HomeworkListResponse = await response.json();
-      console.log(`Retrieved ${data.total} homework items`);
       return data;
     } catch (error) {
-      console.error('Error listing homework:', error);
+      // Handle network errors
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error. Please check your internet connection and try again.');
+      }
       throw error;
     }
   }
@@ -171,17 +204,29 @@ export class HomeworkService {
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error('Homework not found');
+          throw new Error('Homework not found. It may have been deleted.');
         }
+        if (response.status === 401 || response.status === 403) {
+          throw new Error('Authentication required. Please sign in and try again.');
+        }
+        if (response.status === 503) {
+          throw new Error('Service temporarily unavailable. Please try again in a few moments.');
+        }
+        if (response.status >= 500) {
+          throw new Error('Server error occurred. Please try again later.');
+        }
+
         const errorData = await response.json().catch(() => ({ detail: 'Failed to retrieve homework' }));
         throw new Error(errorData.detail || `Request failed with status ${response.status}`);
       }
 
       const data: HomeworkDetailResponse = await response.json();
-      console.log(`Retrieved homework details for ${homeworkId}`);
       return data;
     } catch (error) {
-      console.error('Error getting homework details:', error);
+      // Handle network errors
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error. Please check your internet connection and try again.');
+      }
       throw error;
     }
   }
@@ -208,17 +253,29 @@ export class HomeworkService {
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error('Homework not found');
+          throw new Error('Homework not found. It may have been deleted.');
         }
+        if (response.status === 401 || response.status === 403) {
+          throw new Error('Authentication required. Please sign in and try again.');
+        }
+        if (response.status === 503) {
+          throw new Error('AI service temporarily unavailable. Please try again in a few moments.');
+        }
+        if (response.status >= 500) {
+          throw new Error('Server error occurred. Please try again later.');
+        }
+
         const errorData = await response.json().catch(() => ({ detail: 'Failed to get assistance' }));
         throw new Error(errorData.detail || `Request failed with status ${response.status}`);
       }
 
       const data: AssistResponse = await response.json();
-      console.log(`Received AI assistance for homework ${homeworkId}`);
       return data;
     } catch (error) {
-      console.error('Error asking question:', error);
+      // Handle network errors
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error. Please check your internet connection and try again.');
+      }
       throw error;
     }
   }
@@ -240,17 +297,29 @@ export class HomeworkService {
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error('Homework not found');
+          throw new Error('Homework not found. It may have already been deleted.');
         }
+        if (response.status === 401 || response.status === 403) {
+          throw new Error('Authentication required. Please sign in and try again.');
+        }
+        if (response.status === 503) {
+          throw new Error('Service temporarily unavailable. Please try again in a few moments.');
+        }
+        if (response.status >= 500) {
+          throw new Error('Server error occurred. Please try again later.');
+        }
+
         const errorData = await response.json().catch(() => ({ detail: 'Failed to delete homework' }));
         throw new Error(errorData.detail || `Request failed with status ${response.status}`);
       }
 
       const data: DeleteResponse = await response.json();
-      console.log(`Homework ${homeworkId} deleted successfully`);
       return data;
     } catch (error) {
-      console.error('Error deleting homework:', error);
+      // Handle network errors
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error. Please check your internet connection and try again.');
+      }
       throw error;
     }
   }
@@ -273,7 +342,16 @@ export class HomeworkService {
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new Error('File not found');
+          throw new Error('File not found. It may have been deleted.');
+        }
+        if (response.status === 401 || response.status === 403) {
+          throw new Error('Authentication required. Please sign in and try again.');
+        }
+        if (response.status === 503) {
+          throw new Error('Service temporarily unavailable. Please try again in a few moments.');
+        }
+        if (response.status >= 500) {
+          throw new Error('Server error occurred. Please try again later.');
         }
         throw new Error(`Failed to fetch file: ${response.status}`);
       }
@@ -281,7 +359,10 @@ export class HomeworkService {
       const blob = await response.blob();
       return blob;
     } catch (error) {
-      console.error('Error fetching file:', error);
+      // Handle network errors
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error. Please check your internet connection and try again.');
+      }
       throw error;
     }
   }
