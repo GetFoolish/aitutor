@@ -14,13 +14,20 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Trash2 } from "lucide-react";
+import { useLiveKit } from "../../features/livekit";
+import { useAIDrawing } from "../../hooks/useAIDrawing";
 
 /**
  * A full-featured whiteboard using tldraw.
  * Modern, reliable canvas for math work and drawing.
+ * AI tutor can draw on this canvas to explain concepts.
  */
 const Scratchpad = () => {
   const [editor, setEditor] = useState<Editor | null>(null);
+  const { room } = useLiveKit();
+
+  // Hook for AI drawing commands
+  const { clearAIDrawings } = useAIDrawing(editor, room);
 
   const handleMount = useCallback((editor: Editor) => {
     setEditor(editor);

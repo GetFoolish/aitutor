@@ -77,14 +77,14 @@ export default function Header({ sidebarOpen, onToggleSidebar, isDeveloperMode, 
 
     return (
         <header className="fixed top-0 left-0 right-0 h-[44px] lg:h-[48px] bg-[#FFFDF5] dark:bg-[#000000] border-b-[3px] lg:border-b-[4px] border-black dark:border-white z-40 flex items-center justify-between px-2 md:px-4 lg:px-5 shadow-[0_2px_0_0_rgba(0,0,0,1)] lg:shadow-[0_2px_0_0_rgba(0,0,0,1)] dark:shadow-[0_2px_0_0_rgba(255,255,255,0.3)]">
-            {/* Left side - Logo */}
-            <div className="flex items-center gap-1.5 md:gap-2 group cursor-pointer">
+            {/* Left side - Logo - Click to go home */}
+            <Link to="/" className="flex items-center gap-1.5 md:gap-2 group cursor-pointer">
                 <img
                     src={logoSource}
                     alt="teachr"
                     className="h-7 md:h-8 lg:h-9 w-auto group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform duration-100"
                 />
-            </div>
+            </Link>
 
             {/* Right side - Actions */}
             <div className="flex items-center gap-1.5 md:gap-2">
