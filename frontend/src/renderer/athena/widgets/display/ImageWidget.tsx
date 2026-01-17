@@ -441,22 +441,7 @@ export function ImageWidget({
               !(
                 (imageUrl.toLowerCase().match(/\.jpe?g($|\?)/)) ||
                 (options.alt && (
-                  options.alt.toLowerCase().includes('beaver') ||
-                  options.alt.toLowerCase().includes('castor') ||
-                  options.alt.toLowerCase().includes('samurai') ||
-                  options.alt.toLowerCase().includes('photograph') ||
-                  options.alt.toLowerCase().includes('photo') ||
-                  options.alt.toLowerCase().includes('forest') ||
-                  options.alt.toLowerCase().includes('star') ||
-                  options.alt.toLowerCase().includes('sky') ||
-                  options.alt.toLowerCase().includes('night') ||
-                  options.alt.toLowerCase().includes('banana') ||
-                  options.alt.toLowerCase().includes('fruit') ||
-                  options.alt.toLowerCase().includes('apple') ||
-                  options.alt.toLowerCase().includes('orange') ||
-                  options.alt.toLowerCase().includes('pear') ||
-                  options.alt.toLowerCase().includes('grape') ||
-                  options.alt.toLowerCase().includes('strawberry')
+                  /\b(beaver|castor|samurai|photograph|photo|forest|star|sky|night|banana|fruit|apple|orange|pear|grape|strawberry)\b/i.test(options.alt)
                 )) ||
                 imageUrl.includes('question_69324cd9_forest')
               )
