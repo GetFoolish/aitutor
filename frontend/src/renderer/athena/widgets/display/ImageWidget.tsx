@@ -440,7 +440,12 @@ export function ImageWidget({
                   options.alt.toLowerCase().includes('sky') ||
                   options.alt.toLowerCase().includes('night') ||
                   options.alt.toLowerCase().includes('banana') ||
-                  options.alt.toLowerCase().includes('fruit')
+                  options.alt.toLowerCase().includes('fruit') ||
+                  options.alt.toLowerCase().includes('apple') ||
+                  options.alt.toLowerCase().includes('orange') ||
+                  options.alt.toLowerCase().includes('pear') ||
+                  options.alt.toLowerCase().includes('grape') ||
+                  options.alt.toLowerCase().includes('strawberry')
                 )) ||
                 imageUrl.includes('question_69324cd9_forest')
               )

@@ -272,7 +272,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
   // We want to invert diagrams (charts, graphs) but NOT realistic illustrations (eggs, pizzas, etc.)
   const shouldSkipInversion = useMemo(() => {
     const lowerAlt = alt.toLowerCase();
-    const skipKeywords = ['egg', 'oeuf', 'pizza', 'apple', 'fruit', 'animal', 'bread', 'pain', 'pomme', 'acorn', 'gland'];
+    const skipKeywords = ['egg', 'oeuf', 'pizza', 'apple', 'fruit', 'animal', 'bread', 'pain', 'pomme', 'acorn', 'gland', 'banana', 'grape', 'orange', 'pear', 'strawberry'];
     return skipKeywords.some(keyword => lowerAlt.includes(keyword));
   }, [alt]);
 
@@ -1107,7 +1107,15 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       alt.toLowerCase().includes('beaver') ||
       alt.toLowerCase().includes('castor') ||
       alt.toLowerCase().includes('samurai') ||
-      alt.toLowerCase().includes('photograph')
+      alt.toLowerCase().includes('photograph') ||
+      alt.toLowerCase().includes('banana') ||
+      alt.toLowerCase().includes('grape') ||
+      alt.toLowerCase().includes('orange') ||
+      alt.toLowerCase().includes('pear') ||
+      alt.toLowerCase().includes('strawberry') ||
+      alt.toLowerCase().includes('apple') ||
+      alt.toLowerCase().includes('pomme') ||
+      alt.toLowerCase().includes('fruit')
     ));
 
   // Determine filter class: force light (no filter) if it's illustrative, otherwise follow dark mode
