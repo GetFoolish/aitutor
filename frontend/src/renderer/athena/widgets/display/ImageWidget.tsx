@@ -438,7 +438,9 @@ export function ImageWidget({
                   options.alt.toLowerCase().includes('forest') ||
                   options.alt.toLowerCase().includes('star') ||
                   options.alt.toLowerCase().includes('sky') ||
-                  options.alt.toLowerCase().includes('night')
+                  options.alt.toLowerCase().includes('night') ||
+                  options.alt.toLowerCase().includes('banana') ||
+                  options.alt.toLowerCase().includes('fruit')
                 )) ||
                 imageUrl.includes('question_69324cd9_forest')
               )
