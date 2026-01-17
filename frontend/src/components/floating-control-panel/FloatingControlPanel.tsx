@@ -686,84 +686,129 @@ function FloatingControlPanel({
       )}
 
       {isCollapsed ? (
-        // COLLAPSED VIEW - Minimal
+        // COLLAPSED VIEW - Neo-brutalist style
         <div className="flex flex-col items-center gap-1">
-          <button
-            onClick={handleCollapse}
-            className="w-7 h-7 rounded hover:bg-gray-100 dark:hover:bg-neutral-800 flex items-center justify-center text-gray-500"
-            title="Expand"
-          >
-            <Home className="w-3.5 h-3.5" />
-          </button>
-
           {/* Start/End Session Button */}
           <button
             onClick={handleConnect}
             className={cn(
-              "w-8 h-8 rounded-lg flex items-center justify-center transition-all",
+              "w-9 h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] active:translate-x-1 active:translate-y-1 active:shadow-none relative",
               liveKitConnected
-                ? "bg-red-500 hover:bg-red-600 text-white"
-                : "bg-[#4ADE80] hover:bg-[#22C55E] text-black",
+                ? "bg-[#FF6B6B] hover:bg-[#FF6B6B] text-white"
+                : "bg-[#4ADE80] hover:bg-[#4ADE80] text-black",
             )}
-            title={liveKitConnected ? "End" : "Start"}
+            title={liveKitConnected ? "End Session" : "Start Session"}
           >
             {liveKitConnected ? (
-              <StopCircle className="w-4 h-4" />
+              <div className="w-3 h-3 bg-white border-2 border-black" />
             ) : (
-              <PlayCircle className="w-4 h-4" />
+              <PlayCircle className="w-5 h-5" />
+            )}
+            {liveKitConnected && (
+              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#FFD93D] border-2 border-black animate-pulse" />
             )}
           </button>
 
-          <div className="w-5 h-px bg-gray-200 dark:bg-neutral-700 my-0.5" />
+          <div className="w-7 h-[2px] bg-black dark:bg-white my-0.5" />
 
           <button
             onClick={handleMute}
             className={cn(
-              "w-7 h-7 rounded flex items-center justify-center transition-colors",
+              "w-8 h-8 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
               muted
-                ? "bg-red-100 text-red-600 dark:bg-red-900/30"
-                : "hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-600 dark:text-gray-400",
+                ? "bg-[#FF6B6B] text-white"
+                : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
             )}
             title={muted ? "Unmute" : "Mute"}
           >
-            {muted ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+            {muted ? <MicOff className="w-3.5 h-3.5 font-bold" /> : <Mic className="w-3.5 h-3.5 font-bold" />}
+          </button>
+
+          {supportsVideo && (
+            <button
+              onClick={() => onToggleCamera(!cameraEnabled)}
+              className={cn(
+                "w-8 h-8 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
+                cameraEnabled
+                  ? "bg-[#C4B5FD] text-black"
+                  : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
+              )}
+              title="Toggle Camera"
+            >
+              {cameraEnabled ? <Video className="w-3.5 h-3.5 font-bold" /> : <VideoOff className="w-3.5 h-3.5 font-bold" />}
+            </button>
+          )}
+
+          {supportsVideo && (
+            <button
+              onClick={() => onToggleScreen(!screenEnabled)}
+              className={cn(
+                "w-8 h-8 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
+                screenEnabled
+                  ? "bg-[#FFD93D] text-black"
+                  : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
+              )}
+              title="Share Screen"
+            >
+              {screenEnabled ? <Monitor className="w-3.5 h-3.5 font-bold" /> : <MonitorOff className="w-3.5 h-3.5 font-bold" />}
+            </button>
+          )}
+
+          <div className="w-7 h-[2px] bg-black dark:bg-white my-0.5" />
+
+          <button
+            onClick={onPaintClick}
+            className={cn(
+              "w-8 h-8 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
+              isPaintActive
+                ? "bg-[#FFD93D] text-black"
+                : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
+            )}
+            title="Canvas"
+          >
+            <PenTool className="w-3.5 h-3.5 font-bold" />
           </button>
 
           <button
             onClick={toggleSharedMedia}
             className={cn(
-              "w-7 h-7 rounded flex items-center justify-center transition-colors",
+              "w-8 h-8 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
               sharedMediaOpen
-                ? "bg-[#C4B5FD]/30 text-[#7C3AED]"
-                : "hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-600 dark:text-gray-400",
+                ? "bg-[#C4B5FD] text-black"
+                : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#C4B5FD] border-black dark:border-white",
             )}
             title="View"
           >
-            <Eye className="w-3.5 h-3.5" />
+            <Eye className="w-3.5 h-3.5 font-bold" />
           </button>
 
-          {liveKitConnected && (
-            <span className="text-[8px] font-mono text-gray-400 mt-0.5">
-              {formatTime(sessionTime)}
-            </span>
-          )}
+          <div
+            className={cn(
+              "w-10 h-8 flex items-center justify-center text-[9px] font-mono font-black mt-1 transition-colors border-[2px] border-black",
+              liveKitConnected
+                ? "bg-[#FFD93D] text-black"
+                : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white border-black dark:border-white",
+            )}
+          >
+            {liveKitConnected ? formatTime(sessionTime) : "--:--"}
+          </div>
         </div>
       ) : (
-        // EXPANDED VIEW - Clean & Compact
-        <div className="flex flex-col gap-2">
+        // EXPANDED VIEW - Full Controls
+        <div className="flex flex-col gap-1.5">
           {/* Main Action Button */}
           <button
             onClick={handleConnect}
             className={cn(
-              "w-full py-2 rounded-lg font-semibold text-[11px] transition-all flex items-center justify-center gap-1.5",
+              "w-full py-2 font-black text-[10px] transition-all flex items-center justify-center gap-1.5 border-[2px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none uppercase",
               liveKitConnected
-                ? "bg-red-500 hover:bg-red-600 text-white"
-                : "bg-[#4ADE80] hover:bg-[#22C55E] text-black",
+                ? "bg-[#FF6B6B] hover:bg-[#FF6B6B] text-black"
+                : "bg-[#4ADE80] hover:bg-[#4ADE80] text-black",
             )}
           >
             {liveKitConnected ? (
               <>
-                <StopCircle className="w-3.5 h-3.5" />
+                <div className="w-2.5 h-2.5 bg-white border-2 border-black" />
                 End Session
               </>
             ) : (
@@ -774,54 +819,133 @@ function FloatingControlPanel({
             )}
           </button>
 
-          {/* Bottom Actions - Icon row */}
-          <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-neutral-700">
+          {/* Control Grid - 2 columns */}
+          <div className="grid grid-cols-2 gap-1.5 pt-1.5 border-t border-gray-200 dark:border-neutral-700">
+            {/* Microphone */}
             <button
               onClick={handleMute}
               className={cn(
-                "w-8 h-8 rounded flex items-center justify-center transition-colors",
+                "flex items-center gap-1.5 p-1.5 border-[2px] border-black dark:border-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5",
                 muted
-                  ? "bg-red-100 text-red-600 dark:bg-red-900/30"
-                  : "hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-600 dark:text-gray-400",
+                  ? "bg-[#FF6B6B] text-white"
+                  : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#C4B5FD]",
               )}
               title={muted ? "Unmute" : "Mute"}
             >
-              {muted ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              {muted ? <MicOff className="w-3 h-3" /> : <Mic className="w-3 h-3" />}
+              <span className="text-[8px] font-black uppercase">{muted ? "Muted" : "Mic"}</span>
             </button>
 
+            {/* Camera */}
+            {supportsVideo && (
+              <button
+                onClick={() => onToggleCamera(!cameraEnabled)}
+                className={cn(
+                  "flex items-center gap-1.5 p-1.5 border-[2px] border-black dark:border-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5",
+                  cameraEnabled
+                    ? "bg-[#C4B5FD] text-black"
+                    : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#C4B5FD]",
+                )}
+                title="Toggle Camera"
+              >
+                {cameraEnabled ? <Video className="w-3 h-3" /> : <VideoOff className="w-3 h-3" />}
+                <span className="text-[8px] font-black uppercase">Cam</span>
+              </button>
+            )}
+
+            {/* Screen Share */}
+            {supportsVideo && (
+              <button
+                onClick={() => onToggleScreen(!screenEnabled)}
+                className={cn(
+                  "flex items-center gap-1.5 p-1.5 border-[2px] border-black dark:border-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5",
+                  screenEnabled
+                    ? "bg-[#FFD93D] text-black"
+                    : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D]",
+                )}
+                title="Share Screen"
+              >
+                {screenEnabled ? <Monitor className="w-3 h-3" /> : <MonitorOff className="w-3 h-3" />}
+                <span className="text-[8px] font-black uppercase">Screen</span>
+              </button>
+            )}
+
+            {/* Privacy Toggle */}
+            {supportsVideo && cameraEnabled && onTogglePrivacy && (
+              <button
+                onClick={() => onTogglePrivacy(!privacyEnabled)}
+                className={cn(
+                  "flex items-center gap-1.5 p-1.5 border-[2px] border-black dark:border-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5",
+                  privacyEnabled
+                    ? "bg-[#FF6B6B] text-white"
+                    : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FF6B6B]",
+                )}
+                title={privacyEnabled ? "Disable Privacy" : "Enable Privacy"}
+              >
+                <VenetianMask className="w-3 h-3" />
+                <span className="text-[8px] font-black uppercase">Privacy</span>
+              </button>
+            )}
+
+            {/* Canvas/Paint */}
+            <button
+              onClick={onPaintClick}
+              className={cn(
+                "flex items-center gap-1.5 p-1.5 border-[2px] border-black dark:border-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5",
+                isPaintActive
+                  ? "bg-[#FFD93D] text-black"
+                  : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D]",
+              )}
+              title="Canvas"
+            >
+              <PenTool className="w-3 h-3" />
+              <span className="text-[8px] font-black uppercase">Canvas</span>
+            </button>
+
+            {/* View Media */}
             <button
               onClick={toggleSharedMedia}
               className={cn(
-                "w-8 h-8 rounded flex items-center justify-center transition-colors",
+                "flex items-center gap-1.5 p-1.5 border-[2px] border-black dark:border-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5",
                 sharedMediaOpen
-                  ? "bg-[#C4B5FD]/30 text-[#7C3AED]"
-                  : "hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-600 dark:text-gray-400",
+                  ? "bg-[#C4B5FD] text-black"
+                  : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#C4B5FD]",
               )}
-              title="View"
+              title="View Media"
             >
-              <Eye className="w-4 h-4" />
+              <Eye className="w-3 h-3" />
+              <span className="text-[8px] font-black uppercase">View</span>
             </button>
 
+            {/* Settings */}
             {enableEditingSettings && (
               <SettingsDialog
-                className="w-8"
+                className="!h-auto !block"
                 trigger={
                   <button
-                    className="w-8 h-8 rounded flex items-center justify-center hover:bg-gray-100 dark:hover:bg-neutral-800 text-gray-600 dark:text-gray-400 transition-colors"
+                    className="flex items-center gap-1.5 p-1.5 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FF6B6B] text-black dark:text-white hover:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
                     title="Settings"
                   >
-                    <Settings className="w-4 h-4" />
+                    <Settings className="w-3 h-3" />
+                    <span className="text-[8px] font-black uppercase">Settings</span>
                   </button>
                 }
               />
             )}
-
-            {liveKitConnected && (
-              <span className="text-[10px] font-mono text-gray-400">
-                {formatTime(sessionTime)}
-              </span>
-            )}
           </div>
+
+          {/* Timer row */}
+          {liveKitConnected && (
+            <div className="flex justify-center pt-1.5 border-t border-gray-200 dark:border-neutral-700">
+              <div className={cn(
+                "flex items-center gap-1 px-2 py-1 border-[2px] border-black text-[9px] font-mono font-black",
+                "bg-[#FFD93D] text-black"
+              )}>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B6B] animate-pulse" />
+                {formatTime(sessionTime)}
+              </div>
+            </div>
+          )}
         </div>
       )
       }

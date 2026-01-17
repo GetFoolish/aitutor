@@ -21,6 +21,7 @@ from livekit.agents.llm import ChatContext, ChatMessage, ImageContent
 
 from prompts.system_prompt import load_system_prompt
 from tools.dash_tools import DashTools
+from tools.scratchpad_tools import ScratchpadTools
 
 
 class TutorAgent(Agent):
@@ -35,6 +36,8 @@ class TutorAgent(Agent):
         self._student_id: Optional[str] = None
         self._auth_token: Optional[str] = None
         self._dash_tools: Optional[DashTools] = None
+        self._scratchpad_tools: Optional[ScratchpadTools] = None
+        self._room: Optional[rtc.Room] = None
 
         # Load the Adam tutor system prompt
         system_instructions = load_system_prompt()

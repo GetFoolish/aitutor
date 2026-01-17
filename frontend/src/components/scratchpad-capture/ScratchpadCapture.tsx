@@ -24,28 +24,45 @@ const ScratchpadCapture: React.FC<ScratchpadCaptureProps> = ({ children, onFrame
       isCapturing = true;
       lastCaptureTime = now;
 
+      // Try to capture the scratchpad first (tldraw canvas), then fall back to question content
+      const scratchpadContainer = document.querySelector('.scratchpad-container') as HTMLElement;
       const questionContent = document.querySelector('#question-content-container') as HTMLElement;
 
-      if (questionContent) {
-        htmlToImage.toCanvas(questionContent, {
+      // Determine what to capture - prefer scratchpad if visible, otherwise question
+      const targetElement = scratchpadContainer || questionContent;
+
+      if (targetElement) {
+        htmlToImage.toCanvas(targetElement, {
           quality: 0.7,  // Reduced quality for better performance
           skipFonts: true,
           pixelRatio: 1.0,  // Reduced to 1x for much better performance
           cacheBust: false,  // Don't bust cache for better performance
+          filter: (node) => {
+            // Skip hidden elements and certain UI elements that shouldn't be captured
+            if (node instanceof Element) {
+              const tagName = node.tagName?.toLowerCase();
+              // Skip script, style, and some tldraw UI elements we don't need
+              if (tagName === 'script' || tagName === 'style') return false;
+            }
+            return true;
+          }
         })
           .then((canvas) => {
             // Resize canvas to 1280×720 section size
-            // We create a new canvas here because html-to-image gives us a new one anyway.
-            // Ideally we'd reuse a canvas for resizing to avoid GC, but let's keep it simple for now as it's 1 FPS.
-            // Optimization: Reuse a single canvas for resizing if this becomes a bottleneck.
             const resizedCanvas = document.createElement('canvas');
             resizedCanvas.width = 1280;
             resizedCanvas.height = 720;
             const resizedCtx = resizedCanvas.getContext('2d');
 
             if (resizedCtx) {
-              resizedCtx.drawImage(canvas, 0, 0, 1280, 720);
-              // Pass the canvas directly instead of ImageData
+              // Fill white background first
+              resizedCtx.fillStyle = 'white';
+              resizedCtx.fillRect(0, 0, 1280, 720);
+              // Draw captured content maintaining aspect ratio
+              const scale = Math.min(1280 / canvas.width, 720 / canvas.height);
+              const x = (1280 - canvas.width * scale) / 2;
+              const y = (720 - canvas.height * scale) / 2;
+              resizedCtx.drawImage(canvas, x, y, canvas.width * scale, canvas.height * scale);
               onFrameCaptured(resizedCanvas);
             }
           })
@@ -64,9 +81,9 @@ const ScratchpadCapture: React.FC<ScratchpadCaptureProps> = ({ children, onFrame
         if (ctx) {
           ctx.fillStyle = 'white';
           ctx.fillRect(0, 0, 1280, 720);
-          ctx.fillStyle = 'red';
+          ctx.fillStyle = 'gray';
           ctx.font = '24px Arial';
-          ctx.fillText('ERROR: #question-content-container not found!', 50, 100);
+          ctx.fillText('Waiting for content...', 50, 100);
 
           onFrameCaptured(canvas);
         }

@@ -22,10 +22,10 @@ code {
 }
 
 /* ============================================
-   SCRATCHPAD / EXCALIDRAW CANVAS STYLES
+   SCRATCHPAD / TLDRAW CANVAS STYLES
    ============================================ */
 
-/* Container for the Excalidraw whiteboard */
+/* Container for the tldraw whiteboard */
 .scratchpad-container {
   position: absolute;
   top: 0;
@@ -33,21 +33,26 @@ code {
   right: 0;
   bottom: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.98);
   border-radius: 8px;
   overflow: hidden;
 }
 
-/* Ensure Excalidraw fills its container */
+/* Ensure tldraw fills its container */
 .scratchpad-container > div {
   height: 100% !important;
   width: 100% !important;
 }
 
-/* Excalidraw canvas wrapper */
-.scratchpad-container .excalidraw {
+/* Tldraw canvas wrapper */
+.scratchpad-container .tl-container {
   height: 100% !important;
   width: 100% !important;
+}
+
+/* Hide tldraw watermark if present */
+.scratchpad-container .tl-watermark {
+  display: none !important;
 }
 
 /* Make question panel relative for absolute positioning of scratchpad */
