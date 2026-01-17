@@ -248,7 +248,20 @@ export function RadioWidget({
           imageUrl = imageUrl + '.png';
         }
         const isFixedGraph = imageUrl.includes('fixed_graphs');
-        const extraClass = isFixedGraph ? ' target-graph-fix' : '';
+        const isSvg = imageUrl.toLowerCase().includes('.svg');
+        const hasGraphKeywords = alt && (
+          alt.toLowerCase().includes('graph') ||
+          alt.toLowerCase().includes('diagram') ||
+          alt.toLowerCase().includes('drawing') ||
+          alt.toLowerCase().includes('figure') ||
+          alt.toLowerCase().includes('axis') ||
+          alt.toLowerCase().includes('axes') ||
+          alt.toLowerCase().includes('plot') ||
+          alt.toLowerCase().includes('coordinate') ||
+          alt.toLowerCase().includes('illustration')
+        );
+
+        const extraClass = (isFixedGraph || isSvg || hasGraphKeywords) ? ' target-graph-fix' : '';
 
         return `<img src="${imageUrl}" alt="${alt}" class="athena-choice-image${extraClass}" data-fallback-base="${url.replace('web+graphie://', 'https://').replace(/\.(png|svg)$/, '')}" style="max-width:100%;height:auto;display:block;margin:0.5rem 0;" referrerpolicy="no-referrer" />`;
       });
