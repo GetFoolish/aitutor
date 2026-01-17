@@ -52,8 +52,8 @@ def validate_jwt_secret(secret: str) -> tuple[bool, str]:
     return True, ""
 
 
-# Get JWT secret from environment
-_jwt_secret_raw = os.getenv("JWT_SECRET", "")
+# Get JWT secret from environment and strip whitespace/newlines
+_jwt_secret_raw = os.getenv("JWT_SECRET", "").strip()
 
 # Validate the secret
 is_valid, error_msg = validate_jwt_secret(_jwt_secret_raw)
@@ -80,5 +80,6 @@ if not is_valid:
         print("⚠️  WARNING: Running in development mode with weak JWT secret")
         print("⚠️  This is INSECURE and should NEVER be used in production!\n")
 
-JWT_SECRET = _jwt_secret_raw
+# Strip any whitespace/newlines to prevent signature verification failures
+JWT_SECRET = _jwt_secret_raw.strip()
 
