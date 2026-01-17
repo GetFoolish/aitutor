@@ -425,7 +425,13 @@ export function ImageWidget({
               imageUrl.toLowerCase().includes('graphie') ||
               imageUrl.toLowerCase().includes('perseus') ||
               imageUrl.includes('fixed_graphs') ||
-              (options.alt && options.alt.toLowerCase().includes('graph'))) &&
+              imageUrl.toLowerCase().endsWith('.svg') ||
+              (options.alt && (
+                options.alt.toLowerCase().includes('graph') ||
+                options.alt.toLowerCase().includes('diagram') ||
+                options.alt.toLowerCase().includes('drawing') ||
+                options.alt.toLowerCase().includes('figure')
+              ))) &&
               // EXCLUDE photographs and natural images from inversion fix
               !(
                 (imageUrl.toLowerCase().match(/\.jpe?g($|\?)/)) ||
