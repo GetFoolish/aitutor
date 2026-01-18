@@ -271,7 +271,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
   // Heuristic: Should we invert this image in dark mode?
   // We want to invert diagrams (charts, graphs) but NOT realistic illustrations (eggs, pizzas, etc.)
   const shouldSkipInversion = useMemo(() => {
-    const skipKeywordsRegex = /\b(egg|oeuf|pizza|apple|fruit|animal|bread|pain|pomme|acorn|gland|banana|grape|orange|pear|strawberry)\b/i;
+    const skipKeywordsRegex = /\b(egg|oeuf|pizza|apple|fruit|animal|bread|pain|pomme|acorn|gland|banana|grape|orange|pear|strawberry|rabbit|bunny|lapin)\b/i;
     return skipKeywordsRegex.test(alt);
   }, [alt]);
 
@@ -1103,7 +1103,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     baseUrl.includes('bb0459b2b58513d63d21f1fbf35dac7395a01783') || // Cows
     baseUrl.includes('e25b96c9d939310eaf88a2c23c34152d47f03cc1') || // Beavers
     (alt && (
-      /\b(beaver|castor|samurai|photograph|banana|grape|orange|pear|strawberry|apple|pomme|fruit)\b/i.test(alt)
+      /\b(beaver|castor|samurai|photograph|banana|grape|orange|pear|strawberry|apple|pomme|fruit|rabbit|bunny|lapin)\b/i.test(alt)
     ));
 
   // Determine filter class: force light (no filter) if it's illustrative, otherwise follow dark mode
