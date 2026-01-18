@@ -78,7 +78,10 @@ class TutorAgent(Agent):
             self._current_question = result.get("question")
             metadata = result.get("metadata", {})
 
-            # Inject question context into instructions
+            # Inject question context into instructions with correct answer for assessment
+            correct_answer = metadata.get('correct_answer', 'Unknown')
+            answer_type = metadata.get('answer_type', 'unknown')
+
             question_context = f"""
 
 === CURRENT QUESTION ===
@@ -87,9 +90,14 @@ The student is working on the following question:
 - Difficulty level: {metadata.get('difficulty', 'Unknown')}
 - Question ID: {metadata.get('dash_question_id', 'Unknown')}
 
-Focus your guidance on these specific skills. Remember to use the Socratic method -
-never give the answer directly, instead ask guiding questions to help the student
-discover the solution themselves.
+=== CORRECT ANSWER (FOR YOUR ASSESSMENT ONLY - DO NOT REVEAL) ===
+- Correct Answer: {correct_answer}
+- Answer Type: {answer_type}
+
+IMPORTANT: Use this correct answer to assess if the student's response is correct.
+- If student's answer MATCHES the correct answer → CELEBRATE! ("Excellent!", "That's right!", "Well done!")
+- If student's answer DOES NOT match → Guide gently without saying "wrong" ("Let's check that together...")
+- NEVER tell the student the answer directly - use the Socratic method to guide them.
 """
             # Update instructions with question context
             current_instructions = self.instructions or ""

@@ -18,6 +18,7 @@ import { useRef, useState, useEffect, Suspense, lazy } from "react";
 import "./App.scss";
 import "./styles/mobile-fixes.css"; // Mobile UI fixes
 import { TutorProvider } from "./features/tutor";
+import { LiveKitProvider, useLiveKit } from "./features/livekit";
 import AuthGuard from "./components/auth/AuthGuard";
 import AssessmentGuard from "./components/auth/AssessmentGuard";
 import Header from "./components/header/Header";
@@ -30,9 +31,13 @@ import { Toaster } from "@/components/ui/sonner";
 import { useMediaMixer } from "./hooks/useMediaMixer";
 import { useMediaCapture } from "./hooks/useMediaCapture";
 import { useDeveloperMode } from "./hooks/use-developer-mode";
+import { useGlobalScratchpadListener } from "./hooks/useGlobalScratchpadListener";
 import { apiUtils } from "./lib/api-utils";
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
+
+// Feature flags for integrations
+const USE_LIVEKIT = import.meta.env.VITE_USE_LIVEKIT === 'true';
 
 // Lazy load heavy components
 const SidePanel = lazy(() => import("./components/side-panel/SidePanel"));
@@ -40,6 +45,21 @@ const GradingSidebar = lazy(() => import("./components/grading-sidebar/GradingSi
 const ScratchpadCapture = lazy(() => import("./components/scratchpad-capture/ScratchpadCapture"));
 const FloatingControlPanel = lazy(() => import("./components/floating-control-panel/FloatingControlPanel"));
 const LearningAssetsPanel = lazy(() => import("./components/side-panel/LearningAssetsPanel"));
+
+// LiveKit wrapper - defined outside component to prevent recreation on every render
+const LiveKitWrapper = USE_LIVEKIT
+  ? ({ children }: { children: React.ReactNode }) => <LiveKitProvider>{children}</LiveKitProvider>
+  : ({ children }: { children: React.ReactNode }) => <>{children}</>;
+
+// Global scratchpad listener - listens for open_scratchpad command even when scratchpad is closed
+const GlobalScratchpadListener = () => {
+  const { room } = useLiveKit();
+  useGlobalScratchpadListener(room);
+  return null;
+};
+
+// LiveKit Voice Session is now integrated into FloatingControlPanel
+// The separate VoiceSession component is no longer needed here
 
 function App() {
   // Developer mode hook for Gemini Console visibility
@@ -55,11 +75,22 @@ function App() {
   const mixerVideoRef = useRef<HTMLVideoElement>(null);
   const [isScratchpadOpen, setScratchpadOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Listen for AI requests to open the scratchpad
+  useEffect(() => {
+    const handleOpenScratchpad = () => {
+      console.log('[App] AI requested to open scratchpad');
+      setScratchpadOpen(true);
+    };
+
+    window.addEventListener('ai-open-scratchpad', handleOpenScratchpad);
+    return () => window.removeEventListener('ai-open-scratchpad', handleOpenScratchpad);
+  }, []);
   const [isGradingSidebarOpen, setIsGradingSidebarOpen] = useState(true);
   const [currentSkill, setCurrentSkill] = useState<string | null>(null);
   const [currentQuestionId, setCurrentQuestionId] = useState<string | null>(null);
   const [watchedVideoIds, setWatchedVideoIds] = useState<string[]>([]);
-  
+
   // Assessment mode state
   const [assessmentMode, setAssessmentMode] = useState(false);
   const [assessmentSubject, setAssessmentSubject] = useState<string | null>(null);
@@ -70,7 +101,6 @@ function App() {
   // Ref to hold mediaMixer instance for use in callbacks
   const mediaMixerRef = useRef<any>(null);
 
-  // Media capture with frame callbacks - must be called before useMediaMixer
   // Media capture with frame callbacks - must be called before useMediaMixer
   // Optimized: No longer using callbacks for frames, but exposing video refs directly
   const {
@@ -126,7 +156,7 @@ function App() {
   const startAssessment = async (subject: string) => {
     try {
       const response = await apiUtils.post(`${DASH_API_URL}/assessment/start/${subject}`, {});
-      
+
       if (!response.ok) {
         throw new Error(`Failed to start assessment: ${response.status}`);
       }
@@ -167,14 +197,14 @@ function App() {
       }
 
       const data = await response.json();
-      
+
       // Exit assessment mode
       setAssessmentMode(false);
       setAssessmentSubject(null);
       setAssessmentQuestions([]);
       setAssessmentCurrentIndex(0);
       setAssessmentAnswers([]);
-      
+
       // Show results
       alert(`Assessment Complete!\nScore: ${data.score}/${data.total}\nGrade Level: ${data.estimated_grade || 'Calculating...'}`);
     } catch (err) {
@@ -221,104 +251,108 @@ function App() {
         <AuthGuard>
           <AssessmentGuard subject="math" onStartAssessment={startAssessment}>
             <TutorProvider>
-              <HintProvider>
-                <Header
-                  sidebarOpen={isSidebarOpen}
-                  onToggleSidebar={toggleSidebar}
-                  isDeveloperMode={isDeveloperMode}
-                  onToggleDeveloperMode={toggleDeveloperMode}
-                />
-              <div className="streaming-console">
-                <Suspense fallback={<div className="flex items-center justify-center h-full w-full">Loading...</div>}>
-                  {import.meta.env.DEV ? (
-                    <SidePanel
-                      open={isSidebarOpen}
-                      onToggle={toggleSidebar}
-                    />
-                  ) : (
-                    <LearningAssetsPanel
-                      open={isSidebarOpen}
-                      onToggle={toggleSidebar}
-                    />
-                  )}
-                  <GradingSidebar
-                    open={isGradingSidebarOpen}
-                    onToggle={toggleGradingSidebar}
-                    currentSkill={currentSkill}
+              <LiveKitWrapper>
+                {USE_LIVEKIT && <GlobalScratchpadListener />}
+                <HintProvider>
+                  <Header
+                    sidebarOpen={isSidebarOpen}
+                    onToggleSidebar={toggleSidebar}
+                    isDeveloperMode={isDeveloperMode}
+                    onToggleDeveloperMode={toggleDeveloperMode}
                   />
-                  <main style={{
-                    marginRight: isSidebarOpen ? (import.meta.env.DEV ? "260px" : "320px") : "0",
-                    marginLeft: isGradingSidebarOpen ? "260px" : "40px",
-                    transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
-                  }}>
-                    <div className="main-app-area">
-                      <div className="question-panel">
-                        <BackgroundShapes />
-                        <ScratchpadCapture onFrameCaptured={(canvas) => {
-                          mediaMixer.updateScratchpadFrame(canvas);
-                        }}>
-                          <QuestionDisplay 
-                            onSkillChange={setCurrentSkill}
-                            onQuestionChange={setCurrentQuestionId}
-                            watchedVideoIds={watchedVideoIds}
-                            onAnswerSubmitted={() => setWatchedVideoIds([])}
-                            assessmentMode={assessmentMode}
-                            assessmentQuestions={assessmentQuestions}
-                            currentQuestionIndex={assessmentCurrentIndex}
-                            onAssessmentAnswer={(questionId, isCorrect) => {
-                              const currentQuestion = assessmentQuestions[assessmentCurrentIndex];
-                              const newAnswer = {
-                                question_id: questionId,
-                                skill_id: currentQuestion.dash_metadata.skill_ids[0],
-                                is_correct: isCorrect
-                              };
-                              const newAnswers = [...assessmentAnswers, newAnswer];
-                              setAssessmentAnswers(newAnswers);
-                              setWatchedVideoIds([]);
-                              
-                              if (assessmentCurrentIndex < assessmentQuestions.length - 1) {
-                                setTimeout(() => {
-                                  setAssessmentCurrentIndex(assessmentCurrentIndex + 1);
-                                }, 2000);
-                              } else {
-                                setTimeout(() => {
-                                  // Submit assessment and exit assessment mode
-                                  submitAssessment(newAnswers);
-                                }, 2000);
-                              }
-                            }}
-                          />
-                          {isScratchpadOpen && (
-                            <div className="scratchpad-container">
-                              <Scratchpad />
-                            </div>
-                          )}
-                        </ScratchpadCapture>
-                      </div>
-                      <FloatingControlPanel
-                        renderCanvasRef={mediaMixer.canvasRef}
-                        videoRef={videoRef}
-                        supportsVideo={true}
-                        onVideoStreamChange={setVideoStream}
-                        onMixerStreamChange={setMixerStream}
-                        enableEditingSettings={true}
-                        onPaintClick={() => setScratchpadOpen(!isScratchpadOpen)}
-                        isPaintActive={isScratchpadOpen}
-                        cameraEnabled={cameraEnabled}
-                        screenEnabled={screenEnabled}
-                        onToggleCamera={toggleCamera}
-                        onToggleScreen={toggleScreen}
-                        privacyEnabled={privacyEnabled}
-                        onTogglePrivacy={setPrivacyEnabled}
-                        mediaMixerCanvasRef={mediaMixer.canvasRef}
+                  <div className="streaming-console">
+                    <Suspense fallback={<div className="flex items-center justify-center h-full w-full">Loading...</div>}>
+                      {import.meta.env.DEV ? (
+                        <SidePanel
+                          open={isSidebarOpen}
+                          onToggle={toggleSidebar}
+                        />
+                      ) : (
+                        <LearningAssetsPanel
+                          open={isSidebarOpen}
+                          onToggle={toggleSidebar}
+                        />
+                      )}
+                      <GradingSidebar
+                        open={isGradingSidebarOpen}
+                        onToggle={toggleGradingSidebar}
+                        currentSkill={currentSkill}
                       />
-                    </div>
-                  </main>
-                </Suspense>
-              </div>
-              <Toaster richColors closeButton />
-            </HintProvider>
-          </TutorProvider>
+                      <main style={{
+                        marginRight: isSidebarOpen ? (import.meta.env.DEV ? "260px" : "320px") : "0",
+                        marginLeft: isGradingSidebarOpen ? "260px" : "40px",
+                        transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
+                      }}>
+                        <div className="main-app-area">
+                          <div className="question-panel">
+                            <BackgroundShapes />
+                            <ScratchpadCapture onFrameCaptured={(canvas) => {
+                              mediaMixer.updateScratchpadFrame(canvas);
+                            }}>
+                              <QuestionDisplay
+                                onSkillChange={setCurrentSkill}
+                                onQuestionChange={setCurrentQuestionId}
+                                watchedVideoIds={watchedVideoIds}
+                                onAnswerSubmitted={() => setWatchedVideoIds([])}
+                                assessmentMode={assessmentMode}
+                                assessmentQuestions={assessmentQuestions}
+                                currentQuestionIndex={assessmentCurrentIndex}
+                                onAssessmentAnswer={(questionId, isCorrect) => {
+                                  const currentQuestion = assessmentQuestions[assessmentCurrentIndex];
+                                  const newAnswer = {
+                                    question_id: questionId,
+                                    skill_id: currentQuestion.dash_metadata.skill_ids[0],
+                                    is_correct: isCorrect
+                                  };
+                                  const newAnswers = [...assessmentAnswers, newAnswer];
+                                  setAssessmentAnswers(newAnswers);
+                                  setWatchedVideoIds([]);
+
+                                  if (assessmentCurrentIndex < assessmentQuestions.length - 1) {
+                                    setTimeout(() => {
+                                      setAssessmentCurrentIndex(assessmentCurrentIndex + 1);
+                                    }, 2000);
+                                  } else {
+                                    setTimeout(() => {
+                                      // Submit assessment and exit assessment mode
+                                      submitAssessment(newAnswers);
+                                    }, 2000);
+                                  }
+                                }}
+                              />
+                              {isScratchpadOpen && (
+                                <div className="scratchpad-container">
+                                  <Scratchpad />
+                                </div>
+                              )}
+                            </ScratchpadCapture>
+                          </div>
+                          <FloatingControlPanel
+                            renderCanvasRef={mediaMixer.canvasRef}
+                            videoRef={videoRef}
+                            supportsVideo={true}
+                            onVideoStreamChange={setVideoStream}
+                            onMixerStreamChange={setMixerStream}
+                            enableEditingSettings={true}
+                            onPaintClick={() => setScratchpadOpen(!isScratchpadOpen)}
+                            isPaintActive={isScratchpadOpen}
+                            cameraEnabled={cameraEnabled}
+                            screenEnabled={screenEnabled}
+                            onToggleCamera={toggleCamera}
+                            onToggleScreen={toggleScreen}
+                            privacyEnabled={privacyEnabled}
+                            onTogglePrivacy={setPrivacyEnabled}
+                            mediaMixerCanvasRef={mediaMixer.canvasRef}
+                          />
+                          {/* LiveKit Voice Session and Hedra Avatar are integrated into FloatingControlPanel */}
+                        </div>
+                      </main>
+                    </Suspense>
+                  </div>
+                  <Toaster richColors closeButton />
+                </HintProvider>
+              </LiveKitWrapper>
+            </TutorProvider>
           </AssessmentGuard>
         </AuthGuard>
       </div>

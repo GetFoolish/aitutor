@@ -102,6 +102,118 @@ def health_check():
     }
 
 
+def extract_correct_answer_from_perseus(question: Dict) -> Dict:
+    """
+    Extract the correct answer from a Perseus question widget structure.
+
+    Perseus stores answers in widget definitions:
+    - Radio widgets: choices array with 'correct: true' property
+    - Input-number widgets: 'value' in answers
+    - Expression widgets: 'value' in answers
+    - Numeric-input widgets: 'value' in answers
+
+    Returns a dict with:
+    - 'correct_answer': The correct answer value(s)
+    - 'answer_type': The type of answer (radio, numeric, expression, etc.)
+    - 'explanation': Human-readable explanation of the correct answer
+    """
+    if not question:
+        return {'correct_answer': None, 'answer_type': 'unknown', 'explanation': None}
+
+    widgets = question.get('widgets', {})
+    correct_answers = []
+    answer_type = 'unknown'
+    explanation_parts = []
+
+    for widget_id, widget_def in widgets.items():
+        widget_type = widget_def.get('type', '')
+        options = widget_def.get('options', {})
+
+        if widget_type == 'radio':
+            # Multiple choice - find the correct choice
+            choices = options.get('choices', [])
+            for i, choice in enumerate(choices):
+                if choice.get('correct'):
+                    content = choice.get('content', '')
+                    # Clean up the content (remove HTML/markdown if simple)
+                    clean_content = content.strip()
+                    correct_answers.append(clean_content)
+                    explanation_parts.append(f"Correct choice: {clean_content}")
+                    answer_type = 'radio'
+                    break
+
+        elif widget_type == 'input-number':
+            # Numeric input - get the value
+            value = options.get('value')
+            if value is not None:
+                correct_answers.append(str(value))
+                explanation_parts.append(f"Correct value: {value}")
+                answer_type = 'numeric'
+
+        elif widget_type == 'numeric-input':
+            # Another numeric input type
+            answers = options.get('answers', [])
+            for ans in answers:
+                if ans.get('status') == 'correct':
+                    value = ans.get('value')
+                    if value is not None:
+                        correct_answers.append(str(value))
+                        explanation_parts.append(f"Correct value: {value}")
+                        answer_type = 'numeric'
+                    break
+
+        elif widget_type == 'expression':
+            # Math expression - get the value
+            answers = options.get('answerForms', []) or options.get('answers', [])
+            for ans in answers:
+                value = ans.get('value') or ans.get('considered')
+                if value:
+                    correct_answers.append(str(value))
+                    explanation_parts.append(f"Correct expression: {value}")
+                    answer_type = 'expression'
+                    break
+
+        elif widget_type == 'dropdown':
+            # Dropdown selection
+            choices = options.get('choices', [])
+            for choice in choices:
+                if choice.get('correct'):
+                    correct_answers.append(choice.get('content', ''))
+                    answer_type = 'dropdown'
+                    break
+
+        elif widget_type == 'matcher':
+            # Matching exercise
+            left = options.get('left', [])
+            right = options.get('right', [])
+            labels = options.get('labels', [])
+            if left and right:
+                # The matching is usually positional
+                correct_answers.append(f"Match pairs based on position")
+                answer_type = 'matcher'
+
+        elif widget_type == 'orderer':
+            # Ordering exercise
+            correct_order = options.get('correctOptions', [])
+            if correct_order:
+                correct_answers.append(' → '.join([opt.get('content', '') for opt in correct_order]))
+                answer_type = 'orderer'
+
+    # Combine results
+    if len(correct_answers) == 1:
+        correct_answer = correct_answers[0]
+    elif len(correct_answers) > 1:
+        correct_answer = correct_answers
+    else:
+        correct_answer = None
+
+    return {
+        'correct_answer': correct_answer,
+        'answer_type': answer_type,
+        'explanation': '; '.join(explanation_parts) if explanation_parts else None
+    }
+
+
 def load_perseus_items_for_dash_questions_from_mongodb(
     dash_questions: List[Question]
 ) -> List[Dict]:
@@ -193,10 +305,10 @@ def load_perseus_items_for_dash_questions_from_mongodb(
             slug = question_id.split('_')[0] if '_' in question_id else question_id
 
             # Build Perseus data structure
-            # Note: Perseus scoring uses the 'correct' property in widget choices
-            # We don't need a separate answer key
-            logger.info(f"[PERSEUS_LOAD] Building item for {question_id} - NO ANSWER KEY")
-            
+            # Extract correct answer from widget structure for AI assessment
+            answer_info = extract_correct_answer_from_perseus(question)
+            logger.info(f"[PERSEUS_LOAD] Building item for {question_id} - Answer type: {answer_info.get('answer_type')}, Answer: {answer_info.get('correct_answer')}")
+
             perseus_data = {
                 "question": question,
                 "answerArea": answer_area,
@@ -216,7 +328,11 @@ def load_perseus_items_for_dash_questions_from_mongodb(
                     'mongodb_id': str(question_doc.get('_id')),  # MongoDB ObjectId
                     'unit_name': unit_doc.get('title', 'Unknown Unit') if unit_doc else 'Unknown Unit',
                     'lesson_name': lesson_doc.get('title', 'Unknown Lesson') if lesson_doc else 'Unknown Lesson',
-                    'exercise_name': exercise_doc.get('title', 'Unknown Exercise') if exercise_doc else 'Unknown Exercise'
+                    'exercise_name': exercise_doc.get('title', 'Unknown Exercise') if exercise_doc else 'Unknown Exercise',
+                    # Include correct answer for AI tutor assessment
+                    'correct_answer': answer_info.get('correct_answer'),
+                    'answer_type': answer_info.get('answer_type'),
+                    'answer_explanation': answer_info.get('explanation')
                 }
             }
 

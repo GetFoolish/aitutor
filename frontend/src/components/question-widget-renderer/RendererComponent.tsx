@@ -320,55 +320,135 @@ const RendererComponent = ({
             // getUserInput() returns UserInputMap (the new object format)
             const userInput = rendererRef.current.getUserInput();
             const itemData = perseusItem; // Full item with question AND answer
-            
+
             console.log('[SCORING] User input:', JSON.stringify(userInput, null, 2));
             console.log('[SCORING] Item data keys:', Object.keys(itemData));
-            console.log('[SCORING] Has answer key:', !!itemData.answer);
-            console.log('[SCORING] Answer:', JSON.stringify(itemData.answer, null, 2));
-            
-            // Custom scoring since Perseus doesn't have answer keys in our questions
-            // Score based on the 'correct' property in widget choices
+
+            // Use Perseus's built-in scoring for all widget types
+            // This handles radio, sorter, orderer, numeric-input, expression, etc.
             let isCorrect = false;
             const question = itemData.question;
-            
-            // Check each widget in the user input
-            for (const [widgetId, widgetInput] of Object.entries(userInput)) {
-                const widgetDef = question.widgets?.[widgetId];
-                if (!widgetDef) continue;
-                
-                if (widgetDef.type === 'radio') {
-                    const choices = widgetDef.options?.choices || [];
-                    const selectedIds = (widgetInput as any).selectedChoiceIds || [];
-                    const isMultiSelect = widgetDef.options?.multipleSelect || false;
-                    
-                    if (isMultiSelect) {
-                        // For multi-select: all selected choices must be correct, and all correct choices must be selected
-                        const correctIndices = choices
-                            .map((c, i) => c.correct ? i : -1)
-                            .filter(i => i >= 0);
-                        const selectedIndices = selectedIds.map((id: string) => {
-                            const match = id.match(/choice-(\d+)-/);
-                            return match ? parseInt(match[1]) : -1;
-                        }).filter((i: number) => i >= 0);
-                        
-                        isCorrect = correctIndices.length === selectedIndices.length &&
-                                   correctIndices.every((idx: number) => selectedIndices.includes(idx));
-                    } else {
-                        // For single-select: the one selected choice must be correct
-                        if (selectedIds.length === 1) {
-                            const selectedId = selectedIds[0];
-                            const match = selectedId.match(/choice-(\d+)-/);
-                            if (match) {
-                                const selectedIndex = parseInt(match[1]);
-                                isCorrect = choices[selectedIndex]?.correct === true;
+
+            // Log all widgets for debugging
+            console.log('[SCORING] Question widgets:', Object.keys(question.widgets || {}).map(id => ({
+                id,
+                type: question.widgets[id]?.type,
+                options: question.widgets[id]?.options
+            })));
+
+            // Try Perseus scoring first (works for all widget types if answer data exists)
+            try {
+                const perseusScore = scorePerseusItem(question, userInput, "en");
+                console.log('[SCORING] Perseus score (full):', JSON.stringify(perseusScore, null, 2));
+                console.log('[SCORING] Perseus score type:', perseusScore.type, 'earned:', (perseusScore as any).earned, 'total:', (perseusScore as any).total);
+
+                if (perseusScore.type === 'points') {
+                    isCorrect = perseusScore.earned === perseusScore.total && perseusScore.total > 0;
+                } else if (perseusScore.type === 'invalid') {
+                    // Invalid input (e.g., empty) - treat as incorrect
+                    isCorrect = false;
+                }
+                console.log('[SCORING] Perseus determined correct:', isCorrect);
+
+                // If Perseus says incorrect, fall back to custom scoring to double-check
+                if (!isCorrect) {
+                    console.log('[SCORING] Perseus returned incorrect, trying custom scoring as backup...');
+                    throw new Error('Perseus returned incorrect, trying custom scoring');
+                }
+            } catch (perseusError) {
+                console.warn('[SCORING] Perseus scoring failed, falling back to custom:', perseusError);
+
+                // Fallback to custom scoring for various widget types
+                for (const [widgetId, widgetInput] of Object.entries(userInput)) {
+                    const widgetDef = question.widgets?.[widgetId];
+                    if (!widgetDef) continue;
+
+                    console.log('[SCORING] Processing widget:', widgetId, 'type:', widgetDef.type, 'input:', widgetInput);
+
+                    if (widgetDef.type === 'radio') {
+                        const choices = widgetDef.options?.choices || [];
+                        const selectedIds = (widgetInput as any).selectedChoiceIds || [];
+                        const isMultiSelect = widgetDef.options?.multipleSelect || false;
+
+                        // Log all choices with their correct status
+                        console.log('[SCORING] Radio choices:', choices.map((c: any, i: number) => ({
+                            index: i,
+                            content: c.content?.substring(0, 50),
+                            correct: c.correct,
+                            isNoneOfTheAbove: c.isNoneOfTheAbove
+                        })));
+                        console.log('[SCORING] Selected IDs:', selectedIds);
+
+                        if (isMultiSelect) {
+                            const correctIndices = choices
+                                .map((c: any, i: number) => c.correct ? i : -1)
+                                .filter((i: number) => i >= 0);
+                            const selectedIndices = selectedIds.map((id: string) => {
+                                const match = id.match(/choice-(\d+)-/);
+                                return match ? parseInt(match[1]) : -1;
+                            }).filter((i: number) => i >= 0);
+
+                            isCorrect = correctIndices.length === selectedIndices.length &&
+                                       correctIndices.every((idx: number) => selectedIndices.includes(idx));
+                            console.log('[SCORING] Multi-select - correctIndices:', correctIndices, 'selectedIndices:', selectedIndices);
+                        } else {
+                            if (selectedIds.length === 1) {
+                                const selectedId = selectedIds[0];
+                                const match = selectedId.match(/choice-(\d+)-/);
+                                if (match) {
+                                    const selectedIndex = parseInt(match[1]);
+                                    console.log('[SCORING] Selected index:', selectedIndex, 'Choice at index:', choices[selectedIndex]);
+                                    isCorrect = choices[selectedIndex]?.correct === true;
+                                }
                             }
                         }
+                        console.log('[SCORING] Radio - isCorrect:', isCorrect);
+                    } else if (widgetDef.type === 'sorter') {
+                        // Sorter widget: compare user order with correct order
+                        const correctOrder = widgetDef.options?.correct || [];
+                        const userOrder = (widgetInput as any).options || [];
+                        isCorrect = JSON.stringify(userOrder) === JSON.stringify(correctOrder);
+                        console.log('[SCORING] Sorter - correct:', correctOrder, 'user:', userOrder, 'match:', isCorrect);
+                    } else if (widgetDef.type === 'orderer') {
+                        // Orderer widget: compare user order with correct order
+                        const correctOptions = widgetDef.options?.correctOptions || [];
+                        const userCurrent = (widgetInput as any).current || [];
+                        const correctOrder = correctOptions.map((opt: any) => opt.content);
+                        isCorrect = JSON.stringify(userCurrent) === JSON.stringify(correctOrder);
+                        console.log('[SCORING] Orderer - correct:', correctOrder, 'user:', userCurrent, 'match:', isCorrect);
+                    } else if (widgetDef.type === 'numeric-input' || widgetDef.type === 'input-number') {
+                        // Numeric input: check if user value matches any correct answer
+                        const answers = widgetDef.options?.answers || [];
+                        const userValue = (widgetInput as any).currentValue;
+                        const parsedUserValue = parseFloat(userValue);
+                        isCorrect = answers.some((ans: any) => {
+                            if (ans.status === 'correct' || ans.correct) {
+                                const correctValue = parseFloat(ans.value);
+                                return Math.abs(parsedUserValue - correctValue) < 0.0001;
+                            }
+                            return false;
+                        });
+                        console.log('[SCORING] Numeric - answers:', answers, 'user:', userValue, 'match:', isCorrect);
+                    } else if (widgetDef.type === 'categorizer') {
+                        // Categorizer: compare user values with correct values
+                        const correctValues = widgetDef.options?.values || [];
+                        const userValues = (widgetInput as any).values || [];
+                        isCorrect = JSON.stringify(userValues) === JSON.stringify(correctValues);
+                        console.log('[SCORING] Categorizer - correct:', correctValues, 'user:', userValues, 'match:', isCorrect);
+                    } else if (widgetDef.type === 'group') {
+                        // Group widget contains nested widgets - Perseus should handle this
+                        console.log('[SCORING] Group widget - relying on Perseus scoring');
+                    } else if (widgetDef.type === 'graded-group' || widgetDef.type === 'graded-group-set') {
+                        // Graded group - Perseus should handle this
+                        console.log('[SCORING] Graded group widget - relying on Perseus scoring');
+                    } else {
+                        console.warn('[SCORING] Unhandled widget type:', widgetDef.type, 'widget:', widgetDef);
                     }
                 }
             }
-            
-            console.log('[SCORING] Custom score - is correct:', isCorrect);
-            
+
+            console.log('[SCORING] Final score - is correct:', isCorrect);
+
             const scoreResult = {
                 type: isCorrect ? 'points' : 'points',
                 earned: isCorrect ? 1 : 0,
