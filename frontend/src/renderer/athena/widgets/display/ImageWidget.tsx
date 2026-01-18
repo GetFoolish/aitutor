@@ -441,7 +441,7 @@ export function ImageWidget({
               !(
                 (imageUrl.toLowerCase().match(/\.jpe?g($|\?)/)) ||
                 (options.alt && (
-                  /\b(beaver|castor|samurai|photograph|photo|forest|star|sky|night|banana|fruit|apple|orange|pear|grape|strawberry|rabbit|bunny|lapin)\b/i.test(options.alt)
+                  /\b(beaver|castor|samurai|photograph|photo|forest|star|sky|night|banana|fruit|apple|orange|pear|grape|strawberry|rabbit|bunny|lapin|dog|cat|bird|fish|animal|nature|landscape)s?\b|\bbunnies\b/i.test(options.alt)
                 )) ||
                 imageUrl.includes('question_69324cd9_forest')
               )

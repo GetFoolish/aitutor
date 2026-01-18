@@ -1024,43 +1024,8 @@ a[target="lint-help-window"] {
 }
 
 /* 
-  Invert BITMAP images (PNG/JPG/WEBP) in dark mode for visibility 
-  ONLY if they are explicitly marked as diagrams or are graphie images.
-  Broad img inversion is removed to avoid ruining photos/illustrations.
+  Ensure math/diagram labels are white in dark mode 
 */
-.athena-theme-dark img.invert-on-dark:not([src$=".svg"]),
-.athena-theme-dark img.graphie-image:not([src$=".svg"]) {
-  filter: invert(1) hue-rotate(180deg) !important;
-}
-
-/* Dark mode diagram background to match Perseus - Force pure black to show white coques */
-.athena-theme-dark .graphie-image-container,
-.athena-theme-dark .graphie-svg-wrapper,
-.athena-theme-dark .athena-graphie-placeholder {
-  background-color: #000000 !important;
-  color: #ffffff !important;
-  border-radius: 4px;
-}
-
-/* 
-  DO NOT invert SVGs or Graphie placeholders. 
-  Instead, rely on the fill/stroke currentColor rules above.
-*/
-/* Ensure diagrams (Graphie SVGs and marked diagrams) are NOT inverted as a whole */
-.athena-theme-dark .athena-graphie-placeholder,
-.athena-theme-dark .graphie-image,
-.athena-theme-dark .athena-image-diagram {
-  filter: none !important;
-}
-
-/* 
-  But for PNG versions of these diagrams, we DO want to invert them 
-  to turn white background to black.
-*/
-.athena-theme-dark img.invert-on-dark:not([src$=".svg"]),
-.athena-theme-dark img.graphie-image:not([src$=".svg"]) {
-  filter: invert(1) hue-rotate(180deg) !important;
-}
 
 /* Ensure math/diagram labels are white in dark mode */
 .athena-theme-dark .graphie-labels text,
