@@ -262,22 +262,29 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     };
   }, []);
 
+  // --- BASE URL ---
+  const baseUrl = getGraphieBaseUrl(url);
+
   // DERIVED STATE: Determine final dark mode status
   // If context is available, use it (INSTANT). Otherwise, use standalone state.
   const isDarkMode = athenaContext?.state?.theme
     ? athenaContext.state.theme === 'dark'
     : standaloneIsDarkMode;
 
-  // Heuristic: Should we invert this image in dark mode?
-  // We want to invert diagrams (charts, graphs) but NOT realistic illustrations (eggs, pizzas, etc.)
-  const shouldSkipInversion = useMemo(() => {
-    const skipKeywordsRegex = /\b(egg|oeuf|pizza|apple|fruit|animal|bread|pain|pomme|acorn|gland|banana|grape|orange|pear|strawberry|rabbit|bunny|lapin|dog|cat|bird|fish|nature|landscape)s?\b/i;
-    const isBunnies = /\bbunnies\b/i.test(alt);
-    return skipKeywordsRegex.test(alt) || isBunnies;
-  }, [alt]);
+  // --- VISUAL FILTERS (Inversion for diagrams, not for illustrations) ---
+  const isIllustrativeQuestion = useMemo(() => {
+    return (
+      baseUrl.includes('bb0459b2b58513d63d21f1fbf35dac7395a01783') || // Cows
+      baseUrl.includes('e25b96c9d939310eaf88a2c23c34152d47f03cc1') || // Beavers
+      (alt && (
+        /\b(beaver|castor|samurai|photograph|photo|banana|grape|orange|pear|strawberry|apple|pomme|fruit|rabbit|bunny|lapin|dog|cat|bird|fish|animal|nature|landscape|pig)s?\b/i.test(alt) ||
+        /\bbunnies\b/i.test(alt)
+      ))
+    );
+  }, [baseUrl, alt]);
 
-  const filterClass = isDarkMode
-    ? (shouldSkipInversion ? 'graphie-filter-light' : 'graphie-filter-dark')
+  const computedFilterClass = isDarkMode
+    ? (isIllustrativeQuestion ? 'graphie-filter-light' : 'graphie-filter-dark')
     : 'graphie-filter-light';
 
   const [svgContent, setSvgContent] = useState<string | null>(null);
@@ -290,7 +297,6 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
   const [svgHasText, setSvgHasText] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const baseUrl = getGraphieBaseUrl(url);
 
   // DEBUG: Check if we are capturing the right ID
   const isTargetID = url.toLowerCase().includes('6933b3176cf86fa761d0a255') || baseUrl.toLowerCase().includes('6933b3176cf86fa761d0a255') || baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011');
@@ -1097,19 +1103,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     );
   }
 
-  // --- VISUAL FIXES ---
-  // Fix for illustrative questions (Cows, Beavers, etc.): 
-  // Do not invert colors in dark mode because they are colored illustrations.
-  const isIllustrativeQuestion =
-    baseUrl.includes('bb0459b2b58513d63d21f1fbf35dac7395a01783') || // Cows
-    baseUrl.includes('e25b96c9d939310eaf88a2c23c34152d47f03cc1') || // Beavers
-    (alt && (
-      /\b(beaver|castor|samurai|photograph|banana|grape|orange|pear|strawberry|apple|pomme|fruit|rabbit|bunny|lapin|dog|cat|bird|fish|animal|nature|landscape)s?\b/i.test(alt) ||
-      /\bbunnies\b/i.test(alt)
-    ));
-
-  // Determine filter class: force light (no filter) if it's illustrative, otherwise follow dark mode
-  const computedFilterClass = isIllustrativeQuestion ? 'graphie-filter-light' : (isDarkMode ? 'graphie-filter-dark' : 'graphie-filter-light');
+  // --- DEPRECATED: Standardizing on computedFilterClass above ---
 
   return (
     <div
