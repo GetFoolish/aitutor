@@ -10,7 +10,7 @@ Uses livekit-agents function calling API.
 import json
 from typing import Annotated
 from livekit import rtc
-from livekit.agents.llm import function_tool, ToolContext
+from livekit.agents.llm import function_tool
 
 
 # Global room reference for tools
@@ -146,13 +146,13 @@ async def highlight_area(
     return f"Highlighted area at ({x}, {y}) with size {width}x{height}"
 
 
-# Create the tool context with all scratchpad tools
-def get_scratchpad_tool_context() -> ToolContext:
-    """Get the tool context with all scratchpad drawing tools."""
-    return ToolContext([
+# Get list of all scratchpad tools
+def get_scratchpad_tools() -> list:
+    """Get the list of scratchpad drawing tools for AgentSession."""
+    return [
         write_text,
         draw_arrow,
         draw_circle,
         clear_my_drawings,
         highlight_area,
-    ])
+    ]

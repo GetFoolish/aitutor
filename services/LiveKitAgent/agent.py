@@ -33,7 +33,7 @@ PROJECT_ROOT = os.path.dirname(AITUTOR_ROOT)  # livekit directory
 sys.path.insert(0, SCRIPT_DIR)
 
 from tutor_agent import TutorAgent
-from tools.scratchpad_tools import set_room as set_scratchpad_room, get_scratchpad_tool_context
+from tools.scratchpad_tools import set_room as set_scratchpad_room, get_scratchpad_tools
 
 # Load environment variables - check aitutor/.env first, then project root
 load_dotenv(os.path.join(AITUTOR_ROOT, ".env.local"))
@@ -63,8 +63,8 @@ async def entrypoint(ctx: agents.JobContext):
 
     # Set up scratchpad drawing tools with room access
     set_scratchpad_room(ctx.room)
-    scratchpad_tools = get_scratchpad_tool_context()
-    print("[Agent] Initialized scratchpad drawing tools")
+    scratchpad_tools = get_scratchpad_tools()
+    print(f"[Agent] Initialized {len(scratchpad_tools)} scratchpad drawing tools")
 
     # Create the agent session with traditional STT + LLM + TTS pipeline
     # Include scratchpad tools as function tools for the LLM
@@ -89,7 +89,7 @@ async def entrypoint(ctx: agents.JobContext):
         # Voice Activity Detection: Silero
         vad=_preloaded_vad,
         # Register scratchpad drawing tools for AI to use
-        tool_ctx=scratchpad_tools,
+        tools=scratchpad_tools,
     )
 
     # Create the tutor agent
