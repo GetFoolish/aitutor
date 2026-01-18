@@ -21,7 +21,6 @@ from livekit.agents.llm import ChatContext, ChatMessage, ImageContent
 
 from prompts.system_prompt import load_system_prompt
 from tools.dash_tools import DashTools
-from tools.scratchpad_tools import ScratchpadTools
 
 
 class TutorAgent(Agent):
@@ -36,8 +35,6 @@ class TutorAgent(Agent):
         self._student_id: Optional[str] = None
         self._auth_token: Optional[str] = None
         self._dash_tools: Optional[DashTools] = None
-        self._scratchpad_tools: Optional[ScratchpadTools] = None
-        self._room: Optional[rtc.Room] = None
 
         # Load the Adam tutor system prompt
         system_instructions = load_system_prompt()
@@ -109,13 +106,6 @@ discover the solution themselves.
         camera, or screen share) to enable the agent to see their work.
         Excludes Hedra avatar video tracks.
         """
-        # Store room reference for scratchpad tools
-        self._room = room
-
-        # Initialize scratchpad tools for AI drawing
-        self._scratchpad_tools = ScratchpadTools(room)
-        print("[TutorAgent] Initialized scratchpad drawing tools")
-
         # Check for existing video tracks (exclude Hedra avatar)
         for participant in room.remote_participants.values():
             # Skip Hedra avatar participant - we want user's video, not avatar's
@@ -198,9 +188,5 @@ discover the solution themselves.
                 self._dash_tools.get_next_question,
                 self._dash_tools.get_skill_scores,
             ])
-
-        # Add scratchpad drawing tools if available
-        if self._scratchpad_tools:
-            tools.extend(self._scratchpad_tools.get_tools())
 
         return tools

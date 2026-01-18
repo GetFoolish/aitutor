@@ -33,6 +33,7 @@ PROJECT_ROOT = os.path.dirname(AITUTOR_ROOT)  # livekit directory
 sys.path.insert(0, SCRIPT_DIR)
 
 from tutor_agent import TutorAgent
+from tools.scratchpad_tools import set_room as set_scratchpad_room, get_scratchpad_tool_context
 
 # Load environment variables - check aitutor/.env first, then project root
 load_dotenv(os.path.join(AITUTOR_ROOT, ".env.local"))
@@ -60,14 +61,20 @@ async def entrypoint(ctx: agents.JobContext):
     print(f"[Agent] Starting tutoring session in room: {ctx.room.name}")
     print(f"[Agent] Hedra config: USE_HEDRA={use_hedra}, AVATAR_ID={hedra_avatar_id[:20] if hedra_avatar_id else 'None'}...")
 
+    # Set up scratchpad drawing tools with room access
+    set_scratchpad_room(ctx.room)
+    scratchpad_tools = get_scratchpad_tool_context()
+    print("[Agent] Initialized scratchpad drawing tools")
+
     # Create the agent session with traditional STT + LLM + TTS pipeline
+    # Include scratchpad tools as function tools for the LLM
     session = AgentSession(
         # Speech-to-Text: Deepgram Nova 2
         stt=deepgram.STT(
             model=DEEPGRAM_MODEL,
             language="en",
         ),
-        # LLM: Google Gemini
+        # LLM: Google Gemini with function calling for scratchpad tools
         llm=google.LLM(
             model=GEMINI_MODEL,
             temperature=0.7,
@@ -81,6 +88,8 @@ async def entrypoint(ctx: agents.JobContext):
         ),
         # Voice Activity Detection: Silero
         vad=_preloaded_vad,
+        # Register scratchpad drawing tools for AI to use
+        tool_ctx=scratchpad_tools,
     )
 
     # Create the tutor agent

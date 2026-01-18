@@ -3,272 +3,156 @@ Scratchpad Drawing Tools for AI Tutor Agent
 
 These tools allow the AI agent to draw on the student's scratchpad
 to explain concepts visually during tutoring sessions.
+
+Uses livekit-agents function calling API.
 """
 
 import json
-import asyncio
-from typing import Optional, Literal
+from typing import Annotated
 from livekit import rtc
+from livekit.agents.llm import function_tool, ToolContext
 
 
-class ScratchpadTools:
-    """Tools for the AI agent to draw on the student's scratchpad."""
+# Global room reference for tools
+_room: rtc.Room | None = None
 
-    def __init__(self, room: rtc.Room):
-        """Initialize scratchpad tools with LiveKit room for data channel.
 
-        Args:
-            room: The LiveKit room to send drawing commands through
-        """
-        self._room = room
-        self._command_queue: list[dict] = []
+def set_room(room: rtc.Room) -> None:
+    """Set the room for scratchpad tools to use."""
+    global _room
+    _room = room
+    print("[ScratchpadTools] Room set for data channel communication")
 
-    async def _send_command(self, command: dict) -> None:
-        """Send a drawing command to the frontend via data channel.
 
-        Args:
-            command: The drawing command to send
-        """
-        try:
-            data = json.dumps({
-                "type": "scratchpad_command",
-                "command": command
-            }).encode('utf-8')
+async def _send_command(command: dict) -> None:
+    """Send a drawing command to the frontend via data channel."""
+    global _room
+    if _room is None:
+        print("[ScratchpadTools] Error: Room not set")
+        return
 
-            await self._room.local_participant.publish_data(
-                data,
-                reliable=True,
-                topic="scratchpad"
-            )
-            print(f"[ScratchpadTools] Sent command: {command['action']}")
-        except Exception as e:
-            print(f"[ScratchpadTools] Error sending command: {e}")
+    try:
+        data = json.dumps({
+            "type": "scratchpad_command",
+            "command": command
+        }).encode('utf-8')
 
-    async def draw_line(
-        self,
-        start_x: float,
-        start_y: float,
-        end_x: float,
-        end_y: float,
-        color: str = "#1a1a1a",
-        stroke_width: float = 2.0
-    ) -> str:
-        """Draw a line on the scratchpad.
+        await _room.local_participant.publish_data(
+            data,
+            reliable=True,
+            topic="scratchpad"
+        )
+        print(f"[ScratchpadTools] Sent command: {command['action']}")
+    except Exception as e:
+        print(f"[ScratchpadTools] Error sending command: {e}")
 
-        Use this to draw lines, underlines, or arrows to point to things.
-        Coordinates are in percentage of canvas (0-100).
 
-        Args:
-            start_x: Starting X position (0-100, percentage of canvas width)
-            start_y: Starting Y position (0-100, percentage of canvas height)
-            end_x: Ending X position (0-100)
-            end_y: Ending Y position (0-100)
-            color: Line color in hex format (default: black)
-            stroke_width: Line thickness (default: 2.0)
+@function_tool(
+    name="write_text",
+    description="Write text on the scratchpad to show work steps or explanations. Use this to write mathematical steps, hints, or explanations on the student's canvas."
+)
+async def write_text(
+    x: Annotated[float, "X position (0-100, percentage of canvas width)"],
+    y: Annotated[float, "Y position (0-100, percentage of canvas height)"],
+    text: Annotated[str, "The text to write (can include math like '2 + 3 = 5')"],
+) -> str:
+    """Write text on the scratchpad."""
+    await _send_command({
+        "action": "write_text",
+        "x": x,
+        "y": y,
+        "text": text,
+        "color": "#1a1a1a",
+        "font_size": 18.0
+    })
+    return f"Wrote '{text}' on the scratchpad at position ({x}, {y})"
 
-        Returns:
-            Confirmation message
-        """
-        await self._send_command({
-            "action": "draw_line",
-            "start_x": start_x,
-            "start_y": start_y,
-            "end_x": end_x,
-            "end_y": end_y,
-            "color": color,
-            "stroke_width": stroke_width
-        })
-        return f"Drew line from ({start_x}, {start_y}) to ({end_x}, {end_y})"
 
-    async def draw_circle(
-        self,
-        center_x: float,
-        center_y: float,
-        radius: float,
-        color: str = "#1a1a1a",
-        fill: bool = False
-    ) -> str:
-        """Draw a circle on the scratchpad.
+@function_tool(
+    name="draw_arrow",
+    description="Draw an arrow on the scratchpad to point to something. Use this to draw attention to a specific part of the student's work."
+)
+async def draw_arrow(
+    start_x: Annotated[float, "Arrow start X (0-100)"],
+    start_y: Annotated[float, "Arrow start Y (0-100)"],
+    end_x: Annotated[float, "Arrow end X where arrowhead points (0-100)"],
+    end_y: Annotated[float, "Arrow end Y (0-100)"],
+) -> str:
+    """Draw an arrow on the scratchpad."""
+    await _send_command({
+        "action": "draw_arrow",
+        "start_x": start_x,
+        "start_y": start_y,
+        "end_x": end_x,
+        "end_y": end_y,
+        "color": "#e63946",
+        "stroke_width": 2.0
+    })
+    return f"Drew arrow pointing to ({end_x}, {end_y})"
 
-        Use this to circle important items or draw attention to something.
 
-        Args:
-            center_x: Center X position (0-100, percentage of canvas width)
-            center_y: Center Y position (0-100, percentage of canvas height)
-            radius: Circle radius (in percentage units)
-            color: Circle color in hex format
-            fill: Whether to fill the circle
+@function_tool(
+    name="draw_circle",
+    description="Draw a circle on the scratchpad to highlight something. Use this to circle important items."
+)
+async def draw_circle(
+    center_x: Annotated[float, "Circle center X (0-100)"],
+    center_y: Annotated[float, "Circle center Y (0-100)"],
+    radius: Annotated[float, "Circle radius (percentage units, typically 5-20)"],
+) -> str:
+    """Draw a circle on the scratchpad."""
+    await _send_command({
+        "action": "draw_circle",
+        "center_x": center_x,
+        "center_y": center_y,
+        "radius": radius,
+        "color": "#e63946",
+        "fill": False
+    })
+    return f"Drew circle at ({center_x}, {center_y}) with radius {radius}"
 
-        Returns:
-            Confirmation message
-        """
-        await self._send_command({
-            "action": "draw_circle",
-            "center_x": center_x,
-            "center_y": center_y,
-            "radius": radius,
-            "color": color,
-            "fill": fill
-        })
-        return f"Drew circle at ({center_x}, {center_y}) with radius {radius}"
 
-    async def draw_rectangle(
-        self,
-        x: float,
-        y: float,
-        width: float,
-        height: float,
-        color: str = "#1a1a1a",
-        fill: bool = False
-    ) -> str:
-        """Draw a rectangle on the scratchpad.
+@function_tool(
+    name="clear_my_drawings",
+    description="Clear all drawings made by the AI tutor. Use this before making new drawings."
+)
+async def clear_my_drawings() -> str:
+    """Clear AI drawings from the scratchpad."""
+    await _send_command({
+        "action": "clear_ai_drawings"
+    })
+    return "Cleared AI tutor drawings from scratchpad"
 
-        Use this to highlight areas or create boxes for grouping.
 
-        Args:
-            x: Top-left X position (0-100)
-            y: Top-left Y position (0-100)
-            width: Rectangle width (percentage units)
-            height: Rectangle height (percentage units)
-            color: Rectangle color in hex format
-            fill: Whether to fill the rectangle
+@function_tool(
+    name="highlight_area",
+    description="Highlight an area on the scratchpad with a yellow overlay to draw attention to a region."
+)
+async def highlight_area(
+    x: Annotated[float, "Top-left X position (0-100)"],
+    y: Annotated[float, "Top-left Y position (0-100)"],
+    width: Annotated[float, "Width (percentage units)"],
+    height: Annotated[float, "Height (percentage units)"],
+) -> str:
+    """Highlight an area on the scratchpad."""
+    await _send_command({
+        "action": "highlight_area",
+        "x": x,
+        "y": y,
+        "width": width,
+        "height": height,
+        "color": "#ffd60a"
+    })
+    return f"Highlighted area at ({x}, {y}) with size {width}x{height}"
 
-        Returns:
-            Confirmation message
-        """
-        await self._send_command({
-            "action": "draw_rectangle",
-            "x": x,
-            "y": y,
-            "width": width,
-            "height": height,
-            "color": color,
-            "fill": fill
-        })
-        return f"Drew rectangle at ({x}, {y}) with size {width}x{height}"
 
-    async def write_text(
-        self,
-        x: float,
-        y: float,
-        text: str,
-        color: str = "#1a1a1a",
-        font_size: float = 16.0
-    ) -> str:
-        """Write text on the scratchpad.
-
-        Use this to write explanations, labels, or show work steps.
-        Great for showing mathematical steps or writing hints.
-
-        Args:
-            x: Text X position (0-100)
-            y: Text Y position (0-100)
-            text: The text to write (can include math like "2 + 3 = 5")
-            color: Text color in hex format
-            font_size: Font size
-
-        Returns:
-            Confirmation message
-        """
-        await self._send_command({
-            "action": "write_text",
-            "x": x,
-            "y": y,
-            "text": text,
-            "color": color,
-            "font_size": font_size
-        })
-        return f"Wrote '{text}' at ({x}, {y})"
-
-    async def draw_arrow(
-        self,
-        start_x: float,
-        start_y: float,
-        end_x: float,
-        end_y: float,
-        color: str = "#e63946",
-        stroke_width: float = 2.0
-    ) -> str:
-        """Draw an arrow on the scratchpad.
-
-        Use this to point to specific areas or show direction/flow.
-
-        Args:
-            start_x: Arrow start X position (0-100)
-            start_y: Arrow start Y position (0-100)
-            end_x: Arrow end X position (0-100, where the arrowhead points)
-            end_y: Arrow end Y position (0-100)
-            color: Arrow color in hex format (default: red)
-            stroke_width: Arrow line thickness
-
-        Returns:
-            Confirmation message
-        """
-        await self._send_command({
-            "action": "draw_arrow",
-            "start_x": start_x,
-            "start_y": start_y,
-            "end_x": end_x,
-            "end_y": end_y,
-            "color": color,
-            "stroke_width": stroke_width
-        })
-        return f"Drew arrow from ({start_x}, {start_y}) to ({end_x}, {end_y})"
-
-    async def clear_my_drawings(self) -> str:
-        """Clear all drawings made by the AI tutor.
-
-        Use this to clean up your drawings before making new ones.
-        Does NOT clear the student's work.
-
-        Returns:
-            Confirmation message
-        """
-        await self._send_command({
-            "action": "clear_ai_drawings"
-        })
-        return "Cleared AI tutor drawings from scratchpad"
-
-    async def highlight_area(
-        self,
-        x: float,
-        y: float,
-        width: float,
-        height: float,
-        color: str = "#ffd60a"
-    ) -> str:
-        """Highlight an area on the scratchpad with a semi-transparent overlay.
-
-        Use this to draw attention to a specific region of the student's work.
-
-        Args:
-            x: Top-left X position (0-100)
-            y: Top-left Y position (0-100)
-            width: Highlight width (percentage units)
-            height: Highlight height (percentage units)
-            color: Highlight color (default: yellow)
-
-        Returns:
-            Confirmation message
-        """
-        await self._send_command({
-            "action": "highlight_area",
-            "x": x,
-            "y": y,
-            "width": width,
-            "height": height,
-            "color": color
-        })
-        return f"Highlighted area at ({x}, {y}) with size {width}x{height}"
-
-    def get_tools(self) -> list:
-        """Return the list of tools for the agent to use."""
-        return [
-            self.draw_line,
-            self.draw_circle,
-            self.draw_rectangle,
-            self.write_text,
-            self.draw_arrow,
-            self.clear_my_drawings,
-            self.highlight_area,
-        ]
+# Create the tool context with all scratchpad tools
+def get_scratchpad_tool_context() -> ToolContext:
+    """Get the tool context with all scratchpad drawing tools."""
+    return ToolContext([
+        write_text,
+        draw_arrow,
+        draw_circle,
+        clear_my_drawings,
+        highlight_area,
+    ])
