@@ -31,6 +31,7 @@ import { useMediaMixer } from "./hooks/useMediaMixer";
 import { useMediaCapture } from "./hooks/useMediaCapture";
 import { useDeveloperMode } from "./hooks/use-developer-mode";
 import { apiUtils } from "./lib/api-utils";
+import { MemoryDebugInitializer } from "./components/memory-debug/MemoryDebugInitializer";
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 
@@ -219,6 +220,8 @@ function App() {
     <ThemeProvider defaultTheme="light" storageKey="ai-tutor-theme">
       <div className="App">
         <AuthGuard>
+          {/* Initialize memory debug functions for console testing (window.memoryDebug) */}
+          <MemoryDebugInitializer />
           <AssessmentGuard subject="math" onStartAssessment={startAssessment}>
             <TutorProvider>
               <HintProvider>
