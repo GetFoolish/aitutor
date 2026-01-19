@@ -641,6 +641,15 @@ async def process_transcript(session_id: str, transcript: str, timestamp: str, s
     if not user_id:
         return
 
+    # Store conversation turn in session for biography generation
+    speaker_name = "student" if speaker == "user" else "adam"
+    ta.session_manager.add_conversation_turn(
+        session_id=session_id,
+        speaker=speaker_name,
+        text=transcript
+    )
+    logger.debug(f"[TRANSCRIPT] Stored turn: {speaker_name} in session {session_id}")
+
     # Get or create memory components
     memory_store, memory_retriever = _get_or_create_memory_components(user_id)
 
