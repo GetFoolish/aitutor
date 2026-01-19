@@ -1,0 +1,38 @@
+
+## [$(date -u +"%Y-%m-%d %H:%M:%S UTC")] Subtask 4-1 Completed
+
+**Task:** Add error handling for file uploads and API failures
+
+**Changes Made:**
+
+1. **homework-service.ts** - Enhanced all API methods with comprehensive error handling:
+   - uploadHomework: Handles 413 (file too large), 415 (unsupported type), 401/403 (auth), 503 (service unavailable), 5xx (server errors), network errors
+   - listHomework, getHomework, askQuestion, deleteHomework, getFileBlob: All now handle auth, service, server, and network errors
+   - Clear, user-friendly error messages for each scenario
+   - Separated network errors from API errors
+
+2. **HomeworkUpload.tsx** - Improved error display UI:
+   - Enhanced error box with neo-brutalist styling (border-[3px], shadow)
+   - Error icon (X) for visual feedback
+   - Dismissible error messages
+   - Error clears on new upload attempt
+   - Better error message handling
+
+3. **ERROR_HANDLING_VERIFICATION.md** - Created comprehensive test guide:
+   - Documents all 6 error scenarios
+   - Step-by-step testing instructions
+   - Expected error messages
+   - Testing checklist
+
+**Error Scenarios Covered:**
+1. ✅ File > 10MB
+2. ✅ Unsupported file type
+3. ✅ Network failure during upload
+4. ✅ Backend service down
+5. ✅ Server errors (5xx)
+6. ✅ Authentication errors
+
+**Status:** ✅ COMPLETED
+**Committed:** Yes (77e2411a)
+**Next:** Subtask 4-2 - Add loading states and animations
+

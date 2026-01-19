@@ -127,6 +127,7 @@ class HomeworkDetailResponse(BaseModel):
     status: str
     uploaded_at: str
     conversation_history: List[dict]
+    extracted_text: Optional[str] = None  # Text content extracted from the file
 
 
 class DeleteResponse(BaseModel):
@@ -338,7 +339,8 @@ async def get_homework(
             file_size=homework["file_size"],
             status=homework["status"],
             uploaded_at=homework["uploaded_at"].isoformat() if isinstance(homework["uploaded_at"], datetime) else homework["uploaded_at"],
-            conversation_history=conversation_history
+            conversation_history=conversation_history,
+            extracted_text=homework.get("extracted_text", None)
         )
 
     except HTTPException:

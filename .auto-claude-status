@@ -1,11 +1,11 @@
 {
   "active": true,
   "spec": "019-homework",
-  "state": "building",
+  "state": "complete",
   "subtasks": {
-    "completed": 12,
+    "completed": 16,
     "total": 16,
-    "in_progress": 1,
+    "in_progress": 0,
     "failed": 0
   },
   "phase": {
@@ -18,8 +18,8 @@
     "max": 1
   },
   "session": {
-    "number": 7,
+    "number": 10,
     "started_at": "2026-01-16T16:55:49.703920"
   },
-  "last_update": "2026-01-16T17:34:57.907934"
+  "last_update": "2026-01-16T17:50:18.524268"
 }

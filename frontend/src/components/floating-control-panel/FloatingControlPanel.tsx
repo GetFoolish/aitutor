@@ -21,6 +21,7 @@ import { feedWebSocketService } from "../../services/feed-websocket-service";
 import { instructionSSEService } from "../../services/instruction-sse-service";
 import { LiveServerContent } from '@google/genai';
 import { HomeworkPanel } from "../homework-panel/HomeworkPanel";
+import { homeworkService } from "../../services/homework-service";
 
 /**
  * Extract transcript text from Gemini content event
@@ -50,7 +51,7 @@ import {
   Home,
   X,
   Eye,
-  BookOpen,
+  Upload,
 } from "lucide-react";
 
 const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
@@ -306,6 +307,65 @@ function FloatingControlPanel({
       client.off('outputTranscript', onOutputTranscript);
     };
   }, [client, connected]);
+
+  // Send homework to tutor when connected (works even when homework panel is closed)
+  useEffect(() => {
+    let cancelled = false;
+
+    const sendHomeworkToTutor = async () => {
+      if (!connected) return;
+
+      console.log('[FloatingControlPanel] Tutor connected, checking for homework to send...');
+
+      // Wait for connection to stabilize
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      if (cancelled) return;
+
+      try {
+        // Fetch homework list
+        const response = await homeworkService.listHomework();
+
+        if (cancelled) return;
+
+        if (!response.homework_items || response.homework_items.length === 0) {
+          console.log('[FloatingControlPanel] No homework to send');
+          return;
+        }
+
+        const latestHomework = response.homework_items[0];
+        console.log('[FloatingControlPanel] Found homework to send:', latestHomework.filename);
+
+        // Get the full homework details with extracted text
+        const homeworkDetails = await homeworkService.getHomework(latestHomework.homework_id);
+
+        if (cancelled) return;
+
+        if (homeworkDetails.extracted_text) {
+          console.log('[FloatingControlPanel] Injecting homework into tutor context:', homeworkDetails.filename);
+          const success = await client.injectHomeworkContext(
+            homeworkDetails.extracted_text,
+            homeworkDetails.filename
+          );
+          if (success) {
+            console.log('[FloatingControlPanel] Successfully sent homework to tutor:', homeworkDetails.filename);
+          } else {
+            console.warn('[FloatingControlPanel] Failed to inject homework after retries');
+          }
+        } else {
+          console.log('[FloatingControlPanel] Homework has no extracted text:', latestHomework.filename);
+        }
+      } catch (err) {
+        console.error('[FloatingControlPanel] Error sending homework to tutor:', err);
+      }
+    };
+
+    sendHomeworkToTutor();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [connected, client]);
 
   // Video handling - capture full MediaMixer canvas and send to tutor as JPEG
   useEffect(() => {
@@ -867,11 +927,11 @@ function FloatingControlPanel({
                 "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
                 homeworkOpen
                   ? "bg-[#FFD93D] text-black"
-                  : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
+                  : "bg-[#FFD93D] text-black hover:bg-[#FFE566] border-black",
               )}
-              title="Homework"
+              title="Upload Homework"
             >
-              <BookOpen className="w-3.5 h-3.5 font-bold" />
+              <Upload className="w-3.5 h-3.5 font-bold" />
             </button>
 
             <div
@@ -1135,7 +1195,7 @@ function FloatingControlPanel({
                   "flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group",
                   homeworkOpen
                     ? "bg-[#FFD93D] text-black"
-                    : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D]",
+                    : "bg-[#FFD93D] text-black hover:bg-[#FFE566]",
                 )}
               >
                 <div
@@ -1143,10 +1203,10 @@ function FloatingControlPanel({
                     "p-1 border-[2px] border-black dark:border-white transition-colors",
                     homeworkOpen
                       ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
-                      : "bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#FFD93D]",
+                      : "bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#FFE566]",
                   )}
                 >
-                  <BookOpen className="w-3 h-3 md:w-4 md:h-4 font-bold" />
+                  <Upload className="w-3 h-3 md:w-4 md:h-4 font-bold" />
                 </div>
                 <span className="text-[7px] md:text-[8px] font-black uppercase">Homework</span>
               </button>
@@ -1229,10 +1289,10 @@ function FloatingControlPanel({
             <div className="flex items-center justify-between p-3 md:p-3.5 border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#FFD93D]">
               <div className="flex items-center gap-2 md:gap-3">
                 <div className="p-1.5 md:p-2 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-[#000000]">
-                  <BookOpen className="w-4 h-4 md:w-5 md:h-5 text-black dark:text-white font-bold" />
+                  <Upload className="w-4 h-4 md:w-5 md:h-5 text-black dark:text-white font-bold" />
                 </div>
                 <h3 className="font-black text-black uppercase text-xs md:text-sm">
-                  HOMEWORK
+                  UPLOAD HOMEWORK
                 </h3>
               </div>
               <button

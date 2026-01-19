@@ -52,18 +52,63 @@ const HomeworkUpload = React.forwardRef<HTMLDivElement, HomeworkUploadProps>(
       return null
     }
 
-    const handleFileChange = (file: File) => {
+    const handleFileChange = async (file: File) => {
+      console.log('[HomeworkUpload] handleFileChange called with:', file.name, file.type, file.size)
       const validationError = validateFile(file)
 
       if (validationError) {
+        console.log('[HomeworkUpload] Validation error:', validationError)
         setError(validationError)
         setSelectedFile(null)
         return
       }
 
+      console.log('[HomeworkUpload] File validated, setting selectedFile')
       setError(null)
       setSelectedFile(file)
       onFileSelect?.(file)
+
+      // Auto-upload immediately if onUpload is provided
+      if (onUpload) {
+        console.log('[HomeworkUpload] Auto-uploading file...')
+        setIsUploading(true)
+        setUploadProgress(0)
+
+        try {
+          const progressInterval = setInterval(() => {
+            setUploadProgress(prev => {
+              if (prev >= 90) {
+                clearInterval(progressInterval)
+                return prev
+              }
+              return prev + 10
+            })
+          }, 100)
+
+          await onUpload(file)
+
+          clearInterval(progressInterval)
+          setUploadProgress(100)
+
+          // Reset after successful upload
+          setTimeout(() => {
+            setSelectedFile(null)
+            setUploadProgress(0)
+            setIsUploading(false)
+            if (fileInputRef.current) {
+              fileInputRef.current.value = ''
+            }
+          }, 1000)
+        } catch (err) {
+          let errorMessage = 'Upload failed. Please try again.'
+          if (err instanceof Error) {
+            errorMessage = err.message
+          }
+          setError(errorMessage)
+          setIsUploading(false)
+          setUploadProgress(0)
+        }
+      }
     }
 
     const handleDragEnter = (e: React.DragEvent) => {
@@ -115,7 +160,14 @@ const HomeworkUpload = React.forwardRef<HTMLDivElement, HomeworkUploadProps>(
     }
 
     const handleUpload = async () => {
-      if (!selectedFile || !onUpload) return
+      console.log('[HomeworkUpload] handleUpload called')
+      console.log('[HomeworkUpload] selectedFile:', selectedFile?.name)
+      console.log('[HomeworkUpload] onUpload defined:', !!onUpload)
+
+      if (!selectedFile || !onUpload) {
+        console.log('[HomeworkUpload] Aborting: selectedFile or onUpload missing')
+        return
+      }
 
       setIsUploading(true)
       setUploadProgress(0)
@@ -196,20 +248,20 @@ const HomeworkUpload = React.forwardRef<HTMLDivElement, HomeworkUploadProps>(
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             className={cn(
-              "relative flex flex-col items-center justify-center rounded-lg border-[3px] border-dashed p-6 sm:p-8 min-h-[200px] transition-colors",
+              "relative flex flex-col items-center justify-center rounded border-[2px] border-dashed p-3 sm:p-4 min-h-[80px] transition-colors",
               isDragging
-                ? "border-primary bg-primary/5"
-                : "border-border hover:border-primary/50",
+                ? "border-[#FFD93D] bg-[#FFD93D]/10"
+                : "border-gray-300 hover:border-[#FFD93D]",
               "cursor-pointer"
             )}
             onClick={handleBrowseClick}
           >
-            <Upload className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mb-3 sm:mb-4" />
-            <p className="text-sm sm:text-base font-medium text-center mb-2 px-2">
-              Drop your homework here or click to browse
+            <Upload className="h-6 w-6 text-gray-400 mb-2" />
+            <p className="text-xs font-medium text-center text-gray-600">
+              Drop homework or click to browse
             </p>
-            <p className="text-xs sm:text-sm text-muted-foreground text-center px-2">
-              Supports PDF, JPG, PNG, DOCX, TXT (max 10MB)
+            <p className="text-[10px] text-gray-400 text-center">
+              PDF, JPG, PNG, DOCX, TXT (max 10MB)
             </p>
           </div>
         ) : (
@@ -237,9 +289,14 @@ const HomeworkUpload = React.forwardRef<HTMLDivElement, HomeworkUploadProps>(
             </div>
 
             {isUploading && (
-              <div className="space-y-2">
-                <Progress value={uploadProgress} className="h-2" />
-                <p className="text-xs sm:text-sm text-center text-muted-foreground font-medium">
+              <div className="space-y-1">
+                <div className="w-full h-2 bg-gray-200 rounded overflow-hidden border border-black">
+                  <div
+                    className="h-full bg-[#FFD93D] transition-all duration-200"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+                <p className="text-[10px] text-center text-gray-500 font-medium">
                   Uploading... {uploadProgress}%
                 </p>
               </div>
@@ -247,8 +304,11 @@ const HomeworkUpload = React.forwardRef<HTMLDivElement, HomeworkUploadProps>(
 
             {!isUploading && onUpload && (
               <Button
-                onClick={handleUpload}
-                className="w-full min-h-[48px] border-[3px] border-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition-all text-sm sm:text-base font-bold"
+                onClick={() => {
+                  console.log('[HomeworkUpload] Button clicked!')
+                  handleUpload()
+                }}
+                className="w-full min-h-[48px] border-[3px] border-black bg-[#FFD93D] hover:bg-[#FFE566] text-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition-all text-sm sm:text-base font-bold"
               >
                 <Upload className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                 Upload Homework

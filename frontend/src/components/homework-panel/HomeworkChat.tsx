@@ -151,7 +151,7 @@ export const HomeworkChat = React.forwardRef<HTMLDivElement, HomeworkChatProps>(
                     className={cn(
                       "max-w-[90%] sm:max-w-[85%] p-2.5 sm:p-3 rounded-lg border-[3px] shadow-[2px_2px_0_0_rgba(0,0,0,0.8)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.2)]",
                       message.role === 'user'
-                        ? "bg-[#C4B5FD] border-black dark:border-white text-black"
+                        ? "bg-[#4ADE80] border-black dark:border-white text-black"
                         : "bg-[#FFD93D] border-black dark:border-white text-black"
                     )}
                   >

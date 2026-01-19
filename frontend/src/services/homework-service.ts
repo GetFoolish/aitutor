@@ -60,6 +60,7 @@ export interface HomeworkDetailResponse {
   status: string;
   uploaded_at: string;
   conversation_history: ConversationTurn[];
+  extracted_text?: string;  // Text content extracted from the file
 }
 
 export interface AssistRequest {

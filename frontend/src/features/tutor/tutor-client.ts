@@ -304,6 +304,38 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
       turnComplete,
     });
   }
+
+  /**
+   * Inject homework content so the tutor can help with it
+   * Retries up to 5 times with 500ms delay if not connected
+   */
+  async injectHomeworkContext(homeworkContent: string, filename: string): Promise<boolean> {
+    const maxRetries = 5;
+    const retryDelay = 500;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      console.log(`[TutorClient] injectHomework attempt ${attempt}/${maxRetries}, status: ${this._status}`);
+
+      if (this.tutorService && this._status === "connected") {
+        try {
+          this.tutorService.injectHomeworkContext(homeworkContent, filename);
+          this.log(`client.injectHomework`, { filename, attempt });
+          console.log(`[TutorClient] Successfully injected homework: ${filename}`);
+          return true;
+        } catch (error) {
+          console.error(`[TutorClient] Error injecting homework:`, error);
+        }
+      }
+
+      if (attempt < maxRetries) {
+        console.log(`[TutorClient] Waiting ${retryDelay}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+      }
+    }
+
+    console.warn(`[TutorClient] Failed to inject homework after ${maxRetries} attempts: tutor not connected`);
+    return false;
+  }
 }
 
 // Export alias for backward compatibility during migration

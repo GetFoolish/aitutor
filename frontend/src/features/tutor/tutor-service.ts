@@ -286,4 +286,36 @@ export class TutorService {
   isConnected(): boolean {
     return this.geminiSession !== null;
   }
+
+  /**
+   * Inject homework content into the active session
+   * This tells the tutor about uploaded homework so it can help
+   */
+  injectHomeworkContext(homeworkContent: string, filename: string): void {
+    if (!this.geminiSession) {
+      console.warn('Cannot inject homework: session not connected');
+      return;
+    }
+
+    const contextMessage = `[HOMEWORK UPLOADED]
+The student has uploaded homework that they need help with.
+
+Filename: ${filename}
+
+--- HOMEWORK CONTENT ---
+${homeworkContent}
+--- END HOMEWORK CONTENT ---
+
+Please acknowledge that you can see their homework and offer to help them work through it. Remember to guide them with hints and questions rather than giving direct answers.`;
+
+    try {
+      this.geminiSession.sendClientContent({
+        turns: [{ role: 'user', parts: [{ text: contextMessage }] }],
+        turnComplete: true,
+      });
+      console.log(`Homework context injected: ${filename}`);
+    } catch (error) {
+      console.error('Error injecting homework context:', error);
+    }
+  }
 }
