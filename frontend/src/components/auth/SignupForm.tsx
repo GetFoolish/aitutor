@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
+// Checkbox removed - using custom styling instead
 import {
   Select,
   SelectContent,
@@ -280,6 +280,50 @@ const SignupForm: React.FC<SignupFormProps> = ({ setupToken, googleUser, onCompl
                     )}
                   />
                   {errors.preferredLanguage && <p className="text-sm font-medium text-destructive">{errors.preferredLanguage.message}</p>}
+                </div>
+
+                <div className="space-y-3">
+                  <Label className="text-base font-semibold">
+                    What subjects do you want to learn?
+                  </Label>
+                  <Controller
+                    name="subjects"
+                    control={control}
+                    render={({ field }) => (
+                      <div className="grid grid-cols-2 gap-3">
+                        {SUBJECTS.map((subject) => {
+                          const isSelected = field.value?.includes(subject);
+                          return (
+                            <button
+                              type="button"
+                              key={subject}
+                              onClick={() => {
+                                const current = field.value || [];
+                                if (isSelected) {
+                                  field.onChange(current.filter((s: string) => s !== subject));
+                                } else {
+                                  field.onChange([...current, subject]);
+                                }
+                              }}
+                              className={`flex items-center gap-2 rounded-md border-2 p-3 cursor-pointer transition-all text-left ${
+                                isSelected
+                                  ? 'border-primary bg-primary/10 text-primary'
+                                  : 'border-muted bg-popover hover:bg-accent'
+                              }`}
+                            >
+                              <span className={`w-5 h-5 rounded border-2 flex items-center justify-center text-xs ${
+                                isSelected ? 'bg-primary border-primary text-white' : 'border-muted-foreground'
+                              }`}>
+                                {isSelected && '✓'}
+                              </span>
+                              <span className="font-medium">{subject}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  />
+                  <p className="text-xs text-muted-foreground">Select one or more subjects</p>
                 </div>
               </div>
             )}

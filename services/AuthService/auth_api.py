@@ -237,7 +237,10 @@ async def complete_setup(request: CompleteSetupRequest):
                 "age": user_profile.age,
                 "current_grade": user_profile.current_grade,
                 "user_type": "student",
-                "preferred_language": request.preferred_language
+                "preferred_language": request.preferred_language,
+                "subjects": request.subjects or [],
+                "learning_goals": request.learning_goals or [],
+                "interests": request.interests or []
             },
             "is_new_user": True
         }
@@ -401,14 +404,27 @@ async def get_current_user_info(request: Request):
     from managers.mongodb_manager import mongo_db
     user_data = mongo_db.users.find_one({"user_id": user_profile.user_id})
     
+    # Get email - handle both Google OAuth and email/password users
+    email = user_data.get("google_email", "") if user_data else ""
+    if not email:
+        email = user_data.get("email", "") if user_data else ""
+
+    # Get name - handle both Google OAuth and email/password users
+    name = user_data.get("google_name", "") if user_data else ""
+    if not name:
+        name = user_data.get("name", "") if user_data else ""
+
     return {
         "user_id": user_profile.user_id,
-        "email": user_data.get("google_email", "") if user_data else "",
-        "name": user_data.get("google_name", "") if user_data else "",
+        "email": email,
+        "name": name,
         "age": user_profile.age,
         "current_grade": user_profile.current_grade,
         "user_type": user_data.get("user_type", "student") if user_data else "student",
-        "preferred_language": user_data.get("preferred_language", "English") if user_data else "English"
+        "preferred_language": user_data.get("preferred_language", "English") if user_data else "English",
+        "subjects": user_data.get("subjects", []) if user_data else [],
+        "learning_goals": user_data.get("learning_goals", []) if user_data else [],
+        "interests": user_data.get("interests", []) if user_data else []
     }
 
 
@@ -476,6 +492,31 @@ async def get_account_info(request: Request):
 async def logout():
     """Logout endpoint (frontend clears token)"""
     return {"message": "Logged out successfully"}
+
+
+@app.get("/auth/dev-setup-token")
+async def get_dev_setup_token():
+    """DEV ONLY: Get a test setup token for testing the signup wizard"""
+    # Only allow in development
+    if os.getenv("ENVIRONMENT", "development") == "production":
+        raise HTTPException(status_code=403, detail="Not available in production")
+
+    # Create a test Google user data
+    test_google_user = {
+        "id": "dev-test-123",
+        "email": "test@example.com",
+        "name": "Test User",
+        "picture": "",
+        "verified_email": True
+    }
+
+    # Create a valid setup token
+    setup_token = create_setup_token(test_google_user)
+
+    return {
+        "setup_token": setup_token,
+        "google_user": test_google_user
+    }
 
 
 @app.get("/auth/gemini-key")

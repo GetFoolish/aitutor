@@ -24,9 +24,11 @@ import AssessmentGuard from "./components/auth/AssessmentGuard";
 import Header from "./components/header/Header";
 import BackgroundShapes from "./components/background-shapes/BackgroundShapes";
 import QuestionDisplay from "./components/question-display/QuestionDisplay";
+import SubjectAwareContent from "./components/subject-aware-content/SubjectAwareContent";
 import Scratchpad from "./components/scratchpad/Scratchpad";
 import { ThemeProvider } from "./components/theme/theme-provier";
 import { HintProvider } from "./contexts/HintContext";
+import { useAuth } from "./contexts/AuthContext";
 import { Toaster } from "@/components/ui/sonner";
 import { useMediaMixer } from "./hooks/useMediaMixer";
 import { useMediaCapture } from "./hooks/useMediaCapture";
@@ -62,6 +64,19 @@ const GlobalScratchpadListener = () => {
 // The separate VoiceSession component is no longer needed here
 
 function App() {
+  // Get user info for subject-aware features
+  const { user } = useAuth();
+  const userSubjects = user?.subjects || ['Math'];
+  const [activeSubject, setActiveSubject] = useState<string>(userSubjects[0] || 'Math');
+  const userHasMath = userSubjects.some(s => s.toLowerCase() === 'math');
+
+  // Update active subject when user subjects change
+  useEffect(() => {
+    if (user?.subjects && user.subjects.length > 0) {
+      setActiveSubject(user.subjects[0]);
+    }
+  }, [user?.subjects]);
+
   // Developer mode hook for Gemini Console visibility
   const { isDeveloperMode, toggleDeveloperMode } = useDeveloperMode();
 
@@ -249,7 +264,8 @@ function App() {
     <ThemeProvider defaultTheme="light" storageKey="ai-tutor-theme">
       <div className="App">
         <AuthGuard>
-          <AssessmentGuard subject="math" onStartAssessment={startAssessment}>
+          {/* Disabled auto-assessment to allow subject-aware content */}
+          <AssessmentGuard subject="math">
             <TutorProvider>
               <LiveKitWrapper>
                 {USE_LIVEKIT && <GlobalScratchpadListener />}
@@ -277,6 +293,7 @@ function App() {
                         open={isGradingSidebarOpen}
                         onToggle={toggleGradingSidebar}
                         currentSkill={currentSkill}
+                        activeSubject={activeSubject}
                       />
                       <main style={{
                         marginRight: isSidebarOpen ? (import.meta.env.DEV ? "260px" : "320px") : "0",
@@ -289,37 +306,48 @@ function App() {
                             <ScratchpadCapture onFrameCaptured={(canvas) => {
                               mediaMixer.updateScratchpadFrame(canvas);
                             }}>
-                              <QuestionDisplay
-                                onSkillChange={setCurrentSkill}
-                                onQuestionChange={setCurrentQuestionId}
-                                watchedVideoIds={watchedVideoIds}
-                                onAnswerSubmitted={() => setWatchedVideoIds([])}
-                                assessmentMode={assessmentMode}
-                                assessmentQuestions={assessmentQuestions}
-                                currentQuestionIndex={assessmentCurrentIndex}
-                                onAssessmentAnswer={(questionId, isCorrect) => {
-                                  const currentQuestion = assessmentQuestions[assessmentCurrentIndex];
-                                  const newAnswer = {
-                                    question_id: questionId,
-                                    skill_id: currentQuestion.dash_metadata.skill_ids[0],
-                                    is_correct: isCorrect
-                                  };
-                                  const newAnswers = [...assessmentAnswers, newAnswer];
-                                  setAssessmentAnswers(newAnswers);
-                                  setWatchedVideoIds([]);
+                              {console.log('[App] assessmentMode:', assessmentMode)}
+                              {assessmentMode ? (
+                                <QuestionDisplay
+                                  onSkillChange={setCurrentSkill}
+                                  onQuestionChange={setCurrentQuestionId}
+                                  watchedVideoIds={watchedVideoIds}
+                                  onAnswerSubmitted={() => setWatchedVideoIds([])}
+                                  assessmentMode={assessmentMode}
+                                  assessmentQuestions={assessmentQuestions}
+                                  currentQuestionIndex={assessmentCurrentIndex}
+                                  onAssessmentAnswer={(questionId, isCorrect) => {
+                                    const currentQuestion = assessmentQuestions[assessmentCurrentIndex];
+                                    const newAnswer = {
+                                      question_id: questionId,
+                                      skill_id: currentQuestion.dash_metadata.skill_ids[0],
+                                      is_correct: isCorrect
+                                    };
+                                    const newAnswers = [...assessmentAnswers, newAnswer];
+                                    setAssessmentAnswers(newAnswers);
+                                    setWatchedVideoIds([]);
 
-                                  if (assessmentCurrentIndex < assessmentQuestions.length - 1) {
-                                    setTimeout(() => {
-                                      setAssessmentCurrentIndex(assessmentCurrentIndex + 1);
-                                    }, 2000);
-                                  } else {
-                                    setTimeout(() => {
-                                      // Submit assessment and exit assessment mode
-                                      submitAssessment(newAnswers);
-                                    }, 2000);
-                                  }
-                                }}
-                              />
+                                    if (assessmentCurrentIndex < assessmentQuestions.length - 1) {
+                                      setTimeout(() => {
+                                        setAssessmentCurrentIndex(assessmentCurrentIndex + 1);
+                                      }, 2000);
+                                    } else {
+                                      setTimeout(() => {
+                                        // Submit assessment and exit assessment mode
+                                        submitAssessment(newAnswers);
+                                      }, 2000);
+                                    }
+                                  }}
+                                />
+                              ) : (
+                                <SubjectAwareContent
+                                  onSkillChange={setCurrentSkill}
+                                  onQuestionChange={setCurrentQuestionId}
+                                  watchedVideoIds={watchedVideoIds}
+                                  onAnswerSubmitted={() => setWatchedVideoIds([])}
+                                  onSubjectChange={setActiveSubject}
+                                />
+                              )}
                               {isScratchpadOpen && (
                                 <div className="scratchpad-container">
                                   <Scratchpad />

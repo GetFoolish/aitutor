@@ -165,6 +165,39 @@ const LoginPage: React.FC = () => {
 
         {/* Email/Password Form */}
         <EmailPasswordForm onAuthSuccess={handleAuthSuccess} />
+
+        {/* Dev Mode Test Button */}
+        {import.meta.env.DEV && (
+          <div style={{ marginTop: '20px', borderTop: '2px dashed #ccc', paddingTop: '20px' }}>
+            <p style={{ fontSize: '12px', marginBottom: '10px', color: '#666' }}>Development Mode:</p>
+            <button
+              onClick={async () => {
+                try {
+                  const response = await fetch(`${import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003'}/auth/dev-setup-token`);
+                  if (!response.ok) throw new Error('Failed to get dev token');
+                  const data = await response.json();
+                  setSetupToken(data.setup_token);
+                  setShowSignupForm(true);
+                } catch (error) {
+                  console.error('Dev token error:', error);
+                  alert('Failed to get dev setup token');
+                }
+              }}
+              style={{
+                padding: '10px 15px',
+                background: '#333',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: 'bold'
+              }}
+            >
+              Test Signup Wizard UI
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

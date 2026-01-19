@@ -17,7 +17,105 @@ interface GradingSidebarProps {
     open: boolean;
     onToggle: () => void;
     currentSkill?: string | null;
+    activeSubject?: string;
 }
+
+// Mock skills for non-Math subjects
+const SUBJECT_SKILLS: Record<string, any> = {
+    English: {
+        subjects: {
+            English: {
+                grade_levels: {
+                    "5": {
+                        units: [
+                            { id: "eng-nouns", name: "Parts of Speech: Nouns", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                            { id: "eng-verbs", name: "Parts of Speech: Verbs", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                            { id: "eng-adjectives", name: "Parts of Speech: Adjectives", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                            { id: "eng-reading", name: "Reading Comprehension", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                            { id: "eng-vocabulary", name: "Vocabulary Building", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                            { id: "eng-grammar", name: "Grammar Rules", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                        ]
+                    }
+                }
+            }
+        },
+        overall_grade: "N/A",
+        overall_mastery: 0
+    },
+    Science: {
+        subjects: {
+            Science: {
+                grade_levels: {
+                    "5": {
+                        units: [
+                            { id: "sci-water", name: "The Water Cycle", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                            { id: "sci-plants", name: "Plant Life", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                            { id: "sci-animals", name: "Animal Classification", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                            { id: "sci-matter", name: "States of Matter", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                            { id: "sci-energy", name: "Forms of Energy", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                        ]
+                    }
+                }
+            }
+        },
+        overall_grade: "N/A",
+        overall_mastery: 0
+    },
+    History: {
+        subjects: {
+            History: {
+                grade_levels: {
+                    "5": {
+                        units: [
+                            { id: "hist-ancient", name: "Ancient Civilizations", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                            { id: "hist-medieval", name: "Medieval Times", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                            { id: "hist-exploration", name: "Age of Exploration", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                            { id: "hist-revolution", name: "American Revolution", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                        ]
+                    }
+                }
+            }
+        },
+        overall_grade: "N/A",
+        overall_mastery: 0
+    },
+    Coding: {
+        subjects: {
+            Coding: {
+                grade_levels: {
+                    "5": {
+                        units: [
+                            { id: "code-variables", name: "Variables & Data Types", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                            { id: "code-loops", name: "Loops & Iteration", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                            { id: "code-conditions", name: "Conditionals (If/Else)", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                            { id: "code-functions", name: "Functions", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                        ]
+                    }
+                }
+            }
+        },
+        overall_grade: "N/A",
+        overall_mastery: 0
+    },
+    Arts: {
+        subjects: {
+            Arts: {
+                grade_levels: {
+                    "5": {
+                        units: [
+                            { id: "art-colors", name: "Color Theory", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                            { id: "art-shapes", name: "Shapes & Forms", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                            { id: "art-perspective", name: "Perspective Drawing", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                            { id: "art-famous", name: "Famous Artists", mastery: 0, questions_answered: 0, questions_correct: 0 },
+                        ]
+                    }
+                }
+            }
+        },
+        overall_grade: "N/A",
+        overall_mastery: 0
+    }
+};
 
 
 
@@ -38,12 +136,14 @@ const formatTime = (timestamp: number | null) => {
     );
 };
 
-export default function GradingSidebar({ open, onToggle, currentSkill }: GradingSidebarProps) {
+export default function GradingSidebar({ open, onToggle, currentSkill, activeSubject = 'Math' }: GradingSidebarProps) {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const isUserScrollingRef = useRef(false);
     const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    
-    // Fetch grading panel data from API
+
+    const isMathSubject = activeSubject.toLowerCase() === 'math';
+
+    // Fetch grading panel data from API (only for Math)
     const { data: gradingData, isLoading } = useQuery({
         queryKey: ["grading-panel"],
         queryFn: async () => {
@@ -56,13 +156,17 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
         staleTime: 60_000, // Consider data fresh for 60 seconds
         refetchOnWindowFocus: false, // Don't refetch when window regains focus
         refetchOnMount: true, // Only refetch when component mounts
-        // Removed refetchInterval - we'll manually invalidate on answer submission
+        enabled: isMathSubject, // Only fetch for Math
     });
-    
+
+    // Use mock data for non-Math subjects, API data for Math
+    const displayData = isMathSubject ? gradingData : SUBJECT_SKILLS[activeSubject];
+
     // Extract data from grading panel response
-    const subjects = gradingData?.subjects || {};
-    const overallGrade = gradingData?.overall_grade || "N/A";
-    const overallMastery = gradingData?.overall_mastery || 0;
+    const subjects = displayData?.subjects || {};
+    const overallGrade = displayData?.overall_grade || "N/A";
+    const overallMastery = displayData?.overall_mastery || 0;
+    const effectiveLoading = isMathSubject ? isLoading : false;
     
     // Debug logging
     useEffect(() => {
@@ -114,7 +218,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
 
     // Auto-scroll when open, currentSkill, or data loading state changes
     useEffect(() => {
-        if (open && currentSkill && !isLoading && gradingData) {
+        if (open && currentSkill && !effectiveLoading && displayData) {
             // If skill changed, reset user scrolling flag and scroll immediately
             const skillChanged = prevSkillRef.current !== currentSkill;
             if (skillChanged) {
@@ -138,7 +242,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
             return () => clearTimeout(timeoutId);
         }
         prevOpenRef.current = open;
-    }, [open, currentSkill, isLoading, gradingData]);
+    }, [open, currentSkill, effectiveLoading, displayData]);
 
     // Handle user scrolling and inactivity
     useEffect(() => {
@@ -242,7 +346,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                         onClick={handleContainerClick}
                     >
                         {/* Overall Grade Display */}
-                        {!isLoading && overallGrade && (
+                        {!effectiveLoading && overallGrade && (
                             <div className="mb-4 border-[4px] border-black dark:border-white bg-[#FFD93D] dark:bg-[#FFD93D] p-4 shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
                                 <div className="text-center">
                                     <div className="text-[10px] font-black tracking-wide text-black mb-1">Overall Grade</div>
@@ -259,7 +363,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                             className="w-full space-y-3"
                             onClick={(e) => e.stopPropagation()} // Prevent handleContainerClick from intercepting accordion clicks
                         >
-                            {isLoading ? (
+                            {effectiveLoading ? (
                                 <div className="text-center py-8 text-sm text-gray-500">
                                     Loading skills...
                                 </div>

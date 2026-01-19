@@ -3,6 +3,7 @@ import os
 import time
 import logging
 import sys
+import requests
 from typing import Dict, List, Optional
 from dataclasses import dataclass, asdict, field
 from datetime import datetime
@@ -10,6 +11,27 @@ from datetime import datetime
 from shared.logging_config import get_logger
 
 logger = get_logger(__name__)
+
+# DASH API URL for fetching skills (avoids slow DASHSystem instantiation)
+DASH_API_URL = os.environ.get("DASH_API_URL", "http://localhost:8000")
+
+def fetch_skills_from_api() -> Dict:
+    """
+    Fetch skills from the running DASH API instead of creating a new DASHSystem.
+    This is much faster as the DASH API already has the skills loaded.
+    """
+    try:
+        response = requests.get(f"{DASH_API_URL}/skills", timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            logger.info(f"[DASH API] Fetched {data.get('count', 0)} skills from DASH API")
+            return data.get("skills", {})
+        else:
+            logger.warning(f"[DASH API] Failed to fetch skills: {response.status_code}")
+            return {}
+    except requests.exceptions.RequestException as e:
+        logger.warning(f"[DASH API] Could not connect to DASH API: {e}")
+        return {}
 
 
 # Configure logging
@@ -171,7 +193,11 @@ class UserManager:
         above_grade_count = 0
         
         for skill_id, skill in all_skills.items():
-            skill_grade_value = skill.grade_level.value
+            # Handle both dict format (from API) and Skill object format
+            if isinstance(skill, dict):
+                skill_grade_value = skill.get("grade_level", 0)
+            else:
+                skill_grade_value = skill.grade_level.value
             current_grade_value = current_grade.value
             
             if skill_grade_value < current_grade_value:
@@ -452,11 +478,9 @@ class UserManager:
         # Calculate grade from age
         current_grade = calculate_grade_from_age(age)
         
-        # Get all skills for cold-start initialization
-        from services.DashSystem.dash_system import DASHSystem
-        dash_system = DASHSystem()
-        all_skills = dash_system.skills
-        
+        # Get all skills for cold-start initialization (from DASH API - fast!)
+        all_skills = fetch_skills_from_api()
+
         # Initialize skills based on grade
         skill_states = self.initialize_skills_for_grade(current_grade, all_skills)
         
@@ -541,10 +565,8 @@ class UserManager:
         # Calculate grade from age
         current_grade = calculate_grade_from_age(age)
 
-        # Get all skills for cold-start initialization
-        from services.DashSystem.dash_system import DASHSystem
-        dash_system = DASHSystem()
-        all_skills = dash_system.skills
+        # Get all skills for cold-start initialization (from DASH API - fast!)
+        all_skills = fetch_skills_from_api()
 
         # Initialize skills based on grade
         skill_states = self.initialize_skills_for_grade(current_grade, all_skills)

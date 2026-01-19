@@ -15,6 +15,9 @@ interface AuthUser {
   user_type: string;
   learning_style?: string;
   preferred_language?: string;
+  subjects?: string[];
+  learning_goals?: string[];
+  interests?: string[];
 }
 
 interface AuthContextType {

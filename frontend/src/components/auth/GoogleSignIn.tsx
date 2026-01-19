@@ -147,7 +147,7 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
         </button>
 
         {/* Dev Mode Verification Button */}
-        {process.env.NODE_ENV === 'development' && (
+        {import.meta.env.DEV && (
           <div style={{ marginTop: '20px', borderTop: '2px dashed #ccc', paddingTop: '20px' }}>
             <p style={{ fontSize: '12px', marginBottom: '10px', color: '#666' }}>Development Mode:</p>
             <button
