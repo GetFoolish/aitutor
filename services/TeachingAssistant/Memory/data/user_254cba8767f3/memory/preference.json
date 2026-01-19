@@ -1,0 +1,67 @@
+[
+  {
+    "id": "ad86d8c6-2e2e-4b9e-ae5b-fe338698440c",
+    "type": "preference",
+    "text": "Student demonstrates very brief responses. Further interaction style investigation is needed",
+    "importance": 0.5,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:29:04.916432",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "52cc3ea5-f207-4508-a32e-2075d54e255b",
+    "type": "preference",
+    "text": "Student has an interest in Maths",
+    "importance": 0.7,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:29:04.916441",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "29868c94-a77a-40be-a627-b114e5f39bd9",
+    "type": "preference",
+    "text": "Student expresses a dislike for maths.",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:31:34.743228",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "26a5ef3b-a98b-4691-8ab2-72bd08583cea",
+    "type": "preference",
+    "text": "Student has not stated any preferences yet.",
+    "importance": 0.1,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:32:25.089354",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "93506724-57ea-402f-8e42-ce7eef4a71ca",
+    "type": "preference",
+    "text": "Student has a dislike for something.",
+    "importance": 0.7,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:33:00.980457",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    }
+  }
+]

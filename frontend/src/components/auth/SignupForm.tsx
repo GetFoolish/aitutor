@@ -22,16 +22,17 @@ import {
 import { Progress } from "@/components/ui/progress";
 import "./auth.scss";
 
-// Zod Schema for Validation
+// Zod Schema for Validation (only require basic info for simplified onboarding)
 const signupSchema = z.object({
   userType: z.enum(["student", "parent"]),
-  age: z.coerce.number().min(5, "Age must be at least 5").max(18, "Age must be under 18"),
-  // Step 2
-  subjects: z.array(z.string()).min(1, "Select at least one subject"),
-  learningGoals: z.array(z.string()).min(1, "Select at least one goal"),
-  // Step 3
-  interests: z.array(z.string()).min(1, "Select at least one interest"),
-  learningStyle: z.string().min(1, "Please select a learning style"),
+  dateOfBirth: z.string().min(1, "Date of birth is required"),
+  gender: z.string().min(1, "Please select your gender"),
+  preferredLanguage: z.string().min(1, "Please select your preferred language"),
+  // Optional fields kept for compatibility with API
+  subjects: z.array(z.string()).optional(),
+  learningGoals: z.array(z.string()).optional(),
+  interests: z.array(z.string()).optional(),
+  learningStyle: z.string().optional(),
 });
 
 type SignupFormData = z.infer<typeof signupSchema>;
@@ -43,11 +44,8 @@ interface SignupFormProps {
   onCancel: () => void;
 }
 
-const STEPS = [
-  { id: 1, title: "Basic Info", description: "Let's get to know you" },
-  { id: 2, title: "Academics", description: "What do you want to learn?" },
-  { id: 3, title: "Personalization", description: "How do you learn best?" },
-];
+// Only keep the Basic Info step for streamlined onboarding
+const STEPS = [{ id: 1, title: "Basic Info", description: "Let's get to know you" }];
 
 // Predefined Options
 const SUBJECTS = ["Math", "Science", "English", "History", "Coding", "Arts"];
@@ -73,6 +71,8 @@ const LEARNING_STYLES = [
   { value: "kinesthetic", label: "Kinesthetic (I learn by doing)", icon: "sports_handball" },
   { value: "reading", label: "Reading/Writing (I learn by reading)", icon: "menu_book" },
 ];
+const LANGUAGES = ["English", "Hindi", "Spanish", "French"];
+const GENDERS = ["Male", "Female", "Other", "Prefer not to say"];
 
 
 const SignupForm: React.FC<SignupFormProps> = ({ setupToken, googleUser, onComplete, onCancel }) => {
@@ -90,7 +90,9 @@ const SignupForm: React.FC<SignupFormProps> = ({ setupToken, googleUser, onCompl
     resolver: zodResolver(signupSchema) as any,
     defaultValues: {
       userType: "student",
-      age: undefined,
+      dateOfBirth: "",
+      gender: "",
+      preferredLanguage: "",
       subjects: [],
       learningGoals: [],
       interests: [],
@@ -100,16 +102,9 @@ const SignupForm: React.FC<SignupFormProps> = ({ setupToken, googleUser, onCompl
   });
 
   const nextStep = async () => {
-    let isValidStep = false;
-    if (step === 1) {
-      isValidStep = await trigger(["userType", "age"]);
-    } else if (step === 2) {
-      isValidStep = await trigger(["subjects", "learningGoals"]);
-    }
-
-    if (isValidStep) {
-      setStep((prev) => prev + 1);
-    }
+    // With single-step onboarding we don't need to advance
+    const ok = await trigger(["userType", "dateOfBirth", "gender", "preferredLanguage"]);
+    if (ok) setStep(1);
   };
 
   const prevStep = () => {
@@ -121,12 +116,22 @@ const SignupForm: React.FC<SignupFormProps> = ({ setupToken, googleUser, onCompl
     setSubmitError("");
 
     try {
-      const response = await authAPI.completeSetup(setupToken, data.userType, data.age, {
-        subjects: data.subjects,
-        learningGoals: data.learningGoals,
-        interests: data.interests,
-        learningStyle: data.learningStyle,
-      });
+      // Provide safe defaults for optional profile data
+      const profileData = {
+        subjects: data.subjects || [],
+        learningGoals: data.learningGoals || [],
+        interests: data.interests || [],
+        learningStyle: data.learningStyle || 'visual',
+      };
+
+      const response = await authAPI.completeSetup(
+        setupToken,
+        data.userType,
+        data.dateOfBirth,
+        data.gender,
+        data.preferredLanguage,
+        profileData
+      );
       onComplete(response.token, response.user);
     } catch (err: any) {
       setSubmitError(err.message || "Failed to complete setup.");
@@ -204,24 +209,19 @@ const SignupForm: React.FC<SignupFormProps> = ({ setupToken, googleUser, onCompl
                 </div>
 
                 <div className="space-y-3">
-                  <Label htmlFor="age" className="text-base font-semibold">
-                    How old are you?
+                  <Label htmlFor="dateOfBirth" className="text-base font-semibold">
+                    What's your date of birth?
                   </Label>
                   <Controller
-                    name="age"
+                    name="dateOfBirth"
                     control={control}
                     render={({ field }) => (
                       <div className="relative">
                         <Input
                           {...field}
-                          value={field.value ?? ''}
-                          id="age"
-                          type="number"
-                          placeholder="Enter age (5-18)"
+                          id="dateOfBirth"
+                          type="date"
                           className="h-12 text-lg"
-                          onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                          min={5}
-                          max={18}
                         />
                         <div className="absolute right-3 top-3 text-muted-foreground">
                           <span className="material-symbols-outlined">cake</span>
@@ -229,143 +229,62 @@ const SignupForm: React.FC<SignupFormProps> = ({ setupToken, googleUser, onCompl
                       </div>
                     )}
                   />
-                  {errors.age && <p className="text-sm font-medium text-destructive">{errors.age.message}</p>}
+                  {errors.dateOfBirth && <p className="text-sm font-medium text-destructive">{errors.dateOfBirth.message}</p>}
+                </div>
+
+                <div className="space-y-3">
+                  <Label htmlFor="gender" className="text-base font-semibold">
+                    What's your gender?
+                  </Label>
+                  <Controller
+                    name="gender"
+                    control={control}
+                    render={({ field }) => (
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <SelectTrigger className="h-12 text-lg">
+                          <SelectValue placeholder="Select gender" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {GENDERS.map((gender) => (
+                            <SelectItem key={gender} value={gender}>
+                              {gender}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  {errors.gender && <p className="text-sm font-medium text-destructive">{errors.gender.message}</p>}
+                </div>
+
+                <div className="space-y-3">
+                  <Label htmlFor="preferredLanguage" className="text-base font-semibold">
+                    What language are you most comfortable in?
+                  </Label>
+                  <Controller
+                    name="preferredLanguage"
+                    control={control}
+                    render={({ field }) => (
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <SelectTrigger className="h-12 text-lg">
+                          <SelectValue placeholder="Select language" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {LANGUAGES.map((language) => (
+                            <SelectItem key={language} value={language}>
+                              {language}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  {errors.preferredLanguage && <p className="text-sm font-medium text-destructive">{errors.preferredLanguage.message}</p>}
                 </div>
               </div>
             )}
 
-            {step === 2 && (
-              <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                <div className="space-y-3">
-                  <Label className="text-base font-semibold">Which subjects do you need help with?</Label>
-                  <Controller
-                    name="subjects"
-                    control={control}
-                    render={({ field }) => (
-                      <div className="grid grid-cols-2 gap-3">
-                        {SUBJECTS.map((subject) => (
-                          <div key={subject} className="flex items-center space-x-2 rounded-md border p-3 hover:bg-accent">
-                            <Checkbox
-                              id={`subject-${subject}`}
-                              checked={field.value.includes(subject)}
-                              onCheckedChange={(checked) => {
-                                if (checked) {
-                                  field.onChange([...field.value, subject]);
-                                } else {
-                                  field.onChange(field.value.filter((val) => val !== subject));
-                                }
-                              }}
-                            />
-                            <label htmlFor={`subject-${subject}`} className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                              {subject}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  />
-                  {errors.subjects && <p className="text-sm font-medium text-destructive">{errors.subjects.message}</p>}
-                </div>
-
-                <div className="space-y-3">
-                  <Label className="text-base font-semibold">What are your learning goals?</Label>
-                  <Controller
-                    name="learningGoals"
-                    control={control}
-                    render={({ field }) => (
-                      <div className="space-y-2">
-                        {GOALS.map((goal) => (
-                          <div key={goal} className="flex items-center space-x-2">
-                            <Checkbox
-                              id={`goal-${goal}`}
-                              checked={field.value.includes(goal)}
-                              onCheckedChange={(checked) => {
-                                if (checked) {
-                                  field.onChange([...field.value, goal]);
-                                } else {
-                                  field.onChange(field.value.filter((val) => val !== goal));
-                                }
-                              }}
-                            />
-                            <label htmlFor={`goal-${goal}`} className="text-sm font-medium leading-none">
-                              {goal}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  />
-                  {errors.learningGoals && <p className="text-sm font-medium text-destructive">{errors.learningGoals.message}</p>}
-                </div>
-              </div>
-            )}
-
-            {step === 3 && (
-              <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                <div className="space-y-3">
-                  <Label className="text-base font-semibold">What are your interests?</Label>
-                  <p className="text-xs text-muted-foreground">We'll use these to make problems more fun!</p>
-                  <Controller
-                    name="interests"
-                    control={control}
-                    render={({ field }) => (
-                      <div className="flex flex-wrap gap-2">
-                        {INTERESTS.map((interest) => {
-                          const isSelected = field.value.includes(interest);
-                          return (
-                            <div
-                              key={interest}
-                              onClick={() => {
-                                if (isSelected) {
-                                  field.onChange(field.value.filter((i) => i !== interest));
-                                } else {
-                                  field.onChange([...field.value, interest]);
-                                }
-                              }}
-                              className={`cursor-pointer rounded-full border px-3 py-1.5 text-sm transition-colors ${isSelected
-                                ? "bg-primary text-primary-foreground border-primary hover:bg-primary/90"
-                                : "bg-background hover:bg-accent hover:text-accent-foreground"
-                                }`}
-                            >
-                              {isSelected && <span className="mr-1">✓</span>}
-                              {interest}
-                            </div>
-                          )
-                        })}
-                      </div>
-                    )}
-                  />
-                  {errors.interests && <p className="text-sm font-medium text-destructive">{errors.interests.message}</p>}
-                </div>
-
-                <div className="space-y-3">
-                  <Label className="text-base font-semibold">How do you prefer to learn?</Label>
-                  <Controller
-                    name="learningStyle"
-                    control={control}
-                    render={({ field }) => (
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="grid grid-cols-1 gap-2"
-                      >
-                        {LEARNING_STYLES.map((style) => (
-                          <div key={style.value} className="flex items-center space-x-2 rounded-lg border p-3 hover:bg-accent/50 has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-accent">
-                            <RadioGroupItem value={style.value} id={`style-${style.value}`} />
-                            <Label htmlFor={`style-${style.value}`} className="flex flex-1 cursor-pointer items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <span className="material-symbols-outlined text-muted-foreground">{style.icon}</span>
-                                <span className="font-medium">{style.label.split("(")[0]}</span>
-                              </div>
-                            </Label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    )}
-                  />
-                </div>
-              </div>
-            )}
+            {/* Steps 2 and 3 removed for streamlined onboarding. Optional fields remain supported. */}
           </div>
 
           {submitError && (
@@ -374,26 +293,14 @@ const SignupForm: React.FC<SignupFormProps> = ({ setupToken, googleUser, onCompl
             </div>
           )}
 
-          <div className="mt-6 flex justify-between gap-4 border-t pt-6">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={step === 1 ? onCancel : prevStep}
-              disabled={isSubmitting}
-            >
-              {step === 1 ? "Cancel" : "Back"}
+          <div className="mt-6 flex justify-end gap-4 border-t pt-6">
+            <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+              Cancel
             </Button>
 
-            {step < 3 ? (
-              <Button type="button" onClick={nextStep}>
-                Next Step
-                <span className="material-symbols-outlined ml-2 text-base">arrow_forward</span>
-              </Button>
-            ) : (
-              <Button type="submit" disabled={isSubmitting} className="min-w-[120px]">
-                {isSubmitting ? "Finishing..." : "Start Learning!"}
-              </Button>
-            )}
+            <Button type="submit" disabled={isSubmitting} className="min-w-[120px]">
+              {isSubmitting ? "Finishing..." : "Start Learning!"}
+            </Button>
           </div>
         </form>
       </div>

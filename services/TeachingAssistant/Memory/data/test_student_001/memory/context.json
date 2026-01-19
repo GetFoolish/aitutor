@@ -1,0 +1,418 @@
+[
+  {
+    "id": "c5996b3b-79ca-456f-96cf-281ddcf81762",
+    "type": "context",
+    "text": "Student is okay but sounds a bit reluctant to start the session.",
+    "importance": 0.6,
+    "student_id": "test_student_001",
+    "session_id": "sess_383303d6f2a34b2a",
+    "timestamp": "2025-12-17T22:20:45.166989",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "4927c5ee-4c34-4976-b95e-cc25070175bc",
+    "type": "context",
+    "text": "Student is dreading the math session.",
+    "importance": 0.8,
+    "student_id": "test_student_001",
+    "session_id": "sess_383303d6f2a34b2a",
+    "timestamp": "2025-12-17T22:20:45.166997",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "7f54b209-49d5-4dd8-a93f-56ee43bba0c3",
+    "type": "context",
+    "text": "Student is possibly thinking of basketball game on Friday.",
+    "importance": 0.7,
+    "student_id": "test_student_001",
+    "session_id": "sess_383303d6f2a34b2a",
+    "timestamp": "2025-12-17T22:21:45.257895",
+    "metadata": {
+      "emotion": "excited",
+      "topic": "basketball"
+    }
+  },
+  {
+    "id": "842bcbb5-493c-4240-8616-85286430f5da",
+    "type": "context",
+    "text": "Student experiences nervousness before games.",
+    "importance": 0.8,
+    "student_id": "test_student_001",
+    "session_id": "sess_383303d6f2a34b2a",
+    "timestamp": "2025-12-17T22:21:57.577414",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "1c9b45c3-dcab-4a79-a8b0-784dee093437",
+    "type": "context",
+    "text": "Student experiences nervousness before tests.",
+    "importance": 0.9,
+    "student_id": "test_student_001",
+    "session_id": "sess_383303d6f2a34b2a",
+    "timestamp": "2025-12-17T22:21:57.577419",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "22ae8c3c-c071-4eb1-a697-e45461897e83",
+    "type": "context",
+    "text": "Student is stressed about a math test on Friday morning.",
+    "importance": 0.9,
+    "student_id": "test_student_001",
+    "session_id": "sess_383303d6f2a34b2a",
+    "timestamp": "2025-12-17T22:21:57.577422",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "3f926842-b15a-4c52-af93-84714d80e198",
+    "type": "context",
+    "text": "Student is trying to learn math to avoid panicking on Friday.",
+    "importance": 0.7,
+    "student_id": "test_student_001",
+    "session_id": "sess_383303d6f2a34b2a",
+    "timestamp": "2025-12-17T22:21:57.577425",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "5d1d27f1-a98f-4335-9be0-d2a217bbf9af",
+    "type": "context",
+    "text": "Student experiences confusion with abstract concepts; words 'jumble up'.",
+    "importance": 0.7,
+    "student_id": "test_student_001",
+    "session_id": "sess_383303d6f2a34b2a",
+    "timestamp": "2025-12-17T22:22:08.684095",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "2e932356-cb38-485e-887b-ca996a460e0b",
+    "type": "context",
+    "text": "Student is distracted by a barking dog.",
+    "importance": 0.3,
+    "student_id": "test_student_001",
+    "session_id": "sess_383303d6f2a34b2a",
+    "timestamp": "2025-12-17T22:22:08.684098",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "c2c2c249-9bcb-4d07-a4cb-f8253cb0b35c",
+    "type": "context",
+    "text": "Student is anxious about being late for practice.",
+    "importance": 0.9,
+    "student_id": "test_student_001",
+    "session_id": "sess_383303d6f2a34b2a",
+    "timestamp": "2025-12-17T22:23:08.737422",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "db3837fd-8d57-4f51-958c-1f5eb7cd1cb8",
+    "type": "context",
+    "text": "The student is feeling tired.",
+    "importance": 0.8,
+    "student_id": "test_student_001",
+    "session_id": "sess_e7786fd19ce64376",
+    "timestamp": "2025-12-17T22:23:31.265268",
+    "metadata": {
+      "emotion": "tired",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "0c0d63b2-33db-4836-9fa7-323349bff9c1",
+    "type": "context",
+    "text": "The student is experiencing anxiety about a basketball game and math test.",
+    "importance": 0.6,
+    "student_id": "test_student_001",
+    "session_id": "sess_e7786fd19ce64376",
+    "timestamp": "2025-12-17T22:23:31.265290",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "19fd3537-d723-4e51-87f8-bf7ef4155fb4",
+    "type": "context",
+    "text": "Student was shaking and had sweaty palms while waiting for the test results, indicating anxiety.",
+    "importance": 0.8,
+    "student_id": "test_student_001",
+    "session_id": "sess_e7786fd19ce64376",
+    "timestamp": "2025-12-17T22:23:43.294212",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "f57c2484-ed24-4517-9abb-7364e2aecdab",
+    "type": "context",
+    "text": "Student panicked during the math test.",
+    "importance": 0.6,
+    "student_id": "test_student_001",
+    "session_id": "sess_e7786fd19ce64376",
+    "timestamp": "2025-12-17T22:23:43.294234",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "math test"
+    }
+  },
+  {
+    "id": "1dae5d03-881b-40b6-8a6b-b62a100a1b8c",
+    "type": "context",
+    "text": "Feels good to not completely bomb it.",
+    "importance": 0.8,
+    "student_id": "test_student_001",
+    "session_id": "sess_e7786fd19ce64376",
+    "timestamp": "2025-12-17T22:23:54.590703",
+    "metadata": {
+      "emotion": "happy",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "3d7a1089-0209-4a91-9c27-128b7822bba2",
+    "type": "context",
+    "text": "Exhausted from practice.",
+    "importance": 0.6,
+    "student_id": "test_student_001",
+    "session_id": "sess_e7786fd19ce64376",
+    "timestamp": "2025-12-17T22:23:54.590724",
+    "metadata": {
+      "emotion": "tired",
+      "topic": "completing the square"
+    }
+  },
+  {
+    "id": "1f601308-bbd9-43d5-869a-efcaee77b84d",
+    "type": "context",
+    "text": "Student expresses frustration and annoyance with the math problem.",
+    "importance": 0.8,
+    "student_id": "test_student_001",
+    "session_id": "sess_e7786fd19ce64376",
+    "timestamp": "2025-12-17T22:24:42.962942",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "8b61ac5e-2268-4424-bfe3-c36e8727f857",
+    "type": "context",
+    "text": "Student expresses frustration and dislike for the topic (fractions).",
+    "importance": 0.9,
+    "student_id": "test_student_001",
+    "session_id": "sess_e7786fd19ce64376",
+    "timestamp": "2025-12-17T22:24:56.129100",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "fractions"
+    }
+  },
+  {
+    "id": "c2903519-ba47-4109-ab07-c8ebc231643c",
+    "type": "context",
+    "text": "Student feels the topic (fractions) is pointless and irrelevant to real life.",
+    "importance": 0.7,
+    "student_id": "test_student_001",
+    "session_id": "sess_e7786fd19ce64376",
+    "timestamp": "2025-12-17T22:24:56.129104",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "fractions"
+    }
+  },
+  {
+    "id": "9c1697f3-e21c-4762-b5e5-ac653b0e641f",
+    "type": "context",
+    "text": "Student has a dog named Max.",
+    "importance": 0.3,
+    "student_id": "test_student_001",
+    "session_id": "sess_e7786fd19ce64376",
+    "timestamp": "2025-12-17T22:25:07.115048",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "1b3af59c-0db9-47bb-8326-d0f4a473af1e",
+    "type": "context",
+    "text": "Student experienced frustration with math concepts.",
+    "importance": 0.8,
+    "student_id": "test_student_001",
+    "session_id": "sess_71e809ff7e6540b2",
+    "timestamp": "2025-12-17T22:25:48.615705",
+    "metadata": {
+      "emotion": "frustration",
+      "topic": "math"
+    }
+  },
+  {
+    "id": "301d8e8d-fc59-405a-84fc-bf8bf2a66732",
+    "type": "context",
+    "text": "Student is feeling overwhelmed and has parents pressuring them about grades.",
+    "importance": 0.9,
+    "student_id": "test_student_001",
+    "session_id": "sess_71e809ff7e6540b2",
+    "timestamp": "2025-12-17T22:25:48.615709",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "d624234f-854d-4792-b989-8f37cb483feb",
+    "type": "context",
+    "text": "Student expresses frustration and disinterest in physics.",
+    "importance": 0.9,
+    "student_id": "test_student_001",
+    "session_id": "sess_71e809ff7e6540b2",
+    "timestamp": "2025-12-17T22:26:00.177292",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "db232327-ec02-4d35-b88c-91e0bcb1b2eb",
+    "type": "context",
+    "text": "Student expresses frustration and feels the task is \"stupid\".",
+    "importance": 0.9,
+    "student_id": "test_student_001",
+    "session_id": "sess_71e809ff7e6540b2",
+    "timestamp": "2025-12-17T22:26:24.426266",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "solving equations"
+    }
+  },
+  {
+    "id": "faac0120-efff-4e71-92f3-accf8a5b16e5",
+    "type": "context",
+    "text": "Student feels overwhelmed and unable to think clearly.",
+    "importance": 0.9,
+    "student_id": "test_student_001",
+    "session_id": "sess_71e809ff7e6540b2",
+    "timestamp": "2025-12-17T22:26:24.426287",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "solving equations"
+    }
+  },
+  {
+    "id": "b4920e76-7c34-467c-9c19-80a8c9eca4a6",
+    "type": "context",
+    "text": "Student's brain is full of stress, making it hard to focus on math.",
+    "importance": 0.8,
+    "student_id": "test_student_001",
+    "session_id": "sess_71e809ff7e6540b2",
+    "timestamp": "2025-12-17T22:26:35.328735",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "766dc57a-de06-47df-83fc-4dfb3cc68c8a",
+    "type": "context",
+    "text": "Student is experiencing a stressful environment at home (loud noises, family interactions).",
+    "importance": 0.8,
+    "student_id": "test_student_001",
+    "session_id": "sess_71e809ff7e6540b2",
+    "timestamp": "2025-12-17T22:26:48.484860",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "79f1e5c3-c32f-4339-ae32-be77520f8466",
+    "type": "context",
+    "text": "Student might be experiencing stress, potentially related to the dog's behavior and the home environment.",
+    "importance": 0.7,
+    "student_id": "test_student_001",
+    "session_id": "sess_71e809ff7e6540b2",
+    "timestamp": "2025-12-17T22:26:48.484877",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "24f44405-7212-4465-a737-22015447e4b1",
+    "type": "context",
+    "text": "Student feels better.",
+    "importance": 0.7,
+    "student_id": "test_student_001",
+    "session_id": "sess_71e809ff7e6540b2",
+    "timestamp": "2025-12-17T22:27:23.533100",
+    "metadata": {
+      "emotion": "happy",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "f28f1ebc-dc8c-4759-a8ad-d02780ade4b9",
+    "type": "context",
+    "text": "Student was frustrated at some point during the interaction.",
+    "importance": 0.6,
+    "student_id": "test_student_001",
+    "session_id": "sess_71e809ff7e6540b2",
+    "timestamp": "2025-12-17T22:27:23.533103",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "af6c3a9c-675a-4483-8a6d-395d58369c5a",
+    "type": "context",
+    "text": "The student is feeling awake.",
+    "importance": 0.5,
+    "student_id": "test_student_001",
+    "session_id": "sess_7fdff713059c48f5",
+    "timestamp": "2025-12-17T22:27:47.154919",
+    "metadata": {
+      "emotion": "awake",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "b4a29d10-8085-4416-945b-c56fe9c13888",
+    "type": "context",
+    "text": "Student's initial response ('hopefully they don't crash, that's a foul') suggests potential anxiety related to the topic or task.",
+    "importance": 0.3,
+    "student_id": "test_student_001",
+    "session_id": "sess_7fdff713059c48f5",
+    "timestamp": "2025-12-17T22:27:59.348117",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "general"
+    }
+  }
+]

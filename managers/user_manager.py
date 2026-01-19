@@ -421,7 +421,14 @@ class UserManager:
         name: str,
         age: int,
         picture: str = "",
-        user_type: str = "student"
+        user_type: str = "student",
+        date_of_birth=None,
+        gender: str = "Prefer not to say",
+        preferred_language: str = "English",
+        subjects: List[str] = None,
+        learning_goals: List[str] = None,
+        interests: List[str] = None,
+        learning_style: str = None
     ) -> UserProfile:
         """
         Create a new user from Google OAuth
@@ -474,6 +481,14 @@ class UserManager:
             "google_name": name,
             "google_picture": picture,
             "user_type": user_type,
+            "auth_method": "google",
+            "date_of_birth": date_of_birth.isoformat() if date_of_birth else None,
+            "gender": gender,
+            "preferred_language": preferred_language,
+            "subjects": subjects or [],
+            "learning_goals": learning_goals or [],
+            "interests": interests or [],
+            "learning_style": learning_style,
             "last_login": current_time,
             "is_active": True
         })
@@ -490,7 +505,92 @@ class UserManager:
             raise RuntimeError(f"Failed to save user to MongoDB: {e}")
         
         return user_profile
-    
+
+    def create_email_user(
+        self,
+        email: str,
+        password_hash: str,
+        name: str,
+        age: int,
+        date_of_birth,
+        gender: str,
+        preferred_language: str,
+        user_type: str = "student"
+    ) -> UserProfile:
+        """
+        Create a new user from email/password auth
+
+        Args:
+            email: User email
+            password_hash: Hashed password
+            name: Display name
+            age: Student age
+            date_of_birth: Date of birth
+            gender: User gender
+            preferred_language: Preferred language for tutoring
+            user_type: User type (always "student" for now)
+
+        Returns:
+            Created UserProfile
+        """
+        import uuid
+
+        # Generate unique user_id
+        user_id = f"user_{uuid.uuid4().hex[:12]}"
+
+        # Calculate grade from age
+        current_grade = calculate_grade_from_age(age)
+
+        # Get all skills for cold-start initialization
+        from services.DashSystem.dash_system import DASHSystem
+        dash_system = DASHSystem()
+        all_skills = dash_system.skills
+
+        # Initialize skills based on grade
+        skill_states = self.initialize_skills_for_grade(current_grade, all_skills)
+
+        current_time = time.time()
+
+        user_profile = UserProfile(
+            user_id=user_id,
+            created_at=current_time,
+            last_updated=current_time,
+            skill_states=skill_states,
+            question_history=[],
+            student_notes={},
+            age=age,
+            current_grade=current_grade
+        )
+
+        # Save to MongoDB with email/password auth fields
+        user_dict = user_profile.to_dict()
+        user_dict.update({
+            "email": email,
+            "name": name,
+            "password_hash": password_hash,
+            "auth_method": "email",
+            "date_of_birth": date_of_birth.isoformat() if date_of_birth else None,
+            "gender": gender,
+            "preferred_language": preferred_language,
+            "user_type": user_type,
+            "email_verified": False,  # For future email verification
+            "last_login": current_time,
+            "is_active": True
+        })
+
+        # Save to MongoDB
+        if not self.use_mongodb or not self.mongo:
+            raise RuntimeError("MongoDB is required. Please configure MONGODB_URI in .env file.")
+
+        try:
+            self.mongo.users.insert_one(user_dict)
+            logger.info(f"[MONGODB] Created email/password user: {user_id} (age: {age}, grade: {current_grade})")
+        except Exception as e:
+            logger.error(f"[ERROR] Error saving email/password user: {e}")
+            raise RuntimeError(f"Failed to save user to MongoDB: {e}")
+
+        return user_profile
+
     def update_last_login(self, user_id: str):
         """Update last login timestamp"""
         if not self.use_mongodb or not self.mongo:

@@ -19,6 +19,7 @@ import "./App.scss";
 import "./styles/mobile-fixes.css"; // Mobile UI fixes
 import { TutorProvider } from "./features/tutor";
 import AuthGuard from "./components/auth/AuthGuard";
+import AssessmentGuard from "./components/auth/AssessmentGuard";
 import Header from "./components/header/Header";
 import BackgroundShapes from "./components/background-shapes/BackgroundShapes";
 import QuestionDisplay from "./components/question-display/QuestionDisplay";
@@ -28,14 +29,22 @@ import { HintProvider } from "./contexts/HintContext";
 import { Toaster } from "@/components/ui/sonner";
 import { useMediaMixer } from "./hooks/useMediaMixer";
 import { useMediaCapture } from "./hooks/useMediaCapture";
+import { useDeveloperMode } from "./hooks/use-developer-mode";
+import { apiUtils } from "./lib/api-utils";
+
+const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 
 // Lazy load heavy components
 const SidePanel = lazy(() => import("./components/side-panel/SidePanel"));
 const GradingSidebar = lazy(() => import("./components/grading-sidebar/GradingSidebar"));
 const ScratchpadCapture = lazy(() => import("./components/scratchpad-capture/ScratchpadCapture"));
 const FloatingControlPanel = lazy(() => import("./components/floating-control-panel/FloatingControlPanel"));
+const LearningAssetsPanel = lazy(() => import("./components/side-panel/LearningAssetsPanel"));
 
 function App() {
+  // Developer mode hook for Gemini Console visibility
+  const { isDeveloperMode, toggleDeveloperMode } = useDeveloperMode();
+
   // this video reference is used for displaying the active stream, whether that is the webcam or screen capture
   // feel free to style as you see fit
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -46,8 +55,17 @@ function App() {
   const mixerVideoRef = useRef<HTMLVideoElement>(null);
   const [isScratchpadOpen, setScratchpadOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isGradingSidebarOpen, setIsGradingSidebarOpen] = useState(false);
+  const [isGradingSidebarOpen, setIsGradingSidebarOpen] = useState(true);
   const [currentSkill, setCurrentSkill] = useState<string | null>(null);
+  const [currentQuestionId, setCurrentQuestionId] = useState<string | null>(null);
+  const [watchedVideoIds, setWatchedVideoIds] = useState<string[]>([]);
+  
+  // Assessment mode state
+  const [assessmentMode, setAssessmentMode] = useState(false);
+  const [assessmentSubject, setAssessmentSubject] = useState<string | null>(null);
+  const [assessmentQuestions, setAssessmentQuestions] = useState<any[]>([]);
+  const [assessmentCurrentIndex, setAssessmentCurrentIndex] = useState(0);
+  const [assessmentAnswers, setAssessmentAnswers] = useState<any[]>([]);
 
   // Ref to hold mediaMixer instance for use in callbacks
   const mediaMixerRef = useRef<any>(null);
@@ -64,6 +82,8 @@ function App() {
     screenVideoRef
   } = useMediaCapture({});
 
+  const [privacyEnabled, setPrivacyEnabled] = useState(false);
+
   // MediaMixer hook for local video mixing - uses state from useMediaCapture
   const mediaMixer = useMediaMixer({
     width: 1280,
@@ -72,6 +92,7 @@ function App() {
     quality: 0.85,
     cameraEnabled: cameraEnabled,
     screenEnabled: screenEnabled,
+    privacyEnabled: privacyEnabled,
     cameraVideoRef: cameraVideoRef,
     screenVideoRef: screenVideoRef
   });
@@ -101,35 +122,132 @@ function App() {
     setIsGradingSidebarOpen(!isGradingSidebarOpen);
   };
 
+  // Assessment functions
+  const startAssessment = async (subject: string) => {
+    try {
+      const response = await apiUtils.post(`${DASH_API_URL}/assessment/start/${subject}`, {});
+      
+      if (!response.ok) {
+        throw new Error(`Failed to start assessment: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.error) {
+        // Already completed - show results
+        alert(`You've already completed this assessment! Score: ${data.score}/${data.total || 0}`);
+        return;
+      }
+
+      // Enter assessment mode
+      setAssessmentMode(true);
+      setAssessmentSubject(subject);
+      setAssessmentQuestions(data.questions);
+      setAssessmentCurrentIndex(0);
+      setAssessmentAnswers([]);
+      // Hide both sidebars
+      setIsSidebarOpen(false);
+      setIsGradingSidebarOpen(false);
+    } catch (error) {
+      console.error('Failed to start assessment:', error);
+      alert('Failed to start assessment. Please try again.');
+    }
+  };
+
+  const submitAssessment = async (finalAnswers: any[]) => {
+    try {
+      const response = await apiUtils.post(`${DASH_API_URL}/assessment/complete`, {
+        subject: assessmentSubject,
+        answers: finalAnswers
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || `Failed to complete assessment: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      // Exit assessment mode
+      setAssessmentMode(false);
+      setAssessmentSubject(null);
+      setAssessmentQuestions([]);
+      setAssessmentCurrentIndex(0);
+      setAssessmentAnswers([]);
+      
+      // Show results
+      alert(`Assessment Complete!\nScore: ${data.score}/${data.total}\nGrade Level: ${data.estimated_grade || 'Calculating...'}`);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to complete assessment';
+      console.error('Failed to complete assessment:', err);
+      alert(errorMessage);
+    }
+  };
+
+  // Expose startAssessment globally for testing
+  useEffect(() => {
+    (window as any).startAssessment = startAssessment;
+    (window as any).exitAssessmentMode = () => {
+      setAssessmentMode(false);
+      setAssessmentSubject(null);
+      setAssessmentQuestions([]);
+      setAssessmentCurrentIndex(0);
+      setAssessmentAnswers([]);
+    };
+  }, []);
+
   useEffect(() => {
     if (mixerVideoRef.current && mixerStream) {
       mixerVideoRef.current.srcObject = mixerStream;
     }
   }, [mixerStream]);
 
+  // Keyboard shortcut for developer mode (Ctrl+Shift+D)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+        e.preventDefault();
+        toggleDeveloperMode();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [toggleDeveloperMode]);
+
   return (
     <ThemeProvider defaultTheme="light" storageKey="ai-tutor-theme">
       <div className="App">
         <AuthGuard>
-          <TutorProvider>
-            <HintProvider>
-              <Header
-                sidebarOpen={isSidebarOpen}
-                onToggleSidebar={toggleSidebar}
-              />
+          <AssessmentGuard subject="math" onStartAssessment={startAssessment}>
+            <TutorProvider>
+              <HintProvider>
+                <Header
+                  sidebarOpen={isSidebarOpen}
+                  onToggleSidebar={toggleSidebar}
+                  isDeveloperMode={isDeveloperMode}
+                  onToggleDeveloperMode={toggleDeveloperMode}
+                />
               <div className="streaming-console">
                 <Suspense fallback={<div className="flex items-center justify-center h-full w-full">Loading...</div>}>
-                  <SidePanel
-                    open={isSidebarOpen}
-                    onToggle={toggleSidebar}
-                  />
+                  {import.meta.env.DEV ? (
+                    <SidePanel
+                      open={isSidebarOpen}
+                      onToggle={toggleSidebar}
+                    />
+                  ) : (
+                    <LearningAssetsPanel
+                      open={isSidebarOpen}
+                      onToggle={toggleSidebar}
+                    />
+                  )}
                   <GradingSidebar
                     open={isGradingSidebarOpen}
                     onToggle={toggleGradingSidebar}
                     currentSkill={currentSkill}
                   />
                   <main style={{
-                    marginRight: isSidebarOpen ? "260px" : "0",
+                    marginRight: isSidebarOpen ? (import.meta.env.DEV ? "260px" : "320px") : "0",
                     marginLeft: isGradingSidebarOpen ? "260px" : "40px",
                     transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
                   }}>
@@ -139,7 +257,37 @@ function App() {
                         <ScratchpadCapture onFrameCaptured={(canvas) => {
                           mediaMixer.updateScratchpadFrame(canvas);
                         }}>
-                          <QuestionDisplay onSkillChange={setCurrentSkill} />
+                          <QuestionDisplay 
+                            onSkillChange={setCurrentSkill}
+                            onQuestionChange={setCurrentQuestionId}
+                            watchedVideoIds={watchedVideoIds}
+                            onAnswerSubmitted={() => setWatchedVideoIds([])}
+                            assessmentMode={assessmentMode}
+                            assessmentQuestions={assessmentQuestions}
+                            currentQuestionIndex={assessmentCurrentIndex}
+                            onAssessmentAnswer={(questionId, isCorrect) => {
+                              const currentQuestion = assessmentQuestions[assessmentCurrentIndex];
+                              const newAnswer = {
+                                question_id: questionId,
+                                skill_id: currentQuestion.dash_metadata.skill_ids[0],
+                                is_correct: isCorrect
+                              };
+                              const newAnswers = [...assessmentAnswers, newAnswer];
+                              setAssessmentAnswers(newAnswers);
+                              setWatchedVideoIds([]);
+                              
+                              if (assessmentCurrentIndex < assessmentQuestions.length - 1) {
+                                setTimeout(() => {
+                                  setAssessmentCurrentIndex(assessmentCurrentIndex + 1);
+                                }, 2000);
+                              } else {
+                                setTimeout(() => {
+                                  // Submit assessment and exit assessment mode
+                                  submitAssessment(newAnswers);
+                                }, 2000);
+                              }
+                            }}
+                          />
                           {isScratchpadOpen && (
                             <div className="scratchpad-container">
                               <Scratchpad />
@@ -160,6 +308,8 @@ function App() {
                         screenEnabled={screenEnabled}
                         onToggleCamera={toggleCamera}
                         onToggleScreen={toggleScreen}
+                        privacyEnabled={privacyEnabled}
+                        onTogglePrivacy={setPrivacyEnabled}
                         mediaMixerCanvasRef={mediaMixer.canvasRef}
                       />
                     </div>
@@ -169,6 +319,7 @@ function App() {
               <Toaster richColors closeButton />
             </HintProvider>
           </TutorProvider>
+          </AssessmentGuard>
         </AuthGuard>
       </div>
     </ThemeProvider>

@@ -6,8 +6,8 @@ import React, { ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import ComingSoon from './ComingSoon';
 
-// Access key - change this to enable/disable coming soon mode
-const ACCESS_PREFIX = '/app';
+// Access prefixes - paths that bypass the coming soon page
+const ACCESS_PREFIXES = ['/app', '/landing', '/pricing'];
 
 interface ComingSoonGuardProps {
   children: ReactNode;
@@ -15,15 +15,17 @@ interface ComingSoonGuardProps {
 
 const ComingSoonGuard: React.FC<ComingSoonGuardProps> = ({ children }) => {
   const location = useLocation();
-  
-  // Check if current pathname starts with the access prefix
-  const hasAccess = location.pathname.startsWith(ACCESS_PREFIX);
-  
+
+  // Check if current pathname starts with any of the access prefixes
+  const hasAccess = ACCESS_PREFIXES.some(prefix =>
+    location.pathname.startsWith(prefix)
+  );
+
   if (hasAccess) {
     // User has access - render normal app
     return <>{children}</>;
   }
-  
+
   // No access - show coming soon page
   return <ComingSoon />;
 };

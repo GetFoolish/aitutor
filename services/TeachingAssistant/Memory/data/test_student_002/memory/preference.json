@@ -1,0 +1,496 @@
+[
+  {
+    "id": "2b9d7486-a705-47a1-b9fb-dc105fc4e9fc",
+    "type": "preference",
+    "text": "Student seems to prefer explanations that are not textbook paragraphs and maybe simpler explanations.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:31:33.291720",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "8a73d7cd-d1a0-459d-9c86-377db1a78e45",
+    "type": "preference",
+    "text": "Student seems to prefer and understand visual representations of concepts like parabolas.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:31:56.963278",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "431256ea-515e-4196-8922-a1a5d9deb271",
+    "type": "preference",
+    "text": "Student understands concepts better when related to basketball analogies.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:32:33.504749",
+    "metadata": {
+      "emotion": "happy",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "2250e7e6-1484-4774-be97-ceca5bc545ee",
+    "type": "preference",
+    "text": "Student prefers visual explanations and finds words 'jumble up' for them.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_0e42505c954e4d5f",
+    "timestamp": "2025-12-17T22:32:57.134859",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "c4635592-2756-493f-99fe-c7c7cace863c",
+    "type": "preference",
+    "text": "Student used a visual aid (drawing a hoop) to aid problem solving.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:35:24.936509",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "ca336921-4eb6-4029-b3d5-28bec4172ec2",
+    "type": "preference",
+    "text": "Student prefers using a calculator for the current task.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:36:36.541278",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "fractions"
+    }
+  },
+  {
+    "id": "7b37e41b-14cb-4bdf-a850-ee011f19a35d",
+    "type": "preference",
+    "text": "Student engaged with diagrams in a previous session.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_b7cd3fb98d6f465c",
+    "timestamp": "2025-12-17T22:36:48.846253",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "83500fdc-2fa7-445d-873f-5d32f1869a29",
+    "type": "preference",
+    "text": "Student wants to work to 'get this over with.'",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_db94129053af4805",
+    "timestamp": "2025-12-17T22:38:18.708429",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "e79b3eef-4626-4772-bfcf-e7e9f6b21131",
+    "type": "preference",
+    "text": "The student appears to benefit from visual explanations ('picturing it').",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:40:37.993087",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "learning style"
+    }
+  },
+  {
+    "id": "e3b5ee10-cdc1-4742-ad5c-cf009cdb514d",
+    "type": "preference",
+    "text": "Student prefers analogies and real-world examples (basketball) to understand abstract concepts (imaginary roots).",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:41:14.789013",
+    "metadata": {
+      "emotion": "happy",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "7846b026-bb9a-4b93-863f-8e93937fcc47",
+    "type": "preference",
+    "text": "Student prefers visual explanations and finds drawing out concepts helpful.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_c532221f747945f9",
+    "timestamp": "2025-12-17T22:41:38.819794",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "e857f36a-9bc2-45ec-98f4-7a2d5a034315",
+    "type": "preference",
+    "text": "The student appears to benefit from and/or prefers visual explanations (U-shape/parabola).",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_f4622c7f4f424617",
+    "timestamp": "2025-12-17T22:47:50.300814",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "628ba9ff-8618-47e6-9d0f-b23f48d38922",
+    "type": "preference",
+    "text": "Prefers shorter explanations and struggles with long paragraphs in the textbook, indicating a preference for concise and easily digestible information.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_44438b8f9593416a",
+    "timestamp": "2025-12-17T23:01:43.282132",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "textbook explanations"
+    }
+  },
+  {
+    "id": "30aa1025-138e-4cc6-8dbf-b5be5bfabc39",
+    "type": "preference",
+    "text": "Student seems to prefer visual explanations or is understanding them better.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_44438b8f9593416a",
+    "timestamp": "2025-12-17T23:02:06.187693",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "roots of a parabola"
+    }
+  },
+  {
+    "id": "19d58b0a-4575-4980-aea3-10b1966236fd",
+    "type": "preference",
+    "text": "Student struggles with textbook explanations that use 'huge paragraphs'.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_1248894d45df49b7",
+    "timestamp": "2025-12-17T23:04:21.616460",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "da9134db-f7b7-4afc-987e-3a4534a7354b",
+    "type": "preference",
+    "text": "Student responds positively to visual explanations ('I'm picturing it').",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_6e8f9d84a79c441f",
+    "timestamp": "2025-12-17T23:06:27.787696",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "roots of a parabola"
+    }
+  },
+  {
+    "id": "ec985db0-5e83-43fc-8007-a660b6a0b48a",
+    "type": "preference",
+    "text": "Student understands the concept better when related to basketball (a visual/kinesthetic example).",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_6e8f9d84a79c441f",
+    "timestamp": "2025-12-17T23:07:04.504168",
+    "metadata": {
+      "emotion": "happy",
+      "topic": "learning style"
+    }
+  },
+  {
+    "id": "272361c4-05f7-4b63-9b2a-53fce031c12a",
+    "type": "preference",
+    "text": "Student prefers visual explanations, finding words jumbled and drawing helps with understanding.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_6e8f9d84a79c441f",
+    "timestamp": "2025-12-17T23:07:28.699735",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "29e74c0c-f915-4972-a9ca-03449a57e619",
+    "type": "preference",
+    "text": "The student responds positively to visual explanations (U-shape/parabola, throwing a ball).",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_4f0d1c1a2ce745e4",
+    "timestamp": "2025-12-17T23:10:08.014809",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic equations"
+    }
+  },
+  {
+    "id": "c827b652-6931-43dd-a8d1-b2bc45388fd7",
+    "type": "preference",
+    "text": "Student understands the concept better when presented with an analogy related to basketball (a visual/kinesthetic learning preference).",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_4f0d1c1a2ce745e4",
+    "timestamp": "2025-12-17T23:10:44.524737",
+    "metadata": {
+      "emotion": "happy",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "1e6996f4-043e-410e-904b-7a3f2cf3e459",
+    "type": "preference",
+    "text": "Student prefers visual explanations (drawing things out).",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_4f0d1c1a2ce745e4",
+    "timestamp": "2025-12-17T23:11:08.333873",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "4669324e-4bdb-47d2-8a3f-cba0282c2661",
+    "type": "preference",
+    "text": "Student struggles with long textual explanations.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_e2ad797742a948d6",
+    "timestamp": "2025-12-18T11:32:38.473504",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "math"
+    }
+  },
+  {
+    "id": "4689d3f3-774a-4171-8508-9ba295bdb02b",
+    "type": "preference",
+    "text": "Student seems to prefer and understand visual representations (parabola as a U-shape).",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:33:55.297679",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "roots of a parabola"
+    }
+  },
+  {
+    "id": "97a43a8a-27f8-4cd2-a2a6-ffa9831e508a",
+    "type": "preference",
+    "text": "Student prefers analogies and visual representations to understand concepts (specifically, basketball analogy helps with understanding).",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:34:32.141938",
+    "metadata": {
+      "emotion": "happy",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "9ee152e0-92ef-43cc-ba98-f2bd08d03fe4",
+    "type": "preference",
+    "text": "Student learns well with visual aids (drawing things out).",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_8ed60f5b6ecc42d2",
+    "timestamp": "2025-12-18T12:34:55.597854",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "learning styles"
+    }
+  },
+  {
+    "id": "0c38ebe7-2350-43aa-9e1e-d631568302eb",
+    "type": "preference",
+    "text": "Student's preference is to use a calculator.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_818a21b8eb9a4be4",
+    "timestamp": "2025-12-18T12:38:33.748000",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "fractions"
+    }
+  },
+  {
+    "id": "a2c90831-3413-4f71-bffb-fc16f095c43f",
+    "type": "preference",
+    "text": "Student processes math visually.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_f13b1cb9e7cf436b",
+    "timestamp": "2025-12-18T12:43:44.051503",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "learning style"
+    }
+  },
+  {
+    "id": "7d3e511c-54fe-48e9-910e-a8554b85c7c5",
+    "type": "preference",
+    "text": "Student prefers visual representations, mentioning the 'rocket path'.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_f13b1cb9e7cf436b",
+    "timestamp": "2025-12-18T12:43:55.370008",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "02acedde-5f44-48b4-932d-01fb1e15608c",
+    "type": "preference",
+    "text": "Student seems comfortable using 'okay' to move forward with a math problem.",
+    "importance": 0.3,
+    "student_id": "test_student_002",
+    "session_id": "sess_0b1d3885288c4624",
+    "timestamp": "2025-12-18T12:45:57.858624",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "3bb99e4c-4403-440a-b442-1971b56c5f27",
+    "type": "preference",
+    "text": "The student dislikes the use of symbols in math.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:51:40.913085",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "96e1ef75-2d45-43c4-bf88-f067d28325ce",
+    "type": "preference",
+    "text": "The student dislikes long text explanations.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:51:40.913099",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "e7e8cf37-4857-46a7-b405-3f0992ec9410",
+    "type": "preference",
+    "text": "Student seems to respond well to visual explanations (picturing the U-shape).",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:52:03.908584",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "roots of a parabola"
+    }
+  },
+  {
+    "id": "a69932fb-03cc-4260-9348-1fd15f6a632d",
+    "type": "preference",
+    "text": "Student prefers analogies and relating math concepts to real-world experiences (basketball).",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:52:40.838667",
+    "metadata": {
+      "emotion": "happy",
+      "topic": "learning style"
+    }
+  },
+  {
+    "id": "00ab7e95-b752-4a61-b964-be4815878b0e",
+    "type": "preference",
+    "text": "Student prefers visual explanations and finds them helpful.",
+    "importance": 0.9,
+    "student_id": "test_student_002",
+    "session_id": "sess_ebd709fec0334460",
+    "timestamp": "2025-12-18T12:53:04.364711",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "learning styles"
+    }
+  },
+  {
+    "id": "74311b05-8de8-43c5-af81-43e492e1bb88",
+    "type": "preference",
+    "text": "Student prefers to use a calculator.",
+    "importance": 0.7,
+    "student_id": "test_student_002",
+    "session_id": "sess_4a6e218867104bc6",
+    "timestamp": "2025-12-18T12:56:42.653344",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "fractions"
+    }
+  },
+  {
+    "id": "62ba6975-dec4-4942-b912-dd1eb8b77847",
+    "type": "preference",
+    "text": "Student is unwilling to do math without a calculator.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_70cfdbb1b55342c2",
+    "timestamp": "2025-12-18T12:59:00.999178",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "solving equations"
+    }
+  },
+  {
+    "id": "baa050ba-c406-48bf-add8-a939f1ed0d7a",
+    "type": "preference",
+    "text": "Student likely benefits from visual learning, indicated by AI's comment about seeing shapes.",
+    "importance": 0.6,
+    "student_id": "test_student_002",
+    "session_id": "sess_04b3209f25ea4fff",
+    "timestamp": "2025-12-18T13:01:50.749857",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "learning styles"
+    }
+  },
+  {
+    "id": "75d15912-2280-4115-ae12-97b147758308",
+    "type": "preference",
+    "text": "Student prefers visual explanations, specifically picturing the rocket path.",
+    "importance": 0.8,
+    "student_id": "test_student_002",
+    "session_id": "sess_04b3209f25ea4fff",
+    "timestamp": "2025-12-18T13:02:01.953839",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  }
+]

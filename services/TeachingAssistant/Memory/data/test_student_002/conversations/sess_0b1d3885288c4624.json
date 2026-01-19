@@ -1,0 +1,194 @@
+{
+  "session_id": "sess_0b1d3885288c4624",
+  "user_id": "test_student_002",
+  "start_time": "2025-12-18T17:45:22.556000",
+  "end_time": "2025-12-18T12:46:34.973661",
+  "turn_count": 18,
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "[SYSTEM PROMPT FOR ADAM] [MEMORY AND INJECTION HANDLING] During this session, you will receive 'System Updates' with retrieved memories. - If an update arrives while you are speaking or just finished: DO NOT hallucinate a new user turn. - If you have just finished a response, simply maintain consistency with that response. - Do not let internal system updates disrupt the natural flow of conversation. Hi there! Welcome back! It was fantastic seeing you light up with those quadratic equations last time - you really seemed to enjoy them! Last time we worked on: Today, the student explored systems of equations and quadratic equations, initially experiencing frustration but ultimately finding enjoyment and demonstrating a strong grasp of the material. Their enthusiasm for space and engineering shone through, despite some anxieties about their abilities. Unfinished topics: The specifics of the 'U shape' from Exchange 2., The nature of the Linear-Quadratic system and its relation to the initial concept., Exploring the student's interest in engineering (aerospace). Personal context available.",
+      "timestamp": 1766097922.556
+    },
+    {
+      "speaker": "user",
+      "text": "hey! yeah we do. home game again.",
+      "timestamp": 1766079922.825126
+    },
+    {
+      "speaker": "tutor",
+      "text": "Nice. Hopefully not as stressful as that one a couple of weeks ago where you had the test in the morning too. You have a lighter academic load today?",
+      "timestamp": 1766079925.827171
+    },
+    {
+      "speaker": "user",
+      "text": "yeah much lighter. just a quiz in history. math was just homework check.",
+      "timestamp": 1766079926.827409
+    },
+    {
+      "speaker": "tutor",
+      "text": "Good. You need fresh legs for the game. How's the team looking? Are you still riding the high from that 4-point win?",
+      "timestamp": 1766079929.82959
+    },
+    {
+      "speaker": "user",
+      "text": "we're doing okay. practice has been hard though. coach is making us run lines until we puke.",
+      "timestamp": 1766079930.831815
+    },
+    {
+      "speaker": "tutor",
+      "text": "Ugh. Suicides? That's rough. But hey, think of it as 'completing the square'—annoying reps that pay off when it counts.",
+      "timestamp": 1766079933.833963
+    },
+    {
+      "speaker": "user",
+      "text": "lol don't ruin basketball for me by comparing it to math.",
+      "timestamp": 1766079934.834135
+    },
+    {
+      "speaker": "tutor",
+      "text": "Fair! I'll keep them separate. Speaking of reps, I thought we'd do a mix today. A little review of everything: quadratics, word problems, systems. Sort of a 'greatest hits'.",
+      "timestamp": 1766079937.834324
+    },
+    {
+      "speaker": "user",
+      "text": "sure. as long as we don't do the friction stuff... i mean fraction stuff. freudian slip.",
+      "timestamp": 1766079938.836558
+    },
+    {
+      "speaker": "tutor",
+      "text": "I noticed! You really still hate those fractions, huh? Remember that session where you were super tired and we had to add 25/4? We can skip the ugly numbers today.",
+      "timestamp": 1766079941.836779
+    },
+    {
+      "speaker": "user",
+      "text": "thank you. you're a lifesaver. how did you even remember that specific problem?",
+      "timestamp": 1766079942.838988
+    },
+    {
+      "speaker": "tutor",
+      "text": "I remember everything we work on! I also remember you promised to nap after that session. Did you?",
+      "timestamp": 1766079945.839531
+    },
+    {
+      "speaker": "user",
+      "text": "i did actually. woke up with max sleeping on my head.",
+      "timestamp": 1766079946.839699
+    },
+    {
+      "speaker": "tutor",
+      "text": "Classic Max. Is he behaving today? No mailmen to bark at?",
+      "timestamp": 1766079949.839892
+    },
+    {
+      "speaker": "user",
+      "text": "nah he's chill today. just chewing a bone.",
+      "timestamp": 1766079950.840124
+    },
+    {
+      "speaker": "tutor",
+      "text": "Good boy, Max. Okay, let's look at this problem. It combines your favorite things: Space and Parabolas. 'A rover lands on a planet. Its path is $y = -x^2 + 6x$. A hill is defined by $y = 2x$. Will the rover clear the hill?'",
+      "timestamp": 1766079953.842304
+    },
+    {
+      "speaker": "user",
+      "text": "okay. sounds like the laser problem from last time. intersection.",
+      "timestamp": 1766079954.842572
+    },
+    {
+      "speaker": "tutor",
+      "text": "Exactly. Set them equal.",
+      "timestamp": 1766079957.842766
+    },
+    {
+      "speaker": "user",
+      "text": "$-x^2 + 6x = 2x$.",
+      "timestamp": 1766079958.845115
+    },
+    {
+      "speaker": "tutor",
+      "text": "Move everything to one side. Let's keep $x^2$ positive, it's easier.",
+      "timestamp": 1766079961.845677
+    },
+    {
+      "speaker": "user",
+      "text": "so add $x^2$ and subtract $6x$ from the right? $0 = x^2 - 4x$?",
+      "timestamp": 1766079962.847899
+    },
+    {
+      "speaker": "tutor",
+      "text": "Perfect algebra. Now factor.",
+      "timestamp": 1766079965.848028
+    },
+    {
+      "speaker": "user",
+      "text": "pull out x. $x(x-4) = 0$.",
+      "timestamp": 1766079966.850268
+    },
+    {
+      "speaker": "tutor",
+      "text": "So intersections at $x=0$ and $x=4$. $x=0$ is the launch point. $x=4$ is where they crash. So... does it clear the hill?",
+      "timestamp": 1766079969.850495
+    },
+    {
+      "speaker": "user",
+      "text": "well if they intersect, that means they touch. so it crashes into the hill at x=4?",
+      "timestamp": 1766079970.855074
+    },
+    {
+      "speaker": "tutor",
+      "text": "Exactly. Engineering disaster. How would we fix it? We need the rover to fly HIGHER. What in the equation $-x^2 + 6x$ changes the height?",
+      "timestamp": 1766079973.863518
+    },
+    {
+      "speaker": "user",
+      "text": "the 6x? if we made it bigger?",
+      "timestamp": 1766079974.865769
+    },
+    {
+      "speaker": "tutor",
+      "text": "Right! Increasing the initial velocity. You're thinking like an aerospace engineer again. Maybe you should mention this problem to your dad too.",
+      "timestamp": 1766079977.871183
+    },
+    {
+      "speaker": "user",
+      "text": "funny you say that. i actually showed him the notes from last session about the mars thing. he was kinda quiet but he looked at the math and said 'this is legitimate calculus concepts'.",
+      "timestamp": 1766079978.874801
+    },
+    {
+      "speaker": "tutor",
+      "text": "That is huge! 'Legitimate calculus concepts' is high praise from an accountant. How did that feel?",
+      "timestamp": 1766079981.880995
+    },
+    {
+      "speaker": "user",
+      "text": "pretty good. he didn't say 'good job' directly but he stopped nagging me about business school for a day.",
+      "timestamp": 1766079982.882366
+    },
+    {
+      "speaker": "tutor",
+      "text": "I'll take that as a win. It's a step in the right direction. Just like getting comfortable with the discriminant was step one for us.",
+      "timestamp": 1766079985.885607
+    },
+    {
+      "speaker": "user",
+      "text": "yeah. it's weird thinking back to that first day. i didn't even know what a discriminant was. i just knew it was an airball.",
+      "timestamp": 1766079986.888754
+    },
+    {
+      "speaker": "tutor",
+      "text": "And now you're calculating rover crashes. That's serious progress, Alex. Good luck at the game tonight. Play hard, no airballs!",
+      "timestamp": 1766079989.891368
+    },
+    {
+      "speaker": "user",
+      "text": "thanks. i'll try my best. you're actually kinda helpful for a robot.",
+      "timestamp": 1766079990.894315
+    },
+    {
+      "speaker": "tutor",
+      "text": "I try my best. Have a great weekend!",
+      "timestamp": 1766079993.898348
+    }
+  ]
+}

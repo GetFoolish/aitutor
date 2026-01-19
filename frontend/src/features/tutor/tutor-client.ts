@@ -63,6 +63,14 @@ export interface TutorClientEventTypes {
 
 export class TutorClient extends EventEmitter<TutorClientEventTypes> {
   private tutorService: TutorService | null = null;
+  
+  /**
+   * Get the underlying TutorService instance
+   * Useful for accessing service methods like onCleanup
+   */
+  get service(): TutorService | null {
+    return this.tutorService;
+  };
   private _status: "connected" | "disconnected" | "connecting" = "disconnected";
   private config: LiveConnectConfig | null = null;
 
@@ -93,7 +101,7 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
     this.emit("log", log);
   }
 
-  async connect(config: LiveConnectConfig): Promise<boolean> {
+  async connect(config: LiveConnectConfig, preferredLanguage?: string): Promise<boolean> {
     if (this._status === "connected" || this._status === "connecting") {
       return false;
     }
@@ -102,9 +110,9 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
     this.config = config;
 
     try {
-      // Initialize Tutor Service
+      // Initialize Tutor Service with preferred language
       this.tutorService = new TutorService();
-      await this.tutorService.initialize();
+      await this.tutorService.initialize(preferredLanguage || "English");
 
       // Connect directly to Gemini Live API
       await this.tutorService.connect(config, {
@@ -248,8 +256,31 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
     let hasVideo = false;
 
     for (const ch of chunks) {
-      // Send directly to Gemini
-      this.tutorService.sendRealtimeInput(ch);
+      // CRITICAL: Filter out non-audio media before sending to Gemini
+      // Gemini Live API ONLY accepts audio via sendRealtimeInput
+      // Images/video cause "Cannot extract voices from a non-audio request" error
+      if (!ch.mimeType || !ch.mimeType.includes("audio")) {
+        // Skip non-audio chunks - they should not be sent to Gemini
+        console.debug('Skipping non-audio chunk:', ch.mimeType);
+        continue;
+      }
+
+      // Send directly to Gemini (with error handling)
+      try {
+        this.tutorService.sendRealtimeInput(ch);
+      } catch (error) {
+        // Silently handle errors - connection might be closing
+        if (error instanceof Error) {
+          const errorMsg = error.message || String(error);
+          if (!errorMsg.includes("CLOSING") && !errorMsg.includes("CLOSED") && !errorMsg.includes("WebSocket")) {
+            console.warn('Error in sendRealtimeInput:', error);
+          }
+        }
+        // Stop processing if connection is dead
+        if (this._status !== "connected") {
+          break;
+        }
+      }
 
       if (ch.mimeType.includes("audio")) {
         hasAudio = true;

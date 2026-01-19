@@ -1,0 +1,82 @@
+[
+  {
+    "id": "e2a2e446-a333-4741-a4a8-ea7ae52adc1e",
+    "type": "preference",
+    "text": "Finds math textbooks difficult to understand due to complex explanations.",
+    "importance": 0.7,
+    "student_id": "simulator_user",
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": "2025-12-23T14:46:02.929091",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519162.929092,
+    "last_epoch": 1766519162.929093
+  },
+  {
+    "id": "1c6bc40b-54b6-44db-bb2e-bb072ab9972c",
+    "type": "preference",
+    "text": "Prefers visual examples to understand concepts.",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_04ad26bf155042b3",
+    "timestamp": "2025-12-23T14:47:26.854779",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519246.854786,
+    "last_epoch": 1766519246.854789
+  },
+  {
+    "id": "6adc1bc5-b876-407b-b621-aa5e97adb9d3",
+    "type": "preference",
+    "text": "May struggle with mental calculations.",
+    "importance": 0.6,
+    "student_id": "simulator_user",
+    "session_id": "sess_816cd07b79d748c7",
+    "timestamp": "2025-12-23T14:53:34.586137",
+    "metadata": {
+      "emotion": "confused",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519614.586139,
+    "last_epoch": 1766519614.586143
+  },
+  {
+    "id": "b2d78952-7a1c-451e-b414-ed35eb44b520",
+    "type": "preference",
+    "text": "Processes math visually, translating it to real-world examples.",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_b1550c7e8ae74c19",
+    "timestamp": "2025-12-23T14:56:28.049322",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1766519788.049325,
+    "last_epoch": 1766519788.049329
+  },
+  {
+    "id": "0d75efee-b15f-4777-90d8-2d0c0764dd42",
+    "type": "preference",
+    "text": "Dislikes fractions.",
+    "importance": 0.9,
+    "student_id": "simulator_user",
+    "session_id": "sess_a8266728a56b4b3b",
+    "timestamp": "2025-12-23T14:58:31.836054",
+    "metadata": {
+      "emotion": "disgusted",
+      "topic": "fractions"
+    },
+    "counter": 1,
+    "first_epoch": 1766519911.836061,
+    "last_epoch": 1766519911.836067
+  }
+]

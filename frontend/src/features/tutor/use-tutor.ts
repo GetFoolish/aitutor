@@ -20,6 +20,7 @@ import { AudioStreamer } from "./audio-streamer";
 import { audioContext } from "../../lib/utils";
 import VolMeterWorket from "../../lib/worklets/vol-meter";
 import { LiveConnectConfig } from "@google/genai";
+import { useAuth } from "../../contexts/AuthContext";
 
 export type UseTutorResults = {
   client: TutorClient;
@@ -35,6 +36,7 @@ export type UseTutorResults = {
 export function useTutor(): UseTutorResults {
   const client = useMemo(() => new TutorClient(), []);
   const audioStreamerRef = useRef<AudioStreamer | null>(null);
+  const { user } = useAuth();
 
   const [config, setConfig] = useState<LiveConnectConfig>({});
   const [connected, setConnected] = useState(false);
@@ -106,8 +108,10 @@ export function useTutor(): UseTutorResults {
       throw new Error("config has not been set");
     }
     client.disconnect();
-    await client.connect(config);
-  }, [client, config]);
+    // Pass preferred language from user context
+    const preferredLanguage = user?.preferred_language || "English";
+    await client.connect(config, preferredLanguage);
+  }, [client, config, user?.preferred_language]);
 
   const disconnect = useCallback(async () => {
     client.disconnect();

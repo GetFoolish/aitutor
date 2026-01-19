@@ -1,0 +1,113 @@
+{
+  "session_id": "sess_7fdff713059c48f5",
+  "timestamp": 1766028481.912401,
+  "new_memories": [
+    {
+      "id": "f7f3945a-e24c-4ce2-8fca-ab6773b06814",
+      "type": "personal",
+      "text": "Max, the student's pet, was eating the student's socks.",
+      "importance": 0.2,
+      "student_id": "test_student_001",
+      "session_id": "sess_7fdff713059c48f5",
+      "timestamp": "2025-12-17T22:27:47.154910",
+      "metadata": {
+        "emotion": "happy",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "af6c3a9c-675a-4483-8a6d-395d58369c5a",
+      "type": "context",
+      "text": "The student is feeling awake.",
+      "importance": 0.5,
+      "student_id": "test_student_001",
+      "session_id": "sess_7fdff713059c48f5",
+      "timestamp": "2025-12-17T22:27:47.154919",
+      "metadata": {
+        "emotion": "awake",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "13edc844-286c-4f56-8d08-029ff49c4cbd",
+      "type": "academic",
+      "text": "The student is starting to learn about systems of equations, understanding them as the intersection of lines on a graph.",
+      "importance": 0.7,
+      "student_id": "test_student_001",
+      "session_id": "sess_7fdff713059c48f5",
+      "timestamp": "2025-12-17T22:27:47.154922",
+      "metadata": {
+        "emotion": "excited",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "7a49dc67-0337-4c3e-8311-ffc79303cd2b",
+      "type": "academic",
+      "text": "Student likely misunderstands the concept of intersection of two shapes, possibly a linear-quadratic system.",
+      "importance": 0.8,
+      "student_id": "test_student_001",
+      "session_id": "sess_7fdff713059c48f5",
+      "timestamp": "2025-12-17T22:27:59.348101",
+      "metadata": {
+        "emotion": "neutral",
+        "topic": "Linear-Quadratic systems"
+      }
+    },
+    {
+      "id": "a653885e-aedf-41bd-98a8-14d0d70626d1",
+      "type": "academic",
+      "text": "Student seems to understand the basic concept of intersection.",
+      "importance": 0.5,
+      "student_id": "test_student_001",
+      "session_id": "sess_7fdff713059c48f5",
+      "timestamp": "2025-12-17T22:27:59.348108",
+      "metadata": {
+        "emotion": "neutral",
+        "topic": "Linear-Quadratic systems"
+      }
+    },
+    {
+      "id": "b4a29d10-8085-4416-945b-c56fe9c13888",
+      "type": "context",
+      "text": "Student's initial response ('hopefully they don't crash, that's a foul') suggests potential anxiety related to the topic or task.",
+      "importance": 0.3,
+      "student_id": "test_student_001",
+      "session_id": "sess_7fdff713059c48f5",
+      "timestamp": "2025-12-17T22:27:59.348117",
+      "metadata": {
+        "emotion": "anxious",
+        "topic": "general"
+      }
+    }
+  ],
+  "emotional_arc": [
+    "happy",
+    "awake",
+    "excited",
+    "anxious"
+  ],
+  "key_moments": [
+    "The student reports a good day and happiness about a pet's behavior.",
+    "The student indicates readiness and focus for a new topic.",
+    "The student demonstrates preliminary understanding of systems of equations.",
+    "The student attempts to apply knowledge about collisions to the topic.",
+    "The student starts to think about the intersection points and number of intersections.",
+    "The student correctly states the number of intersections for a tangent line."
+  ],
+  "unfinished_topics": [
+    "Linear-Quadratic Systems",
+    "Intersection of geometric shapes."
+  ],
+  "topics_covered": [
+    "general"
+  ],
+  "session_summary": "Today, we explored systems of equations and the concept of intersections, with a focus on applying collision knowledge. The student started the session happy but ended feeling anxious.",
+  "goodbye_message": "It's great to hear about the good day, and I'm glad we could explore these interesting math concepts together. I hope the anxiety eases, and I look forward to seeing you again!",
+  "next_session_hooks": [
+    "Linear-Quadratic Systems",
+    "Intersection of geometric shapes.",
+    "Next time, let's dive deeper into Linear-Quadratic Systems to solidify understanding."
+  ],
+  "last_regen_time": 1766028480.458055
+}

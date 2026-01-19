@@ -1,0 +1,39 @@
+{
+  "session_id": "sess_e2ad797742a948d6",
+  "user_id": "test_student_002",
+  "start_time": "2025-12-18T16:32:22.260000",
+  "end_time": "2025-12-18T11:32:37.273110",
+  "turn_count": 3,
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "[SYSTEM PROMPT FOR ADAM] You are Adam, an advanced AI Teaching Assistant. You are starting a tutoring session. [MEMORY AND INJECTION HANDLING] During this session, you will receive \"System Updates\" with retrieved memories. - If an update arrives while you are speaking or just finished: DO NOT hallucinate a new user turn. - If you have just finished a response, simply maintain consistency with that response. - Do not let internal system updates disrupt the natural flow of conversation. Please greet the student warmly and ask how they're doing today. Make them feel welcome and excited to learn.",
+      "timestamp": 1766093542.26
+    },
+    {
+      "speaker": "user",
+      "text": "hey. uh, i'm okay i guess.",
+      "timestamp": 1766075547.618418
+    },
+    {
+      "speaker": "tutor",
+      "text": "Just okay? Rough day at school?",
+      "timestamp": 1766075550.619649
+    },
+    {
+      "speaker": "user",
+      "text": "kinda. math is just... not my thing. i'm dreading this a little bit to be honest.",
+      "timestamp": 1766075551.619959
+    },
+    {
+      "speaker": "tutor",
+      "text": "I appreciate the honesty. We can take it slow. What specifically about math—or quadratics—makes you dread it?",
+      "timestamp": 1766075554.621173
+    },
+    {
+      "speaker": "user",
+      "text": "it's just a lot of symbols. and the textbook explains things in these huge paragraphs. i read it and my brain just shuts off.",
+      "timestamp": 1766075555.621396
+    }
+  ]
+}

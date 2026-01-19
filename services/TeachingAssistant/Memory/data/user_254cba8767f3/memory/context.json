@@ -1,0 +1,67 @@
+[
+  {
+    "id": "28829d47-645e-46c4-a561-1fbb0c25a108",
+    "type": "context",
+    "text": "Student appears to be seeking help or attention, indicated by 'Hey, are you there?'",
+    "importance": 0.5,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:28:12.913319",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "6d4c5c71-03a0-4d5b-81d2-186e56cf5e90",
+    "type": "context",
+    "text": "Student might be unsure or hesitant as indicated by 'Uh'",
+    "importance": 0.4,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:28:12.913326",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "64ab0499-c027-4cc8-a907-b43f8e0131d0",
+    "type": "context",
+    "text": "The student is hesitant to engage or answer, responding with single-word utterances.",
+    "importance": 0.7,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:29:15.475497",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "aafbdc2e-971e-4b16-ba89-9e4adf8faa36",
+    "type": "context",
+    "text": "Student expresses a negative feeling towards a subject matter (implied dislike).",
+    "importance": 0.7,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:29:17.128228",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "94dc4259-49f4-461b-a507-fa21812b7ba1",
+    "type": "context",
+    "text": "Student expresses a negative feeling towards 'mats'.",
+    "importance": 0.8,
+    "student_id": "user_254cba8767f3",
+    "session_id": "sess_591693fec6bc4193",
+    "timestamp": "2025-12-18T13:33:00.980447",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "general"
+    }
+  }
+]

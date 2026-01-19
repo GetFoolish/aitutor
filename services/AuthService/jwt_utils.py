@@ -7,8 +7,16 @@ import sys
 from datetime import datetime, timedelta
 from typing import Dict, Optional
 
-JWT_SECRET = os.getenv("JWT_SECRET", "change-me-in-production")
-JWT_ALGORITHM = "HS256"
+# Use shared JWT config to ensure consistency across services
+# This ensures tokens created here can be verified by shared/auth_middleware.py
+try:
+    from shared.jwt_config import JWT_SECRET, JWT_ALGORITHM
+except ImportError:
+    # Fallback if shared module not available (shouldn't happen)
+    _jwt_secret_raw = os.getenv("JWT_SECRET", "").strip()
+    JWT_SECRET = _jwt_secret_raw if _jwt_secret_raw else "change-me-in-production"
+    JWT_ALGORITHM = "HS256"
+
 JWT_EXPIRATION_MINUTES = 1440 # 24 hours
 
 

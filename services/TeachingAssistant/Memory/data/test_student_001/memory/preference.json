@@ -1,0 +1,67 @@
+[
+  {
+    "id": "681af824-70b3-47f6-b103-7d9333596d91",
+    "type": "preference",
+    "text": "Student struggles with long textual explanations and needs simpler explanations.",
+    "importance": 0.7,
+    "student_id": "test_student_001",
+    "session_id": "sess_383303d6f2a34b2a",
+    "timestamp": "2025-12-17T22:20:45.167006",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "quadratics"
+    }
+  },
+  {
+    "id": "e2cd1770-9cfc-49e5-af96-f9602aada678",
+    "type": "preference",
+    "text": "Student seems to understand and prefer visual/conceptual explanations.",
+    "importance": 0.8,
+    "student_id": "test_student_001",
+    "session_id": "sess_383303d6f2a34b2a",
+    "timestamp": "2025-12-17T22:21:08.176554",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "parabolas, roots"
+    }
+  },
+  {
+    "id": "7a9f4831-57f9-4496-8fb1-43a11db81878",
+    "type": "preference",
+    "text": "Student prefers visual explanations (drawing things out).",
+    "importance": 0.9,
+    "student_id": "test_student_001",
+    "session_id": "sess_383303d6f2a34b2a",
+    "timestamp": "2025-12-17T22:22:08.684086",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "d124c720-79ab-4673-9a42-71584862f4b7",
+    "type": "preference",
+    "text": "Student wants to use a calculator.",
+    "importance": 0.6,
+    "student_id": "test_student_001",
+    "session_id": "sess_e7786fd19ce64376",
+    "timestamp": "2025-12-17T22:24:56.129107",
+    "metadata": {
+      "emotion": "frustrated",
+      "topic": "fractions"
+    }
+  },
+  {
+    "id": "d2eaf058-93e9-4757-8411-7b5ca8098997",
+    "type": "preference",
+    "text": "Student may prefer to distract themselves with work rather than talk about issues.",
+    "importance": 0.4,
+    "student_id": "test_student_001",
+    "session_id": "sess_71e809ff7e6540b2",
+    "timestamp": "2025-12-17T22:25:48.615712",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  }
+]

@@ -1,0 +1,44 @@
+{
+  "session_id": "sess_affe2362343948d4",
+  "user_id": "test_student_002",
+  "start_time": "2025-12-18T03:30:48.181000",
+  "end_time": "2025-12-17T22:31:11.416392",
+  "turn_count": 3,
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "[SYSTEM PROMPT FOR ADAM] You are Adam, an advanced AI Teaching Assistant. You are starting a tutoring session. [MEMORY AND INJECTION HANDLING] During this session, you will receive \"System Updates\" with retrieved memories. - If an update arrives while you are speaking or just finished: DO NOT hallucinate a new user turn. - If you have just finished a response, simply maintain consistency with that response. - Do not let internal system updates disrupt the natural flow of conversation. Please greet the student warmly and ask how they're doing today. Make them feel welcome and excited to learn.",
+      "timestamp": 1766046648.181
+    },
+    {
+      "speaker": "user",
+      "text": "hey. uh, i'm okay i guess.",
+      "timestamp": 1766028660.158081
+    },
+    {
+      "speaker": "tutor",
+      "text": "Just okay? Rough day at school?",
+      "timestamp": 1766028663.159432
+    },
+    {
+      "speaker": "user",
+      "text": "kinda. math is just... not my thing. i'm dreading this a little bit to be honest.",
+      "timestamp": 1766028664.160599
+    },
+    {
+      "speaker": "tutor",
+      "text": "I appreciate the honesty. We can take it slow. What specifically about math—or quadratics—makes you dread it?",
+      "timestamp": 1766028667.161745
+    },
+    {
+      "speaker": "user",
+      "text": "it's just a lot of symbols. and the textbook explains things in these huge paragraphs. i read it and my brain just shuts off.",
+      "timestamp": 1766028668.163917
+    },
+    {
+      "speaker": "tutor",
+      "text": "That makes sense. Dense text can be really overwhelming. We'll try to avoid the 'wall of text' approach here. Have you started the chapter on quadratics yet, or is this brand new?",
+      "timestamp": 1766028671.165094
+    }
+  ]
+}

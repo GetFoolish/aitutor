@@ -34,13 +34,17 @@ const WEB1_COLORS = [
   '#C4B5FD', // Soft Violet - gentle yet vibrant
 ];
 
-const generateRandomShapes = (): ShapeConfig[] => {
+interface BackgroundShapesProps {
+  count?: number; // Number of shapes to generate (default: 15 for login, 45 for landing)
+}
+
+const generateRandomShapes = (count: number): ShapeConfig[] => {
   const shapes: ShapeConfig[] = [];
   const shapeTypes: ('circle' | 'square' | 'triangle')[] = [
     'circle', 'square', 'triangle'
   ];
 
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < count; i++) {
     const type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
     const color = WEB1_COLORS[Math.floor(Math.random() * WEB1_COLORS.length)];
     const size = Math.floor(Math.random() * 29) + 29; // 29-58px (20% bigger than before)
@@ -61,12 +65,12 @@ const generateRandomShapes = (): ShapeConfig[] => {
   return shapes;
 };
 
-export default function BackgroundShapes() {
+export default function BackgroundShapes({ count = 15 }: BackgroundShapesProps) {
   const [shapes, setShapes] = useState<ShapeConfig[]>([]);
 
   useEffect(() => {
-    setShapes(generateRandomShapes());
-  }, []);
+    setShapes(generateRandomShapes(count));
+  }, [count]);
 
   const renderShape = (shape: ShapeConfig, index: number) => {
     const strokeColor = 'currentColor'; // Will inherit from parent (black in light mode, white in dark)

@@ -140,6 +140,24 @@ def create_indexes():
     except Exception as e:
         print(f"   ✗ Error creating practice_history indexes: {e}")
     
+    # Subject Assessments Collection Indexes (Phase 3)
+    print("\n7. Creating indexes on 'subject_assessments' collection...")
+    try:
+        # Compound unique index for user + subject lookups
+        mongo_db.subject_assessments.create_index(
+            [("user_id", ASCENDING), ("subject", ASCENDING)],
+            unique=True,
+            name="idx_user_subject"
+        )
+        print("   ✓ Created unique compound index on user_id + subject")
+        
+        # Status filtering for in-progress assessments
+        mongo_db.subject_assessments.create_index([("status", ASCENDING)], name="idx_assessment_status")
+        print("   ✓ Created index on status")
+        
+    except Exception as e:
+        print(f"   ✗ Error creating subject_assessments indexes: {e}")
+    
     print("\n✅ Index creation complete!")
     print("\nTo verify indexes, run:")
     print("  mongo_db.<collection>.index_information()")

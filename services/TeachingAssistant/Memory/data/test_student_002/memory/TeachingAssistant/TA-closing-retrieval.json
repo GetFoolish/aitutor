@@ -1,0 +1,297 @@
+{
+  "session_id": "sess_ed05d7e5e2334281",
+  "timestamp": 1766081083.382761,
+  "new_memories": [
+    {
+      "id": "f2caa91a-8d67-4be2-8725-d77de0b29b05",
+      "type": "personal",
+      "text": "Student has a home game.",
+      "importance": 0.7,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:03:40.691746",
+      "metadata": {
+        "emotion": "excited",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "b689acb5-aeb7-4ef8-bcfc-c8ee4013595a",
+      "type": "context",
+      "text": "Student has a quiz in history and math homework check.",
+      "importance": 0.6,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:03:40.691754",
+      "metadata": {
+        "emotion": "neutral",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "9c6d7fe9-842b-4fd7-9f49-d6de118cd940",
+      "type": "personal",
+      "text": "Student is on a sports team and practice has been hard.",
+      "importance": 0.8,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:03:40.691768",
+      "metadata": {
+        "emotion": "tired",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "9e638e3b-0859-47d3-8902-05c099cba2e8",
+      "type": "personal",
+      "text": "Student enjoys basketball.",
+      "importance": 0.7,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:03:53.439601",
+      "metadata": {
+        "emotion": "neutral",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "34ce22d3-bcc3-436b-a989-4b07f42da9da",
+      "type": "context",
+      "text": "Student seems to dislike fractions.",
+      "importance": 0.8,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:03:53.439607",
+      "metadata": {
+        "emotion": "neutral",
+        "topic": "fractions"
+      }
+    },
+    {
+      "id": "ca0e08b5-6865-40f8-8329-638a705764a3",
+      "type": "academic",
+      "text": "Student struggles with fractions (based on Freudian slip).",
+      "importance": 0.9,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:03:53.439610",
+      "metadata": {
+        "emotion": "neutral",
+        "topic": "fractions"
+      }
+    },
+    {
+      "id": "c1c4f582-6280-4afe-8a24-13c4af26719a",
+      "type": "context",
+      "text": "Student was tired during a previous session where fractions were discussed.",
+      "importance": 0.6,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:03:53.439613",
+      "metadata": {
+        "emotion": "neutral",
+        "topic": "fractions"
+      }
+    },
+    {
+      "id": "043f9d93-1222-440d-be37-a0a5588565cc",
+      "type": "personal",
+      "text": "Student has a dog named Max, who sleeps on their head.",
+      "importance": 0.8,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:04:04.839950",
+      "metadata": {
+        "emotion": "neutral",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "9b412530-ccb1-4856-b171-3bac8083024c",
+      "type": "personal",
+      "text": "Student's dog Max is chewing a bone today.",
+      "importance": 0.6,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:04:04.839961",
+      "metadata": {
+        "emotion": "neutral",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "65437b4e-00a0-43c9-aefb-7024e3177c07",
+      "type": "academic",
+      "text": "Student is working on a problem involving parabolas and intersections.",
+      "importance": 0.7,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:04:04.839965",
+      "metadata": {
+        "emotion": "neutral",
+        "topic": "math"
+      }
+    },
+    {
+      "id": "d3e13ab4-d9ce-4dee-96ea-13ddf54e98a7",
+      "type": "academic",
+      "text": "Student attempts to solve a quadratic equation.",
+      "importance": 0.8,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:04:16.903842",
+      "metadata": {
+        "emotion": "neutral",
+        "topic": "quadratic equations"
+      }
+    },
+    {
+      "id": "392ac7d4-192a-45de-b1fc-9c82d043637c",
+      "type": "academic",
+      "text": "Student understands the concept of setting a quadratic equation equal to zero.",
+      "importance": 0.7,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:04:16.903852",
+      "metadata": {
+        "emotion": "neutral",
+        "topic": "quadratic equations"
+      }
+    },
+    {
+      "id": "ae5e4d9a-5d19-4db6-ad73-173e52b4c4fd",
+      "type": "academic",
+      "text": "Student attempts factoring to solve the quadratic equation.",
+      "importance": 0.8,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:04:16.903856",
+      "metadata": {
+        "emotion": "neutral",
+        "topic": "factoring quadratic equations"
+      }
+    },
+    {
+      "id": "848ba24d-2d34-4efd-aaa7-90f25e96b832",
+      "type": "academic",
+      "text": "Student understands the concept of intersection and its relation to 'touching' or 'crashing'.",
+      "importance": 0.8,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:04:29.265363",
+      "metadata": {
+        "emotion": "neutral",
+        "topic": "Intersections"
+      }
+    },
+    {
+      "id": "5ec77f70-bd96-4483-a89b-4edcfb41a29d",
+      "type": "academic",
+      "text": "Student is able to connect mathematical concepts (like the equation affecting height of an object) with real-world scenarios like aerospace engineering.",
+      "importance": 0.7,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:04:29.265375",
+      "metadata": {
+        "emotion": "neutral",
+        "topic": "Aerospace Engineering, Quadratic Functions"
+      }
+    },
+    {
+      "id": "8ee24517-2623-4a5e-b4b9-02c60db0faa5",
+      "type": "context",
+      "text": "Student has previously discussed this topic (Mars rover/calculus) with another person (implied: father).",
+      "importance": 0.6,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:04:29.265379",
+      "metadata": {
+        "emotion": "neutral",
+        "topic": "Mars Rover/Calculus"
+      }
+    },
+    {
+      "id": "cba30140-249a-4c70-93c1-cd7338bc2f46",
+      "type": "context",
+      "text": "Student feels positive due to lack of nagging from accountant about business school.",
+      "importance": 0.7,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:04:40.491757",
+      "metadata": {
+        "emotion": "happy",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "a0e1c569-0eb7-4ea7-aa2d-419ef1d54680",
+      "type": "academic",
+      "text": "Student initially didn't know what a discriminant was.",
+      "importance": 0.8,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:04:40.491773",
+      "metadata": {
+        "emotion": "neutral",
+        "topic": "general"
+      }
+    },
+    {
+      "id": "06f31a13-9e8e-4de6-a740-a296bcf46d07",
+      "type": "personal",
+      "text": "Student plays a game related to rover crashes.",
+      "importance": 0.6,
+      "student_id": "test_student_002",
+      "session_id": "sess_ed05d7e5e2334281",
+      "timestamp": "2025-12-18T13:04:40.491786",
+      "metadata": {
+        "emotion": "neutral",
+        "topic": "general"
+      }
+    }
+  ],
+  "emotional_arc": [
+    "excited",
+    "tired",
+    "happy",
+    "happy"
+  ],
+  "key_moments": [
+    "Student's home game is mentioned.",
+    "Student has a lighter academic load today.",
+    "Student mentions how hard practice has been.",
+    "No clear key moment in exchange 1.",
+    "Student makes a Freudian slip suggesting a strong dislike for fractions.",
+    "Student expresses gratitude, indicating positive feelings towards the AI's assistance.",
+    "Student mentions Max sleeping on their head, indicating a positive morning experience.",
+    "Student acknowledges Max's current state, showing familiarity with the dog's behavior.",
+    "Student starts to address the math problem, implying engagement with the topic.",
+    "Student correctly sets up the initial equation.",
+    "Student rearranges the equation correctly.",
+    "Student factors the equation correctly.",
+    "Student correctly identifies the x-coordinate of impact.",
+    "Student understands the relationship between the 6x coefficient and the rover's trajectory.",
+    "Student's explanation of calculus concepts was validated by another person.",
+    "Accountant's positive feedback on student's understanding of calculus concepts.",
+    "Student's comfort with the discriminant improved since the first day.",
+    "Student is now calculating rover crashes; a sign of progress."
+  ],
+  "unfinished_topics": [
+    "Student's understanding of fractions needs to be assessed and addressed.",
+    "Explore the student's aversion to fractions and its underlying causes (e.g., past experiences).",
+    "Solving the quadratic equation after factoring (finding the roots).",
+    "Further exploring the relationship between the equation and the rover's trajectory",
+    "Understanding how to fix the problem to make the rover fly HIGHER"
+  ],
+  "topics_covered": [
+    "general"
+  ],
+  "session_summary": "Today, the student made significant progress in solving quadratic equations and demonstrated a solid understanding of how they relate to the rover's trajectory. They ended the session feeling happy and confident.",
+  "goodbye_message": "It was a pleasure working with you today! I'm so glad to hear you're feeling happy, and it sounds like you had a lovely morning with Max.",
+  "next_session_hooks": [
+    "Student's understanding of fractions needs to be assessed and addressed.",
+    "Explore the student's aversion to fractions and its underlying causes (e.g., past experiences).",
+    "Let's solve the quadratic equation to find the roots and complete the problem."
+  ],
+  "last_regen_time": 1766081081.944706
+}

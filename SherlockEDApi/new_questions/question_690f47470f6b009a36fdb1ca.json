@@ -1,0 +1,432 @@
+{
+  "answerArea": {
+    "calculator": false,
+    "chi2Table": false,
+    "financialCalculatorMonthlyPayment": false,
+    "financialCalculatorTimeToPayOff": false,
+    "financialCalculatorTotalAmount": false,
+    "periodicTable": false,
+    "periodicTableWithKey": false,
+    "tTable": false,
+    "zTable": false
+  },
+  "hints": [
+    {
+      "content": "There are $\\blueD8$ groups of $\\maroonD{{3}}$.\n\n[[\u2603 image 1]]\n\n[[\u2603 image 2]]\n\n[[\u2603 image 3]]\n\n[[\u2603 image 4]]\n\n[[\u2603 image 5]]\n\n[[\u2603 image 6]]\n\n[[\u2603 image 7]]\n\n[[\u2603 image 8]]\n\n",
+      "images": {},
+      "replace": false,
+      "widgets": {
+        "image 1": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "This image displays one of eight groups, featuring three brightly frosted cupcakes. The three cupcakes are clearly enclosed by a dashed rectangular outline. A prominent large plus sign (+) is positioned to the right of this group, indicating sequential addition. The background is clean and simple. Image size: 256x256 pixels.",
+            "backgroundImage": {
+              "height": 65,
+              "url": "/assets/1765813356924-0.16549846496078746.png",
+              "width": 100
+            },
+            "box": [
+              256,
+              256
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 2,
+            "minor": 0
+          }
+        },
+        "image 2": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "This image displays one of eight groups, featuring three brightly frosted cupcakes. The three cupcakes are clearly enclosed by a dashed rectangular outline. A prominent large plus sign (+) is positioned to the right of this group, indicating sequential addition. The background is clean and simple. Image size: 256x256 pixels.",
+            "backgroundImage": {
+              "height": 65,
+              "url": "/assets/1765813370506-0.5342558731082407.png",
+              "width": 100
+            },
+            "box": [
+              256,
+              256
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 2,
+            "minor": 0
+          }
+        },
+        "image 3": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "This image displays one of eight groups, featuring three brightly frosted cupcakes. The three cupcakes are clearly enclosed by a dashed rectangular outline. A prominent large plus sign (+) is positioned to the right of this group, indicating sequential addition. The background is clean and simple. Image size: 256x256 pixels.",
+            "backgroundImage": {
+              "height": 65,
+              "url": "/assets/1765813388451-0.0476615464889768.png",
+              "width": 100
+            },
+            "box": [
+              256,
+              256
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 2,
+            "minor": 0
+          }
+        },
+        "image 4": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "This image displays one of eight groups, featuring three brightly frosted cupcakes. The three cupcakes are clearly enclosed by a dashed rectangular outline. A prominent large plus sign (+) is positioned to the right of this group, indicating sequential addition. The background is clean and simple. Image size: 256x256 pixels.",
+            "backgroundImage": {
+              "height": 65,
+              "url": "/assets/1765813406645-0.7355461593037419.png",
+              "width": 100
+            },
+            "box": [
+              256,
+              256
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 2,
+            "minor": 0
+          }
+        },
+        "image 5": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "This image displays one of eight groups, featuring three brightly frosted cupcakes. The three cupcakes are clearly enclosed by a dashed rectangular outline. A prominent large plus sign (+) is positioned to the right of this group, indicating sequential addition. The background is clean and simple. Image size: 256x256 pixels.",
+            "backgroundImage": {
+              "height": 65,
+              "url": "/assets/1765813423026-0.595963624173411.png",
+              "width": 100
+            },
+            "box": [
+              256,
+              256
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 2,
+            "minor": 0
+          }
+        },
+        "image 6": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "This image displays one of eight groups, featuring three brightly frosted cupcakes. The three cupcakes are clearly enclosed by a dashed rectangular outline. A prominent large plus sign (+) is positioned to the right of this group, indicating sequential addition. The background is clean and simple. Image size: 256x256 pixels.",
+            "backgroundImage": {
+              "height": 65,
+              "url": "/assets/1765813438860-0.02994746752344324.png",
+              "width": 100
+            },
+            "box": [
+              256,
+              256
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 2,
+            "minor": 0
+          }
+        },
+        "image 7": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "This image displays one of eight groups, featuring three brightly frosted cupcakes. The three cupcakes are clearly enclosed by a dashed rectangular outline. A prominent large plus sign (+) is positioned to the right of this group, indicating sequential addition. The background is clean and simple. Image size: 256x256 pixels.",
+            "backgroundImage": {
+              "height": 65,
+              "url": "/assets/1765813458077-0.8961199646272967.png",
+              "width": 100
+            },
+            "box": [
+              256,
+              256
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 2,
+            "minor": 0
+          }
+        },
+        "image 8": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "This image displays the final group of the sequence, containing three brightly frosted cupcakes. The three cupcakes are clearly enclosed by a dashed rectangular outline. There is no plus sign next to this group, signifying it is the last in the series. The background is clean and simple. Image size: 256x256 pixels.",
+            "backgroundImage": {
+              "height": 65,
+              "url": "/assets/1765813472618-0.0033883173415046874.png",
+              "width": 100
+            },
+            "box": [
+              256,
+              256
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 2,
+            "minor": 0
+          }
+        }
+      }
+    },
+    {
+      "content": "So, let's skip count by $\\maroonD{\\text{three}}$ $\\blueD8$ times to find the total.\n\n\n$\\overset{\\blueD1}{\\maroonD{3}}{} , \\overset{\\blueD2}{\\maroonD{6}}{} , \\overset{\\blueD3}{\\maroonD{9}}{} , \\overset{\\blueD4}{\\maroonD{12}}{}, \\overset{\\blueD5}{\\maroonD{15}}{} , \\overset{\\blueD6}{\\maroonD{18}}{} , \\overset{\\blueD7}{\\maroonD{21}}{} , \\overset{\\blueD8}{\\greenD{24}}$\n\n\n$\\blueD8\\text{ groups of }\\maroonD{{3}} = \\greenD{24}$",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    },
+    {
+      "content": "We can also express $\\blueD8\\text{ groups of }\\maroonD{{3}}$ using multiplication.  \n\n$\\blueD8\\text{ groups of }\\maroonD{{3}} =\\blueD8\\times\\maroonD3$",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    },
+    {
+      "content": "$\\begin{align}\n\\blueD8\\text{ groups of }\\maroonD{{3}} = \\greenD{24}\\\\\\\\\n\\blueD8\\times\\maroonD3 = \\greenD{24}\n\\end{align}$",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    }
+  ],
+  "itemDataVersion": {
+    "major": 2,
+    "minor": 0
+  },
+  "question": {
+    "content": "**Examine the image below to determine the total count of cupcakes.**\n\n[[\u2603 image 1]]\n\n$8$ groups of $3 ={}$ [[\u2603 numeric-input 1]]\n\n$8 \\times 3 ={}$ [[\u2603 numeric-input 2]]",
+    "images": {},
+    "widgets": {
+      "image 1": {
+        "alignment": "block",
+        "graded": true,
+        "options": {
+          "alt": "An overhead view showing a total of eight distinct groups of brightly frosted cupcakes. Each group contains exactly three cupcakes, resulting in twenty-four cupcakes in total. Every group of three cupcakes is clearly visually demarcated by a dashed circular boundary. The cupcakes are arranged neatly in an array on a clean, light-colored surface, rendered in a simple, illustrative style. Image size: 256x256 pixels.",
+          "backgroundImage": {
+            "height": 320,
+            "url": "/assets/1765813487493-0.15939107289785714.png",
+            "width": 320
+          },
+          "box": [
+            256,
+            256
+          ],
+          "caption": "",
+          "labels": [],
+          "range": [
+            [
+              0,
+              10
+            ],
+            [
+              0,
+              10
+            ]
+          ],
+          "static": false,
+          "title": ""
+        },
+        "static": false,
+        "type": "image",
+        "version": {
+          "major": 2,
+          "minor": 0
+        }
+      },
+      "numeric-input 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "answers": [
+            {
+              "maxError": null,
+              "message": "",
+              "simplify": "required",
+              "status": "correct",
+              "strict": false,
+              "value": 24
+            }
+          ],
+          "coefficient": false,
+          "labelText": "total",
+          "multipleNumberInput": false,
+          "rightAlign": false,
+          "size": "normal",
+          "static": false
+        },
+        "static": false,
+        "type": "numeric-input",
+        "version": {
+          "major": 2,
+          "minor": 0
+        }
+      },
+      "numeric-input 2": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "answers": [
+            {
+              "maxError": null,
+              "message": "",
+              "simplify": "required",
+              "status": "correct",
+              "strict": false,
+              "value": 24
+            }
+          ],
+          "coefficient": false,
+          "labelText": "product",
+          "multipleNumberInput": false,
+          "rightAlign": false,
+          "size": "normal",
+          "static": false
+        },
+        "static": false,
+        "type": "numeric-input",
+        "version": {
+          "major": 2,
+          "minor": 0
+        }
+      }
+    }
+  },
+  "status": "pending_approval",
+  "human_approved": false
+}
