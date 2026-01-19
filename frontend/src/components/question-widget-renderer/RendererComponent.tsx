@@ -340,7 +340,7 @@ const RendererComponent = ({
                     const choices = widgetDef.options?.choices || [];
                     const selectedIds = (widgetInput as any).selectedChoiceIds || [];
                     const isMultiSelect = widgetDef.options?.multipleSelect || false;
-                    
+
                     if (isMultiSelect) {
                         // For multi-select: all selected choices must be correct, and all correct choices must be selected
                         const correctIndices = choices
@@ -350,7 +350,7 @@ const RendererComponent = ({
                             const match = id.match(/choice-(\d+)-/);
                             return match ? parseInt(match[1]) : -1;
                         }).filter((i: number) => i >= 0);
-                        
+
                         isCorrect = correctIndices.length === selectedIndices.length &&
                                    correctIndices.every((idx: number) => selectedIndices.includes(idx));
                     } else {
@@ -363,6 +363,17 @@ const RendererComponent = ({
                                 isCorrect = choices[selectedIndex]?.correct === true;
                             }
                         }
+                    }
+                } else if (widgetDef.type === 'orderer') {
+                    // For orderer widget: check if user's order matches correctOptions
+                    const correctOptions = widgetDef.options?.correctOptions || [];
+                    const userOrder = (widgetInput as any).current || [];
+
+                    // Compare content of each item in order
+                    if (correctOptions.length === userOrder.length) {
+                        isCorrect = correctOptions.every((correctOpt: any, index: number) => {
+                            return correctOpt.content === userOrder[index];
+                        });
                     }
                 }
             }
