@@ -49,7 +49,9 @@ import {
   ToggleRight,
   Loader2,
   Clock,
+  Upload,
 } from "lucide-react";
+import { HomeworkPanel } from "../homework-panel/HomeworkPanel";
 import { toast } from "sonner";
 
 const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
@@ -100,6 +102,7 @@ function FloatingControlPanel({
   const [muted, setMuted] = useState(false);
   const [activeVideoStream] = useState<MediaStream | null>(null);
   const [sharedMediaOpen, setSharedMediaOpen] = useState(false);
+  const [homeworkPanelOpen, setHomeworkPanelOpen] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -1382,11 +1385,24 @@ function FloatingControlPanel({
                 </div>
                 <span className="text-[7px] md:text-[8px] font-black uppercase">View</span>
               </button>
-              <button className="flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#C4B5FD] text-black dark:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group">
-                <div className="p-1 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#C4B5FD] transition-colors">
-                  <MoreHorizontal className="w-3 h-3 md:w-4 md:h-4 font-bold" />
+              <button
+                onClick={() => setHomeworkPanelOpen(!homeworkPanelOpen)}
+                className={cn(
+                  "flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white text-black dark:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group",
+                  homeworkPanelOpen
+                    ? "bg-[#ADFF2F]"
+                    : "bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#C4B5FD]",
+                )}
+              >
+                <div className={cn(
+                  "p-1 border-[2px] border-black dark:border-white transition-colors",
+                  homeworkPanelOpen
+                    ? "bg-[#FFFDF5] dark:bg-[#000000]"
+                    : "bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#C4B5FD]",
+                )}>
+                  <Upload className="w-3 h-3 md:w-4 md:h-4 font-bold" />
                 </div>
-                <span className="text-[7px] md:text-[8px] font-black uppercase">More</span>
+                <span className="text-[7px] md:text-[8px] font-black uppercase">Homework</span>
               </button>
             </div>
           </div>
@@ -1449,6 +1465,39 @@ function FloatingControlPanel({
                 privacyMode={privacyMode}
                 processedEdgesRef={processedEdgesRef}
               />
+            </div>
+          </div>
+        )}
+
+        {homeworkPanelOpen && (
+          <div
+            className={cn(
+              "absolute w-[320px] md:w-[360px] h-auto flex flex-col bg-white dark:bg-[#000000] border-[3px] md:border-[4px] border-black dark:border-white rounded-xl md:rounded-2xl shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] overflow-hidden z-[1001]",
+              "animate-popover-in",
+              popoverPosition === "right"
+                ? "left-full ml-4 md:ml-6"
+                : "right-full mr-4 md:mr-6",
+              verticalAlign === "bottom" ? "bottom-0" : "top-0",
+            )}
+          >
+            <div className="flex items-center justify-between p-3 md:p-3.5 border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#ADFF2F]">
+              <div className="flex items-center gap-2 md:gap-3">
+                <div className="p-1.5 md:p-2 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-[#000000]">
+                  <Upload className="w-4 h-4 md:w-5 md:h-5 text-black dark:text-white font-bold" />
+                </div>
+                <h3 className="font-black text-black uppercase text-xs md:text-sm">
+                  HOMEWORK
+                </h3>
+              </div>
+              <button
+                onClick={() => setHomeworkPanelOpen(false)}
+                className="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-[#000000] hover:bg-[#FF006E] text-black dark:text-white hover:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1"
+              >
+                <X className="w-4 h-4 md:w-5 md:h-5 font-bold" />
+              </button>
+            </div>
+            <div className="p-4 bg-[#FFFDF5] dark:bg-[#000000]">
+              <HomeworkPanel />
             </div>
           </div>
         )}
