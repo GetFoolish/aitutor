@@ -72,6 +72,14 @@ export interface TutorClientEventTypes {
 
 export class TutorClient extends EventEmitter<TutorClientEventTypes> {
   private tutorService: TutorService | null = null;
+  
+  /**
+   * Get the underlying TutorService instance
+   * Useful for accessing service methods like onCleanup
+   */
+  get service(): TutorService | null {
+    return this.tutorService;
+  };
   private _status: "connected" | "disconnected" | "connecting" = "disconnected";
   private config: LiveConnectConfig | null = null;
 
@@ -279,8 +287,31 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
     let hasVideo = false;
 
     for (const ch of chunks) {
-      // Send directly to Gemini
-      this.tutorService.sendRealtimeInput(ch);
+      // CRITICAL: Filter out non-audio media before sending to Gemini
+      // Gemini Live API ONLY accepts audio via sendRealtimeInput
+      // Images/video cause "Cannot extract voices from a non-audio request" error
+      if (!ch.mimeType || !ch.mimeType.includes("audio")) {
+        // Skip non-audio chunks - they should not be sent to Gemini
+        console.debug('Skipping non-audio chunk:', ch.mimeType);
+        continue;
+      }
+
+      // Send directly to Gemini (with error handling)
+      try {
+        this.tutorService.sendRealtimeInput(ch);
+      } catch (error) {
+        // Silently handle errors - connection might be closing
+        if (error instanceof Error) {
+          const errorMsg = error.message || String(error);
+          if (!errorMsg.includes("CLOSING") && !errorMsg.includes("CLOSED") && !errorMsg.includes("WebSocket")) {
+            console.warn('Error in sendRealtimeInput:', error);
+          }
+        }
+        // Stop processing if connection is dead
+        if (this._status !== "connected") {
+          break;
+        }
+      }
 
       if (ch.mimeType.includes("audio")) {
         hasAudio = true;
@@ -334,6 +365,38 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
       turns: Array.isArray(parts) ? parts : [parts],
       turnComplete,
     });
+  }
+
+  /**
+   * Inject homework content so the tutor can help with it
+   * Retries up to 5 times with 500ms delay if not connected
+   */
+  async injectHomeworkContext(homeworkContent: string, filename: string): Promise<boolean> {
+    const maxRetries = 5;
+    const retryDelay = 500;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      console.log(`[TutorClient] injectHomework attempt ${attempt}/${maxRetries}, status: ${this._status}`);
+
+      if (this.tutorService && this._status === "connected") {
+        try {
+          this.tutorService.injectHomeworkContext(homeworkContent, filename);
+          this.log(`client.injectHomework`, { filename, attempt });
+          console.log(`[TutorClient] Successfully injected homework: ${filename}`);
+          return true;
+        } catch (error) {
+          console.error(`[TutorClient] Error injecting homework:`, error);
+        }
+      }
+
+      if (attempt < maxRetries) {
+        console.log(`[TutorClient] Waiting ${retryDelay}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+      }
+    }
+
+    console.warn(`[TutorClient] Failed to inject homework after ${maxRetries} attempts: tutor not connected`);
+    return false;
   }
 }
 

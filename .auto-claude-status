@@ -1,0 +1,25 @@
+{
+  "active": true,
+  "spec": "019-homework",
+  "state": "complete",
+  "subtasks": {
+    "completed": 16,
+    "total": 16,
+    "in_progress": 0,
+    "failed": 0
+  },
+  "phase": {
+    "current": "Error Handling and UX Polish",
+    "id": null,
+    "total": 4
+  },
+  "workers": {
+    "active": 0,
+    "max": 1
+  },
+  "session": {
+    "number": 10,
+    "started_at": "2026-01-16T16:55:49.703920"
+  },
+  "last_update": "2026-01-16T17:50:18.524268"
+}
