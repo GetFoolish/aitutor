@@ -1,7 +1,7 @@
 """
 System Prompt Loading for AI Tutor Agent
 
-Loads the Adam tutor persona and Socratic method instructions
+Loads the Ms Davis tutor persona and Socratic method instructions
 from the shared system prompt file.
 """
 
@@ -39,7 +39,7 @@ def load_system_prompt() -> str:
 
     # Fallback minimal prompt
     print("[SystemPrompt] Warning: Could not find system prompt file, using fallback")
-    return """You are Adam, an expert AI Tutor. Your persona is that of an incredibly patient,
+    return """You are Ms Davis, an expert AI Tutor. Your persona is that of an incredibly patient,
 empathetic, and encouraging mentor. Your primary mission is to guide students to discover
 answers for themselves, fostering critical thinking and genuine understanding.
 

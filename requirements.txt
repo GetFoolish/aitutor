@@ -66,3 +66,18 @@ yarl==1.22.0
 passlib[bcrypt]==1.7.4
 bcrypt==4.2.1
 livekit-api>=0.7.0
+
+# Auth & Payments
+email-validator>=2.0.0
+stripe>=7.0.0
+
+# Vector DB (correct package name)
+pinecone>=3.0.0
+
+# LiveKit Agent dependencies
+livekit-agents>=1.0.0
+livekit-plugins-silero>=1.0.0
+livekit-plugins-deepgram>=1.0.0
+livekit-plugins-google>=1.0.0
+livekit-plugins-cartesia>=1.0.0
+livekit-plugins-hedra>=1.0.0
