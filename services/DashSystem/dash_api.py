@@ -1225,6 +1225,379 @@ def get_suggested_videos(
         raise HTTPException(status_code=500, detail=f"Failed to fetch suggested videos: {str(e)}")
 
 
+# ===== BADGES & STREAK ENDPOINTS =====
+
+# Badge definitions
+AVAILABLE_BADGES = [
+    {
+        "badge_id": "first_steps",
+        "name": "First Steps",
+        "description": "Answer your first question",
+        "badge_type": "question_count",
+        "icon": "🚀",
+        "requirement": 1,
+        "tier": "bronze"
+    },
+    {
+        "badge_id": "practice_10",
+        "name": "Getting Started",
+        "description": "Answer 10 questions",
+        "badge_type": "question_count",
+        "icon": "📚",
+        "requirement": 10,
+        "tier": "bronze"
+    },
+    {
+        "badge_id": "practice_50",
+        "name": "Dedicated Learner",
+        "description": "Answer 50 questions",
+        "badge_type": "question_count",
+        "icon": "🎯",
+        "requirement": 50,
+        "tier": "silver"
+    },
+    {
+        "badge_id": "practice_100",
+        "name": "Century Club",
+        "description": "Answer 100 questions",
+        "badge_type": "question_count",
+        "icon": "💯",
+        "requirement": 100,
+        "tier": "gold"
+    },
+    {
+        "badge_id": "streak_3",
+        "name": "On Fire",
+        "description": "Maintain a 3-day streak",
+        "badge_type": "streak",
+        "icon": "🔥",
+        "requirement": 3,
+        "tier": "bronze"
+    },
+    {
+        "badge_id": "streak_7",
+        "name": "Week Warrior",
+        "description": "Maintain a 7-day streak",
+        "badge_type": "streak",
+        "icon": "⚡",
+        "requirement": 7,
+        "tier": "silver"
+    },
+    {
+        "badge_id": "streak_30",
+        "name": "Monthly Master",
+        "description": "Maintain a 30-day streak",
+        "badge_type": "streak",
+        "icon": "🏆",
+        "requirement": 30,
+        "tier": "gold"
+    },
+    {
+        "badge_id": "perfect_5",
+        "name": "Sharp Mind",
+        "description": "Get 5 questions correct in a row",
+        "badge_type": "perfect_score",
+        "icon": "🧠",
+        "requirement": 5,
+        "tier": "bronze"
+    },
+    {
+        "badge_id": "perfect_10",
+        "name": "Perfectionist",
+        "description": "Get 10 questions correct in a row",
+        "badge_type": "perfect_score",
+        "icon": "⭐",
+        "requirement": 10,
+        "tier": "silver"
+    }
+]
+
+
+def _calculate_streak(user_id: str) -> dict:
+    """Calculate user's practice streak from question_attempts"""
+    from managers.mongodb_manager import mongo_db
+    from datetime import datetime, timedelta
+
+    try:
+        # Get all attempts for user, sorted by date
+        attempts = list(mongo_db.question_attempts.find(
+            {"user_id": user_id}
+        ).sort("timestamp", -1))
+
+        if not attempts:
+            return {
+                "current_streak": 0,
+                "longest_streak": 0,
+                "last_practice_date": None,
+                "streak_history": [],
+                "practice_dates": []
+            }
+
+        # Get unique practice dates
+        practice_dates = set()
+        for attempt in attempts:
+            ts = attempt.get("timestamp")
+            if ts:
+                date_str = ts.strftime("%Y-%m-%d") if hasattr(ts, 'strftime') else str(ts)[:10]
+                practice_dates.add(date_str)
+
+        practice_dates = sorted(list(practice_dates), reverse=True)
+
+        # Calculate current streak
+        today = datetime.now().date()
+        yesterday = today - timedelta(days=1)
+
+        current_streak = 0
+        check_date = today
+
+        # Check if practiced today or yesterday to start streak
+        today_str = today.strftime("%Y-%m-%d")
+        yesterday_str = yesterday.strftime("%Y-%m-%d")
+
+        if today_str in practice_dates:
+            check_date = today
+        elif yesterday_str in practice_dates:
+            check_date = yesterday
+        else:
+            # No recent practice, streak is 0
+            return {
+                "current_streak": 0,
+                "longest_streak": _calculate_longest_streak(practice_dates),
+                "last_practice_date": practice_dates[0] if practice_dates else None,
+                "streak_history": practice_dates[:30],
+                "practice_dates": practice_dates
+            }
+
+        # Count consecutive days
+        while check_date.strftime("%Y-%m-%d") in practice_dates:
+            current_streak += 1
+            check_date -= timedelta(days=1)
+
+        return {
+            "current_streak": current_streak,
+            "longest_streak": max(current_streak, _calculate_longest_streak(practice_dates)),
+            "last_practice_date": practice_dates[0] if practice_dates else None,
+            "streak_history": practice_dates[:30],
+            "practice_dates": practice_dates
+        }
+
+    except Exception as e:
+        logger.error(f"[STREAK] Error calculating streak: {e}")
+        return {
+            "current_streak": 0,
+            "longest_streak": 0,
+            "last_practice_date": None,
+            "streak_history": [],
+            "practice_dates": []
+        }
+
+
+def _calculate_longest_streak(practice_dates: list) -> int:
+    """Calculate longest streak from list of practice dates"""
+    from datetime import datetime, timedelta
+
+    if not practice_dates:
+        return 0
+
+    # Sort dates
+    dates = sorted([datetime.strptime(d, "%Y-%m-%d").date() for d in practice_dates])
+
+    longest = 1
+    current = 1
+
+    for i in range(1, len(dates)):
+        if dates[i] - dates[i-1] == timedelta(days=1):
+            current += 1
+            longest = max(longest, current)
+        else:
+            current = 1
+
+    return longest
+
+
+@app.get("/api/streak")
+def get_streak(request: Request):
+    """Get user's current streak data"""
+    user_id = get_current_user(request)
+
+    logger.info(f"[STREAK] Fetching streak data for user: {user_id}")
+
+    streak_data = _calculate_streak(user_id)
+
+    return {
+        "current_streak": streak_data["current_streak"],
+        "longest_streak": streak_data["longest_streak"],
+        "last_practice_date": streak_data["last_practice_date"],
+        "streak_history": streak_data["streak_history"]
+    }
+
+
+@app.get("/api/streak/calendar")
+def get_streak_calendar(request: Request):
+    """Get practice dates for calendar heatmap"""
+    user_id = get_current_user(request)
+
+    logger.info(f"[STREAK] Fetching calendar data for user: {user_id}")
+
+    streak_data = _calculate_streak(user_id)
+
+    return {
+        "practice_dates": streak_data["practice_dates"]
+    }
+
+
+def _get_badge_progress(user_id: str) -> dict:
+    """Calculate progress towards each badge"""
+    from managers.mongodb_manager import mongo_db
+
+    try:
+        # Get total questions answered
+        total_questions = mongo_db.question_attempts.count_documents({"user_id": user_id})
+
+        # Get streak data
+        streak_data = _calculate_streak(user_id)
+        current_streak = streak_data["current_streak"]
+        longest_streak = streak_data["longest_streak"]
+
+        # Get perfect streak (consecutive correct answers)
+        attempts = list(mongo_db.question_attempts.find(
+            {"user_id": user_id}
+        ).sort("timestamp", -1).limit(100))
+
+        current_perfect = 0
+        max_perfect = 0
+        temp_perfect = 0
+
+        for attempt in reversed(attempts):
+            if attempt.get("is_correct"):
+                temp_perfect += 1
+                max_perfect = max(max_perfect, temp_perfect)
+            else:
+                temp_perfect = 0
+
+        # Check most recent streak
+        for attempt in attempts:
+            if attempt.get("is_correct"):
+                current_perfect += 1
+            else:
+                break
+
+        # Get earned badges
+        user_doc = mongo_db.users.find_one({"user_id": user_id})
+        earned_badges = user_doc.get("earned_badges", []) if user_doc else []
+
+        progress = {}
+        for badge in AVAILABLE_BADGES:
+            badge_id = badge["badge_id"]
+            badge_type = badge["badge_type"]
+            requirement = badge["requirement"]
+
+            if badge_type == "question_count":
+                current = total_questions
+            elif badge_type == "streak":
+                current = max(current_streak, longest_streak)
+            elif badge_type == "perfect_score":
+                current = max(current_perfect, max_perfect)
+            else:
+                current = 0
+
+            progress[badge_id] = {
+                "current": current,
+                "required": requirement,
+                "percentage": min(100, int((current / requirement) * 100)) if requirement > 0 else 0,
+                "earned": badge_id in earned_badges
+            }
+
+        return progress, earned_badges
+
+    except Exception as e:
+        logger.error(f"[BADGES] Error calculating progress: {e}")
+        return {}, []
+
+
+@app.get("/api/badges")
+def get_badges(request: Request):
+    """Get all available badges with user progress"""
+    user_id = get_current_user(request)
+
+    logger.info(f"[BADGES] Fetching badges for user: {user_id}")
+
+    progress, earned_badges = _get_badge_progress(user_id)
+
+    return {
+        "available_badges": AVAILABLE_BADGES,
+        "user_progress": progress,
+        "earned_badges": earned_badges
+    }
+
+
+@app.get("/api/badges/earned")
+def get_earned_badges(request: Request):
+    """Get user's earned badges"""
+    user_id = get_current_user(request)
+
+    logger.info(f"[BADGES] Fetching earned badges for user: {user_id}")
+
+    from managers.mongodb_manager import mongo_db
+
+    try:
+        user_doc = mongo_db.users.find_one({"user_id": user_id})
+        earned_badge_ids = user_doc.get("earned_badges", []) if user_doc else []
+
+        earned_badges = [b for b in AVAILABLE_BADGES if b["badge_id"] in earned_badge_ids]
+
+        return {
+            "earned_badges": earned_badges,
+            "total_count": len(earned_badges)
+        }
+
+    except Exception as e:
+        logger.error(f"[BADGES] Error fetching earned badges: {e}")
+        return {
+            "earned_badges": [],
+            "total_count": 0
+        }
+
+
+@app.post("/api/badges/check")
+def check_badges(request: Request):
+    """Check and award new badges based on current progress"""
+    user_id = get_current_user(request)
+
+    logger.info(f"[BADGES] Checking badges for user: {user_id}")
+
+    from managers.mongodb_manager import mongo_db
+
+    try:
+        progress, current_earned = _get_badge_progress(user_id)
+
+        newly_earned = []
+
+        for badge_id, prog in progress.items():
+            if prog["percentage"] >= 100 and badge_id not in current_earned:
+                newly_earned.append(badge_id)
+                logger.info(f"[BADGES] User {user_id} earned badge: {badge_id}")
+
+        # Update earned badges in database
+        if newly_earned:
+            mongo_db.users.update_one(
+                {"user_id": user_id},
+                {"$addToSet": {"earned_badges": {"$each": newly_earned}}},
+                upsert=True
+            )
+
+        return {
+            "newly_earned": newly_earned,
+            "badge_progress": progress
+        }
+
+    except Exception as e:
+        logger.error(f"[BADGES] Error checking badges: {e}")
+        import traceback
+        logger.error(f"[BADGES] Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Failed to check badges: {str(e)}")
+
+
 @app.get("/api/admin/videos/stats")
 def get_videos_stats(
     request: Request
