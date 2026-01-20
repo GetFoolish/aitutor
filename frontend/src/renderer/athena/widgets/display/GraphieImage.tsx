@@ -185,6 +185,49 @@ function restructureSvgForVotingGraph(svg: string): string {
   }
 }
 
+/**
+ * Simpler restructuring for standard bar charts that need room for injected labels.
+ */
+function restructureSvgForBarChart(svg: string, leftPadding = 70, bottomPadding = 80, topPadding = 20, rightPadding = 20): string {
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(svg, 'image/svg+xml');
+    const svgEl = doc.documentElement;
+
+    const viewBoxMatch = svg.match(/viewBox="([^"]+)"/);
+    let svgWidth = 400;
+    let svgHeight = 400;
+    if (viewBoxMatch) {
+      const parts = viewBoxMatch[1].split(/\s+/);
+      svgWidth = parseFloat(parts[2]) || 400;
+      svgHeight = parseFloat(parts[3]) || 400;
+    }
+
+    const newWidth = svgWidth + leftPadding + rightPadding;
+    const newHeight = svgHeight + bottomPadding + topPadding;
+
+    svgEl.setAttribute('viewBox', `0 0 ${newWidth} ${newHeight}`);
+    svgEl.setAttribute('data-original-height', svgHeight.toString());
+    svgEl.setAttribute('data-restructured', 'true');
+    svgEl.setAttribute('width', '100%');
+    svgEl.removeAttribute('height');
+
+    const g = doc.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('transform', `translate(${leftPadding}, ${topPadding})`);
+    g.setAttribute('class', 'graph-content-transformed');
+
+    while (svgEl.firstChild) {
+      g.appendChild(svgEl.firstChild);
+    }
+    svgEl.appendChild(g);
+
+    return new XMLSerializer().serializeToString(doc);
+  } catch (err) {
+    console.error('[GraphieImage] Error restructuring bar chart SVG:', err);
+    return svg;
+  }
+}
+
 export function GraphieImage({ url, alt = '', className = '', style }: GraphieImageProps) {
   // Get global context safely (returns null if not in provider)
   const athenaContext = React.useContext(AthenaContext);
@@ -341,6 +384,29 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     ]
   };
 
+  // Hardcoded data for the Favorite Color bar chart (Hash: bdf68c9d18c94a4d1512fd9328cfa9b054e4ff44)
+  const FAVORITE_COLOR_GRAPH_DATA: GraphieData = {
+    "range": [[-3.0, 17.5], [-2.0, 11]] as [[number, number], [number, number]],
+    "labels": [
+      { "content": "0", "coordinates": [0, -0.6], "alignment": "center", "typesetAsMath": true },
+      { "content": "2", "coordinates": [2, -0.6], "alignment": "center", "typesetAsMath": true },
+      { "content": "4", "coordinates": [4, -0.6], "alignment": "center", "typesetAsMath": true },
+      { "content": "6", "coordinates": [6, -0.6], "alignment": "center", "typesetAsMath": true },
+      { "content": "8", "coordinates": [8, -0.6], "alignment": "center", "typesetAsMath": true },
+      { "content": "10", "coordinates": [10, -0.6], "alignment": "center", "typesetAsMath": true },
+      { "content": "12", "coordinates": [12, -0.6], "alignment": "center", "typesetAsMath": true },
+      { "content": "14", "coordinates": [14, -0.6], "alignment": "center", "typesetAsMath": true },
+      { "content": "16", "coordinates": [16, -0.6], "alignment": "center", "typesetAsMath": true },
+      { "content": "Number of students", "coordinates": [8, -1.8], "alignment": "center", "typesetAsMath": false, "style": { "font-weight": "bold" } },
+      { "content": "Favorite Color", "coordinates": [-0.15, 7.5], "alignment": "center", "typesetAsMath": false, "style": { "font-weight": "bold", "transform": "rotate(-90deg)" } },
+      { "content": "green", "coordinates": [-0.1, 1], "alignment": "right", "typesetAsMath": false },
+      { "content": "blue", "coordinates": [-0.1, 3], "alignment": "right", "typesetAsMath": false },
+      { "content": "purple", "coordinates": [-0.1, 5], "alignment": "right", "typesetAsMath": false },
+      { "content": "orange", "coordinates": [-0.1, 7], "alignment": "right", "typesetAsMath": false },
+      { "content": "red", "coordinates": [-0.1, 9], "alignment": "right", "typesetAsMath": false }
+    ] as GraphieLabel[]
+  };
+
   useEffect(() => {
     // Check if URL suggests this is a labeled/numbered image that works better with PNG
     const lowerUrl = baseUrl.toLowerCase();
@@ -364,7 +430,8 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     if (baseUrl.toLowerCase().includes('6933b3176cf86fa761d0a255') ||
       baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011') ||
       baseUrl.includes('d638c1e1fee8df2a93bbbb569d809df60bf9a52a') ||
-      baseUrl.includes('bb0459b2b58513d63d21f1fbf35dac7395a01783')) {
+      baseUrl.includes('bb0459b2b58513d63d21f1fbf35dac7395a01783') ||
+      baseUrl.includes('bdf68c9d18c94a4d1512fd9328cfa9b054e4ff44')) {
 
       const svgUrl = baseUrl + '.svg?v=debug4'; // Force fresh fetch
       if (svgCache.has(baseUrl + '.svg')) {
@@ -443,11 +510,6 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
           baseUrl.toLowerCase().includes('political') ||
           baseUrl.toLowerCase().includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011') ||
           baseUrl.toLowerCase().includes('6933b3176cf86fa761d0a255');
-
-        if (isVotingUrl) {
-          console.log('[GraphieImage] Voting graph detected by URL, restructuring SVG');
-          processedSvg = restructureSvgForVotingGraph(processedSvg);
-        }
 
         // Inject comprehensive CSS style block to ensure ALL text is visible
         // IMPORTANT: Scope all selectors to .graphie-svg to avoid affecting other page elements
@@ -645,14 +707,18 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       return;
     }
 
-    // FORCE HARDCODED DATA for Voting Graph
-    // This bypasses fetch failures and guarantees labels exist for our fix
+    // FORCE HARDCODED DATA for Voting Graph and Favorite Color Graph
     if (baseUrl.toLowerCase().includes('6933b3176cf86fa761d0a255') || baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011')) {
       console.log('[GraphieImage] Using HARDCODED data for voting graph');
-      // We already defined VOTING_GRAPH_DATA constant at component scope (lines 220+)
-      // But since it's defined inside the component, we can access it here.
-      // Wait, scope is fine.
       setGraphieData(VOTING_GRAPH_DATA as GraphieData);
+      setDataFetchComplete(true);
+      return;
+    }
+
+    if (baseUrl.includes('bdf68c9d18c94a4d1512fd9328cfa9b054e4ff44') ||
+      baseUrl.includes('Bdf68c9d18c94a4d1512fd9328cfa9b054e4ff44')) {
+      console.log('[GraphieImage] Using HARDCODED data for favorite color graph');
+      setGraphieData(FAVORITE_COLOR_GRAPH_DATA);
       setDataFetchComplete(true);
       return;
     }
@@ -815,7 +881,9 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
 
     // Parse SVG dimensions and check for restructuring
     const viewBoxMatch = svg.match(/viewBox="([^"]+)"/);
-    const isTargetGraph = baseUrl.toLowerCase().includes('6933b3176cf86fa761d0a255') || baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011');
+    const isTargetGraph = baseUrl.toLowerCase().includes('6933b3176cf86fa761d0a255') ||
+      baseUrl.includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011') ||
+      baseUrl.includes('bdf68c9d18c94a4d1512fd9328cfa9b054e4ff44');
     const isRestructured = svg.includes('data-restructured') || isTargetGraph;
     const origHeightMatch = svg.match(/data-original-height="([^"]+)"/);
 
@@ -952,10 +1020,13 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
           label.alignment === 'center';
 
         if (isVertical && isAxisTitle) {
-          const yAxisPixelX = ((-xMin) / (xMax - xMin)) * svgWidth;
-          // Standard vertical axis title positioning
-          svgY = coordinateHeight / 2;
-          svgX = yAxisPixelX - 85;
+          if (!baseUrl.includes('bdf68c9d18c94a4d1512fd9328cfa9b054e4ff44')) {
+            // Standard vertical axis title positioning
+            const yAxisPixelX = ((-xMin) / (xMax - xMin)) * svgWidth;
+            svgX = yAxisPixelX - 85;
+            svgY = coordinateHeight / 2;
+          }
+
           textAnchor = 'middle';
           transformAttr = `rotate(-90 ${svgX} ${svgY})`;
           styleStr += ' font-weight: bold; font-size: 16px;';
@@ -1010,7 +1081,13 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
     }
 
     if (isRestructured) {
-      return svg.replace('</svg>', `<g transform="translate(60, 180)" class="graphie-labels">${labelElements}</g></svg>`);
+      let translation = "60, 180"; // Default for voting graph
+      if (baseUrl.includes('bdf68c9d18c94a4d1512fd9328cfa9b054e4ff44')) {
+        translation = "60, 20";
+      }
+      // The previous block that called setGraphieData and returned has been removed.
+      // Now, we always return the SVG with labels and the determined translation.
+      return svg.replace('</svg>', `<g transform="translate(${translation})" class="graphie-labels">${labelElements}</g></svg>`);
     }
 
     return svg.replace('</svg>', `<g class="graphie-labels">${labelElements}</g></svg>`);
@@ -1022,9 +1099,23 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       return svgContent;
     }
     const range = graphieData.range || [[-10, 10], [-10, 10]];
-    console.log('[GraphieImage] Injecting', graphieData.labels.length, 'labels into SVG');
-    return injectLabelsIntoSvg(svgContent, graphieData.labels, range);
-  }, [svgContent, graphieData, injectLabelsIntoSvg]);
+    const graphHash = baseUrl.split('/').pop() || '';
+    const isVotingUrl = baseUrl.toLowerCase().includes('voting') ||
+      baseUrl.toLowerCase().includes('political') ||
+      baseUrl.toLowerCase().includes('6ba2c9076404d0c5e704a2071bec7597bb3dc011') ||
+      baseUrl.toLowerCase().includes('6933b3176cf86fa761d0a255');
+
+    let processedContent = svgContent;
+    if (!processedContent.includes('data-restructured')) {
+      if (isVotingUrl) {
+        processedContent = restructureSvgForVotingGraph(processedContent);
+      } else if (graphHash.includes('bdf68c9d18c94a4d1512fd9328cfa9b054e4ff44')) {
+        processedContent = restructureSvgForBarChart(processedContent, 60, 100, 20, 20);
+      }
+    }
+
+    return injectLabelsIntoSvg(processedContent, graphieData.labels, range);
+  }, [svgContent, graphieData, injectLabelsIntoSvg, baseUrl]);
 
   // FORCE STATIC IMAGE FOR BROKEN GRAPHS
   // This bypasses all complex SVG restructuring logic as requested by user.
@@ -1064,8 +1155,10 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       className: `${imgClass} ${isDarkMode ? 'force-dark' : ''}`
     });
 
+    const graphMaxWidth = baseUrl.includes('bdf68c9d18c94a4d1512fd9328cfa9b054e4ff44') ? '600px' : '500px';
+
     return (
-      <div className={`graphie-container ${className}`} style={{ ...style, width: '100%', maxWidth: '400px', margin: '0 auto', background: 'transparent', padding: 0, border: 'none' }}>
+      <div className="graphie-image-container" style={{ position: 'relative', width: '100%', maxWidth: baseUrl.includes('bdf68c9d18c94a4d1512fd9328cfa9b054e4ff44') ? '600px' : '500px', margin: '0 auto', overflow: 'visible', background: 'transparent', padding: 0, border: 'none' }}>
         {/* CSS pour dark mode - ULTRA-SPÉCIFIQUE pour éviter d'affecter d'autres éléments */}
         <style>{`
           /* Cible UNIQUEMENT l'image de ce composant */
@@ -1116,7 +1209,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
-        maxWidth: '100%',
+        maxWidth: baseUrl.includes('bdf68c9d18c94a4d1512fd9328cfa9b054e4ff44') ? '380px' : '100%',
         margin: '2rem auto',
         textAlign: 'center',
         ...style,
