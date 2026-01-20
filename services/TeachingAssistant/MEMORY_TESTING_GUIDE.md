@@ -42,7 +42,7 @@ npm run dev
 curl http://localhost:8002/health
 
 # Check biography endpoint
-curl -H "Authorization: Bearer <your-jwt-token>" http://localhost:8002/biography
+curl -H "Authorization: Bearer <your-jwt-token>" http://localhost:8002/student/biography
 ```
 
 ## Testing the Memory System
@@ -129,13 +129,16 @@ The tutor should reference interests naturally, e.g.:
 ### Biography Endpoints
 
 ```bash
-# Get biography
-GET /biography
+# Get biography (returns user_id, biography, has_biography)
+GET /student/biography
 Authorization: Bearer <token>
 
-# Force biography regeneration
-POST /biography/regenerate
-Authorization: Bearer <token>
+# Response format:
+{
+  "user_id": "...",
+  "biography": { ... },
+  "has_biography": true
+}
 ```
 
 ### Memory Endpoints
