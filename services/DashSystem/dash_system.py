@@ -978,22 +978,38 @@ class DASHSystem:
             total_mastery = 0
             total_units_with_attempts = 0
 
+            # Sort units by grade level before processing
+            # First, we need to get course info for each unit to determine grade
+            units_with_grade = []
             for unit in units:
                 unit_id = unit.get("unit_id")
                 course_id = unit.get("course_id")
 
-                # Get course to determine subject using batch-loaded data
+                # Get course to determine grade level
                 course = courses_by_id.get(course_id)
                 if not course:
                     continue
 
-                # Extract subject and grade level from course (same as initialization)
-                subject = extract_subject(course.get("title", ""))
+                # Extract grade level from course
                 grade_level_enum = derive_grade_from_course(
                     course.get("title", ""),
                     course.get("slug", ""),
                     course.get("order_in_region", 0)
                 )
+
+                # Store unit with its grade level value for sorting
+                grade_value = grade_level_enum.value if grade_level_enum else 999
+                units_with_grade.append((unit, course, grade_level_enum, grade_value))
+
+            # Sort by grade level (ascending order: K=0, Grade1=1, ..., Grade12=12)
+            units_with_grade.sort(key=lambda x: x[3])
+
+            for unit, course, grade_level_enum, grade_value in units_with_grade:
+                unit_id = unit.get("unit_id")
+                course_id = unit.get("course_id")
+
+                # Extract subject and grade level from course (already computed above)
+                subject = extract_subject(course.get("title", ""))
                 grade_level = grade_level_enum.name if grade_level_enum else "Unknown"
                 
                 # Initialize subject in grading data
