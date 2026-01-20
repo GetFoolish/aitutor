@@ -73,6 +73,7 @@ class EmailSignupRequest(BaseModel):
     date_of_birth: date
     gender: str
     preferred_language: str
+    location: Optional[str] = None
     user_type: str = "student"
 
 class EmailLoginRequest(BaseModel):
@@ -85,10 +86,24 @@ class CompleteSetupRequest(BaseModel):
     date_of_birth: date  # Changed from age
     gender: str
     preferred_language: str
+    location: Optional[str] = None
     subjects: Optional[List[str]] = []
     learning_goals: Optional[List[str]] = []
     interests: Optional[List[str]] = []
     learning_style: Optional[str] = None
+
+class UpdateAccountRequest(BaseModel):
+    name: Optional[str] = None
+    date_of_birth: Optional[date] = None
+    location: Optional[str] = None
+    gender: Optional[str] = None
+    preferred_language: Optional[str] = None
+
+class UpdateMissingInfoRequest(BaseModel):
+    date_of_birth: Optional[date] = None
+    gender: Optional[str] = None
+    preferred_language: Optional[str] = None
+    location: Optional[str] = None
 
 
 @app.get("/health")
@@ -210,6 +225,7 @@ async def complete_setup(request: CompleteSetupRequest):
             date_of_birth=request.date_of_birth,
             gender=request.gender,
             preferred_language=request.preferred_language,
+            location=request.location,
             subjects=request.subjects,
             learning_goals=request.learning_goals,
             interests=request.interests,
@@ -292,6 +308,7 @@ async def email_signup(request: EmailSignupRequest):
             date_of_birth=request.date_of_birth,
             gender=request.gender,
             preferred_language=request.preferred_language,
+            location=request.location,
             user_type=request.user_type
         )
 
@@ -451,6 +468,15 @@ async def get_account_info(request: Request):
     # Get location (default to empty string if not set)
     location = user_data.get("location", "") if user_data else ""
     
+    # Get gender
+    gender = user_data.get("gender", "") if user_data else ""
+    
+    # Get preferred language
+    preferred_language = user_data.get("preferred_language", "") if user_data else ""
+    
+    # Get user type
+    user_type = user_data.get("user_type", "student") if user_data else "student"
+    
     # Get credits (default to 0.0 balance with USD currency if not set)
     credits = user_data.get("credits", {}) if user_data else {}
     if not credits:
@@ -461,21 +487,331 @@ async def get_account_info(request: Request):
             credits["balance"] = 0.0
         if "currency" not in credits:
             credits["currency"] = "USD"
+
+    # Get subscription plan (default to None if not set)
+    subscription_plan = user_data.get("subscription_plan") if user_data else None
     
+    # Get free_minutes (for daily allocation)
+    free_minutes = user_data.get("free_minutes", {}) if user_data else {}
+    if not free_minutes:
+        free_minutes = {"balance": 0.0, "last_reset_date": None}
+    else:
+        # Ensure balance exists
+        if "balance" not in free_minutes:
+            free_minutes["balance"] = 0.0
+        if "last_reset_date" not in free_minutes:
+            free_minutes["last_reset_date"] = None
+
     return {
         "user_id": user_profile.user_id,
         "email": email,
         "name": name,
         "date_of_birth": date_of_birth,
         "location": location,
-        "credits": credits
+        "gender": gender,
+        "preferred_language": preferred_language,
+        "user_type": user_type,
+        "credits": credits,
+        "free_minutes": free_minutes,
+        "subscription_plan": subscription_plan
     }
+
+
+@app.put("/account/update")
+async def update_account_info(request: Request, update_data: UpdateAccountRequest):
+    """Update user account information"""
+    auth_header = request.headers.get("Authorization")
+    
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
+    
+    token = auth_header.split(" ")[1]
+    payload = verify_token(token)
+    
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
+    user_id = payload["sub"]
+    
+    # Get user from database
+    user_profile = user_manager.load_user(user_id)
+    
+    if not user_profile:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Get full user data from MongoDB
+    from managers.mongodb_manager import mongo_db
+    user_data = mongo_db.users.find_one({"user_id": user_id})
+    
+    if not user_data:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Build update dictionary with only provided fields
+    update_dict = {}
+    
+    if update_data.name is not None:
+        # Update both google_name and name fields
+        if user_data.get("auth_method") == "google":
+            update_dict["google_name"] = update_data.name
+        else:
+            update_dict["name"] = update_data.name
+    
+    if update_data.date_of_birth is not None:
+        update_dict["date_of_birth"] = update_data.date_of_birth.isoformat()
+        # Recalculate age and current_grade
+        today = datetime.now().date()
+        age = today.year - update_data.date_of_birth.year - ((today.month, today.day) < (update_data.date_of_birth.month, update_data.date_of_birth.day))
+        current_grade = calculate_grade_from_age(age)
+        update_dict["age"] = age
+        update_dict["current_grade"] = current_grade
+        # Also update in UserProfile
+        user_profile.age = age
+        user_profile.current_grade = current_grade
+    
+    if update_data.location is not None:
+        update_dict["location"] = update_data.location
+    
+    if update_data.gender is not None:
+        # Validate gender
+        if update_data.gender not in ["Male", "Female", "Other", "Prefer not to say"]:
+            raise HTTPException(status_code=400, detail="Invalid gender value")
+        update_dict["gender"] = update_data.gender
+    
+    if update_data.preferred_language is not None:
+        # Validate language
+        if update_data.preferred_language not in ["English", "Hindi", "Spanish", "French"]:
+            raise HTTPException(status_code=400, detail="Invalid language value")
+        update_dict["preferred_language"] = update_data.preferred_language
+    
+    # Update MongoDB
+    if update_dict:
+        mongo_db.users.update_one(
+            {"user_id": user_id},
+            {"$set": update_dict}
+        )
+        
+        # Save updated UserProfile if age/grade changed
+        if "age" in update_dict or "current_grade" in update_dict:
+            user_manager.save_user(user_profile)
+        
+        logger.info(f"[ACCOUNT] Updated account info for user {user_id}: {list(update_dict.keys())}")
+    
+    # Return updated account info
+    return await get_account_info(request)
+
+
+@app.get("/auth/detect-location")
+async def detect_location(request: Request):
+    """Detect user's country from IP address"""
+    try:
+        # Get client IP from headers (handles proxies/load balancers)
+        client_ip = request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
+        if not client_ip:
+            client_ip = request.headers.get("X-Real-IP", "")
+        if not client_ip:
+            client_ip = request.client.host if request.client else None
+        
+        if not client_ip:
+            return {"country": None, "error": "Could not determine IP address"}
+        
+        # Use ipapi.co for geolocation (free tier: 30k/month)
+        import httpx
+        async with httpx.AsyncClient() as client:
+            try:
+                # Free tier doesn't require API key, but you can add one for higher limits
+                api_key = os.getenv("IPAPI_API_KEY", "")  # Optional
+                url = f"https://ipapi.co/{client_ip}/json/"
+                if api_key:
+                    url += f"?key={api_key}"
+                
+                resp = await client.get(url, timeout=5.0)
+                
+                if resp.status_code == 200:
+                    data = resp.json()
+                    country = data.get("country_name", "")
+                    country_code = data.get("country_code", "")
+                    
+                    return {
+                        "country": country,
+                        "country_code": country_code,
+                        "ip": client_ip
+                    }
+                else:
+                    logger.warning(f"ipapi.co returned status {resp.status_code}")
+                    return {"country": None, "error": "Geolocation service unavailable"}
+                    
+            except Exception as e:
+                logger.error(f"Error calling ipapi.co: {e}")
+                return {"country": None, "error": str(e)}
+                
+    except Exception as e:
+        logger.error(f"Error detecting location: {e}")
+        return {"country": None, "error": str(e)}
 
 
 @app.post("/auth/logout")
 async def logout():
     """Logout endpoint (frontend clears token)"""
     return {"message": "Logged out successfully"}
+
+
+@app.get("/auth/check-completeness")
+async def check_user_completeness(request: Request):
+    """
+    Check if user has all required information and assessment status.
+    Returns missing fields, assessment status, and user readiness.
+    """
+    auth_header = request.headers.get("Authorization")
+    
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
+    
+    token = auth_header.split(" ")[1]
+    payload = verify_token(token)
+    
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
+    user_id = payload["sub"]
+    
+    # Get user from database
+    from managers.mongodb_manager import mongo_db
+    user_data = mongo_db.users.find_one({"user_id": user_id})
+    
+    if not user_data:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Check assessment status for primary subject (math)
+    assessment = mongo_db.subject_assessments.find_one({
+        "user_id": user_id,
+        "subject": "math"
+    })
+    
+    assessment_completed = assessment and assessment.get("assessment_completed", False)
+    
+    # Determine required fields
+    required_fields = {
+        "date_of_birth": True,  # Required for age calculation
+        "gender": True,
+        "preferred_language": True,
+    }
+    
+    # Optional but recommended fields
+    optional_fields = {
+        "location": False,
+    }
+    
+    # Check missing required fields
+    missing_fields = []
+    for field, required in {**required_fields, **optional_fields}.items():
+        value = user_data.get(field)
+        if required and (not value or value == "" or value is None):
+            missing_fields.append(field)
+    
+    # Determine readiness status
+    if missing_fields:
+        readiness_status = "needs_info"
+    elif not assessment_completed:
+        readiness_status = "needs_assessment"
+    else:
+        readiness_status = "complete"
+    
+    return {
+        "is_complete": len(missing_fields) == 0,
+        "missing_fields": missing_fields,
+        "assessment_completed": assessment_completed,
+        "assessment_subject": "math",
+        "user_data": {
+            "date_of_birth": user_data.get("date_of_birth"),
+            "gender": user_data.get("gender"),
+            "preferred_language": user_data.get("preferred_language"),
+            "location": user_data.get("location"),
+            "age": user_data.get("age"),
+            "current_grade": user_data.get("current_grade"),
+        },
+        "readiness_status": readiness_status
+    }
+
+
+@app.post("/auth/update-missing-info")
+async def update_missing_info(request: Request, update_data: UpdateMissingInfoRequest):
+    """
+    Update missing user information with validation and grade recalculation.
+    """
+    auth_header = request.headers.get("Authorization")
+    
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
+    
+    token = auth_header.split(" ")[1]
+    payload = verify_token(token)
+    
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
+    user_id = payload["sub"]
+    
+    # Get user profile
+    user_profile = user_manager.load_user(user_id)
+    if not user_profile:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Build update dictionary
+    update_dict = {}
+    
+    if update_data.date_of_birth:
+        # Validate and recalculate age/grade
+        today = datetime.now().date()
+        age = today.year - update_data.date_of_birth.year - (
+            (today.month, today.day) < (update_data.date_of_birth.month, update_data.date_of_birth.day)
+        )
+        
+        if age < 5 or age > 18:
+            raise HTTPException(status_code=400, detail="Age must be between 5 and 18")
+        
+        current_grade = calculate_grade_from_age(age)
+        update_dict["date_of_birth"] = update_data.date_of_birth.isoformat()
+        update_dict["age"] = age
+        update_dict["current_grade"] = current_grade
+        
+        # Update UserProfile (only age and grade are in the dataclass)
+        user_profile.age = age
+        user_profile.current_grade = current_grade
+    
+    if update_data.gender:
+        if update_data.gender not in ["Male", "Female", "Other", "Prefer not to say"]:
+            raise HTTPException(status_code=400, detail="Invalid gender value")
+        update_dict["gender"] = update_data.gender
+    
+    if update_data.preferred_language:
+        if update_data.preferred_language not in ["English", "Hindi", "Spanish", "French"]:
+            raise HTTPException(status_code=400, detail="Invalid language value")
+        update_dict["preferred_language"] = update_data.preferred_language
+    
+    if update_data.location:
+        update_dict["location"] = update_data.location
+    
+    # Update MongoDB
+    from managers.mongodb_manager import mongo_db
+    if update_dict:
+        mongo_db.users.update_one(
+            {"user_id": user_id},
+            {"$set": update_dict}
+        )
+        
+        # Save updated UserProfile
+        user_manager.save_user(user_profile)
+        
+        logger.info(f"[USER_UPDATE] Updated fields for {user_id}: {list(update_dict.keys())}")
+    
+    return {
+        "success": True,
+        "updated_fields": list(update_dict.keys()),
+        "user_data": {
+            "age": user_profile.age,
+            "current_grade": user_profile.current_grade
+        }
+    }
 
 
 @app.get("/auth/gemini-key")
@@ -560,6 +896,11 @@ async def get_gemini_token(request: Request):
     except Exception as e:
         logger.error(f"Error creating ephemeral token: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to create token: {str(e)}")
+
+
+# Register Payment API router (Phase 4 - Week 2)
+from services.PaymentService.api import router as payment_router
+app.include_router(payment_router)
 
 
 if __name__ == "__main__":

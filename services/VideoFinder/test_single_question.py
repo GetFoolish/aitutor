@@ -11,13 +11,16 @@ import json
 import logging
 from pathlib import Path
 from datetime import datetime
+from pymongo import MongoClient
+from dotenv import load_dotenv
 
-# Add project root to path
-project_root = Path(__file__).parent.parent.parent
-sys.path.append(str(project_root))
+# Load environment variables from .env file in VideoFinder directory
+video_finder_dir = Path(__file__).parent
+dotenv_path = video_finder_dir / '.env'
+load_dotenv(dotenv_path=dotenv_path)
 
 # Create logs directory if it doesn't exist
-logs_dir = project_root / "logs"
+logs_dir = video_finder_dir / "logs"
 logs_dir.mkdir(exist_ok=True)
 
 # Setup detailed logging
@@ -36,9 +39,28 @@ logger.info("=" * 100)
 logger.info("VIDEO FINDER TESTING SCRIPT - SINGLE QUESTION")
 logger.info("=" * 100)
 
+# Initialize MongoDB connection
+mongo_uri = os.getenv('MONGODB_URI')
+if not mongo_uri:
+    raise ValueError(
+        "MONGODB_URI not found in environment variables. "
+        "Please create a .env file in the VideoFinder directory with MONGODB_URI."
+    )
+
+db_name = os.getenv('MONGODB_DB_NAME', 'ai_tutor')
+mongo_client = MongoClient(mongo_uri)
+db = mongo_client[db_name]
+
+# Test connection
+try:
+    mongo_client.admin.command('ping')
+    logger.info(f"[TEST] Connected to MongoDB database: {db_name}")
+except Exception as e:
+    logger.error(f"[TEST] MongoDB connection failed: {e}")
+    raise
+
 # Import after path setup
-from services.VideoFinder.find_videos import VideoFinder
-from managers.mongodb_manager import mongo_db
+from find_videos import VideoFinder
 
 def log_separator(title=""):
     """Print a separator line"""
@@ -98,14 +120,14 @@ def get_test_question():
 
     try:
         # Try to get a question with existing learning_videos first to avoid duplicates
-        question = mongo_db.scraped_questions.find_one({
+        question = db['scraped_questions'].find_one({
             "questionId": {"$exists": True},
             "learning_videos": {"$size": 0}  # No approved videos yet
         })
 
         if not question:
             # If not found, get any question
-            question = mongo_db.scraped_questions.find_one({
+            question = db['scraped_questions'].find_one({
                 "questionId": {"$exists": True}
             })
 
@@ -299,7 +321,7 @@ def analyze_and_store_videos(finder, question, videos):
 
             # Store in MongoDB
             try:
-                result = mongo_db.scraped_questions.update_one(
+                result = db['scraped_questions'].update_one(
                     {"questionId": question_id},
                     {"$push": {"suggested_videos": pending_video}},
                     upsert=True
@@ -329,7 +351,7 @@ def verify_database_storage(question_id):
 
     try:
         # Fetch the question from database
-        question_from_db = mongo_db.scraped_questions.find_one({"questionId": question_id})
+        question_from_db = db['scraped_questions'].find_one({"questionId": question_id})
 
         if not question_from_db:
             logger.error("❌ Question not found in database after storage")

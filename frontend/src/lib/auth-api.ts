@@ -39,10 +39,18 @@ export interface AccountInfo {
   name: string;
   date_of_birth: string;
   location: string;
+  gender?: string;
+  preferred_language?: string;
+  user_type?: string;
   credits: {
     balance: number;
     currency: string;
   };
+  free_minutes?: {
+    balance: number;
+    last_reset_date: string | null;
+  };
+  subscription_plan?: string | null;
 }
 
 class AuthAPI {
@@ -60,6 +68,7 @@ class AuthAPI {
     dateOfBirth: string,
     gender: string,
     preferredLanguage: string,
+    location: string,
     profileData: {
       subjects: string[];
       learningGoals: string[];
@@ -78,6 +87,7 @@ class AuthAPI {
         date_of_birth: dateOfBirth,
         gender: gender,
         preferred_language: preferredLanguage,
+        location: location,
         subjects: profileData.subjects,
         learning_goals: profileData.learningGoals,
         interests: profileData.interests,
@@ -100,6 +110,7 @@ class AuthAPI {
     dateOfBirth: string,
     gender: string,
     preferredLanguage: string,
+    location: string,
     userType: string = "student"
   ): Promise<AuthResponse> {
     const response = await fetch(`${AUTH_SERVICE_URL}/auth/signup`, {
@@ -114,6 +125,7 @@ class AuthAPI {
         date_of_birth: dateOfBirth,
         gender,
         preferred_language: preferredLanguage,
+        location: location,
         user_type: userType
       }),
     });
@@ -174,6 +186,41 @@ class AuthAPI {
 
     if (!response.ok) {
       throw new Error('Failed to get account info');
+    }
+
+    return response.json();
+  }
+
+  async updateAccountInfo(updates: {
+    name?: string;
+    dateOfBirth?: string;
+    location?: string;
+    gender?: string;
+    preferredLanguage?: string;
+  }): Promise<AccountInfo> {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+      throw new Error('Not authenticated');
+    }
+
+    const response = await httpClient.fetch(`${AUTH_SERVICE_URL}/account/update`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: updates.name,
+        date_of_birth: updates.dateOfBirth,
+        location: updates.location,
+        gender: updates.gender,
+        preferred_language: updates.preferredLanguage,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Failed to update account info');
     }
 
     return response.json();

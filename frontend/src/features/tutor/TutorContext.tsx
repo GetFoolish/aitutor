@@ -21,10 +21,11 @@ const TutorContext = createContext<UseTutorResults | undefined>(undefined);
 
 export type TutorProviderProps = {
   children: ReactNode;
+  assessmentMode?: boolean;
 };
 
-export const TutorProvider: FC<TutorProviderProps> = ({ children }) => {
-  const tutor = useTutor();
+export const TutorProvider: FC<TutorProviderProps> = ({ children, assessmentMode }) => {
+  const tutor = useTutor(assessmentMode);
 
   return (
     <TutorContext.Provider value={tutor}>

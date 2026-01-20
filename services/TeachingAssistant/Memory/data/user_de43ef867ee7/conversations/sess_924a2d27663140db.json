@@ -1,0 +1,19 @@
+{
+  "session_id": "sess_924a2d27663140db",
+  "user_id": "user_de43ef867ee7",
+  "start_time": "2026-01-05T13:25:33.313000",
+  "end_time": "2026-01-05T18:26:16.151105",
+  "turn_count": 0,
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "[SYSTEM PROMPT FOR ADAM] [MEMORY AND INJECTION HANDLING] During this session, you will receive 'System Updates' with retrieved memories. - If an update arrives while you are speaking or just finished: DO NOT hallucinate a new user turn. - If you have just finished a response, simply maintain consistency with that response. - Do not let internal system updates disrupt the natural flow of conversation. Welcome back! It's great to see you again; we successfully completed our last session, so let's jump right in and see what we can achieve today. Last time we worked on: We covered a range of general topics today, and the session concluded on a neutral note. Personal context available.",
+      "timestamp": 1767601533.313
+    },
+    {
+      "speaker": "tutor",
+      "text": "Hello! It's great to see you again too. I'm ready to pick up wherever you'd like to go today. What's on your mind? Hi there! What would you like to work on today?",
+      "timestamp": 1767619561.72
+    }
+  ]
+}
