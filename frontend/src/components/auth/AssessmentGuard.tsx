@@ -1,14 +1,14 @@
 /**
- * Assessment Guard Component
+ * Assessment Guard Component (UPDATED)
  *
- * Checks if user has completed assessment for primary subject.
- * If not completed, redirects to assessment page.
- * If completed, allows access to main app.
+ * Enhanced to integrate with UserOnboardingFlow.
+ * Only checks assessment status if onboarding is complete.
  */
 import React, { useEffect, useState } from 'react';
-import { Redirect, useHistory } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { apiUtils } from '../../lib/api-utils';
+import UserOnboardingFlow from './UserOnboardingFlow';
 
 interface AssessmentGuardProps {
   children: React.ReactNode;
@@ -23,7 +23,8 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
   subject = DEFAULT_SUBJECT
 }) => {
   const { isAuthenticated, isLoading } = useAuth();
-  const history = useHistory();
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [assessmentStatus, setAssessmentStatus] = useState<{
     loading: boolean;
     completed: boolean;
@@ -39,8 +40,33 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
       return;
     }
 
-    checkAssessmentStatus();
+    // Check if onboarding has been completed (stored in sessionStorage)
+    const onboardingDone = sessionStorage.getItem('onboarding_complete');
+    
+    if (!onboardingDone) {
+      // First time login - show onboarding flow
+      setShowOnboarding(true);
+    } else {
+      // Onboarding done - check assessment status normally
+      setOnboardingComplete(true);
+      checkAssessmentStatus();
+    }
   }, [isAuthenticated, isLoading, subject]);
+
+  // Listen for onboarding completion
+  useEffect(() => {
+    const handleOnboardingComplete = () => {
+      setShowOnboarding(false);
+      setOnboardingComplete(true);
+      sessionStorage.setItem('onboarding_complete', 'true');
+      checkAssessmentStatus();
+    };
+
+    window.addEventListener('onboarding-complete', handleOnboardingComplete);
+    return () => {
+      window.removeEventListener('onboarding-complete', handleOnboardingComplete);
+    };
+  }, []);
 
   const checkAssessmentStatus = async () => {
     try {
@@ -95,8 +121,13 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
     return <>{children}</>;
   }
 
+  // Show onboarding flow on first login
+  if (showOnboarding) {
+    return <UserOnboardingFlow />;
+  }
+
   // Show loading while checking assessment status
-  if (assessmentStatus.loading) {
+  if (!onboardingComplete || assessmentStatus.loading) {
     return (
       <div style={{
         display: 'flex',

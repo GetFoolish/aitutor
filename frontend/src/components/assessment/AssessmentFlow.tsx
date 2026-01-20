@@ -87,6 +87,7 @@ const AssessmentFlow: React.FC = () => {
   const [total, setTotal] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const mediaMixerCanvasRef = React.useRef<HTMLCanvasElement>(null);
   const videoRef = React.useRef<HTMLVideoElement>(null);
@@ -182,7 +183,10 @@ const AssessmentFlow: React.FC = () => {
     <div className="auth-container">
       <BackgroundShapes />
 
-      <Header />
+      <Header 
+        sidebarOpen={sidebarOpen}
+        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+      />
 
       {loading && (
         <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center' }}>
@@ -204,9 +208,76 @@ const AssessmentFlow: React.FC = () => {
       )}
 
       {!loading && !completed && !error && (
-        <div style={{ position: 'relative', minHeight: '100vh' }}>
-          <div style={{ padding: '40px 20px', maxWidth: 800, margin: '0 auto' }}>
-            {submitting && <div>Submitting…</div>}
+        <div style={{ position: 'relative', minHeight: '100vh', paddingTop: '60px' }}>
+          {/* Assessment Mode Banner */}
+          <div style={{
+            position: 'sticky',
+            top: '48px',
+            zIndex: 30,
+            width: '100%',
+            marginBottom: '24px'
+          }}>
+            <div style={{
+              border: '5px solid #000000',
+              backgroundColor: '#FF6B6B',
+              padding: '12px 24px',
+              boxShadow: '0 4px 0px 0px #000000',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '12px',
+              margin: '0 20px'
+            }}>
+              <div style={{
+                width: '12px',
+                height: '12px',
+                backgroundColor: '#FFFFFF',
+                border: '2px solid #000000',
+                borderRadius: '50%',
+                animation: 'pulse-dot 1.5s ease-in-out infinite'
+              }}></div>
+              <span style={{
+                fontSize: '16px',
+                fontWeight: 900,
+                color: '#FFFFFF',
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+                fontFamily: 'system-ui, -apple-system, sans-serif'
+              }}>
+                ASSESSMENT MODE
+              </span>
+              <div style={{
+                width: '12px',
+                height: '12px',
+                backgroundColor: '#FFFFFF',
+                border: '2px solid #000000',
+                borderRadius: '50%',
+                animation: 'pulse-dot 1.5s ease-in-out infinite'
+              }}></div>
+            </div>
+          </div>
+
+          <div style={{ padding: '0 20px 40px', maxWidth: 900, margin: '0 auto' }}>
+            {submitting && (
+              <div style={{
+                textAlign: 'center',
+                padding: '20px',
+                border: '5px solid #000000',
+                backgroundColor: '#FFD93D',
+                marginBottom: '24px',
+                boxShadow: '3px 3px 0 #000000'
+              }}>
+                <span style={{
+                  fontSize: '18px',
+                  fontWeight: 700,
+                  color: '#000000',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  Submitting Assessment...
+                </span>
+              </div>
+            )}
 
             {questions[currentIndex] && (
               <AssessmentQuestion
@@ -247,6 +318,18 @@ const AssessmentFlow: React.FC = () => {
           </TutorProvider>
         </div>
       )}
+      <style>{`
+        @keyframes pulse-dot {
+          0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.5;
+            transform: scale(0.8);
+          }
+        }
+      `}</style>
     </div>
   );
 };

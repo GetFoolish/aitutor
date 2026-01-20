@@ -99,6 +99,12 @@ class UpdateAccountRequest(BaseModel):
     gender: Optional[str] = None
     preferred_language: Optional[str] = None
 
+class UpdateMissingInfoRequest(BaseModel):
+    date_of_birth: Optional[date] = None
+    gender: Optional[str] = None
+    preferred_language: Optional[str] = None
+    location: Optional[str] = None
+
 
 @app.get("/health")
 async def health_check():
@@ -647,6 +653,165 @@ async def detect_location(request: Request):
 async def logout():
     """Logout endpoint (frontend clears token)"""
     return {"message": "Logged out successfully"}
+
+
+@app.get("/auth/check-completeness")
+async def check_user_completeness(request: Request):
+    """
+    Check if user has all required information and assessment status.
+    Returns missing fields, assessment status, and user readiness.
+    """
+    auth_header = request.headers.get("Authorization")
+    
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
+    
+    token = auth_header.split(" ")[1]
+    payload = verify_token(token)
+    
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
+    user_id = payload["sub"]
+    
+    # Get user from database
+    from managers.mongodb_manager import mongo_db
+    user_data = mongo_db.users.find_one({"user_id": user_id})
+    
+    if not user_data:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Check assessment status for primary subject (math)
+    assessment = mongo_db.subject_assessments.find_one({
+        "user_id": user_id,
+        "subject": "math"
+    })
+    
+    assessment_completed = assessment and assessment.get("assessment_completed", False)
+    
+    # Determine required fields
+    required_fields = {
+        "date_of_birth": True,  # Required for age calculation
+        "gender": True,
+        "preferred_language": True,
+    }
+    
+    # Optional but recommended fields
+    optional_fields = {
+        "location": False,
+    }
+    
+    # Check missing required fields
+    missing_fields = []
+    for field, required in {**required_fields, **optional_fields}.items():
+        value = user_data.get(field)
+        if required and (not value or value == "" or value is None):
+            missing_fields.append(field)
+    
+    # Determine readiness status
+    if missing_fields:
+        readiness_status = "needs_info"
+    elif not assessment_completed:
+        readiness_status = "needs_assessment"
+    else:
+        readiness_status = "complete"
+    
+    return {
+        "is_complete": len(missing_fields) == 0,
+        "missing_fields": missing_fields,
+        "assessment_completed": assessment_completed,
+        "assessment_subject": "math",
+        "user_data": {
+            "date_of_birth": user_data.get("date_of_birth"),
+            "gender": user_data.get("gender"),
+            "preferred_language": user_data.get("preferred_language"),
+            "location": user_data.get("location"),
+            "age": user_data.get("age"),
+            "current_grade": user_data.get("current_grade"),
+        },
+        "readiness_status": readiness_status
+    }
+
+
+@app.post("/auth/update-missing-info")
+async def update_missing_info(request: Request, update_data: UpdateMissingInfoRequest):
+    """
+    Update missing user information with validation and grade recalculation.
+    """
+    auth_header = request.headers.get("Authorization")
+    
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
+    
+    token = auth_header.split(" ")[1]
+    payload = verify_token(token)
+    
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
+    user_id = payload["sub"]
+    
+    # Get user profile
+    user_profile = user_manager.load_user(user_id)
+    if not user_profile:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Build update dictionary
+    update_dict = {}
+    
+    if update_data.date_of_birth:
+        # Validate and recalculate age/grade
+        today = datetime.now().date()
+        age = today.year - update_data.date_of_birth.year - (
+            (today.month, today.day) < (update_data.date_of_birth.month, update_data.date_of_birth.day)
+        )
+        
+        if age < 5 or age > 18:
+            raise HTTPException(status_code=400, detail="Age must be between 5 and 18")
+        
+        current_grade = calculate_grade_from_age(age)
+        update_dict["date_of_birth"] = update_data.date_of_birth.isoformat()
+        update_dict["age"] = age
+        update_dict["current_grade"] = current_grade
+        
+        # Update UserProfile (only age and grade are in the dataclass)
+        user_profile.age = age
+        user_profile.current_grade = current_grade
+    
+    if update_data.gender:
+        if update_data.gender not in ["Male", "Female", "Other", "Prefer not to say"]:
+            raise HTTPException(status_code=400, detail="Invalid gender value")
+        update_dict["gender"] = update_data.gender
+    
+    if update_data.preferred_language:
+        if update_data.preferred_language not in ["English", "Hindi", "Spanish", "French"]:
+            raise HTTPException(status_code=400, detail="Invalid language value")
+        update_dict["preferred_language"] = update_data.preferred_language
+    
+    if update_data.location:
+        update_dict["location"] = update_data.location
+    
+    # Update MongoDB
+    from managers.mongodb_manager import mongo_db
+    if update_dict:
+        mongo_db.users.update_one(
+            {"user_id": user_id},
+            {"$set": update_dict}
+        )
+        
+        # Save updated UserProfile
+        user_manager.save_user(user_profile)
+        
+        logger.info(f"[USER_UPDATE] Updated fields for {user_id}: {list(update_dict.keys())}")
+    
+    return {
+        "success": True,
+        "updated_fields": list(update_dict.keys()),
+        "user_data": {
+            "age": user_profile.age,
+            "current_grade": user_profile.current_grade
+        }
+    }
 
 
 @app.get("/auth/gemini-key")

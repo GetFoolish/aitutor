@@ -54,31 +54,88 @@ const AssessmentQuestion: React.FC<Props> = ({
     onAnswer(score.correct);
   };
 
+  const progressPercentage = (questionNumber / totalQuestions) * 100;
+
   return (
-    <div style={{ marginTop: '32px' }}>
+    <div style={{ marginTop: '0' }}>
+      {/* Enhanced Question Header with Progress */}
       <div style={{
-        marginBottom: '24px',
-        fontSize: '16px',
-        fontWeight: 700,
-        color: 'var(--neo-black)',
-        textAlign: 'center',
-        textTransform: 'uppercase',
-        letterSpacing: '0.05em',
-        border: '5px solid var(--neo-black)',
-        padding: '16px',
-        backgroundColor: 'var(--neo-yellow)',
-        boxShadow: '2px 2px 0 var(--neo-black)'
+        marginBottom: '32px',
+        border: '5px solid #000000',
+        backgroundColor: '#FFD93D',
+        boxShadow: '4px 4px 0px 0px #000000',
+        overflow: 'hidden'
       }}>
-        Question {questionNumber} of {totalQuestions}
+        <div style={{
+          padding: '20px 24px',
+          textAlign: 'center',
+          borderBottom: '3px solid #000000'
+        }}>
+          <div style={{
+            fontSize: '20px',
+            fontWeight: 900,
+            color: '#000000',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            marginBottom: '8px',
+            fontFamily: 'system-ui, -apple-system, sans-serif'
+          }}>
+            QUESTION {questionNumber} OF {totalQuestions}
+          </div>
+          <div style={{
+            fontSize: '14px',
+            fontWeight: 700,
+            color: '#000000',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            opacity: 0.8
+          }}>
+            Assessment in Progress
+          </div>
+        </div>
+        
+        {/* Progress Bar */}
+        <div style={{
+          height: '12px',
+          backgroundColor: '#FFFFFF',
+          borderTop: '3px solid #000000',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <div style={{
+            height: '100%',
+            width: `${progressPercentage}%`,
+            backgroundColor: '#FF6B6B',
+            borderRight: '3px solid #000000',
+            transition: 'width 0.3s ease-out',
+            boxShadow: 'inset 0 0 0 2px #000000'
+          }}></div>
+          <div style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            fontSize: '10px',
+            fontWeight: 900,
+            color: '#000000',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            zIndex: 1,
+            textShadow: '0 0 4px #FFFFFF'
+          }}>
+            {Math.round(progressPercentage)}%
+          </div>
+        </div>
       </div>
 
       <div style={{
-        border: '5px solid var(--neo-black)',
-        backgroundColor: 'var(--neo-bg)',
-        color: 'var(--neo-black)',
-        padding: '24px',
-        boxShadow: '3px 3px 0 var(--neo-black)',
-        marginBottom: '24px'
+        border: '5px solid #000000',
+        backgroundColor: '#FFFFFF',
+        color: '#000000',
+        padding: '32px',
+        boxShadow: '4px 4px 0px 0px #000000',
+        marginBottom: '32px',
+        position: 'relative'
       }}>
         <PerseusI18nContextProvider locale="en" strings={mockStrings}>
           <RenderStateRoot>
@@ -108,25 +165,30 @@ const AssessmentQuestion: React.FC<Props> = ({
             onClick={handleSubmit}
             style={{
               width: '100%',
-              padding: '16px 32px',
-              fontSize: '16px',
-              fontWeight: 700,
+              padding: '20px 32px',
+              fontSize: '18px',
+              fontWeight: 900,
               textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              backgroundColor: 'var(--neo-yellow)',
-              color: 'var(--neo-black)',
-              border: '5px solid var(--neo-black)',
+              letterSpacing: '0.1em',
+              backgroundColor: '#FFD93D',
+              color: '#000000',
+              border: '5px solid #000000',
               cursor: 'pointer',
-              boxShadow: '2px 2px 0 var(--neo-black)',
-              transition: 'all 0.2s ease',
+              boxShadow: '4px 4px 0px 0px #000000',
+              transition: 'all 0.1s ease-out',
+              fontFamily: 'system-ui, -apple-system, sans-serif'
             }}
             onMouseDown={(e) => {
-              (e.target as HTMLElement).style.boxShadow = '1px 1px 0 var(--neo-black)';
-              (e.target as HTMLElement).style.transform = 'translateY(2px) translateX(2px)';
+              (e.target as HTMLElement).style.boxShadow = '2px 2px 0px 0px #000000';
+              (e.target as HTMLElement).style.transform = 'translate(2px, 2px)';
             }}
             onMouseUp={(e) => {
-              (e.target as HTMLElement).style.boxShadow = '2px 2px 0 var(--neo-black)';
-              (e.target as HTMLElement).style.transform = 'translateY(0) translateX(0)';
+              (e.target as HTMLElement).style.boxShadow = '4px 4px 0px 0px #000000';
+              (e.target as HTMLElement).style.transform = 'translate(0, 0)';
+            }}
+            onMouseLeave={(e) => {
+              (e.target as HTMLElement).style.boxShadow = '4px 4px 0px 0px #000000';
+              (e.target as HTMLElement).style.transform = 'translate(0, 0)';
             }}
           >
             Submit Answer
@@ -137,14 +199,14 @@ const AssessmentQuestion: React.FC<Props> = ({
       {showFeedback && keScore && (
         <div style={{
           marginBottom: '24px',
-          padding: '16px',
-          border: '5px solid var(--neo-black)',
+          padding: '20px',
+          border: '5px solid #000000',
           backgroundColor: keScore.correct ? '#E8F5E9' : '#FFEBEE',
-          boxShadow: '2px 2px 0 var(--neo-black)',
+          boxShadow: '4px 4px 0px 0px #000000',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '12px'
+          gap: '16px'
         }}>
           {keScore.correct ? (
             <>
@@ -178,20 +240,32 @@ const AssessmentQuestion: React.FC<Props> = ({
 
       {showFeedback && !isAnswered && (
         <div style={{
-          padding: '16px',
-          border: '5px solid var(--neo-black)',
-          backgroundColor: 'var(--neo-yellow)',
-          boxShadow: '2px 2px 0 var(--neo-black)',
+          padding: '20px',
+          border: '5px solid #000000',
+          backgroundColor: '#FFD93D',
+          boxShadow: '4px 4px 0px 0px #000000',
           textAlign: 'center',
-          fontSize: '14px',
-          fontWeight: 700,
-          color: 'var(--neo-black)',
+          fontSize: '16px',
+          fontWeight: 900,
+          color: '#000000',
           textTransform: 'uppercase',
-          letterSpacing: '0.05em'
+          letterSpacing: '0.1em',
+          fontFamily: 'system-ui, -apple-system, sans-serif',
+          animation: 'pulse 1.5s ease-in-out infinite'
         }}>
           Moving to next question...
         </div>
       )}
+      <style>{`
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.7;
+          }
+        }
+      `}</style>
     </div>
   );
 };
