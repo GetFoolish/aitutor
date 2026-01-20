@@ -806,6 +806,277 @@ def check_inactivity(http_request: Request):
 
 
 # ============================================================================
+# Multi-Signal Struggle Detection Endpoints
+# ============================================================================
+
+from services.TeachingAssistant.struggle_detector import StruggleDetector
+from services.TeachingAssistant.intervention_manager import InterventionManager
+
+# Initialize struggle detection components
+struggle_detector = StruggleDetector()
+intervention_manager = InterventionManager()
+
+
+class SignalsUpdateRequest(BaseModel):
+    """Request model for updating audio/visual signals"""
+    audio_signals: Optional[Dict[str, Any]] = None
+    visual_signals: Optional[Dict[str, Any]] = None
+
+
+class StruggleStatusResponse(BaseModel):
+    """Response model for struggle status"""
+    session_id: str
+    struggle_score: float
+    needs_intervention: bool
+    intervention_urgency: str
+    signal_mode: str
+    signals: Dict[str, Any]
+    intervention: Optional[Dict[str, Any]] = None
+
+
+@app.post("/signals/update")
+def update_signals(http_request: Request, request: SignalsUpdateRequest):
+    """
+    Receive audio/visual signals from Vision Agents or frontend.
+    Updates session with signal data for multi-signal struggle detection.
+
+    Expected audio_signals:
+    - hesitation_score: float (0.0 to 1.0)
+    - long_pauses: int (count of pauses > 3 seconds)
+    - volume_trend: str ("increasing", "stable", "decreasing")
+    - is_speaking: bool
+
+    Expected visual_signals:
+    - emotion: str ("neutral", "happy", "frustrated", "confused", "engaged")
+    - emotion_struggle_score: float (0.0 to 1.0)
+    - engagement_score: float (0.0 to 1.0)
+    - is_distracted: bool
+    - face_detected: bool
+    """
+    user_id = get_current_user(http_request)
+    try:
+        session = ta.get_active_session(user_id)
+        if not session:
+            raise HTTPException(status_code=404, detail="No active session")
+
+        session_id = session["session_id"]
+
+        # Update session with new signals
+        update_data = {}
+        if request.audio_signals:
+            update_data["audio_signals"] = request.audio_signals
+            logger.info(f"[SIGNALS] Updated audio signals for session {session_id}: {request.audio_signals}")
+
+        if request.visual_signals:
+            update_data["visual_signals"] = request.visual_signals
+            logger.info(f"[SIGNALS] Updated visual signals for session {session_id}: {request.visual_signals}")
+
+        if update_data:
+            ta.session_manager.update_session(session_id, update_data)
+
+        # Analyze struggle after receiving signals
+        updated_session = ta.session_manager.get_session_by_id(session_id)
+        analysis = struggle_detector.analyze_session(updated_session)
+
+        # Check if intervention is needed
+        intervention = None
+        if intervention_manager.should_intervene(analysis, updated_session):
+            intervention = intervention_manager.create_intervention(analysis, updated_session)
+
+            # Push intervention prompt via SSE
+            if intervention.get("prompt"):
+                ta.session_manager.push_instruction(session_id, intervention["prompt"])
+                logger.info(f"[SIGNALS] Pushed intervention for session {session_id}: {intervention['type']}")
+
+            # Update session with intervention timestamp
+            ta.session_manager.update_session(session_id, {
+                "last_intervention_time": intervention["timestamp"],
+                "last_intervention_type": intervention["type"]
+            })
+
+        return {
+            "success": True,
+            "session_id": session_id,
+            "struggle_score": analysis["struggle_score"],
+            "needs_intervention": analysis["needs_intervention"],
+            "intervention_triggered": intervention is not None,
+            "intervention_type": intervention["type"] if intervention else None
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating signals: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/struggle/status", response_model=StruggleStatusResponse)
+def get_struggle_status(http_request: Request):
+    """
+    Get current struggle status for the active session.
+    Returns struggle score, detected signals, and any pending intervention.
+    Used by frontend to display struggle indicators and interventions.
+    """
+    user_id = get_current_user(http_request)
+    try:
+        session = ta.get_active_session(user_id)
+        if not session:
+            raise HTTPException(status_code=404, detail="No active session")
+
+        session_id = session["session_id"]
+
+        # Analyze current session state
+        analysis = struggle_detector.analyze_session(session)
+
+        # Check if intervention should be triggered
+        intervention = None
+        if intervention_manager.should_intervene(analysis, session):
+            intervention = intervention_manager.create_intervention(analysis, session)
+            # Don't push automatically - let frontend decide when to show
+
+        return StruggleStatusResponse(
+            session_id=session_id,
+            struggle_score=analysis["struggle_score"],
+            needs_intervention=analysis["needs_intervention"],
+            intervention_urgency=analysis["intervention_urgency"],
+            signal_mode=analysis["signal_mode"],
+            signals=analysis["signals"],
+            intervention={
+                "type": intervention["type"],
+                "message": intervention["message"],
+                "urgency": intervention["urgency"]
+            } if intervention else None
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting struggle status: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/struggle/record-error")
+def record_error(http_request: Request):
+    """
+    Record a question error for struggle detection.
+    Increments consecutive_errors counter and triggers analysis.
+    Call this when student answers incorrectly.
+    """
+    user_id = get_current_user(http_request)
+    try:
+        session = ta.get_active_session(user_id)
+        if not session:
+            raise HTTPException(status_code=404, detail="No active session")
+
+        session_id = session["session_id"]
+        current_errors = session.get("consecutive_errors", 0)
+
+        # Increment error count
+        ta.session_manager.update_session(session_id, {
+            "consecutive_errors": current_errors + 1
+        })
+
+        # Analyze struggle after error
+        updated_session = ta.session_manager.get_session_by_id(session_id)
+        analysis = struggle_detector.analyze_session(updated_session)
+
+        # Check if intervention is needed
+        intervention = None
+        if intervention_manager.should_intervene(analysis, updated_session):
+            intervention = intervention_manager.create_intervention(analysis, updated_session)
+
+            # Push intervention prompt via SSE
+            if intervention.get("prompt"):
+                ta.session_manager.push_instruction(session_id, intervention["prompt"])
+
+            ta.session_manager.update_session(session_id, {
+                "last_intervention_time": intervention["timestamp"],
+                "last_intervention_type": intervention["type"]
+            })
+
+        return {
+            "success": True,
+            "consecutive_errors": current_errors + 1,
+            "struggle_score": analysis["struggle_score"],
+            "intervention_triggered": intervention is not None,
+            "intervention": {
+                "type": intervention["type"],
+                "message": intervention["message"]
+            } if intervention else None
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error recording error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/struggle/record-success")
+def record_success(http_request: Request):
+    """
+    Record a correct answer. Resets consecutive_errors counter.
+    Call this when student answers correctly.
+    """
+    user_id = get_current_user(http_request)
+    try:
+        session = ta.get_active_session(user_id)
+        if not session:
+            raise HTTPException(status_code=404, detail="No active session")
+
+        session_id = session["session_id"]
+
+        # Reset error count on success
+        ta.session_manager.update_session(session_id, {
+            "consecutive_errors": 0
+        })
+
+        return {
+            "success": True,
+            "consecutive_errors": 0,
+            "message": "Error count reset on successful answer"
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error recording success: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/struggle/request-hint")
+def request_hint(http_request: Request):
+    """
+    Record a hint request for struggle detection.
+    Increments hint_requests counter.
+    """
+    user_id = get_current_user(http_request)
+    try:
+        session = ta.get_active_session(user_id)
+        if not session:
+            raise HTTPException(status_code=404, detail="No active session")
+
+        session_id = session["session_id"]
+        current_hints = session.get("hint_requests", 0)
+
+        # Increment hint count
+        ta.session_manager.update_session(session_id, {
+            "hint_requests": current_hints + 1
+        })
+
+        return {
+            "success": True,
+            "hint_requests": current_hints + 1
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error recording hint request: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
 # WebSocket Endpoint (Frontend → Backend feed streaming)
 # ============================================================================
 
