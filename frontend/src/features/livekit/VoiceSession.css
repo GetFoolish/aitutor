@@ -1,0 +1,112 @@
+/* Voice Session Styles */
+
+.voice-session {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.voice-session-loading {
+  min-height: 100px;
+}
+
+.loading-text {
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+.voice-session-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Agent Visualizer */
+.agent-visualizer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.visualizer-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  width: 200px;
+}
+
+.audio-visualizer {
+  --lk-bar-color: #3b82f6;
+}
+
+.agent-state-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.state-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+/* Control Bar */
+.voice-control-bar {
+  margin-top: 0.5rem;
+}
+
+.voice-control-bar button {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 50%;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.voice-control-bar button:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.voice-control-bar button[data-lk-muted="true"] {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.voice-control-bar button[data-lk-muted="true"]:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .voice-session {
+    background: rgba(0, 0, 0, 0.2);
+  }
+}

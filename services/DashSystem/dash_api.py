@@ -1280,6 +1280,75 @@ def get_videos_stats(
         raise HTTPException(status_code=500, detail=f"Failed to fetch statistics: {str(e)}")
 
 
+# ===== LIVEKIT TOKEN ENDPOINT =====
+class LiveKitTokenRequest(BaseModel):
+    room_name: str = Field(default="tutoring-session", description="Name of the LiveKit room")
+
+@app.post("/api/livekit-token")
+async def get_livekit_token(request: Request, token_request: LiveKitTokenRequest = None):
+    """Generate a LiveKit access token for the current user."""
+    from livekit import api
+
+    user_id = get_current_user(request)
+    session_id = f"{int(time.time())}"
+    base_room = token_request.room_name if token_request else "tutoring-session"
+    room_name = f"{base_room}-{user_id[-8:]}-{session_id}"
+
+    livekit_url = os.getenv("LIVEKIT_URL")
+    api_key = os.getenv("LIVEKIT_API_KEY")
+    api_secret = os.getenv("LIVEKIT_API_SECRET")
+
+    if not all([livekit_url, api_key, api_secret]):
+        logger.error("[LIVEKIT] Missing LiveKit credentials in environment")
+        raise HTTPException(status_code=500, detail="LiveKit not configured")
+
+    try:
+        token = (
+            api.AccessToken(api_key, api_secret)
+            .with_identity(user_id)
+            .with_name(f"Student {user_id}")
+            .with_grants(api.VideoGrants(
+                room_join=True,
+                room_create=True,
+                room=room_name,
+                can_publish=True,
+                can_subscribe=True,
+                can_publish_data=True,
+            ))
+        )
+        jwt_token = token.to_jwt()
+        logger.info(f"[LIVEKIT] Generated token for user {user_id} in room {room_name}")
+
+        # Create room and dispatch agent
+        livekit_api = api.LiveKitAPI(
+            livekit_url.replace("wss://", "https://"),
+            api_key,
+            api_secret
+        )
+        await livekit_api.room.create_room(
+            api.CreateRoomRequest(name=room_name, empty_timeout=300, max_participants=10)
+        )
+
+        # Read agent name and dispatch
+        aitutor_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        agent_name_file = os.path.join(aitutor_root, ".current_agent_name")
+        try:
+            with open(agent_name_file, "r") as f:
+                current_agent_name = f.read().strip()
+        except FileNotFoundError:
+            current_agent_name = "ai-tutor"
+
+        await livekit_api.agent_dispatch.create_dispatch(
+            api.CreateAgentDispatchRequest(room=room_name, agent_name=current_agent_name)
+        )
+        await livekit_api.aclose()
+
+        return {"token": jwt_token, "room": room_name, "url": livekit_url}
+    except Exception as e:
+        logger.error(f"[LIVEKIT] Error generating token: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("DASH_PORT", 8000))  # DASH API on 8000

@@ -18,6 +18,7 @@ import { useRef, useState, useEffect, Suspense, lazy } from "react";
 import "./App.scss";
 import "./styles/mobile-fixes.css"; // Mobile UI fixes
 import { TutorProvider } from "./features/tutor";
+import { LiveKitProvider } from "./features/livekit";
 import AuthGuard from "./components/auth/AuthGuard";
 import AssessmentGuard from "./components/auth/AssessmentGuard";
 import Header from "./components/header/Header";
@@ -33,6 +34,14 @@ import { useDeveloperMode } from "./hooks/use-developer-mode";
 import { apiUtils } from "./lib/api-utils";
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
+
+// Feature flags
+const USE_LIVEKIT = import.meta.env.VITE_USE_LIVEKIT === 'true';
+
+// LiveKit wrapper - only renders if enabled
+const LiveKitWrapper = USE_LIVEKIT
+  ? ({ children }: { children: React.ReactNode }) => <LiveKitProvider>{children}</LiveKitProvider>
+  : ({ children }: { children: React.ReactNode }) => <>{children}</>;
 
 // Lazy load heavy components
 const SidePanel = lazy(() => import("./components/side-panel/SidePanel"));
@@ -219,7 +228,8 @@ function App() {
         <AuthGuard>
           <AssessmentGuard subject="math" onStartAssessment={startAssessment}>
             <TutorProvider>
-              <HintProvider>
+              <LiveKitWrapper>
+                <HintProvider>
                 <Header
                   sidebarOpen={isSidebarOpen}
                   onToggleSidebar={toggleSidebar}
@@ -320,6 +330,7 @@ function App() {
                 </div>
                 <Toaster richColors closeButton />
               </HintProvider>
+              </LiveKitWrapper>
             </TutorProvider>
           </AssessmentGuard>
         </AuthGuard>
