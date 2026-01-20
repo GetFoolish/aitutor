@@ -40,6 +40,7 @@ const GradingSidebar = lazy(() => import("./components/grading-sidebar/GradingSi
 const ScratchpadCapture = lazy(() => import("./components/scratchpad-capture/ScratchpadCapture"));
 const FloatingControlPanel = lazy(() => import("./components/floating-control-panel/FloatingControlPanel"));
 const LearningAssetsPanel = lazy(() => import("./components/side-panel/LearningAssetsPanel"));
+const PracticeHistoryPanel = lazy(() => import("./components/practice-history/PracticeHistoryPanel"));
 
 function App() {
   // Developer mode hook for Gemini Console visibility
@@ -56,6 +57,7 @@ function App() {
   const [isScratchpadOpen, setScratchpadOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isGradingSidebarOpen, setIsGradingSidebarOpen] = useState(true);
+  const [isPracticeHistoryOpen, setIsPracticeHistoryOpen] = useState(false);
   const [currentSkill, setCurrentSkill] = useState<string | null>(null);
   const [currentQuestionId, setCurrentQuestionId] = useState<string | null>(null);
   const [watchedVideoIds, setWatchedVideoIds] = useState<string[]>([]);
@@ -118,6 +120,10 @@ function App() {
   const toggleGradingSidebar = () => {
     if (!isGradingSidebarOpen) setIsSidebarOpen(false);
     setIsGradingSidebarOpen(!isGradingSidebarOpen);
+  };
+
+  const togglePracticeHistory = () => {
+    setIsPracticeHistoryOpen(!isPracticeHistoryOpen);
   };
 
   // Assessment functions
@@ -246,6 +252,10 @@ function App() {
                       open={isGradingSidebarOpen}
                       onToggle={toggleGradingSidebar}
                       currentSkill={currentSkill}
+                    />
+                    <PracticeHistoryPanel
+                      open={isPracticeHistoryOpen}
+                      onToggle={togglePracticeHistory}
                     />
                     <main style={{
                       marginRight: isSidebarOpen ? "260px" : "0",

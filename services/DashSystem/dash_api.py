@@ -1280,6 +1280,216 @@ def get_videos_stats(
         raise HTTPException(status_code=500, detail=f"Failed to fetch statistics: {str(e)}")
 
 
+# ============================================================================
+# Practice History Endpoints
+# ============================================================================
+
+@app.get("/api/practice-history")
+def get_practice_history(request: Request, page: int = 1, limit: int = 10):
+    """
+    Get paginated list of practice sessions for the current user.
+    Groups question attempts into sessions based on time gaps (30 minutes).
+    """
+    ensure_dash_system()
+    user_id = get_current_user(request)
+
+    logger.info(f"[PRACTICE_HISTORY] User: {user_id}, Page: {page}, Limit: {limit}")
+
+    from managers.mongodb_manager import mongo_db
+    user_data = mongo_db.users.find_one({"user_id": user_id})
+
+    if not user_data:
+        logger.warning(f"[PRACTICE_HISTORY] User not found: {user_id}")
+        return {"sessions": [], "total_count": 0, "page": page, "limit": limit}
+
+    question_history = user_data.get("question_history", [])
+    if not question_history:
+        return {"sessions": [], "total_count": 0, "page": page, "limit": limit}
+
+    sorted_history = sorted(question_history, key=lambda x: x.get("timestamp", 0))
+
+    # Group questions into sessions (30-minute gap = new session)
+    SESSION_GAP_SECONDS = 30 * 60
+    sessions = []
+    current_session = []
+
+    for attempt in sorted_history:
+        if not current_session:
+            current_session.append(attempt)
+        else:
+            last_timestamp = current_session[-1].get("timestamp", 0)
+            current_timestamp = attempt.get("timestamp", 0)
+            if current_timestamp - last_timestamp > SESSION_GAP_SECONDS:
+                sessions.append(current_session)
+                current_session = [attempt]
+            else:
+                current_session.append(attempt)
+
+    if current_session:
+        sessions.append(current_session)
+
+    sessions.reverse()  # Most recent first
+
+    session_data = []
+    for idx, session_attempts in enumerate(sessions):
+        if not session_attempts:
+            continue
+
+        start_time = session_attempts[0].get("timestamp", 0)
+        end_time = session_attempts[-1].get("timestamp", 0)
+        duration = end_time - start_time
+        question_count = len(session_attempts)
+        correct_count = sum(1 for attempt in session_attempts if attempt.get("is_correct", False))
+        accuracy = correct_count / question_count if question_count > 0 else 0
+
+        skills_practiced = set()
+        for attempt in session_attempts:
+            skills_practiced.update(attempt.get("skill_ids", []))
+
+        session_data.append({
+            "session_id": f"session_{idx}",
+            "date": start_time,
+            "duration": duration,
+            "question_count": question_count,
+            "accuracy": accuracy,
+            "skills_practiced": list(skills_practiced)
+        })
+
+    total_sessions = len(session_data)
+    total_pages = (total_sessions + limit - 1) // limit
+
+    if page < 1:
+        page = 1
+    if page > total_pages and total_pages > 0:
+        page = total_pages
+
+    start_idx = (page - 1) * limit
+    end_idx = start_idx + limit
+    paginated_sessions = session_data[start_idx:end_idx]
+
+    return {
+        "sessions": paginated_sessions,
+        "total_count": total_sessions,
+        "page": page,
+        "limit": limit
+    }
+
+
+@app.get("/api/practice-history/{session_id}")
+def get_session_details(request: Request, session_id: str):
+    """
+    Get detailed information about a specific practice session.
+    """
+    ensure_dash_system()
+    user_id = get_current_user(request)
+
+    logger.info(f"[SESSION_DETAILS] User: {user_id}, Session: {session_id}")
+
+    from managers.mongodb_manager import mongo_db
+    user_data = mongo_db.users.find_one({"user_id": user_id})
+
+    if not user_data:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    question_history = user_data.get("question_history", [])
+    if not question_history:
+        raise HTTPException(status_code=404, detail="No question history found")
+
+    sorted_history = sorted(question_history, key=lambda x: x.get("timestamp", 0))
+
+    SESSION_GAP_SECONDS = 30 * 60
+    sessions = []
+    current_session = []
+
+    for attempt in sorted_history:
+        if not current_session:
+            current_session.append(attempt)
+        else:
+            last_timestamp = current_session[-1].get("timestamp", 0)
+            current_timestamp = attempt.get("timestamp", 0)
+            if current_timestamp - last_timestamp > SESSION_GAP_SECONDS:
+                sessions.append(current_session)
+                current_session = [attempt]
+            else:
+                current_session.append(attempt)
+
+    if current_session:
+        sessions.append(current_session)
+
+    sessions.reverse()
+
+    try:
+        session_index = int(session_id.split('_')[-1])
+    except (ValueError, IndexError):
+        raise HTTPException(status_code=400, detail="Invalid session_id format")
+
+    if session_index < 0 or session_index >= len(sessions):
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    session_attempts = sessions[session_index]
+
+    start_time = session_attempts[0].get("timestamp", 0)
+    end_time = session_attempts[-1].get("timestamp", 0)
+    duration = end_time - start_time
+    question_count = len(session_attempts)
+    correct_count = sum(1 for attempt in session_attempts if attempt.get("is_correct", False))
+    accuracy = correct_count / question_count if question_count > 0 else 0
+
+    skills_practiced = set()
+    for attempt in session_attempts:
+        skills_practiced.update(attempt.get("skill_ids", []))
+
+    detailed_questions = []
+    for attempt in session_attempts:
+        question_id = attempt.get("question_id", "")
+        skill_ids = attempt.get("skill_ids", [])
+
+        skill_names = []
+        for skill_id in skill_ids:
+            skill = dash_system.skills.get(skill_id)
+            if skill:
+                skill_names.append(skill.name)
+            else:
+                skill_names.append(skill_id)
+
+        question_text = None
+        try:
+            scraped_question = mongo_db.scraped_questions.find_one({"questionId": question_id})
+            if scraped_question:
+                assessment_data = scraped_question.get('assessmentData', {})
+                if assessment_data:
+                    item_data_str = assessment_data.get('data', {}).get('assessmentItem', {}).get('item', {}).get('itemData', '')
+                    if item_data_str:
+                        item_data = json.loads(item_data_str)
+                        question_content = item_data.get('question', {}).get('content', '')
+                        if question_content:
+                            question_text = question_content
+        except Exception as e:
+            logger.warning(f"[SESSION_DETAILS] Failed to load question text for {question_id}: {e}")
+
+        detailed_questions.append({
+            "question_id": question_id,
+            "skill_ids": skill_ids,
+            "skill_names": skill_names,
+            "is_correct": attempt.get("is_correct", False),
+            "response_time_seconds": attempt.get("response_time_seconds", 0),
+            "timestamp": attempt.get("timestamp", 0),
+            "question_text": question_text
+        })
+
+    return {
+        "session_id": session_id,
+        "metadata": {
+            "date": start_time,
+            "duration": duration,
+            "question_count": question_count,
+            "accuracy": accuracy,
+            "skills_practiced": list(skills_practiced)
+        },
+        "questions": detailed_questions
+    }
+
+
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("DASH_PORT", 8000))  # DASH API on 8000

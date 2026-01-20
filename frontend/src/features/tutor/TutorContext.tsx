@@ -42,6 +42,11 @@ export const useTutorContext = () => {
   return context;
 };
 
+// Optional version that returns null instead of throwing
+export const useTutorContextOptional = () => {
+  return useContext(TutorContext);
+};
+
 // Export aliases for backward compatibility during migration
 export { TutorProvider as LiveAPIProvider };
 export { useTutorContext as useLiveAPIContext };

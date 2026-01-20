@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useTutorContext } from '../../features/tutor';
+import { useTutorContextOptional } from '../../features/tutor/TutorContext';
 
 interface Props {
   score: number;
@@ -15,7 +15,10 @@ const AssessmentResults: React.FC<Props> = ({
   onContinue
 }) => {
   const [showPersonalizing, setShowPersonalizing] = useState(false);
-  const { client, connected, disconnect } = useTutorContext();
+  const tutorContext = useTutorContextOptional();
+  const client = tutorContext?.client;
+  const connected = tutorContext?.connected;
+  const disconnect = tutorContext?.disconnect;
 
   const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
   const passColor = percentage >= 70 ? '#4CAF50' : '#FF9800';
@@ -24,18 +27,18 @@ const AssessmentResults: React.FC<Props> = ({
 
   // Send transition message and disconnect tutor when results are shown
   useEffect(() => {
-    if (connected && client) {
+    if (connected && client && disconnect) {
       try {
         // Send explicit transition message to AI
-        client.send({ 
-          text: "SYSTEM: Assessment complete. Transitioning to regular tutoring mode." 
+        client.send({
+          text: "SYSTEM: Assessment complete. Transitioning to regular tutoring mode."
         });
-        
+
         // Wait a moment for the message to be sent, then disconnect
         const disconnectTimer = setTimeout(() => {
           disconnect();
         }, 500);
-        
+
         return () => clearTimeout(disconnectTimer);
       } catch (error) {
         console.warn('Failed to send transition message to tutor:', error);
