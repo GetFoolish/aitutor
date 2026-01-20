@@ -6,8 +6,8 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    port: 3000,
-    strictPort: true, // Fail if port 3000 is already in use instead of trying next available port
+    port: 3001, // Use 3001 for homework worktree to avoid conflict with main app on 3000
+    strictPort: false, // Try next port if 3001 is in use
     open: true, // automatically open browser
   },
   build: {

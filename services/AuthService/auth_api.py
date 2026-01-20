@@ -844,8 +844,14 @@ async def get_gemini_key(request: Request):
 async def get_gemini_token(request: Request):
     """Get ephemeral token for Gemini Live API (secure - single use)"""
     try:
-        # Verify JWT token
-        user_id = get_current_user(request)
+        # Verify JWT token - provide better error messages
+        try:
+            user_id = get_current_user(request)
+        except HTTPException as e:
+            # Log the error for debugging
+            auth_header = request.headers.get("Authorization", "Not provided")
+            logger.warning(f"Authentication failed for /auth/gemini-token: {e.detail}, Auth header: {auth_header[:20]}...")
+            raise
 
         # Get API key and model from environment variables
         api_key = os.getenv("GEMINI_API_KEY")
@@ -868,10 +874,12 @@ async def get_gemini_token(request: Request):
             http_options={'api_version': 'v1alpha'}
         )
 
-        # Create single-use ephemeral token
+        # Create ephemeral token with multiple uses to allow reconnection
+        # Using 10 uses to allow for network hiccups and reconnections
+        # The token will still expire after a reasonable time
         token = client.auth_tokens.create(
             config={
-                'uses': 1,  # Single use only - expires after one connection
+                'uses': 10,  # Allow multiple uses for reconnection resilience
             }
         )
 

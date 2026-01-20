@@ -56,6 +56,34 @@ if (import.meta.env.DEV) {
   };
 }
 
+// Intercept console.error to filter out expected WebSocket errors from Google GenAI library
+// These errors occur during normal connection teardown and are not actionable
+const originalConsoleError = console.error;
+console.error = (...args: any[]) => {
+  const errorMessage = args.map(arg => 
+    typeof arg === 'string' ? arg : 
+    arg?.message || arg?.toString() || String(arg)
+  ).join(' ');
+  
+  // Suppress expected WebSocket errors from Google GenAI library
+  // Check for various error message formats
+  if (
+    errorMessage.includes("WebSocket is already in CLOSING or CLOSED state") ||
+    errorMessage.includes("WebSocket") && errorMessage.includes("already in") ||
+    errorMessage.includes("Cannot extract voices from a non-audio request") ||
+    (errorMessage.includes("WebSocket") && errorMessage.includes("CLOSING")) ||
+    (errorMessage.includes("WebSocket") && errorMessage.includes("CLOSED")) ||
+    errorMessage.includes("sendRealtimeInput") && errorMessage.includes("CLOSING") ||
+    errorMessage.includes("sendRealtimeInput") && errorMessage.includes("CLOSED")
+  ) {
+    // Silently ignore - these are expected during connection teardown
+    return;
+  }
+  
+  // Log all other errors normally
+  originalConsoleError.apply(console, args);
+};
+
 // Component to decide between landing page and app
 const LandingPageOrApp: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
