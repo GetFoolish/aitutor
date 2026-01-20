@@ -74,7 +74,7 @@ export function usePracticeHistory({
   page = 1,
   limit = 10,
   enabled = true,
-  useMockData = true, // Default to true to show demo data
+  useMockData = false, // Default to false to use real backend (mock data is fallback)
 }: UsePracticeHistoryOptions = {}) {
   return useQuery<PracticeHistoryResponse>({
     queryKey: ["practice-history", page, limit, useMockData],

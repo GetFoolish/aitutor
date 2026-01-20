@@ -60,16 +60,19 @@ GET /api/practice-history?page=1&limit=10
 GET /api/practice-history/{session_id}
 ```
 
-### 6. Toggle Mock Data
+### 6. Mock Data Fallback
 
-In `usePracticeHistory.ts`, change `useMockData` default:
+By default, the hook uses the real backend API. Mock data is used as a fallback when:
+- API returns an error
+- API returns empty data
+- You explicitly enable it:
 
 ```typescript
-// Show mock data (for demo)
-useMockData = true
+// Use real backend (default)
+const { data } = usePracticeHistory({ page: 1, limit: 10 });
 
-// Show real data (for production)
-useMockData = false
+// Force mock data for demo
+const { data } = usePracticeHistory({ page: 1, limit: 10, useMockData: true });
 ```
 
 ### 7. Files Modified
@@ -82,16 +85,45 @@ useMockData = false
 - `src/App.tsx` - Integration
 
 **Backend:**
-- `services/DashSystem/dash_api.py` - API endpoints (to be added for production)
+- `services/DashSystem/dash_api.py` - API endpoints (lines 1287-1420)
+
+## Backend Endpoints
+
+The backend endpoints are fully implemented:
+
+```bash
+# Get paginated practice history (builds sessions from question_attempts)
+GET /api/practice-history?page=1&limit=10
+Authorization: Bearer <token>
+
+# Response:
+{
+  "sessions": [
+    {
+      "session_id": "session_123",
+      "date": 1705766400,
+      "duration": 1800,
+      "question_count": 15,
+      "accuracy": 0.87,
+      "skills_practiced": ["addition_within_20", "place_value"]
+    }
+  ],
+  "total_count": 25,
+  "page": 1,
+  "limit": 10
+}
+
+# Get specific session details
+GET /api/practice-history/{session_id}
+```
 
 ## Known Issues
 
-- Backend endpoints not yet added (using mock data)
 - Panel positioning may need adjustment on smaller screens
+- Mock data fallback activates for new users with no practice history
 
-## Next Steps
+## Status
 
-1. Add backend `/api/practice-history` endpoints to `dash_api.py`
-2. Connect to real MongoDB question_history data
-3. Add loading states and error handling
-4. Add pagination controls
+✅ Backend endpoints implemented
+✅ Frontend components complete
+✅ Mock data fallback for empty state
