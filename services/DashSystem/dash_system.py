@@ -9,6 +9,10 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 from managers.user_manager import UserManager, UserProfile, SkillState
+from services.DashSystem.khan_models import (
+    KhanSkill, KhanSubSkill, GradeLevel as KhanGradeLevel,
+    derive_grade_from_course, extract_subject
+)
 
 from shared.logging_config import get_logger
 
@@ -71,17 +75,23 @@ class Question:
     expected_time_seconds: float = 60.0  # Default expected time for answering
 
 class DASHSystem:
-    def __init__(self, skills_file: Optional[str] = None, curriculum_file: Optional[str] = None, use_mongodb: bool = True):
+    def __init__(self, skills_file: Optional[str] = None, curriculum_file: Optional[str] = None, use_mongodb: bool = True, 
+                 use_khan_hierarchy: bool = True, region: str = "US", subject: str = "Math"):
         
         # Default file paths relative to the project root
         self.skills_file_path = skills_file if skills_file else "QuestionsBank/skills.json"
         self.curriculum_file_path = curriculum_file if curriculum_file else "QuestionsBank/curriculum.json"
         self.use_mongodb = use_mongodb
+        self.use_khan_hierarchy = use_khan_hierarchy
+        self.region = region
+        self.subject = subject
 
         self.skills: Dict[str, Skill] = {}
+        self.khan_skills: Dict[str, KhanSkill] = {}  # New: Khan Academy units as skills
+        self.khan_sub_skills: Dict[str, KhanSubSkill] = {}  # New: Khan Academy lessons as sub-skills
         self.student_states: Dict[str, Dict[str, StudentSkillState]] = {}
         # Lightweight index structures for efficient question loading
-        self.question_index: Dict[str, str] = {}  # Maps question_id → skill_id (exerciseDirName)
+        self.question_index: Dict[str, str] = {}  # Maps question_id → skill_id
         self.skill_question_index: Dict[str, List[str]] = {}  # Maps skill_id → [question_ids]
         self.question_cache: Dict[str, Question] = {}  # LRU cache for created Question objects
         self._cache_max_size = 10000  # LRU cache limit
@@ -104,11 +114,233 @@ class DASHSystem:
                 log_print(f"[ERROR] Could not initialize MongoDB: {e}")
                 raise RuntimeError(f"MongoDB initialization failed: {e}. Please configure MONGODB_URI in .env file.")
         
-        # Load skills and questions from MongoDB only
+        # Load skills and questions from MongoDB
         if self.use_mongodb and self.mongo:
-            self._load_from_mongodb()
+            if self.use_khan_hierarchy:
+                log_print(f"[KHAN] Loading Khan Academy hierarchy for {region} - {subject}")
+                self._load_from_khan_hierarchy()
+            else:
+                log_print("[LEGACY] Loading from generated_skills collection")
+                self._load_from_mongodb()
         else:
             raise RuntimeError("MongoDB is required. Please configure MONGODB_URI in .env file.")
+    
+    def _load_from_khan_hierarchy(self):
+        """
+        Load skills from Khan Academy hierarchy (questions_db).
+        Maps Units → Skills and Lessons → Sub-skills.
+        OPTIMIZED: Uses batch queries with $in to avoid query storm.
+        """
+        try:
+            log_print(f"[KHAN] Loading courses for region={self.region}, subject={self.subject}")
+
+            # Get all courses for the specified region
+            courses = list(self.mongo.courses.find({"region": self.region}).sort("order_in_region", 1))
+            log_print(f"[KHAN] Found {len(courses)} courses in region {self.region}")
+
+            # Filter courses by subject
+            relevant_courses = []
+            for course in courses:
+                course_subject = extract_subject(course['title'])
+                if course_subject == self.subject:
+                    relevant_courses.append(course)
+
+            log_print(f"[KHAN] Found {len(relevant_courses)} {self.subject} courses in {self.region}")
+
+            if not relevant_courses:
+                log_print(f"[WARNING] No {self.subject} courses found for region {self.region}")
+                return
+
+            # OPTIMIZATION: Batch load all units for all relevant courses at once
+            course_ids = [course['course_id'] for course in relevant_courses]
+            all_units = list(self.mongo.units.find({"course_id": {"$in": course_ids}}).sort("order_in_course", 1))
+            log_print(f"[KHAN] Loaded {len(all_units)} units in batch")
+
+            # Group units by course_id for prerequisite calculation
+            units_by_course = {}
+            for unit in all_units:
+                course_id = unit['course_id']
+                if course_id not in units_by_course:
+                    units_by_course[course_id] = []
+                units_by_course[course_id].append(unit)
+
+            # OPTIMIZATION: Batch load all lessons for all units at once
+            unit_ids = [unit['unit_id'] for unit in all_units]
+            all_lessons = list(self.mongo.lessons.find({"unit_id": {"$in": unit_ids}}).sort("order_in_unit", 1))
+            log_print(f"[KHAN] Loaded {len(all_lessons)} lessons in batch")
+
+            # Group lessons by unit_id
+            lessons_by_unit = {}
+            for lesson in all_lessons:
+                unit_id = lesson['unit_id']
+                if unit_id not in lessons_by_unit:
+                    lessons_by_unit[unit_id] = []
+                lessons_by_unit[unit_id].append(lesson)
+
+            # OPTIMIZATION: Batch load all exercises for all lessons at once
+            lesson_ids = [lesson['lesson_id'] for lesson in all_lessons]
+            all_exercises = list(self.mongo.exercises.find({"lesson_id": {"$in": lesson_ids}}))
+            log_print(f"[KHAN] Loaded {len(all_exercises)} exercises in batch")
+
+            # Group exercises by lesson_id
+            exercises_by_lesson = {}
+            for exercise in all_exercises:
+                lesson_id = exercise['lesson_id']
+                if lesson_id not in exercises_by_lesson:
+                    exercises_by_lesson[lesson_id] = []
+                exercises_by_lesson[lesson_id].append(exercise)
+
+            # Now process all units and create skills
+            total_units = 0
+            total_lessons = 0
+            total_exercises = 0
+
+            for course in relevant_courses:
+                course_id = course['course_id']
+                course_title = course['title']
+                grade_level = derive_grade_from_course(
+                    course_title,
+                    course['slug'],
+                    course.get('order_in_region', 0)
+                )
+
+                # Get units for this course from pre-loaded data
+                units = units_by_course.get(course_id, [])
+
+                for unit in units:
+                    unit_id = unit['unit_id']
+
+                    # Get prerequisites (all previous units in the same course)
+                    prerequisites = [
+                        u['unit_id'] for u in units
+                        if u.get('order_in_course', 0) < unit.get('order_in_course', 0)
+                    ]
+
+                    # Get lessons for this unit from pre-loaded data
+                    lessons = lessons_by_unit.get(unit_id, [])
+                    sub_skill_ids = [lesson['lesson_id'] for lesson in lessons]
+
+                    # Create KhanSkill (Unit → Skill mapping)
+                    khan_skill = KhanSkill(
+                        skill_id=unit_id,
+                        name=unit['title'],
+                        course_id=course_id,
+                        region=self.region,
+                        subject=self.subject,
+                        grade_level=grade_level,
+                        order_in_course=unit.get('order_in_course', 0),
+                        prerequisites=prerequisites,
+                        sub_skills=sub_skill_ids,
+                        difficulty=0.5,
+                        forgetting_rate=0.1
+                    )
+                    self.khan_skills[unit_id] = khan_skill
+
+                    # Also add to regular skills dict for backward compatibility
+                    skill = Skill(
+                        skill_id=unit_id,
+                        name=unit['title'],
+                        grade_level=grade_level,
+                        prerequisites=prerequisites,
+                        forgetting_rate=0.1,
+                        difficulty=0.5,
+                        order=unit.get('order_in_course', 0)
+                    )
+                    self.skills[unit_id] = skill
+
+                    # Create KhanSubSkills (Lesson → Sub-skill mapping)
+                    for lesson in lessons:
+                        lesson_id = lesson['lesson_id']
+
+                        # Get exercises for this lesson from pre-loaded data
+                        exercises = exercises_by_lesson.get(lesson_id, [])
+                        exercise_ids = [ex['exercise_id'] for ex in exercises]
+
+                        khan_sub_skill = KhanSubSkill(
+                            sub_skill_id=lesson_id,
+                            name=lesson['title'],
+                            skill_id=unit_id,
+                            course_id=course_id,
+                            order_in_skill=lesson.get('order_in_unit', 0),
+                            exercise_ids=exercise_ids,
+                            difficulty=0.5
+                        )
+                        self.khan_sub_skills[lesson_id] = khan_sub_skill
+
+                        total_lessons += 1
+                        total_exercises += len(exercise_ids)
+
+                    total_units += 1
+
+            log_print(f"[KHAN] Loaded {total_units} units (skills) with {total_lessons} lessons (sub-skills)")
+            log_print(f"[KHAN] Total exercises available: {total_exercises}")
+
+            # Now build question index from questions_db
+            self._build_khan_question_index()
+
+        except Exception as e:
+            log_print(f"[ERROR] Error loading Khan hierarchy: {e}")
+            import traceback
+            traceback.print_exc()
+            raise RuntimeError(f"Failed to load Khan Academy hierarchy: {e}")
+    
+    def _build_khan_question_index(self):
+        """
+        Build question index from Khan Academy questions in questions_db.
+        Maps questions to their parent units (skills) via exercise → lesson → unit chain.
+        """
+        try:
+            log_print("[KHAN] Building question index from questions_db...")
+            
+            # Get all exercise IDs we're interested in (from our loaded sub-skills)
+            all_exercise_ids = []
+            for sub_skill in self.khan_sub_skills.values():
+                all_exercise_ids.extend(sub_skill.exercise_ids)
+            
+            log_print(f"[KHAN] Looking for questions from {len(all_exercise_ids)} exercises")
+            
+            # Query questions from questions_db
+            questions_cursor = self.mongo.questions.find(
+                {"exercise_id": {"$in": all_exercise_ids}},
+                {"question_id": 1, "exercise_id": 1, "lesson_id": 1, "unit_id": 1}
+            ).batch_size(1000)
+            
+            # Build mapping: exercise_id → unit_id for fast lookup
+            exercise_to_unit = {}
+            for sub_skill in self.khan_sub_skills.values():
+                for exercise_id in sub_skill.exercise_ids:
+                    exercise_to_unit[exercise_id] = sub_skill.skill_id
+            
+            # Initialize index structures
+            self.question_index.clear()
+            self.skill_question_index.clear()
+            
+            question_count = 0
+            for q_doc in questions_cursor:
+                question_id = q_doc.get('question_id', '')
+                exercise_id = q_doc.get('exercise_id', '')
+                
+                if not question_id or not exercise_id:
+                    continue
+                
+                # Map question to its unit (skill)
+                unit_id = q_doc.get('unit_id') or exercise_to_unit.get(exercise_id)
+                
+                if unit_id and unit_id in self.khan_skills:
+                    # Build indexes
+                    self.question_index[question_id] = unit_id
+                    if unit_id not in self.skill_question_index:
+                        self.skill_question_index[unit_id] = []
+                    self.skill_question_index[unit_id].append(question_id)
+                    question_count += 1
+            
+            log_print(f"[KHAN] Indexed {question_count} questions across {len(self.skill_question_index)} skills")
+            
+        except Exception as e:
+            log_print(f"[ERROR] Error building Khan question index: {e}")
+            import traceback
+            traceback.print_exc()
+            raise
     
     def _load_from_mongodb(self):
         """Load skills and questions from MongoDB"""
@@ -662,26 +894,192 @@ class DASHSystem:
         
         return affected_skills
     
-    def get_skill_scores(self, student_id: str, current_time: float) -> Dict[str, Dict[str, float]]:
-        """Get all skill scores for a student"""
-        scores = {}
-        
-        for skill_id, skill in self.skills.items():
-            state = self.get_student_state(student_id, skill_id)
-            memory_strength = self.calculate_memory_strength(student_id, skill_id, current_time)
-            probability = self.predict_correctness(student_id, skill_id, current_time)
-            
-            scores[skill_id] = {
-                'name': skill.name,
-                'grade_level': skill.grade_level.name,
-                'memory_strength': round(memory_strength, 3),
-                'probability': round(probability, 3),
-                'practice_count': state.practice_count,
-                'correct_count': state.correct_count,
-                'accuracy': round(state.correct_count / state.practice_count, 3) if state.practice_count > 0 else 0.0
+    def get_grading_panel_data(self, user_id: str) -> Dict[str, any]:
+        """
+        Get grading panel data from Khan Academy hierarchy.
+        Skills = Units, Sub-skills = Lessons, dynamically from questions_db.
+        This follows the DASH Integration Plan exactly.
+        """
+        try:
+            # 1. Get current Khan Academy hierarchy from questions_db
+            units = list(self.mongo.units.find({}))
+
+            # 2. Get all question attempts for this student
+            attempts = list(self.mongo.question_attempts.find({"user_id": user_id}))
+
+            # OPTIMIZATION: Batch load all questions, lessons, and courses to avoid N+1 queries
+            question_ids = [attempt.get("question_id") for attempt in attempts if attempt.get("question_id")]
+            questions_list = list(self.mongo.questions.find({"question_id": {"$in": question_ids}}))
+            questions_by_id = {q["question_id"]: q for q in questions_list}
+
+            lesson_ids = [q.get("lesson_id") for q in questions_list if q.get("lesson_id")]
+            lessons_list = list(self.mongo.lessons.find({"lesson_id": {"$in": lesson_ids}}))
+            lessons_by_id = {l["lesson_id"]: l for l in lessons_list}
+
+            course_ids = list(set([unit.get("course_id") for unit in units if unit.get("course_id")]))
+            courses_list = list(self.mongo.courses.find({"course_id": {"$in": course_ids}}))
+            courses_by_id = {c["course_id"]: c for c in courses_list}
+
+            # 3. Build performance map: unit_id -> {correct, total, lessons}
+            unit_performance = {}
+
+            for attempt in attempts:
+                question_id = attempt.get("question_id")
+
+                # Find question -> lesson -> unit path using batch-loaded data
+                question = questions_by_id.get(question_id)
+                if not question:
+                    continue
+
+                lesson_id = question.get("lesson_id")
+                if not lesson_id:
+                    continue
+
+                lesson = lessons_by_id.get(lesson_id)
+                if not lesson:
+                    continue
+
+                unit_id = lesson.get("unit_id")
+                if not unit_id:
+                    continue
+
+                # Initialize unit performance
+                if unit_id not in unit_performance:
+                    unit_performance[unit_id] = {
+                        "correct": 0,
+                        "total": 0,
+                        "lessons": {}
+                    }
+
+                # Update unit totals
+                unit_performance[unit_id]["total"] += 1
+                if attempt.get("is_correct"):
+                    unit_performance[unit_id]["correct"] += 1
+
+                # Track lesson-level performance (sub-skills)
+                if lesson_id not in unit_performance[unit_id]["lessons"]:
+                    unit_performance[unit_id]["lessons"][lesson_id] = {
+                        "lesson_name": lesson.get("title"),
+                        "correct": 0,
+                        "total": 0
+                    }
+
+                unit_performance[unit_id]["lessons"][lesson_id]["total"] += 1
+                if attempt.get("is_correct"):
+                    unit_performance[unit_id]["lessons"][lesson_id]["correct"] += 1
+
+            # 4. Build grading panel structure organized by subject and grade
+            grading_data = {
+                "subjects": {},
+                "overall_grade": None,
+                "overall_mastery": 0
             }
-        
-        return scores
+
+            total_mastery = 0
+            total_units_with_attempts = 0
+
+            # Sort units by grade level before processing
+            # First, we need to get course info for each unit to determine grade
+            units_with_grade = []
+            for unit in units:
+                unit_id = unit.get("unit_id")
+                course_id = unit.get("course_id")
+
+                # Get course to determine grade level
+                course = courses_by_id.get(course_id)
+                if not course:
+                    continue
+
+                # Extract grade level from course
+                grade_level_enum = derive_grade_from_course(
+                    course.get("title", ""),
+                    course.get("slug", ""),
+                    course.get("order_in_region", 0)
+                )
+
+                # Store unit with its grade level value for sorting
+                grade_value = grade_level_enum.value if grade_level_enum else 999
+                units_with_grade.append((unit, course, grade_level_enum, grade_value))
+
+            # Sort by grade level (ascending order: K=0, Grade1=1, ..., Grade12=12)
+            units_with_grade.sort(key=lambda x: x[3])
+
+            for unit, course, grade_level_enum, grade_value in units_with_grade:
+                unit_id = unit.get("unit_id")
+                course_id = unit.get("course_id")
+
+                # Extract subject and grade level from course (already computed above)
+                subject = extract_subject(course.get("title", ""))
+                grade_level = grade_level_enum.name if grade_level_enum else "Unknown"
+                
+                # Initialize subject in grading data
+                if subject not in grading_data["subjects"]:
+                    grading_data["subjects"][subject] = {
+                        "grade_levels": {}
+                    }
+                
+                # Initialize grade level
+                if grade_level not in grading_data["subjects"][subject]["grade_levels"]:
+                    grading_data["subjects"][subject]["grade_levels"][grade_level] = {
+                        "units": []
+                    }
+                
+                # Calculate unit mastery
+                perf = unit_performance.get(unit_id, {"correct": 0, "total": 0, "lessons": {}})
+                mastery = (perf["correct"] / perf["total"] * 100) if perf["total"] > 0 else 0
+                
+                if perf["total"] > 0:
+                    total_mastery += mastery
+                    total_units_with_attempts += 1
+                
+                # Build sub-skills (lessons) data
+                sub_skills = []
+                for lesson_id, lesson_perf in perf["lessons"].items():
+                    lesson_mastery = (lesson_perf["correct"] / lesson_perf["total"] * 100) if lesson_perf["total"] > 0 else 0
+                    sub_skills.append({
+                        "id": lesson_id,
+                        "name": lesson_perf["lesson_name"],
+                        "mastery": round(lesson_mastery, 1),
+                        "questions_answered": lesson_perf["total"],
+                        "questions_correct": lesson_perf["correct"]
+                    })
+                
+                # Add unit to grading data
+                grading_data["subjects"][subject]["grade_levels"][grade_level]["units"].append({
+                    "id": unit_id,
+                    "name": unit.get("title"),
+                    "mastery": round(mastery, 1),
+                    "questions_answered": perf["total"],
+                    "questions_correct": perf["correct"],
+                    "sub_skills": sub_skills
+                })
+            
+            # 5. Calculate overall grade
+            if total_units_with_attempts > 0:
+                avg_mastery = total_mastery / total_units_with_attempts
+                grading_data["overall_mastery"] = round(avg_mastery, 1)
+                
+                if avg_mastery >= 90:
+                    grading_data["overall_grade"] = "A"
+                elif avg_mastery >= 80:
+                    grading_data["overall_grade"] = "B"
+                elif avg_mastery >= 70:
+                    grading_data["overall_grade"] = "C"
+                elif avg_mastery >= 60:
+                    grading_data["overall_grade"] = "D"
+                else:
+                    grading_data["overall_grade"] = "F"
+            else:
+                grading_data["overall_grade"] = "N/A"
+            
+            log_print(f"[GRADING_PANEL] Generated data for {total_units_with_attempts} units with attempts")
+            return grading_data
+            
+        except Exception as e:
+            log_print(f"[ERROR] Error getting grading panel data: {e}")
+            import traceback
+            traceback.print_exc()
+            raise
     
     def get_recommended_skills(
         self, 
@@ -1088,3 +1486,127 @@ class DASHSystem:
 
         # No unanswered questions found
         return None
+    
+    def get_dynamic_student_performance(self, user_id: str) -> Dict[str, any]:
+        """
+        Get student performance mapped to CURRENT skill structure.
+        Maps historical question attempts to current Khan Academy hierarchy.
+        This is future-proof - works even when questions_db is updated.
+        """
+        from datetime import datetime
+        
+        # 1. Get all historical question attempts for this student
+        attempts = list(self.mongo_db.question_attempts.find({
+            "user_id": user_id
+        }).sort("timestamp", -1))
+        
+        if not attempts:
+            # No attempts yet - return empty performance with current skills
+            return {
+                "overall_grade": "N/A",
+                "overall_mastery": 0.0,
+                "skills": [],
+                "total_questions": 0,
+                "updated_at": datetime.now().isoformat()
+            }
+        
+        # 2. Map attempts to current skills
+        skill_performance = {}
+        
+        for attempt in attempts:
+            question_id = attempt.get("question_id")
+            
+            # Find which current skill this question belongs to
+            question_doc = self.mongo_db.questions.find_one({"question_id": question_id})
+            
+            if not question_doc:
+                continue  # Question no longer exists in current DB
+                
+            # Get the lesson, then unit (skill)
+            lesson_id = question_doc.get("lesson_id")
+            if not lesson_id:
+                continue
+                
+            lesson = self.mongo_db.lessons.find_one({"lesson_id": lesson_id})
+            if not lesson:
+                continue
+                
+            unit_id = lesson.get("unit_id")
+            if not unit_id:
+                continue
+                
+            # Find the skill in current DASH tree
+            skill_node = self.skills.get(unit_id)
+            
+            if not skill_node:
+                continue  # Skill no longer in current hierarchy
+                
+            # Initialize skill performance tracking
+            if skill_node.skill_id not in skill_performance:
+                skill_performance[skill_node.skill_id] = {
+                    "skill_name": skill_node.name,
+                    "subject": getattr(skill_node, 'subject', 'Unknown'),
+                    "grade_level": skill_node.grade_level.name if hasattr(skill_node.grade_level, 'name') else str(skill_node.grade_level),
+                    "correct": 0,
+                    "total": 0,
+                    "recent_attempts": []
+                }
+            
+            # Update performance
+            perf = skill_performance[skill_node.skill_id]
+            perf["total"] += 1
+            if attempt.get("is_correct"):
+                perf["correct"] += 1
+            
+            perf["recent_attempts"].append({
+                "timestamp": attempt.get("timestamp"),
+                "correct": attempt.get("is_correct"),
+                "question_id": question_id
+            })
+        
+        # 3. Calculate mastery levels
+        skills_with_mastery = []
+        for skill_id, perf in skill_performance.items():
+            mastery = (perf["correct"] / perf["total"] * 100) if perf["total"] > 0 else 0
+            
+            skills_with_mastery.append({
+                "skill_id": skill_id,
+                "skill_name": perf["skill_name"],
+                "subject": perf["subject"],
+                "grade_level": perf["grade_level"],
+                "mastery": round(mastery, 1),
+                "questions_answered": perf["total"],
+                "questions_correct": perf["correct"],
+                "last_attempt": perf["recent_attempts"][0]["timestamp"] if perf["recent_attempts"] else None
+            })
+        
+        # 4. Sort by subject and grade level
+        skills_with_mastery.sort(key=lambda x: (x["subject"], x["grade_level"], x["skill_name"]))
+        
+        # 5. Calculate overall grade
+        if skills_with_mastery:
+            total_mastery = sum(s["mastery"] for s in skills_with_mastery)
+            avg_mastery = total_mastery / len(skills_with_mastery)
+            
+            # Map to letter grade
+            if avg_mastery >= 90:
+                letter_grade = "A"
+            elif avg_mastery >= 80:
+                letter_grade = "B"
+            elif avg_mastery >= 70:
+                letter_grade = "C"
+            elif avg_mastery >= 60:
+                letter_grade = "D"
+            else:
+                letter_grade = "F"
+        else:
+            letter_grade = "N/A"
+            avg_mastery = 0.0
+        
+        return {
+            "overall_grade": letter_grade,
+            "overall_mastery": round(avg_mastery, 1),
+            "skills": skills_with_mastery,
+            "total_questions": sum(s["questions_answered"] for s in skills_with_mastery),
+            "updated_at": datetime.now().isoformat()
+        }

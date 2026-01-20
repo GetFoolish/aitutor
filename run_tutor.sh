@@ -32,7 +32,11 @@ mkdir -p "$SCRIPT_DIR/logs"
 # Detect Python environment
 if [[ -z "$VIRTUAL_ENV" ]]; then
     # Not already in a virtual environment
-    if [[ -d "$SCRIPT_DIR/env" ]]; then
+    if [[ -d "$SCRIPT_DIR/venv" ]]; then
+        echo "Activating local venv..."
+        # shellcheck source=/dev/null
+        source "$SCRIPT_DIR/venv/bin/activate"
+    elif [[ -d "$SCRIPT_DIR/env" ]]; then
         echo "Activating local env..."
         # shellcheck source=/dev/null
         source "$SCRIPT_DIR/env/bin/activate"

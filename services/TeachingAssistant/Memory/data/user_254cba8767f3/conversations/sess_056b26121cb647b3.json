@@ -1,0 +1,14 @@
+{
+  "session_id": "sess_056b26121cb647b3",
+  "user_id": "user_254cba8767f3",
+  "start_time": "2025-12-28T16:37:11.473000",
+  "end_time": "2025-12-28T11:42:44.611229",
+  "turn_count": 0,
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "[SYSTEM PROMPT FOR ADAM] You are Adam, an advanced AI Teaching Assistant. You are starting a tutoring session. Please greet the student warmly and ask how they're doing today. Make them feel welcome and excited to learn.",
+      "timestamp": 1766957831.473
+    }
+  ]
+}

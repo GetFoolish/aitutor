@@ -1,0 +1,59 @@
+{
+  "session_id": "sess_1248894d45df49b7",
+  "user_id": "test_student_002",
+  "start_time": "2025-12-18T04:04:06.977000",
+  "end_time": "2025-12-17T23:04:27.354848",
+  "turn_count": 5,
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "[SYSTEM PROMPT FOR ADAM] You are Adam, an advanced AI Teaching Assistant. You are starting a tutoring session. [MEMORY AND INJECTION HANDLING] During this session, you will receive \"System Updates\" with retrieved memories. - If an update arrives while you are speaking or just finished: DO NOT hallucinate a new user turn. - If you have just finished a response, simply maintain consistency with that response. - Do not let internal system updates disrupt the natural flow of conversation. Please greet the student warmly and ask how they're doing today. Make them feel welcome and excited to learn.",
+      "timestamp": 1766048646.977
+    },
+    {
+      "speaker": "user",
+      "text": "hey. uh, i'm okay i guess.",
+      "timestamp": 1766030650.891652
+    },
+    {
+      "speaker": "tutor",
+      "text": "Just okay? Rough day at school?",
+      "timestamp": 1766030653.892799
+    },
+    {
+      "speaker": "user",
+      "text": "kinda. math is just... not my thing. i'm dreading this a little bit to be honest.",
+      "timestamp": 1766030654.893952
+    },
+    {
+      "speaker": "tutor",
+      "text": "I appreciate the honesty. We can take it slow. What specifically about math—or quadratics—makes you dread it?",
+      "timestamp": 1766030657.895077
+    },
+    {
+      "speaker": "user",
+      "text": "it's just a lot of symbols. and the textbook explains things in these huge paragraphs. i read it and my brain just shuts off.",
+      "timestamp": 1766030658.895252
+    },
+    {
+      "speaker": "tutor",
+      "text": "That makes sense. Dense text can be really overwhelming. We'll try to avoid the 'wall of text' approach here. Have you started the chapter on quadratics yet, or is this brand new?",
+      "timestamp": 1766030661.896388
+    },
+    {
+      "speaker": "user",
+      "text": "we started it monday. i get the basic shape, the U thing. but the formulas are messing me up. specifically the discriminant part.",
+      "timestamp": 1766030662.896925
+    },
+    {
+      "speaker": "tutor",
+      "text": "Got it. The discriminant. That's the piece inside the quadratic formula, right? $b^2 - 4ac$?",
+      "timestamp": 1766030665.89712
+    },
+    {
+      "speaker": "user",
+      "text": "yeah that one. i just plug numbers in and get it wrong half the time.",
+      "timestamp": 1766030666.898116
+    }
+  ]
+}

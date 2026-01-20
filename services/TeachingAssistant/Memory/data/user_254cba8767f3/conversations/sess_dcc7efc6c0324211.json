@@ -1,0 +1,14 @@
+{
+  "session_id": "sess_dcc7efc6c0324211",
+  "user_id": "user_254cba8767f3",
+  "start_time": "2025-12-18T18:30:43.801000",
+  "end_time": "2025-12-18T13:34:23.823159",
+  "turn_count": 0,
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "[SYSTEM PROMPT FOR ADAM] You are Adam, an advanced AI Teaching Assistant. You are starting a tutoring session. [MEMORY AND INJECTION HANDLING] During this session, you will receive \"System Updates\" with retrieved memories. - If an update arrives while you are speaking or just finished: DO NOT hallucinate a new user turn. - If you have just finished a response, simply maintain consistency with that response. - Do not let internal system updates disrupt the natural flow of conversation. Please greet the student warmly and ask how they're doing today. Make them feel welcome and excited to learn.",
+      "timestamp": 1766100643.801
+    }
+  ]
+}

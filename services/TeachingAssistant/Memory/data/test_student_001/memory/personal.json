@@ -1,0 +1,197 @@
+[
+  {
+    "id": "3064b418-8464-4d67-8285-4d234061aad0",
+    "type": "personal",
+    "text": "Student plays basketball.",
+    "importance": 0.8,
+    "student_id": "test_student_001",
+    "session_id": "sess_383303d6f2a34b2a",
+    "timestamp": "2025-12-17T22:21:45.257882",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "basketball"
+    }
+  },
+  {
+    "id": "80c58e7f-357e-4e5e-9895-734e0bdfa088",
+    "type": "personal",
+    "text": "Student plays point guard.",
+    "importance": 0.6,
+    "student_id": "test_student_001",
+    "session_id": "sess_383303d6f2a34b2a",
+    "timestamp": "2025-12-17T22:21:45.257892",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "basketball"
+    }
+  },
+  {
+    "id": "de0d37a2-dd57-4332-b846-2dd3e526dc34",
+    "type": "personal",
+    "text": "Student has a dog named Max.",
+    "importance": 0.3,
+    "student_id": "test_student_001",
+    "session_id": "sess_383303d6f2a34b2a",
+    "timestamp": "2025-12-17T22:22:20.081101",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "2c458807-45aa-4a16-a351-efe69d1690d3",
+    "type": "personal",
+    "text": "Student describes Max's behavior.",
+    "importance": 0.4,
+    "student_id": "test_student_001",
+    "session_id": "sess_383303d6f2a34b2a",
+    "timestamp": "2025-12-17T22:22:20.081110",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "1784b374-49dd-4f61-92ce-7d1458a80a25",
+    "type": "personal",
+    "text": "Student is late for practice.",
+    "importance": 0.8,
+    "student_id": "test_student_001",
+    "session_id": "sess_383303d6f2a34b2a",
+    "timestamp": "2025-12-17T22:23:08.737408",
+    "metadata": {
+      "emotion": "anxious",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "1685126b-7deb-4300-a8f9-ebb5426a765b",
+    "type": "personal",
+    "text": "The student plays basketball and had a brutal practice.",
+    "importance": 0.9,
+    "student_id": "test_student_001",
+    "session_id": "sess_e7786fd19ce64376",
+    "timestamp": "2025-12-17T22:23:31.265275",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "87469492-f397-4c72-8756-687e4e7f2c11",
+    "type": "personal",
+    "text": "The student had a basketball game on Friday.",
+    "importance": 0.7,
+    "student_id": "test_student_001",
+    "session_id": "sess_e7786fd19ce64376",
+    "timestamp": "2025-12-17T22:23:31.265284",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "622f0646-5954-43c5-b91a-a23065fd4500",
+    "type": "personal",
+    "text": "The student won their basketball game with a score of 54-50.",
+    "importance": 1.0,
+    "student_id": "test_student_001",
+    "session_id": "sess_e7786fd19ce64376",
+    "timestamp": "2025-12-17T22:23:31.265287",
+    "metadata": {
+      "emotion": "excited",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "4694b1e9-1ff0-4c8d-828e-c708c60e3403",
+    "type": "personal",
+    "text": "Student used a 'airball thing' visual aid, potentially linked to sports like basketball.",
+    "importance": 0.5,
+    "student_id": "test_student_001",
+    "session_id": "sess_e7786fd19ce64376",
+    "timestamp": "2025-12-17T22:23:43.294232",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "math test"
+    }
+  },
+  {
+    "id": "015fc02c-cdb7-4337-8e8d-89d181f05006",
+    "type": "personal",
+    "text": "Student's dog, Max, stole a sock and the student chased him for 10 minutes.",
+    "importance": 0.4,
+    "student_id": "test_student_001",
+    "session_id": "sess_e7786fd19ce64376",
+    "timestamp": "2025-12-17T22:25:07.115051",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "8e9e3c06-fb96-4e9f-9630-1b424859384c",
+    "type": "personal",
+    "text": "Student plays basketball.",
+    "importance": 0.5,
+    "student_id": "test_student_001",
+    "session_id": "sess_71e809ff7e6540b2",
+    "timestamp": "2025-12-17T22:25:48.615702",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "personal"
+    }
+  },
+  {
+    "id": "6d3b925a-b9cc-4137-b9b1-d756654506de",
+    "type": "personal",
+    "text": "Student is familiar with basketball and x's and o's from basketball.",
+    "importance": 0.6,
+    "student_id": "test_student_001",
+    "session_id": "sess_71e809ff7e6540b2",
+    "timestamp": "2025-12-17T22:26:35.328742",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "e7daaec0-f818-473b-a4ca-3f9b62583adb",
+    "type": "personal",
+    "text": "Student has a dog named Max.",
+    "importance": 0.6,
+    "student_id": "test_student_001",
+    "session_id": "sess_71e809ff7e6540b2",
+    "timestamp": "2025-12-17T22:26:48.484869",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    }
+  },
+  {
+    "id": "1063ea1c-bea0-422e-92d6-9fea6a897938",
+    "type": "personal",
+    "text": "Student is using a sports context to understand math.",
+    "importance": 0.5,
+    "student_id": "test_student_001",
+    "session_id": "sess_71e809ff7e6540b2",
+    "timestamp": "2025-12-17T22:27:00.038419",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "quadratic functions"
+    }
+  },
+  {
+    "id": "f7f3945a-e24c-4ce2-8fca-ab6773b06814",
+    "type": "personal",
+    "text": "Max, the student's pet, was eating the student's socks.",
+    "importance": 0.2,
+    "student_id": "test_student_001",
+    "session_id": "sess_7fdff713059c48f5",
+    "timestamp": "2025-12-17T22:27:47.154910",
+    "metadata": {
+      "emotion": "happy",
+      "topic": "general"
+    }
+  }
+]

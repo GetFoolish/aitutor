@@ -1,0 +1,31 @@
+{
+  "session_id": "sess_a8266728a56b4b3b",
+  "timestamp": 1766519964.187263,
+  "new_memories": [],
+  "emotional_arc": [
+    "frustrated",
+    "disgusted",
+    "happy"
+  ],
+  "key_moments": [
+    "Successfully factors the quadratic equation.",
+    "Improved understanding of mathematical concepts."
+  ],
+  "unfinished_topics": [],
+  "topics_covered": [
+    "general"
+  ],
+  "session_summary": "You successfully factored a quadratic equation and gained a better grasp of the underlying mathematical concepts! It sounds like you had quite the emotional rollercoaster, but it's fantastic to hear you ended feeling happy.",
+  "goodbye_message": "It's great to know that the session ended on a high note after the frustration you experienced. I'm so glad we could work through those feelings together and achieve a happy conclusion!",
+  "next_session_hooks": [
+    "Explore applying the factoring skills to more complex quadratic problems.",
+    "Review other algebraic concepts, like completing the square or graphing quadratics, to build on your understanding."
+  ],
+  "memories_count": 14,
+  "memories_by_type": {
+    "personal": 7,
+    "preference": 1,
+    "academic": 6
+  },
+  "last_regen_time": 1766519961.967962
+}

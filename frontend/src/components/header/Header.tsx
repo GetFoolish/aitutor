@@ -17,7 +17,7 @@
 import { RiSidebarFoldLine, RiSidebarUnfoldLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import cn from "classnames";
-import { Moon, Sun, User, Settings, LogOut } from "lucide-react";
+import { Moon, Sun, User, Settings, LogOut, Terminal, BookOpen } from "lucide-react";
 import { useTheme } from "../theme/theme-provier";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -77,9 +77,9 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
         <header className="fixed top-0 left-0 right-0 h-[44px] lg:h-[48px] bg-[#FFFDF5] dark:bg-[#000000] border-b-[3px] lg:border-b-[4px] border-black dark:border-white z-40 flex items-center justify-between px-2 md:px-4 lg:px-5 shadow-[0_2px_0_0_rgba(0,0,0,1)] lg:shadow-[0_2px_0_0_rgba(0,0,0,1)] dark:shadow-[0_2px_0_0_rgba(255,255,255,0.3)]">
             {/* Left side - Logo */}
             <div className="flex items-center gap-1.5 md:gap-2 group cursor-pointer">
-                <img 
-                    src={logoSource} 
-                    alt="teachr" 
+                <img
+                    src={logoSource}
+                    alt="teachr"
                     className="h-7 md:h-8 lg:h-9 w-auto group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform duration-100"
                 />
             </div>
@@ -144,10 +144,12 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
                     className="w-7 h-7 md:w-8 md:h-8 lg:w-8 lg:h-8 border-[2px] border-black dark:border-white bg-[#FFD93D] hover:bg-[#FFD93D] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 text-black"
                     onClick={onToggleSidebar}
                 >
-                    {sidebarOpen ? (
-                        <RiSidebarFoldLine className="w-4 h-4 lg:w-[1.1rem] lg:h-[1.1rem] font-black" />
+                    {import.meta.env.DEV ? (
+                        /* Developer Mode: Terminal Icon */
+                        <Terminal className={cn("w-5 h-5 md:w-5 md:h-5 transition-transform", sidebarOpen ? "rotate-180" : "")} />
                     ) : (
-                        <RiSidebarUnfoldLine className="w-4 h-4 lg:w-[1.1rem] lg:h-[1.1rem] font-black" />
+                        /* Student Mode: Book/Learning Assets Icon */
+                        <BookOpen className={cn("w-5 h-5 md:w-5 md:h-5 transition-transform", sidebarOpen ? "rotate-0" : "")} />
                     )}
                 </Button>
             </div>
