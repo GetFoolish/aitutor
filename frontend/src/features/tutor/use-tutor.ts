@@ -23,6 +23,10 @@ import { LiveConnectConfig } from "@google/genai";
 import { useAuth } from "../../contexts/AuthContext";
 import { apiUtils } from "../../lib/api-utils";
 
+// Auto-reconnect configuration
+const MAX_RECONNECT_ATTEMPTS = 3;
+const RECONNECT_DELAY_MS = 2000;
+
 export type UseTutorResults = {
   client: TutorClient;
   setConfig: (config: LiveConnectConfig) => void;
@@ -43,6 +47,21 @@ export function useTutor(assessmentMode?: boolean): UseTutorResults {
   const [config, setConfig] = useState<LiveConnectConfig>({});
   const [connected, setConnected] = useState(false);
   const [volume, setVolume] = useState(0);
+
+  // Auto-reconnect state
+  const reconnectAttemptsRef = useRef(0);
+  const isReconnectingRef = useRef(false);
+  const configRef = useRef<LiveConnectConfig>({});
+  const userLanguageRef = useRef<string>("English");
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    configRef.current = config;
+  }, [config]);
+
+  useEffect(() => {
+    userLanguageRef.current = user?.preferred_language || "English";
+  }, [user?.preferred_language]);
 
   // register audio for streaming server -> speakers
   useEffect(() => {
@@ -72,10 +91,48 @@ export function useTutor(assessmentMode?: boolean): UseTutorResults {
   useEffect(() => {
     const onOpen = () => {
       setConnected(true);
+      // Reset reconnect attempts on successful connection
+      reconnectAttemptsRef.current = 0;
+      isReconnectingRef.current = false;
     };
 
-    const onClose = () => {
+    const onClose = (event?: { reason?: string }) => {
       setConnected(false);
+      const reason = event?.reason || '';
+
+      // Check if this is a connection error that we should auto-reconnect
+      // Include: deadline errors, timeouts, unknown disconnects (not user-initiated)
+      const isReconnectableError = reason.toLowerCase().includes('deadline') ||
+                                   reason.toLowerCase().includes('timeout') ||
+                                   reason.toLowerCase().includes('expired') ||
+                                   reason.toLowerCase().includes('unknown');
+
+      if (isReconnectableError && !isReconnectingRef.current) {
+        if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
+          reconnectAttemptsRef.current += 1;
+          isReconnectingRef.current = true;
+
+          console.log(`%c[TUTOR] 🔄 Auto-reconnecting after disconnect (reason: ${reason || 'none'}) - attempt ${reconnectAttemptsRef.current}/${MAX_RECONNECT_ATTEMPTS}...`,
+            'color: #F39C12; font-weight: bold;');
+
+          // Delay before reconnecting
+          setTimeout(async () => {
+            try {
+              client.disconnect();
+              await client.connect(configRef.current, userLanguageRef.current);
+              console.log('%c[TUTOR] ✅ Auto-reconnect successful!', 'color: #27AE60; font-weight: bold;');
+            } catch (error) {
+              console.error('[TUTOR] Auto-reconnect failed:', error);
+              isReconnectingRef.current = false;
+            }
+          }, RECONNECT_DELAY_MS);
+        } else {
+          console.log('%c[TUTOR] ❌ Max reconnect attempts reached. Please refresh the page.',
+            'color: #E74C3C; font-weight: bold;');
+          reconnectAttemptsRef.current = 0;
+          isReconnectingRef.current = false;
+        }
+      }
     };
 
     const onError = (error: ErrorEvent) => {

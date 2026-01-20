@@ -54,9 +54,19 @@ class SessionManager:
             "last_conversation_turn": now,
             "last_question_submission": None,
             "pending_instructions": [],
+            "pending_interventions": [],  # Queue for intervention events to be sent via SSE
             "websocket_connected": False,
             "sse_connected": False,
             "inactivity_prompt_sent": False,  # Track if we've sent an inactivity prompt
+            # Struggle tracking fields
+            "consecutive_errors": 0,
+            "pause_start_time": None,
+            "total_pauses": 0,
+            "hint_requests": 0,
+            "last_struggle_check": now,
+            "struggle_score": 0.0,
+            # Intervention effectiveness tracking
+            "intervention_history": [],
         }
         self.sessions.insert_one(session)
         logger.info(f"[SESSION_MANAGER] Created session {session['session_id']} for user {user_id}")
@@ -72,6 +82,18 @@ class SessionManager:
     def get_session_by_id(self, session_id: str) -> Optional[Dict[str, Any]]:
         """Get a session by its ID"""
         return self.sessions.find_one({"session_id": session_id})
+
+    def get_session(self, session_id: str) -> Optional[Dict[str, Any]]:
+        """Get a session by its ID (alias for get_session_by_id)"""
+        return self.get_session_by_id(session_id)
+
+    def update_session(self, session_id: str, updates: Dict[str, Any]) -> None:
+        """Update session fields"""
+        if updates:
+            self.sessions.update_one(
+                {"session_id": session_id},
+                {"$set": updates}
+            )
 
     def list_active_sessions(self) -> List[Dict[str, Any]]:
         """List all active sessions (for admin/observer use)"""
@@ -170,6 +192,50 @@ class SessionManager:
             {"$set": {"pending_instructions.$.delivered": True}}
         )
         logger.info(f"[SESSION_MANAGER] Marked instruction {instruction_id} as delivered")
+
+    def push_intervention(self, session_id: str, intervention: Dict[str, Any]) -> str:
+        """Add an intervention to the pending queue for frontend SSE delivery"""
+        intervention_event = {
+            "intervention_id": f"intv_{uuid.uuid4().hex[:8]}",
+            "type": intervention["type"],
+            "message": intervention.get("message", ""),
+            "timestamp": datetime.utcnow().isoformat(),
+            "delivered": False
+        }
+        self.sessions.update_one(
+            {"session_id": session_id},
+            {"$push": {"pending_interventions": intervention_event}}
+        )
+        logger.info(f"[SESSION_MANAGER] Pushed {intervention['type']} intervention {intervention_event['intervention_id']} to session {session_id}")
+        return intervention_event["intervention_id"]
+
+    def get_pending_interventions(self, session_id: str) -> List[Dict[str, Any]]:
+        """Get all undelivered interventions"""
+        session = self.sessions.find_one(
+            {"session_id": session_id},
+            {"pending_interventions": 1}
+        )
+        if not session:
+            return []
+        return [
+            intv for intv in session.get("pending_interventions", [])
+            if not intv.get("delivered", False)
+        ]
+
+    def mark_intervention_delivered(
+        self,
+        session_id: str,
+        intervention_id: str
+    ) -> None:
+        """Mark an intervention as delivered"""
+        self.sessions.update_one(
+            {
+                "session_id": session_id,
+                "pending_interventions.intervention_id": intervention_id
+            },
+            {"$set": {"pending_interventions.$.delivered": True}}
+        )
+        logger.info(f"[SESSION_MANAGER] Marked intervention {intervention_id} as delivered")
 
     def set_connection_status(
         self,
@@ -304,6 +370,98 @@ class SessionManager:
             )
 
         return is_inactive
+
+    def record_intervention(
+        self,
+        session_id: str,
+        intervention_type: str,
+        struggle_score_before: float
+    ) -> str:
+        """
+        Record a new intervention in the session history.
+        Returns the intervention_id for later effectiveness tracking.
+        """
+        intervention = {
+            "intervention_id": f"intv_{uuid.uuid4().hex[:8]}",
+            "type": intervention_type,
+            "timestamp": datetime.utcnow(),
+            "struggle_score_before": struggle_score_before,
+            "struggle_score_after": None,
+            "was_effective": None
+        }
+        self.sessions.update_one(
+            {"session_id": session_id},
+            {"$push": {"intervention_history": intervention}}
+        )
+        logger.info(
+            f"[SESSION_MANAGER] Recorded intervention {intervention['intervention_id']} "
+            f"of type '{intervention_type}' for session {session_id}"
+        )
+        return intervention["intervention_id"]
+
+    def update_intervention_effectiveness(
+        self,
+        session_id: str,
+        intervention_id: str,
+        struggle_score_after: float
+    ) -> None:
+        """
+        Update an intervention's effectiveness metrics.
+        Calculates was_effective based on score reduction.
+        """
+        session = self.sessions.find_one({"session_id": session_id})
+        if not session:
+            logger.warning(f"[SESSION_MANAGER] Session {session_id} not found")
+            return
+
+        # Find the intervention in history
+        intervention_history = session.get("intervention_history", [])
+        for i, intervention in enumerate(intervention_history):
+            if intervention["intervention_id"] == intervention_id:
+                struggle_score_before = intervention["struggle_score_before"]
+                # Intervention is effective if struggle score decreased by at least 0.1
+                # Use small epsilon (0.001) for floating-point comparison tolerance
+                score_reduction = struggle_score_before - struggle_score_after
+                was_effective = score_reduction >= (0.1 - 0.001)
+
+                self.sessions.update_one(
+                    {
+                        "session_id": session_id,
+                        "intervention_history.intervention_id": intervention_id
+                    },
+                    {
+                        "$set": {
+                            "intervention_history.$.struggle_score_after": struggle_score_after,
+                            "intervention_history.$.was_effective": was_effective
+                        }
+                    }
+                )
+                logger.info(
+                    f"[SESSION_MANAGER] Updated intervention {intervention_id} effectiveness: "
+                    f"was_effective={was_effective} (score: {struggle_score_before:.2f} -> {struggle_score_after:.2f})"
+                )
+                return
+
+        logger.warning(
+            f"[SESSION_MANAGER] Intervention {intervention_id} not found in session {session_id}"
+        )
+
+    def get_recent_interventions(
+        self,
+        session_id: str,
+        limit: int = 5
+    ) -> List[Dict[str, Any]]:
+        """Get recent interventions for a session"""
+        session = self.sessions.find_one(
+            {"session_id": session_id},
+            {"intervention_history": 1}
+        )
+        if not session:
+            return []
+
+        history = session.get("intervention_history", [])
+        # Return most recent interventions (already in chronological order)
+        return history[-limit:] if len(history) > limit else history
 
     def get_session_info(self, session_id: str) -> Dict[str, Any]:
         """Get session info for API response"""

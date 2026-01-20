@@ -5,13 +5,18 @@ const TEACHING_ASSISTANT_API_URL = "http://localhost:8002";
 
 export function useRecordConversationTurn() {
   return useMutation({
-    mutationFn: async () =>
-      fetch(`${TEACHING_ASSISTANT_API_URL}/conversation/turn`, {
+    mutationFn: async () => {
+      console.log('[TeachingAssistant] Recording conversation turn...');
+      const res = await fetch(`${TEACHING_ASSISTANT_API_URL}/conversation/turn`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-      }),
+      });
+      const data = await res.json().catch(() => ({}));
+      console.log('[TeachingAssistant] Turn recorded:', data);
+      return res;
+    },
     onError: (error: unknown) => {
       const message =
         error instanceof Error ? error.message : "Unknown error recording turn";
@@ -23,6 +28,7 @@ export function useRecordConversationTurn() {
 export function useStartTeachingSession(userId: string) {
   return useMutation({
     mutationFn: async () => {
+      console.log('[TeachingAssistant] Starting session for user:', userId);
       const res = await fetch(`${TEACHING_ASSISTANT_API_URL}/session/start`, {
         method: "POST",
         headers: {
@@ -32,10 +38,13 @@ export function useStartTeachingSession(userId: string) {
       });
 
       if (!res.ok) {
+        console.error('[TeachingAssistant] Failed to start session:', res.status);
         throw new Error(`Failed to start session (${res.status})`);
       }
 
-      return res.json() as Promise<{ prompt?: string; session_info?: any }>;
+      const data = await res.json();
+      console.log('[TeachingAssistant] Session started:', data);
+      return data as { prompt?: string; session_info?: any };
     },
     onError: (error: unknown) => {
       const message =

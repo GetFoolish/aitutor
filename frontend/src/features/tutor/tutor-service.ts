@@ -362,17 +362,19 @@ export class TutorService {
       return;
     }
 
-    // CRITICAL: Gemini Live API ONLY accepts audio via sendRealtimeInput
-    // Sending images/video causes "Cannot extract voices from a non-audio request" error
-    // Reject any non-audio media immediately
-    if (!media.mimeType || !media.mimeType.includes("audio")) {
-      // Silently ignore non-audio media (images/video should not be sent here)
-      console.debug('Rejected non-audio media:', media.mimeType);
+    // Allow both audio and video/image media
+    // Audio: audio/pcm for voice input
+    // Video: image/jpeg or image/png for screen sharing
+    const isAudio = media.mimeType?.includes("audio");
+    const isImage = media.mimeType?.includes("image");
+
+    if (!isAudio && !isImage) {
+      console.debug('Rejected unsupported media type:', media.mimeType);
       return;
     }
 
-    // Validate audio format - must be PCM audio for Gemini to extract voices
-    if (!media.mimeType.includes("pcm") && !media.mimeType.includes("audio/pcm")) {
+    // For audio, validate it's PCM format
+    if (isAudio && !media.mimeType.includes("pcm")) {
       console.debug('Rejected non-PCM audio format:', media.mimeType);
       return;
     }
@@ -448,14 +450,27 @@ export class TutorService {
         return;
       }
 
-      // Ensure mimeType matches expected format for PCM audio
-      // Expected formats: "audio/pcm;rate=16000" or "audio/pcm;rate=16000;channels=1"
-      // Allow variations but must contain "audio/pcm" and "rate=16000"
-      const isValidPCM = media.mimeType.includes("audio/pcm") && 
-                         (media.mimeType.includes("rate=16000") || media.mimeType.includes("rate=16k"));
-      if (!isValidPCM) {
-        console.debug('Audio format mismatch, expected PCM 16kHz:', media.mimeType);
-        return;
+      // Validate media format
+      const isAudioMedia = media.mimeType.includes("audio");
+      const isImageMedia = media.mimeType.includes("image");
+
+      // For audio, ensure it's PCM format with correct sample rate
+      if (isAudioMedia) {
+        const isValidPCM = media.mimeType.includes("audio/pcm") &&
+                           (media.mimeType.includes("rate=16000") || media.mimeType.includes("rate=16k"));
+        if (!isValidPCM) {
+          console.debug('Audio format mismatch, expected PCM 16kHz:', media.mimeType);
+          return;
+        }
+      }
+
+      // For images, ensure it's a supported format
+      if (isImageMedia) {
+        const isValidImage = media.mimeType.includes("image/jpeg") || media.mimeType.includes("image/png");
+        if (!isValidImage) {
+          console.debug('Image format not supported:', media.mimeType);
+          return;
+        }
       }
 
       // The Google GenAI library's sendRealtimeInput may throw synchronously

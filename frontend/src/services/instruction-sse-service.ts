@@ -71,13 +71,27 @@ class InstructionSSEService {
     // Listen for instruction events
     this.eventSource.addEventListener('instruction', (event: MessageEvent) => {
       const instruction = event.data;
-      console.log('[InstructionSSE] Received instruction:', instruction.substring(0, 100) + '...');
+      console.log('[InstructionSSE] 📝 Received instruction:', instruction);
       this.instructionCallbacks.forEach(cb => cb(instruction));
+    });
+
+    // Listen for intervention events (struggle detection)
+    this.eventSource.addEventListener('intervention', (event: MessageEvent) => {
+      console.log('%c[InstructionSSE] 🆘 INTERVENTION RECEIVED', 'color: #FF6B6B; font-weight: bold; font-size: 14px;');
+      try {
+        const data = JSON.parse(event.data);
+        console.log('%c  Type: ' + data.type, 'color: #4ECDC4; font-weight: bold;');
+        console.log('%c  Message: ' + data.message, 'color: #FFE66D; font-weight: bold;');
+        console.log('%c  Timestamp: ' + data.timestamp, 'color: #95E1D3;');
+        console.log('%c  Full data:', 'color: #95E1D3;', data);
+      } catch (e) {
+        console.log('[InstructionSSE] 🆘 Intervention (raw):', event.data);
+      }
     });
 
     // Listen for keepalive (just to confirm connection is alive)
     this.eventSource.addEventListener('keepalive', () => {
-      // Connection is alive - no action needed
+      console.log('[InstructionSSE] 💓 Keepalive received');
     });
   }
 

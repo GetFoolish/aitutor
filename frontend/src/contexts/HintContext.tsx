@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback, useMemo } from 'react';
 
 interface HintContextType {
   showHints: boolean;
@@ -8,6 +8,7 @@ interface HintContextType {
   setCurrentHintIndex: (index: number) => void;
   totalHints: number;
   setTotalHints: (count: number) => void;
+  resetHints: () => void;
 }
 
 const HintContext = createContext<HintContextType | undefined>(undefined);
@@ -29,25 +30,33 @@ export const HintProvider: React.FC<HintProviderProps> = ({ children }) => {
   const [currentHintIndex, setCurrentHintIndex] = useState(0);
   const [totalHints, setTotalHints] = useState(0);
 
-  const toggleHints = () => {
-    setShowHints(prev => !prev);
-    if (!showHints) {
-      setCurrentHintIndex(0);
-    }
-  };
+  const toggleHints = useCallback(() => {
+    setShowHints(prev => {
+      if (!prev) {
+        setCurrentHintIndex(0);
+      }
+      return !prev;
+    });
+  }, []);
+
+  const resetHints = useCallback(() => {
+    setShowHints(false);
+    setCurrentHintIndex(0);
+  }, []);
+
+  const contextValue = useMemo(() => ({
+    showHints,
+    toggleHints,
+    setShowHints,
+    currentHintIndex,
+    setCurrentHintIndex,
+    totalHints,
+    setTotalHints,
+    resetHints,
+  }), [showHints, currentHintIndex, totalHints, toggleHints, resetHints]);
 
   return (
-    <HintContext.Provider
-      value={{
-        showHints,
-        toggleHints,
-        setShowHints,
-        currentHintIndex,
-        setCurrentHintIndex,
-        totalHints,
-        setTotalHints,
-      }}
-    >
+    <HintContext.Provider value={contextValue}>
       {children}
     </HintContext.Provider>
   );

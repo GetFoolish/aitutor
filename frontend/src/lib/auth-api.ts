@@ -241,6 +241,22 @@ class AuthAPI {
       }
     }
   }
+
+  async devLogin(): Promise<AuthResponse> {
+    const response = await fetch(`${AUTH_SERVICE_URL}/auth/dev-login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Dev login failed');
+    }
+
+    return response.json();
+  }
 }
 
 export const authAPI = new AuthAPI();

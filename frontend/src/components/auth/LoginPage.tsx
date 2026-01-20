@@ -69,6 +69,16 @@ const LoginPage: React.FC = () => {
     }
   };
 
+  const handleDevLogin = async () => {
+    try {
+      const response = await authAPI.devLogin();
+      handleAuthSuccess(response.token, response.user);
+    } catch (error) {
+      console.error('Dev login error:', error);
+      alert('Dev login failed. Make sure the auth service is running.');
+    }
+  };
+
   // If showing signup wizard, render it
   if (showSignupForm && setupToken) {
     return (
@@ -165,6 +175,45 @@ const LoginPage: React.FC = () => {
 
         {/* Email/Password Form */}
         <EmailPasswordForm onAuthSuccess={handleAuthSuccess} />
+
+        {/* Dev Login Button */}
+        {(
+          <>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '16px',
+              margin: '28px 0',
+            }}>
+              <div style={{ flex: 1, height: '2px', background: '#ccc' }}></div>
+              <span style={{
+                fontWeight: 600,
+                fontSize: '12px',
+                color: '#666',
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em'
+              }}>Dev Only</span>
+              <div style={{ flex: 1, height: '2px', background: '#ccc' }}></div>
+            </div>
+            <button
+              onClick={handleDevLogin}
+              style={{
+                width: '100%',
+                padding: '12px 24px',
+                background: '#4CAF50',
+                color: 'white',
+                border: '3px solid #000',
+                fontWeight: 700,
+                fontSize: '14px',
+                cursor: 'pointer',
+                boxShadow: '4px 4px 0px 0px #000000',
+                transition: 'all 0.1s ease'
+              }}
+            >
+              Quick Dev Login (Test User)
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

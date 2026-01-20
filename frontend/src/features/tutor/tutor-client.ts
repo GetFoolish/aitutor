@@ -287,12 +287,12 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
     let hasVideo = false;
 
     for (const ch of chunks) {
-      // CRITICAL: Filter out non-audio media before sending to Gemini
-      // Gemini Live API ONLY accepts audio via sendRealtimeInput
-      // Images/video cause "Cannot extract voices from a non-audio request" error
-      if (!ch.mimeType || !ch.mimeType.includes("audio")) {
-        // Skip non-audio chunks - they should not be sent to Gemini
-        console.debug('Skipping non-audio chunk:', ch.mimeType);
+      // Allow both audio and video/image media
+      const isAudio = ch.mimeType?.includes("audio");
+      const isImage = ch.mimeType?.includes("image");
+
+      if (!isAudio && !isImage) {
+        console.debug('Skipping unsupported chunk:', ch.mimeType);
         continue;
       }
 
