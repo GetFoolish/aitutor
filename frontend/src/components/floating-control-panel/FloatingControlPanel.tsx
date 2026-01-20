@@ -101,6 +101,7 @@ function FloatingControlPanel({
   const [activeVideoStream] = useState<MediaStream | null>(null);
   const [sharedMediaOpen, setSharedMediaOpen] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+  const [homeworkPanelOpen] = useState(false); // Placeholder for homework feature
   const panelRef = useRef<HTMLDivElement>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [sessionTime, setSessionTime] = useState(0);
