@@ -85,8 +85,43 @@ class FeedWebSocketService {
       this.socket.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
+          
+          // Handle pong (existing)
           if (data.type === 'pong') {
             // Keepalive response - connection is healthy
+            return;
+          }
+          
+          // Handle disconnect signal from backend
+          if (data.type === 'disconnect') {
+            console.warn('[FeedWebSocket] Received disconnect signal:', data.reason);
+            
+            // Emit custom event for FloatingControlPanel to handle
+            const disconnectEvent = new CustomEvent('backend-disconnect', {
+              detail: {
+                reason: data.reason,
+                message: data.message
+              }
+            });
+            window.dispatchEvent(disconnectEvent);
+            
+            // Show toast notification
+            import('@/components/ui/sonner').then(({ toast }) => {
+              toast.error("⏱️ Session Auto-Ended", {
+                description: data.message || "Your tutoring session has ended.",
+                duration: 8000,
+                action: {
+                  label: "Buy More",
+                  onClick: () => {
+                    window.location.href = '/app/pricing';
+                  }
+                }
+              });
+            });
+            
+            // Close the connection
+            this.disconnect();
+            return;
           }
         } catch (e) {
           console.warn('[FeedWebSocket] Failed to parse message:', e);

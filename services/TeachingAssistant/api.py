@@ -46,26 +46,42 @@ OBSERVER_API_KEY = os.getenv("OBSERVER_API_KEY", "dev-observer-key-12345")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Start and stop event processing loop"""
-    global ta, event_processing_task
+    """Start and stop event processing loop AND session monitor"""
+    global ta, event_processing_task, session_monitor_task
     
     # Start event processing loop
     ta.running = True
     event_processing_task = asyncio.create_task(ta.ongoing())
-    logger.info("[API] Started event processing loop")
+    logger.info("[API] ✅ Started event processing loop")
+    
+    # Start session credit monitoring
+    from services.TeachingAssistant.session_monitor import monitor_session_credits
+    session_monitor_task = asyncio.create_task(monitor_session_credits())
+    logger.info("[API] ✅ Started session credit monitoring")
     
     yield
     
     # Shutdown
-    logger.info("[API] Shutting down event processing loop...")
+    logger.info("[API] 🛑 Shutting down services...")
     ta.running = False
+    
+    # Stop event processing
     if event_processing_task:
         event_processing_task.cancel()
         try:
             await event_processing_task
         except asyncio.CancelledError:
             pass
-    logger.info("[API] Event processing loop stopped")
+    
+    # Stop session monitor
+    if session_monitor_task:
+        session_monitor_task.cancel()
+        try:
+            await session_monitor_task
+        except asyncio.CancelledError:
+            pass
+    
+    logger.info("[API] ✅ All services stopped")
 
 
 app = FastAPI(title="Teaching Assistant API", lifespan=lifespan)
@@ -137,8 +153,9 @@ async def options_handler(full_path: str):
 # Create TeachingAssistant instance (now stateless - all state in MongoDB)
 ta = TeachingAssistant()
 
-# Global task for event processing loop
+# Global tasks for event processing loop and session monitoring
 event_processing_task = None
+session_monitor_task = None
 
 # DASH API URL for pre-loading questions
 DASH_API_URL = os.getenv("DASH_API_URL", "http://localhost:8000")
@@ -343,9 +360,51 @@ async def start_session(http_request: Request, request: Optional[StartSessionReq
     """Start a new tutoring session"""
     user_id = get_current_user(http_request)
     try:
+        # STEP 1: Allocate daily free minutes if needed
+        from services.PaymentService.free_minutes_handler import (
+            allocate_daily_free_minutes,
+            check_user_balance
+        )
+        
+        # Allocate daily minutes (will only allocate if not already allocated today)
+        allocate_daily_free_minutes(user_id)
+        
+        # STEP 2: Check if user has enough minutes (at least 1 minute to start)
+        balances = check_user_balance(user_id)
+        total_balance = balances["total"]
+        logger.info(f"[SESSION_START] User {user_id[:8]}... has {total_balance} minutes available (free: {balances['free']}, paid: {balances['paid']})")
+        
+        if total_balance < 1:
+            logger.warning(f"[SESSION_START] ❌ User {user_id[:8]}... has insufficient minutes: {total_balance}")
+            raise HTTPException(
+                status_code=403,
+                detail={
+                    "error": "insufficient_minutes",
+                    "message": "You've used your free 15 minutes today. Come back tomorrow or purchase a plan to continue tutoring.",
+                    "balance": total_balance,
+                    "required": 1
+                }
+            )
+        
         # Create session in MongoDB (existing method)
         result = ta.start_session(user_id)
         session_id = result["session_info"]["session_id"]
+        
+        # STEP 3: Store credits_at_start for session monitoring
+        from managers.mongodb_manager import mongo_db
+        mongo_db.sessions.update_one(
+            {"session_id": session_id},
+            {
+                "$set": {
+                    "credits_at_start": total_balance,
+                    "max_duration_minutes": total_balance
+                }
+            }
+        )
+        logger.info(
+            f"[SESSION_START] ✅ Session {session_id[:8]}... created with "
+            f"{total_balance} minutes available"
+        )
         
         # Initialize memory and context components (new method)
         greeting = await ta.start(user_id, session_id)
@@ -781,10 +840,25 @@ async def websocket_feed(websocket: WebSocket):
     await websocket.accept()
     ta.session_manager.set_connection_status(session_id, websocket=True)
     logger.info(f"[WS] WebSocket connected for session {session_id}")
+    
+    # 4. Register WebSocket for session monitoring
+    from services.TeachingAssistant.session_monitor import register_websocket, unregister_websocket
+    register_websocket(session_id, websocket)
 
     try:
-        # 4. Message handling loop
+        # 5. Message handling loop
         while True:
+            # Check if session was force-ended
+            session = ta.session_manager.get_session_by_id(session_id)
+            if not session or not session.get("is_active"):
+                # Session ended - close connection
+                close_reason = "Session ended"
+                if session and session.get("force_ended"):
+                    close_reason = f"Session ended: {session.get('force_end_reason', 'credits exceeded')}"
+                await websocket.close(code=1000, reason=close_reason)
+                logger.info(f"[WS] Closing - {close_reason}")
+                break
+            
             data = await websocket.receive_json()
 
             # Update activity timestamp
@@ -815,6 +889,9 @@ async def websocket_feed(websocket: WebSocket):
         logger.error(f"[WS] WebSocket error for session {session_id}: {e}")
         transcript_buffer.cleanup_session(session_id)
         ta.session_manager.set_connection_status(session_id, websocket=False)
+    finally:
+        # 6. Unregister WebSocket
+        unregister_websocket(session_id)
 
 
 async def broadcast_to_observers(session_id: str, message: dict):

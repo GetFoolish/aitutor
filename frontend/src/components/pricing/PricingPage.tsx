@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '../ui/card';
 import { Button } from '../ui/button';
 import cn from 'classnames';
 import { Check, Star } from 'lucide-react';
 import { paymentAPI } from '../../lib/payment-api';
+import { authAPI } from '../../lib/auth-api';
 
 interface PricingTier {
   name: string;
@@ -20,7 +21,7 @@ const pricingTiers: PricingTier[] = [
     price: '$9.99',
     description: 'Perfect for getting started',
     features: [
-      '10 hours of tutoring per month',
+      '5 hours of tutoring',
       'Basic question bank access',
       'Email support',
       'Progress tracking'
@@ -32,7 +33,7 @@ const pricingTiers: PricingTier[] = [
     price: '$19.99',
     description: 'Most popular choice',
     features: [
-      '30 hours of tutoring per month',
+      '20 hours of tutoring',
       'Full question bank access',
       'Priority email support',
       'Advanced progress tracking',
@@ -47,7 +48,7 @@ const pricingTiers: PricingTier[] = [
     price: '$39.99',
     description: 'For serious learners',
     features: [
-      'Unlimited tutoring hours',
+      '50 hours of tutoring',
       'Full question bank access',
       '24/7 priority support',
       'Advanced progress tracking',
@@ -63,6 +64,24 @@ const pricingTiers: PricingTier[] = [
 const PricingPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [accountInfo, setAccountInfo] = useState<any>(null);
+  const [loadingAccount, setLoadingAccount] = useState(true);
+
+  useEffect(() => {
+    const fetchAccountInfo = async () => {
+      try {
+        setLoadingAccount(true);
+        const info = await authAPI.getAccountInfo();
+        setAccountInfo(info);
+      } catch (err) {
+        console.error('Failed to fetch account info:', err);
+      } finally {
+        setLoadingAccount(false);
+      }
+    };
+
+    fetchAccountInfo();
+  }, []);
 
   const handleSelectPlan = async (tierName: string) => {
     try {
@@ -86,9 +105,27 @@ const PricingPage: React.FC = () => {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create checkout session';
       setError(errorMessage);
       console.error('Checkout error:', err);
+      
+      // Show alert for better UX when user already has subscription
+      if (errorMessage.includes('already have an active')) {
+        alert(`${errorMessage}\n\nPlease visit your Account page to manage your subscription.`);
+      }
     } finally {
       setIsLoading(null);
     }
+  };
+
+  // Helper to check if this is user's current plan
+  const isCurrentPlan = (tierName: string): boolean => {
+    if (!accountInfo?.subscription_plan) return false;
+    
+    const planMap: { [key: string]: string } = {
+      'starter': 'Starter',
+      'pro': 'Pro',
+      'premium': 'Premium'
+    };
+    
+    return planMap[accountInfo.subscription_plan.toLowerCase()] === tierName;
   };
 
   return (
@@ -127,6 +164,17 @@ const PricingPage: React.FC = () => {
                 )}>
                   <Star className="w-3 h-3 fill-black" />
                   MOST POPULAR
+                </div>
+              )}
+
+              {!tier.isPopular && isCurrentPlan(tier.name) && (
+                <div className={cn(
+                  "absolute -top-4 left-1/2 transform -translate-x-1/2",
+                  "px-4 py-1 border-[2px] border-black dark:border-white",
+                  "bg-[#6EE7B7] text-black font-black text-xs uppercase tracking-wide",
+                  "flex items-center gap-1"
+                )}>
+                  ✓ ACTIVE SUBSCRIPTION
                 </div>
               )}
 
@@ -178,19 +226,26 @@ const PricingPage: React.FC = () => {
               <CardFooter>
                 <Button
                   onClick={() => handleSelectPlan(tier.name)}
-                  disabled={isLoading !== null}
+                  disabled={isLoading !== null || isCurrentPlan(tier.name) || loadingAccount}
                   className={cn(
                     "w-full py-3 font-black text-black transition-all transform",
                     "border-[2px] border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)]",
                     "active:translate-x-1 active:translate-y-1 active:shadow-none",
                     "uppercase",
-                    isLoading === tier.name && "opacity-50 cursor-not-allowed",
+                    (isLoading === tier.name || loadingAccount) && "opacity-50 cursor-not-allowed",
+                    isCurrentPlan(tier.name) && "opacity-75 cursor-not-allowed",
                     tier.isPopular
                       ? "bg-[#C4B5FD] hover:bg-[#C4B5FD]"
                       : "bg-[#FFD93D] hover:bg-[#FFD93D]"
                   )}
                 >
-                  {isLoading === tier.name ? 'Processing...' : tier.buttonText}
+                  {loadingAccount 
+                    ? 'Loading...' 
+                    : isLoading === tier.name 
+                      ? 'Processing...' 
+                      : isCurrentPlan(tier.name)
+                        ? '✓ Current Plan'
+                        : tier.buttonText}
                 </Button>
               </CardFooter>
             </Card>
