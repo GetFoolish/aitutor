@@ -804,6 +804,13 @@ function FloatingControlPanel({
     }
   }, [sharedMediaOpen, updatePopoverPosition]);
 
+  // Update popover position when homework panel opens
+  useEffect(() => {
+    if (homeworkPanelOpen) {
+      updatePopoverPosition();
+    }
+  }, [homeworkPanelOpen, updatePopoverPosition]);
+
   const handleCollapse = useCallback(() => {
     setIsCollapsed(!isCollapsed);
   }, [isCollapsed]);
@@ -813,10 +820,10 @@ function FloatingControlPanel({
   }, [muted]);
 
   const handleDragEnd = useCallback(() => {
-    if (sharedMediaOpen) {
+    if (sharedMediaOpen || homeworkPanelOpen) {
       updatePopoverPosition();
     }
-  }, [sharedMediaOpen, updatePopoverPosition]);
+  }, [sharedMediaOpen, homeworkPanelOpen, updatePopoverPosition]);
 
   const panelClasses = useMemo(
     () =>
