@@ -807,6 +807,13 @@ function FloatingControlPanel({
     }
   }, [sharedMediaOpen, updatePopoverPosition]);
 
+  // Update popover position when homework panel opens
+  useEffect(() => {
+    if (homeworkPanelOpen) {
+      updatePopoverPosition();
+    }
+  }, [homeworkPanelOpen, updatePopoverPosition]);
+
   const handleCollapse = useCallback(() => {
     setIsCollapsed(!isCollapsed);
   }, [isCollapsed]);
@@ -816,10 +823,10 @@ function FloatingControlPanel({
   }, [muted]);
 
   const handleDragEnd = useCallback(() => {
-    if (sharedMediaOpen) {
+    if (sharedMediaOpen || homeworkPanelOpen) {
       updatePopoverPosition();
     }
-  }, [sharedMediaOpen, updatePopoverPosition]);
+  }, [sharedMediaOpen, homeworkPanelOpen, updatePopoverPosition]);
 
   const panelClasses = useMemo(
     () =>
@@ -1390,15 +1397,15 @@ function FloatingControlPanel({
                 className={cn(
                   "flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white text-black dark:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group",
                   homeworkPanelOpen
-                    ? "bg-[#ADFF2F]"
-                    : "bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#C4B5FD]",
+                    ? "bg-[#FFD93D]"
+                    : "bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D]",
                 )}
               >
                 <div className={cn(
                   "p-1 border-[2px] border-black dark:border-white transition-colors",
                   homeworkPanelOpen
                     ? "bg-[#FFFDF5] dark:bg-[#000000]"
-                    : "bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#C4B5FD]",
+                    : "bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#FFD93D]",
                 )}>
                   <Upload className="w-3 h-3 md:w-4 md:h-4 font-bold" />
                 </div>
@@ -1480,7 +1487,7 @@ function FloatingControlPanel({
               verticalAlign === "bottom" ? "bottom-0" : "top-0",
             )}
           >
-            <div className="flex items-center justify-between p-3 md:p-3.5 border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#ADFF2F]">
+            <div className="flex items-center justify-between p-3 md:p-3.5 border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#FFD93D]">
               <div className="flex items-center gap-2 md:gap-3">
                 <div className="p-1.5 md:p-2 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-[#000000]">
                   <Upload className="w-4 h-4 md:w-5 md:h-5 text-black dark:text-white font-bold" />
