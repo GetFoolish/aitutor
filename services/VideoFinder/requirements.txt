@@ -8,3 +8,5 @@ youtube-transcript-api>=0.6.0  # Fetch video transcripts
 
 # Optional utilities
 python-dotenv>=1.0.0  # Load environment variables from .env file
+pymongo>=4.0.0  # MongoDB driver
+langdetect>=1.0.9  # Language detection

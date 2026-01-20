@@ -1,15 +1,21 @@
-import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { apiUtils } from '../../lib/api-utils';
-import QuestionDisplay from '../question-display/QuestionDisplay';
+import { TutorProvider, useTutorContext } from '../../features/tutor';
+import AssessmentQuestion from './AssessmentQuestion';
 import AssessmentResults from './AssessmentResults';
-import { HintProvider } from '../../contexts/HintContext';
-import LearningAssetsPanel from '../learning-assets/LearningAssetsPanel';
-import { TutorProvider } from '../../features/tutor';
+import Header from '../../components/header/Header';
+import BackgroundShapes from '../background-shapes/BackgroundShapes';
 
-const FloatingControlPanel = lazy(() => import('../floating-control-panel/FloatingControlPanel'));
+/* 🔥 COPY LOGIN BG STYLES */
+import '../auth/auth.scss';
 
-const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
+const FloatingControlPanel = lazy(() =>
+  import('../../components/floating-control-panel/FloatingControlPanel')
+);
+
+const DASH_API_URL =
+  import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 
 interface Question {
   question: any;
@@ -23,6 +29,51 @@ interface Params {
   subject: string;
 }
 
+/* ----------------------------------------------------
+   Tutor question sender
+---------------------------------------------------- */
+const QuestionSender: React.FC<{ question: Question }> = ({ question }) => {
+  const { client, connected } = useTutorContext();
+
+  useEffect(() => {
+    if (!connected || !client) return;
+
+    const questionContent = question.question?.content || '';
+    const widgets = question.question?.widgets || {};
+
+    let questionText = questionContent.trim();
+
+    if (!questionText || questionText.length < 10) {
+      const widgetTexts: string[] = [];
+      Object.values(widgets).forEach((widget: any) => {
+        if (widget?.options?.choices) {
+          widget.options.choices.forEach((choice: any) => {
+            if (choice?.content) widgetTexts.push(choice.content);
+          });
+        } else if (widget?.options?.content) {
+          widgetTexts.push(widget.options.content);
+        }
+      });
+      if (widgetTexts.length > 0) {
+        questionText = widgetTexts.join(' ');
+      }
+    }
+
+    if (questionText) {
+      try {
+        client.send({ text: `New assessment question:\n\n${questionText}` });
+      } catch (err) {
+        console.warn('Failed to send question to tutor:', err);
+      }
+    }
+  }, [question, client, connected]);
+
+  return null;
+};
+
+/* ----------------------------------------------------
+   Main component
+---------------------------------------------------- */
 const AssessmentFlow: React.FC = () => {
   const history = useHistory();
   const { subject } = useParams<Params>();
@@ -36,18 +87,13 @@ const AssessmentFlow: React.FC = () => {
   const [total, setTotal] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [awaitingNext, setAwaitingNext] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [currentQuestionId, setCurrentQuestionId] = useState<string | null>(null);
-  const [watchedVideoIds, setWatchedVideoIds] = useState<string[]>([]);
-  
-  // Floating control panel state
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const processedEdgesRef = useRef<ImageData | null>(null);
-  const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
-  const [mixerStream, setMixerStream] = useState<MediaStream | null>(null);
-  const [isScratchpadOpen, setScratchpadOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const mediaMixerCanvasRef = React.useRef<HTMLCanvasElement>(null);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+  const processedEdgesRef = React.useRef<ImageData | null>(null);
+
+  const [isScratchpadOpen, setIsScratchpadOpen] = useState(false);
   const [cameraEnabled, setCameraEnabled] = useState(false);
   const [screenEnabled, setScreenEnabled] = useState(false);
   const [privacyMode, setPrivacyMode] = useState(false);
@@ -58,16 +104,16 @@ const AssessmentFlow: React.FC = () => {
 
   const startAssessment = async () => {
     try {
-      const response = await apiUtils.post(`${DASH_API_URL}/assessment/start/${subject}`, {});
-      
-      if (!response.ok) {
-        throw new Error(`Failed to start assessment: ${response.status}`);
-      }
+      const response = await apiUtils.post(
+        `${DASH_API_URL}/assessment/start/${subject}`,
+        {}
+      );
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
       const data = await response.json();
 
       if (data.error) {
-        // Already completed
         setCompleted(true);
         setScore(data.score);
         setTotal(data.total || 0);
@@ -78,277 +124,213 @@ const AssessmentFlow: React.FC = () => {
       setQuestions(data.questions);
       setTotal(data.total);
       setLoading(false);
-    } catch (error) {
-      console.error('Failed to start assessment:', error);
-      history.push('/app');
+    } catch (err) {
+      console.error(err);
+      history.replace('/app');
     }
   };
 
-  const handleAnswer = (questionId: string, isCorrect: boolean) => {
-    const currentQuestion = questions[currentIndex];
-    const newAnswer = {
-      question_id: questionId,
-      skill_id: currentQuestion.dash_metadata.skill_ids[0],
-      is_correct: isCorrect
-    };
+  const handleAnswer = (isCorrect: boolean) => {
+    const q = questions[currentIndex];
 
-    const newAnswers = [...answers, newAnswer];
-    setAnswers(newAnswers);
-    setAwaitingNext(true);
-    
-    // Reset watched videos
-    setWatchedVideoIds([]);
+    const updated = [
+      ...answers,
+      {
+        question_id: q.dash_metadata.dash_question_id,
+        skill_id: q.dash_metadata.skill_ids[0],
+        is_correct: isCorrect,
+      },
+    ];
 
-    if (currentIndex < questions.length - 1) {
-      // Wait 2 seconds to show feedback before moving to next question
-      setTimeout(() => {
-        setCurrentIndex(currentIndex + 1);
-        setAwaitingNext(false);
-      }, 2000);
-    } else {
-      // Assessment complete - submit all answers after showing final feedback
-      setTimeout(() => {
-        submitAssessment(newAnswers);
-      }, 2000);
-    }
+    setAnswers(updated);
+
+    setTimeout(() => {
+      if (currentIndex < questions.length - 1) {
+        setCurrentIndex((i) => i + 1);
+      } else {
+        submitAssessment(updated);
+      }
+    }, 1500);
   };
-  
-  // Update currentQuestionId when question changes
-  useEffect(() => {
-    if (questions[currentIndex]?.dash_metadata?.dash_question_id) {
-      setCurrentQuestionId(questions[currentIndex].dash_metadata.dash_question_id);
-    }
-  }, [currentIndex, questions]);
 
   const submitAssessment = async (finalAnswers: any[]) => {
     try {
       setSubmitting(true);
-      setError(null);
 
-      const response = await apiUtils.post(`${DASH_API_URL}/assessment/complete`, {
-        subject,
-        answers: finalAnswers
-      });
+      const response = await apiUtils.post(
+        `${DASH_API_URL}/assessment/complete`,
+        { subject, answers: finalAnswers }
+      );
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || `Failed to complete assessment: ${response.status}`);
-      }
+      if (!response.ok) throw new Error('Submit failed');
 
       const data = await response.json();
       setScore(data.score);
       setTotal(data.total);
       setCompleted(true);
+      
+      // Note: Tutor disconnect will be handled by AssessmentResults component
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to complete assessment';
-      console.error('Failed to complete assessment:', err);
-      setError(errorMessage);
+      setError('Failed to submit assessment');
       setSubmitting(false);
-      // Don't redirect immediately - show error to user
     }
   };
 
-  if (loading) {
-    return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        fontSize: '18px',
-        backgroundColor: 'var(--neo-bg)',
-        color: 'var(--neo-black)',
-        fontWeight: 700,
-        textTransform: 'uppercase',
-        letterSpacing: '0.05em'
-      }}>
-        <div style={{
-          padding: '24px 32px',
-          border: '5px solid var(--neo-black)',
-          backgroundColor: 'var(--neo-yellow)',
-          boxShadow: '3px 3px 0 var(--neo-black)'
-        }}>
-          Loading Assessment...
-        </div>
-      </div>
-    );
-  }
+  /* ----------------------------------------------------
+     Render
+  ---------------------------------------------------- */
+  return (
+    <div className="auth-container">
+      <BackgroundShapes />
 
-  if (completed) {
-    return (
-      <AssessmentResults
-        score={score}
-        total={total}
-        subject={subject}
-        onContinue={() => history.replace('/app')}
+      <Header 
+        sidebarOpen={sidebarOpen}
+        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
       />
-    );
-  }
 
-  if (error) {
-    return (
-      <div style={{
-        padding: '40px 20px',
-        backgroundColor: 'var(--neo-bg)',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <div style={{
-          maxWidth: '600px',
-          border: '5px solid var(--neo-black)',
-          backgroundColor: '#FFEBEE',
-          padding: '32px',
-          boxShadow: '3px 3px 0 var(--neo-black)'
-        }}>
-          <h2 style={{
-            color: '#C62828',
-            fontSize: '24px',
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            marginBottom: '16px',
-            marginTop: 0
-          }}>
-            Assessment Error
-          </h2>
-          <p style={{
-            color: '#C62828',
-            fontSize: '16px',
-            fontWeight: 600,
+      {loading && (
+        <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center' }}>
+          Loading…
+        </div>
+      )}
+
+      {completed && (
+        <AssessmentResults
+          score={score}
+          total={total}
+          subject={subject}
+          onContinue={() => history.replace('/app')}
+        />
+      )}
+
+      {error && (
+        <div style={{ padding: 40, color: 'red' }}>{error}</div>
+      )}
+
+      {!loading && !completed && !error && (
+        <div style={{ position: 'relative', minHeight: '100vh', paddingTop: '60px' }}>
+          {/* Assessment Mode Banner */}
+          <div style={{
+            position: 'sticky',
+            top: '48px',
+            zIndex: 30,
+            width: '100%',
             marginBottom: '24px'
           }}>
-            {error}
-          </p>
-          <button
-            onClick={() => history.replace('/app')}
-            style={{
-              width: '100%',
-              padding: '16px 32px',
-              fontSize: '16px',
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              backgroundColor: 'var(--neo-yellow)',
-              color: 'var(--neo-black)',
-              border: '5px solid var(--neo-black)',
-              cursor: 'pointer',
-              boxShadow: '2px 2px 0 var(--neo-black)',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseDown={(e) => {
-              (e.target as HTMLElement).style.boxShadow = '1px 1px 0 var(--neo-black)';
-              (e.target as HTMLElement).style.transform = 'translateY(2px) translateX(2px)';
-            }}
-            onMouseUp={(e) => {
-              (e.target as HTMLElement).style.boxShadow = '2px 2px 0 var(--neo-black)';
-              (e.target as HTMLElement).style.transform = 'translateY(0) translateX(0)';
-            }}
-          >
-            Return to Home
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <TutorProvider>
-      <div style={{
-        backgroundColor: 'var(--neo-bg)',
-        minHeight: '100vh',
-        paddingTop: '20px'
-      }}>
-        {submitting && (
-          <div style={{
-            position: 'fixed',
-            top: '80px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            zIndex: 1000,
-            padding: '16px 24px',
-            border: '5px solid var(--neo-black)',
-            backgroundColor: 'var(--neo-yellow)',
-            boxShadow: '3px 3px 0 var(--neo-black)',
-            textAlign: 'center',
-            fontSize: '14px',
-            fontWeight: 700,
-            color: 'var(--neo-black)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em'
-          }}>
-            Submitting Assessment...
-          </div>
-        )}
-        
-        <LearningAssetsPanel
-          questionId={currentQuestionId}
-          open={isSidebarOpen}
-          onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
-          onVideosWatched={setWatchedVideoIds}
-        />
-        
-        <div style={{
-          maxWidth: '900px',
-          margin: '0 auto',
-          padding: '0 20px',
-          marginRight: isSidebarOpen ? '260px' : '0',
-          transition: 'margin-right 0.5s cubic-bezier(0.16, 1, 0.3, 1)'
-        }}>
-          <div style={{
-            marginBottom: '20px',
-            textAlign: 'center',
-            fontSize: '18px',
-            fontWeight: 700,
-            color: 'var(--neo-black)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            border: '5px solid var(--neo-black)',
-            padding: '16px',
-            backgroundColor: 'var(--neo-yellow)',
-            boxShadow: '3px 3px 0 var(--neo-black)'
-          }}>
-            {subject} Assessment - Question {currentIndex + 1} of {questions.length}
+            <div style={{
+              border: '5px solid #000000',
+              backgroundColor: '#FF6B6B',
+              padding: '12px 24px',
+              boxShadow: '0 4px 0px 0px #000000',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '12px',
+              margin: '0 20px'
+            }}>
+              <div style={{
+                width: '12px',
+                height: '12px',
+                backgroundColor: '#FFFFFF',
+                border: '2px solid #000000',
+                borderRadius: '50%',
+                animation: 'pulse-dot 1.5s ease-in-out infinite'
+              }}></div>
+              <span style={{
+                fontSize: '16px',
+                fontWeight: 900,
+                color: '#FFFFFF',
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+                fontFamily: 'system-ui, -apple-system, sans-serif'
+              }}>
+                ASSESSMENT MODE
+              </span>
+              <div style={{
+                width: '12px',
+                height: '12px',
+                backgroundColor: '#FFFFFF',
+                border: '2px solid #000000',
+                borderRadius: '50%',
+                animation: 'pulse-dot 1.5s ease-in-out infinite'
+              }}></div>
+            </div>
           </div>
 
-          <HintProvider>
-            {questions.length > 0 && (
-              <QuestionDisplay
-                assessmentMode={true}
-                assessmentQuestions={questions}
-                currentQuestionIndex={currentIndex}
-                onAssessmentAnswer={handleAnswer}
-                watchedVideoIds={watchedVideoIds}
-                onAnswerSubmitted={() => setWatchedVideoIds([])}
+          <div style={{ padding: '0 20px 40px', maxWidth: 900, margin: '0 auto' }}>
+            {submitting && (
+              <div style={{
+                textAlign: 'center',
+                padding: '20px',
+                border: '5px solid #000000',
+                backgroundColor: '#FFD93D',
+                marginBottom: '24px',
+                boxShadow: '3px 3px 0 #000000'
+              }}>
+                <span style={{
+                  fontSize: '18px',
+                  fontWeight: 700,
+                  color: '#000000',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  Submitting Assessment...
+                </span>
+              </div>
+            )}
+
+            {questions[currentIndex] && (
+              <AssessmentQuestion
+                question={questions[currentIndex]}
+                questionNumber={currentIndex + 1}
+                totalQuestions={questions.length}
+                onAnswer={handleAnswer}
               />
             )}
-          </HintProvider>
+          </div>
+
+          <TutorProvider assessmentMode={true}>
+            {questions[currentIndex] && (
+              <QuestionSender question={questions[currentIndex]} />
+            )}
+
+            <Suspense fallback={null}>
+              <FloatingControlPanel
+                renderCanvasRef={mediaMixerCanvasRef}
+                videoRef={videoRef}
+                supportsVideo
+                onVideoStreamChange={() => {}}
+                onMixerStreamChange={() => {}}
+                enableEditingSettings
+                onPaintClick={() => setIsScratchpadOpen(!isScratchpadOpen)}
+                isPaintActive={isScratchpadOpen}
+                cameraEnabled={cameraEnabled}
+                screenEnabled={screenEnabled}
+                onToggleCamera={setCameraEnabled}
+                onToggleScreen={setScreenEnabled}
+                mediaMixerCanvasRef={mediaMixerCanvasRef}
+                privacyMode={privacyMode}
+                onTogglePrivacy={setPrivacyMode}
+                processedEdgesRef={processedEdgesRef}
+                assessmentMode={true}
+              />
+            </Suspense>
+          </TutorProvider>
         </div>
-        
-        <Suspense fallback={null}>
-          <FloatingControlPanel
-            renderCanvasRef={canvasRef}
-            videoRef={videoRef}
-            supportsVideo={true}
-            onVideoStreamChange={setVideoStream}
-            onMixerStreamChange={setMixerStream}
-            enableEditingSettings={true}
-            onPaintClick={() => setScratchpadOpen(!isScratchpadOpen)}
-            isPaintActive={isScratchpadOpen}
-            cameraEnabled={cameraEnabled}
-            screenEnabled={screenEnabled}
-            onToggleCamera={setCameraEnabled}
-            onToggleScreen={setScreenEnabled}
-            mediaMixerCanvasRef={canvasRef}
-            privacyMode={privacyMode}
-            onTogglePrivacy={setPrivacyMode}
-            processedEdgesRef={processedEdgesRef}
-          />
-        </Suspense>
-      </div>
-    </TutorProvider>
+      )}
+      <style>{`
+        @keyframes pulse-dot {
+          0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.5;
+            transform: scale(0.8);
+          }
+        }
+      `}</style>
+    </div>
   );
 };
 

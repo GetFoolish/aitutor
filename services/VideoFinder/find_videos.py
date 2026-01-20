@@ -24,10 +24,9 @@ from youtube_transcript_api._errors import TranscriptsDisabled, NoTranscriptFoun
 import time
 from dotenv import load_dotenv
 
-# Load environment variables from .env file in project root
-# Get the project root (parent of VideoFinder folder)
-project_root = Path(__file__).parent.parent
-dotenv_path = project_root / '.env'
+# Load environment variables from .env file in VideoFinder directory
+video_finder_dir = Path(__file__).parent
+dotenv_path = video_finder_dir / '.env'
 load_dotenv(dotenv_path=dotenv_path)
 
 

@@ -1,0 +1,375 @@
+================================================================================
+                    AI TUTOR CONVERSATION SIMULATOR
+                            User Guide
+================================================================================
+
+OVERVIEW
+--------
+The Conversation Simulator processes sample conversation files and integrates
+with the Teaching Assistant memory system. It simulates conversations between
+a student and AI tutor "Adam" without requiring a live LLM connection.
+
+All text is read from JSON files in Memory/Memory_Brief/sample_conversations_for_testing/
+and memory events are sent to the Teaching Assistant via HTTP API and WebSocket.
+
+The simulator connects to the TeachingAssistant API (HTTP + WebSocket) to send
+conversation events for memory testing. Each conversation file creates a new
+session, allowing you to test multi-session memory continuity.
+
+PREREQUISITES
+-------------
+1. Teaching Assistant API must be running
+    - Start api.py file separately first
+    - Command: python services/TeachingAssistant/api.py
+    - API runs on http://localhost:8002 (default)
+    - WebSocket endpoint: ws://localhost:8002/ws/feed
+    - Logs are saved to: aitutor/logs/teaching_assistant.log
+
+2. Sample conversation files must exist in:
+   services/TeachingAssistant/Memory/Memory_Brief/sample_conversations_for_testing/
+   
+3. Required files:
+   - session_1_intro.md
+   - session_2_post_test.md
+   - session_3_emotional.md
+   - session_4_deep_personal_connection.md
+   - session_5_testing_sentient_feel.md
+
+4. Environment setup:
+   - JWT_SECRET must be set in .env file (for authentication)
+   - PINECONE_API_KEY must be set (for vector storage)
+   - GEMINI_API_KEY must be set (for memory extraction)
+
+MODES
+-----
+
+Mode 1: AUTOMATIC
+-----------------
+Description: Automatically processes all conversation files sequentially.
+            - Reads both Adam and User text from JSON files
+            - Processes all turns automatically
+            - Creates a NEW SESSION for each file (important for memory testing)
+            - Waits between files (default: 60 seconds)
+            - No user interaction required
+            - All logs saved to aitutor/logs/teaching_assistant.log
+
+How It Works:
+1. For each conversation file:
+   a. Starts a new session via HTTP POST /session/start
+   b. Connects to WebSocket /ws/feed?token=<jwt_token>
+   c. Processes all turns from the file
+   d. Sends user and tutor transcripts via WebSocket
+   e. Ends the session via HTTP POST /session/end
+   f. Disconnects WebSocket
+   g. Waits before processing next file
+
+Command:
+    python services/TeachingAssistant/Simulator.py --mode automatic
+
+With options:
+    python services/TeachingAssistant/Simulator.py --mode automatic --delay 120 --user-id student_001
+
+Use Case: 
+- Testing memory system with full conversation sessions automatically
+- Testing multi-session memory continuity (each file = new session)
+- Batch processing all conversation files without intervention
+
+
+Mode 2: INTERACTIVE MIXED (Manual Mode)
+----------------------------------------
+Description: Interactive/manual mode where you control user responses.
+            - Adam's responses: Automatically read from JSON conversation files
+            - User's responses: You choose between JSON text or custom input
+            - Creates a NEW SESSION for each file (important for memory testing)
+            - Perfect for testing specific scenarios or customizing conversations
+            - All logs saved to aitutor/logs/teaching_assistant.log
+
+How It Works:
+1. For each conversation file:
+   a. Starts a new session via HTTP POST /session/start
+   b. Connects to WebSocket /ws/feed?token=<jwt_token>
+   c. For each turn:
+      - Shows Adam's response (from JSON file)
+      - Shows suggested user text (from JSON file)
+      - Prompts you for input
+   d. You can either:
+      - Press Enter (empty input) → Uses the JSON text automatically
+      - Type your own response → Uses your custom text instead
+      - Type 'quit', 'exit', or 'q' → Ends current session and stops processing
+   e. Sends your chosen user text and Adam's text via WebSocket
+   f. Process continues to next turn
+   g. After file completes, asks if you want to continue to next file
+   h. Ends session and disconnects WebSocket
+
+Command:
+    python services/TeachingAssistant/Simulator.py --mode interactive_mixed
+
+With options:
+    python services/TeachingAssistant/Simulator.py --mode interactive_mixed --user-id my_user
+
+Example Session Flow:
+    [Turn 1/39]
+    Adam > Just okay? Rough day at school?
+    JSON User > hey. uh, i'm okay i guess....
+    
+    Press Enter to use JSON text, or type your own response: 
+    [Press Enter] → Uses "hey. uh, i'm okay i guess...."
+    
+    OR
+    
+    Press Enter to use JSON text, or type your own response: I'm actually doing great!
+    [Your custom text] → Uses "I'm actually doing great!"
+    
+    OR
+    
+    Press Enter to use JSON text, or type your own response: quit
+    [Quit command] → Ends session immediately and stops processing
+
+Use Cases:
+- Testing memory system with custom user responses
+- Simulating specific conversation scenarios
+- Mixing automatic (JSON) and manual (custom) responses
+- Testing how TeachingAssistant handles unexpected inputs
+- Debugging specific conversation flows
+- Testing memory retrieval with custom queries
+
+
+COMMAND-LINE OPTIONS
+--------------------
+
+--mode {automatic,interactive_mixed}
+    Simulation mode to run
+    - automatic: Process all files automatically without user input
+    - interactive_mixed: Manual mode - choose between JSON text or custom input
+    Default: automatic
+
+--user-id USER_ID
+    User ID for the simulation
+    This determines:
+    - Which user's memory index to use in Pinecone
+    - Where memory files are saved (Memory/data/{user_id}/)
+    Default: simulator_user
+
+--delay SECONDS
+    Delay in seconds between files in automatic mode
+    Only applies to automatic mode
+    Default: 60
+
+--clean
+    Clear all existing memories (Pinecone + local) for the user before starting
+    This removes all memories from:
+    - Pinecone vector database (user-specific index)
+    - Local JSON files (Memory/data/{user_id}/memory/*.json)
+    Use this to start fresh for testing
+
+
+EXAMPLES
+--------
+
+# Run automatic mode with default settings
+python services/TeachingAssistant/Simulator.py
+
+# Run automatic mode with 2-minute delay between files
+python services/TeachingAssistant/Simulator.py --mode automatic --delay 120
+
+# Run automatic mode with custom user ID
+python services/TeachingAssistant/Simulator.py --mode automatic --user-id student_001
+
+# Run automatic mode and clear existing memories first
+python services/TeachingAssistant/Simulator.py --mode automatic --clean --user-id student_001
+
+# Run interactive mixed mode (manual mode - Enter for JSON, or type custom)
+python services/TeachingAssistant/Simulator.py --mode interactive_mixed
+
+# Run interactive mixed mode with custom user ID
+python services/TeachingAssistant/Simulator.py --mode interactive_mixed --user-id student_001
+
+# Full example with all options (automatic mode)
+python services/TeachingAssistant/Simulator.py --mode automatic --user-id test_user --delay 90
+
+# Full example with all options (interactive mode)
+python services/TeachingAssistant/Simulator.py --mode interactive_mixed --user-id test_user --clean
+
+INTERACTIVE MODE WORKFLOW:
+--------------------------
+1. Start simulator in interactive_mixed mode
+2. For each conversation file:
+   a. A new session is created automatically
+   b. For each turn, you'll see:
+      - Adam's response (from JSON file)
+      - Suggested user text (from JSON file)
+   c. Choose your action:
+      - Press Enter → Use JSON text (quick, automatic)
+      - Type custom text → Use your own response (manual control)
+      - Type 'quit', 'exit', or 'q' → End current session and stop processing
+3. After completing a file:
+   - Session ends automatically
+   - You're asked: "Continue to next file? (y/n):"
+   - Type 'y' or 'yes' to continue, anything else to stop
+
+
+MEMORY INTEGRATION
+------------------
+The simulator integrates with the Teaching Assistant memory system via HTTP API and WebSocket:
+
+1. Session Start: HTTP POST /session/start (creates session, initializes memory)
+2. User Turn: WebSocket message type="transcript", speaker="user" (triggers TA-light retrieval)
+3. Adam Turn: WebSocket message type="transcript", speaker="tutor" (completes turn for memory extraction)
+4. Session End: HTTP POST /session/end (triggers memory consolidation)
+
+IMPORTANT: Each conversation file creates a NEW SESSION
+- This allows testing multi-session memory continuity
+- Memories from previous sessions are retrieved in new sessions
+- Session boundaries are important for testing memory persistence
+
+Memory Files Created:
+- TA-light-retrieval.json: Light retrieval results (every user turn)
+- TA-deep-retrieval.json: Deep retrieval results (every 3+ minutes)
+- TA-closing-retrieval.json: Session closing summaries (updated after each batch)
+- TA-opening-retrieval.json: Opening context for next session
+- academic.json: Academic memories (saved to Pinecone + local)
+- personal.json: Personal memories (saved to Pinecone + local)
+- preference.json: Preference memories (saved to Pinecone + local)
+- context.json: Context memories (saved to Pinecone + local)
+
+Location: services/TeachingAssistant/Memory/data/{user_id}/memory/
+
+Logs Location: aitutor/logs/teaching_assistant.log
+- All memory operations are logged with detailed information
+- Look for [MEMORY_EXTRACTION], [MEMORY_RETRIEVAL], [MEMORY_STORE], [MEMORY_CONSOLIDATION] prefixes
+
+
+TROUBLESHOOTING
+---------------
+
+Problem: "Could not connect to TeachingAssistant API"
+Solution: Make sure Teaching Assistant API is running
+    1. Start API: python services/TeachingAssistant/api.py
+    2. Verify API is accessible: curl http://localhost:8002/health
+    3. Check API logs: aitutor/logs/teaching_assistant.log
+    4. Verify API is running on port 8002 (default)
+    5. If using custom port, set TEACHING_ASSISTANT_API_URL in .env
+
+Problem: "Failed to start session" or "Failed to connect WebSocket"
+Solution: Check authentication and API status
+    1. Verify JWT_SECRET is set in .env file
+    2. Check that API is running and healthy
+    3. Check API logs for authentication errors
+    4. Verify WebSocket endpoint: ws://localhost:8002/ws/feed
+
+Problem: "File not found" errors
+Solution: Verify conversation files exist in correct location
+    Expected path: services/TeachingAssistant/Memory/Memory_Brief/sample_conversations_for_testing/
+    Required files:
+    - session_1_intro.md
+    - session_2_post_test.md
+    - session_3_emotional.md
+    - session_4_deep_personal_connection.md
+    - session_5_testing_sentient_feel.md
+
+Problem: No memory files created or no memories extracted
+Solution: 
+    1. Check TeachingAssistant API is running and accessible
+    2. Verify session was started successfully (check logs)
+    3. Check aitutor/logs/teaching_assistant.log for:
+       - [MEMORY_EXTRACTION] logs (memory generation)
+       - [MEMORY_RETRIEVAL] logs (memory retrieval)
+       - [MEMORY_STORE] logs (memory saving)
+    4. Verify PINECONE_API_KEY and GEMINI_API_KEY are set
+    5. Check that transcripts are being sent (look for "📤 Sent transcript" messages)
+
+Problem: "No memories found" in retrieval logs
+Solution: This is normal for first session
+    1. First session will have 0 memories (no previous conversations)
+    2. Subsequent sessions should retrieve memories from previous sessions
+    3. Verify memories were saved in previous sessions (check memory JSON files)
+    4. Check Pinecone index exists and has data
+
+Problem: Interactive mode not responding to input
+Solution: Check terminal/console setup
+    1. Make sure you're running in a terminal that supports input
+    2. Try pressing Enter first to see if it responds
+    3. Check for any error messages in the terminal
+    4. On Windows, use PowerShell or Command Prompt (not certain IDEs)
+
+
+QUICK START
+-----------
+
+AUTOMATIC MODE:
+---------------
+1. Start Teaching Assistant API (in first terminal):
+   python services/TeachingAssistant/api.py
+   
+   Wait for: "✅ TeachingAssistant API is accessible" or check http://localhost:8002/health
+
+2. In another terminal, run simulator:
+   python services/TeachingAssistant/Simulator.py --mode automatic
+
+3. What happens:
+   - Simulator checks API health
+   - For each conversation file:
+     * Creates new session (HTTP POST /session/start)
+     * Connects WebSocket
+     * Processes all turns automatically
+     * Sends user and tutor transcripts
+     * Ends session (HTTP POST /session/end)
+     * Disconnects WebSocket
+     * Waits before next file
+
+4. Monitor progress:
+   - Terminal output shows each turn being processed
+   - Check aitutor/logs/teaching_assistant.log for detailed memory operations:
+     * [MEMORY_EXTRACTION] - How many memories extracted, by type
+     * [MEMORY_RETRIEVAL] - How many memories found, breakdown by type
+     * [MEMORY_STORE] - Memory saving operations
+     * [MEMORY_CONSOLIDATION] - Session consolidation details
+
+5. Check results:
+   - Memory files: services/TeachingAssistant/Memory/data/{user_id}/memory/
+   - Logs: aitutor/logs/teaching_assistant.log
+   - Pinecone: Check user-specific index (memory-{user_id})
+
+INTERACTIVE/MANUAL MODE:
+------------------------
+1. Start Teaching Assistant API (in first terminal):
+   python services/TeachingAssistant/api.py
+   
+   Wait for: "✅ TeachingAssistant API is accessible" or check http://localhost:8002/health
+
+2. In another terminal, run simulator:
+   python services/TeachingAssistant/Simulator.py --mode interactive_mixed
+
+3. For each conversation file:
+   a. New session is created automatically
+   b. For each turn:
+      - Adam's response is displayed (from JSON file)
+      - Suggested user text is shown (from JSON file)
+      - Prompt appears: "Press Enter to use JSON text, or type your own response:"
+      - Your options:
+        * Press Enter → Uses JSON text automatically
+        * Type custom text → Uses your custom response
+        * Type 'quit', 'exit', or 'q' → Ends session and stops
+   c. After file completes:
+      - Session ends automatically
+      - Prompt: "Continue to next file? (y/n):"
+      - Type 'y' or 'yes' to continue, anything else to stop
+
+4. Monitor progress:
+   - Terminal shows your choices and conversation flow
+   - Check aitutor/logs/teaching_assistant.log for detailed memory operations
+   - See [MEMORY_EXTRACTION], [MEMORY_RETRIEVAL], [MEMORY_STORE] logs
+
+5. Check results:
+   - Memory files: services/TeachingAssistant/Memory/data/{user_id}/memory/
+   - Logs: aitutor/logs/teaching_assistant.log
+   - Pinecone: Check user-specific index (memory-{user_id})
+
+TIPS:
+-----
+- Use --clean flag to start fresh: clears all memories before running
+- Use --user-id to test with different users
+- Each file = new session, so you can test multi-session memory continuity
+- Check logs for detailed memory operation information
+- Memory files are saved both to Pinecone (vector DB) and local JSON files
+

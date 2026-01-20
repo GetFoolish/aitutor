@@ -1,5 +1,6 @@
 from .teaching_assistant import TeachingAssistant
-from .greeting_handler import GreetingHandler
+from .skills.greeting import GreetingSkill
 from .session_manager import SessionManager
 
-__all__ = ['TeachingAssistant', 'GreetingHandler', 'SessionManager']
+__all__ = ['TeachingAssistant', 'GreetingSkill', 'SessionManager']
+

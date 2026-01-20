@@ -1,0 +1,39 @@
+{
+  "session_id": "sess_2a253c199c194c90",
+  "user_id": "user_de43ef867ee7",
+  "start_time": "2025-12-31T12:07:41.922000",
+  "end_time": "2025-12-31T17:09:43.617857",
+  "turn_count": 3,
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "[SYSTEM PROMPT FOR ADAM] You are Adam, an advanced AI Teaching Assistant. You are starting a tutoring session. Please greet the student warmly and ask how they're doing today. Make them feel welcome and excited to learn.",
+      "timestamp": 1767164861.922
+    },
+    {
+      "speaker": "tutor",
+      "text": "Hey there! Welcome to our tutoring session. How are you feeling today? Ready to dive into some math?",
+      "timestamp": 1767182879.123
+    },
+    {
+      "speaker": "user",
+      "text": "Hi Adam. Hoi.",
+      "timestamp": 1767182894.174
+    },
+    {
+      "speaker": "tutor",
+      "text": "**Initiating a Dialogue** I'm focusing on the user's readiness to learn. I've formulated a welcoming response and a simple, encouraging Socratic question to initiate our problem-solving session, aiming to ease them into the task. Hi there! I'm glad you're here. I see you have a problem on your screen about horses. What is the problem asking you to do?",
+      "timestamp": 1767182903.089
+    },
+    {
+      "speaker": "user",
+      "text": "Okay so",
+      "timestamp": 1767182904.429
+    },
+    {
+      "speaker": "tutor",
+      "text": "That's a great way to put it! So, if Mia starts with 4 horses and gets 1 more, are we",
+      "timestamp": 1767182910.763
+    }
+  ]
+}
