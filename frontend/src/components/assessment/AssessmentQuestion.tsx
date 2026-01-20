@@ -57,7 +57,7 @@ const AssessmentQuestion: React.FC<Props> = ({
   const progressPercentage = (questionNumber / totalQuestions) * 100;
 
   return (
-    <div style={{ marginTop: '0' }}>
+    <div className="framework-perseus" style={{ marginTop: '0' }}>
       {/* Enhanced Question Header with Progress */}
       <div style={{
         marginBottom: '32px',
@@ -128,15 +128,10 @@ const AssessmentQuestion: React.FC<Props> = ({
         </div>
       </div>
 
-      <div style={{
-        border: '5px solid #000000',
-        backgroundColor: '#FFFFFF',
-        color: '#000000',
-        padding: '32px',
-        boxShadow: '4px 4px 0px 0px #000000',
-        marginBottom: '32px',
-        position: 'relative'
-      }}>
+      <div 
+        id="question-content-container"
+        className="border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white p-4 md:p-5 lg:p-6 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] mb-6"
+      >
         <PerseusI18nContextProvider locale="en" strings={mockStrings}>
           <RenderStateRoot>
             <ServerItemRenderer
