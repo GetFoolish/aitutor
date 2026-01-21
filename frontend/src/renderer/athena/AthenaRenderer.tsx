@@ -195,6 +195,25 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         }
       }
 
+      // 5. Fix Question 693643a203d86cedf65fa681 (Dot Plot)
+      if (fixed.question?.content?.toLowerCase().includes("dot plot") || (fixed as any)._id === "693643a203d86cedf65fa681") {
+        console.log("[AthenaRenderer] Applying hotfix for Dot Plot question");
+        ensureClone();
+        const widgets = fixed.question.widgets;
+        for (const [wId, widget] of Object.entries(widgets)) {
+          if ((widget as any).type === "plotter") {
+            // Correct according to image: 0: 2 dots, 1: 1 dot, 2: 3 dots, 3: 2 dots
+            (widget as any).options.correct = [
+              [0, 1], [0, 2],
+              [1, 1],
+              [2, 1], [2, 2], [2, 3],
+              [3, 1], [3, 2]
+            ];
+            modified = true;
+          }
+        }
+      }
+
       if (modified) {
         console.log("[AthenaRenderer] Hotfix applied successfully.");
         return fixed;
@@ -393,6 +412,53 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
 
               return normalize(expected) === normalize(actual);
             });
+          }
+        } else if (widgetType === 'plotter' && widget.options) {
+          const options = widget.options as any;
+          const isBar = options.type === 'bar' || (Array.isArray(options.categories) && options.categories.length > 0 && options.type !== 'dotplot' && options.type !== 'pic');
+          const correctVal = options.correct;
+          const currentAnswer = userAnswer;
+
+          if (isBar) {
+            // Compare arrays of numbers
+            const expected = Array.isArray(correctVal) ? correctVal : [];
+            const actual = Array.isArray(currentAnswer) ? currentAnswer : [];
+            if (expected.length !== actual.length) {
+              correct = false;
+            } else {
+              correct = expected.every((val: any, idx: number) => Number(val) === Number(actual[idx]));
+            }
+          } else {
+            // Compare sets of points [x, y]
+            const expectedPoints = Array.isArray(correctVal) ? correctVal : [];
+            const actualPoints = Array.isArray(currentAnswer) ? currentAnswer : [];
+
+            if (options.type === 'dotplot' || options.type === 'pic') {
+              // For dotplots/pictograms, we usually care about the count of elements per X position
+              const getCounts = (pts: any[]) => {
+                const counts: Record<number, number> = {};
+                pts.forEach(p => {
+                  const x = Array.isArray(p) ? p[0] : p;
+                  counts[x] = (counts[x] || 0) + 1;
+                });
+                return counts;
+              };
+              const expectedCounts = getCounts(expectedPoints);
+              const actualCounts = getCounts(actualPoints);
+
+              const allX = new Set([...Object.keys(expectedCounts), ...Object.keys(actualCounts)]);
+              correct = Array.from(allX).every(x => expectedCounts[Number(x)] === actualCounts[Number(x)]);
+            } else {
+              // Scatter: exact [x, y] matches
+              if (expectedPoints.length !== actualPoints.length) {
+                correct = false;
+              } else {
+                const serialize = (p: any) => Array.isArray(p) ? `${p[0]},${p[1]}` : String(p);
+                const expectedSet = new Set(expectedPoints.map(serialize));
+                const actualSet = new Set(actualPoints.map(serialize));
+                correct = expectedSet.size === actualSet.size && Array.from(expectedSet).every(p => actualSet.has(p));
+              }
+            }
           }
         }
 
