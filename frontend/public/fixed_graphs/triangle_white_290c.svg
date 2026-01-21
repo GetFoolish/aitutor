@@ -1,0 +1,14 @@
+<svg viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg">
+  <!-- White Triangle for Dark Mode -->
+  <path d="M50,300 L350,300 L350,50 Z" fill="none" stroke="white" stroke-width="3" />
+  
+  <!-- Labels (guessed based on 'sin(alpha)' context) -->
+  <!-- Trying to correspond to a typical 3-4-5 or similar triangle -->
+  
+  <!-- Right angle marker -->
+  <path d="M320,300 L320,270 L350,270" fill="none" stroke="white" stroke-width="2" />
+
+  <!-- Alpha angle marker (at bottom left usually if sin(alpha) is asked) -->
+  <path d="M100,300 Q110,290 100,280" fill="none" stroke="white" stroke-width="2" opacity="0" /> 
+  <!-- I'll keep it simple: just the shape first to prove visibility -->
+</svg>

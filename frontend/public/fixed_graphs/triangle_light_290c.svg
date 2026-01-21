@@ -1,0 +1,28 @@
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Right Triangle C=(50,300), A=(50,150), B=(130,300) -->
+  <!-- Side AC (vertical) = 15 units -->
+  <!-- Side BC (horizontal) = 8 units -->
+  <!-- Side AB (hypotenuse) = 17 units -->
+  <!-- Scale: 10px per unit -->
+  
+  <path d="M50,150 L130,300 L50,300 Z" fill="none" stroke="black" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Right angle marker at C -->
+  <path d="M50,290 L60,290 L60,300" fill="none" stroke="black" stroke-width="2" />
+  
+  <!-- Labels -->
+  <text x="35" y="150" fill="black" font-family="sans-serif" font-size="16">A</text>
+  <text x="135" y="305" fill="black" font-family="sans-serif" font-size="16">B</text>
+  <text x="35" y="305" fill="black" font-family="sans-serif" font-size="16">C</text>
+  
+  <!-- Sidelengths -->
+  <text x="30" y="225" fill="black" font-family="sans-serif" font-size="14">15</text>
+  <text x="90" y="320" fill="black" font-family="sans-serif" font-size="14">8</text>
+  <text x="100" y="220" fill="black" font-family="sans-serif" font-size="14">17</text>
+
+  <!-- Alpha at A -->
+  <text x="55" y="190" fill="black" font-family="sans-serif" font-size="14">α</text>
+
+  <!-- Beta at B -->
+  <text x="110" y="295" fill="black" font-family="sans-serif" font-size="14">β</text>
+</svg>

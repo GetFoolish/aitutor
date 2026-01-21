@@ -1681,9 +1681,31 @@
 }
 
 /* Override for widgets that should NOT be centered even if they are blocks */
-.athena-widget-radio .athena-widget-content,
-.athena-widget-categorizer .athena-widget-content,
-.athena-widget-sorter .athena-widget-content,
 .athena-widget-orderer .athena-widget-content {
   align-items: flex-start;
+}
+
+/* Fix for invisible triangle in dark mode (Question 6932160533f9a4d79a00653d) */
+/* Force white lines in dark mode by inverting the black content */
+.athena-theme-dark .triangle-fix-290c,
+.athena-theme-dark .triangle-fix-290c img,
+.athena-theme-dark .triangle-fix-290c svg {
+  filter: invert(1) hue-rotate(180deg) !important;
+  background-color: transparent !important;
+}
+
+/* Ensure specific SVG elements inside are white */
+.athena-theme-dark .triangle-fix-290c svg path,
+.athena-theme-dark .triangle-fix-290c svg line,
+.athena-theme-dark .triangle-fix-290c svg rect,
+.athena-theme-dark .triangle-fix-290c svg polygon,
+.athena-theme-dark .triangle-fix-290c svg polyline {
+  stroke: #ffffff !important;
+  fill: none !important;
+}
+
+/* Ensure text labels are white */
+.athena-theme-dark .triangle-fix-290c svg text {
+  fill: #ffffff !important;
+  stroke: none !important;
 }

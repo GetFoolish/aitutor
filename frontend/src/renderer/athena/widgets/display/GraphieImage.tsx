@@ -1140,8 +1140,15 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       imgSrc = baseUrl + '.png';
       imgClass = "runner-graph-fix";
     } else if (isTriangleGraph) {
-      imgSrc = "/fixed_graphs/triangle_fix_693396fb.png";
-      imgClass = "graphie-image-triangle"; // Use standard class format
+      if (baseUrl.includes('290ce3585c9dfd9c3f285fbc1f4c1e8d6e9a2e8f')) {
+        // Retour au SVG qui fonctionnait (forme correcte)
+        imgSrc = baseUrl + '.svg';
+      } else {
+        imgSrc = "/fixed_graphs/triangle_fix_693396fb.png";
+      }
+      imgClass = "graphie-image-triangle";
+    } else if (isCurvedGraph) {
+    } else if (isCurvedGraph) {
     } else if (isCurvedGraph) {
       imgSrc = "/fixed_graphs/curved_graph_6935f1b5.png?v=fixed2";
       imgClass = "graphie-image-curved";
@@ -1152,7 +1159,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       imgSrc,
       imgClass,
       isDarkMode,
-      className: `${imgClass} ${isDarkMode ? 'force-dark' : ''}`
+      className: `${imgClass} ${isDarkMode ? 'force-dark' : ''} ${baseUrl.includes('290ce3585c9dfd9c3f285fbc1f4c1e8d6e9a2e8f') ? 'triangle-fix-290c' : ''}`
     });
 
     const graphMaxWidth = baseUrl.includes('bdf68c9d18c94a4d1512fd9328cfa9b054e4ff44') ? '600px' : '500px';
@@ -1178,7 +1185,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         <img
           src={imgSrc}
           alt={alt || "Graph showing data"}
-          className={`${imgClass} ${isDarkMode ? 'force-dark' : ''}`}
+          className={`${imgClass} ${isDarkMode ? 'force-dark' : ''} ${baseUrl.includes('290ce3585c9dfd9c3f285fbc1f4c1e8d6e9a2e8f') ? 'triangle-fix-290c' : ''}`}
           style={{
             width: '100%',
             height: 'auto',
@@ -1269,7 +1276,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
             opacity: viewMode === 'comparison' ? 0.8 : 1,
             background: 'transparent',
             // FORCE OVERRIDE for the problematic graph to ensure mix-blend-mode applies
-            ...(baseUrl.includes('69334af918bcab85650eed24') && isDarkMode ? {
+            ...((baseUrl.includes('69334af918bcab85650eed24') || baseUrl.includes('290ce3585c9dfd9c3f285fbc1f4c1e8d6e9a2e8f')) && isDarkMode ? {
               filter: 'invert(1) hue-rotate(180deg)',
               mixBlendMode: 'plus-lighter', // Try 'plus-lighter' or 'lighten' if screen fails
             } : {})
@@ -1294,7 +1301,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
           }}
         >
           <div
-            className={`graphie-svg-wrapper ${computedFilterClass}`}
+            className={`graphie-svg-wrapper ${computedFilterClass} ${baseUrl.includes('290ce3585c9dfd9c3f285fbc1f4c1e8d6e9a2e8f') ? 'triangle-fix-290c' : ''}`}
             dangerouslySetInnerHTML={{ __html: processedSvgWithLabels }}
             style={{
               display: 'block',
@@ -1303,6 +1310,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
               lineHeight: 0,
               background: 'transparent',
               opacity: viewMode === 'comparison' ? 0.8 : 1,
+              // Fix for invisible triangle in dark mode - handled via CSS class 'triangle-fix-290c' now
             }}
           />
         </div>
@@ -1319,7 +1327,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
             opacity: viewMode === 'comparison' ? 0.8 : 1,
             background: 'transparent',
             // FORCE OVERRIDE for the problematic graph
-            ...(baseUrl.includes('69334af918bcab85650eed24') && isDarkMode ? {
+            ...((baseUrl.includes('69334af918bcab85650eed24') || baseUrl.includes('290ce3585c9dfd9c3f285fbc1f4c1e8d6e9a2e8f')) && isDarkMode ? {
               filter: 'invert(1) hue-rotate(180deg)',
               mixBlendMode: 'plus-lighter',
             } : {})
