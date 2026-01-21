@@ -931,8 +931,19 @@ export const processContent = (content: string): string => {
   processed = processed.replace(/<span[^>]*class="athena-graphie-placeholder"[^>]*>[\s\S]*?<\/span>/g, (match) => addProtection(match));
 
   // Phase 8: Convert widget placeholders to HTML and protect them
+  // Pattern 1: Standard Perseus "snowman" syntax [[☃ widget-id]]
   processed = processed.replace(/\[\[☃\s+([^\]]+)\]\]/g, (_, widgetId) => {
     const html = `<span class="athena-widget-inline" data-widget-id="${widgetId.trim()}"></span>`;
+    return addProtection(html);
+  });
+
+  // Pattern 2: Explicit "Widget:" syntax [[Widget: widget-id (type)]] or [[Widget: widget-id]]
+  // This handles raw/legacy formats often found in hints or untransformed content
+  // We use a permissive regex to capture everything between "Widget:" and "]]" to be safe
+  processed = processed.replace(/\[\[Widget:\s+([^\]]+)\]\]/g, (_, rawId) => {
+    // rawId might be "plotter 2 (plotter)" -> extract "plotter 2"
+    let widgetId = rawId.split('(')[0].trim();
+    const html = `<span class="athena-widget-inline" data-widget-id="${widgetId}"></span>`;
     return addProtection(html);
   });
 

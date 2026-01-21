@@ -68,13 +68,23 @@ const HintDisplay: React.FC<HintDisplayProps> = ({ hints, viewMode = 'perseus' }
     interactionCallback: () => { },
   };
 
+  // Process content to handle legacy widget syntax [[Widget: ...]] -> [[☃ ...]]
+  const processHintContent = (content: string) => {
+    if (!content) return '';
+    // Replace [[Widget: id (type)]] with [[☃ id]]
+    return content.replace(/\[\[Widget:\s+([^\]]+)\]\]/g, (_, rawId) => {
+      const widgetId = rawId.split('(')[0].trim();
+      return `[[☃ ${widgetId}]]`;
+    });
+  };
+
   const renderPerseusHint = () => (
     <DependenciesContext.Provider value={storybookDependenciesV2}>
       <PerseusI18nContextProvider locale="en" strings={mockStrings}>
         <RenderStateRoot>
           <div className="perseus-renderer-container">
             <Renderer
-              content={currentHint.content}
+              content={processHintContent(currentHint.content)}
               widgets={currentHint.widgets || {}}
               images={currentHint.images || {}}
               apiOptions={apiOptions}
@@ -95,9 +105,16 @@ const HintDisplay: React.FC<HintDisplayProps> = ({ hints, viewMode = 'perseus' }
 
   const renderAthenaHint = () => (
     <AthenaRenderer
-      content={currentHint.content}
-      widgets={currentHint.widgets || {}}
-      images={currentHint.images || {}}
+      item={{
+        question: {
+          content: processHintContent(currentHint.content),
+          widgets: currentHint.widgets || {},
+          images: currentHint.images || {}
+        },
+        hints: [],
+        answerArea: {},
+        itemDataVersion: { major: 0, minor: 0 }
+      }}
       onAnswerChange={() => { }}
       reviewMode={true}
     />

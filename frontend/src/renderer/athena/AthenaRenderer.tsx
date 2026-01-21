@@ -78,6 +78,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
               ...fixed.question.widgets[wId].options,
               type: "bar",
               labels: ["Stegosaurus", "Raptor", "Triceratops", "T-Rex"],
+              range: [[0, 4], [0, 70]],
               maxY: 70,
               labelY: "Number in orchestra",
               labelX: "Dinosaur type",
@@ -208,6 +209,22 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
               [1, 1],
               [2, 1], [2, 2], [2, 3],
               [3, 1], [3, 2]
+            ];
+            modified = true;
+          }
+        }
+      }
+
+      // 6. Fix Question 69373f6290c1c4a17045a46e (Sum of opposites)
+      const content = fixed.question?.content || "";
+      if (content.includes("5 + (-5)") || content.includes("5+(-5)") || (fixed as any)._id === "69373f6290c1c4a17045a46e") {
+        console.log("[AthenaRenderer] Applying hotfix for Sum of Opposites question");
+        ensureClone();
+        const widgets = fixed.question.widgets;
+        for (const [wId, widget] of Object.entries(widgets)) {
+          if ((widget as any).type === "numeric-input" || wId.includes("numeric-input")) {
+            (widget as any).options.answers = [
+              { value: 0, status: "correct", maxError: 0 }
             ];
             modified = true;
           }
@@ -347,8 +364,8 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         const userAnswer = state.answers[widgetId];
         const widgetType = widget.type as any;
 
-        // Skip ungraded widgets
-        if (!widget.graded) {
+        // Skip ungraded widgets or non-interactive widgets
+        if (!widget.graded || widgetType === 'image') {
           return;
         }
 
@@ -551,7 +568,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
                   </div>
                   <HtmlWithInlineWidgets
                     html={hintContent}
-                    widgets={processedWidgets}
+                    widgets={hint.widgets || {}}
                     keyPrefix={`hint-${problemNum}-${idx}`}
                     state={state}
                     setAnswer={setAnswer}

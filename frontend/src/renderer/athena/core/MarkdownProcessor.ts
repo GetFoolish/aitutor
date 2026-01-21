@@ -114,6 +114,15 @@ export class MarkdownProcessor {
       return placeholder;
     });
 
+    // Support explicit "Widget:" syntax [[Widget: widget-id (type)]]
+    processed = processed.replace(/\[\[Widget:\s+([^\]]+)\]\]/g, (match, rawId) => {
+      const placeholder = `__WIDGET_${widgetIndex++}__`;
+      // rawId might be "plotter 2 (plotter)" -> extract "plotter 2"
+      let widgetId = rawId.split('(')[0].trim();
+      widgetPlaceholders.push({ placeholder, widgetId });
+      return placeholder;
+    });
+
     // Step 4: Process markdown
     processed = this.processMarkdownSyntax(processed);
 
