@@ -50,7 +50,157 @@ interface ContentRendererProps {
 
 const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
   function ContentRenderer(props, ref) {
-    const { item, problemNum, theme } = props;
+    const { item: originalItem, problemNum, theme } = props;
+
+    // Hardcoded fix for question 693535d4e61eddfd0c7265ad due to DB connection issues
+    const item = useMemo(() => {
+      if (!originalItem) return originalItem;
+
+      // Clone to avoid mutation if we need to fix something
+      let fixed = originalItem;
+      let modified = false;
+
+      const ensureClone = () => {
+        if (fixed === originalItem) {
+          fixed = JSON.parse(JSON.stringify(originalItem));
+        }
+      };
+
+      // 1. Fix Dino Graph Widget (Look for Stegosaurus in ANY widget)
+      const widgets = fixed.question?.widgets || {};
+      for (const [wId, widget] of Object.entries(widgets)) {
+        const options = (widget as any).options;
+        if (options && options.labels && Array.isArray(options.labels) && options.labels.includes("Stegosaurus")) {
+          ensureClone();
+          if (fixed.question?.widgets?.[wId]) {
+            console.log(`[AthenaRenderer] Fixing Dino Graph options for ${wId}`);
+            fixed.question.widgets[wId].options = {
+              ...fixed.question.widgets[wId].options,
+              type: "bar",
+              labels: ["Stegosaurus", "Raptor", "Triceratops", "T-Rex"],
+              maxY: 70,
+              labelY: "Number in orchestra",
+              labelX: "Dinosaur type",
+              snapsY: 1,
+              scaleY: 7,
+              correct: [25, 30, 15, 60]
+            };
+            modified = true;
+          }
+        }
+      }
+
+      // 2. Fix Broken Hint Widget (regex replace in content)
+      const fixContent = (text: string) => {
+        if (!text) return text;
+        if (text.includes("[[Widget: plotter 2")) {
+          ensureClone();
+          return text.replace(
+            /\[\[Widget:\s*plotter 2.*?\]\]/g,
+            "\n\n![](https://ai-tutor-backend.vercel.app/fixed_graphs/solution_693535.png)\n\n"
+          );
+        }
+        return text;
+      };
+
+      if (fixed.question?.content) {
+        const newContent = fixContent(fixed.question.content);
+        if (newContent !== fixed.question.content) {
+          fixed.question.content = newContent;
+          modified = true;
+        }
+      }
+      if (fixed.hints && Array.isArray(fixed.hints)) {
+        fixed.hints.forEach((hint: any, idx: number) => {
+          const newHintContent = fixContent(hint.content);
+          if (newHintContent !== hint.content) {
+            ensureClone();
+            fixed.hints[idx].content = newHintContent;
+            fixed.hints[idx].widgets = {};
+            modified = true;
+          }
+        });
+      }
+
+      // 3. Fix Subatomic Particle Question (Scoring)
+      if (fixed.question?.content?.includes("subatomic particle")) {
+        console.log("[AthenaRenderer] Fixing Subatomic Particle scoring");
+        ensureClone();
+
+        const content = fixed.question.content;
+        const widgets = fixed.question.widgets;
+
+        const findWidgetAfter = (keyword: string) => {
+          const parts = content.split(keyword);
+          if (parts.length < 2) return null;
+          const part = parts[1];
+          const match = part.match(/\[\[☃\s+([^\]]+)\]\]/);
+          return match ? match[1].trim() : null;
+        };
+
+        const protonWidgetId = findWidgetAfter("proton");
+        const neutronWidgetId = findWidgetAfter("neutron");
+        const electronWidgetId = findWidgetAfter("electron");
+
+        const setCorrectChoice = (wId: string | null, correctText: string) => {
+          if (wId && widgets[wId] && widgets[wId].options?.choices) {
+            const choices = widgets[wId].options.choices;
+            let updated = false;
+            const newChoices = choices.map((c: any) => {
+              if (c.content === correctText) {
+                updated = true;
+                return { ...c, correct: true };
+              }
+              return { ...c, correct: false };
+            });
+
+            if (updated) {
+              widgets[wId].options.choices = newChoices;
+              console.log(`[AthenaRenderer] Set correct choice for ${wId} to ${correctText}`);
+            }
+          }
+        };
+
+        setCorrectChoice(protonWidgetId, "1+");
+        setCorrectChoice(neutronWidgetId, "0");
+        setCorrectChoice(electronWidgetId, "1-");
+        modified = true;
+      }
+
+      // 4. Fix Polar Bear Question (Scoring)
+      if (fixed.question?.content?.includes("Polar bears")) {
+        console.log("[AthenaRenderer] Fixing Polar Bear scoring");
+        ensureClone();
+
+        const widgets = fixed.question.widgets;
+        for (const [wId, widget] of Object.entries(widgets)) {
+          if ((widget as any).type === "dropdown" || wId.includes("dropdown")) {
+            const options = (widget as any).options;
+            if (options && options.choices) {
+              let updated = false;
+              const newChoices = options.choices.map((c: any) => {
+                if (c.content === "strong") {
+                  updated = true;
+                  return { ...c, correct: true };
+                }
+                return { ...c, correct: false };
+              });
+
+              if (updated) {
+                fixed.question.widgets[wId].options.choices = newChoices;
+                modified = true;
+              }
+            }
+          }
+        }
+      }
+
+      if (modified) {
+        console.log("[AthenaRenderer] Hotfix applied successfully.");
+        return fixed;
+      }
+      return originalItem;
+    }, [originalItem]);
 
     const { state, setAnswer, dispatchEvent } = useAthena();
     const containerRef = useRef<HTMLDivElement>(null);
@@ -192,7 +342,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
         // Basic scoring logic (to be expanded in Phase 4)
         let correct = false;
 
-        if (widgetType === 'radio' && widget.options) {
+        if ((widgetType === 'radio' || widgetType === 'dropdown') && widget.options) {
           const options = widget.options as any;
           const choices = Array.isArray(options?.choices) ? options.choices : [];
           const selectedIndex = userAnswer as number;
