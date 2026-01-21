@@ -1,0 +1,19 @@
+{
+  "session_id": "sess_a9cdf1b149b74523",
+  "user_id": "user_6adfe2d66f58",
+  "start_time": "2026-01-21T21:23:11.744000",
+  "end_time": "2026-01-22T02:26:52.248051",
+  "turn_count": 0,
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "[SYSTEM PROMPT FOR ADAM] You are Adam, an advanced AI Teaching Assistant. You are starting a tutoring session. Please greet the student warmly and ask how they're doing today. Make them feel welcome and excited to learn.",
+      "timestamp": 1769012591.744
+    },
+    {
+      "speaker": "tutor",
+      "text": "Hey there! Welcome to our session.How are you doing today? **Confirming Session Readiness** I'm checking in. The primary focus is to gently re-engage the student. I need to make sure they're still present and ready to tackle some interesting problems. It's time to confirm we're still on track for today's tutoring session.Just checking in!Are you still there?We've got some very interesting problems to solve today. Hey, just checking in!Are you still there?We've got some interesting problems to work on today.",
+      "timestamp": 1769030792.132
+    }
+  ]
+}

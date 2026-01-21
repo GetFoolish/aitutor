@@ -114,7 +114,12 @@ class MongoDBManager:
     def sessions(self):
         """Get sessions collection for active tutoring session state"""
         return self._db['sessions']
-    
+
+    @property
+    def session_costs(self):
+        """Get session_costs collection for tracking API usage and costs"""
+        return self._db['session_costs']
+
     @property
     def question_attempts(self):
         """Get question_attempts collection for future-proof performance tracking"""

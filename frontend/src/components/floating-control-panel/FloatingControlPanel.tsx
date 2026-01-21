@@ -18,6 +18,16 @@ import { useTheme } from "../theme/theme-provier";
 import { feedWebSocketService } from "../../services/feed-websocket-service";
 import { instructionSSEService } from "../../services/instruction-sse-service";
 import { LiveServerContent } from '@google/genai';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../ui/alert-dialog";
 
 function extractTranscriptFromContent(content: LiveServerContent): string | null {
   const parts = content.modelTurn?.parts || [];
@@ -113,6 +123,10 @@ function FloatingControlPanel({
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [userBalance, setUserBalance] = useState<number | null>(null);
   const [checkingBalance, setCheckingBalance] = useState(false);
+  const [showNoMinutesDialog, setShowNoMinutesDialog] = useState(false);
+
+  // Compute whether user has no minutes (but don't disable button - show modal instead)
+  const hasNoMinutes = userBalance !== null && userBalance < 1;
 
   useEffect(() => {
     const checkDarkMode = () => {
@@ -502,6 +516,12 @@ function FloatingControlPanel({
   }, [connected, activeVideoStream, client, privacyMode, processedEdgesRef]);
 
   const handleConnect = useCallback(async () => {
+    // Check if user has no minutes before connecting
+    if (!connected && hasNoMinutes) {
+      setShowNoMinutesDialog(true);
+      return;
+    }
+
     if (connected) {
       try {
         flushUserTranscript();
@@ -522,43 +542,46 @@ function FloatingControlPanel({
 
         await new Promise((resolve) => setTimeout(resolve, 300));
 
-        // Skip Teaching Assistant session end call during assessment mode
-        if (!assessmentMode) {
-          const token = jwtUtils.getToken();
-          if (token) {
-            try {
-              const response = await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/session/end`, { interrupt_audio: true });
+        // Call session end for both normal and assessment mode (for minute tracking)
+        const token = jwtUtils.getToken();
+        if (token) {
+          try {
+            const response = await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/session/end`, {
+              interrupt_audio: true,
+              assessment_mode: assessmentMode
+            });
 
             if (response.ok) {
               const data = await response.json();
-              if (data.prompt && client.status === 'connected') {
+              // Only play goodbye prompt in normal mode (not assessment mode)
+              if (data.prompt && client.status === 'connected' && !assessmentMode) {
                 const goodbyeTurnComplete = { current: false };
                 const goodbyeAudioReceived = { current: false };
                 let lastAudioTime = 0;
-                
+
                 const onAudio = () => {
                   goodbyeAudioReceived.current = true;
                   lastAudioTime = Date.now();
                 };
-                
+
                 const onTurnComplete = () => {
                   if (goodbyeAudioReceived.current) {
                     goodbyeTurnComplete.current = true;
                   }
                 };
-                
+
                 client.on('audio', onAudio);
                 client.on('turncomplete', onTurnComplete);
-                
+
                 client.send({ text: data.prompt }, true);
-                
+
                 const maxWaitTime = 30000;
                 const startTime = Date.now();
                 const audioSilenceTimeout = 5000;
-                
+
                 while (!goodbyeTurnComplete.current && (Date.now() - startTime) < maxWaitTime) {
                   await new Promise((resolve) => setTimeout(resolve, 100));
-                  
+
                   if (goodbyeAudioReceived.current && lastAudioTime > 0) {
                     const timeSinceLastAudio = Date.now() - lastAudioTime;
                     if (timeSinceLastAudio > audioSilenceTimeout && goodbyeTurnComplete.current) {
@@ -566,25 +589,22 @@ function FloatingControlPanel({
                     }
                   }
                 }
-                
+
                 if (goodbyeAudioReceived.current) {
                   await new Promise((resolve) => setTimeout(resolve, 1500));
                 }
-                
+
                 client.off('audio', onAudio);
                 client.off('turncomplete', onTurnComplete);
               }
             }
-            } catch (taError: any) {
-              if (taError.message?.includes('Failed to fetch') || taError.message?.includes('ERR_CONNECTION_REFUSED')) {
-                console.warn('TeachingAssistant service is not available during disconnect - continuing');
-              } else {
-                console.error('Failed to get goodbye from TeachingAssistant:', taError);
-              }
+          } catch (taError: any) {
+            if (taError.message?.includes('Failed to fetch') || taError.message?.includes('ERR_CONNECTION_REFUSED')) {
+              console.warn('TeachingAssistant service is not available during disconnect - continuing');
+            } else {
+              console.error('Failed to get goodbye from TeachingAssistant:', taError);
             }
           }
-        } else {
-          console.log('[ASSESSMENT MODE] Skipping Teaching Assistant session end - assessment mode active');
         }
       } catch (error) {
         console.error('Error during disconnect:', error);
@@ -659,14 +679,7 @@ function FloatingControlPanel({
         await waitForConnection();
         await waitForSetupComplete();
         await new Promise((resolve) => setTimeout(resolve, 500));
-        
-        // Skip Teaching Assistant integration during assessment mode
-        // Assessment mode only needs Gemini connection without backend memory/context features
-        if (assessmentMode) {
-          console.log('[ASSESSMENT MODE] Skipping Teaching Assistant integration - using assessment prompt only');
-          return;
-        }
-        
+
         const token = jwtUtils.getToken();
         if (!token) {
           console.error('No authentication token for TeachingAssistant session start');
@@ -674,32 +687,41 @@ function FloatingControlPanel({
         }
 
         try {
-          const response = await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/session/start`);
+          // Call session start for both normal and assessment mode (for minute tracking)
+          const response = await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/session/start`, {
+            assessment_mode: assessmentMode
+          });
 
           if (response.ok) {
             const data = await response.json();
 
+            // Always connect WebSocket for session monitoring (credit exhaustion signals)
             try {
               await feedWebSocketService.connect();
             } catch (wsError) {
               console.warn('Failed to connect WebSocket feed service (optional):', wsError);
             }
 
-            try {
-              instructionSSEService.connect();
-            } catch (sseError) {
-              console.warn('Failed to connect SSE instruction service (optional):', sseError);
-            }
+            // Only connect SSE and play greeting in normal mode (not assessment mode)
+            if (!assessmentMode) {
+              try {
+                instructionSSEService.connect();
+              } catch (sseError) {
+                console.warn('Failed to connect SSE instruction service (optional):', sseError);
+              }
 
-            if (data.prompt && client.status === 'connected') {
-              client.send({ text: data.prompt });
+              if (data.prompt && client.status === 'connected') {
+                client.send({ text: data.prompt });
+              }
+            } else {
+              console.log('[ASSESSMENT MODE] Session started with minute tracking - WebSocket connected for monitoring');
             }
           } else if (response.status === 403) {
             // Handle insufficient minutes with user-friendly toast
             try {
               const errorData = await response.json();
               const errorMessage = errorData.detail?.message || errorData.detail || "Insufficient minutes";
-              
+
               // Show toast notification
               toast.error("⏰ Out of Minutes", {
                 description: errorMessage,
@@ -711,14 +733,14 @@ function FloatingControlPanel({
                   }
                 }
               });
-              
+
               console.warn('[SESSION] Insufficient minutes - session start blocked');
-              
+
               // Disconnect Gemini if already connected
               if (client.status === 'connected') {
                 disconnect();
               }
-              
+
               return;
             } catch (parseError) {
               console.error('Failed to parse 403 error response:', parseError);
@@ -745,13 +767,9 @@ function FloatingControlPanel({
         setupCompleteResolver = null;
       }
     }
-  }, [connected, connect, disconnect, client, interruptAudio, flushUserTranscript, flushTutorTranscript, assessmentMode]);
+  }, [connected, connect, disconnect, client, interruptAudio, flushUserTranscript, flushTutorTranscript, assessmentMode, hasNoMinutes]);
 
   const [verticalAlign, setVerticalAlign] = useState<"top" | "bottom">("top");
-
-  // Compute whether button should be disabled
-  const hasNoMinutes = userBalance !== null && userBalance < 1;
-  const isStartButtonDisabled = checkingBalance || hasNoMinutes;
 
   // Calculate initial position once without state
   const initialPosition = useMemo(() => {
@@ -1273,22 +1291,16 @@ function FloatingControlPanel({
 
             <button
               onClick={handleConnect}
-              disabled={!connected && isStartButtonDisabled}
+              disabled={!connected && checkingBalance}
               className={cn(
                 "w-full py-2.5 md:py-3 font-black transition-all transform flex items-center justify-center gap-2 mt-1 border-[2px] md:border-[3px] border-black dark:border-white uppercase text-[10px] md:text-xs",
                 connected
                   ? "bg-[#FF6B6B] hover:bg-[#FF6B6B] text-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
-                  : isStartButtonDisabled
+                  : checkingBalance
                     ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60 shadow-none"
                     : "bg-[#4ADE80] hover:bg-[#4ADE80] text-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
               )}
-              title={
-                connected 
-                  ? "End Session" 
-                  : hasNoMinutes 
-                    ? "No minutes available - Purchase a plan or return tomorrow"
-                    : "Start Session"
-              }
+              title={connected ? "End Session" : "Start Session"}
             >
               {connected ? (
                 <>
@@ -1300,11 +1312,6 @@ function FloatingControlPanel({
                   <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" />
                   Loading...
                 </>
-              ) : hasNoMinutes ? (
-                <>
-                  <Clock className="w-4 h-4 md:w-5 md:h-5" />
-                  No Minutes Left
-                </>
               ) : (
                 <>
                   <PlayCircle className="w-4 h-4 md:w-5 md:h-5" />
@@ -1312,18 +1319,6 @@ function FloatingControlPanel({
                 </>
               )}
             </button>
-
-            {/* Show message below button when no minutes */}
-            {!connected && hasNoMinutes && (
-              <div className="text-center mt-2 p-2 border-[2px] border-black dark:border-white bg-[#FFD93D] text-black text-[9px] md:text-[10px] font-black uppercase">
-                ⏰ Come back tomorrow or <button
-                  onClick={() => window.location.href = '/app/pricing'}
-                  className="underline hover:no-underline"
-                >
-                  buy a plan
-                </button>
-              </div>
-            )}
 
             {/* Bottom Actions */}
             <div className="grid grid-cols-4 gap-1.5 md:gap-2 pt-2 md:pt-3 border-t-[2px] border-black dark:border-white">
@@ -1452,6 +1447,33 @@ function FloatingControlPanel({
             </div>
           </div>
         )}
+
+        {/* No Minutes Alert Dialog */}
+        <AlertDialog open={showNoMinutesDialog} onOpenChange={setShowNoMinutesDialog}>
+          <AlertDialogContent className="border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)]">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-xl font-black text-black dark:text-white uppercase border-b-[3px] border-black dark:border-white pb-3">
+                Out of Free Minutes
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-base text-black dark:text-white pt-3 font-medium">
+                You've used your 15 free minutes today. Your free minutes reset tomorrow, or you can upgrade to continue learning right now.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="gap-2 sm:gap-3 mt-4">
+              <AlertDialogCancel className="border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] hover:text-black font-black uppercase shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none">
+                Maybe Later
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  window.location.href = '/app/pricing';
+                }}
+                className="border-[2px] border-black dark:border-white bg-[#4ADE80] text-black hover:bg-[#4ADE80] font-black uppercase shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none"
+              >
+                View Plans
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </motion.div>
   );
 }
