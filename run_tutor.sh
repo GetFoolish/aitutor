@@ -120,9 +120,14 @@ pids+=($!)
 # Note: Tutor service has been moved to frontend (frontend/src/services/tutor/)
 # The backend Tutor service (services/Tutor/) is kept for reference but not started
 
+# Extract frontend port early for FRONTEND_URL
+FRONTEND_PORT=$(grep -o '"port":[[:space:]]*[0-9]*' "$SCRIPT_DIR/frontend/vite.config.ts" 2>/dev/null | grep -o '[0-9]*' || echo "3001")
+FRONTEND_PORT=${FRONTEND_PORT:-3001}
+export FRONTEND_URL="http://localhost:$FRONTEND_PORT"
+
 # Start the Auth Service API server in the background
 echo "Starting Auth Service API server... Logs -> logs/auth_service.log"
-(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/AuthService/auth_api.py) > "$SCRIPT_DIR/logs/auth_service.log" 2>&1 &
+(cd "$SCRIPT_DIR" && FRONTEND_URL="$FRONTEND_URL" "$PYTHON_BIN" services/AuthService/auth_api.py) > "$SCRIPT_DIR/logs/auth_service.log" 2>&1 &
 pids+=($!)
 
 # Start the Homework Assistant API server in the background

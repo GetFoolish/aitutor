@@ -20,7 +20,8 @@ import cn from "classnames";
 import { Moon, Sun, User, Settings, LogOut, Terminal, BookOpen } from "lucide-react";
 import { useTheme } from "../theme/theme-provier";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -43,7 +44,14 @@ interface HeaderProps {
 
 export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
     const { theme, setTheme } = useTheme();
+    const { user, logout } = useAuth();
+    const history = useHistory();
     const [isDarkMode, setIsDarkMode] = useState(false);
+
+    const handleLogout = async () => {
+        await logout();
+        history.push('/app/login');
+    };
 
     useEffect(() => {
         const checkDarkMode = () => {
@@ -102,17 +110,18 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="relative h-7 w-7 md:h-8 md:w-8 lg:h-8 lg:w-8 p-0 border-[2px] border-black dark:border-white bg-[#FF6B6B] hover:bg-[#FF6B6B] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100">
                             <Avatar className="h-full w-full border-none">
-                                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                                <AvatarFallback className="bg-transparent text-white font-black text-xs">CN</AvatarFallback>
+                                <AvatarFallback className="bg-transparent text-white font-black text-xs">
+                                    {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U'}
+                                </AvatarFallback>
                             </Avatar>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-48 md:w-56" align="end" forceMount>
                         <DropdownMenuLabel className="font-normal">
                             <div className="flex flex-col space-y-1">
-                                <p className="text-sm font-medium leading-none">User</p>
+                                <p className="text-sm font-medium leading-none">{user?.name || 'User'}</p>
                                 <p className="text-xs leading-none text-muted-foreground">
-                                    user@example.com
+                                    {user?.email || 'user@example.com'}
                                 </p>
                             </div>
                         </DropdownMenuLabel>
@@ -130,7 +139,10 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-[#FF6B6B] focus:text-[#FF6B6B]">
+                        <DropdownMenuItem
+                            className="text-[#FF6B6B] focus:text-[#FF6B6B] cursor-pointer"
+                            onClick={handleLogout}
+                        >
                             <LogOut className="mr-2 h-4 w-4" />
                             <span>Log out</span>
                         </DropdownMenuItem>
