@@ -194,6 +194,18 @@ export function ImageWidget({
       return '/fixed_graphs/linear_graph_6936fda6.png?v=fixed1';
     }
 
+    // 4. Triangles Replacement (6935617a)
+    // Image 1: Triangles 1, 2, 3
+    if (url.includes('1bbc59f89096d3bbe13c4cc2197f9cd481b55f32')) {
+      console.log('[ImageWidget] Fixing Triangles 1-3 (6935617a)');
+      return '/fixed_graphs/question_6935617a_triangles_123.png?v=uploaded';
+    }
+    // Image 2: Triangle WXY
+    if (url.includes('1f4c504dc429c306ee1ba7fab9cb53079f8947f0')) {
+      console.log('[ImageWidget] Fixing Triangle WXY (6935617a)');
+      return '/fixed_graphs/question_6935617a_triangle_wxy.png?v=uploaded';
+    }
+
     let converted = convertImageUrl(backgroundImage.url);
 
     // Apply fallback attempts - try different extensions
@@ -320,7 +332,9 @@ export function ImageWidget({
   const isLinearGraphFixed = backgroundImage.url.includes('a73f94') || altText.includes('(1,40)');
 
   const isBrokenGraph = isCurvedGraphFixed || isLinearGraphFixed ||
-    backgroundImage.url.includes('4d5a7152eb4a9381f6727326fe960fe5c818498b');
+    backgroundImage.url.includes('4d5a7152eb4a9381f6727326fe960fe5c818498b') ||
+    backgroundImage.url.includes('1bbc59f89096d3bbe13c4cc2197f9cd481b55f32') ||
+    backgroundImage.url.includes('1f4c504dc429c306ee1ba7fab9cb53079f8947f0');
 
   const isGraphieImage = !isBrokenGraph && (
     backgroundImage.url.startsWith('web+graphie://') ||
