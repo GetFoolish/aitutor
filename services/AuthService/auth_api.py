@@ -433,22 +433,30 @@ async def get_current_user_info(request: Request):
 async def get_account_info(request: Request):
     """Get user account information including credits"""
     auth_header = request.headers.get("Authorization")
-    
+
     if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
-    
+
     token = auth_header.split(" ")[1]
     payload = verify_token(token)
-    
+
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
-    
+
     # Get user from database
     user_profile = user_manager.load_user(payload["sub"])
-    
+
     if not user_profile:
         raise HTTPException(status_code=404, detail="User not found")
-    
+
+    # ENTERPRISE SOLUTION: Allocate daily free minutes if needed (before fetching balance)
+    # This ensures the UI always shows accurate, up-to-date balance
+    from services.PaymentService.free_minutes_handler import allocate_daily_free_minutes
+    try:
+        allocate_daily_free_minutes(user_profile.user_id)
+    except Exception as e:
+        logger.warning(f"[ACCOUNT_INFO] Failed to allocate daily minutes: {e}")
+
     # Get full user data from MongoDB
     from managers.mongodb_manager import mongo_db
     user_data = mongo_db.users.find_one({"user_id": user_profile.user_id})
@@ -502,6 +510,41 @@ async def get_account_info(request: Request):
         if "last_reset_date" not in free_minutes:
             free_minutes["last_reset_date"] = None
 
+    # Calculate hours and minutes until next reset (for better UX)
+    next_reset_in_hours = None
+    next_reset_in_minutes = None
+    last_reset_date = free_minutes.get("last_reset_date")
+    if last_reset_date:
+        try:
+            if isinstance(last_reset_date, str):
+                last_reset_dt = datetime.fromisoformat(last_reset_date)
+            elif isinstance(last_reset_date, datetime):
+                last_reset_dt = last_reset_date
+            else:
+                last_reset_dt = None
+
+            if last_reset_dt:
+                # Calculate hours and minutes until next midnight (UTC)
+                from datetime import timedelta
+                today = datetime.now().date()
+                last_reset_day = last_reset_dt.date()
+
+                # If last reset was today, calculate hours and minutes until tomorrow midnight
+                if last_reset_day == today:
+                    tomorrow_midnight = datetime.combine(today + timedelta(days=1), datetime.min.time())
+                    time_until_reset = tomorrow_midnight - datetime.now()
+                    total_seconds = time_until_reset.total_seconds()
+                    next_reset_in_hours = int(total_seconds // 3600)
+                    next_reset_in_minutes = int((total_seconds % 3600) // 60)
+                else:
+                    # If last reset was before today, reset is available now (0 hours, 0 minutes)
+                    next_reset_in_hours = 0
+                    next_reset_in_minutes = 0
+        except Exception as e:
+            logger.warning(f"[ACCOUNT_INFO] Failed to calculate next reset time: {e}")
+            next_reset_in_hours = None
+            next_reset_in_minutes = None
+
     return {
         "user_id": user_profile.user_id,
         "email": email,
@@ -512,7 +555,11 @@ async def get_account_info(request: Request):
         "preferred_language": preferred_language,
         "user_type": user_type,
         "credits": credits,
-        "free_minutes": free_minutes,
+        "free_minutes": {
+            **free_minutes,
+            "next_reset_in_hours": next_reset_in_hours,
+            "next_reset_in_minutes": next_reset_in_minutes
+        },
         "subscription_plan": subscription_plan
     }
 

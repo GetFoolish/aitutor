@@ -124,6 +124,8 @@ function FloatingControlPanel({
   const [userBalance, setUserBalance] = useState<number | null>(null);
   const [checkingBalance, setCheckingBalance] = useState(false);
   const [showNoMinutesDialog, setShowNoMinutesDialog] = useState(false);
+  const [nextResetInHours, setNextResetInHours] = useState<number | null>(null);
+  const [nextResetInMinutes, setNextResetInMinutes] = useState<number | null>(null);
 
   // Compute whether user has no minutes (but don't disable button - show modal instead)
   const hasNoMinutes = userBalance !== null && userBalance < 1;
@@ -165,6 +167,12 @@ function FloatingControlPanel({
           const data = await response.json();
           const totalBalance = (data.credits?.balance || 0) + (data.free_minutes?.balance || 0);
           setUserBalance(totalBalance);
+
+          // Extract reset time metadata for better UX
+          const resetHours = data.free_minutes?.next_reset_in_hours;
+          const resetMinutes = data.free_minutes?.next_reset_in_minutes;
+          setNextResetInHours(resetHours !== undefined && resetHours !== null ? resetHours : null);
+          setNextResetInMinutes(resetMinutes !== undefined && resetMinutes !== null ? resetMinutes : null);
         }
       } catch (error) {
         console.error('Failed to check balance:', error);
@@ -432,6 +440,12 @@ function FloatingControlPanel({
                 const data = await response.json();
                 const totalBalance = (data.credits?.balance || 0) + (data.free_minutes?.balance || 0);
                 setUserBalance(totalBalance);
+
+                // Extract reset time metadata
+                const resetHours = data.free_minutes?.next_reset_in_hours;
+                const resetMinutes = data.free_minutes?.next_reset_in_minutes;
+                setNextResetInHours(resetHours !== undefined && resetHours !== null ? resetHours : null);
+                setNextResetInMinutes(resetMinutes !== undefined && resetMinutes !== null ? resetMinutes : null);
               }
             } catch (e) {
               console.error('Failed to refresh balance:', e);
@@ -620,6 +634,12 @@ function FloatingControlPanel({
             const data = await response.json();
             const totalBalance = (data.credits?.balance || 0) + (data.free_minutes?.balance || 0);
             setUserBalance(totalBalance);
+
+            // Extract reset time metadata
+            const resetHours = data.free_minutes?.next_reset_in_hours;
+            const resetMinutes = data.free_minutes?.next_reset_in_minutes;
+            setNextResetInHours(resetHours !== undefined && resetHours !== null ? resetHours : null);
+            setNextResetInMinutes(resetMinutes !== undefined && resetMinutes !== null ? resetMinutes : null);
           }
         } catch (e) {
           console.error('Failed to refresh balance:', e);
@@ -1456,7 +1476,26 @@ function FloatingControlPanel({
                 Out of Free Minutes
               </AlertDialogTitle>
               <AlertDialogDescription className="text-base text-black dark:text-white pt-3 font-medium">
-                You've used your 15 free minutes today. Your free minutes reset tomorrow, or you can upgrade to continue learning right now.
+                {nextResetInHours !== null && nextResetInMinutes !== null && (nextResetInHours > 0 || nextResetInMinutes > 0) ? (
+                  <>
+                    You've used your 15 free minutes today. Your free minutes reset in{' '}
+                    <span className="font-black">
+                      {nextResetInHours > 0 && `${nextResetInHours} hour${nextResetInHours !== 1 ? 's' : ''}`}
+                      {nextResetInHours > 0 && nextResetInMinutes > 0 && ' '}
+                      {nextResetInMinutes > 0 && `${nextResetInMinutes} minute${nextResetInMinutes !== 1 ? 's' : ''}`}
+                    </span>
+                    , or you can upgrade to continue learning right now.
+                  </>
+                ) : nextResetInHours === 0 && nextResetInMinutes === 0 ? (
+                  <>
+                    You've used your 15 free minutes. Your free minutes are available now!{' '}
+                    <span className="font-black">Please refresh the page to get your new minutes.</span>
+                  </>
+                ) : (
+                  <>
+                    You've used your 15 free minutes today. Your free minutes reset tomorrow, or you can upgrade to continue learning right now.
+                  </>
+                )}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter className="gap-2 sm:gap-3 mt-4">
