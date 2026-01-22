@@ -21,10 +21,11 @@ const TutorContext = createContext<UseTutorResults | undefined>(undefined);
 
 export type TutorProviderProps = {
   children: ReactNode;
+  assessmentMode?: boolean;
 };
 
-export const TutorProvider: FC<TutorProviderProps> = ({ children }) => {
-  const tutor = useTutor();
+export const TutorProvider: FC<TutorProviderProps> = ({ children, assessmentMode }) => {
+  const tutor = useTutor(assessmentMode);
 
   return (
     <TutorContext.Provider value={tutor}>
@@ -39,6 +40,14 @@ export const useTutorContext = () => {
     throw new Error("useTutorContext must be used within a TutorProvider");
   }
   return context;
+};
+
+/**
+ * Optional tutor context hook.
+ * Returns undefined when not wrapped in TutorProvider (useful for pages where tutor is not mounted).
+ */
+export const useOptionalTutorContext = () => {
+  return useContext(TutorContext);
 };
 
 // Export aliases for backward compatibility during migration

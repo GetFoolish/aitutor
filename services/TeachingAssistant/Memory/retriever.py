@@ -379,6 +379,7 @@ Return JSON:
                     injected_ids.add(mem_id)
 
         if not memories_to_inject:
+            logger.info("[REFLECTION LAYER] FALSE - No new memories available for injection")
             return None
 
         # Get conversation context

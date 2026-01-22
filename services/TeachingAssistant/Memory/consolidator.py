@@ -16,6 +16,15 @@ from .vector_store import MemoryStore
 from .extractor import MemoryExtractor
 from ..core.decorators import with_retry, with_circuit_breaker, CircuitBreaker
 from ..core.exceptions import LLMGenerationError
+from services.TeachingAssistant.prompts import (
+    get_closing_artifacts_generation_prompt,
+    get_goodbye_message_generation_prompt,
+    get_next_session_hooks_enhancement_prompt,
+    get_next_session_hooks_from_moments_prompt,
+    get_personal_relevance_generation_prompt,
+    get_welcome_hook_generation_prompt,
+    get_suggested_opener_generation_prompt
+)
 
 logger = get_logger(__name__)
 
@@ -305,25 +314,13 @@ class SessionClosingCache:
         """Helper to make the actual LLM call, protected by decorators."""
         from google import genai
         
-        prompt = f"""Analyze this session data and generate closing artifacts.
-
-Data:
-- Topics: {topics}
-- Key Moments: {moments}
-- Emotional Journey: {emotions} (Ending: {current_emotion})
-- Unfinished Topics: {unfinished_str}
-
-Generate a JSON object with these 3 keys:
-1. "summary": 1-2 conc sentences on what was learned and how they felt.
-2. "goodbye": A warm, natural, personal goodbye message (1-2 sentences) acknowledging their emotion.
-3. "hooks": Array of 2-3 specific, actionable next session limits/topics based on unfinished items or key moments.
-
-Return ONLY valid JSON:
-{{
-  "summary": "...",
-  "goodbye": "...",
-  "hooks": ["...", "..."]
-}}"""
+        prompt = get_closing_artifacts_generation_prompt(
+            topics=topics,
+            moments=moments,
+            emotions=emotions,
+            current_emotion=current_emotion,
+            unfinished_str=unfinished_str
+        )
 
         def _call_gemini():
             client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
@@ -331,6 +328,14 @@ Return ONLY valid JSON:
                 model="gemini-2.0-flash-lite",
                 contents=prompt
             )
+            
+            # Track token usage for cost calculation
+            try:
+                from services.TeachingAssistant.token_tracker import extract_and_track_tokens
+                extract_and_track_tokens(response, self.session_id, "closing_artifacts_generation")
+            except Exception as track_error:
+                logger.info(f"Token tracking failed (non-critical): {track_error}")
+            
             text = response.text.strip()
             if text.startswith("```json"):
                 text = text[7:]
@@ -350,18 +355,7 @@ Return ONLY valid JSON:
         moments = ', '.join(self.cache["key_moments"][-3:]) if self.cache["key_moments"] else "None"
         topics = ', '.join(self.cache["topics_covered"]) if self.cache["topics_covered"] else "general topics"
         
-        prompt = f"""Generate a warm, natural goodbye message for a tutoring session.
-
-Current emotional state: {current_emotion}
-Key moments: {moments}
-Topics covered: {topics}
-
-Create a brief (1-2 sentences) goodbye that:
-- Acknowledges their emotional state
-- Encourages them appropriately
-- Feels genuine and personal
-
-Return ONLY the goodbye message, nothing else."""
+        prompt = get_goodbye_message_generation_prompt(current_emotion, moments, topics)
         
         try:
             client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
@@ -369,6 +363,14 @@ Return ONLY the goodbye message, nothing else."""
                 model="gemini-2.0-flash-lite",
                 contents=prompt
             )
+            
+            # Track token usage for cost calculation
+            try:
+                from services.TeachingAssistant.token_tracker import extract_and_track_tokens
+                extract_and_track_tokens(response, self.session_id, "goodbye_generation")
+            except Exception as track_error:
+                logger.info(f"Token tracking failed (non-critical): {track_error}")
+            
             return response.text.strip()
         except Exception as e:
             logger.error(f"❌ Error generating goodbye_message: {e}")
@@ -387,22 +389,25 @@ Return ONLY the goodbye message, nothing else."""
             # Enhance with LLM if needed for better phrasing
             if len(hooks) < 3 and moments:
                 summary = self.cache.get("session_summary", "")
-                prompt = f"""Based on unfinished topics and key moments, suggest 1-2 additional specific continuation topics.
-
-Unfinished topics: {', '.join(unfinished)}
-Key moments: {', '.join(moments[-3:]) if moments else 'None'}
-Session summary: {summary if summary else 'Session in progress'}
-
-Return as JSON array of strings. Each should be specific and actionable.
-Example: ["Continue practicing completing the square", "Explore how discriminant relates to graph shape"]
-
-Return ONLY the JSON array, nothing else."""
+                prompt = get_next_session_hooks_enhancement_prompt(
+                    unfinished_topics=', '.join(unfinished),
+                    key_moments=', '.join(moments[-3:]) if moments else 'None',
+                    session_summary=summary if summary else 'Session in progress'
+                )
                 try:
                     client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
                     response = client.models.generate_content(
                         model="gemini-2.0-flash-lite",
                         contents=prompt
                     )
+                    
+                    # Track token usage for cost calculation
+                    try:
+                        from services.TeachingAssistant.token_tracker import extract_and_track_tokens
+                        extract_and_track_tokens(response, self.session_id, "hooks_enhancement")
+                    except Exception as track_error:
+                        logger.info(f"Token tracking failed (non-critical): {track_error}")
+                    
                     text = response.text.strip()
                     if text.startswith("```json"):
                         text = text[7:]
@@ -419,22 +424,25 @@ Return ONLY the JSON array, nothing else."""
         if moments:
             summary = self.cache.get("session_summary", "")
             topics = ', '.join(self.cache.get("topics_covered", [])) or "general topics"
-            prompt = f"""Based on key moments from this session, suggest 2-3 specific continuation topics.
-
-Key moments: {', '.join(moments)}
-Session summary: {summary if summary else 'Session in progress'}
-Topics covered: {topics}
-
-Return as JSON array of strings. Each should be specific and actionable.
-Example: ["Continue practicing completing the square", "Explore how discriminant relates to graph shape"]
-
-Return ONLY the JSON array, nothing else."""
+            prompt = get_next_session_hooks_from_moments_prompt(
+                key_moments=', '.join(moments),
+                session_summary=summary if summary else 'Session in progress',
+                topics_covered=topics
+            )
             try:
                 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
                 response = client.models.generate_content(
                     model="gemini-2.0-flash-lite",
                     contents=prompt
                 )
+                
+                # Track token usage for cost calculation
+                try:
+                    from services.TeachingAssistant.token_tracker import extract_and_track_tokens
+                    extract_and_track_tokens(response, self.session_id, "hooks_from_moments")
+                except Exception as track_error:
+                    logger.info(f"Token tracking failed (non-critical): {track_error}")
+                
                 text = response.text.strip()
                 if text.startswith("```json"):
                     text = text[7:]
@@ -512,6 +520,16 @@ class MemoryConsolidator:
         # It also creates the hook for the next session.
         asyncio.create_task(self._generate_and_save_opening_background(user_id, closing_cache))
         
+        # Recalculate session costs now that memory consolidation LLM calls are complete
+        # This ensures TA token usage from memory extraction and closing generation are included
+        try:
+            from services.CostTracking.cost_tracker import CostTracker
+            cost_tracker = CostTracker(session_id, user_id)
+            cost_tracker.end_session()
+            logger.info(f"[COST_TRACKING] Recalculated costs after memory consolidation for session {session_id[:8]}...")
+        except Exception as cost_error:
+            logger.error(f"[COST_TRACKING] Failed to recalculate costs after consolidation: {cost_error}", exc_info=True)
+        
         logger.info("[MEMORY_CONSOLIDATION] Session consolidation complete for %s (Opening context generation running in background)", session_id)
 
     async def _generate_and_save_opening_background(self, user_id: str, closing_cache: SessionClosingCache):
@@ -524,6 +542,17 @@ class MemoryConsolidator:
             opening_context = await self._generate_opening_context_async(user_id, closing_cache)
             await asyncio.to_thread(self._save_opening, user_id, opening_context)
             logger.info("Background opening context generation complete for user %s", user_id)
+            
+            # Final cost recalculation after all opening context LLM calls complete
+            # This captures the opening generation tokens (personal_relevance, welcome_hook, suggested_opener)
+            try:
+                session_id = closing_cache.session_id
+                from services.CostTracking.cost_tracker import CostTracker
+                cost_tracker = CostTracker(session_id, user_id)
+                cost_tracker.end_session()
+                logger.info(f"[COST_TRACKING] Final cost recalculation after opening generation for session {session_id[:8]}...")
+            except Exception as cost_error:
+                logger.error(f"[COST_TRACKING] Failed to recalculate costs after opening generation: {cost_error}", exc_info=True)
         except Exception as e:
             logger.error(f"Error in background opening context generation: {e}", exc_info=True)
 
@@ -532,9 +561,9 @@ class MemoryConsolidator:
         logger.info("Generating opening context (async)")
         # We can implement a similar _generate_opening_context_call protected method 
         # or just wrap the existing logic in to_thread here for simplicity in this step.
-        return await asyncio.to_thread(self._generate_opening_context, user_id, closing_cache)
+        return await asyncio.to_thread(self._generate_opening_context, user_id, closing_cache, closing_cache.session_id)
 
-    def _generate_personal_relevance(self, user_id: str) -> str:
+    def _generate_personal_relevance(self, user_id: str, session_id: str = None) -> str:
         """Generate time-contextual personal relevance string."""
         from google import genai
         from datetime import datetime
@@ -554,20 +583,11 @@ class MemoryConsolidator:
         time_context = "morning" if now.hour < 12 else "afternoon" if now.hour < 17 else "evening"
         personal_texts = [m["memory"].text for m in personal_memories[:3]]
         
-        prompt = f"""Generate a brief, time-contextual personal relevance string (max 20 words) for a tutoring session.
-
-Current day: {day_name}
-Time of day: {time_context}
-Personal memories: {', '.join(personal_texts)}
-
-Create a natural, contextual string that references their personal life relevant to NOW.
-Examples:
-- "It's Friday - basketball game today?"
-- "Ready for another week of learning?"
-- "How's your week going?"
-
-If no time-specific relevance, return empty string.
-Return ONLY the relevance string or empty string, nothing else."""
+        prompt = get_personal_relevance_generation_prompt(
+            day_name=day_name,
+            time_context=time_context,
+            personal_texts=', '.join(personal_texts)
+        )
 
         try:
             client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
@@ -575,13 +595,22 @@ Return ONLY the relevance string or empty string, nothing else."""
                 model="gemini-2.0-flash-lite",
                 contents=prompt
             )
+            
+            # Track token usage for cost calculation
+            if session_id:
+                try:
+                    from services.TeachingAssistant.token_tracker import extract_and_track_tokens
+                    extract_and_track_tokens(response, session_id, "opening_personal_relevance")
+                except Exception as track_error:
+                    logger.info(f"Token tracking failed (non-critical): {track_error}")
+            
             relevance = response.text.strip()
             return relevance if relevance and len(relevance) > 0 else ""
         except Exception as e:
             logger.error(f"❌ Error generating personal_relevance: {e}")
             return ""
 
-    def _generate_opening_context(self, user_id: str, closing_cache: SessionClosingCache) -> dict:
+    def _generate_opening_context(self, user_id: str, closing_cache: SessionClosingCache, session_id: str = None) -> dict:
         """Generate personalized opening context for next session using LLM."""
         from google import genai
         
@@ -596,29 +625,32 @@ Return ONLY the relevance string or empty string, nothing else."""
         emotional_state_last = emotional_arc[-1] if emotional_arc else "neutral"
         
         # Generate time-contextual personal relevance
-        personal_relevance = self._generate_personal_relevance(user_id)
+        personal_relevance = self._generate_personal_relevance(user_id, session_id)
         
         # Generate welcome_hook - reference specific achievements
         welcome_hook = ""
         if session_summary or key_moments:
             achievement = key_moments[-1] if key_moments else ""
-            welcome_hook_prompt = f"""Generate a warm, natural welcome message (1-2 sentences) that references a specific achievement from last session.
-
-Last session summary: {session_summary if session_summary else 'Previous session'}
-Key achievement: {achievement if achievement else 'Session completed'}
-Emotional state when they left: {emotional_state_last}
-
-Reference the specific achievement naturally. Examples:
-- "Last time you cracked the discriminant - ready to build on that?"
-- "You had that breakthrough with visual diagrams - let's keep that momentum going!"
-
-Return ONLY the welcome message, nothing else."""
+            welcome_hook_prompt = get_welcome_hook_generation_prompt(
+                session_summary=session_summary if session_summary else 'Previous session',
+                achievement=achievement if achievement else 'Session completed',
+                emotional_state_last=emotional_state_last
+            )
 
             try:
                 response = client.models.generate_content(
                     model="gemini-2.0-flash-lite",
                     contents=welcome_hook_prompt
                 )
+                
+                # Track token usage for cost calculation
+                if session_id:
+                    try:
+                        from services.TeachingAssistant.token_tracker import extract_and_track_tokens
+                        extract_and_track_tokens(response, session_id, "opening_welcome_hook")
+                    except Exception as track_error:
+                        logger.info(f"Token tracking failed (non-critical): {track_error}")
+                
                 welcome_hook = response.text.strip()
             except Exception as e:
                 logger.error(f"❌ Error generating welcome_hook: {e}")
@@ -629,23 +661,27 @@ Return ONLY the welcome message, nothing else."""
         # Generate suggested_opener
         suggested_opener = ""
         if session_summary or personal_relevance or unfinished_threads:
-            opener_prompt = f"""Generate a natural, conversational opening line (1-2 sentences) for an AI tutor.
-
-Last session: {session_summary if session_summary else 'Previous session completed'}
-Emotional state: {emotional_state_last}
-Personal context: {personal_relevance if personal_relevance else 'None'}
-Unfinished topics: {', '.join(unfinished_threads[:2]) if unfinished_threads else 'None'}
-
-Create a warm, natural conversation starter that feels genuine. Reference last session or personal life if relevant.
-Sound like a friendly tutor who remembers them.
-
-Return ONLY the opener, nothing else."""
+            opener_prompt = get_suggested_opener_generation_prompt(
+                last_session=session_summary if session_summary else 'Previous session completed',
+                emotional_state_last=emotional_state_last,
+                personal_relevance=personal_relevance if personal_relevance else 'None',
+                unfinished_topics=', '.join(unfinished_threads[:2]) if unfinished_threads else 'None'
+            )
 
             try:
                 response = client.models.generate_content(
                     model="gemini-2.0-flash-lite",
                     contents=opener_prompt
                 )
+                
+                # Track token usage for cost calculation
+                if session_id:
+                    try:
+                        from services.TeachingAssistant.token_tracker import extract_and_track_tokens
+                        extract_and_track_tokens(response, session_id, "opening_suggested_opener")
+                    except Exception as track_error:
+                        logger.info(f"Token tracking failed (non-critical): {track_error}")
+                
                 suggested_opener = response.text.strip()
             except Exception as e:
                 logger.error(f"❌ Error generating suggested_opener: {e}")
@@ -683,14 +719,23 @@ Return ONLY the opener, nothing else."""
             json.dump(closing_data, f, indent=2, ensure_ascii=False)
 
     def _save_opening(self, user_id: str, opening_context: dict):
-        data_dir = f"services/TeachingAssistant/Memory/data/{user_id}/memory/TeachingAssistant"
-        os.makedirs(data_dir, exist_ok=True)
+        """Save opening context to MongoDB users collection"""
+        from managers.mongodb_manager import mongo_db
         
-        file_path = f"{data_dir}/TA-opening-retrieval.json"
-        opening_data = {
-            "timestamp": time.time(),
-            **opening_context
-        }
-        
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(opening_data, f, indent=2, ensure_ascii=False)
+        try:
+            # Add timestamp to opening context (using time.time() to match existing pattern)
+            opening_data = {
+                "timestamp": time.time(),
+                **opening_context
+            }
+            
+            # Update user document with opening_memory field
+            # This ensures only one opening memory exists per user (updated on each session close)
+            mongo_db.users.update_one(
+                {"user_id": user_id},
+                {"$set": {"opening_memory": opening_data}}
+            )
+            
+            logger.info(f"[OPENING_MEMORY] Saved opening memory to MongoDB for user {user_id}")
+        except Exception as e:
+            logger.error(f"[OPENING_MEMORY] Failed to save opening memory to MongoDB: {e}", exc_info=True)

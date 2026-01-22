@@ -12,10 +12,13 @@ import logging
 from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any
+from pymongo import MongoClient
+from dotenv import load_dotenv
 
-# Add project root to Python path
-project_root = Path(__file__).parent.parent.parent
-sys.path.append(str(project_root))
+# Load environment variables from .env file in VideoFinder directory
+video_finder_dir = Path(__file__).parent
+dotenv_path = video_finder_dir / '.env'
+load_dotenv(dotenv_path=dotenv_path)
 
 # Configure logging
 logging.basicConfig(
@@ -25,8 +28,27 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-from managers.mongodb_manager import mongo_db
-from services.VideoFinder.find_videos import VideoFinder
+# Initialize MongoDB connection
+mongo_uri = os.getenv('MONGODB_URI')
+if not mongo_uri:
+    raise ValueError(
+        "MONGODB_URI not found in environment variables. "
+        "Please create a .env file in the VideoFinder directory with MONGODB_URI."
+    )
+
+db_name = os.getenv('MONGODB_DB_NAME', 'ai_tutor')
+mongo_client = MongoClient(mongo_uri)
+db = mongo_client[db_name]
+
+# Test connection
+try:
+    mongo_client.admin.command('ping')
+    logger.info(f"[VIDEO_FINDER] Connected to MongoDB database: {db_name}")
+except Exception as e:
+    logger.error(f"[VIDEO_FINDER] MongoDB connection failed: {e}")
+    raise
+
+from find_videos import VideoFinder
 
 # For language detection
 try:
@@ -59,7 +81,7 @@ class MongoDBVideoFinder:
 
             # Query for questions with < min_videos learning videos
             # Using $size operator to count array elements
-            questions = list(mongo_db.scraped_questions.find({
+            questions = list(db['scraped_questions'].find({
                 "$expr": {
                     "$lt": [
                         {"$size": {"$ifNull": ["$learning_videos", []]}},
@@ -114,7 +136,7 @@ class MongoDBVideoFinder:
                 return 0
 
             # Get existing question to check for duplicates
-            question_doc = mongo_db.scraped_questions.find_one({"questionId": question_id})
+            question_doc = db['scraped_questions'].find_one({"questionId": question_id})
 
             existing_video_ids = set()
             if question_doc:
@@ -128,7 +150,7 @@ class MongoDBVideoFinder:
             added_count = 0
             for video in videos:
                 try:
-                    video_id = video.get('id', '')
+                    video_id = video.get('video_id', '')
 
                     # Skip if video already exists (deduplication)
                     if video_id in existing_video_ids:
@@ -155,7 +177,7 @@ class MongoDBVideoFinder:
                     }
 
                     # Add to suggested_videos collection
-                    mongo_db.scraped_questions.update_one(
+                    db['scraped_questions'].update_one(
                         {"questionId": question_id},
                         {"$push": {"suggested_videos": pending_video}},
                         upsert=True

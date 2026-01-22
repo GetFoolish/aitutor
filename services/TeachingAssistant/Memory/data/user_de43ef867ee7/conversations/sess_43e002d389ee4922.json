@@ -1,0 +1,14 @@
+{
+  "session_id": "sess_43e002d389ee4922",
+  "user_id": "user_de43ef867ee7",
+  "start_time": "2026-01-01T16:42:28.012000",
+  "end_time": "2026-01-01T21:43:30.997477",
+  "turn_count": 0,
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "[SYSTEM PROMPT FOR ADAM] [MEMORY AND INJECTION HANDLING] During this session, you will receive 'System Updates' with retrieved memories. - If an update arrives while you are speaking or just finished: DO NOT hallucinate a new user turn. - If you have just finished a response, simply maintain consistency with that response. - Do not let internal system updates disrupt the natural flow of conversation. Welcome back! It's great to see you again, and well done on completing the session last time – we can now dive into those unfinished math discussion points. Last time we worked on: This session covered general topics and ended on a neutral note, leaving the emotional state unchanged. We identified some unfinished discussion points, especially related to math. Unfinished topics: math",
+      "timestamp": 1767267748.012
+    }
+  ]
+}

@@ -342,10 +342,39 @@ class SessionManager:
         """
         session = self.sessions.find_one({"session_id": session_id})
         if not session:
+            logger.warning(f"[SESSION_MANAGER] Session {session_id} not found")
             return {}
 
         now = datetime.utcnow()
         duration_minutes = (now - session["started_at"]).total_seconds() / 60
+        
+        # Get the credits available at session start
+        credits_at_start = session.get("credits_at_start", 0)
+        user_id = session["user_id"]
+        
+        # MINUTE DEDUCTION LOGIC
+        import math
+        from services.PaymentService.free_minutes_handler import deduct_minutes
+        
+        # Deduct MINIMUM of: (actual duration) OR (credits available at start)
+        # This prevents negative balance if user overruns their credits
+        minutes_to_deduct = min(math.ceil(duration_minutes), credits_at_start)
+        
+        # Deduct the minutes
+        deduct_success = deduct_minutes(user_id, minutes_to_deduct)
+        
+        # Log if session exceeded available credits
+        if duration_minutes > credits_at_start:
+            logger.warning(
+                f"[SESSION_MANAGER] ⚠️ Session {session_id[:8]}... exceeded available credits! "
+                f"Duration: {duration_minutes:.2f} min, Credits: {credits_at_start} min, "
+                f"Deducted: {minutes_to_deduct} min"
+            )
+        else:
+            logger.info(
+                f"[SESSION_MANAGER] ✅ Session {session_id[:8]}... ended normally. "
+                f"Duration: {duration_minutes:.2f} min, Deducted: {minutes_to_deduct} min"
+            )
 
         # Get conversation and session data
         conversation = session.get("conversation", [])
@@ -506,14 +535,18 @@ class SessionManager:
                     "websocket_connected": False,
                     "sse_connected": False,
                     "session_summary": session_summary,
+                    "duration_minutes": round(duration_minutes, 2),
+                    "minutes_deducted": minutes_to_deduct,
+                    "credits_exceeded": duration_minutes > credits_at_start,
+                    "deduct_success": deduct_success
                 }
             }
         )
 
-        logger.info(f"[SESSION_MANAGER] Ended session {session_id}, duration: {duration_minutes:.2f} min")
         return {
             "session_id": session_id,
             "duration_minutes": round(duration_minutes, 2),
+            "minutes_deducted": minutes_to_deduct,
             "questions_answered": session["questions_answered_this_session"],
             "questions_correct": session["questions_correct_this_session"],
             "topics_covered": topics_covered,

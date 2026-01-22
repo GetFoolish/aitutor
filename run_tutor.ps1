@@ -1,4 +1,3 @@
-# PowerShell script to run the AI Tutor system on Windows
 # Equivalent to run_tutor.sh for Mac/Linux
 
 # Get the directory where the script is located

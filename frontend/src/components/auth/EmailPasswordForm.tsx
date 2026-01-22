@@ -1,11 +1,13 @@
 /**
  * Email/Password authentication form - Login and Signup tabs
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { authAPI } from '../../lib/auth-api';
+import { detectLocationFromIP } from '../../lib/geolocation';
+import { getCountryList, findMatchingCountryName } from '../../lib/countries';
 import SignupForm from './SignupForm';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +18,7 @@ import './auth.scss';
 
 const LANGUAGES = ["English", "Hindi", "Spanish", "French"];
 const GENDERS = ["Male", "Female", "Other", "Prefer not to say"];
+const COUNTRIES = getCountryList();
 
 // Login Schema
 const loginSchema = z.object({
@@ -36,6 +39,7 @@ const signupSchema = z.object({
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   gender: z.string().min(1, "Please select your gender"),
   preferredLanguage: z.string().min(1, "Please select your preferred language"),
+  location: z.string().min(1, "Please select your location"),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
@@ -56,6 +60,7 @@ const EmailPasswordForm: React.FC<EmailPasswordFormProps> = ({ onAuthSuccess }) 
   const [submitError, setSubmitError] = useState('');
   const [showSetupWizard, setShowSetupWizard] = useState(false);
   const [tempSignupData, setTempSignupData] = useState<any>(null);
+  const [countrySearch, setCountrySearch] = useState('');
 
   const {
     control: loginControl,
@@ -75,6 +80,7 @@ const EmailPasswordForm: React.FC<EmailPasswordFormProps> = ({ onAuthSuccess }) 
     handleSubmit: handleSignupSubmit,
     formState: { errors: signupErrors },
     reset: resetSignup,
+    setValue: setSignupValue,
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema) as any,
     defaultValues: {
@@ -85,8 +91,35 @@ const EmailPasswordForm: React.FC<EmailPasswordFormProps> = ({ onAuthSuccess }) 
       dateOfBirth: '',
       gender: '',
       preferredLanguage: '',
+      location: '',
     },
   });
+
+  // Detect location when in signup mode
+  useEffect(() => {
+    if (mode === 'signup') {
+      detectLocationFromIP().then((data) => {
+        if (data.country) {
+          // Try to match detected country name with country-list names
+          const matchedCountry = findMatchingCountryName(data.country);
+          if (matchedCountry) {
+            setSignupValue("location", matchedCountry);
+          }
+        }
+      });
+    }
+  }, [mode, setSignupValue]);
+
+  // Filter countries based on search
+  const filteredCountries = useMemo(() => {
+    if (!countrySearch.trim()) {
+      return COUNTRIES;
+    }
+    const searchLower = countrySearch.toLowerCase();
+    return COUNTRIES.filter(country => 
+      country.name.toLowerCase().includes(searchLower)
+    );
+  }, [countrySearch]);
 
   const onLogin = async (data: LoginFormData) => {
     setIsSubmitting(true);
@@ -113,7 +146,8 @@ const EmailPasswordForm: React.FC<EmailPasswordFormProps> = ({ onAuthSuccess }) 
         data.name,
         data.dateOfBirth,
         data.gender,
-        data.preferredLanguage
+        data.preferredLanguage,
+        data.location
       );
       onAuthSuccess(response.token, response.user);
     } catch (err: any) {
@@ -489,6 +523,54 @@ const EmailPasswordForm: React.FC<EmailPasswordFormProps> = ({ onAuthSuccess }) 
               {signupErrors.preferredLanguage && (
                 <p style={{ color: '#FF6B6B', fontSize: '14px', marginTop: '4px', fontWeight: 600 }}>
                   {signupErrors.preferredLanguage.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="signup-location" style={{ display: 'block', marginBottom: '8px', fontWeight: 700, fontSize: '14px' }}>
+                Location (Country)
+              </Label>
+              <p style={{ fontSize: '12px', color: '#666', marginBottom: '8px' }}>
+                We'll customize content based on your location
+              </p>
+              <Controller
+                name="location"
+                control={signupControl}
+                render={({ field }) => (
+                  <Select onValueChange={(value) => { field.onChange(value); setCountrySearch(''); }} value={field.value}>
+                    <SelectTrigger className="h-12 text-lg">
+                      <SelectValue placeholder="Select your country" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      <div className="sticky top-0 z-10 bg-popover p-2 border-b" onClick={(e) => e.stopPropagation()}>
+                        <Input
+                          placeholder="Search countries..."
+                          value={countrySearch}
+                          onChange={(e) => setCountrySearch(e.target.value)}
+                          className="h-9"
+                          onClick={(e) => e.stopPropagation()}
+                          onKeyDown={(e) => e.stopPropagation()}
+                        />
+                      </div>
+                      {filteredCountries.length === 0 ? (
+                        <div className="px-2 py-4 text-sm text-muted-foreground text-center">
+                          No countries found
+                        </div>
+                      ) : (
+                        filteredCountries.map((country) => (
+                          <SelectItem key={country.code} value={country.name}>
+                            {country.name}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {signupErrors.location && (
+                <p style={{ color: '#FF6B6B', fontSize: '14px', marginTop: '4px', fontWeight: 600 }}>
+                  {signupErrors.location.message}
                 </p>
               )}
             </div>

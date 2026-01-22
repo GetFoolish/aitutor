@@ -59,6 +59,15 @@ export interface TutorClientEventTypes {
   ) => void;
   // Emitted when the current turn is complete
   turncomplete: () => void;
+  // Emitted when token usage data is received from Gemini
+  tokenUsage: (usage: { 
+    promptTokenCount: number; 
+    candidatesTokenCount: number; 
+    totalTokenCount: number;
+    cachedContentTokenCount?: number;
+    thoughtTokenCount?: number;
+    promptTokensDetails?: Array<{ modality: string; tokenCount: number }>;
+  }) => void;
 }
 
 export class TutorClient extends EventEmitter<TutorClientEventTypes> {
@@ -93,7 +102,7 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
     this.emit("log", log);
   }
 
-  async connect(config: LiveConnectConfig, preferredLanguage?: string): Promise<boolean> {
+  async connect(config: LiveConnectConfig, preferredLanguage?: string, assessmentMode?: boolean): Promise<boolean> {
     if (this._status === "connected" || this._status === "connecting") {
       return false;
     }
@@ -102,9 +111,9 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
     this.config = config;
 
     try {
-      // Initialize Tutor Service with preferred language
+      // Initialize Tutor Service with preferred language and mode
       this.tutorService = new TutorService();
-      await this.tutorService.initialize(preferredLanguage || "English");
+      await this.tutorService.initialize(preferredLanguage || "English", assessmentMode || false);
 
       // Connect directly to Gemini Live API
       await this.tutorService.connect(config, {
@@ -223,6 +232,28 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
         const content = { modelTurn: { parts } };
         this.emit("content", content);
         this.log(`server.content`, message);
+      }
+    }
+
+    // Extract and emit token usage if available
+    if (message.usageMetadata) {
+      // Use type assertion to access properties that may not be in the type definition
+      const usage = message.usageMetadata as any;
+      const tokenUsage = {
+        promptTokenCount: usage.promptTokenCount || usage.inputTokenCount || 0,
+        candidatesTokenCount: usage.candidatesTokenCount || usage.outputTokenCount || usage.candidateTokenCount || 0,
+        totalTokenCount: usage.totalTokenCount || 0,
+        // Extract cached content tokens (for 90% discount)
+        cachedContentTokenCount: usage.cachedContentTokenCount || usage.cached_content_token_count || 0,
+        // Extract thinking tokens (billed as output)
+        thoughtTokenCount: usage.thoughtTokenCount || usage.thought_token_count || 0,
+        // Extract modality breakdown for accurate pricing
+        promptTokensDetails: usage.promptTokensDetails || usage.prompt_tokens_details || []
+      };
+      
+      // Only emit if we have actual token counts
+      if (tokenUsage.totalTokenCount > 0) {
+        this.emit("tokenUsage", tokenUsage);
       }
     }
   }

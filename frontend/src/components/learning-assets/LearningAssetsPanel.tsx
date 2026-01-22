@@ -19,13 +19,15 @@ interface LearningAssetsPanelProps {
   open: boolean;
   onToggle: () => void;
   onVideosWatched?: (videoIds: string[]) => void;
+  isDeveloperMode?: boolean;
 }
 
 const LearningAssetsPanel: React.FC<LearningAssetsPanelProps> = ({
   questionId,
   open,
   onToggle,
-  onVideosWatched
+  onVideosWatched,
+  isDeveloperMode = false
 }) => {
   const { user } = useAuth();
   const [videos, setVideos] = useState<LearningVideo[]>([]);
@@ -107,7 +109,11 @@ const LearningAssetsPanel: React.FC<LearningAssetsPanelProps> = ({
       <header className="flex items-center justify-between h-[44px] lg:h-[48px] px-3 lg:px-4 border-b-[3px] border-black dark:border-white shrink-0 overflow-hidden transition-all duration-300 bg-[#C4B5FD]">
         <div className="flex items-center gap-2 lg:gap-2.5 animate-in fade-in slide-in-from-right-4 duration-300">
           <div className="p-1.5 lg:p-2 border-[2px] lg:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]">
-            <VideoIcon className="w-4 h-4 lg:w-4 lg:h-4 text-black dark:text-white font-bold" />
+            {isDeveloperMode ? (
+              <VideoIcon className="w-4 h-4 lg:w-4 lg:h-4 text-black dark:text-white font-bold" />
+            ) : (
+              <Play className="w-4 h-4 lg:w-4 lg:h-4 text-black dark:text-white font-bold" />
+            )}
           </div>
           <h2 className="text-sm lg:text-base font-black text-black uppercase tracking-tight whitespace-nowrap">
             Learning Assets

@@ -93,6 +93,85 @@ export const useMediaMixer = (config: MediaMixerConfig) => {
         // console.error('Error drawing camera frame:', error);
       }
     }
+
+    // ============================================================================
+    // DRAW LABELS AND BOUNDARIES ON TOP (AFTER all content is drawn)
+    // This ensures stickers and boundaries are visible and not covered by content
+    // ============================================================================
+
+    // Save canvas state to avoid interference
+    ctx.save();
+
+    // Draw colored bounding boxes around each section (so LLM can see clear boundaries)
+    // Draw complete rectangles for each section including all 4 borders
+    ctx.lineWidth = 8; // Thick lines for visibility
+    ctx.setLineDash([]); // Solid line (no dashes)
+
+    // Box around QuestionPane section (RED border) - complete rectangle
+    ctx.strokeStyle = '#FF0000';
+    ctx.strokeRect(4, 4, config.width - 8, sectionHeight - 8);
+
+    // Box around Screenshare section (YELLOW border) - complete rectangle
+    ctx.strokeStyle = '#FFD700';
+    ctx.strokeRect(4, sectionHeight + 4, config.width - 8, sectionHeight - 8);
+
+    // Box around Camera Feed section (PURPLE border) - complete rectangle
+    ctx.strokeStyle = '#9F7AEA';
+    ctx.strokeRect(4, 2 * sectionHeight + 4, config.width - 8, sectionHeight - 8);
+
+    // Draw neo-brutalist stickers for each section (so LLM can identify them)
+    // Position stickers at BOTTOM of each section to avoid content overlap
+    const drawSectionSticker = (label: string, yOffset: number, bgColor: string, textColor: string = '#000000') => {
+      const paddingX = 15; // Horizontal padding from left edge
+      const paddingY = 15; // Vertical padding from bottom edge
+      const stickerX = paddingX;
+
+      // Moderate font size for visibility
+      const fontSize = 40;
+      ctx.font = `bold ${fontSize}px Arial`;
+      const textMetrics = ctx.measureText(label);
+      const textWidth = textMetrics.width;
+      const stickerWidth = textWidth + 40; // Padding inside sticker
+      const stickerHeight = 60; // Sticker height
+
+      // Position at BOTTOM of section (yOffset + sectionHeight - stickerHeight - paddingY)
+      const stickerY = yOffset + sectionHeight - stickerHeight - paddingY;
+
+      // Draw shadow first (neo-brutalist shadow effect)
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(stickerX + 4, stickerY + 4, stickerWidth, stickerHeight);
+
+      // Draw sticker background on top of shadow
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(stickerX, stickerY, stickerWidth, stickerHeight);
+
+      // Draw sticker border (neo-brutalist thick black border)
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([]);
+      ctx.strokeRect(stickerX, stickerY, stickerWidth, stickerHeight);
+
+      // Draw sticker text
+      ctx.fillStyle = textColor;
+      ctx.font = `bold ${fontSize}px Arial`;
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'left';
+      ctx.fillText(label, stickerX + 20, stickerY + stickerHeight / 2);
+    };
+
+    // Add stickers for each section (matching MediaMixerDisplay style)
+    // Position at BOTTOM of each section for better visibility
+    // QUESTIONPANE gets red background with white text (same as Canvas/Privacy stickers)
+    drawSectionSticker('QUESTIONPANE', 0, '#FF6B6B', '#FFFFFF');
+
+    // SCREENSHARE gets yellow background with black text
+    drawSectionSticker('SCREENSHARE', sectionHeight, '#FFD93D', '#000000');
+
+    // CAMERA FEED gets purple background with black text
+    drawSectionSticker('CAMERA FEED', 2 * sectionHeight, '#C4B5FD', '#000000');
+
+    // Restore canvas state
+    ctx.restore();
   }, [config.width, config.height, showCamera, showScreen, config.cameraVideoRef, config.screenVideoRef, config.privacyEnabled]);
 
   // Update frame buffers
