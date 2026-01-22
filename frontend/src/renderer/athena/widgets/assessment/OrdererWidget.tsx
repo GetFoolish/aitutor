@@ -67,7 +67,14 @@ export function OrdererWidget({
     try {
       // 1. Handle markdown images ![alt](url)
       processed = processed.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
-        return `<img src="${url}" alt="${alt}" style="max-width:100%;max-height:80px;height:auto;display:block;margin:4px auto;" onerror="this.style.display='none'" />`;
+        let imageUrl = url;
+        // Convert web+graphie:// URLs to https:// with PNG extension
+        // This ensures compatibility with Perseus assets
+        if (imageUrl.startsWith('web+graphie://')) {
+          imageUrl = imageUrl.replace('web+graphie://', 'https://') + '.png';
+        }
+
+        return `<img src="${imageUrl}" alt="${alt}" style="max-width:100%;max-height:80px;height:auto;display:block;margin:4px auto;" onerror="if(this.src.endsWith('.png')){this.src=this.src.replace('.png','.svg')}else if(this.src.endsWith('.svg')){this.src=this.src.replace('.svg','.png')}" />`;
       });
 
       // 2. Handle display math $$...$$
@@ -159,7 +166,9 @@ export function OrdererWidget({
   // Compute available cards (not yet selected)
   // If "infinite" option is enabled, available cards are never removed.
   // Otherwise, remove selected instances from the available pool.
-  const isInfinite = !!widget?.options?.infinite;
+  // AUTO-FIX: If we only have ONE card available but multiple are needed for the correct sequence,
+  // we assume it's a "bank" style question and enable infinite mode automatically.
+  const isInfinite = !!widget?.options?.infinite || (allCards.length === 1 && correctSequence.length > 1);
   const availableCards = isInfinite ? [...allCards] : [...allCards];
 
   if (!isInfinite) {
