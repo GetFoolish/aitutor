@@ -42,6 +42,14 @@ export const useTutorContext = () => {
   return context;
 };
 
+/**
+ * Optional tutor context hook.
+ * Returns undefined when not wrapped in TutorProvider (useful for pages where tutor is not mounted).
+ */
+export const useOptionalTutorContext = () => {
+  return useContext(TutorContext);
+};
+
 // Export aliases for backward compatibility during migration
 export { TutorProvider as LiveAPIProvider };
 export { useTutorContext as useLiveAPIContext };
