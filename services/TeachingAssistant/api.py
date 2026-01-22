@@ -1512,6 +1512,385 @@ async def options_handler(full_path: str):
 
 # Create TeachingAssistant instance (now stateless - all state in MongoDB)
 
+
+# ============================================================================
+# Personalization API Endpoints
+# ============================================================================
+
+# Import personalization components
+from services.TeachingAssistant.core.interest_mapper import get_interest_mapper
+from services.TeachingAssistant.core.learning_style_tracker import (
+    get_learning_style_tracker,
+    LearningStyleProfile
+)
+from services.TeachingAssistant.core.followup_tracker import get_followup_tracker
+
+
+class InterestMappingRequest(BaseModel):
+    interests: List[str]
+    topic: str
+    subject: Optional[str] = "general"
+    difficulty_level: Optional[str] = "middle school"
+
+
+class LearningStyleUpdateRequest(BaseModel):
+    student_text: str
+    tutor_text: str
+    emotion: Optional[str] = None
+    topic: Optional[str] = None
+
+
+class FollowupExtractRequest(BaseModel):
+    conversation_text: str
+    session_id: Optional[str] = None
+
+
+@app.post("/personalization/map-interest")
+async def map_interest_to_concept(http_request: Request, request: InterestMappingRequest):
+    """
+    Map student interests to a learning concept using LLM.
+
+    Returns teaching connections, analogies, and example problems
+    personalized to the student's interests.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        interest_mapper = get_interest_mapper()
+
+        if not interest_mapper.enabled:
+            raise HTTPException(
+                status_code=503,
+                detail="Interest mapping service unavailable (Gemini not configured)"
+            )
+
+        # Get student name from profile if available
+        student = ta.session_manager.get_or_create_student(user_id)
+        student_name = student.get("name") or student.get("display_name")
+
+        connection = interest_mapper.generate_connection(
+            interests=request.interests,
+            current_topic=request.topic,
+            student_name=student_name,
+            difficulty_level=request.difficulty_level
+        )
+
+        if not connection:
+            return {
+                "success": False,
+                "message": "Could not generate a natural connection",
+                "connection": None
+            }
+
+        logger.info(f"[PERSONALIZATION] Generated interest mapping for user {user_id[:8]}...")
+
+        return {
+            "success": True,
+            "connection": connection,
+            "user_id": user_id
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in map_interest: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/personalization/learning-style")
+async def get_learning_style(http_request: Request):
+    """
+    Get the student's learning style profile.
+
+    Returns preferences for explanation styles, pace, and
+    what approaches have worked/not worked.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        # Get student profile from MongoDB
+        student = ta.session_manager.get_or_create_student(user_id)
+
+        # Get learning style data
+        learning_style_data = student.get("learning_style", {})
+
+        if learning_style_data:
+            profile = LearningStyleProfile.from_dict(learning_style_data)
+        else:
+            profile = LearningStyleProfile()
+
+        return {
+            "user_id": user_id,
+            "profile": profile.to_dict(),
+            "prompt_text": profile.to_prompt_text()
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting learning style: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/personalization/learning-style/update")
+async def update_learning_style(http_request: Request, request: LearningStyleUpdateRequest):
+    """
+    Analyze a conversation turn and update learning style profile.
+
+    Uses LLM to detect style preferences, engagement levels,
+    pace signals, and breakthrough moments.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        tracker = get_learning_style_tracker()
+
+        # Analyze the turn
+        analysis = tracker.analyze_turn(
+            student_text=request.student_text,
+            tutor_text=request.tutor_text,
+            emotion=request.emotion,
+            topic=request.topic
+        )
+
+        # Get current profile
+        student = ta.session_manager.get_or_create_student(user_id)
+        learning_style_data = student.get("learning_style", {})
+
+        if learning_style_data:
+            current_profile = LearningStyleProfile.from_dict(learning_style_data)
+        else:
+            current_profile = LearningStyleProfile()
+
+        # Update profile based on analysis
+        updated_profile = tracker.update_profile(
+            current_profile=current_profile,
+            turn_analysis=analysis,
+            topic=request.topic
+        )
+
+        # Save to MongoDB
+        from managers.mongodb_manager import mongo_db
+        mongo_db.users.update_one(
+            {"user_id": user_id},
+            {"$set": {"learning_style": updated_profile.to_dict()}}
+        )
+
+        logger.info(f"[PERSONALIZATION] Updated learning style for user {user_id[:8]}...")
+
+        return {
+            "success": True,
+            "analysis": {
+                "style_preferences": [s.value for s in analysis.get("style_preferences", [])],
+                "engagement": analysis.get("engagement"),
+                "pace_signal": analysis.get("pace_signal"),
+                "breakthrough": analysis.get("breakthrough"),
+                "observation": analysis.get("observation")
+            },
+            "updated_profile": updated_profile.to_dict()
+        }
+
+    except Exception as e:
+        logger.error(f"Error updating learning style: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/personalization/followups")
+async def get_followups(http_request: Request):
+    """
+    Get pending follow-ups for the student.
+
+    Returns tests, events, commitments, and other items
+    that should be followed up on.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        # Get student profile from MongoDB
+        student = ta.session_manager.get_or_create_student(user_id)
+
+        # Get followups list
+        followups_data = student.get("followups", [])
+
+        tracker = get_followup_tracker()
+        followups = []
+        due_followups = []
+
+        for fu_data in followups_data:
+            try:
+                from services.TeachingAssistant.core.followup_tracker import Followup
+                fu = Followup.from_dict(fu_data)
+                followups.append(fu.to_dict())
+                if fu.is_due():
+                    due_followups.append({
+                        **fu.to_dict(),
+                        "prompt_text": fu.to_prompt_text()
+                    })
+            except Exception as e:
+                logger.warning(f"Error parsing followup: {e}")
+
+        return {
+            "user_id": user_id,
+            "all_followups": followups,
+            "due_followups": due_followups,
+            "total": len(followups),
+            "due_count": len(due_followups)
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting followups: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/personalization/followups/extract")
+async def extract_followups(http_request: Request, request: FollowupExtractRequest):
+    """
+    Extract follow-up items from conversation text using LLM.
+
+    Identifies tests, events, commitments, unfinished topics,
+    and personal situations worth following up on.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        tracker = get_followup_tracker()
+
+        if not tracker.enabled:
+            raise HTTPException(
+                status_code=503,
+                detail="Follow-up extraction unavailable (Gemini not configured)"
+            )
+
+        # Extract followups from conversation
+        extracted = tracker.extract_followups(
+            text=request.conversation_text,
+            session_id=request.session_id
+        )
+
+        if not extracted:
+            return {
+                "success": True,
+                "extracted": [],
+                "message": "No follow-ups identified"
+            }
+
+        # Save new followups to MongoDB
+        from managers.mongodb_manager import mongo_db
+
+        followups_dicts = [fu.to_dict() for fu in extracted]
+
+        mongo_db.users.update_one(
+            {"user_id": user_id},
+            {"$push": {"followups": {"$each": followups_dicts}}}
+        )
+
+        logger.info(f"[PERSONALIZATION] Extracted {len(extracted)} followups for user {user_id[:8]}...")
+
+        return {
+            "success": True,
+            "extracted": followups_dicts,
+            "count": len(extracted)
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error extracting followups: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/personalization/session-context")
+async def get_session_personalization_context(http_request: Request):
+    """
+    Get full personalization context for the current session.
+
+    Combines biography, learning style, interests, and due followups
+    into a single context object for injection into prompts.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        # Get student profile
+        student = ta.session_manager.get_or_create_student(user_id)
+
+        # Get biography
+        biography = student.get("biography", {})
+        biography_text = biography.get("text", "")
+
+        # Get learning style
+        learning_style_data = student.get("learning_style", {})
+        if learning_style_data:
+            learning_profile = LearningStyleProfile.from_dict(learning_style_data)
+            learning_style_text = learning_profile.to_prompt_text()
+        else:
+            learning_style_text = "Learning style not yet determined"
+
+        # Get interests
+        interests = student.get("interests", [])
+
+        # Get due followups
+        followups_data = student.get("followups", [])
+        due_followups_text = []
+        for fu_data in followups_data:
+            try:
+                from services.TeachingAssistant.core.followup_tracker import Followup
+                fu = Followup.from_dict(fu_data)
+                if fu.is_due():
+                    due_followups_text.append(fu.to_prompt_text())
+            except:
+                pass
+
+        # Build combined context
+        context_parts = []
+
+        if biography_text:
+            context_parts.append(f"STUDENT BIOGRAPHY:\n{biography_text}")
+
+        if learning_style_text:
+            context_parts.append(f"LEARNING STYLE:\n{learning_style_text}")
+
+        if interests:
+            context_parts.append(f"INTERESTS: {', '.join(interests)}")
+
+        if due_followups_text:
+            context_parts.append(f"FOLLOW-UPS TO MENTION:\n" + "\n".join(due_followups_text))
+
+        combined_context = "\n\n".join(context_parts) if context_parts else "No personalization data available yet."
+
+        return {
+            "user_id": user_id,
+            "biography": biography_text,
+            "learning_style": learning_style_data,
+            "interests": interests,
+            "due_followups": due_followups_text,
+            "combined_context": combined_context
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting session context: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/student/biography")
+async def get_student_biography(http_request: Request):
+    """
+    Get the student's biography and academic journey.
+
+    Returns the Living Biography text and related stats.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        biography_data = ta.get_student_biography(user_id)
+
+        return {
+            "user_id": user_id,
+            **biography_data
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting biography: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # Include Cost Tracking API routes (Phase 4)
 from services.CostTracking.api import router as cost_router
 app.include_router(cost_router)
