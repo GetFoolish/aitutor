@@ -660,6 +660,15 @@ const HintPanel: React.FC<{
   // Process hint content with KaTeX for math rendering
   const processHintContent = (content: string, widgets: Record<string, any>): string => {
     if (!content) return '';
+
+    // Hardcoded fix for Dino Graph hints showing broken widgets
+    if (content.toLowerCase().includes("plotter 2")) {
+      content = content.replace(
+        /\[\[(?:Widget:\s*|☃\s*)plotter 2.*?\]\]/gi,
+        "\n\n![](/fixed_graphs/corr.png)\n\n"
+      );
+    }
+
     console.log('[HintDebug] Processing hint:', content.substring(0, 50));
 
     // IMMEDIATE FIX: Remove garbage text immediately

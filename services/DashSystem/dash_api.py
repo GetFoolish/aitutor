@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 # Add the project root to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
+from shared.asset_utils import apply_recursive_asset_fix
 from services.DashSystem.dash_system import DASHSystem, Question
 from shared.auth_middleware import get_current_user
 from shared.cache_middleware import CacheControlMiddleware
@@ -194,6 +195,9 @@ def load_perseus_items_for_dash_questions_from_mongodb(
                                    if sid in dash_system.skills]
                 }
             }
+
+            # Apply asset fixes (Maxwell-Boltzmann, etc.)
+            apply_recursive_asset_fix(perseus_data)
 
             perseus_items.append(perseus_data)
 

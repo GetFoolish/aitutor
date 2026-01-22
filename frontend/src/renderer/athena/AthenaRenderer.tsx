@@ -51,8 +51,8 @@ interface ContentRendererProps {
 const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
   function ContentRenderer(props, ref) {
     const { item: originalItem, problemNum, theme } = props;
-
-    // Hardcoded fix for question 693535d4e61eddfd0c7265ad due to DB connection issues
+    const itemId = (originalItem as any)?._id || (originalItem as any)?.id;
+    console.log("!!! [AthenaRenderer] RENDER V4 !!!", { itemId });
     const item = useMemo(() => {
       if (!originalItem) return originalItem;
 
@@ -69,55 +69,65 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
       // 1. Fix Dino Graph Widget (Look for Stegosaurus in ANY widget)
       const widgets = fixed.question?.widgets || {};
       for (const [wId, widget] of Object.entries(widgets)) {
-        const options = (widget as any).options;
-        if (options && options.labels && Array.isArray(options.labels) && options.labels.includes("Stegosaurus")) {
+        const options = (widget as any).options || {};
+        const labels = options.labels || [];
+        const categories = options.categories || [];
+        const allLabels = [...(Array.isArray(labels) ? labels : []), ...(Array.isArray(categories) ? categories : [])]
+          .map(l => (typeof l === 'string' ? l : (l as any)?.content || '')).join(' ');
+
+        if (allLabels.includes("Stegosaurus")) {
           ensureClone();
           if (fixed.question?.widgets?.[wId]) {
             console.log(`[AthenaRenderer] Fixing Dino Graph options for ${wId}`);
             fixed.question.widgets[wId].options = {
               ...fixed.question.widgets[wId].options,
               type: "bar",
-              labels: ["Stegosaurus", "Raptor", "Triceratops", "T-Rex"],
+              categories: ["Stegosaurus", "Raptor", "Triceratops", "T-Rex"],
               range: [[0, 4], [0, 70]],
               maxY: 70,
               labelY: "Number in orchestra",
               labelX: "Dinosaur type",
               snapsY: 1,
               scaleY: 7,
-              correct: [25, 30, 15, 60]
+              step: [1, 7],
+              starting: [0, 0, 0, 0], // Start at 0 like in the reference image
+              correct: [42, 63, 35, 49] // User confirmed values: 42, 63, 35, 49
             };
             modified = true;
           }
         }
       }
 
-      // 2. Fix Broken Hint Widget (regex replace in content)
-      const fixContent = (text: string) => {
+      // 2. Fix Broken Hint Widget (replace with image directly)
+      const fixContentWithImage = (text: string) => {
         if (!text) return text;
-        if (text.includes("[[Widget: plotter 2")) {
-          ensureClone();
+        // Match both syntaxes: [[Widget: plotter 2 (plotter)]] or [[☃ plotter 2]]
+        // Use a global case-insensitive regex to catch all variations
+        const plotterRegex = /\[\[(?:Widget:\s*|☃\s*)plotter 2.*?\]\]/gi;
+        if (plotterRegex.test(text)) {
           return text.replace(
-            /\[\[Widget:\s*plotter 2.*?\]\]/g,
-            "\n\n![](https://ai-tutor-backend.vercel.app/fixed_graphs/solution_693535.png)\n\n"
+            plotterRegex,
+            "\n\n![](/fixed_graphs/corr.png)\n\n"
           );
         }
         return text;
       };
 
       if (fixed.question?.content) {
-        const newContent = fixContent(fixed.question.content);
+        const newContent = fixContentWithImage(fixed.question.content);
         if (newContent !== fixed.question.content) {
+          ensureClone();
           fixed.question.content = newContent;
           modified = true;
         }
       }
+
       if (fixed.hints && Array.isArray(fixed.hints)) {
         fixed.hints.forEach((hint: any, idx: number) => {
-          const newHintContent = fixContent(hint.content);
-          if (newHintContent !== hint.content) {
+          const newContent = fixContentWithImage(hint.content);
+          if (newContent !== hint.content) {
             ensureClone();
-            fixed.hints[idx].content = newHintContent;
-            fixed.hints[idx].widgets = {};
+            fixed.hints[idx].content = newContent;
             modified = true;
           }
         });
@@ -228,6 +238,28 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
             ];
             modified = true;
           }
+        }
+      }
+      // 7. Fix Question 6931b27ff0cd8d47c9679ecf (Tairn/Saddle bolding)
+      if (content.includes("Tairn") || content.includes("saddle") || itemId === "6931b27ff0cd8d47c9679ecf") {
+        if (content.includes("**3.")) {
+          console.log("[AthenaRenderer] Applying hotfix for Tairn/Saddle question formatting");
+          ensureClone();
+          let text = fixed.question.content;
+
+          // Replace markers with HTML bold tags
+          // We use <b> to span across paragraphs which markdown ** often fails at
+          text = text.replace("**3.", "<b>3.");
+
+          // Remove the trailing markers (which might be ** or ***) 
+          // They usually appear before "Which paragraph" or at the end of the string
+          // We insert line breaks before the question to separate it
+          text = text.replace(/\*\*\s*Which paragraph/, "</b><br /><br />Which paragraph");
+          text = text.replace(/rider\."\s*\*\*\*/, 'rider."</b><br /><br />');
+          text = text.replace(/rider\."\s*\*\*/, 'rider."</b><br /><br />');
+
+          fixed.question.content = text;
+          modified = true;
         }
       }
 
@@ -444,6 +476,7 @@ const ContentRenderer = forwardRef<AthenaRendererRef, ContentRendererProps>(
               correct = false;
             } else {
               correct = expected.every((val: any, idx: number) => Number(val) === Number(actual[idx]));
+              console.log(`[AthenaRenderer] Plotter(bar) score: ${correct}`, { expected, actual });
             }
           } else {
             // Compare sets of points [x, y]

@@ -71,10 +71,22 @@ const HintDisplay: React.FC<HintDisplayProps> = ({ hints, viewMode = 'perseus' }
   // Process content to handle legacy widget syntax [[Widget: ...]] -> [[☃ ...]]
   const processHintContent = (content: string) => {
     if (!content) return '';
-    // Replace [[Widget: id (type)]] with [[☃ id]]
-    return content.replace(/\[\[Widget:\s+([^\]]+)\]\]/g, (_, rawId) => {
-      const widgetId = rawId.split('(')[0].trim();
-      return `[[☃ ${widgetId}]]`;
+
+    // Hardcoded fix for Dino Graph hints showing broken widgets
+    if (content.toLowerCase().includes("plotter 2")) {
+      return content.replace(
+        /\[\[(?:Widget:\s*|☃\s*)plotter 2.*?\]\]/gi,
+        "\n\n![](/fixed_graphs/corr.png)\n\n"
+      );
+    }
+
+    // Replace [[Widget: id (type)]] or [[Widget: id]] with [[☃ id]]
+    // This allows the renderer to find the widget in the widgets map
+    // We allow spaces in the ID (e.g., "plotter 2") but stop before the type parenthetical
+    return content.replace(/\[\[Widget:\s*([^\](]+?)\s*(?:\([^)]*\))?\s*\]\]/g, (_, widgetId) => {
+      const id = widgetId.trim();
+      console.log(`[HintDisplay] Converted widget ${id}`);
+      return `[[☃ ${id}]]`;
     });
   };
 

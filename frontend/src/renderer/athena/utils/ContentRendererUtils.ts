@@ -872,6 +872,14 @@ const preprocessMarkdown = (text: string): string => {
 export const processContent = (content: string): string => {
   if (!content) return '';
 
+  // Hardcoded fix for Dino Graph hints showing broken widgets
+  if (content.toLowerCase().includes("plotter 2")) {
+    content = content.replace(
+      /\[\[(?:Widget:\s*|☃\s*)plotter 2.*?\]\]/gi,
+      "\n\n![](/fixed_graphs/corr.png)\n\n"
+    );
+  }
+
   // Phase 1: Clean legacy content (IMPORTANT: must happen first to unescape \$ and fix mangled structure)
   let processed = cleanLegacyContent(content);
 

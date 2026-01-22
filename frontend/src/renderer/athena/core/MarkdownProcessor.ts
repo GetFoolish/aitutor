@@ -61,6 +61,14 @@ export class MarkdownProcessor {
 
     let processed = content;
 
+    // Hardcoded fix for Dino Graph hints showing broken widgets
+    if (processed.toLowerCase().includes("plotter 2")) {
+      processed = processed.replace(
+        /\[\[(?:Widget:\s*|☃\s*)plotter 2.*?\]\]/gi,
+        "\n\n![](/fixed_graphs/corr.png)\n\n"
+      );
+    }
+
     // Step 1: Protect math expressions from markdown processing
     const mathPlaceholders: Array<{ placeholder: string; content: string; displayMode: boolean }> = [];
     let mathIndex = 0;

@@ -18,38 +18,14 @@ sys.path.insert(0, project_root)
 
 from managers.mongodb_manager import mongo_db
 from shared.logging_config import get_logger
+from shared.asset_utils import convert_graphie_url, fix_all_urls_in_string, apply_recursive_asset_fix
 
 logger = get_logger(__name__)
 
 
-def convert_graphie_url(url: str) -> str:
-    """
-    Convert Perseus graphie URLs to standard HTTPS URLs.
-
-    Perseus format: web+graphie://cdn.kastatic.org/ka-perseus-graphie/{hash}
-    Athena format: https://cdn.kastatic.org/ka-perseus-graphie/{hash}.svg
-    """
-    if not url:
-        return url
-
-    # Handle web+graphie:// protocol
-    if url.startswith('web+graphie://'):
-        # FIXED: Specific override for Question 6933689e1a5cae918f8bec3a (Hint 3)
-        # The original image has incorrect numbering (column-major instead of row-major).
-        # We redirect this specific hash to a local asset.
-        if 'e66544a9df611c00a03c44091f17ab1be4c19f1a' in url:
-             return '/assets/graphie-fix-6933689-hint3.svg'
-
-        # Remove protocol and add https
-        clean_url = url.replace('web+graphie://', 'https://')
-
-        # Add .svg extension if not present
-        if not clean_url.endswith(('.svg', '.png', '.jpg', '.jpeg', '.gif')):
-            clean_url += '.svg'
-
-        return clean_url
-
-    return url
+def convert_graphie_url_old(url: str) -> str:
+    # This function is now deprecated in favor of shared.asset_utils.convert_graphie_url
+    return convert_graphie_url(url)
 
 
 def convert_widget_to_athena(widget_id: str, widget_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -102,8 +78,6 @@ def convert_widget_to_athena(widget_id: str, widget_data: Dict[str, Any]) -> Dic
         choices = athena_widget['options'].get('choices', [])
         for i, choice in enumerate(choices):
             if isinstance(choice, dict):
-                if 'content' not in choice:
-                    choice['content'] = choice.get('text', '')
                 if 'correct' not in choice:
                     choice['correct'] = choice.get('isCorrect', False)
 
@@ -115,6 +89,9 @@ def convert_widget_to_athena(widget_id: str, widget_data: Dict[str, Any]) -> Dic
                 bg.get('width', 400),
                 bg.get('height', 300)
             ]
+
+    # Recursive check for any nested strings that might contain web+graphie URLs (like radio choice contents)
+    apply_recursive_asset_fix(athena_widget['options'])
 
     return athena_widget
 
