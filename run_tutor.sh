@@ -125,6 +125,11 @@ echo "Starting Auth Service API server... Logs -> logs/auth_service.log"
 (cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/AuthService/auth_api.py) > "$SCRIPT_DIR/logs/auth_service.log" 2>&1 &
 pids+=($!)
 
+# Start the Homework Assistant API server in the background
+echo "Starting Homework Assistant API server... Logs -> logs/homework_service.log"
+(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/HomeworkAssistant/api.py) > "$SCRIPT_DIR/logs/homework_service.log" 2>&1 &
+pids+=($!)
+
 # Extract ports dynamically from configuration files
 FRONTEND_PORT=$(grep -o '"port":[[:space:]]*[0-9]*' "$SCRIPT_DIR/frontend/vite.config.ts" 2>/dev/null | grep -o '[0-9]*' || echo "3000")
 DASH_API_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/DashSystem/dash_api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8000")
@@ -216,6 +221,7 @@ echo "  🔐 Auth Service:       http://localhost:$AUTH_SERVICE_PORT"
 echo "  🔧 DASH API:           http://localhost:$DASH_API_PORT"
 echo "  🕵️  SherlockED API:     http://localhost:$SHERLOCKED_API_PORT"
 echo "  👨‍🏫 TeachingAssistant:  http://localhost:$TEACHING_ASSISTANT_PORT"
+echo "  📚 Homework Assistant: http://localhost:8004"
 echo "  🎓 Tutor Service:      (integrated in frontend)"
 echo "  🎓 Cost Tracking Service:  http://localhost:$COST_TRACKING_PORT"
 echo "     Cost tracking interface: http://localhost:3000/app/admin/cost-tracking"

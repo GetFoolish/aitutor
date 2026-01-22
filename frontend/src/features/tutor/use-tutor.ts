@@ -84,8 +84,10 @@ export function useTutor(assessmentMode?: boolean): UseTutorResults {
 
     const stopAudioStreamer = () => audioStreamerRef.current?.stop();
 
-    const onAudio = (data: ArrayBuffer) =>
+    const onAudio = (data: ArrayBuffer) => {
+      console.log(`🔊 [TUTOR AUDIO] Received ${data.byteLength} bytes of audio data`);
       audioStreamerRef.current?.addPCM16(new Uint8Array(data));
+    };
 
     const onTokenUsage = async (usage: { 
       promptTokenCount: number; 

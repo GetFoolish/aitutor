@@ -96,22 +96,42 @@ class FileProcessor:
 
     def extract_text_from_image(self, file_content: bytes) -> str:
         """
-        Extract text from image file (placeholder for future OCR integration)
+        Extract text from image file using OCR (Tesseract)
 
         Args:
             file_content: Binary content of image file
 
         Returns:
-            Extracted text or placeholder
+            Extracted text from the image
         """
-        # TODO: Implement OCR using Google Vision API or similar
-        # For now, just validate the image can be opened
         try:
+            import pytesseract
+
+            # Open the image
             img = Image.open(io.BytesIO(file_content))
             width, height = img.size
-            return f"[Image file: {width}x{height} pixels - OCR not yet implemented]"
+            logger.info(f"[OCR] Processing image: {width}x{height} pixels")
+
+            # Perform OCR
+            extracted_text = pytesseract.image_to_string(img)
+
+            if extracted_text.strip():
+                logger.info(f"[OCR] Successfully extracted {len(extracted_text)} characters")
+                return extracted_text.strip()
+            else:
+                logger.warning("[OCR] No text found in image")
+                return f"[Image file: {width}x{height} pixels - No text detected by OCR]"
+
+        except ImportError:
+            logger.warning("pytesseract not installed, OCR not available")
+            try:
+                img = Image.open(io.BytesIO(file_content))
+                width, height = img.size
+                return f"[Image file: {width}x{height} pixels - OCR library not available]"
+            except:
+                return "[Image file - could not process]"
         except Exception as e:
-            logger.error(f"Error processing image: {e}")
+            logger.error(f"Error extracting text from image: {e}")
             return f"[Error processing image: {str(e)}]"
 
     def extract_text_from_document(self, file_content: bytes) -> str:

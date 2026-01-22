@@ -108,6 +108,15 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
       message,
     };
     this.emit("log", log);
+
+    // Log transcripts to console for debugging
+    if (type === "server.inputTranscript") {
+      console.log(`🎤 [USER]: ${message}`);
+    } else if (type === "server.outputTranscript") {
+      console.log(`🤖 [TUTOR]: ${message}`);
+    } else if (type === "client.injectHomework") {
+      console.log(`📚 [HOMEWORK INJECTED]:`, message);
+    }
   }
 
   async connect(config: LiveConnectConfig, preferredLanguage?: string, assessmentMode?: boolean): Promise<boolean> {

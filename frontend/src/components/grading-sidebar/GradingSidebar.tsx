@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import cn from "classnames";
-import { GraduationCap, ChevronRight, ChevronLeft, TrendingUp, Clock, Target } from "lucide-react";
+import { GraduationCap, ChevronRight, ChevronLeft, TrendingUp, Clock, Target, Upload, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { apiUtils } from "../../lib/api-utils";
+import { HomeworkPanel } from "@/components/homework-panel/HomeworkPanel";
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 import {
@@ -42,6 +43,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const isUserScrollingRef = useRef(false);
     const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const [homeworkExpanded, setHomeworkExpanded] = useState(true);
     
     // Fetch grading panel data from API
     const { data: gradingData, isLoading } = useQuery({
@@ -198,6 +200,58 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                 "max-md:hidden" // Hide on mobile
             )}
         >
+            {/* Homework Section Header */}
+            <header className={cn(
+                "flex items-center h-[44px] lg:h-[48px] border-b-[3px] border-black dark:border-white shrink-0 overflow-hidden transition-all duration-300 bg-[#FFD93D]",
+                open ? "justify-between px-3 lg:px-4" : "justify-center"
+            )}>
+                {open ? (
+                    <div
+                        className="flex items-center gap-2 lg:gap-2.5 animate-in fade-in slide-in-from-left-4 duration-300 cursor-pointer flex-1"
+                        onClick={() => setHomeworkExpanded(!homeworkExpanded)}
+                    >
+                        <div className="px-[0.25rem] pt-[0.15rem] pb-[0.25rem] lg:px-[0.375rem] lg:pt-[0.25rem] lg:pb-[0.375rem] border-[2px] lg:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]">
+                            <Upload className="w-4 h-4 text-black dark:text-white font-bold" />
+                        </div>
+                        <h2 className="text-xs lg:text-sm font-black text-black whitespace-nowrap tracking-tight">
+                            Homework
+                        </h2>
+                        <ChevronDown className={cn(
+                            "w-4 h-4 text-black transition-transform duration-200 ml-auto mr-2",
+                            homeworkExpanded && "rotate-180"
+                        )} />
+                    </div>
+                ) : (
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => { onToggle(); setHomeworkExpanded(true); }}
+                        className="w-[1.8125rem] h-[1.6rem] lg:w-[2.025rem] lg:h-[1.8125rem] border-[2px] lg:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] transition-colors shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
+                    >
+                        <Upload className="w-3 h-3 text-black dark:text-white dark:hover:text-black font-bold" />
+                    </Button>
+                )}
+
+                {open && (
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={onToggle}
+                        className="w-[2.125rem] h-[2.125rem] border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FF6B6B] dark:hover:bg-[#FF6B6B] text-black dark:text-white dark:hover:text-white transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1"
+                    >
+                        <ChevronLeft className="w-5 h-5 font-bold" />
+                    </Button>
+                )}
+            </header>
+
+            {/* Homework Content (collapsible) */}
+            {open && homeworkExpanded && (
+                <div className="border-b-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] p-3 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <HomeworkPanel />
+                </div>
+            )}
+
+            {/* Grading & Skills Header */}
             <header className={cn(
                 "flex items-center h-[44px] lg:h-[48px] border-b-[3px] border-black dark:border-white shrink-0 overflow-hidden transition-all duration-300 bg-[#FF6B6B]",
                 open ? "justify-between px-3 lg:px-4" : "justify-center"
@@ -219,17 +273,6 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                         className="w-[1.8125rem] h-[1.6rem] lg:w-[2.025rem] lg:h-[1.8125rem] border-[2px] lg:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] transition-colors shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
                     >
                         <GraduationCap className="w-3 h-3 text-black dark:text-white dark:hover:text-black font-bold" />
-                    </Button>
-                )}
-
-                {open && (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={onToggle}
-                        className="w-[2.125rem] h-[2.125rem] border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1"
-                    >
-                        <ChevronLeft className="w-5 h-5 font-bold" />
                     </Button>
                 )}
             </header>

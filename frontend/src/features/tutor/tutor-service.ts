@@ -145,6 +145,7 @@ export class TutorService {
   private _isConnected: boolean = false;
   private _isClosing: boolean = false;
   private _cleanupCallbacks: Set<() => void> = new Set();
+  private _sessionHandle: string | null = null; // For session resumption
 
   /**
    * Initialize the service
@@ -198,11 +199,15 @@ export class TutorService {
       systemInstruction: config.systemInstruction || this.systemPrompt,
       // Ensure AUDIO modality is set for voice extraction (use Modality enum, not raw string)
       responseModalities: config.responseModalities ?? [Modality.AUDIO],
-    };
+      // Enable session resumption to handle brief disconnects (wifi->5G, etc)
+      // Sessions can be resumed within 24 hours without losing context
+      sessionResumption: { handle: this._sessionHandle || undefined },
+    } as LiveConnectConfig;
 
     console.log(`Connecting to Gemini model: ${this.model}`);
     console.log(`Voice: ${fullConfig.speechConfig?.voiceConfig?.prebuiltVoiceConfig?.voiceName || 'default'}`);
     console.log(`Response Modalities: ${fullConfig.responseModalities?.join(', ') || 'AUDIO'}`);
+    console.log(`Session Resumption: ${this._sessionHandle ? 'Resuming previous session' : 'New session'}`);
 
     try {
       this.geminiSession = await this.geminiClient.live.connect({
@@ -216,6 +221,12 @@ export class TutorService {
             callbacks.onopen?.();
           },
           onmessage: (message: LiveServerMessage) => {
+            // Capture session handle for resumption if provided
+            const msgAny = message as any;
+            if (msgAny.sessionResumptionUpdate?.newHandle) {
+              this._sessionHandle = msgAny.sessionResumptionUpdate.newHandle;
+              console.log('[Session] Got resumption handle for reconnection');
+            }
             callbacks.onmessage?.(message);
           },
           onerror: (error: ErrorEvent | Error) => {
@@ -592,8 +603,8 @@ export class TutorService {
       return;
     }
 
-    const contextMessage = `[HOMEWORK UPLOADED]
-The student has uploaded homework that they need help with.
+    const contextMessage = `[HOMEWORK UPLOADED - HELP THE STUDENT NOW]
+The student has uploaded homework and needs your help working through it.
 
 Filename: ${filename}
 
@@ -601,16 +612,24 @@ Filename: ${filename}
 ${homeworkContent}
 --- END HOMEWORK CONTENT ---
 
-Please acknowledge that you can see their homework and offer to help them work through it. Remember to guide them with hints and questions rather than giving direct answers.`;
+IMPORTANT: Start helping immediately! Do the following:
+1. Briefly acknowledge you can see their homework (1 sentence max)
+2. Identify what type of problems/questions are on the homework
+3. Ask the student which problem they'd like to start with, OR if it's a single problem, start guiding them through it
+4. Use the Socratic method - ask guiding questions, give hints, help them discover the answer themselves
+5. Be encouraging and supportive
+
+Do NOT just say "I can see your homework" and stop. Actively engage and start the tutoring process!`;
 
     try {
+      console.log(`📚 [HOMEWORK CONTEXT SENT TO TUTOR]:\n${contextMessage}`);
       this.geminiSession.sendClientContent({
         turns: [{ role: 'user', parts: [{ text: contextMessage }] }],
         turnComplete: true,
       });
-      console.log(`Homework context injected: ${filename}`);
+      console.log(`✅ Homework context injected: ${filename}`);
     } catch (error) {
-      console.error('Error injecting homework context:', error);
+      console.error('❌ Error injecting homework context:', error);
     }
   }
 }

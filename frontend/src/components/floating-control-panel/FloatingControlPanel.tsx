@@ -58,6 +58,9 @@ import {
 
 const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
 
+// Module-level variable for throttling audio logs
+let lastAudioLogTime = 0;
+
 export type FloatingControlPanelProps = {
   videoRef: RefObject<HTMLVideoElement>;
   renderCanvasRef: ((canvas: HTMLCanvasElement | null) => void) | RefObject<HTMLCanvasElement>;
@@ -175,15 +178,50 @@ function FloatingControlPanel({
   }, []);
 
   useEffect(() => {
-    navigator.mediaDevices.enumerateDevices().then((devices) => {
-      const audioInputs = devices.filter(
-        (device) => device.kind === "audioinput",
-      );
-      setAudioDevices(audioInputs);
-      if (audioInputs.length > 0) {
-        setSelectedAudioDevice(audioInputs[0].deviceId);
+    // Request microphone permission FIRST, then enumerate devices
+    // This ensures we get valid device IDs (without permission, device IDs may be empty/invalid)
+    const initializeAudioDevices = async () => {
+      try {
+        // Request permission first by getting any audio stream
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Stop the stream immediately - we just needed permission
+        stream.getTracks().forEach(track => track.stop());
+        console.log('[Audio] Microphone permission granted');
+
+        // Now enumerate devices (will have valid device IDs)
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const audioInputs = devices.filter(
+          (device) => device.kind === "audioinput",
+        );
+        console.log(`[Audio] Found ${audioInputs.length} audio input devices:`, audioInputs.map(d => ({ label: d.label, id: d.deviceId?.substring(0, 10) })));
+
+        setAudioDevices(audioInputs);
+        if (audioInputs.length > 0) {
+          setSelectedAudioDevice(audioInputs[0].deviceId);
+          console.log(`[Audio] Selected default device: ${audioInputs[0].label || 'Default'}`);
+        } else {
+          console.warn('[Audio] No audio input devices found!');
+        }
+      } catch (error) {
+        console.error('[Audio] Failed to initialize audio devices:', error);
+        // Still try to enumerate devices even without permission
+        try {
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          const audioInputs = devices.filter(
+            (device) => device.kind === "audioinput",
+          );
+          setAudioDevices(audioInputs);
+          if (audioInputs.length > 0) {
+            // Device IDs might be empty, so use empty string (will trigger fallback in audio-recorder)
+            setSelectedAudioDevice(audioInputs[0].deviceId || '');
+          }
+        } catch (enumError) {
+          console.error('[Audio] Failed to enumerate devices:', enumError);
+        }
       }
-    });
+    };
+
+    initializeAudioDevices();
   }, []);
 
   useEffect(() => {
@@ -244,6 +282,12 @@ function FloatingControlPanel({
       }
 
       try {
+        // Log that we're sending user audio (periodically to avoid spam)
+        if (Date.now() - lastAudioLogTime > 2000) {
+          console.log(`🎤 [USER AUDIO] Sending ${base64.length} bytes to Gemini`);
+          lastAudioLogTime = Date.now();
+        }
+
         // Send to Gemini (existing functionality)
         // sendRealtimeInput handles WebSocket state errors internally
         client.sendRealtimeInput([
@@ -1071,19 +1115,6 @@ function FloatingControlPanel({
             <Eye className="w-3.5 h-3.5 font-bold" />
           </button>
 
-          <button
-            onClick={toggleHomework}
-            className={cn(
-              "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
-              homeworkOpen
-                ? "bg-[#FFD93D] text-black"
-                : "bg-[#FFD93D] text-black hover:bg-[#FFE566] border-black",
-            )}
-            title="Upload Homework"
-          >
-            <Upload className="w-3.5 h-3.5 font-bold" />
-          </button>
-
           <div
             className={cn(
               "w-10 h-8 flex items-center justify-center text-[9px] font-mono font-black mt-1 transition-colors border-[2px] border-black",
@@ -1453,39 +1484,6 @@ function FloatingControlPanel({
         )
       }
 
-      {/* Popover for Homework */}
-      {homeworkOpen && (
-        <div
-          className={cn(
-            "absolute w-[320px] md:w-[360px] h-auto flex flex-col bg-white dark:bg-[#000000] border-[3px] md:border-[4px] border-black dark:border-white rounded-xl md:rounded-2xl shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] overflow-hidden z-[1001]",
-            isHomeworkAnimatingOut ? "animate-popover-out" : "animate-popover-in",
-            popoverPosition === "right"
-              ? "left-full ml-4 md:ml-6"
-              : "right-full mr-4 md:mr-6",
-            verticalAlign === "bottom" ? "bottom-0" : "top-0",
-          )}
-        >
-          <div className="flex items-center justify-between p-3 md:p-3.5 border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#FFD93D]">
-            <div className="flex items-center gap-2 md:gap-3">
-              <div className="p-1.5 md:p-2 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-[#000000]">
-                <Upload className="w-4 h-4 md:w-5 md:h-5 text-black dark:text-white font-bold" />
-              </div>
-              <h3 className="font-black text-black uppercase text-xs md:text-sm">
-                UPLOAD HOMEWORK
-              </h3>
-            </div>
-            <button
-              onClick={toggleHomework}
-              className="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-[#000000] hover:bg-[#FF006E] text-black dark:text-white hover:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1"
-            >
-              <X className="w-4 h-4 md:w-5 md:h-5 font-bold" />
-            </button>
-          </div>
-          <div className="flex-1 min-h-0 bg-[#FFFDF5] dark:bg-[#000000] overflow-hidden p-3 md:p-4">
-            <HomeworkPanel />
-          </div>
-        </div>
-      )}
     </motion.div >
   );
 }
