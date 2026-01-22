@@ -1,15 +1,15 @@
 import React from "react";
-import cn from "classnames";
+import { VideoTrack, isTrackReference } from "@livekit/components-react";
 
 export interface AvatarLiveVideoProps {
-  videoTrack?: any; // LiveKit video track
+  videoTrack?: any; // LiveKit video track reference
   agentState?: string; // 'speaking' | 'listening' | 'thinking' | 'connecting' | 'disconnected'
   isLive?: boolean;
 }
 
 /**
  * Avatar Live Video Component
- * 
+ *
  * Displays the live avatar video from LiveKit/Hedra when session is active.
  * Falls back to placeholder if video track is not available.
  */
@@ -19,21 +19,16 @@ export default function AvatarLiveVideo({
   isLive = false,
 }: AvatarLiveVideoProps) {
   // Check if videoTrack is a valid LiveKit TrackReference
-  const hasValidTrack = videoTrack && videoTrack.track;
+  const hasValidTrack = videoTrack && isTrackReference(videoTrack);
+
+  console.log('[AvatarLiveVideo] Rendering with track:', hasValidTrack ? 'VALID' : 'INVALID', videoTrack);
 
   return (
     <div className="w-full h-full flex items-center justify-center bg-black relative">
       {hasValidTrack ? (
-        <video
-          ref={(el) => {
-            if (el && videoTrack?.track) {
-              videoTrack.track.attach(el);
-            }
-          }}
+        <VideoTrack
+          trackRef={videoTrack}
           className="w-full h-full object-cover object-top"
-          autoPlay
-          playsInline
-          muted={false}
         />
       ) : (
         /* Placeholder when video track is not available */

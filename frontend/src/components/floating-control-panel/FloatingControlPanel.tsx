@@ -25,6 +25,7 @@ import { ScratchpadPublisher } from "../../features/livekit/ScratchpadPublisher"
 import { useTheme } from "../theme/theme-provier";
 import { feedWebSocketService } from "../../services/feed-websocket-service";
 import { instructionSSEService } from "../../services/instruction-sse-service";
+import AvatarVideoDisplay from "../avatar/AvatarVideoDisplay";
 // NOTE: Gemini types removed - using LiveKit for voice AI
 // import { LiveServerContent } from '@google/genai';
 // function extractTranscriptFromContent removed - no longer needed
@@ -259,6 +260,7 @@ function FloatingControlPanel({
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isVideoExpanded, setIsVideoExpanded] = useState(false);
   const [sessionTime, setSessionTime] = useState(0);
   const [popoverPosition, setPopoverPosition] = useState<"left" | "right">(
     "right",
@@ -655,12 +657,13 @@ function FloatingControlPanel({
             </button>
           </div>
 
-          {/* Avatar Video Frame */}
-          <AvatarVideoFrame
+          {/* Avatar Video Frame with speaker button for intro */}
+          <AvatarVideoDisplay
             videoTrack={agentVideoTrack}
             isConnected={liveKitConnected}
             agentState={agentState}
-            isSpeaking={agentState === 'speaking'}
+            isExpanded={isVideoExpanded}
+            onToggleExpand={() => setIsVideoExpanded(!isVideoExpanded)}
           />
 
           {/* Status row - minimal */}
