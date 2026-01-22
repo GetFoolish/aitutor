@@ -14,6 +14,10 @@ from datetime import date, datetime
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
+# Load environment variables from .env file
+from dotenv import load_dotenv
+load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
+
 from services.AuthService.oauth_handler import GoogleOAuthHandler
 from services.AuthService.jwt_utils import create_jwt_token, create_setup_token, verify_setup_token, verify_token
 from services.AuthService.password_utils import hash_password, verify_password, validate_password_strength
