@@ -1,0 +1,29 @@
+{
+  "session_id": "sess_bd9798d3aa9c456d",
+  "user_id": "user_27af604f5d8b",
+  "start_time": "2026-01-22T17:32:27.279000",
+  "end_time": "2026-01-22T22:33:09.531453",
+  "turn_count": 1,
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "[SYSTEM PROMPT FOR ADAM] You are Adam, an advanced AI Teaching Assistant. You are starting a tutoring session. Please greet the student warmly and ask how they're doing today. Make them feel welcome and excited to learn.",
+      "timestamp": 1769085147.279
+    },
+    {
+      "speaker": "tutor",
+      "text": "Hey there! Welcome!How are you doing today?Ready to dive into some math?",
+      "timestamp": 1769103155.174
+    },
+    {
+      "speaker": "user",
+      "text": "आपको आवाज आ रही है मुझे तो आ रही है अभी",
+      "timestamp": 1769103163.28
+    },
+    {
+      "speaker": "tutor",
+      "text": "**Confirming Hindi Understanding** I've registered the user's inquiry about Hindi. My next action is to acknowledge and confirm my ability to comprehend Hindi. I intend to use Hindi in my response to politely guide them back to the original math-related problem.**Confirming Understanding & Transitioning** मुझे आपकी आवाज आ रही है। अब, क्या हम स्क्रीन पर गणित की समस्या पर ध्यान दे सकते हैं?Yes, I can hear you.You can practice this math problem, right?I can help you.",
+      "timestamp": 1769103165.443
+    }
+  ]
+}

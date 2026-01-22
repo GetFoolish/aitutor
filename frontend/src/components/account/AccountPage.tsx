@@ -525,6 +525,34 @@ const AccountPage: React.FC = () => {
                 )}>
                   {formatMinutes((accountInfo.credits?.balance || 0) + (accountInfo.free_minutes?.balance || 0))}
                 </p>
+
+                {/* Reset Timer - Show when user has 0 minutes and reset info is available */}
+                {((accountInfo.credits?.balance || 0) + (accountInfo.free_minutes?.balance || 0)) === 0 &&
+                 accountInfo.free_minutes?.next_reset_in_hours !== undefined &&
+                 accountInfo.free_minutes?.next_reset_in_hours !== null && (
+                  <div className={cn(
+                    "mt-2 p-2 text-xs font-bold",
+                    "border-[2px] border-black dark:border-white bg-[#C4B5FD] text-black"
+                  )}>
+                    {accountInfo.free_minutes.next_reset_in_hours === 0 && accountInfo.free_minutes.next_reset_in_minutes === 0 ? (
+                      <>
+                        ✨ Free minutes available now! <span className="font-black">Refresh the page</span> to get your 15 free minutes.
+                      </>
+                    ) : accountInfo.free_minutes.next_reset_in_hours !== null && accountInfo.free_minutes.next_reset_in_minutes !== null ? (
+                      <>
+                        ⏱️ Free minutes reset in{' '}
+                        <span className="font-black">
+                          {accountInfo.free_minutes.next_reset_in_hours > 0 &&
+                            `${accountInfo.free_minutes.next_reset_in_hours}h`}
+                          {accountInfo.free_minutes.next_reset_in_hours > 0 &&
+                           accountInfo.free_minutes.next_reset_in_minutes > 0 && ' '}
+                          {accountInfo.free_minutes.next_reset_in_minutes > 0 &&
+                            `${accountInfo.free_minutes.next_reset_in_minutes}m`}
+                        </span>
+                      </>
+                    ) : null}
+                  </div>
+                )}
               </div>
 
               <Button
