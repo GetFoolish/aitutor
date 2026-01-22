@@ -370,6 +370,16 @@ export function ImageWidget({
           .target-graph-fix {
             transition: filter 0.3s ease;
           }
+
+          /* Force White Background for specific diagrams in Dark Mode (e.g. Cell Diagram) */
+          .athena-theme-dark .force-white-bg,
+          :root.dark .force-white-bg,
+          .dark .force-white-bg,
+          [data-theme="dark"] .force-white-bg {
+             background-color: white !important;
+             padding: 8px !important;
+             border-radius: 4px !important;
+          }
         `}</style>
         {/* Loading state */}
         {isLoading && (
@@ -446,7 +456,9 @@ export function ImageWidget({
                 imageUrl.includes('question_69324cd9_forest')
               )
               ? 'target-graph-fix'
-              : ''
+              : (imageUrl.includes('90d20d92234515a0ce3d81f731fc210615df78fe'))
+                ? 'force-white-bg'
+                : ''
               }`}
             referrerPolicy="no-referrer"
             style={{
