@@ -361,7 +361,6 @@ async def start_session(http_request: Request, request: Optional[StartSessionReq
     """Start a new tutoring session (supports both normal and assessment modes)"""
     user_id = get_current_user(http_request)
     assessment_mode = request.assessment_mode if request else False
-
     try:
         # STEP 1: Allocate daily free minutes if needed
         from services.PaymentService.free_minutes_handler import (
@@ -377,7 +376,7 @@ async def start_session(http_request: Request, request: Optional[StartSessionReq
         total_balance = balances["total"]
         mode_str = "ASSESSMENT" if assessment_mode else "NORMAL"
         logger.info(f"[SESSION_START] [{mode_str}] User {user_id[:8]}... has {total_balance} minutes available (free: {balances['free']}, paid: {balances['paid']})")
-
+        
         if total_balance < 1:
             logger.warning(f"[SESSION_START] ❌ User {user_id[:8]}... has insufficient minutes: {total_balance}")
             raise HTTPException(
@@ -389,11 +388,11 @@ async def start_session(http_request: Request, request: Optional[StartSessionReq
                     "required": 1
                 }
             )
-
+        
         # Create session in MongoDB (existing method)
         result = ta.start_session(user_id)
         session_id = result["session_info"]["session_id"]
-
+        
         # STEP 3: Store credits_at_start and assessment_mode flag for session monitoring
         from managers.mongodb_manager import mongo_db
         mongo_db.sessions.update_one(
@@ -428,19 +427,19 @@ async def start_session(http_request: Request, request: Optional[StartSessionReq
             ta.queue_manager.enqueue(start_event)
         else:
             logger.info(f"[SESSION_START] Skipping TA initialization for assessment mode")
-
+        
         # UPDATED: Return greeting in response for immediate delivery
         # Also sent via SSE for systems that listen to instruction queue
         # This ensures backward compatibility with frontends expecting prompt in response
         session_id = result["session_id"]
 
-        # Initialize cost tracking for this session (works for both modes)
+        # Initialize cost tracking for this session
         from services.CostTracking.cost_tracker import CostTracker
         cost_tracker = CostTracker(session_id, user_id)
         cost_tracker.start_session()
 
         return PromptResponse(
-            prompt=greeting or "",  # Return greeting (empty in assessment mode)
+            prompt=greeting or "",  # Return greeting directly (not empty!)
             session_info=result["session_info"]
         )
     except Exception as e:
@@ -522,11 +521,11 @@ async def end_session(http_request: Request, request: Optional[EndSessionRequest
         #     data={"session_id": session_id, "user_id": user_id}
         # )
         # ta.queue_manager.enqueue(end_event)
-
-        # Get session summary (existing method for stats - works for both modes)
+        
+        # Get session summary (existing method for stats)
         result = ta.end_session(session_id)
 
-        # Finalize cost tracking for this session (works for both modes)
+        # Finalize cost tracking for this session
         try:
             from services.CostTracking.cost_tracker import CostTracker
             cost_tracker = CostTracker(session_id, user_id)
@@ -534,34 +533,32 @@ async def end_session(http_request: Request, request: Optional[EndSessionRequest
         except Exception as cost_error:
             logger.error(f"[COST_TRACKING] Failed to finalize costs: {cost_error}", exc_info=True)
 
-        # CONDITIONAL: Pre-load next session questions only in normal mode
-        if not session_assessment_mode:
-            try:
-                auth_header = http_request.headers.get("Authorization", "")
-                if not auth_header:
-                    auth_header = http_request.headers.get("authorization", "")
+        # Pre-load next session questions in background (non-blocking)
+        try:
+            auth_header = http_request.headers.get("Authorization", "")
+            if not auth_header:
+                auth_header = http_request.headers.get("authorization", "")
 
-                token = ""
-                if auth_header.startswith("Bearer "):
-                    token = auth_header.replace("Bearer ", "", 1)
-                elif auth_header.startswith("bearer "):
-                    token = auth_header.replace("bearer ", "", 1)
+            token = ""
+            if auth_header.startswith("Bearer "):
+                token = auth_header.replace("Bearer ", "", 1)
+            elif auth_header.startswith("bearer "):
+                token = auth_header.replace("bearer ", "", 1)
 
-                if token and len(token) > 0:
-                    preload_thread = threading.Thread(
-                        target=_preload_questions_background,
-                        args=(user_id, token),
-                        daemon=True
-                    )
-                    preload_thread.start()
-            except Exception as e:
-                logger.error(f"[PRELOAD] Failed to start pre-loading thread: {e}")
+            if token and len(token) > 0:
+                preload_thread = threading.Thread(
+                    target=_preload_questions_background,
+                    args=(user_id, token),
+                    daemon=True
+                )
+                preload_thread.start()
+        except Exception as e:
+            logger.error(f"[PRELOAD] Failed to start pre-loading thread: {e}")
 
-        logger.info(f"[SESSION_END] ✅ [{mode_str}] Session {session_id[:8]}... ended successfully")
-
-        # Return closing message directly (also sent via SSE) - empty in assessment mode
+        
+        # Return closing message directly (also sent via SSE)
         return PromptResponse(
-            prompt=closing or result["prompt"],  # Use memory-aware closing or fallback (empty in assessment)
+            prompt=closing or result["prompt"],  # Use memory-aware closing or fallback
             session_info=result["session_info"]
         )
     except Exception as e:
@@ -1412,6 +1409,112 @@ def send_instruction_to_tutor(http_request: Request):
 from services.CostTracking.api import router as cost_router
 app.include_router(cost_router)
 
+
+if __name__ == "__main__":
+    import sys
+import os
+import threading
+import requests
+import asyncio
+from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+from typing import Optional
+from urllib.parse import parse_qs
+from sse_starlette.sse import EventSourceResponse
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
+from services.TeachingAssistant.teaching_assistant import TeachingAssistant
+from shared.auth_middleware import get_current_user, get_user_from_token
+from shared.cors_config import ALLOWED_ORIGINS, ALLOW_CREDENTIALS, ALLOWED_METHODS, ALLOWED_HEADERS
+from shared.timing_middleware import UnpluggedTimingMiddleware
+from shared.cache_middleware import CacheControlMiddleware
+
+from shared.logging_config import get_logger
+
+logger = get_logger(__name__)
+
+# ============================================================================
+# Observer WebSocket Registry (for real-time feed monitoring)
+# ============================================================================
+# Maps session_id -> list of observer WebSocket connections
+# Used by backend devs to monitor live sessions and feed data to TeachingAssistant
+from typing import Dict, List
+active_observers: Dict[str, List[WebSocket]] = {}
+
+# Simple API key for observer authentication (backend devs only)
+# In production, use a more robust auth mechanism
+OBSERVER_API_KEY = os.getenv("OBSERVER_API_KEY", "dev-observer-key-12345")
+
+
+app = FastAPI(title="Teaching Assistant API")
+
+# Add timing middleware for performance monitoring (Phase 1)
+app.add_middleware(UnpluggedTimingMiddleware)
+
+# Cache Control (Phase 7)
+app.add_middleware(CacheControlMiddleware)
+
+# Add GZip compression middleware (Phase 7)
+app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=6)
+
+# Configure CORS with secure origins from environment
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=ALLOW_CREDENTIALS,
+    allow_methods=ALLOWED_METHODS,
+    allow_headers=ALLOWED_HEADERS,
+    expose_headers=["*"],
+)
+
+# Request timeout middleware (Phase 3)
+@app.middleware("http")
+async def timeout_middleware(request: Request, call_next):
+    try:
+        return await asyncio.wait_for(call_next(request), timeout=30.0)
+    except asyncio.TimeoutError:
+        return JSONResponse(
+            status_code=504,
+            content={"detail": "Request timeout"}
+        )
+
+# Cache control middleware for static responses (Phase 7)
+@app.middleware("http")
+async def cache_control_middleware(request: Request, call_next):
+    response = await call_next(request)
+    if request.url.path == "/health":
+        response.headers["Cache-Control"] = "public, max-age=60"
+    elif request.url.path.startswith("/session/info"):
+        response.headers["Cache-Control"] = "private, max-age=10"
+    else:
+        response.headers["Cache-Control"] = "no-cache"
+    return response
+
+# Explicit OPTIONS handler for Cloud Run compatibility (backup)
+@app.options("/{full_path:path}")
+async def options_handler(full_path: str):
+    """Handle OPTIONS preflight requests explicitly for Cloud Run"""
+    from fastapi.responses import Response
+    # Use first allowed origin or * if none configured
+    origin = ALLOWED_ORIGINS[0] if ALLOWED_ORIGINS else "*"
+    return Response(
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": origin,
+            "Access-Control-Allow-Methods": ", ".join(ALLOWED_METHODS),
+            "Access-Control-Allow-Headers": "*",
+        }
+    )
+
+# Create TeachingAssistant instance (now stateless - all state in MongoDB)
+
+# Include Cost Tracking API routes (Phase 4)
+from services.CostTracking.api import router as cost_router
+app.include_router(cost_router)
 
 
 if __name__ == "__main__":
