@@ -99,6 +99,18 @@ def convert_widget_to_athena(widget_id: str, widget_data: Dict[str, Any]) -> Dic
     return converted
 
 
+
+def remove_markdown_bold(text: str) -> str:
+    """
+    Remove markdown bold asterisks (**text**) from string.
+    Replacing '**text**' with 'text'.
+    """
+    if not text:
+        return text
+    # Replace **text** with text
+    return re.sub(r'\*\*(.*?)\*\*', r'\1', text)
+
+
 def convert_content_images(content: str, images: Dict[str, Any]) -> str:
     """
     Convert image references in content to use HTTPS URLs.
@@ -187,6 +199,8 @@ def convert_question_to_athena(doc: Dict[str, Any]) -> Dict[str, Any]:
     if not isinstance(images, dict):
         images = {}
     converted_content = convert_content_images(content, images)
+    # Remove markdown bold asterisks that are not rendered correctly in tables
+    converted_content = remove_markdown_bold(converted_content)
 
     # Convert images dict to Athena format
     def convert_images_dict(img_dict):
@@ -222,7 +236,7 @@ def convert_question_to_athena(doc: Dict[str, Any]) -> Dict[str, Any]:
             hint_images = {}
 
         athena_hints.append({
-            'content': convert_content_images(hint_content, hint_images),
+            'content': remove_markdown_bold(convert_content_images(hint_content, hint_images)),
             'widgets': hint_widgets,
             'images': convert_images_dict(hint_images),
             'replace': hint.get('replace', False),
