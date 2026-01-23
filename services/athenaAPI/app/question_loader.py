@@ -111,6 +111,44 @@ def remove_markdown_bold(text: str) -> str:
     return re.sub(r'\*\*(.*?)\*\*', r'\1', text)
 
 
+def fix_latex_environments(text: str) -> str:
+    """
+    Replace LaTeX environments that don't work well in inline math.
+    e.g., \begin{align} -> \begin{aligned}
+    """
+    if not text:
+        return text
+    # Replace align with aligned
+    text = text.replace(r'\begin{align}', r'\begin{aligned}')
+    text = text.replace(r'\end{align}', r'\end{aligned}')
+    # Handle double escaped versions if any
+    text = text.replace(r'\\begin{align}', r'\\begin{aligned}')
+    text = text.replace(r'\\end{align}', r'\\end{aligned}')
+    return text
+
+
+def strip_hint_headers(text: str) -> str:
+    """
+    Remove markdown headers like ###Strategy from the start of hints.
+    """
+    if not text:
+        return text
+    # Remove one or more # followed by optional spaces at the start of a line
+    return re.sub(r'^#+\s*', '', text, flags=re.MULTILINE)
+
+
+def clean_athena_content(text: str) -> str:
+    """
+    Apply all content cleaning rules.
+    """
+    if not text:
+        return text
+    text = remove_markdown_bold(text)
+    text = fix_latex_environments(text)
+    text = strip_hint_headers(text)
+    return text
+
+
 def convert_content_images(content: str, images: Dict[str, Any]) -> str:
     """
     Convert image references in content to use HTTPS URLs.
@@ -199,8 +237,8 @@ def convert_question_to_athena(doc: Dict[str, Any]) -> Dict[str, Any]:
     if not isinstance(images, dict):
         images = {}
     converted_content = convert_content_images(content, images)
-    # Remove markdown bold asterisks that are not rendered correctly in tables
-    converted_content = remove_markdown_bold(converted_content)
+    # Apply global content cleaning (bold, latex, headers)
+    converted_content = clean_athena_content(converted_content)
 
     # Convert images dict to Athena format
     def convert_images_dict(img_dict):
@@ -236,7 +274,7 @@ def convert_question_to_athena(doc: Dict[str, Any]) -> Dict[str, Any]:
             hint_images = {}
 
         athena_hints.append({
-            'content': remove_markdown_bold(convert_content_images(hint_content, hint_images)),
+            'content': clean_athena_content(convert_content_images(hint_content, hint_images)),
             'widgets': hint_widgets,
             'images': convert_images_dict(hint_images),
             'replace': hint.get('replace', False),
@@ -263,16 +301,30 @@ def convert_question_to_athena(doc: Dict[str, Any]) -> Dict[str, Any]:
     widget_types_in_item = list(set(w['type'] for w in athena_widgets.values()))
 
     # Build raw Perseus item (unmodified fields but with converted URLs for compatibility)
-    # We use deep_convert_urls to ensure everything is web-ready
+    # We apply content cleaning here as well to ensure consistent behavior if frontend falls back
+    clean_question_data = question_data.copy()
+    if 'content' in clean_question_data:
+        clean_question_data['content'] = clean_athena_content(clean_question_data['content'])
+    
+    clean_hints = []
+    for h in hints:
+        if isinstance(h, dict):
+            h_copy = h.copy()
+            if 'content' in h_copy:
+                h_copy['content'] = clean_athena_content(h_copy['content'])
+            clean_hints.append(h_copy)
+        else:
+            clean_hints.append(h)
+
     perseus_item = deep_convert_urls({
-        'question': question_data,
-        'hints': hints,
+        'question': clean_question_data,
+        'hints': clean_hints,
         'answerArea': answer_area,
         'itemDataVersion': doc.get('itemDataVersion', {'major': 2, 'minor': 0})
     })
 
     # Ensure it's not a Pydantic object if coming from anywhere else
-    if hasattr(perseus_item, 'dict'):
+    if hasattr(perseus_item, 'get') and hasattr(perseus_item, 'dict'):
         perseus_item = perseus_item.dict()
 
     athena_item = {
