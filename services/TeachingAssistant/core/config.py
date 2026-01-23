@@ -35,8 +35,12 @@ class TeachingAssistantConfig:
     )
 
     # =================================
-    # Vector Database (Pinecone)
+    # Vector Database (MongoDB default, Pinecone optional)
     # =================================
+    memory_store_backend: str = field(
+        default_factory=lambda: os.getenv("MEMORY_STORE_BACKEND", "mongodb")
+    )
+    # Pinecone settings (only used if MEMORY_STORE_BACKEND=pinecone)
     pinecone_api_key: str = field(
         default_factory=lambda: os.getenv("PINECONE_API_KEY", "")
     )
@@ -183,11 +187,12 @@ class TeachingAssistantConfig:
         if not self.has_gemini and not self.has_openai:
             issues.append("ERROR: No LLM provider configured (GEMINI_API_KEY or OPENAI_API_KEY)")
 
-        if not self.has_pinecone and self.enable_semantic_search:
-            issues.append("WARNING: Semantic search enabled but PINECONE_API_KEY not set")
-
         if not self.has_mongodb:
-            issues.append("WARNING: MONGODB_URI not set - some features may not work")
+            issues.append("WARNING: MONGODB_URI not set - memory system may not work")
+
+        # Only warn about Pinecone if explicitly using pinecone backend
+        if self.memory_store_backend == "pinecone" and not self.has_pinecone:
+            issues.append("WARNING: MEMORY_STORE_BACKEND=pinecone but PINECONE_API_KEY not set")
 
         return issues
 
@@ -197,10 +202,10 @@ class TeachingAssistantConfig:
             "llm_provider": self.llm_provider,
             "has_gemini": self.has_gemini,
             "has_openai": self.has_openai,
-            "has_pinecone": self.has_pinecone,
             "has_mongodb": self.has_mongodb,
+            "memory_store_backend": self.memory_store_backend,
+            "has_pinecone": self.has_pinecone,  # Legacy - kept for compatibility
             "gemini_text_model": self.gemini_text_model,
-            "pinecone_index_name": self.pinecone_index_name,
             "embedding_dimension": self.embedding_dimension,
             "enable_biographer": self.enable_biographer,
             "enable_memory_extraction": self.enable_memory_extraction,

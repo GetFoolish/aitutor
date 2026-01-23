@@ -463,7 +463,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--clean",
         action="store_true",
-        help="Clear all existing memories (Pinecone + local) for the user before starting simulation"
+        help="Clear all existing memories (vector store + local) for the user before starting simulation"
     )
 
     args = parser.parse_args()
