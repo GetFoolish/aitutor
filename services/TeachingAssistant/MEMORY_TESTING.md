@@ -44,18 +44,25 @@ You need a MongoDB Atlas cluster with Vector Search enabled:
 
 ### 2. Environment Variables
 
-Create a `.env` file with these required variables:
+Copy the example file and fill in your values:
 
 ```bash
-# MongoDB Atlas (REQUIRED)
-MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/ai_tutor?retryWrites=true&w=majority
+cp services/TeachingAssistant/.env.example .env
+```
 
-# Embeddings - use Gemini (REQUIRED - pick one)
-GOOGLE_API_KEY=your_google_api_key
-# OR
-GEMINI_API_KEY=your_gemini_api_key
+Edit `.env` with your credentials (minimum required):
 
-# Embedding dimension - MUST match your Atlas vector index
+```bash
+# REQUIRED - Get from MongoDB Atlas UI → Database → Connect
+MONGODB_URI=mongodb+srv://YOUR_USER:YOUR_PASSWORD@YOUR_CLUSTER.mongodb.net/ai_tutor
+
+# REQUIRED - Get from https://makersuite.google.com/app/apikey
+GOOGLE_API_KEY=your_google_api_key_here
+
+# REQUIRED - Any random string for JWT auth
+JWT_SECRET=your_random_secret_string_here
+
+# MUST match your Atlas vector index (default: 768)
 EMBEDDING_DIMENSION=768
 
 # JWT for API auth
