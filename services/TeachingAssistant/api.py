@@ -504,27 +504,13 @@ async def end_session(http_request: Request, request: Optional[EndSessionRequest
         session_assessment_mode = session.get("assessment_mode", assessment_mode)
         mode_str = "ASSESSMENT" if session_assessment_mode else "NORMAL"
 
-        # CONDITIONAL: End session with memory consolidation only in normal mode
-        closing = ""
-        if not session_assessment_mode:
-            # End session with memory consolidation (new method)
-            closing = await ta.end(user_id, session_id)
-        else:
-            logger.info(f"[SESSION_END] Skipping TA cleanup for assessment mode")
+        # Get session summary and handle cleanup
+        mode_label = "ASSESSMENT" if session_assessment_mode else "NORMAL"
+        logger.info(f"[SESSION_END] [{mode_label}] Ending session {session_id[:12]}...")
 
-        # Session end event is NO LONGER needed here because we called ta.end() directly above
-        # Queuing it would cause the event loop to call ta.end() a second time!
-        # end_event = Event(
-        #     type="session_end",
-        #     timestamp=time.time(),
-        #     session_id=session_id,
-        #     user_id=user_id,
-        #     data={"session_id": session_id, "user_id": user_id}
-        # )
-        # ta.queue_manager.enqueue(end_event)
-        
-        # Get session summary (existing method for stats)
+        # End session (handles memory consolidation)
         result = ta.end_session(session_id)
+        closing = result.get("prompt", "")
 
         # Finalize cost tracking for this session
         try:

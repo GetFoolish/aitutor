@@ -415,9 +415,11 @@ class TeachingAssistant:
 
         logger.info(f"[MEMORY] ✅ Found {len(memories)} relevant memories!")
         for i, mem in enumerate(memories):
-            mem_text = mem.get("text", mem.get("memory", {}).get("text", ""))[:80]
+            mem_text = mem.get("text", mem.get("memory", {}).get("text", ""))
             mem_score = mem.get("score", mem.get("similarity", 0))
-            logger.info(f"[MEMORY]   {i+1}. (score={mem_score:.2f}) {mem_text}...")
+            mem_type = mem.get("type", "unknown")
+            logger.info(f"[MEMORY]   {i+1}. [type={mem_type}] (score={mem_score:.2f})")
+            logger.info(f"[MEMORY]      📝 \"{mem_text}\"")
 
         # Generate memory injection prompt
         prompt = self.greeting_handler.get_memory_injection_prompt(
