@@ -88,21 +88,33 @@ class TeachingAssistant:
                             user_id=event.user_id
                         )
 
-                        # MEMORY FEATURE: Retrieve relevant memories for user messages only
+                        # MEMORY FEATURE: Real-time memory extraction and retrieval
                         from .core.context import EventType
                         speaker = event.data.get("speaker", "user") if event.data else "user"
                         if event.event_type == EventType.USER_MESSAGE and event.user_text and speaker == "user":
-                            logger.info(f"[MEMORY] 🔍 Searching memories for user message: {event.user_text[:50]}...")
-                            memory_injection = self.retrieve_memories(
-                                session_id=event.session_id,
-                                query_text=event.user_text
-                            )
-                            if memory_injection:
-                                logger.info(f"[MEMORY] ✅ Found relevant memories, injecting into session")
-                            else:
-                                logger.info(f"[MEMORY] ❌ No relevant memories found for this message")
+                            user_text = event.user_text.strip()
+
+                            # Skip very short messages
+                            if len(user_text) > 10:
+                                # 1. RETRIEVE: Search for relevant past memories
+                                logger.info(f"[MEMORY] 🔍 RETRIEVING memories for: \"{user_text[:50]}...\"")
+                                memory_injection = self.retrieve_memories(
+                                    session_id=event.session_id,
+                                    query_text=user_text
+                                )
+                                if memory_injection:
+                                    logger.info(f"[MEMORY] ✅ Retrieved memories injected into session")
+                                else:
+                                    logger.info(f"[MEMORY] ❌ No relevant past memories found")
+
+                                # 2. EXTRACT: Try to form new memories from meaningful messages
+                                await self._extract_realtime_memory(
+                                    session_id=event.session_id,
+                                    student_id=event.user_id,
+                                    user_text=user_text
+                                )
                         elif event.event_type == EventType.USER_MESSAGE and event.user_text and speaker == "tutor":
-                            logger.debug(f"[MEMORY] Skipping memory search for tutor message")
+                            logger.debug(f"[MEMORY] Skipping tutor message")
 
                         # Process event through EventProcessor (triggers skills)
                         injections = self.event_processor.process_event(event)
@@ -552,3 +564,149 @@ class TeachingAssistant:
             }
         )
         return result.modified_count > 0
+
+    async def _extract_realtime_memory(
+        self,
+        session_id: str,
+        student_id: str,
+        user_text: str
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Extract and store memories in real-time during live sessions.
+
+        This enables the user to see memories being formed as they chat,
+        and those memories can be retrieved when similar topics come up again.
+
+        Args:
+            session_id: Current session ID
+            student_id: Student's ID for memory storage
+            user_text: The user's message to analyze
+
+        Returns:
+            The created memory document if one was formed, None otherwise
+        """
+        import os
+        import re
+        from datetime import datetime
+
+        # Skip if text is too short or too generic
+        if len(user_text) < 20:
+            return None
+
+        # Skip generic responses that aren't memory-worthy
+        generic_patterns = [
+            r'^(ok|okay|yes|no|maybe|sure|thanks|thank you|hi|hello|bye|goodbye)\.?$',
+            r'^(i don\'?t know|idk|nm|nothing much)\.?$',
+            r'^\?+$',
+        ]
+        text_lower = user_text.lower().strip()
+        for pattern in generic_patterns:
+            if re.match(pattern, text_lower):
+                return None
+
+        try:
+            # Use Gemini to analyze if this message contains memory-worthy content
+            import google.genai as genai
+
+            api_key = os.environ.get("GOOGLE_API_KEY")
+            if not api_key:
+                logger.warning("[MEMORY] No GOOGLE_API_KEY set, skipping real-time extraction")
+                return None
+
+            client = genai.Client(api_key=api_key)
+
+            extraction_prompt = f"""Analyze this student message and determine if it contains personal information worth remembering for future tutoring sessions.
+
+Student message: "{user_text}"
+
+Memory-worthy content includes:
+- Personal facts (family, pets, hobbies, interests)
+- Emotional states or feelings
+- Academic struggles or strengths
+- Goals or aspirations
+- Preferences (likes/dislikes)
+- Experiences they share
+
+If this message contains memory-worthy content, respond with ONLY a JSON object like:
+{{"extract": true, "memory": "concise summary of the memory", "type": "personal|emotional|academic|preference", "importance": 0.5}}
+
+If this message is NOT memory-worthy (just a question, generic response, or academic answer), respond with ONLY:
+{{"extract": false}}
+
+Respond with ONLY the JSON object, no explanation."""
+
+            response = client.models.generate_content(
+                model=os.environ.get("GEMINI_TEXT_MODEL", "gemini-1.5-flash"),
+                contents=extraction_prompt
+            )
+
+            response_text = response.text.strip()
+
+            # Parse JSON response
+            import json
+            # Handle potential markdown code blocks
+            if response_text.startswith("```"):
+                response_text = response_text.split("```")[1]
+                if response_text.startswith("json"):
+                    response_text = response_text[4:]
+                response_text = response_text.strip()
+
+            result = json.loads(response_text)
+
+            if not result.get("extract", False):
+                logger.debug(f"[MEMORY] 💭 Message not memory-worthy: \"{user_text[:40]}...\"")
+                return None
+
+            memory_text = result.get("memory", user_text)
+            memory_type = result.get("type", "personal")
+            importance = float(result.get("importance", 0.5))
+
+            logger.info(f"[MEMORY] 💾 FORMING new memory from live session!")
+            logger.info(f"[MEMORY]    📝 Original: \"{user_text[:60]}...\"")
+            logger.info(f"[MEMORY]    💡 Memory: \"{memory_text}\"")
+            logger.info(f"[MEMORY]    🏷️  Type: {memory_type}, Importance: {importance:.2f}")
+
+            # Store the memory using MongoDBMemoryStore
+            from .Memory.mongodb_vector_store import MongoDBMemoryStore
+
+            store = MongoDBMemoryStore(user_id=student_id)
+            if not store.enabled:
+                logger.warning("[MEMORY] MongoDBMemoryStore not enabled, cannot store memory")
+                return None
+
+            # Generate embedding for the memory
+            embedding = store._generate_embedding(memory_text)
+            if not embedding:
+                logger.error("[MEMORY] Failed to generate embedding for new memory")
+                return None
+
+            # Create the memory document
+            memory_doc = {
+                "student_id": student_id,
+                "session_id": session_id,
+                "text": memory_text,
+                "original_text": user_text,
+                "type": memory_type,
+                "importance": importance,
+                "embedding": embedding,
+                "source": "realtime_extraction",
+                "created_at": datetime.utcnow(),
+                "accessed_count": 0,
+                "last_accessed": None,
+            }
+
+            # Insert into MongoDB
+            result = store.collection.insert_one(memory_doc)
+            memory_doc["_id"] = result.inserted_id
+
+            logger.info(f"[MEMORY] ✅ Memory stored successfully! ID: {result.inserted_id}")
+            logger.info(f"[MEMORY]    Student: {student_id[:8]}..., Session: {session_id[:8]}...")
+
+            return memory_doc
+
+        except json.JSONDecodeError as e:
+            logger.debug(f"[MEMORY] Failed to parse extraction response: {e}")
+            return None
+        except Exception as e:
+            logger.error(f"[MEMORY] Real-time memory extraction failed: {e}")
+            return None
