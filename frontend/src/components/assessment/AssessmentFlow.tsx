@@ -195,12 +195,14 @@ const AssessmentFlow: React.FC = () => {
       )}
 
       {completed && (
-        <AssessmentResults
-          score={score}
-          total={total}
-          subject={subject}
-          onContinue={() => history.replace('/app')}
-        />
+        <TutorProvider assessmentMode={true}>
+          <AssessmentResults
+            score={score}
+            total={total}
+            subject={subject}
+            onContinue={() => history.replace('/app')}
+          />
+        </TutorProvider>
       )}
 
       {error && (

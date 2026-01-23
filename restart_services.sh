@@ -12,7 +12,8 @@ echo "Stopping existing services..."
 pkill -f "dash_api.py" 2>/dev/null
 pkill -f "auth_api.py" 2>/dev/null
 pkill -f "run_backend.py" 2>/dev/null
-pkill -f "api.py" 2>/dev/null
+pkill -f "HomeworkAssistant.api" 2>/dev/null
+pkill -f "TeachingAssistant.api" 2>/dev/null
 sleep 2
 
 # Note: Authentication is enabled (BYPASS_AUTH removed)
@@ -57,6 +58,11 @@ echo "Starting TeachingAssistant API..."
 python services/TeachingAssistant/api.py > logs/teaching_assistant.log 2>&1 &
 TA_PID=$!
 
+echo "Starting Homework Assistant API..."
+python -m uvicorn services.HomeworkAssistant.api:app --host 0.0.0.0 --port 8004 > logs/homework_assistant.log 2>&1 &
+HOMEWORK_PID=$!
+echo "  Homework Assistant PID: $HOMEWORK_PID"
+
 echo ""
 echo "⏳ Waiting for services to start..."
 sleep 5
@@ -81,10 +87,18 @@ else
     echo "❌ DASH API (8000): Not responding"
 fi
 
+# Check Homework Assistant
+if curl -s http://localhost:8004/health >/dev/null 2>&1; then
+    echo "✅ Homework Assistant (8004): Running"
+else
+    echo "❌ Homework Assistant (8004): Not responding"
+fi
+
 echo ""
 echo "📝 Logs:"
 echo "  DASH API: tail -f logs/dash_api.log"
 echo "  Auth Service: tail -f logs/auth_service.log"
+echo "  Homework Assistant: tail -f logs/homework_assistant.log"
 echo ""
 echo "🧪 Test Auth Bypass:"
 echo "  curl http://localhost:8003/auth/gemini-token"
@@ -92,6 +106,6 @@ echo ""
 echo "Press Ctrl+C to stop all services"
 
 # Wait for interrupt
-trap "echo ''; echo 'Stopping services...'; kill $DASH_PID $AUTH_PID $SHERLOCKED_PID $TA_PID 2>/dev/null; exit" INT
+trap "echo ''; echo 'Stopping services...'; kill $DASH_PID $AUTH_PID $SHERLOCKED_PID $TA_PID $HOMEWORK_PID 2>/dev/null; exit" INT
 wait
 
