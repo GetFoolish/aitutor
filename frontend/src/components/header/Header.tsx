@@ -20,7 +20,7 @@ import cn from "classnames";
 import { Moon, Sun, User, Settings, LogOut, Terminal, BookOpen } from "lucide-react";
 import { useTheme } from "../theme/theme-provier";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -44,6 +44,9 @@ interface HeaderProps {
 export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
     const { theme, setTheme } = useTheme();
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [userName, setUserName] = useState("User");
+    const [userEmail, setUserEmail] = useState("");
+    const history = useHistory();
 
     useEffect(() => {
         const checkDarkMode = () => {
@@ -71,6 +74,55 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
         }
     }, [theme]);
 
+    // Fetch user info on component mount
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const token = localStorage.getItem('jwt_token');
+                if (!token) return;
+
+                const AUTH_SERVICE_URL = import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003';
+                const response = await fetch(`${AUTH_SERVICE_URL}/account/info`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setUserName(data.name || "User");
+                    setUserEmail(data.email || "");
+                }
+            } catch (error) {
+                console.error('Failed to fetch user info:', error);
+            }
+        };
+
+        fetchUserInfo();
+    }, []);
+
+    const handleLogout = async () => {
+        try {
+            const AUTH_SERVICE_URL = import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003';
+
+            // Clear token from localStorage
+            localStorage.removeItem('jwt_token');
+
+            // Call logout endpoint
+            await fetch(`${AUTH_SERVICE_URL}/auth/logout`, {
+                method: 'POST'
+            });
+
+            // Redirect to login page
+            history.push('/app/login');
+        } catch (error) {
+            console.error('Logout failed:', error);
+            // Still clear token and redirect even if API call fails
+            localStorage.removeItem('jwt_token');
+            history.push('/app/login');
+        }
+    };
+
     const logoSource = isDarkMode ? '/logo_white.png' : '/logo.png';
 
     return (
@@ -86,18 +138,6 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
 
             {/* Right side - Actions */}
             <div className="flex items-center gap-1.5 md:gap-2">
-                <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="w-7 h-7 md:w-8 md:h-8 lg:w-8 lg:h-8 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 text-black dark:text-white dark:hover:text-black"
-                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                >
-                    <Sun className="h-[0.9rem] w-[0.9rem] md:h-[1rem] md:w-[1rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                    <Moon className="absolute h-[0.9rem] w-[0.9rem] md:h-[1rem] md:w-[1rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                    <span className="sr-only">Toggle theme</span>
-                </Button>
-
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="relative h-7 w-7 md:h-8 md:w-8 lg:h-8 lg:w-8 p-0 border-[2px] border-black dark:border-white bg-[#FF6B6B] hover:bg-[#FF6B6B] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100">
@@ -110,10 +150,12 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
                     <DropdownMenuContent className="w-48 md:w-56" align="end" forceMount>
                         <DropdownMenuLabel className="font-normal">
                             <div className="flex flex-col space-y-1">
-                                <p className="text-sm font-medium leading-none">User</p>
-                                <p className="text-xs leading-none text-muted-foreground">
-                                    user@example.com
-                                </p>
+                                <p className="text-sm font-medium leading-none">{userName}</p>
+                                {userEmail && (
+                                    <p className="text-xs leading-none text-muted-foreground">
+                                        {userEmail}
+                                    </p>
+                                )}
                             </div>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
@@ -124,13 +166,12 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
                                     <span>Account</span>
                                 </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Settings className="mr-2 h-4 w-4" />
-                                <span>Settings</span>
-                            </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-[#FF6B6B] focus:text-[#FF6B6B]">
+                        <DropdownMenuItem
+                            className="text-[#FF6B6B] focus:text-[#FF6B6B] cursor-pointer"
+                            onClick={handleLogout}
+                        >
                             <LogOut className="mr-2 h-4 w-4" />
                             <span>Log out</span>
                         </DropdownMenuItem>
