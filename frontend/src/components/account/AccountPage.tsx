@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import cn from 'classnames';
 import { User, MapPin, Calendar, Clock, Loader2, Edit2, Save, X } from 'lucide-react';
 import { getCountryList } from '../../lib/countries';
+import Header from '../header/Header';
 
 const LANGUAGES = ["English", "Hindi", "Spanish", "French"];
 const GENDERS = ["Male", "Female", "Other", "Prefer not to say"];
@@ -136,8 +137,10 @@ const AccountPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8">
-        <div className="max-w-6xl mx-auto">
+      <>
+        <Header sidebarOpen={false} onToggleSidebar={() => history.push('/app')} hideSidebarToggle={true} />
+        <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8 pt-[60px] md:pt-[64px] lg:pt-[68px] page-transition">
+          <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <Card className={cn(
               "border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]"
@@ -165,20 +168,24 @@ const AccountPage: React.FC = () => {
           </div>
         </div>
       </div>
+      </>
     );
   }
 
   if (error && !isEditing) {
     return (
-      <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8 flex items-center justify-center">
-        <Card className={cn(
-          "border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] max-w-md"
-        )}>
-          <CardContent className="pt-6">
-            <p className="text-center text-red-600 dark:text-red-400 font-bold">{error}</p>
-          </CardContent>
-        </Card>
-      </div>
+      <>
+        <Header sidebarOpen={false} onToggleSidebar={() => history.push('/app')} hideSidebarToggle={true} />
+        <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8 pt-[60px] md:pt-[64px] lg:pt-[68px] flex items-center justify-center page-transition">
+          <Card className={cn(
+            "border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] max-w-md"
+          )}>
+            <CardContent className="pt-6">
+              <p className="text-center text-red-600 dark:text-red-400 font-bold">{error}</p>
+            </CardContent>
+          </Card>
+        </div>
+      </>
     );
   }
 
@@ -187,8 +194,10 @@ const AccountPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
+    <>
+      <Header sidebarOpen={false} onToggleSidebar={() => history.push('/app')} hideSidebarToggle={true} />
+      <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8 pt-[60px] md:pt-[64px] lg:pt-[68px] page-transition">
+      <div className="max-w-6xl mx-auto content-transition">
         <h1 className={cn(
           "text-3xl md:text-4xl font-black mb-6 md:mb-8 text-black dark:text-white uppercase tracking-wide",
           "border-b-[3px] border-black dark:border-white pb-4"
@@ -571,6 +580,7 @@ const AccountPage: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

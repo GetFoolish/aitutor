@@ -20,6 +20,42 @@ code {
 }
 
 /* ============================================
+   PAGE TRANSITION ANIMATIONS
+   ============================================ */
+
+/* Fade-in animation for page loads */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Slide-up and fade animation for content */
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Apply fade-in to main page containers */
+.page-transition {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Apply slide-up fade to content sections */
+.content-transition {
+  animation: slideUpFade 0.4s ease-out;
+}
+
+/* ============================================
    SCRATCHPAD / EXCALIDRAW CANVAS STYLES
    ============================================ */
 

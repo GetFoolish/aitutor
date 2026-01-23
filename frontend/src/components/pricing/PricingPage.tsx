@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '../ui/card';
 import { Button } from '../ui/button';
 import cn from 'classnames';
 import { Check, Star } from 'lucide-react';
+import { Skeleton } from '../ui/skeleton';
 import { paymentAPI } from '../../lib/payment-api';
 import { authAPI } from '../../lib/auth-api';
+import Header from '../header/Header';
 
 interface PricingTier {
   name: string;
@@ -62,10 +65,12 @@ const pricingTiers: PricingTier[] = [
 ];
 
 const PricingPage: React.FC = () => {
+  const history = useHistory();
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [accountInfo, setAccountInfo] = useState<any>(null);
   const [loadingAccount, setLoadingAccount] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
     const fetchAccountInfo = async () => {
@@ -77,6 +82,7 @@ const PricingPage: React.FC = () => {
         console.error('Failed to fetch account info:', err);
       } finally {
         setLoadingAccount(false);
+        setInitialLoading(false);
       }
     };
 
@@ -128,9 +134,53 @@ const PricingPage: React.FC = () => {
     return planMap[accountInfo.subscription_plan.toLowerCase()] === tierName;
   };
 
+  if (initialLoading) {
+    return (
+      <>
+        <Header sidebarOpen={false} onToggleSidebar={() => history.push('/app')} hideSidebarToggle={true} />
+        <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8 pt-[60px] md:pt-[64px] lg:pt-[68px] page-transition">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-8 md:mb-12">
+              <Skeleton className="h-12 w-64 mx-auto mb-4" />
+              <Skeleton className="h-6 w-96 mx-auto" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+              {[1, 2, 3].map((i) => (
+                <Card
+                  key={i}
+                  className={cn(
+                    "border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]",
+                    "shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]"
+                  )}
+                >
+                  <CardHeader className="border-b-[2px] border-black dark:border-white bg-[#FFD93D]">
+                    <Skeleton className="h-8 w-32 mb-2" />
+                    <Skeleton className="h-10 w-24" />
+                  </CardHeader>
+                  <CardContent className="pt-6">
+                    <div className="space-y-3">
+                      {[1, 2, 3, 4].map((j) => (
+                        <Skeleton key={j} className="h-4 w-full" />
+                      ))}
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Skeleton className="h-12 w-full" />
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
+    <>
+      <Header sidebarOpen={false} onToggleSidebar={() => history.push('/app')} hideSidebarToggle={true} />
+      <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8 pt-[60px] md:pt-[64px] lg:pt-[68px] page-transition">
+        <div className="max-w-7xl mx-auto content-transition">
         <div className="text-center mb-8 md:mb-12">
           <h1 className={cn(
             "text-4xl md:text-5xl font-black mb-4 text-black dark:text-white uppercase tracking-wide"
@@ -277,6 +327,7 @@ const PricingPage: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
