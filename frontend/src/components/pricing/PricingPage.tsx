@@ -137,7 +137,7 @@ const PricingPage: React.FC = () => {
   if (initialLoading) {
     return (
       <>
-        <Header sidebarOpen={false} onToggleSidebar={() => history.push('/app')} hideSidebarToggle={true} />
+        <Header sidebarOpen={false} onToggleSidebar={() => history.push('/')} hideSidebarToggle={true} />
         <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8 pt-[60px] md:pt-[64px] lg:pt-[68px] page-transition">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-8 md:mb-12">
@@ -178,7 +178,7 @@ const PricingPage: React.FC = () => {
 
   return (
     <>
-      <Header sidebarOpen={false} onToggleSidebar={() => history.push('/app')} hideSidebarToggle={true} />
+      <Header sidebarOpen={false} onToggleSidebar={() => history.push('/')} hideSidebarToggle={true} />
       <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8 pt-[60px] md:pt-[64px] lg:pt-[68px] page-transition">
         <div className="max-w-7xl mx-auto content-transition">
         <div className="text-center mb-8 md:mb-12">

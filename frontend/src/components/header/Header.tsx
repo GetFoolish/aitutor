@@ -115,12 +115,12 @@ export default function Header({ sidebarOpen, onToggleSidebar, hideSidebarToggle
             });
 
             // Redirect to login page
-            history.push('/app/login');
+            history.push('/login');
         } catch (error) {
             console.error('Logout failed:', error);
             // Still clear token and redirect even if API call fails
             localStorage.removeItem('jwt_token');
-            history.push('/app/login');
+            history.push('/login');
         }
     };
 
@@ -129,7 +129,7 @@ export default function Header({ sidebarOpen, onToggleSidebar, hideSidebarToggle
     return (
         <header className="fixed top-0 left-0 right-0 h-[44px] lg:h-[48px] bg-[#FFFDF5] dark:bg-[#000000] border-b-[3px] lg:border-b-[4px] border-black dark:border-white z-40 flex items-center justify-between px-2 md:px-4 lg:px-5 shadow-[0_2px_0_0_rgba(0,0,0,1)] lg:shadow-[0_2px_0_0_rgba(0,0,0,1)] dark:shadow-[0_2px_0_0_rgba(255,255,255,0.3)]">
             {/* Left side - Logo (clickable to navigate home) */}
-            <Link to="/app" className="flex items-center gap-1.5 md:gap-2 group cursor-pointer">
+            <Link to="/" className="flex items-center gap-1.5 md:gap-2 group cursor-pointer">
                 <img
                     src={logoSource}
                     alt="teachr"
@@ -162,7 +162,7 @@ export default function Header({ sidebarOpen, onToggleSidebar, hideSidebarToggle
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem asChild>
-                                <Link to="/app/account" className="flex items-center">
+                                <Link to="/account" className="flex items-center">
                                     <User className="mr-2 h-4 w-4" />
                                     <span>Account</span>
                                 </Link>

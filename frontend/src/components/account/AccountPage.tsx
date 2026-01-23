@@ -92,7 +92,7 @@ const AccountPage: React.FC = () => {
   };
 
   const handleBuyMinutes = () => {
-    history.push('/app/pricing');
+    history.push('/pricing');
   };
 
   const handleEdit = () => {
@@ -138,7 +138,7 @@ const AccountPage: React.FC = () => {
   if (loading) {
     return (
       <>
-        <Header sidebarOpen={false} onToggleSidebar={() => history.push('/app')} hideSidebarToggle={true} />
+        <Header sidebarOpen={false} onToggleSidebar={() => history.push('/')} hideSidebarToggle={true} />
         <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8 pt-[60px] md:pt-[64px] lg:pt-[68px] page-transition">
           <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
@@ -175,7 +175,7 @@ const AccountPage: React.FC = () => {
   if (error && !isEditing) {
     return (
       <>
-        <Header sidebarOpen={false} onToggleSidebar={() => history.push('/app')} hideSidebarToggle={true} />
+        <Header sidebarOpen={false} onToggleSidebar={() => history.push('/')} hideSidebarToggle={true} />
         <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8 pt-[60px] md:pt-[64px] lg:pt-[68px] flex items-center justify-center page-transition">
           <Card className={cn(
             "border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] max-w-md"
@@ -195,7 +195,7 @@ const AccountPage: React.FC = () => {
 
   return (
     <>
-      <Header sidebarOpen={false} onToggleSidebar={() => history.push('/app')} hideSidebarToggle={true} />
+      <Header sidebarOpen={false} onToggleSidebar={() => history.push('/')} hideSidebarToggle={true} />
       <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8 pt-[60px] md:pt-[64px] lg:pt-[68px] page-transition">
       <div className="max-w-6xl mx-auto content-transition">
         <h1 className={cn(

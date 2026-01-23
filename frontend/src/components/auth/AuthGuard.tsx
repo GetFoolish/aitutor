@@ -39,7 +39,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    return <Redirect to="/app/login" />;
+    return <Redirect to="/login" />;
   }
 
   return <>{children}</>;

@@ -15,7 +15,7 @@
  */
 import React, { Suspense, lazy } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
@@ -23,7 +23,6 @@ import reportWebVitals from "./reportWebVitals";
 import "./package/perseus/testing/perseus-init.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import ComingSoonGuard from "./components/coming-soon/ComingSoonGuard"; // Commented out to allow home page access
 
 const LoginPage = lazy(() => import("./components/auth/LoginPage"));
 const LandingPageWrapper = lazy(() => import("./components/landing/LandingPageWrapper"));
@@ -32,6 +31,7 @@ const PricingPage = lazy(() => import("./components/pricing/PricingPage"));
 const AssessmentFlow = lazy(() => import("./components/assessment/AssessmentFlow"));
 const AdminVideoPanel = lazy(() => import("./components/admin/AdminVideoPanel"));
 const CostTrackingPage = lazy(() => import("./components/admin/CostTrackingPage"));
+const NotFoundPage = lazy(() => import("./components/not-found/NotFoundPage"));
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
@@ -146,25 +146,21 @@ root.render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <ComingSoonGuard>
-            <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
-              <Switch>
-                <Route path="/app/auth/setup" component={LoginPage} />
-                <Route path="/app/login" component={LoginPage} />
-                <Route path="/app/account" component={AccountPage} />
-                <Route path="/app/pricing" component={PricingPage} />
-                <Route path="/pricing" component={PricingPage} />
-                <Route path="/app/admin/videos" component={AdminVideoPanel} />
-                <Route path="/app/admin/cost-tracking" component={CostTrackingPage} />
-                <Route path="/app/assessment/:subject" component={AssessmentFlow} />
-                <Route path="/landing/:id" component={LandingPageWrapper} /> {/* Dynamic landing page routes */}
-                <Route path="/app" exact component={LandingPageOrApp} />
-                <Route path="/app" component={App} />
-                <Route path="/" exact render={() => <Redirect to="/comingsoon" />} />
-                <Route component={LandingPageOrApp} /> {/* Catch-all route - fallback to landing page */}
-              </Switch>
-            </Suspense>
-          </ComingSoonGuard>
+          <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+            <Switch>
+              <Route path="/auth/setup" component={LoginPage} />
+              <Route path="/login" component={LoginPage} />
+              <Route path="/account" component={AccountPage} />
+              <Route path="/pricing" component={PricingPage} />
+              <Route path="/admin/videos" component={AdminVideoPanel} />
+              <Route path="/admin/cost-tracking" component={CostTrackingPage} />
+              <Route path="/assessment/:subject" component={AssessmentFlow} />
+              <Route path="/landing/:id" component={LandingPageWrapper} /> {/* Dynamic landing page routes */}
+              <Route path="/" exact component={LandingPageOrApp} /> {/* Root shows landing page or app based on auth */}
+              <Route path="/" component={App} />
+              <Route component={NotFoundPage} /> {/* Catch-all route - 404 for non-existent pages */}
+            </Switch>
+          </Suspense>
         </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>

@@ -98,7 +98,7 @@ const UserOnboardingFlow: React.FC = () => {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      history.replace('/app/login');
+      history.replace('/login');
       return;
     }
 
@@ -146,11 +146,11 @@ const UserOnboardingFlow: React.FC = () => {
         
         window.dispatchEvent(new CustomEvent('onboarding-complete'));
         sessionStorage.setItem('onboarding_complete', 'true');
-        history.replace(`/app/assessment/${data.assessment_subject}`);
+        history.replace(`/assessment/${data.assessment_subject}`);
       } else if (data.readiness_status === 'complete') {
         window.dispatchEvent(new CustomEvent('onboarding-complete'));
         sessionStorage.setItem('onboarding_complete', 'true');
-        history.replace('/app');
+        history.replace('/');
       }
     } catch (error) {
       console.error('Error in onboarding flow:', error);
@@ -255,9 +255,9 @@ const UserOnboardingFlow: React.FC = () => {
       sessionStorage.setItem('onboarding_complete', 'true');
 
       if (completeness && !completeness.assessment_completed) {
-        history.replace(`/app/assessment/${completeness.assessment_subject}`);
+        history.replace(`/assessment/${completeness.assessment_subject}`);
       } else {
-        history.replace('/app');
+        history.replace('/');
       }
     } catch (error: any) {
       setSubmitError(error.message || 'Failed to save information');

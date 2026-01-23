@@ -20,7 +20,7 @@ const LoginPage: React.FC = () => {
   // If already authenticated, redirect to home
   React.useEffect(() => {
     if (isAuthenticated) {
-      history.replace('/app');
+      history.replace('/');
     }
   }, [isAuthenticated, history]);
 
@@ -40,7 +40,7 @@ const LoginPage: React.FC = () => {
         .then(res => res.json())
         .then(userData => {
           login(token, userData);
-          history.replace('/app');
+          history.replace('/');
         })
         .catch(error => {
           console.error('Failed to get user info:', error);
@@ -81,7 +81,7 @@ const LoginPage: React.FC = () => {
         }}
         onCancel={() => {
           setShowSignupForm(false);
-          history.replace('/app/login');
+          history.replace('/login');
         }}
       />
     );

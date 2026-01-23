@@ -148,7 +148,7 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
 
   // If assessment not completed, redirect to assessment
   if (!assessmentStatus.completed) {
-    return <Redirect to={`/app/assessment/${subject}`} />;
+    return <Redirect to={`/assessment/${subject}`} />;
   }
 
   // Assessment completed, allow access to app

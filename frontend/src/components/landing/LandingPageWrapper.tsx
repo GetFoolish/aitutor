@@ -67,7 +67,7 @@ const LandingPageWrapper: React.FC = () => {
   useEffect(() => {
     // If authenticated, redirect to app
     if (!isLoading && isAuthenticated) {
-      history.replace('/app');
+      history.replace('/');
       return;
     }
   }, [isAuthenticated, isLoading, history]);
@@ -89,7 +89,7 @@ const LandingPageWrapper: React.FC = () => {
 
   // Render landing page
   const handleGetStarted = () => {
-    history.push('/app/login');
+    history.push('/login');
   };
 
   return <LandingPageComponent onGetStarted={handleGetStarted} />;

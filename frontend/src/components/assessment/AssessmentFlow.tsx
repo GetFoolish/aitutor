@@ -126,7 +126,7 @@ const AssessmentFlow: React.FC = () => {
       setLoading(false);
     } catch (err) {
       console.error(err);
-      history.replace('/app');
+      history.replace('/');
     }
   };
 
