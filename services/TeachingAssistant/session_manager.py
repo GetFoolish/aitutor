@@ -611,7 +611,7 @@ class SessionManager:
         """
         Retrieve relevant memories for mid-conversation injection.
 
-        Uses MongoDB text search to find matching memories.
+        Uses MongoDB Atlas Vector Search for semantic similarity.
 
         Args:
             student_id: Student to search memories for
@@ -622,58 +622,23 @@ class SessionManager:
             List of relevant memories with similarity scores
         """
         try:
-            # First try text search if index exists
-            try:
-                memories_cursor = self.db.memories.find(
-                    {
-                        "student_id": student_id,
-                        "$text": {"$search": query_text}
-                    },
-                    {"score": {"$meta": "textScore"}}
-                ).sort([("score", {"$meta": "textScore"})]).limit(top_k)
+            from .Memory.mongodb_vector_store import MongoDBMemoryStore
 
-                memories = []
-                for mem in memories_cursor:
-                    memories.append({
-                        "text": mem.get("text", ""),
-                        "type": mem.get("type", "general"),
-                        "importance": mem.get("importance", 0.5),
-                        "score": mem.get("score", 0.5),
-                        "timestamp": mem.get("timestamp"),
-                    })
-
-                if memories:
-                    logger.info(f"[SESSION_MANAGER] Found {len(memories)} memories via text search")
-                    return memories
-
-            except Exception as text_err:
-                # Text index may not exist, fall back to keyword matching
-                logger.debug(f"[SESSION_MANAGER] Text search unavailable: {text_err}")
-
-            # Fallback: Simple keyword matching
-            keywords = [w.lower() for w in query_text.split() if len(w) > 3]
-            if not keywords:
+            store = MongoDBMemoryStore(user_id=student_id)
+            if not store.enabled:
+                logger.warning("[SESSION_MANAGER] MongoDBMemoryStore not enabled")
                 return []
 
-            # Build regex pattern for any keyword match
-            regex_pattern = "|".join(keywords[:5])  # Limit to 5 keywords
+            memories = store.search(
+                query_text=query_text,
+                student_id=student_id,
+                top_k=top_k,
+                min_importance=0.0
+            )
 
-            memories_cursor = self.db.memories.find({
-                "student_id": student_id,
-                "text": {"$regex": regex_pattern, "$options": "i"}
-            }).sort("importance", -1).limit(top_k)
+            if memories:
+                logger.info(f"[SESSION_MANAGER] Found {len(memories)} memories via vector search")
 
-            memories = []
-            for mem in memories_cursor:
-                memories.append({
-                    "text": mem.get("text", ""),
-                    "type": mem.get("type", "general"),
-                    "importance": mem.get("importance", 0.5),
-                    "score": mem.get("importance", 0.5),  # Use importance as score
-                    "timestamp": mem.get("timestamp"),
-                })
-
-            logger.info(f"[SESSION_MANAGER] Found {len(memories)} memories via keyword match")
             return memories
 
         except Exception as e:
