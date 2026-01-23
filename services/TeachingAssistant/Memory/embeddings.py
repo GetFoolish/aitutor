@@ -60,6 +60,8 @@ def _init_embedding_provider():
             _gemini_client = genai.Client(api_key=gemini_key)
             _gemini_model = "models/text-embedding-004"
             _embedding_provider = "gemini"
+            # Gemini text-embedding-004 supports 768 (default) or custom dimensions up to 768
+            # Use 768 as default for compatibility
             _embedding_dimension = int(os.getenv("EMBEDDING_DIMENSION", "768"))
             logger.info(f"[EMBEDDINGS] Using Gemini embeddings (dim={_embedding_dimension})")
             return

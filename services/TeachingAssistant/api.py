@@ -17,7 +17,7 @@ from sse_starlette.sse import EventSourceResponse
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from services.TeachingAssistant.teaching_assistant import TeachingAssistant
-from services.TeachingAssistant.core.context import Event
+from services.TeachingAssistant.core.context import Event, EventType
 from shared.auth_middleware import get_current_user, get_user_from_token
 from shared.cors_config import ALLOWED_ORIGINS, ALLOW_CREDENTIALS, ALLOWED_METHODS, ALLOWED_HEADERS
 from shared.timing_middleware import UnpluggedTimingMiddleware
@@ -270,10 +270,11 @@ def feed_message_to_event(message: dict, session_id: str, user_id: str) -> Optio
     # Convert based on message type
     if msg_type == "transcript":
         return Event(
-            type="text",
+            event_type=EventType.USER_MESSAGE,
             timestamp=timestamp,
             session_id=session_id,
             user_id=user_id,
+            user_text=payload.get("transcript", ""),
             data={
                 "speaker": payload.get("speaker", "user"),
                 "text": payload.get("transcript", ""),
@@ -282,7 +283,7 @@ def feed_message_to_event(message: dict, session_id: str, user_id: str) -> Optio
         )
     elif msg_type == "audio":
         return Event(
-            type="audio",
+            event_type=EventType.USER_MESSAGE,
             timestamp=timestamp,
             session_id=session_id,
             user_id=user_id,
@@ -293,7 +294,7 @@ def feed_message_to_event(message: dict, session_id: str, user_id: str) -> Optio
         )
     elif msg_type == "media":
         return Event(
-            type="media",
+            event_type=EventType.USER_MESSAGE,
             timestamp=timestamp,
             session_id=session_id,
             user_id=user_id,
@@ -413,13 +414,13 @@ async def start_session(http_request: Request, request: Optional[StartSessionReq
         # CONDITIONAL: Initialize memory and context components only in normal mode
         greeting = ""
         if not assessment_mode:
-            # Initialize memory and context components (new method)
-            greeting = await ta.start(user_id, session_id)
+            # Get greeting from start_session result (includes biography-driven personalization)
+            greeting = result.get("prompt", "")
+            logger.info(f"[SESSION_START] Got personalized greeting for session {session_id[:8]}...")
 
-            # Create session_start event
+            # v4 improvement: Create session_start event and enqueue for processing
             start_event = Event(
-                type="session_start",
-                timestamp=time.time(),
+                event_type=EventType.SESSION_START,
                 session_id=session_id,
                 user_id=user_id,
                 data={"session_id": session_id, "user_id": user_id}
@@ -787,6 +788,86 @@ def get_session_info(http_request: Request):
     if not session:
         return {"session_active": False, "user_id": user_id}
     return ta.get_session_info(session["session_id"])
+
+
+@app.get("/session/transcript")
+def get_session_transcript(http_request: Request, session_id: Optional[str] = None):
+    """
+    Get the conversation transcript for a session.
+    If no session_id provided, gets transcript for current active session.
+    """
+    user_id = get_current_user(http_request)
+    try:
+        if not session_id:
+            session = ta.get_active_session(user_id)
+            if not session:
+                return {"error": "No active session", "transcript": []}
+            session_id = session["session_id"]
+
+        # Get conversation from session manager
+        conversation = ta.session_manager.get_conversation(session_id)
+
+        # Format for easy reading
+        formatted = []
+        for turn in conversation:
+            formatted.append({
+                "speaker": turn.get("speaker", "unknown"),
+                "text": turn.get("text", ""),
+                "timestamp": str(turn.get("timestamp", "")),
+                "emotion": turn.get("emotion")
+            })
+
+        return {
+            "session_id": session_id,
+            "turn_count": len(formatted),
+            "transcript": formatted
+        }
+    except Exception as e:
+        logger.error(f"Error getting transcript: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/session/transcript/latest")
+def get_latest_transcript(http_request: Request, limit: int = 50):
+    """
+    Get the most recent session transcript for the user.
+    Useful for debugging - shows conversations from today's sessions.
+    """
+    user_id = get_current_user(http_request)
+    try:
+        # Get most recent session (active or completed)
+        sessions = list(ta.session_manager.sessions.find(
+            {"user_id": user_id},
+            {"session_id": 1, "conversation": 1, "started_at": 1, "ended_at": 1, "status": 1}
+        ).sort("started_at", -1).limit(1))
+
+        if not sessions:
+            return {"error": "No sessions found", "transcript": []}
+
+        session = sessions[0]
+        conversation = session.get("conversation", [])
+
+        # Format transcript
+        formatted = []
+        for turn in conversation[-limit:]:  # Get last N turns
+            formatted.append({
+                "speaker": turn.get("speaker", "unknown"),
+                "text": turn.get("text", ""),
+                "timestamp": str(turn.get("timestamp", "")),
+                "emotion": turn.get("emotion")
+            })
+
+        return {
+            "session_id": session["session_id"],
+            "status": session.get("status", "unknown"),
+            "started_at": str(session.get("started_at", "")),
+            "ended_at": str(session.get("ended_at", "")),
+            "total_turns": len(conversation),
+            "transcript": formatted
+        }
+    except Exception as e:
+        logger.error(f"Error getting latest transcript: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/conversation/turn")
@@ -1785,6 +1866,144 @@ async def get_student_biography(http_request: Request):
     except Exception as e:
         logger.error(f"Error getting biography: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
+# Memory Debug Endpoints (for frontend testing)
+# ============================================================================
+
+@app.get("/config/info")
+async def get_config_info(http_request: Request):
+    """
+    Get system configuration for debugging.
+
+    Returns feature flags and enabled services.
+    """
+    user_id = get_current_user(http_request)
+
+    # Check what's available
+    has_gemini = bool(os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"))
+    has_openai = bool(os.getenv("OPENAI_API_KEY"))
+    has_mongodb = bool(os.getenv("MONGODB_URI"))
+
+    validation_issues = []
+    if not has_gemini and not has_openai:
+        validation_issues.append("No LLM API key configured (GEMINI_API_KEY or OPENAI_API_KEY)")
+    if not has_mongodb:
+        validation_issues.append("MongoDB not configured")
+
+    return {
+        "config": {
+            "llm_provider": "gemini" if has_gemini else ("openai" if has_openai else "none"),
+            "has_gemini": has_gemini,
+            "has_openai": has_openai,
+            "has_mongodb": has_mongodb,
+            "enable_biographer": has_gemini or has_openai,
+            "enable_memory_extraction": has_mongodb and (has_gemini or has_openai),
+            "enable_semantic_search": has_mongodb,
+            "enable_skills": True
+        },
+        "validation": validation_issues
+    }
+
+
+@app.get("/memory/stats")
+async def get_memory_stats(http_request: Request):
+    """
+    Get memory statistics for the current user.
+
+    Returns total memories, breakdown by type, etc.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        from services.TeachingAssistant.Memory.mongodb_vector_store import MongoDBMemoryStore
+
+        # Get or create memory store for this user
+        store = MongoDBMemoryStore(user_id=user_id)
+
+        if not store.enabled:
+            return {
+                "enabled": False,
+                "error": "Memory system not configured"
+            }
+
+        stats = store.get_stats()
+
+        # MongoDB stats format
+        total_memories = stats.get("user_memories") or stats.get("total_memories", 0)
+
+        return {
+            "enabled": True,
+            "total_memories": total_memories,
+            "by_type": stats.get("by_type", {}),
+            "index_stats": stats
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting memory stats: {e}", exc_info=True)
+        return {
+            "enabled": False,
+            "error": str(e)
+        }
+
+
+class MemorySearchRequest(BaseModel):
+    query: str
+    top_k: int = 10
+
+
+@app.post("/memory/search")
+async def search_memories(http_request: Request, request: MemorySearchRequest):
+    """
+    Search memories for the current user.
+
+    Returns semantically similar memories based on query.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        from services.TeachingAssistant.Memory.mongodb_vector_store import MongoDBMemoryStore
+
+        store = MongoDBMemoryStore(user_id=user_id)
+
+        if not store.enabled:
+            return {
+                "results": [],
+                "error": "Memory system not configured"
+            }
+
+        # Search for memories
+        memories = store.search(
+            query_text=request.query,
+            student_id=user_id,
+            top_k=request.top_k,
+            min_importance=0.0  # Return all for debugging
+        )
+
+        # Format results
+        results = []
+        for mem in memories:
+            results.append({
+                "text": mem.get("text", ""),
+                "type": mem.get("type", "unknown"),
+                "importance": mem.get("importance", 0),
+                "score": mem.get("score", 0),
+                "timestamp": mem.get("timestamp", "")
+            })
+
+        return {
+            "results": results,
+            "query": request.query,
+            "total": len(results)
+        }
+
+    except Exception as e:
+        logger.error(f"Error searching memories: {e}", exc_info=True)
+        return {
+            "results": [],
+            "error": str(e)
+        }
 
 
 # Include Cost Tracking API routes (Phase 4)

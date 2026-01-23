@@ -27,6 +27,27 @@ export type TutorProviderProps = {
 export const TutorProvider: FC<TutorProviderProps> = ({ children, assessmentMode }) => {
   const tutor = useTutor(assessmentMode);
 
+  // Debug helper: expose tutor client to window for console testing
+  if (typeof window !== 'undefined' && !(window as any)._tutorDebugInitialized) {
+    (window as any)._tutorDebugInitialized = true;
+    console.log('[TutorDebug] Available! Use window.tutorDebug.send("your message") to send text');
+  }
+  if (typeof window !== 'undefined') {
+    (window as any).tutorDebug = {
+      client: tutor.client,
+      connected: tutor.connected,
+      send: (text: string) => {
+        if (tutor.client && tutor.connected) {
+          tutor.client.send({ text });
+          console.log('[TutorDebug] Sent:', text);
+        } else {
+          console.error('[TutorDebug] Not connected. Start a session first.');
+        }
+      },
+      status: () => tutor.client?.status || 'no client',
+    };
+  }
+
   return (
     <TutorContext.Provider value={tutor}>
       {children}

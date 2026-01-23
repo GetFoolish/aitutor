@@ -26,7 +26,6 @@ logger = get_logger(__name__)
 _biographer_agent = None
 _memory_extractor = None
 _student_manager = None
-_pinecone_client = None
 
 
 def _get_biographer():
@@ -49,17 +48,6 @@ def _get_memory_extractor():
         except ImportError:
             logger.warning("[SESSION_MANAGER] Memory extractor not available")
     return _memory_extractor
-
-
-def _get_pinecone():
-    global _pinecone_client
-    if _pinecone_client is None:
-        try:
-            from .database.pinecone_client import pinecone_client
-            _pinecone_client = pinecone_client
-        except ImportError:
-            logger.warning("[SESSION_MANAGER] Pinecone not available")
-    return _pinecone_client
 
 
 class SessionManager:
@@ -386,7 +374,6 @@ class SessionManager:
         # Extract additional data using AI (if enabled)
         memory_extractor = _get_memory_extractor()
         biographer = _get_biographer()
-        pinecone = _get_pinecone()
 
         # Extract topics if not already done
         if not topics_covered and memory_extractor and memory_extractor.enabled:
@@ -434,7 +421,6 @@ class SessionManager:
                 if memories:
                     # Store in MongoDB
                     memory_docs = []
-                    pinecone_memories = []
 
                     for memory in memories:
                         memory_id = f"mem_{uuid.uuid4().hex[:12]}"
@@ -450,25 +436,10 @@ class SessionManager:
                         }
                         memory_docs.append(memory_doc)
 
-                        pinecone_memories.append({
-                            "id": memory_id,
-                            "student_id": memory.student_id,
-                            "text": memory.text,
-                            "memory_type": memory.type.value,
-                            "importance": memory.importance,
-                            "emotion": memory.metadata.emotion if memory.metadata else None,
-                            "session_id": memory.session_id,
-                            "timestamp": now.isoformat(),
-                        })
-
                     # Insert to MongoDB
                     if memory_docs:
                         self.db.memories.insert_many(memory_docs)
-                        logger.info(f"[SESSION_MANAGER] Stored {len(memory_docs)} memories")
-
-                    # Upsert to Pinecone
-                    if pinecone and pinecone.enabled and pinecone_memories:
-                        pinecone.upsert_memories_batch(pinecone_memories)
+                        logger.info(f"[SESSION_MANAGER] Stored {len(memory_docs)} memories in MongoDB")
 
             except Exception as e:
                 logger.error(f"[SESSION_MANAGER] Memory extraction failed: {e}")
@@ -638,9 +609,9 @@ class SessionManager:
         top_k: int = 3
     ) -> List[Dict[str, Any]]:
         """
-        Retrieve semantically similar memories for mid-conversation injection.
+        Retrieve relevant memories for mid-conversation injection.
 
-        NEW in v5: Uses Pinecone for semantic search.
+        Uses MongoDB text search to find matching memories.
 
         Args:
             student_id: Student to search memories for
@@ -648,20 +619,63 @@ class SessionManager:
             top_k: Number of memories to retrieve
 
         Returns:
-            List of relevant memories
+            List of relevant memories with similarity scores
         """
-        pinecone = _get_pinecone()
-        if not pinecone or not pinecone.enabled:
-            return []
-
         try:
-            memories = pinecone.search_similar_memories(
-                query_text=query_text,
-                student_id=student_id,
-                top_k=top_k,
-                min_importance=0.3  # Only retrieve moderately important memories
-            )
+            # First try text search if index exists
+            try:
+                memories_cursor = self.db.memories.find(
+                    {
+                        "student_id": student_id,
+                        "$text": {"$search": query_text}
+                    },
+                    {"score": {"$meta": "textScore"}}
+                ).sort([("score", {"$meta": "textScore"})]).limit(top_k)
+
+                memories = []
+                for mem in memories_cursor:
+                    memories.append({
+                        "text": mem.get("text", ""),
+                        "type": mem.get("type", "general"),
+                        "importance": mem.get("importance", 0.5),
+                        "score": mem.get("score", 0.5),
+                        "timestamp": mem.get("timestamp"),
+                    })
+
+                if memories:
+                    logger.info(f"[SESSION_MANAGER] Found {len(memories)} memories via text search")
+                    return memories
+
+            except Exception as text_err:
+                # Text index may not exist, fall back to keyword matching
+                logger.debug(f"[SESSION_MANAGER] Text search unavailable: {text_err}")
+
+            # Fallback: Simple keyword matching
+            keywords = [w.lower() for w in query_text.split() if len(w) > 3]
+            if not keywords:
+                return []
+
+            # Build regex pattern for any keyword match
+            regex_pattern = "|".join(keywords[:5])  # Limit to 5 keywords
+
+            memories_cursor = self.db.memories.find({
+                "student_id": student_id,
+                "text": {"$regex": regex_pattern, "$options": "i"}
+            }).sort("importance", -1).limit(top_k)
+
+            memories = []
+            for mem in memories_cursor:
+                memories.append({
+                    "text": mem.get("text", ""),
+                    "type": mem.get("type", "general"),
+                    "importance": mem.get("importance", 0.5),
+                    "score": mem.get("importance", 0.5),  # Use importance as score
+                    "timestamp": mem.get("timestamp"),
+                })
+
+            logger.info(f"[SESSION_MANAGER] Found {len(memories)} memories via keyword match")
             return memories
+
         except Exception as e:
             logger.error(f"[SESSION_MANAGER] Memory retrieval failed: {e}")
             return []

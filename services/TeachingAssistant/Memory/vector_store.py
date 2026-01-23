@@ -1,11 +1,16 @@
 """
-Vector Store - Pinecone-based memory storage with deduplication
-Based on v4 teaching-assistant branch implementation
+Vector Store - Memory storage with deduplication
+
+Supports multiple backends:
+- MongoDB Atlas Vector Search (default, recommended)
+- Pinecone (requires PINECONE_API_KEY)
+
+Set MEMORY_STORE_BACKEND=mongodb or MEMORY_STORE_BACKEND=pinecone
 
 Features:
 - Intelligent deduplication using semantic similarity
 - Multi-factor scoring (similarity, recency, importance)
-- User-specific indexes
+- User-specific indexes/namespaces
 - Local JSON backup
 """
 
@@ -533,3 +538,67 @@ class MemoryStore:
             }
         except Exception as e:
             return {"enabled": True, "error": str(e)}
+
+
+# Alias for explicit Pinecone usage
+PineconeMemoryStore = MemoryStore
+
+
+# ============================================================================
+# Factory function to get the appropriate memory store
+# ============================================================================
+
+def get_memory_store(user_id: str = None, **kwargs):
+    """
+    Factory function to get the appropriate memory store based on configuration.
+
+    Environment variable MEMORY_STORE_BACKEND controls which backend to use:
+    - 'mongodb' (default): Use MongoDB Atlas Vector Search
+    - 'pinecone': Use Pinecone
+
+    Args:
+        user_id: User ID for user-specific storage
+        **kwargs: Additional arguments passed to the store constructor
+
+    Returns:
+        MemoryStore instance (either MongoDB or Pinecone based)
+    """
+    backend = os.getenv("MEMORY_STORE_BACKEND", "mongodb").lower()
+
+    if backend == "pinecone":
+        # Check if Pinecone is configured
+        if os.getenv("PINECONE_API_KEY"):
+            logger.info("[MEMORY_STORE] Using Pinecone backend")
+            return PineconeMemoryStore(user_id=user_id, **kwargs)
+        else:
+            logger.warning("[MEMORY_STORE] Pinecone requested but PINECONE_API_KEY not set, falling back to MongoDB")
+
+    # Default to MongoDB
+    try:
+        from .mongodb_vector_store import MongoDBMemoryStore
+        logger.info("[MEMORY_STORE] Using MongoDB backend")
+        return MongoDBMemoryStore(user_id=user_id, **kwargs)
+    except ImportError as e:
+        logger.error(f"[MEMORY_STORE] Failed to import MongoDB store: {e}")
+        # Last resort: try Pinecone
+        if PINECONE_AVAILABLE and os.getenv("PINECONE_API_KEY"):
+            return PineconeMemoryStore(user_id=user_id, **kwargs)
+        raise
+
+
+# Create a wrapper class that uses the factory
+class _MemoryStoreFactory:
+    """
+    Memory Store factory that automatically selects the best backend.
+
+    Uses MongoDB by default, falls back to Pinecone if configured.
+    Set MEMORY_STORE_BACKEND=pinecone to force Pinecone.
+    """
+
+    def __new__(cls, user_id: str = None, **kwargs):
+        return get_memory_store(user_id=user_id, **kwargs)
+
+
+# Export the factory as MemoryStore for backward compatibility
+# Code importing MemoryStore will automatically get the right backend
+MemoryStore = _MemoryStoreFactory

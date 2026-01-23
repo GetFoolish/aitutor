@@ -13,6 +13,9 @@ from typing import Optional, Dict, Any, List
 
 from .greeting_handler import GreetingHandler
 from .session_manager import SessionManager
+from .handlers.queue_manager import EventQueueManager
+from .core.event_processor import EventProcessor, ContextManager
+from .skills_manager import SkillsManager
 from managers.mongodb_manager import MongoDBManager
 
 from shared.logging_config import get_logger
@@ -37,6 +40,21 @@ class TeachingAssistant:
         self.greeting_handler = GreetingHandler()
         self.mongo = mongo
 
+        # v4 improvement: Event queue manager for priority-based event processing
+        self.queue_manager = EventQueueManager()
+
+        # v4 improvement: Context manager for session state
+        self.context_manager = ContextManager()
+
+        # v4 improvement: Skills manager for skill execution
+        self.skills_manager = SkillsManager(load_defaults=True)
+
+        # v4 improvement: Event processor for coordinating components
+        self.event_processor = EventProcessor(
+            context_manager=self.context_manager,
+            skills_manager=self.skills_manager
+        )
+
         # v4 improvement: Event processing loop support
         self.running = False
 
@@ -48,25 +66,67 @@ class TeachingAssistant:
         Called by lifespan manager in api.py.
 
         Handles background tasks like:
+        - Processing queued events through EventProcessor
+        - Executing skills based on context
         - Inactivity checks
         - Memory consolidation
         - Session cleanup
         """
         logger.info("[TEACHING_ASSISTANT] Event processing loop started")
 
+        inactivity_check_counter = 0
+
         while self.running:
             try:
-                # Get all active sessions and check for inactivity
-                active_sessions = self.session_manager.list_active_sessions()
+                # v4: Process events from queue
+                events = self.queue_manager.dequeue_batch(max_batch_size=10)
+                for event in events:
+                    try:
+                        # Ensure context exists for this session
+                        context = self.context_manager.get_or_create_context(
+                            session_id=event.session_id,
+                            user_id=event.user_id
+                        )
 
-                for session in active_sessions:
-                    session_id = session.get("session_id")
-                    if session_id:
-                        # Check for inactivity (this will push prompt if needed)
-                        self.check_inactivity(session_id)
+                        # MEMORY FEATURE: Retrieve relevant memories for user messages only
+                        from .core.context import EventType
+                        speaker = event.data.get("speaker", "user") if event.data else "user"
+                        if event.event_type == EventType.USER_MESSAGE and event.user_text and speaker == "user":
+                            logger.info(f"[MEMORY] 🔍 Searching memories for user message: {event.user_text[:50]}...")
+                            memory_injection = self.retrieve_memories(
+                                session_id=event.session_id,
+                                query_text=event.user_text
+                            )
+                            if memory_injection:
+                                logger.info(f"[MEMORY] ✅ Found relevant memories, injecting into session")
+                            else:
+                                logger.info(f"[MEMORY] ❌ No relevant memories found for this message")
+                        elif event.event_type == EventType.USER_MESSAGE and event.user_text and speaker == "tutor":
+                            logger.debug(f"[MEMORY] Skipping memory search for tutor message")
 
-                # Sleep before next check (don't check too frequently)
-                await asyncio.sleep(30)  # Check every 30 seconds
+                        # Process event through EventProcessor (triggers skills)
+                        injections = self.event_processor.process_event(event)
+
+                        # Push any skill-generated injections to the session
+                        for injection in injections:
+                            self.session_manager.push_instruction(event.session_id, injection)
+                            logger.debug(f"[TEACHING_ASSISTANT] Pushed skill injection to session {event.session_id[:8]}...")
+
+                    except Exception as e:
+                        logger.error(f"[TEACHING_ASSISTANT] Error processing event: {e}")
+
+                # Check inactivity less frequently (every ~30 seconds)
+                inactivity_check_counter += 1
+                if inactivity_check_counter >= 30:
+                    inactivity_check_counter = 0
+                    active_sessions = self.session_manager.list_active_sessions()
+                    for session in active_sessions:
+                        session_id = session.get("session_id")
+                        if session_id:
+                            self.check_inactivity(session_id)
+
+                # Short sleep to not busy-wait
+                await asyncio.sleep(1)
 
             except asyncio.CancelledError:
                 logger.info("[TEACHING_ASSISTANT] Event processing loop cancelled")
@@ -96,22 +156,34 @@ class TeachingAssistant:
 
         # Create session linked to student
         session = self.session_manager.create_session(user_id, student_id)
+        session_id = session["session_id"]
 
         # Get biography data for personalized greeting
         biography_data = self.session_manager.get_student_biography(student_id)
+        biography_text = biography_data.get("biography", "")
+
+        # v4 improvement: Create session context for event processing
+        is_first_session = student.get("statistics", {}).get("total_sessions", 0) == 0
+        self.context_manager.create_context(
+            session_id=session_id,
+            user_id=user_id,
+            student_name=student.get("name"),
+            biography=biography_text,
+            is_first_session=is_first_session
+        )
 
         # Generate personalized greeting with biography
         greeting = self.greeting_handler.get_greeting(user_id, biography_data)
 
         logger.info(
-            f"[TEACHING_ASSISTANT] Started session {session['session_id']} "
+            f"[TEACHING_ASSISTANT] Started session {session_id} "
             f"for student {student_id} (biography version: {student.get('biography', {}).get('version', 0)})"
         )
 
         return {
-            "session_id": session["session_id"],
+            "session_id": session_id,
             "prompt": greeting,
-            "session_info": self.session_manager.get_session_info(session["session_id"]),
+            "session_info": self.session_manager.get_session_info(session_id),
             "biography_version": student.get("biography", {}).get("version", 0),
         }
 
@@ -201,6 +273,9 @@ class TeachingAssistant:
                 session_summary.get("questions_answered", 0),
                 session_summary.get("questions_correct", 0),
             )
+
+        # v4 improvement: Clean up session context
+        self.context_manager.delete_context(session_id)
 
         return {
             "prompt": closing,
@@ -321,9 +396,11 @@ class TeachingAssistant:
         """
         session = self.session_manager.get_session_by_id(session_id)
         if not session:
+            logger.warning(f"[MEMORY] No session found for {session_id}")
             return None
 
         student_id = session.get("student_id", session.get("user_id"))
+        logger.info(f"[MEMORY] 🔍 Retrieving memories for student {student_id[:8]}... Query: '{query_text[:50]}'")
 
         # Retrieve relevant memories
         memories = self.session_manager.retrieve_relevant_memories(
@@ -333,7 +410,14 @@ class TeachingAssistant:
         )
 
         if not memories:
+            logger.info(f"[MEMORY] ❌ No relevant memories found")
             return None
+
+        logger.info(f"[MEMORY] ✅ Found {len(memories)} relevant memories!")
+        for i, mem in enumerate(memories):
+            mem_text = mem.get("text", mem.get("memory", {}).get("text", ""))[:80]
+            mem_score = mem.get("score", mem.get("similarity", 0))
+            logger.info(f"[MEMORY]   {i+1}. (score={mem_score:.2f}) {mem_text}...")
 
         # Generate memory injection prompt
         prompt = self.greeting_handler.get_memory_injection_prompt(
@@ -344,7 +428,7 @@ class TeachingAssistant:
         if prompt:
             # Push as system update
             self.session_manager.push_instruction(session_id, prompt)
-            logger.debug(f"[TEACHING_ASSISTANT] Injected {len(memories)} memories into session")
+            logger.info(f"[MEMORY] 📤 Injected {len(memories)} memories into session via SSE")
 
         return prompt
 

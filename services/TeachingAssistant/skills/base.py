@@ -96,8 +96,12 @@ class GreetingSkill(Skill):
     """
     Skill for handling session greetings.
 
-    Triggers on the first turn to personalize the greeting
-    based on student biography and session history.
+    NOTE: This skill is DISABLED because greeting is already handled by
+    GreetingHandler in the /session/start response. Enabling this would
+    cause duplicate greetings (one in response, one via SSE).
+
+    The greeting_handler provides biography-aware greetings that are
+    included directly in the session start response.
     """
 
     name = "greeting"
@@ -105,8 +109,11 @@ class GreetingSkill(Skill):
     priority = 10  # High priority for first turn
 
     def should_run(self, context: SessionContext) -> bool:
-        """Run only on the first turn"""
-        return context.turn_count <= 1
+        """
+        DISABLED: Greeting is handled by GreetingHandler in session start.
+        Return False to prevent duplicate greetings.
+        """
+        return False  # Greeting handled by greeting_handler.get_greeting()
 
     def execute(self, context: SessionContext) -> Optional[str]:
         """Generate personalized greeting instruction"""
