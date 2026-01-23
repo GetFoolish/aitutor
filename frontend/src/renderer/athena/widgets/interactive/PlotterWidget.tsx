@@ -102,6 +102,8 @@ interface PlotterOptions {
   snapsPerLine?: number;
   labels?: string[];  // Axis labels [x-axis label, y-axis label]
   labelText?: string; // Alternate axis label property
+  labelX?: string;
+  labelY?: string;
 }
 
 export interface PlotterWidgetProps extends WidgetProps<PlotterOptions> { }
@@ -117,6 +119,7 @@ export function PlotterWidget({
   theme = 'light',
 }: PlotterWidgetProps) {
   const options = widget.options || {};
+  console.log(`[PlotterWidget] Render: ${widgetId}`, { type: options.type, labelX: options.labelX, labelY: options.labelY, range: options.range });
 
   // Safely extract range with proper validation
   const defaultRange: [[number, number], [number, number]] = [[0, 5], [0, 8]];
@@ -197,6 +200,8 @@ export function PlotterWidget({
 
   const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
   const [hoveredBar, setHoveredBar] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
 
   const themeStyles = {
     light: { bg: '#fff', grid: '#e5e7eb', axis: '#374151', point: '#3b82f6', correct: '#22c55e', text: '#6b7280' },
@@ -207,9 +212,9 @@ export function PlotterWidget({
   const isDisabled = readOnly || disabled;
 
   // SVG dimensions
-  const width = 400;
-  const height = 320;
-  const padding = 40;
+  const width = 500; // Increased width for better title spacing
+  const height = 350; // Increased height
+  const padding = 60; // Increased padding for titles
   const graphWidth = width - 2 * padding;
   const graphHeight = height - 2 * padding;
 
@@ -224,8 +229,11 @@ export function PlotterWidget({
   // Generate grid lines
   const xTicks: number[] = [];
   const yTicks: number[] = [];
-  for (let x = range[0][0]; x <= range[0][1]; x++) xTicks.push(x);
-  for (let y = range[1][0]; y <= range[1][1]; y++) yTicks.push(y);
+  const xStep = options.step?.[0] || 1;
+  const yStep = options.step?.[1] || options.scaleY || 1;
+
+  for (let x = range[0][0]; x <= range[0][1]; x = Number((x + xStep).toFixed(10))) xTicks.push(x);
+  for (let y = range[1][0]; y <= range[1][1]; y = Number((y + yStep).toFixed(10))) yTicks.push(y);
 
   const handleClick = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
     if (isDisabled) return;
@@ -267,6 +275,22 @@ export function PlotterWidget({
     onChange?.(newValues);
   }, [isDisabled, barValues, onChange, range]);
 
+  const handleMouseMove = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
+    if (!isDragging || dragIndex === null || isDisabled) return;
+
+    const svg = e.currentTarget;
+    const rect = svg.getBoundingClientRect();
+    const clickY = e.clientY - rect.top;
+    const newY = Math.round(yInverse(clickY));
+
+    handleBarClick(dragIndex, newY);
+  }, [isDragging, dragIndex, isDisabled, yInverse, handleBarClick]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+    setDragIndex(null);
+  }, []);
+
   // Render bar chart
   if (isBarChart) {
     const barWidth = (graphWidth / categories.length) * 0.6;
@@ -276,7 +300,14 @@ export function PlotterWidget({
     return (
       <BaseWidgetWrapper widgetId={widgetId} widgetType="plotter">
         <div className="athena-plotter" style={{ padding: '16px', backgroundColor: themeStyles.bg, borderRadius: '8px' }}>
-          <svg width={width} height={height + 30} style={{ border: `1px solid ${themeStyles.grid}`, borderRadius: '4px' }}>
+          <svg
+            width={width}
+            height={height + 30}
+            style={{ border: `1px solid ${themeStyles.grid}`, borderRadius: '4px' }}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+          >
             <rect x={0} y={0} width={width} height={height + 30} fill={themeStyles.bg} />
 
             {/* Y-axis grid lines and labels */}
@@ -307,10 +338,14 @@ export function PlotterWidget({
                     width={barWidth}
                     height={graphHeight}
                     fill="transparent"
-                    style={{ cursor: isDisabled ? 'default' : 'pointer' }}
+                    style={{ cursor: isDisabled ? 'default' : 'ns-resize' }}
                     onMouseEnter={() => !isDisabled && setHoveredBar(i)}
                     onMouseLeave={() => setHoveredBar(null)}
-                    onClick={(e) => {
+                    onMouseDown={(e) => {
+                      if (isDisabled) return;
+                      setIsDragging(true);
+                      setDragIndex(i);
+
                       const rect = e.currentTarget.ownerSVGElement?.getBoundingClientRect();
                       if (rect) {
                         const clickY = e.clientY - rect.top;
@@ -325,11 +360,11 @@ export function PlotterWidget({
                     y={height - padding - barHeight}
                     width={barWidth}
                     height={Math.max(barHeight, 0)}
-                    fill={isHovered ? '#4ade80' : themeStyles.correct}
-                    stroke={isHovered ? '#22c55e' : themeStyles.axis}
+                    fill={isHovered ? '#4ade80' : '#28ae7b'}
+                    stroke={isHovered ? '#22c55e' : '#1a7a56'}
                     strokeWidth={isHovered ? 2 : 1}
                     style={{
-                      cursor: isDisabled ? 'default' : 'pointer',
+                      cursor: isDisabled ? 'default' : 'ns-resize',
                       transition: 'all 0.15s ease',
                     }}
                     pointerEvents="none"
@@ -385,6 +420,32 @@ export function PlotterWidget({
                 />
               );
             })}
+
+            {options.labelX && (
+              <text
+                x={padding + graphWidth / 2}
+                y={height - 5}
+                textAnchor="middle"
+                fontSize="14"
+                fontWeight="700"
+                fill={themeStyles.axis}
+              >
+                {options.labelX}
+              </text>
+            )}
+            {options.labelY && (
+              <text
+                x={20}
+                y={padding + graphHeight / 2}
+                textAnchor="middle"
+                fontSize="14"
+                fontWeight="700"
+                fill={themeStyles.axis}
+                transform={`rotate(-90, 20, ${padding + graphHeight / 2})`}
+              >
+                {options.labelY}
+              </text>
+            )}
           </svg>
 
           <div style={{ marginTop: '12px', fontSize: '13px', color: themeStyles.text, textAlign: 'center' }}>
