@@ -90,14 +90,16 @@ for r in results:
 "
 ```
 
-Expected output:
+Expected output (scores should vary, indicating vector search is working):
 ```
 Store enabled: True
 Found 3 memories:
-  - Score: 0.66 | maybe. it's just hard when i feel so dumb compared to everyo...
-  - Score: 0.65 | i guess. it's just... he's so good at math and science...
-  - Score: 0.64 | okay i feel a little better about friday. still scared but...
+  - Score: 0.72 | maybe. it's just hard when i feel so dumb compared to everyo...
+  - Score: 0.71 | i guess. it's just... he's so good at math and science...
+  - Score: 0.68 | okay i feel a little better about friday. still scared but...
 ```
+
+**Note:** If you see flat scores like `0.60, 0.60, 0.60`, vector search is not working - check your Atlas vector index.
 
 ## Running the Server
 
@@ -172,6 +174,12 @@ Frontend (receives memory-informed responses)
 ### Dimension mismatch error
 - Your Atlas index and `EMBEDDING_DIMENSION` env var must match
 - Default is 768 for Gemini embeddings
+
+### Flat scores (0.60, 0.50) instead of varied scores
+- This means vector search failed and keyword fallback is being used
+- Check that your Atlas vector index is named `vector_index`
+- Verify index status is "READY" in Atlas UI
+- Ensure memories have embeddings: `db.memories.countDocuments({embedding: {$exists: true}})`
 
 ## Verifying the Setup
 
