@@ -749,7 +749,7 @@ function FloatingControlPanel({
                 action: {
                   label: "Buy Plan",
                   onClick: () => {
-                    window.location.href = '/app/pricing';
+                    window.location.href = '/pricing';
                   }
                 }
               });
@@ -1504,7 +1504,7 @@ function FloatingControlPanel({
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => {
-                  window.location.href = '/app/pricing';
+                  window.location.href = '/pricing';
                 }}
                 className="border-[2px] border-black dark:border-white bg-[#4ADE80] text-black hover:bg-[#4ADE80] font-black uppercase shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none"
               >

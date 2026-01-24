@@ -205,7 +205,7 @@ const AssessmentFlow: React.FC = () => {
               score={score}
               total={total}
               subject={subject}
-              onContinue={() => history.replace('/app')}
+              onContinue={() => history.replace('/')}
             />
           )}
 

@@ -188,6 +188,8 @@ const SignupForm: React.FC<SignupFormProps> = ({ setupToken, googleUser, onCompl
         interests: data.interests,
         learningStyle: data.learningStyle,
       });
+      // Mark as new user - will show onboarding animation
+      sessionStorage.setItem('is_new_user', 'true');
       onComplete(response.token, response.user);
     } catch (err: any) {
       setSubmitError(err.message || "Failed to complete setup.");

@@ -197,7 +197,7 @@ async def payment_success():
             <div class="success-icon">✓</div>
             <h1>Payment Successful!</h1>
             <p>Your payment has been processed successfully and your credits have been added to your account.</p>
-            <a href="/app/account" class="button">Back to Account</a>
+            <a href="/account" class="button">Back to Account</a>
         </div>
     </body>
     </html>
@@ -279,7 +279,7 @@ async def payment_cancel():
             <div class="cancel-icon">✕</div>
             <h1>Payment Cancelled</h1>
             <p>Your payment has been cancelled. No charges were made to your account.</p>
-            <a href="/app/pricing" class="button">Try Again</a>
+            <a href="/pricing" class="button">Try Again</a>
         </div>
     </body>
     </html>

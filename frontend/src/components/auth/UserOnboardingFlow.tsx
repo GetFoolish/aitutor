@@ -103,7 +103,22 @@ const UserOnboardingFlow: React.FC = () => {
     }
 
     if (isAuthenticated && !isLoading) {
-      startOnboardingFlow();
+      // Check if this is a new user or existing user
+      const isNewUser = sessionStorage.getItem('is_new_user') === 'true';
+      const isExistingUser = sessionStorage.getItem('is_existing_user') === 'true';
+
+      if (isNewUser) {
+        // New user - always show onboarding animation
+        sessionStorage.removeItem('is_new_user'); // Clear the flag after checking
+        startOnboardingFlow();
+      } else if (isExistingUser) {
+        // Existing user - check backend validation only, skip animation
+        sessionStorage.removeItem('is_existing_user'); // Clear the flag after checking
+        checkBackendValidationOnly();
+      } else {
+        // Fallback: If no flag is set, treat as existing user
+        checkBackendValidationOnly();
+      }
     }
   }, [isAuthenticated, isLoading, history]);
 
@@ -119,13 +134,49 @@ const UserOnboardingFlow: React.FC = () => {
     }
   }, [step]);
 
+  const checkBackendValidationOnly = async () => {
+    try {
+      // Check completeness without showing animation
+      const response = await apiUtils.get(`${AUTH_API_URL}/auth/check-completeness`);
+
+      if (!response.ok) {
+        throw new Error('Failed to check completeness');
+      }
+
+      const data: CompletenessCheck = await response.json();
+      setCompleteness(data);
+
+      // Route based on readiness (no animation delays for existing users)
+      if (data.readiness_status === 'needs_info') {
+        // Existing user with missing info - show the form with animation
+        setChecklistVisible(true);
+        setStep('collecting_info');
+      } else if (data.readiness_status === 'needs_assessment') {
+        // Existing user needs assessment - redirect directly
+        window.dispatchEvent(new CustomEvent('onboarding-complete'));
+        sessionStorage.setItem('onboarding_complete', 'true');
+        history.replace(`/assessment/${data.assessment_subject}`);
+      } else if (data.readiness_status === 'complete') {
+        // Existing user with complete data - go straight to app
+        window.dispatchEvent(new CustomEvent('onboarding-complete'));
+        sessionStorage.setItem('onboarding_complete', 'true');
+        history.replace('/');
+      }
+    } catch (error) {
+      console.error('Error in backend validation check:', error);
+      window.dispatchEvent(new CustomEvent('onboarding-complete'));
+      sessionStorage.setItem('onboarding_complete', 'true');
+      history.replace('/');
+    }
+  };
+
   const startOnboardingFlow = async () => {
     try {
       setStep('checking');
 
       // Check completeness
       const response = await apiUtils.get(`${AUTH_API_URL}/auth/check-completeness`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to check completeness');
       }
@@ -143,7 +194,7 @@ const UserOnboardingFlow: React.FC = () => {
         setStep('starting_assessment');
         // Longer loading time before redirecting to assessment
         await new Promise(resolve => setTimeout(resolve, 4000));
-        
+
         window.dispatchEvent(new CustomEvent('onboarding-complete'));
         sessionStorage.setItem('onboarding_complete', 'true');
         history.replace(`/assessment/${data.assessment_subject}`);
@@ -156,7 +207,7 @@ const UserOnboardingFlow: React.FC = () => {
       console.error('Error in onboarding flow:', error);
       window.dispatchEvent(new CustomEvent('onboarding-complete'));
       sessionStorage.setItem('onboarding_complete', 'true');
-      history.replace('/app');
+      history.replace('/');
     }
   };
 

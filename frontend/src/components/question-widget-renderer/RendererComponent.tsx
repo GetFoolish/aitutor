@@ -224,9 +224,9 @@ const RendererComponent = ({
                 console.warn('[RendererComponent] No unit_id found in metadata!');
             }
             
-            // Update URL to /app/{mongodb_id}
+            // Update URL to /{mongodb_id}
             if (mongodbId && !assessmentMode) {
-                window.history.replaceState(null, '', `/app/${mongodbId}`);
+                window.history.replaceState(null, '', `/${mongodbId}`);
             }
         }
     }, [item, perseusItems, isLoading, onSkillChange, assessmentMode]);

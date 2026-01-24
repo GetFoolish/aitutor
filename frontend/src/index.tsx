@@ -157,7 +157,7 @@ root.render(
               <Route path="/assessment/:subject" component={AssessmentFlow} />
               <Route path="/landing/:id" component={LandingPageWrapper} /> {/* Dynamic landing page routes */}
               <Route path="/" exact component={LandingPageOrApp} /> {/* Root shows landing page or app based on auth */}
-              <Route path="/" component={App} />
+              <Route path="/:questionId" exact component={App} /> {/* Dynamic question URLs like /{mongodb_id} */}
               <Route component={NotFoundPage} /> {/* Catch-all route - 404 for non-existent pages */}
             </Switch>
           </Suspense>

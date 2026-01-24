@@ -113,7 +113,7 @@ class FeedWebSocketService {
                 action: {
                   label: "Buy More",
                   onClick: () => {
-                    window.location.href = '/app/pricing';
+                    window.location.href = '/pricing';
                   }
                 }
               });

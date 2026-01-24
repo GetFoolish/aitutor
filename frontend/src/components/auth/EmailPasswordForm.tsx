@@ -127,6 +127,8 @@ const EmailPasswordForm: React.FC<EmailPasswordFormProps> = ({ onAuthSuccess }) 
 
     try {
       const response = await authAPI.emailLogin(data.email, data.password);
+      // Mark as existing user - skip onboarding animation
+      sessionStorage.setItem('is_existing_user', 'true');
       onAuthSuccess(response.token, response.user);
     } catch (err: any) {
       setSubmitError(err.message || 'Login failed. Please try again.');
@@ -149,6 +151,8 @@ const EmailPasswordForm: React.FC<EmailPasswordFormProps> = ({ onAuthSuccess }) 
         data.preferredLanguage,
         data.location
       );
+      // Mark as new user - will show onboarding animation
+      sessionStorage.setItem('is_new_user', 'true');
       onAuthSuccess(response.token, response.user);
     } catch (err: any) {
       setSubmitError(err.message || 'Signup failed. Please try again.');

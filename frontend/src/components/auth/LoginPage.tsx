@@ -40,6 +40,8 @@ const LoginPage: React.FC = () => {
         .then(res => res.json())
         .then(userData => {
           login(token, userData);
+          // Mark as existing user - skip onboarding animation
+          sessionStorage.setItem('is_existing_user', 'true');
           history.replace('/');
         })
         .catch(error => {
@@ -56,7 +58,7 @@ const LoginPage: React.FC = () => {
 
   const handleAuthSuccess = (token: string, user: any) => {
     login(token, user);
-    history.replace('/app');
+    history.replace('/');
   };
 
   const handleGoogleLogin = async () => {
