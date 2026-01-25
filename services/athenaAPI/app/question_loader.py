@@ -137,6 +137,27 @@ def strip_hint_headers(text: str) -> str:
     return re.sub(r'^#+\s*', '', text, flags=re.MULTILINE)
 
 
+def fix_duplicate_latex_delimiters(text: str) -> str:
+    """
+    Fix duplicate LaTeX delimiters like \\left\\left and \\right\\right.
+    These often appear due to double escaping or copy-paste errors.
+    """
+    if not text:
+        return text
+    
+    # Fix double \left commands (match any duplicate \left\left)
+    # This handles both \left\left[ and \left\left( and \left\left\{
+    text = re.sub(r'\\left\\left', r'\\left', text)
+    text = re.sub(r'\\\\left\\\\left', r'\\\\left', text)
+    
+    # Fix double \right commands (match any duplicate \right\right)
+    # This handles both \right\right] and \right\right) and \right\right\}
+    text = re.sub(r'\\right\\right', r'\\right', text)
+    text = re.sub(r'\\\\right\\\\right', r'\\\\right', text)
+    
+    return text
+
+
 def clean_athena_content(text: str) -> str:
     """
     Apply all content cleaning rules.
@@ -145,6 +166,7 @@ def clean_athena_content(text: str) -> str:
         return text
     text = remove_markdown_bold(text)
     text = fix_latex_environments(text)
+    text = fix_duplicate_latex_delimiters(text)
     text = strip_hint_headers(text)
     return text
 

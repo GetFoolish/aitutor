@@ -1,29 +1,24 @@
-from managers.mongodb_manager import mongo_db
-from bson.objectid import ObjectId
+
 import json
-from datetime import datetime
+from pymongo import MongoClient
+import sys
 
-def inspect_question(question_id):
-    print(f"Inspecting question: {question_id}")
-    question = mongo_db.scraped_questions.find_one({"_id": question_id})
-    if not question:
-        try:
-            question = mongo_db.scraped_questions.find_one({"_id": ObjectId(question_id)})
-        except:
-            pass
-            
-    if question:
-        class MongoEncoder(json.JSONEncoder):
-            def default(self, obj):
-                if isinstance(obj, ObjectId):
-                    return str(obj)
-                if isinstance(obj, datetime):
-                    return obj.isoformat()
-                return super().default(obj)
-                
-        print(json.dumps(question, indent=2, cls=MongoEncoder))
-    else:
-        print("Question not found.")
+# Connect to MongoDB
+client = MongoClient('mongodb+srv://sherlocked:sherlocked123@cluster0.bbw2k.mongodb.net/athena_db?retryWrites=true&w=majority')
+db = client['athena_db']
+collection = db['exercises']
 
-if __name__ == "__main__":
-    inspect_question("69317e1c47a2cb48fc68c2e8")
+question_id = "693643a203d86cedf65fa681"
+
+# Find the question
+question = collection.find_one({"id": question_id})
+
+if question:
+    print(f"--- Question Data for {question_id} ---")
+    # specific fields of interest
+    print(f"Type: {question.get('type', 'N/A')}")
+    
+    question_data = question.get('question_data', {})
+    print(json.dumps(question_data, indent=2))
+else:
+    print(f"Question {question_id} not found.")

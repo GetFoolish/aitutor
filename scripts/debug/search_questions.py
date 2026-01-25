@@ -39,6 +39,16 @@ def main():
             for name, data in widgets.items():
                 print(f"--- Widget: {name} ---")
                 print(json.dumps(data, indent=2))
+            
+            print("-" * 40)
+            print("HINTS:")
+            hints = doc.get('hints', [])
+            if not hints and 'question' in doc:
+                hints = doc.get('question', {}).get('hints', [])
+            
+            for i, hint in enumerate(hints):
+                print(f"--- Hint {i+1} ---")
+                print(hint.get('content', 'NO CONTENT'))
         else:
             print("Question not found.")
     else:

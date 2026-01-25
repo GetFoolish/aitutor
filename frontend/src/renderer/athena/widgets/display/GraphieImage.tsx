@@ -310,9 +310,16 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
 
   // DERIVED STATE: Determine final dark mode status
   // If context is available, use it (INSTANT). Otherwise, use standalone state.
+  // ALSO check global document class as a 'source of truth' for the final CSS application
+  const isGlobalDarkMode = useMemo(() => {
+    return document.documentElement.classList.contains('dark') ||
+      document.body.classList.contains('dark') ||
+      document.querySelector('[data-theme="dark"]') !== null;
+  }, [athenaContext?.state?.theme, standaloneIsDarkMode]);
+
   const isDarkMode = athenaContext?.state?.theme
     ? athenaContext.state.theme === 'dark'
-    : standaloneIsDarkMode;
+    : (standaloneIsDarkMode || isGlobalDarkMode);
 
   // --- VISUAL FILTERS (Inversion for diagrams, not for illustrations) ---
   const isIllustrativeQuestion = useMemo(() => {
@@ -325,6 +332,18 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
       ))
     );
   }, [baseUrl, alt]);
+
+  // Specific detection for trigonometry diagrams that need inversion
+  const isTrigDiagram = useMemo(() => {
+    const isTrig =
+      baseUrl.includes('795d7598beb11dc5dd769977d48a4996f1f1e7b0') || // Sine triangle
+      baseUrl.includes('2dd9d4de4ca5af0613bba63748691cafee34152d47f03cc1') || // Triangle fix
+      url.includes('693528') || // ID Prefix for trig lesson
+      baseUrl.toLowerCase().includes('triangle') ||
+      (alt && /\btriangle\b/i.test(alt));
+
+    return isTrig;
+  }, [baseUrl, url, alt, isDarkMode, isGlobalDarkMode, isIllustrativeQuestion]);
 
   const computedFilterClass = isDarkMode
     ? (isIllustrativeQuestion ? 'graphie-filter-light' : 'graphie-filter-dark')
@@ -1252,6 +1271,64 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
           mix-blend-mode: normal !important;
           transition: filter 0.3s ease !important;
         }
+
+        /* NUCLEAR FIX for Invisible Trig Diagrams - NO FILTER, DIRECT COLOR */
+        .trig-diagram-dark-fix.force-dark {
+          filter: none !important; 
+          mix-blend-mode: normal !important;
+          background: transparent !important;
+          background-color: transparent !important;
+          opacity: 1 !important;
+          display: block !important;
+          visibility: visible !important;
+        }
+
+        /* Target SVG internal elements specifically */
+        .trig-diagram-dark-fix.force-dark svg * {
+           vector-effect: non-scaling-stroke !important;
+        }
+
+        @keyframes graphie-debug-flash {
+          from { outline-color: #ff00ff; outline-width: 2px; }
+          to { outline-color: #00ffff; outline-width: 8px; }
+        }
+
+        /* Force colors for vector lines and shapes - STROKE ONLY for most */
+        .trig-diagram-dark-fix.force-dark path,
+        .trig-diagram-dark-fix.force-dark line,
+        .trig-diagram-dark-fix.force-dark polyline,
+        .trig-diagram-dark-fix.force-dark circle,
+        .trig-diagram-dark-fix.force-dark rect {
+           stroke: #ffffff !important;
+           stroke-width: 2px !important;
+           fill: none !important; /* Avoid solid white blocks */
+           stroke-opacity: 1 !important;
+           visibility: visible !important;
+        }
+
+        /* Force colors for text and labels - FILL ONLY */
+        .trig-diagram-dark-fix.force-dark text,
+        .trig-diagram-dark-fix.force-dark tspan,
+        .trig-diagram-dark-fix.force-dark .graphie-label,
+        .trig-diagram-dark-fix.force-dark .athena-image-label {
+           fill: #ffffff !important;
+           color: #ffffff !important;
+           stroke: none !important;
+           fill-opacity: 1 !important;
+           visibility: visible !important;
+        }
+        
+        /* Force color of labels if they are separate */
+        .trig-diagram-dark-fix.force-dark .graphie-label,
+        .trig-diagram-dark-fix.force-dark .athena-image-label {
+           color: #ffffff !important;
+           background-color: #000000 !important;
+           border: 2px solid white !important;
+           z-index: 100 !important;
+        }
+        
+        /* Exception for color-coded elements if they exist (heuristic: they have a non-black initial color) */
+        /* But for now, we want full visibility, so we force white */
       `}</style>
 
       {/*
@@ -1267,7 +1344,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         <img
           src={baseUrl + '.png'}
           alt={alt}
-          className={`graphie-image graphie-png-with-labels ${computedFilterClass}`}
+          className={`graphie-image graphie-png-with-labels ${isTrigDiagram && isDarkMode ? '' : computedFilterClass} ${isTrigDiagram ? 'trig-diagram-dark-fix' : ''} ${isDarkMode ? 'force-dark' : ''}`}
           style={{
             maxWidth: '100%',
             height: 'auto',
@@ -1301,7 +1378,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
           }}
         >
           <div
-            className={`graphie-svg-wrapper ${computedFilterClass} ${baseUrl.includes('290ce3585c9dfd9c3f285fbc1f4c1e8d6e9a2e8f') ? 'triangle-fix-290c' : ''}`}
+            className={`graphie-svg-wrapper ${isTrigDiagram && isDarkMode ? '' : computedFilterClass} ${isTrigDiagram ? 'trig-diagram-dark-fix' : ''} ${isDarkMode ? 'force-dark' : ''} ${baseUrl.includes('290ce3585c9dfd9c3f285fbc1f4c1e8d6e9a2e8f') ? 'triangle-fix-290c' : ''}`}
             dangerouslySetInnerHTML={{ __html: processedSvgWithLabels }}
             style={{
               display: 'block',
@@ -1319,7 +1396,7 @@ export function GraphieImage({ url, alt = '', className = '', style }: GraphieIm
         <img
           src={pngFallback || baseUrl + '.png'}
           alt={alt}
-          className={`graphie-image ${computedFilterClass}`}
+          className={`graphie-image ${isTrigDiagram && isDarkMode ? '' : computedFilterClass} ${isTrigDiagram ? 'trig-diagram-dark-fix' : ''} ${isDarkMode ? 'force-dark' : ''}`}
           style={{
             maxWidth: '100%',
             height: 'auto',

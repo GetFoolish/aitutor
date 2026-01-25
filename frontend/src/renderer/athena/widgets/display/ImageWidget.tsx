@@ -110,6 +110,36 @@ export function ImageWidget({
     };
   }, []);
 
+  // Determine if this is a graphie image early to avoid false timeouts
+  const isGraphieImage = useMemo(() => {
+    if (!backgroundImage?.url) return false;
+
+    // EXCLUDE fixed graphs from this check to ensure they use the standard <img> tag
+    const altText = options.alt || '';
+    const isCurvedGraphFixed = backgroundImage.url.includes('e5659') ||
+      (altText.includes('Good S') && altText.includes('Good R'));
+    const isLinearGraphFixed = backgroundImage.url.includes('a73f94') || altText.includes('(1,40)');
+    const isBrokenGraph = isCurvedGraphFixed || isLinearGraphFixed ||
+      backgroundImage.url.includes('4d5a7152eb4a9381f6727326fe960fe5c818498b') ||
+      backgroundImage.url.includes('1bbc59f89096d3bbe13c4cc2197f9cd481b55f32') ||
+      backgroundImage.url.includes('1f4c504dc429c306ee1ba7fab9cb53079f8947f0');
+
+    if (isBrokenGraph) return false;
+
+    return (
+      backgroundImage.url.startsWith('web+graphie://') ||
+      backgroundImage.url.includes('ka-perseus-graphie') ||
+      (backgroundImage.url.includes('kastatic.org') && backgroundImage.url.includes('graphie'))
+    );
+  }, [backgroundImage?.url, options.alt]);
+
+  // Set isLoading to false if it's a GraphieImage (it handles its own loading)
+  useEffect(() => {
+    if (isGraphieImage && isLoading) {
+      setIsLoading(false);
+    }
+  }, [isGraphieImage, isLoading]);
+
   // Use Context for robust Dark Mode detection
   const athenaContext = React.useContext(AthenaContext);
   const isDarkMode = athenaContext?.state?.theme
@@ -125,7 +155,7 @@ export function ImageWidget({
         clearTimeout(loadTimeoutRef.current);
       }
       loadTimeoutRef.current = setTimeout(() => {
-        if (isLoading) {
+        if (isLoading && !isGraphieImage) {
           console.log('[ImageWidget] Load timeout, trying fallback');
           if (fallbackAttempt < 3) {
             setFallbackAttempt(prev => prev + 1);
@@ -322,28 +352,8 @@ export function ImageWidget({
     );
   }
 
-  // Check if this is a graphie image that needs labels from data.json
-  // EXCLUDE fixed graphs from this check to ensure they use the standard <img> tag with our override URL
-  // Sync detection logic with imageUrl calculation
-  const altText = options.alt || '';
-  const isCurvedGraphFixed = backgroundImage.url.includes('e5659') ||
-    (altText.includes('Good S') && altText.includes('Good R'));
-
-  const isLinearGraphFixed = backgroundImage.url.includes('a73f94') || altText.includes('(1,40)');
-
-  const isBrokenGraph = isCurvedGraphFixed || isLinearGraphFixed ||
-    backgroundImage.url.includes('4d5a7152eb4a9381f6727326fe960fe5c818498b') ||
-    backgroundImage.url.includes('1bbc59f89096d3bbe13c4cc2197f9cd481b55f32') ||
-    backgroundImage.url.includes('1f4c504dc429c306ee1ba7fab9cb53079f8947f0');
-
-  const isGraphieImage = !isBrokenGraph && (
-    backgroundImage.url.startsWith('web+graphie://') ||
-    backgroundImage.url.includes('ka-perseus-graphie') ||
-    (backgroundImage.url.includes('kastatic.org') && backgroundImage.url.includes('graphie'))
-  );
-
   // Use GraphieImage component for graphie images to properly render labels from data.json
-  if (isGraphieImage) {
+  if (isGraphieImage && backgroundImage?.url) {
     return (
       <BaseWidgetWrapper widgetId={widgetId} widgetType="image">
         <figure className="athena-image-figure">
