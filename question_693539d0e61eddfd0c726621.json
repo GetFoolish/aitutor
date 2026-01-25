@@ -1,0 +1,160 @@
+{
+  "_id": "693539d0e61eddfd0c726621",
+  "questionId": "30.1.1.1.2_x44a7850d2e67466b",
+  "courseIdx": 30,
+  "courseName": "High school biology",
+  "courseDirName": "30_High_school_biology",
+  "courseUrl": "https://www.khanacademy.org/science/hs-bio",
+  "unitIdx": 1,
+  "unitName": "Ecology and natural systems",
+  "unitDirName": "30.1_Ecology_and_natural_systems",
+  "lessonIdx": 1,
+  "lessonName": "Organization of natural systems",
+  "lessonDirName": "30.1.1_Organization_of_natural_systems",
+  "exerciseIdx": 1,
+  "exerciseName": "Apply: organization of natural systems",
+  "exerciseDirName": "30.1.1.1_Apply:_organization_of_natural_systems",
+  "exerciseId": "xce5055c93ff67ad3",
+  "itemId": "x44a7850d2e67466b",
+  "assessmentData": {
+    "data": {
+      "assessmentItem": {
+        "__typename": "AssessmentItemOrError",
+        "error": null,
+        "item": {
+          "__typename": "AssessmentItem",
+          "id": "x44a7850d2e67466b",
+          "isContextInaccessible": false,
+          "itemData": "{\"answerArea\": {\"calculator\": false, \"chi2Table\": false, \"financialCalculatorMonthlyPayment\": false, \"financialCalculatorTimeToPayOff\": false, \"financialCalculatorTotalAmount\": false, \"periodicTable\": false, \"periodicTableWithKey\": false, \"tTable\": false, \"zTable\": false}, \"hints\": [], \"itemDataVersion\": {\"major\": 0, \"minor\": 1}, \"question\": {\"content\": \"The Venus flytrap is a carnivorous plant found in wetlands along the east coast of the United States. The soil of the Venus flytrap\\u2019s habitat tends to be acidic and low in nutrients. Although the Venus flytrap does photosynthesize, it also uses sticky leaf traps to catch and digest ants, spiders, beetles, and other crawling arthropods to obtain additional nutrients.  \\n\\n[[\\u2603 image 1]]\\n\\n**Which of the following describes a biotic factor in the Venus flytrap\\u2019s habitat?**\\n\\n[[\\u2603 radio 1]]\\n\\n[[\\u2603 explanation 1]]\", \"images\": {}, \"widgets\": {\"explanation 1\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"explanation\": \"\\\"[Dionaea muscipula 0zz](https://commons.wikimedia.org/wiki/File:Dionaea_muscipula_0zz.jpg)\\\" by David J. Stang, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.en)\", \"hidePrompt\": \"Hide image credit\", \"showPrompt\": \"Image credit\", \"static\": false, \"widgets\": {}}, \"static\": false, \"type\": \"explanation\", \"version\": {\"major\": 0, \"minor\": 0}}, \"image 1\": {\"alignment\": \"block\", \"graded\": true, \"options\": {\"alt\": \"A small, green plant called the Venus flytrap has sticky leaf traps to catch its prey. These leaf traps consist of two flat leaves with long, sharp teeth on their edges that are connected by a hinge.\", \"backgroundImage\": {\"height\": 233, \"url\": \"https://cdn.kastatic.org/ka-content-images/747e0193a54f68f1796b797c508c931af095fae7.jpg\", \"width\": 350}, \"box\": [350, 233], \"caption\": \"*Sticky leaf traps of a Venus flytrap*\", \"labels\": [], \"range\": [[0, 10], [0, 10]], \"static\": false, \"title\": \"\"}, \"static\": false, \"type\": \"image\", \"version\": {\"major\": 0, \"minor\": 0}}, \"radio 1\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"choices\": [{\"clue\": \"Soil acidity is a non-living part of the environment. So, it is an *abiotic factor*, not a biotic factor.\", \"content\": \"acidic (low pH) soil\", \"correct\": false}, {\"clue\": \"Spiders are living organisms. So, they are biotic factors.\", \"content\": \"spiders\", \"correct\": true}, {\"clue\": \"Soil nutrients are non-living parts of the environment. So, they are *abiotic factors*, not biotic factors.\", \"content\": \"nutrient-poor soil\", \"correct\": false, \"isNoneOfTheAbove\": false}, {\"clue\": \"Sunlight is a non-living part of the environment. So, it is an *abiotic factor*, not a biotic factor.\", \"content\": \"sunlight\", \"correct\": false, \"isNoneOfTheAbove\": false}], \"countChoices\": false, \"deselectEnabled\": false, \"displayCount\": null, \"hasNoneOfTheAbove\": false, \"multipleSelect\": false, \"randomize\": true}, \"static\": false, \"type\": \"radio\", \"version\": {\"major\": 1, \"minor\": 0}}}}}",
+          "problemType": "Identifying abiotic and biotic factors",
+          "requiresScreenOrMouse": false,
+          "sha": "2d016cca52c8d0b8106a0a111cb76e7dcce48abf"
+        }
+      }
+    }
+  },
+  "scrapedAt": "2025-12-07 08:24:48.729000",
+  "difficulty": 0.5,
+  "expected_time_seconds": 60,
+  "inferred_grade": "8",
+  "sequence_order": 64,
+  "total_in_course": 348,
+  "answerArea": {
+    "calculator": false,
+    "chi2Table": false,
+    "financialCalculatorMonthlyPayment": false,
+    "financialCalculatorTimeToPayOff": false,
+    "financialCalculatorTotalAmount": false,
+    "periodicTable": false,
+    "periodicTableWithKey": false,
+    "tTable": false,
+    "zTable": false
+  },
+  "fixedAt": "2025-12-21_v2",
+  "hints": [],
+  "itemDataVersion": {
+    "major": 0,
+    "minor": 1
+  },
+  "question": {
+    "content": "The Venus flytrap is a carnivorous plant found in wetlands along the east coast of the United States. The soil of the Venus flytrap’s habitat tends to be acidic and low in nutrients. Although the Venus flytrap does photosynthesize, it also uses sticky leaf traps to catch and digest ants, spiders, beetles, and other crawling arthropods to obtain additional nutrients.  \n\n[[☃ image 1]]\n\n**Which of the following describes a biotic factor in the Venus flytrap’s habitat?**\n\n[[☃ radio 1]]\n\n[[☃ explanation 1]]",
+    "images": {},
+    "widgets": {
+      "explanation 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "explanation": "\"[Dionaea muscipula 0zz](https://commons.wikimedia.org/wiki/File:Dionaea_muscipula_0zz.jpg)\" by David J. Stang, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.en)",
+          "hidePrompt": "Hide image credit",
+          "showPrompt": "Image credit",
+          "static": false,
+          "widgets": {}
+        },
+        "static": false,
+        "type": "explanation",
+        "version": {
+          "major": 0,
+          "minor": 0
+        }
+      },
+      "image 1": {
+        "alignment": "block",
+        "graded": true,
+        "options": {
+          "alt": "A small, green plant called the Venus flytrap has sticky leaf traps to catch its prey. These leaf traps consist of two flat leaves with long, sharp teeth on their edges that are connected by a hinge.",
+          "backgroundImage": {
+            "height": 233,
+            "url": "https://cdn.kastatic.org/ka-content-images/747e0193a54f68f1796b797c508c931af095fae7.jpg",
+            "width": 350
+          },
+          "box": [
+            350,
+            233
+          ],
+          "caption": "*Sticky leaf traps of a Venus flytrap*",
+          "labels": [],
+          "range": [
+            [
+              0,
+              10
+            ],
+            [
+              0,
+              10
+            ]
+          ],
+          "static": false,
+          "title": ""
+        },
+        "static": false,
+        "type": "image",
+        "version": {
+          "major": 0,
+          "minor": 0
+        }
+      },
+      "radio 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "choices": [
+            {
+              "clue": "Soil acidity is a non-living part of the environment. So, it is an *abiotic factor*, not a biotic factor.",
+              "content": "acidic (low pH) soil",
+              "correct": false
+            },
+            {
+              "clue": "Spiders are living organisms. So, they are biotic factors.",
+              "content": "spiders",
+              "correct": true
+            },
+            {
+              "clue": "Soil nutrients are non-living parts of the environment. So, they are *abiotic factors*, not biotic factors.",
+              "content": "nutrient-poor soil",
+              "correct": false,
+              "isNoneOfTheAbove": false
+            },
+            {
+              "clue": "Sunlight is a non-living part of the environment. So, it is an *abiotic factor*, not a biotic factor.",
+              "content": "sunlight",
+              "correct": false,
+              "isNoneOfTheAbove": false
+            }
+          ],
+          "countChoices": false,
+          "deselectEnabled": false,
+          "displayCount": null,
+          "hasNoneOfTheAbove": false,
+          "multipleSelect": false,
+          "randomize": true
+        },
+        "static": false,
+        "type": "radio",
+        "version": {
+          "major": 1,
+          "minor": 0
+        }
+      }
+    }
+  }
+}
