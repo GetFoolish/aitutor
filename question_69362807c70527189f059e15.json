@@ -1,0 +1,144 @@
+{
+  "_id": "69362807c70527189f059e15",
+  "questionId": "27.1.4.1.2_x0c4e65eeaab8fee9",
+  "courseIdx": 27,
+  "courseName": "Microeconomics",
+  "courseDirName": "27_Microeconomics",
+  "courseUrl": "https://www.khanacademy.org/economics-finance-domain/microeconomics",
+  "unitIdx": 1,
+  "unitName": "Basic economic concepts",
+  "unitDirName": "27.1_Basic_economic_concepts",
+  "lessonIdx": 4,
+  "lessonName": "Production possibilities frontier",
+  "lessonDirName": "27.1.4_Production_possibilities_frontier",
+  "exerciseIdx": 1,
+  "exerciseName": "Interpreting graphs of the production possibilities curve (PPC)",
+  "exerciseDirName": "27.1.4.1_Interpreting_graphs_of_the_production_possibilities_curve_(PPC)",
+  "exerciseId": "x57b7b05f2cfaf2af",
+  "itemId": "x0c4e65eeaab8fee9",
+  "assessmentData": {
+    "data": {
+      "assessmentItem": {
+        "__typename": "AssessmentItemOrError",
+        "error": null,
+        "item": {
+          "__typename": "AssessmentItem",
+          "id": "x0c4e65eeaab8fee9",
+          "isContextInaccessible": false,
+          "itemData": "{\"answerArea\": {\"calculator\": false, \"chi2Table\": false, \"financialCalculatorMonthlyPayment\": false, \"financialCalculatorTimeToPayOff\": false, \"financialCalculatorTotalAmount\": false, \"periodicTable\": false, \"periodicTableWithKey\": false, \"tTable\": false, \"zTable\": false}, \"hints\": [], \"question\": {\"content\": \"A company can use its current resources to produce hats and boots as shown in this production possibilities curve (PPC).\\n\\n[[\\u2603 image 1]]\\n\\n**Which of the following represents a movement from inefficiency to efficiency in this PPC?**\\n\\n[[\\u2603 radio 1]]\\n\\n\", \"images\": {}, \"widgets\": {\"image 1\": {\"alignment\": \"block\", \"graded\": true, \"options\": {\"alt\": \"A line graph depicts a production possibilities curve labeled P P C 1, representing the trade-off between the production of hats and an unspecified second good. The graph has a vertical axis labeled Hats and a horizontal axis labeled Quantity. The curve P P C 1 is downward-sloping and concave, starting at point V at (0, 8) on the Y-axis and ending at point R at (9, 0) on the X-axis. Points are marked along and within the curve. Five points are marked on the graph. Point V is at (0, 8) on the P P C 1 curve. Point R is at (10, 0) on the P P C 1 curve. Point S is at approximately (7, 5) on the P P C 1 curve. Point T is at approximately (5, 3) inside the P P C 1 curve. Point U is at approximately (9, 6) outside the P P C 1 curve.\", \"backgroundImage\": {\"height\": 393, \"url\": \"web+graphie://cdn.kastatic.org/ka-perseus-graphie/eef3b98b747a72ed553620be279df1c46e7eb201\", \"width\": 382}, \"box\": [382, 393], \"caption\": \"\", \"labels\": [], \"range\": [[0, 10], [0, 10]], \"static\": false, \"title\": \"\"}, \"static\": false, \"type\": \"image\", \"version\": {\"major\": 0, \"minor\": 0}}, \"radio 1\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"choices\": [{\"clue\": \"A movement from T to S represents a move from an inefficient combination of production to an efficient combination of production. S is efficient because it is *on* the PPC and T is inefficient because it is *inside* the PPC.\\n\", \"content\": \"From T to S\\n\", \"correct\": true}, {\"clue\": \"If you chose this option, you might think that R is inefficient because it is on an axis. However, R is efficient because it is on the PPC and any point on the PPC is efficient.\\n\", \"content\": \"From S to R\\n\", \"correct\": false}, {\"clue\": \"If you chose this option, you might think V is inefficient because it is on an axis. However, V is efficient because it is on the PPC and any point on the PPC is efficient.\\n\", \"content\": \"From S to V\\n\", \"isNoneOfTheAbove\": false}, {\"clue\": \"A movement from S to U represents a change from an attainable combination of production to an unattainable combination of production. S is attainable and efficient because it is *on* the PPC. U is unattainable because it is outside the PPC. \\n\", \"content\": \"From S to U\\n\\n\", \"isNoneOfTheAbove\": false}, {\"clue\": \"V is an attainable combination because it is on the PPC, but T is inside the PPC, so it cannot be efficient.\", \"content\": \"From V to T\", \"isNoneOfTheAbove\": false}], \"countChoices\": false, \"deselectEnabled\": false, \"displayCount\": null, \"hasNoneOfTheAbove\": false, \"multipleSelect\": false, \"numCorrect\": 1, \"randomize\": true}, \"static\": false, \"type\": \"radio\", \"version\": {\"major\": 2, \"minor\": 0}}}}}",
+          "problemType": "What the PPC shows - dup",
+          "requiresScreenOrMouse": true,
+          "sha": "96968ebaf3e3c9729b9e230b8b556bbfc185aac3"
+        }
+      }
+    }
+  },
+  "scrapedAt": "2025-12-08 01:21:11.588000",
+  "difficulty": 0.5,
+  "expected_time_seconds": 60,
+  "inferred_grade": "8",
+  "sequence_order": 273,
+  "total_in_course": 343,
+  "answerArea": {
+    "calculator": false,
+    "chi2Table": false,
+    "financialCalculatorMonthlyPayment": false,
+    "financialCalculatorTimeToPayOff": false,
+    "financialCalculatorTotalAmount": false,
+    "periodicTable": false,
+    "periodicTableWithKey": false,
+    "tTable": false,
+    "zTable": false
+  },
+  "fixedAt": "2025-12-21_v2",
+  "hints": [],
+  "itemDataVersion": {},
+  "question": {
+    "content": "A company can use its current resources to produce hats and boots as shown in this production possibilities curve (PPC).\n\n[[☃ image 1]]\n\n**Which of the following represents a movement from inefficiency to efficiency in this PPC?**\n\n[[☃ radio 1]]\n\n",
+    "images": {},
+    "widgets": {
+      "image 1": {
+        "alignment": "block",
+        "graded": true,
+        "options": {
+          "alt": "A line graph depicts a production possibilities curve labeled P P C 1, representing the trade-off between the production of hats and an unspecified second good. The graph has a vertical axis labeled Hats and a horizontal axis labeled Quantity. The curve P P C 1 is downward-sloping and concave, starting at point V at (0, 8) on the Y-axis and ending at point R at (9, 0) on the X-axis. Points are marked along and within the curve. Five points are marked on the graph. Point V is at (0, 8) on the P P C 1 curve. Point R is at (10, 0) on the P P C 1 curve. Point S is at approximately (7, 5) on the P P C 1 curve. Point T is at approximately (5, 3) inside the P P C 1 curve. Point U is at approximately (9, 6) outside the P P C 1 curve.",
+          "backgroundImage": {
+            "height": 393,
+            "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/eef3b98b747a72ed553620be279df1c46e7eb201",
+            "width": 382
+          },
+          "box": [
+            382,
+            393
+          ],
+          "caption": "",
+          "labels": [],
+          "range": [
+            [
+              0,
+              10
+            ],
+            [
+              0,
+              10
+            ]
+          ],
+          "static": false,
+          "title": ""
+        },
+        "static": false,
+        "type": "image",
+        "version": {
+          "major": 0,
+          "minor": 0
+        }
+      },
+      "radio 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "choices": [
+            {
+              "clue": "A movement from T to S represents a move from an inefficient combination of production to an efficient combination of production. S is efficient because it is *on* the PPC and T is inefficient because it is *inside* the PPC.\n",
+              "content": "From T to S\n",
+              "correct": true
+            },
+            {
+              "clue": "If you chose this option, you might think that R is inefficient because it is on an axis. However, R is efficient because it is on the PPC and any point on the PPC is efficient.\n",
+              "content": "From S to R\n",
+              "correct": false
+            },
+            {
+              "clue": "If you chose this option, you might think V is inefficient because it is on an axis. However, V is efficient because it is on the PPC and any point on the PPC is efficient.\n",
+              "content": "From S to V\n",
+              "isNoneOfTheAbove": false
+            },
+            {
+              "clue": "A movement from S to U represents a change from an attainable combination of production to an unattainable combination of production. S is attainable and efficient because it is *on* the PPC. U is unattainable because it is outside the PPC. \n",
+              "content": "From S to U\n\n",
+              "isNoneOfTheAbove": false
+            },
+            {
+              "clue": "V is an attainable combination because it is on the PPC, but T is inside the PPC, so it cannot be efficient.",
+              "content": "From V to T",
+              "isNoneOfTheAbove": false
+            }
+          ],
+          "countChoices": false,
+          "deselectEnabled": false,
+          "displayCount": null,
+          "hasNoneOfTheAbove": false,
+          "multipleSelect": false,
+          "numCorrect": 1,
+          "randomize": true
+        },
+        "static": false,
+        "type": "radio",
+        "version": {
+          "major": 2,
+          "minor": 0
+        }
+      }
+    }
+  }
+}
