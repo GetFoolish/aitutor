@@ -74,7 +74,7 @@ export class MarkdownProcessor {
     let mathIndex = 0;
 
     // Protect display math: $$...$$ and \[...\]
-    processed = processed.replace(/\$\$([^$]+)\$\$|\\\[([^\]]+)\\\]/g, (match, content1, content2) => {
+    processed = processed.replace(/\$\$([\s\S]+?)\$\$|\\\[([\s\S]+?)\\\]/g, (match, content1, content2) => {
       const mathContent = content1 || content2;
       const placeholder = `__MATH_DISPLAY_${mathIndex++}__`;
       mathPlaceholders.push({ placeholder, content: mathContent, displayMode: true });
@@ -83,9 +83,10 @@ export class MarkdownProcessor {
       return placeholder;
     });
 
-    // Protect inline math: $...$ and \(...\)
-    processed = processed.replace(/\$([^$\n]+)\$|\\\(([^)]+)\\\)/g, (match, content1, content2) => {
-      const mathContent = content1 || content2;
+    // Protect inline math: $\begin{env}...\end{env}$ (multiline) | $...$ (single line) | \(...\)
+    const inlineMathRegex = /\$\\begin\{([^}]+)\}([\s\S]+?)\\end\{\1\}\$|\$([^$\n]+)\$|\\\(([\s\S]+?)\\\)/g;
+    processed = processed.replace(inlineMathRegex, (match, envName, envContent, simpleContent, parenContent) => {
+      const mathContent = (envName ? `\\begin{${envName}}${envContent}\\end{${envName}}` : null) || simpleContent || parenContent;
       const placeholder = `__MATH_INLINE_${mathIndex++}__`;
       mathPlaceholders.push({ placeholder, content: mathContent, displayMode: false });
       mathExpressions.push({ content: mathContent, displayMode: false });

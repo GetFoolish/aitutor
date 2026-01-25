@@ -280,17 +280,41 @@ export class OrderValidator implements Validator {
 
       if (s1 === s2) return true;
 
-      // Robust URL normalization
+      // Robust URL and Content normalization
       const normalize = (s: string) => {
-        // Extract URL from markdown image syntax ![alt](url)
-        const imgMatch = s.match(/!\[.*\]\((.*)\)/);
-        const url = imgMatch ? imgMatch[1] : s;
+        let normalized = s;
 
-        return url
-          .replace(/^https?:\/\//, '')
-          .replace(/^web\+graphie:\/\//, '')
-          .replace(/\.(svg|png|jpg|jpeg|gif|webp)$/, '')
-          .trim();
+        // 1. Decode common HTML entities
+        normalized = normalized
+          .replace(/&nbsp;/g, ' ')
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/&amp;/g, '&')
+          .replace(/&quot;/g, '"')
+          .replace(/&#39;/g, "'");
+
+        // 2. Strip LaTeX delimiters ($...$)
+        // Be careful not to strip valid currency symbols if they aren't delimiters, 
+        // but in this context $ usually brackets math. 
+        // Strategy: remove leading/trailing $ if present
+        normalized = normalized.replace(/^\$|\$$/g, '');
+
+        // 3. Extract URL from markdown image syntax ![alt](url)
+        const imgMatch = normalized.match(/!\[.*\]\((.*)\)/);
+        if (imgMatch) {
+          normalized = imgMatch[1];
+        }
+
+        // 4. Clean up URL protocols/extensions if it looks like a URL
+        if (normalized.match(/^(https?:|web\+graphie:)/) || normalized.match(/\.(svg|png|jpg|jpeg|gif|webp)$/)) {
+          normalized = normalized
+            .replace(/^https?:\/\//, '')
+            .replace(/^web\+graphie:\/\//, '')
+            .replace(/\.(svg|png|jpg|jpeg|gif|webp)$/, '');
+        }
+
+        // 5. Collapse whitespace
+        return normalized.trim().replace(/\s+/g, ' ');
       };
 
       return normalize(s1) === normalize(s2);

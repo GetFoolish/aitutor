@@ -1,0 +1,70 @@
+--- ID: 69384abbd5f915e3ae100724 ---
+INNER CONTENT: '**Which answer best describes the New Zealand niche shifts we learned about?**\n\n[[☃ radio 1]]\n'
+
+==================================================
+
+--- ID: 69384ac1d5f915e3ae100725 ---
+INNER CONTENT: '**Select all the features of the kiwi that are unusual for a bird.**\n\n[[☃ radio 1]]\n\n'
+
+==================================================
+
+--- ID: 69384ac67470c33c458e8ef0 ---
+INNER CONTENT: '**What are some features of Kākāpō that make them unusual compared to birds elsewhere? Select all that apply.**\n\n[[☃ radio 1]]\n'
+
+==================================================
+
+--- ID: 69384acc7470c33c458e8ef1 ---
+INNER CONTENT: '**Which native New Zealand species has no relation to any other living species on earth?**\n\n[[☃ radio 1]]\n\n'
+
+==================================================
+
+--- ID: 69384ad87470c33c458e8ef2 ---
+INNER CONTENT: 'What is the Māori concept that matches the definition below?   \n   \n*Of the sacred rather than the profane, prohibited, restricted, set apart, forbidden.    \nCan apply to certain activities, places, people, objects or social behaviours. Application of this concept relates to the atua (supernatural beings, spirits of ancestors, or the gods). It is a way to control how people behave towards each other and the environment, placing restrictions upon society to ensure that society flourished.*  \n\n[[☃ radio 1]]\n\n'
+
+==================================================
+
+--- ID: 69384aded5f915e3ae100729 ---
+INNER CONTENT: "What is the Māori concept that matches the definition below?   \n   \n*Prestige, authority, control, power, influence, status, spiritual power, charisma.    \nA supernatural force in a person, place or object. Can be inherited or earned and holds great significance to an individual's relationships, social position, and interactions.*\n\n[[☃ radio 1]]\n\n"
+
+==================================================
+
+--- ID: 69384ae4d5f915e3ae10072a ---
+INNER CONTENT: 'What is the Māori concept that matches the definition below?   \n   \n*Revenge, retaliation, cost, payment, reciprocity, balance.   \nAn important concept concerned with the maintenance of balance and harmony in relationships between individuals and groups and order within Māori society, whether through gift exchange or as a result of hostilities between groups.*\n\n[[☃ radio 1]]'
+
+==================================================
+
+--- ID: 693850a07470c33c458e8ef6 ---
+INNER CONTENT: '**Which answer best describes the New Zealand niche shifts we learned about?**\n\n[[☃ radio 1]]\n'
+
+==================================================
+
+--- ID: 693850a57470c33c458e8ef7 ---
+INNER CONTENT: '**Select all the features of the kiwi that are unusual for a bird.**\n\n[[☃ radio 1]]\n\n'
+
+==================================================
+
+--- ID: 693850aa7470c33c458e8ef8 ---
+INNER CONTENT: '**What are some features of Kākāpō that make them unusual compared to birds elsewhere? Select all that apply.**\n\n[[☃ radio 1]]\n'
+
+==================================================
+
+--- ID: 693850ae7470c33c458e8ef9 ---
+INNER CONTENT: '**Which native New Zealand species has no relation to any other living species on earth?**\n\n[[☃ radio 1]]\n\n'
+
+==================================================
+
+--- ID: 693850b87470c33c458e8efa ---
+INNER CONTENT: 'What is the Māori concept that matches the definition below?   \n   \n*Of the sacred rather than the profane, prohibited, restricted, set apart, forbidden.    \nCan apply to certain activities, places, people, objects or social behaviours. Application of this concept relates to the atua (supernatural beings, spirits of ancestors, or the gods). It is a way to control how people behave towards each other and the environment, placing restrictions upon society to ensure that society flourished.*  \n\n[[☃ radio 1]]\n\n'
+
+==================================================
+
+--- ID: 693850bc7470c33c458e8efb ---
+INNER CONTENT: "What is the Māori concept that matches the definition below?   \n   \n*Prestige, authority, control, power, influence, status, spiritual power, charisma.    \nA supernatural force in a person, place or object. Can be inherited or earned and holds great significance to an individual's relationships, social position, and interactions.*\n\n[[☃ radio 1]]\n\n"
+
+==================================================
+
+--- ID: 693850c3d5f915e3ae10072c ---
+INNER CONTENT: 'What is the Māori concept that matches the definition below?   \n   \n*Revenge, retaliation, cost, payment, reciprocity, balance.   \nAn important concept concerned with the maintenance of balance and harmony in relationships between individuals and groups and order within Māori society, whether through gift exchange or as a result of hostilities between groups.*\n\n[[☃ radio 1]]'
+
+==================================================
+

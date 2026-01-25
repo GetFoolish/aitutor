@@ -219,15 +219,16 @@ export const renderMath = (text: string): string => {
   // Process LaTeX environments \begin{...}...\end{...} (gather, equation, array, matrix, cases)
   // Note: align/aligned are handled above with special & character cleaning
   // First: with $ wrapper
-  processed = processed.replace(/\$\\?(large|Large|LARGE|huge|Huge)?\s*\\begin\{(gather|gathered|equation|array|matrix|pmatrix|bmatrix|cases)\}([\s\S]*?)\\end\{\2\}\s*\$/g, (_, size, env, content) => {
+  processed = processed.replace(/\$\\?(large|Large|LARGE|huge|Huge)?\s*\\begin\{(gather|gathered|equation|array|matrix|pmatrix|bmatrix|cases)\}(\{r\})?([\s\S]*?)\\end\{\2\}\s*\$/g, (_, size, env, align, content) => {
     try {
       // Clean up any HTML-encoded & characters
       let cleanContent = content
         .replace(/&amp;/g, '&')
         .replace(/amp;/g, '&')
-        .replace(/\\\\\\\\/g, '\\\\');
+        .replace(/\\\\\\\\/g, '\\\\')
+        .replace(/&\s*\\\\/g, ' \\\\');
       cleanContent = preprocessColorCommands(cleanContent);
-      const latex = `\\begin{${env}}${cleanContent}\\end{${env}}`;
+      const latex = `\\begin{${env}}${align || ''}${cleanContent}\\end{${env}}`;
       const result = katex.renderToString(latex, { ...katexOptions, displayMode: true });
       return createPlaceholder(result);
     } catch (e) {
@@ -237,15 +238,16 @@ export const renderMath = (text: string): string => {
   });
 
   // Second: without $ wrapper (standalone \begin{...}...\end{...})
-  processed = processed.replace(/\\begin\{(gather|gathered|equation|array|matrix|pmatrix|bmatrix|cases)\}([\s\S]*?)\\end\{\1\}/g, (_, env, content) => {
+  processed = processed.replace(/\\begin\{(gather|gathered|equation|array|matrix|pmatrix|bmatrix|cases)\}(\{r\})?([\s\S]*?)\\end\{\1\}/g, (_, env, align, content) => {
     try {
       // Clean up any HTML-encoded & characters
       let cleanContent = content
         .replace(/&amp;/g, '&')
         .replace(/amp;/g, '&')
-        .replace(/\\\\\\\\/g, '\\\\');
+        .replace(/\\\\\\\\/g, '\\\\')
+        .replace(/&\s*\\\\/g, ' \\\\'); // Remove & before \\ in single-column array{r}
       cleanContent = preprocessColorCommands(cleanContent);
-      const latex = `\\begin{${env}}${cleanContent}\\end{${env}}`;
+      const latex = `\\begin{${env}}${align || ''}${cleanContent}\\end{${env}}`;
       const result = katex.renderToString(latex, { ...katexOptions, displayMode: true });
       return createPlaceholder(result);
     } catch (e) {
@@ -886,8 +888,12 @@ export const processContent = (content: string): string => {
   // Phase 2: Protect raw math from table parser
   const mathBlocks: string[] = [];
   // Use a more restricted regex for inline math ($) to avoid matching across multiple lines
-  // which often causes document-spanning math errors and wipes out spaces.
-  processed = processed.replace(/\$\$([\s\S]+?)\$\$|\$([^$\n]+)\$/g, (match) => {
+  // UNLESS it starts with a \begin block, which often spans multiple lines.
+  // Pattern: $$ (multiline) | $\begin{env}...\end{env}$ (multiline) | $...$ (single line)
+  // Support optional sizing commands like \large before \begin
+  const mathRegex = /\$\$([\s\S]+?)\$\$|\$(?:\\(?:tiny|scriptsize|footnotesize|small|normalsize|large|Large|LARGE|huge|Huge)\s*)?\\begin\{([^}]+)\}([\s\S]+?)\\end\{\2\}\$|\$([^$\n]+)\$/g;
+
+  processed = processed.replace(mathRegex, (match) => {
     const placeholder = `__ATHENA_MATH_RAW_${mathBlocks.length}__`;
     mathBlocks.push(match);
     return placeholder;

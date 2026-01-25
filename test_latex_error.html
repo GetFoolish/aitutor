@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <h3>Test LaTeX Rendering</h3>
+
+    <p>Original (from user report):</p>
+    $$ \left\|\left|5 \vec v\right|\right| $$
+
+    <p>Hypothesis 1 (Mismatched delimiters `\left\|` and `\right|`?):</p>
+    $$ \left\| 5 \vec v \right| $$
+
+    <p>Hypothesis 2 (Corrected Double Bars `\left\| ... \right\|`):</p>
+    $$ \left\| 5 \vec v \right\| $$
+
+    <p>Hypothesis 3 (Corrected Single Bars `\left| ... \right|`):</p>
+    $$ \left| 5 \vec v \right| $$
+
+    <p>Hypothesis 4 (User string verbatim `\left\|\left|5 \vec v\right|\right|`):</p>
+    <!-- Wait, \left\| is double, \left| is single. 
+         So it opens Double, opens Single, closes Single, closes Single (`\right|`).
+         So it matches \left|...\right| (inner).
+         But outer \left\| has NO matching \right\|. It has a \right| at the end.
+         Let's trace user string: \left\| \left| ... \right| \right|
+         Outer: \left\| ... \right| -> MISMATCH. 
+    -->
+    $$ \left\|\left|5 \vec v\right|\right| $$
+
+</body>
+
+</html>

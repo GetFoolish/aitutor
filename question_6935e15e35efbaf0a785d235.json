@@ -1,0 +1,179 @@
+{
+  "_id": "6935e15e35efbaf0a785d235",
+  "questionId": "26.1.1.2.13_xefd70f10ed7976ba",
+  "courseIdx": 26,
+  "courseName": "Get ready for AP® Calculus",
+  "courseDirName": "26_Get_ready_for_AP®_Calculus",
+  "courseUrl": "https://www.khanacademy.org/math/get-ready-for-ap-calc",
+  "unitIdx": 1,
+  "unitName": "Get ready for limits and continuity",
+  "unitDirName": "26.1_Get_ready_for_limits_and_continuity",
+  "lessonIdx": 1,
+  "lessonName": "Evaluating functions",
+  "lessonDirName": "26.1.1_Evaluating_functions",
+  "exerciseIdx": 2,
+  "exerciseName": "Evaluate functions from their graph",
+  "exerciseDirName": "26.1.1.2_Evaluate_functions_from_their_graph",
+  "exerciseId": "x07593bbf",
+  "itemId": "xefd70f10ed7976ba",
+  "assessmentData": {
+    "data": {
+      "assessmentItem": {
+        "__typename": "AssessmentItemOrError",
+        "error": null,
+        "item": {
+          "__typename": "AssessmentItem",
+          "id": "xefd70f10ed7976ba",
+          "isContextInaccessible": false,
+          "itemData": "{\"answerArea\": {\"calculator\": false, \"chi2Table\": false, \"periodicTable\": false, \"tTable\": false, \"zTable\": false}, \"hints\": [{\"content\": \"The notation $f(2)$ refers to the output of the function when the input is $x=2$. If the point $(2,b)$ is on the graph, then $f(2)=b$.\\n\\nWe should look for the point on the graph whose $x$-coordinate is $2$.\", \"images\": {}, \"replace\": false, \"widgets\": {}}, {\"content\": \"The point on the graph whose $x$-coordinate is $2$ is the point $(2,-5)$.\\n\\n**Therefore, $f(2)=-5$.**\\n\\n[[\\u2603 image 1]]\", \"images\": {}, \"replace\": false, \"widgets\": {\"image 1\": {\"alignment\": \"block\", \"graded\": true, \"options\": {\"alt\": \"A coordinate plane. The x- and y-axes both scale by one. The graph shows function f which has seven points. The following points are plotted on the graph: the point negative seven, six, the point negative five, two, the point negative three, negative one, the point negative one, three, the point two, negative five, the point four, zero, the point seven, two. The point at two, negative five is labeled.\", \"backgroundImage\": {\"height\": 345, \"url\": \"web+graphie://cdn.kastatic.org/ka-perseus-graphie/5af3293ab60e114001dfa57f97f9cd9a34fdb26b\", \"width\": 345}, \"box\": [345, 345], \"caption\": \"\", \"labels\": [], \"range\": [[0, 10], [0, 10]], \"static\": false, \"title\": \"\"}, \"static\": false, \"type\": \"image\", \"version\": {\"major\": 0, \"minor\": 0}}}}], \"itemDataVersion\": {\"major\": 0, \"minor\": 1}, \"question\": {\"content\": \"$f(2)=$ [[\\u2603 numeric-input 1]]\\n\\n[[\\u2603 image 1]]\", \"images\": {}, \"widgets\": {\"image 1\": {\"alignment\": \"block\", \"graded\": true, \"options\": {\"alt\": \"A coordinate plane. The x- and y-axes both scale by one. The graph shows function f which has seven points. The following points are plotted on the graph: the point negative seven, six, the point negative five, two, the point negative three, negative one, the point negative one, three, the point two, negative five, the point four, zero, the point seven, two.\", \"backgroundImage\": {\"height\": 345, \"url\": \"web+graphie://cdn.kastatic.org/ka-perseus-graphie/7bda202ee1637a7a6c2d2a2d0f26a54d59914cdb\", \"width\": 345}, \"box\": [345, 345], \"caption\": \"\", \"labels\": [], \"range\": [[0, 10], [0, 10]], \"static\": false, \"title\": \"\"}, \"static\": false, \"type\": \"image\", \"version\": {\"major\": 0, \"minor\": 0}}, \"numeric-input 1\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"answers\": [{\"maxError\": null, \"message\": \"\", \"simplify\": \"required\", \"status\": \"correct\", \"strict\": false, \"value\": -5}], \"coefficient\": false, \"labelText\": \"f of 2\", \"multipleNumberInput\": false, \"rightAlign\": false, \"size\": \"normal\", \"static\": false}, \"static\": false, \"type\": \"numeric-input\", \"version\": {\"major\": 0, \"minor\": 0}}}}}",
+          "problemType": "2. Discrete",
+          "requiresScreenOrMouse": true,
+          "sha": "763cb0e9ddd158063a7e914fbfba15aa9c107007"
+        }
+      }
+    }
+  },
+  "scrapedAt": "2025-12-07T20:19:42.445000",
+  "difficulty": 0.75,
+  "expected_time_seconds": 85,
+  "inferred_grade": "11",
+  "grade_level": "12",
+  "grade_order": 13,
+  "learning_order": 1301102,
+  "age": 17,
+  "sequence_order": 323,
+  "total_in_course": 345,
+  "answerArea": {
+    "calculator": false,
+    "chi2Table": false,
+    "periodicTable": false,
+    "tTable": false,
+    "zTable": false
+  },
+  "fixedAt": "2025-12-21_v2",
+  "hints": [
+    {
+      "content": "The notation $f(2)$ refers to the output of the function when the input is $x=2$. If the point $(2,b)$ is on the graph, then $f(2)=b$.\n\nWe should look for the point on the graph whose $x$-coordinate is $2$.",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    },
+    {
+      "content": "The point on the graph whose $x$-coordinate is $2$ is the point $(2,-5)$.\n\n**Therefore, $f(2)=-5$.**\n\n[[☃ image 1]]",
+      "images": {},
+      "replace": false,
+      "widgets": {
+        "image 1": {
+          "alignment": "block",
+          "graded": true,
+          "options": {
+            "alt": "A coordinate plane. The x- and y-axes both scale by one. The graph shows function f which has seven points. The following points are plotted on the graph: the point negative seven, six, the point negative five, two, the point negative three, negative one, the point negative one, three, the point two, negative five, the point four, zero, the point seven, two. The point at two, negative five is labeled.",
+            "backgroundImage": {
+              "height": 345,
+              "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/5af3293ab60e114001dfa57f97f9cd9a34fdb26b",
+              "width": 345
+            },
+            "box": [
+              345,
+              345
+            ],
+            "caption": "",
+            "labels": [],
+            "range": [
+              [
+                0,
+                10
+              ],
+              [
+                0,
+                10
+              ]
+            ],
+            "static": false,
+            "title": ""
+          },
+          "static": false,
+          "type": "image",
+          "version": {
+            "major": 0,
+            "minor": 0
+          }
+        }
+      }
+    }
+  ],
+  "itemDataVersion": {
+    "major": 0,
+    "minor": 1
+  },
+  "question": {
+    "content": "$f(2)=$[[☃ numeric-input 1]]\n\n[[☃ image 1]]",
+    "images": {},
+    "widgets": {
+      "image 1": {
+        "alignment": "block",
+        "graded": true,
+        "options": {
+          "alt": "A coordinate plane. The x- and y-axes both scale by one. The graph shows function f which has seven points. The following points are plotted on the graph: the point negative seven, six, the point negative five, two, the point negative three, negative one, the point negative one, three, the point two, negative five, the point four, zero, the point seven, two.",
+          "backgroundImage": {
+            "height": 345,
+            "url": "web+graphie://cdn.kastatic.org/ka-perseus-graphie/7bda202ee1637a7a6c2d2a2d0f26a54d59914cdb",
+            "width": 345
+          },
+          "box": [
+            345,
+            345
+          ],
+          "caption": "",
+          "labels": [],
+          "range": [
+            [
+              0,
+              10
+            ],
+            [
+              0,
+              10
+            ]
+          ],
+          "static": false,
+          "title": ""
+        },
+        "static": false,
+        "type": "image",
+        "version": {
+          "major": 0,
+          "minor": 0
+        }
+      },
+      "numeric-input 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "answers": [
+            {
+              "maxError": null,
+              "message": "",
+              "simplify": "required",
+              "status": "correct",
+              "strict": false,
+              "value": -5
+            }
+          ],
+          "coefficient": false,
+          "labelText": "f of 2",
+          "multipleNumberInput": false,
+          "rightAlign": false,
+          "size": "normal",
+          "static": false
+        },
+        "static": false,
+        "type": "numeric-input",
+        "version": {
+          "major": 0,
+          "minor": 0
+        }
+      }
+    }
+  }
+}

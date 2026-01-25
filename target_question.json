@@ -1,0 +1,253 @@
+{
+  "_id": "693199158189149cdbee41a8",
+  "questionId": "28.1.1.1.5_x6524f6d0f3d6511e",
+  "courseIdx": 28,
+  "courseName": "Linear algebra",
+  "courseDirName": "28_Linear_algebra",
+  "courseUrl": "https://www.khanacademy.org/math",
+  "unitIdx": 1,
+  "unitName": "Vectors and spaces",
+  "unitDirName": "28.1_Vectors_and_spaces",
+  "lessonIdx": 1,
+  "lessonName": "Vectors",
+  "lessonDirName": "28.1.1_Vectors",
+  "exerciseIdx": 1,
+  "exerciseName": "Scalar multiplication",
+  "exerciseDirName": "28.1.1.1_Scalar_multiplication",
+  "exerciseId": "75894985",
+  "itemId": "x6524f6d0f3d6511e",
+  "assessmentData": {
+    "data": {
+      "assessmentItem": {
+        "__typename": "AssessmentItemOrError",
+        "error": null,
+        "item": {
+          "__typename": "AssessmentItem",
+          "id": "x6524f6d0f3d6511e",
+          "isContextInaccessible": false,
+          "itemData": "{\"answerArea\": {\"calculator\": false, \"chi2Table\": false, \"periodicTable\": false, \"tTable\": false, \"zTable\": false}, \"hints\": [{\"content\": \"Multiplying a vector by a scalar is like scaling the directed line segment that represents the vector. This has the following implications:\\n\\n**Magnitude**: The magnitude of the scaled vector is equal to the magnitude of the original vector times the absolute value of the scalar. We represent this mathematically as follows:\\n\\n$||c\\\\cdot \\\\vec v||=|c|\\\\cdot ||\\\\vec v||$\\n\\n**Direction**: The scaled segment stays on the same line as the original segment. If the factor is positive, the direction stays exactly the same. If the factor is negative, the direction is flipped to the opposite side.\", \"images\": {}, \"replace\": false, \"widgets\": {}}, {\"content\": \"## Finding the magnitude\\n\\nWe know $\\\\vec v$ has a magnitude of $3$ units (so $||\\\\vec v||=3$), and we multiply $\\\\vec v$ by $5$.\\n\\n$\\\\begin{align}\\n\\\\left|\\\\left|5 \\\\vec v\\\\right|\\\\right|&=\\\\left|5\\\\right|\\\\cdot ||\\\\vec v||\\n\\\\\\\\\\\\\\\\\\n&=5\\\\cdot 3\\n\\\\\\\\\\\\\\\\\\n&=15\\n\\\\end{align}$\", \"images\": {}, \"replace\": false, \"widgets\": {}}, {\"content\": \"### Finding the direction\\n\\nWe know $\\\\vec v$ creates an angle of $160\\\\degree$ with the positive $x$-axis. Since we multiply it by a positive factor, the direction stays the same.\", \"images\": {}, \"replace\": false, \"widgets\": {}}, {\"content\": \"In conclusion, these are the magnitude and the direction of $5 \\\\vec v$:\\n\\n$\\\\left|\\\\left|5 \\\\vec v\\\\right|\\\\right|=15$ units\\n\\n$5\\\\vec v$ creates an angle of $160 \\\\degree$ with the positive $x$-axis.\", \"images\": {}, \"replace\": false, \"widgets\": {}}], \"itemDataVersion\": {\"major\": 0, \"minor\": 1}, \"question\": {\"content\": \"Vector $\\\\vec v$ has a magnitude of $3$ units and it creates an angle of $160\\\\degree$ with the positive $x$-axis.\\n\\n**Find the magnitude and direction of $5\\\\vec v$.**  \\n*Give the direction as an angle measure between $0\\\\degree$ and $360\\\\degree$.*\\n\\n$\\\\left|\\\\left|5 \\\\vec v\\\\right|\\\\right|=$ [[\\u2603 numeric-input 1]] units\\n\\n$5\\\\vec v$ creates an angle of [[\\u2603 numeric-input 2]]$\\\\degree$ with the positive $x$-axis.\", \"images\": {}, \"widgets\": {\"numeric-input 1\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"answers\": [{\"maxError\": null, \"message\": \"\", \"simplify\": \"required\", \"status\": \"correct\", \"strict\": false, \"value\": 15}], \"coefficient\": false, \"labelText\": \"\", \"multipleNumberInput\": false, \"rightAlign\": false, \"size\": \"normal\", \"static\": false}, \"static\": false, \"type\": \"numeric-input\", \"version\": {\"major\": 0, \"minor\": 0}}, \"numeric-input 2\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"answers\": [{\"maxError\": null, \"message\": \"\", \"simplify\": \"required\", \"status\": \"correct\", \"strict\": false, \"value\": 160}], \"coefficient\": false, \"labelText\": \"\", \"multipleNumberInput\": false, \"rightAlign\": false, \"size\": \"normal\", \"static\": false}, \"static\": false, \"type\": \"numeric-input\", \"version\": {\"major\": 0, \"minor\": 0}}}}}",
+          "problemType": "2. Magnitude and direction",
+          "requiresScreenOrMouse": false,
+          "sha": "4a25bb38d18586f8e33ccc9e71d62f09070d4b41"
+        }
+      }
+    }
+  },
+  "scrapedAt": "2025-12-04 14:22:13.811000",
+  "difficulty": 0.8,
+  "expected_time_seconds": 90,
+  "inferred_grade": "12",
+  "grade_level": "12",
+  "grade_order": 14,
+  "learning_order": 1401101,
+  "age": 17,
+  "sequence_order": 155,
+  "total_in_course": 520,
+  "answerArea": {
+    "calculator": false,
+    "periodicTable": false,
+    "chi2Table": false,
+    "tTable": false,
+    "zTable": false,
+    "financialCalculator": false
+  },
+  "fixedAt": "2025-12-21_v2",
+  "hints": [
+    {
+      "content": "Multiplying a vector by a scalar is like scaling the directed line segment that represents the vector. This has the following implications:\n\nMagnitude: The magnitude of the scaled vector is equal to the magnitude of the original vector times the absolute value of the scalar. We represent this mathematically as follows:\n\n$||c\\cdot \\vec v||=|c|\\cdot ||\\vec v||$\n\nDirection: The scaled segment stays on the same line as the original segment. If the factor is positive, the direction stays exactly the same. If the factor is negative, the direction is flipped to the opposite side.",
+      "widgets": {},
+      "images": {},
+      "replace": false
+    },
+    {
+      "content": "Finding the magnitude\n\nWe know $\\vec v$ has a magnitude of $3$ units (so $||\\vec v||=3$), and we multiply $\\vec v$ by $5$.\n\n$\\begin{aligned}\n\\left|\\left|5 \\vec v\\right\\|&=\\left|5\\right|\\cdot ||\\vec v||\n\\\\\\\\\n&=5\\cdot 3\n\\\\\\\\\n&=15\n\\end{aligned}$",
+      "widgets": {},
+      "images": {},
+      "replace": false
+    },
+    {
+      "content": "Finding the direction\n\nWe know $\\vec v$ creates an angle of $160\\degree$ with the positive $x$-axis. Since we multiply it by a positive factor, the direction stays the same.",
+      "widgets": {},
+      "images": {},
+      "replace": false
+    },
+    {
+      "content": "In conclusion, these are the magnitude and the direction of $5 \\vec v$:\n\n$\\left|\\left|5 \\vec v\\right\\|=15$ units\n\n$5\\vec v$ creates an angle of $160 \\degree$ with the positive $x$-axis.",
+      "widgets": {},
+      "images": {},
+      "replace": false
+    }
+  ],
+  "itemDataVersion": {
+    "major": 0,
+    "minor": 1
+  },
+  "question": {
+    "content": "Vector $\\vec v$ has a magnitude of $3$ units and it creates an angle of $160\\degree$ with the positive $x$-axis.\n\nFind the magnitude and direction of $5\\vec v$.  \n*Give the direction as an angle measure between $0\\degree$ and $360\\degree$.*\n\n$\\left|\\left|5 \\vec v\\right\\|=$[[Ôÿâ numeric-input 1]] units\n\n$5\\vec v$ creates an angle of [[Ôÿâ numeric-input 2]]$\\degree$ with the positive $x$-axis.",
+    "widgets": {
+      "numeric-input 1": {
+        "type": "numeric-input",
+        "options": {
+          "answers": [
+            {
+              "maxError": null,
+              "message": "",
+              "simplify": "required",
+              "status": "correct",
+              "strict": false,
+              "value": 15
+            }
+          ],
+          "coefficient": false,
+          "labelText": "",
+          "multipleNumberInput": false,
+          "rightAlign": false,
+          "size": "normal",
+          "static": false
+        },
+        "alignment": "default",
+        "graded": true,
+        "static": false,
+        "version": {
+          "major": 0,
+          "minor": 0
+        }
+      },
+      "numeric-input 2": {
+        "type": "numeric-input",
+        "options": {
+          "answers": [
+            {
+              "maxError": null,
+              "message": "",
+              "simplify": "required",
+              "status": "correct",
+              "strict": false,
+              "value": 160
+            }
+          ],
+          "coefficient": false,
+          "labelText": "",
+          "multipleNumberInput": false,
+          "rightAlign": false,
+          "size": "normal",
+          "static": false
+        },
+        "alignment": "default",
+        "graded": true,
+        "static": false,
+        "version": {
+          "major": 0,
+          "minor": 0
+        }
+      }
+    },
+    "images": {}
+  },
+  "perseusItem": {
+    "question": {
+      "content": "Vector $\\vec v$ has a magnitude of $3$ units and it creates an angle of $160\\degree$ with the positive $x$-axis.\n\nFind the magnitude and direction of $5\\vec v$.  \n*Give the direction as an angle measure between $0\\degree$ and $360\\degree$.*\n\n$\\left|\\left|5 \\vec v\\right\\|=$[[Ôÿâ numeric-input 1]] units\n\n$5\\vec v$ creates an angle of [[Ôÿâ numeric-input 2]]$\\degree$ with the positive $x$-axis.",
+      "images": {},
+      "widgets": {
+        "numeric-input 1": {
+          "alignment": "default",
+          "graded": true,
+          "options": {
+            "answers": [
+              {
+                "maxError": null,
+                "message": "",
+                "simplify": "required",
+                "status": "correct",
+                "strict": false,
+                "value": 15
+              }
+            ],
+            "coefficient": false,
+            "labelText": "",
+            "multipleNumberInput": false,
+            "rightAlign": false,
+            "size": "normal",
+            "static": false
+          },
+          "static": false,
+          "type": "numeric-input",
+          "version": {
+            "major": 0,
+            "minor": 0
+          }
+        },
+        "numeric-input 2": {
+          "alignment": "default",
+          "graded": true,
+          "options": {
+            "answers": [
+              {
+                "maxError": null,
+                "message": "",
+                "simplify": "required",
+                "status": "correct",
+                "strict": false,
+                "value": 160
+              }
+            ],
+            "coefficient": false,
+            "labelText": "",
+            "multipleNumberInput": false,
+            "rightAlign": false,
+            "size": "normal",
+            "static": false
+          },
+          "static": false,
+          "type": "numeric-input",
+          "version": {
+            "major": 0,
+            "minor": 0
+          }
+        }
+      }
+    },
+    "hints": [
+      {
+        "content": "Multiplying a vector by a scalar is like scaling the directed line segment that represents the vector. This has the following implications:\n\nMagnitude: The magnitude of the scaled vector is equal to the magnitude of the original vector times the absolute value of the scalar. We represent this mathematically as follows:\n\n$||c\\cdot \\vec v||=|c|\\cdot ||\\vec v||$\n\nDirection: The scaled segment stays on the same line as the original segment. If the factor is positive, the direction stays exactly the same. If the factor is negative, the direction is flipped to the opposite side.",
+        "images": {},
+        "replace": false,
+        "widgets": {}
+      },
+      {
+        "content": "Finding the magnitude\n\nWe know $\\vec v$ has a magnitude of $3$ units (so $||\\vec v||=3$), and we multiply $\\vec v$ by $5$.\n\n$\\begin{aligned}\n\\left|\\left|5 \\vec v\\right\\|&=\\left|5\\right|\\cdot ||\\vec v||\n\\\\\\\\\n&=5\\cdot 3\n\\\\\\\\\n&=15\n\\end{aligned}$",
+        "images": {},
+        "replace": false,
+        "widgets": {}
+      },
+      {
+        "content": "Finding the direction\n\nWe know $\\vec v$ creates an angle of $160\\degree$ with the positive $x$-axis. Since we multiply it by a positive factor, the direction stays the same.",
+        "images": {},
+        "replace": false,
+        "widgets": {}
+      },
+      {
+        "content": "In conclusion, these are the magnitude and the direction of $5 \\vec v$:\n\n$\\left|\\left|5 \\vec v\\right\\|=15$ units\n\n$5\\vec v$ creates an angle of $160 \\degree$ with the positive $x$-axis.",
+        "images": {},
+        "replace": false,
+        "widgets": {}
+      }
+    ],
+    "answerArea": {
+      "calculator": false,
+      "chi2Table": false,
+      "periodicTable": false,
+      "tTable": false,
+      "zTable": false
+    },
+    "itemDataVersion": {
+      "major": 0,
+      "minor": 1
+    }
+  },
+  "skill_prefix": "",
+  "slug": "",
+  "widgetTypes": [
+    "numeric-input"
+  ]
+}

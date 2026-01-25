@@ -1,0 +1,166 @@
+{
+  "_id": "692fb4ae7e334152c5f474dd",
+  "questionId": "38.1.1.1.7_x8ac6cf3687599328",
+  "courseIdx": 38,
+  "courseName": "High school biology",
+  "courseDirName": "38_High_school_biology",
+  "courseUrl": "https://www.khanacademy.org/science/hs-bio",
+  "unitIdx": 1,
+  "unitName": "Ecology and natural systems",
+  "unitDirName": "38.1_Ecology_and_natural_systems",
+  "lessonIdx": 1,
+  "lessonName": "Organization of natural systems",
+  "lessonDirName": "38.1.1_Organization_of_natural_systems",
+  "exerciseIdx": 1,
+  "exerciseName": "Apply: organization of natural systems",
+  "exerciseDirName": "38.1.1.1_Apply:_organization_of_natural_systems",
+  "exerciseId": "xce5055c93ff67ad3",
+  "itemId": "x8ac6cf3687599328",
+  "assessmentData": {
+    "data": {
+      "assessmentItem": {
+        "__typename": "AssessmentItemOrError",
+        "error": null,
+        "item": {
+          "__typename": "AssessmentItem",
+          "id": "x8ac6cf3687599328",
+          "isContextInaccessible": false,
+          "itemData": "{\"answerArea\": {\"calculator\": false, \"chi2Table\": false, \"periodicTable\": false, \"tTable\": false, \"zTable\": false}, \"hints\": [], \"itemDataVersion\": {\"major\": 0, \"minor\": 1}, \"question\": {\"content\": \"The Mediterranean forests, woodlands, and scrub biome has dry summers and mild, rainy winters. This biome is found all over the world, including the Mediterranean Basin, Baja California Peninsula, South Africa, and Australia. Plants in this biome are tough and woody; some even have waxy leaves to reduce water loss during the hot, dry summer.\\n\\n[[☃ image 1]]\\n\\nWhich of the following graphs best matches the climate of the Mediterranean forests, woodlands, and scrub biome?\\n\\n[[☃ explanation 1]]\\n\\n[[☃ radio 1]]\\n\\n[[☃ explanation 2]]\", \"images\": {}, \"widgets\": {\"explanation 1\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"explanation\": \"In the graphs shown below, monthly total precipitation (in millimeters) is indicated by bars and is measured on the left-hand y-axis of the graph. Monthly average temperature (in degrees Celsius) is indicated by a dotted line and is measured on the right-hand y-axis of the graph. Each month is labeled on the x-axis.\", \"hidePrompt\": \"Got it, thanks!\", \"showPrompt\": \"How do I read these graphs?\", \"static\": false, \"widgets\": {}}, \"static\": false, \"type\": \"explanation\", \"version\": {\"major\": 0, \"minor\": 0}}, \"explanation 2\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"explanation\": \"Image: \\\"[Troodos Mountain range in Lythrodontas Cyprus](https://commons.wikimedia.org/wiki/File:Troodos_Mountain_range_in_Lythrodontas_Cyprus.JPG)\\\" by Andreas2009, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en)\\n\\nData: [Climate Inuvik](https://en.climate-data.org/north-america/canada/northwest-territories/inuvik-15016/), [Climate Knoxville](https://en.climate-data.org/north-america/united-states-of-america/tennessee/knoxville-764473/), and [Climate Lipari](https://en.climate-data.org/europe/italy/sicily/lipari-13870/) by [Climate-Data.org](https://en.climate-data.org/), [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) \", \"hidePrompt\": \"Hide image credit and data source\", \"showPrompt\": \"Image credit and data source\", \"static\": false, \"widgets\": {}}, \"static\": false, \"type\": \"explanation\", \"version\": {\"major\": 0, \"minor\": 0}}, \"image 1\": {\"alignment\": \"block\", \"graded\": true, \"options\": {\"alt\": \"Grasses and shrubs are scattered across an arid and hilly landscape, with large patches of bare soil. \", \"backgroundImage\": {\"height\": 262, \"url\": \"https://cdn.kastatic.org/ka-content-images/802219a05800ec5998c0e56dde9f4db7a0e54187.jpg\", \"width\": 350}, \"box\": [350, 262], \"caption\": \"Mediterranean forests, woodlands, and scrub biome in Troodos National Forest Park, Cyprus\", \"labels\": [], \"range\": [[0, 10], [0, 10]], \"static\": false, \"title\": \"\"}, \"static\": false, \"type\": \"image\", \"version\": {\"major\": 0, \"minor\": 0}}, \"radio 1\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"choices\": [{\"clue\": \"The Mediterranean forests, woodlands, and scrub biome has hot, dry summers and mild, rainy winters. This graph does show high temperatures during the summer months (in June, July, and August). However, it does not show a substantial decrease in precipitation during the summer months compared to the rest of the year.\", \"content\": \"![A bar and line graph is shown. The x-axis is labeled Month and goes from January to December. The left-hand y-axis is labeled Precipitation (in millimeters) and goes from 0 to 150, in increments of 25. The right-hand y-axis is labeled Average Temperature (in degrees Celsius) and goes from -30 to 30, in increments of 10. The bar line represents total precipitation for each month and shows the following: January bar line extends to 114, February bar line extends to 110, March bar line extends to 125, April bar line extends to 110, May bar line extends to 98, June bar line extends to 98, July bar line extends to 124, August bar line extends to 88, September bar line extends to 92, October bar line extends to 78, November bar line extends to 97, and December bar line extends to 124. The average temperature line forms a curve, beginning at 3 degrees in January, increasing by about 4 degrees each month from February through June, peaking at 24 degrees in July and August, and then declining by 3 to 6 degrees each month from September through November to a low of 5 degrees in December.](web+graphie://cdn.kastatic.org/ka-perseus-graphie/a32897bf0e0a93155dcef79a2a2551a54aa48514)\", \"correct\": false}, {\"clue\": \"The Mediterranean forests, woodlands, and scrub biome has hot, dry summers and mild, rainy winters. This graph is consistent with that climate, showing high temperatures and low precipitation during the summer (in June, July, and August), and mild temperatures and high precipitation during the winter (from November through February). \", \"content\": \"![A bar and line graph is shown. The x-axis is labeled Month and goes from January to December. The left-hand y-axis is labeled Precipitation (in millimeters) and goes from 0 to 150, in increments of 25. The right-hand y-axis is labeled Average Temperature (in degrees Celsius) and goes from -30 to 30, in increments of 10. The bar line represents total precipitation for each month and shows the following: January bar line extends to 97, February bar line extends to 83, March bar line extends to 69, April bar line extends to 54, May bar line extends to 26, June bar line extends to 21, July bar line extends to 12, August bar line extends to 17, September bar line extends to 61, October bar line extends to 74, November bar line extends to 88, and December bar line extends to 112. The average temperature line forms a curve, beginning at 13 degrees in January, increasing by 1 to 4 degrees each month from February through July, peaking at 26 degrees in August, and then declining by 2 to 3 degrees each month from September through November to a low of 15 degrees in December.](web+graphie://cdn.kastatic.org/ka-perseus-graphie/152a855b3c87d220745621e6697d0f012a5f5eb3)\", \"correct\": true}, {\"clue\": \"The Mediterranean forests, woodlands, and scrub biome has hot, dry summers and mild, rainy winters. This graph does show higher temperatures during the summer months (in June, July, and August). However, it does not show a substantial decrease in precipitation during the summer compared to the rest of the year. Instead, this graph shows an increase in precipitation during the late summer.\", \"content\": \"![A bar and line graph is shown. The x-axis is labeled Month and goes from January to December. The left-hand y-axis is labeled Precipitation (in millimeters) and goes from 0 to 150, in increments of 25. The right-hand y-axis is labeled Average Temperature (in degrees Celsius) and goes from -30 to 30, in increments of 10. The bar line represents total precipitation for each month and shows the following: January bar line extends to 18, February bar line extends to 14, March bar line extends to 14, April bar line extends to 12, May bar line extends to 19, June bar line extends to 31, July bar line extends to 44, August bar line extends to 47, September bar line extends to 38, October bar line extends to 28, November bar line extends to 20, and December bar line extends to 17. The average temperature line forms a curve, beginning at -25 degrees in January, increasing between 1 to 2 degrees in February and March, increasing by 8 to 10 degrees each month from April through June, peaking at 14 degrees in July, and then declining rapidly from August through November to a low of -24 degrees in December.](web+graphie://cdn.kastatic.org/ka-perseus-graphie/4bf2aab5a4281cab81b96c24a07a051f8bc80fc5)\", \"isNoneOfTheAbove\": false}], \"countChoices\": false, \"deselectEnabled\": false, \"displayCount\": null, \"hasNoneOfTheAbove\": false, \"multipleSelect\": false, \"randomize\": true}, \"static\": false, \"type\": \"radio\", \"version\": {\"major\": 1, \"minor\": 0}}}}}",
+          "problemType": "Identifying terrestrial biome climates",
+          "requiresScreenOrMouse": false,
+          "sha": "0c6182920fb060e68b4161cc2e7fd8b46dd03485"
+        }
+      }
+    }
+  },
+  "scrapedAt": "2025-12-03 03:55:26.891000",
+  "difficulty": 0.5,
+  "expected_time_seconds": 60,
+  "inferred_grade": "8",
+  "sequence_order": 79,
+  "total_in_course": 348,
+  "answerArea": {
+    "calculator": false,
+    "chi2Table": false,
+    "periodicTable": false,
+    "tTable": false,
+    "zTable": false
+  },
+  "fixedAt": "2025-12-21_v2",
+  "hints": [],
+  "itemDataVersion": {
+    "major": 0,
+    "minor": 1
+  },
+  "question": {
+    "content": "The Mediterranean forests, woodlands, and scrub biome has dry summers and mild, rainy winters. This biome is found all over the world, including the Mediterranean Basin, Baja California Peninsula, South Africa, and Australia. Plants in this biome are tough and woody; some even have waxy leaves to reduce water loss during the hot, dry summer.\n\n[[☃ image 1]]\n\nWhich of the following graphs best matches the climate of the Mediterranean forests, woodlands, and scrub biome?\n\n[[☃ explanation 1]]\n\n[[☃ radio 1]]\n\n[[☃ explanation 2]]",
+    "images": {},
+    "widgets": {
+      "explanation 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "explanation": "In the graphs shown below, monthly total precipitation (in millimeters) is indicated by bars and is measured on the left-hand y-axis of the graph. Monthly average temperature (in degrees Celsius) is indicated by a dotted line and is measured on the right-hand y-axis of the graph. Each month is labeled on the x-axis.",
+          "hidePrompt": "Got it, thanks!",
+          "showPrompt": "How do I read these graphs?",
+          "static": false,
+          "widgets": {}
+        },
+        "static": false,
+        "type": "explanation",
+        "version": {
+          "major": 0,
+          "minor": 0
+        }
+      },
+      "explanation 2": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "explanation": "Image: \"[Troodos Mountain range in Lythrodontas Cyprus](https://commons.wikimedia.org/wiki/File:Troodos_Mountain_range_in_Lythrodontas_Cyprus.JPG)\" by Andreas2009, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/deed.en)\n\nData: [Climate Inuvik](https://en.climate-data.org/north-america/canada/northwest-territories/inuvik-15016/), [Climate Knoxville](https://en.climate-data.org/north-america/united-states-of-america/tennessee/knoxville-764473/), and [Climate Lipari](https://en.climate-data.org/europe/italy/sicily/lipari-13870/) by [Climate-Data.org](https://en.climate-data.org/), [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) ",
+          "hidePrompt": "Hide image credit and data source",
+          "showPrompt": "Image credit and data source",
+          "static": false,
+          "widgets": {}
+        },
+        "static": false,
+        "type": "explanation",
+        "version": {
+          "major": 0,
+          "minor": 0
+        }
+      },
+      "image 1": {
+        "alignment": "block",
+        "graded": true,
+        "options": {
+          "alt": "Grasses and shrubs are scattered across an arid and hilly landscape, with large patches of bare soil. ",
+          "backgroundImage": {
+            "height": 262,
+            "url": "https://cdn.kastatic.org/ka-content-images/802219a05800ec5998c0e56dde9f4db7a0e54187.jpg",
+            "width": 350
+          },
+          "box": [
+            350,
+            262
+          ],
+          "caption": "Mediterranean forests, woodlands, and scrub biome in Troodos National Forest Park, Cyprus",
+          "labels": [],
+          "range": [
+            [
+              0,
+              10
+            ],
+            [
+              0,
+              10
+            ]
+          ],
+          "static": false,
+          "title": ""
+        },
+        "static": false,
+        "type": "image",
+        "version": {
+          "major": 0,
+          "minor": 0
+        }
+      },
+      "radio 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "choices": [
+            {
+              "clue": "The Mediterranean forests, woodlands, and scrub biome has hot, dry summers and mild, rainy winters. This graph does show high temperatures during the summer months (in June, July, and August). However, it does not show a substantial decrease in precipitation during the summer months compared to the rest of the year.",
+              "content": "![A bar and line graph is shown. The x-axis is labeled Month and goes from January to December. The left-hand y-axis is labeled Precipitation (in millimeters) and goes from 0 to 150, in increments of 25. The right-hand y-axis is labeled Average Temperature (in degrees Celsius) and goes from -30 to 30, in increments of 10. The bar line represents total precipitation for each month and shows the following: January bar line extends to 114, February bar line extends to 110, March bar line extends to 125, April bar line extends to 110, May bar line extends to 98, June bar line extends to 98, July bar line extends to 124, August bar line extends to 88, September bar line extends to 92, October bar line extends to 78, November bar line extends to 97, and December bar line extends to 124. The average temperature line forms a curve, beginning at 3 degrees in January, increasing by about 4 degrees each month from February through June, peaking at 24 degrees in July and August, and then declining by 3 to 6 degrees each month from September through November to a low of 5 degrees in December.](web+graphie://cdn.kastatic.org/ka-perseus-graphie/a32897bf0e0a93155dcef79a2a2551a54aa48514)",
+              "correct": false
+            },
+            {
+              "clue": "The Mediterranean forests, woodlands, and scrub biome has hot, dry summers and mild, rainy winters. This graph is consistent with that climate, showing high temperatures and low precipitation during the summer (in June, July, and August), and mild temperatures and high precipitation during the winter (from November through February). ",
+              "content": "![A bar and line graph is shown. The x-axis is labeled Month and goes from January to December. The left-hand y-axis is labeled Precipitation (in millimeters) and goes from 0 to 150, in increments of 25. The right-hand y-axis is labeled Average Temperature (in degrees Celsius) and goes from -30 to 30, in increments of 10. The bar line represents total precipitation for each month and shows the following: January bar line extends to 97, February bar line extends to 83, March bar line extends to 69, April bar line extends to 54, May bar line extends to 26, June bar line extends to 21, July bar line extends to 12, August bar line extends to 17, September bar line extends to 61, October bar line extends to 74, November bar line extends to 88, and December bar line extends to 112. The average temperature line forms a curve, beginning at 13 degrees in January, increasing by 1 to 4 degrees each month from February through July, peaking at 26 degrees in August, and then declining by 2 to 3 degrees each month from September through November to a low of 15 degrees in December.](web+graphie://cdn.kastatic.org/ka-perseus-graphie/152a855b3c87d220745621e6697d0f012a5f5eb3)",
+              "correct": true
+            },
+            {
+              "clue": "The Mediterranean forests, woodlands, and scrub biome has hot, dry summers and mild, rainy winters. This graph does show higher temperatures during the summer months (in June, July, and August). However, it does not show a substantial decrease in precipitation during the summer compared to the rest of the year. Instead, this graph shows an increase in precipitation during the late summer.",
+              "content": "![A bar and line graph is shown. The x-axis is labeled Month and goes from January to December. The left-hand y-axis is labeled Precipitation (in millimeters) and goes from 0 to 150, in increments of 25. The right-hand y-axis is labeled Average Temperature (in degrees Celsius) and goes from -30 to 30, in increments of 10. The bar line represents total precipitation for each month and shows the following: January bar line extends to 18, February bar line extends to 14, March bar line extends to 14, April bar line extends to 12, May bar line extends to 19, June bar line extends to 31, July bar line extends to 44, August bar line extends to 47, September bar line extends to 38, October bar line extends to 28, November bar line extends to 20, and December bar line extends to 17. The average temperature line forms a curve, beginning at -25 degrees in January, increasing between 1 to 2 degrees in February and March, increasing by 8 to 10 degrees each month from April through June, peaking at 14 degrees in July, and then declining rapidly from August through November to a low of -24 degrees in December.](web+graphie://cdn.kastatic.org/ka-perseus-graphie/4bf2aab5a4281cab81b96c24a07a051f8bc80fc5)",
+              "isNoneOfTheAbove": false
+            }
+          ],
+          "countChoices": false,
+          "deselectEnabled": false,
+          "displayCount": null,
+          "hasNoneOfTheAbove": false,
+          "multipleSelect": false,
+          "randomize": true
+        },
+        "static": false,
+        "type": "radio",
+        "version": {
+          "major": 1,
+          "minor": 0
+        }
+      }
+    }
+  }
+}

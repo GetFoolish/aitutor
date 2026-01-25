@@ -267,21 +267,21 @@ export function RadioWidget({
       });
 
       // 2. Handle display math $$...$$
-      processed = processed.replace(/\$\$([^$]+)\$\$/g, (_, math) => {
+      processed = processed.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
         try {
           if (katex) {
             return katex.renderToString(math.trim(), { displayMode: true, throwOnError: false });
           }
-          return `<span class="athena-math-display">${math}</span>`;
+          return `<div class="athena-math-display">${math}</div>`;
         } catch {
-          return `<span class="athena-math-display">${math}</span>`;
+          return `<div class="athena-math-display">${math}</div>`;
         }
       });
 
-      // 3. Handle inline math $...$
-      // Note: $28$ IS valid math (renders 28 in math font), different from $28 (currency)
-      // Currency like $28 without closing $ won't match this regex anyway
-      processed = processed.replace(/\$([^$\n]+)\$/g, (match, math) => {
+      // 3. Handle inline math: $\begin{env}...\end{env}$ (multiline) | $...$ (single line)
+      const inlineMathRegex = /\$\\begin\{([^}]+)\}([\s\S]+?)\\end\{\1\}\$|\$([^$\n]+)\$/g;
+      processed = processed.replace(inlineMathRegex, (match, envName, envContent, simpleContent) => {
+        const math = envName ? `\\begin{${envName}}${envContent}\\end{${envName}}` : simpleContent;
         try {
           if (katex) {
             return katex.renderToString(math.trim(), { displayMode: false, throwOnError: false });
