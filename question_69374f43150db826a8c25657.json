@@ -1,0 +1,126 @@
+{
+  "_id": "69374f43150db826a8c25657",
+  "questionId": "27.1.3.1.18_x39f402e6238d3d6f",
+  "courseIdx": 27,
+  "courseName": "AP®︎/College Calculus BC",
+  "courseDirName": "27_AP®︎/College_Calculus_BC",
+  "courseUrl": "https://www.khanacademy.org/math/ap-calculus-bc",
+  "unitIdx": 1,
+  "unitName": "Limits and continuity",
+  "unitDirName": "27.1_Limits_and_continuity",
+  "lessonIdx": 3,
+  "lessonName": "Estimating limit values from graphs",
+  "lessonDirName": "27.1.3_Estimating_limit_values_from_graphs",
+  "exerciseIdx": 1,
+  "exerciseName": "Estimating limit values from graphs",
+  "exerciseDirName": "27.1.3.1_Estimating_limit_values_from_graphs",
+  "exerciseId": "x8c286c43",
+  "itemId": "x39f402e6238d3d6f",
+  "assessmentData": {
+    "data": {
+      "assessmentItem": {
+        "__typename": "AssessmentItemOrError",
+        "error": null,
+        "item": {
+          "__typename": "AssessmentItem",
+          "id": "x39f402e6238d3d6f",
+          "isContextInaccessible": false,
+          "itemData": "{\"answerArea\": {\"calculator\": false, \"chi2Table\": false, \"periodicTable\": false, \"tTable\": false, \"zTable\": false}, \"hints\": [{\"content\": \"$\\\\displaystyle \\\\lim_{x\\\\to -5}g(x)$ represents the limit of $g$ as $x$ approaches $-5$.\\n\\nThe function $g$ has a *vertical asymptote* at $x=-5$.\", \"images\": {}, \"replace\": false, \"widgets\": {}}, {\"content\": \"If we approach $x=-5$ from the left, the $y$-values get closer and closer to $\\\\infty$. If we approach $x=-5$ from the right, the $y$-values get closer and closer to $-\\\\infty$.\\n\\nThe function does not approach a specific value as $x$ approaches $-5$.\", \"images\": {}, \"replace\": false, \"widgets\": {}}, {\"content\": \"The limit $\\\\displaystyle\\\\lim_{x\\\\to -5}g(x)$ doesn't exist.\", \"images\": {}, \"replace\": false, \"widgets\": {}}], \"itemDataVersion\": {\"major\": 0, \"minor\": 1}, \"question\": {\"content\": \"The function $g$ is defined for all real numbers except for $x=-5$.\\n\\n![graph](web+graphie://cdn.kastatic.org/ka-perseus-graphie/43e5020c68f2b1cee7aa064e7aa38b04f406630a)\\n\\n**What is a reasonable estimate for $\\\\displaystyle\\\\lim_{x\\\\to -5}g(x)$?**\\n\\n[[\\u2603 radio 1]]\\n\", \"images\": {\"web+graphie://cdn.kastatic.org/ka-perseus-graphie/43e5020c68f2b1cee7aa064e7aa38b04f406630a\": {\"height\": 325, \"width\": 325}}, \"widgets\": {\"radio 1\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"choices\": [{\"content\": \"$-8$\", \"correct\": false}, {\"content\": \"$2$\", \"correct\": false}, {\"content\": \"$-5$\", \"correct\": false, \"isNoneOfTheAbove\": false}, {\"content\": \"The limit doesn't exist\", \"correct\": true, \"isNoneOfTheAbove\": false}], \"deselectEnabled\": false, \"displayCount\": null, \"hasNoneOfTheAbove\": false, \"multipleSelect\": false, \"randomize\": false}, \"static\": false, \"type\": \"radio\", \"version\": {\"major\": 1, \"minor\": 0}}}}}",
+          "problemType": "2. Asymptote",
+          "requiresScreenOrMouse": false,
+          "sha": "55fba61a9edaa45f123375f46c791b0d8d84457a"
+        }
+      }
+    }
+  },
+  "scrapedAt": "2025-12-08 22:20:51.642000",
+  "difficulty": 0.85,
+  "expected_time_seconds": 95,
+  "inferred_grade": "12",
+  "grade_level": "12",
+  "grade_order": 13,
+  "learning_order": 1301301,
+  "age": 17,
+  "sequence_order": 163,
+  "total_in_course": 340,
+  "answerArea": {
+    "calculator": false,
+    "chi2Table": false,
+    "periodicTable": false,
+    "tTable": false,
+    "zTable": false
+  },
+  "fixedAt": "2025-12-21_v2",
+  "hints": [
+    {
+      "content": "$\\displaystyle \\lim_{x\\to -5}g(x)$ represents the limit of $g$ as $x$ approaches $-5$.\n\nThe function $g$ has a *vertical asymptote* at $x=-5$.",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    },
+    {
+      "content": "If we approach $x=-5$ from the left, the $y$-values get closer and closer to $\\infty$. If we approach $x=-5$ from the right, the $y$-values get closer and closer to $-\\infty$.\n\nThe function does not approach a specific value as $x$ approaches $-5$.",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    },
+    {
+      "content": "The limit $\\displaystyle\\lim_{x\\to -5}g(x)$ doesn't exist.",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    }
+  ],
+  "itemDataVersion": {
+    "major": 0,
+    "minor": 1
+  },
+  "question": {
+    "content": "The function $g$ is defined for all real numbers except for $x=-5$.\n\n![graph](web+graphie://cdn.kastatic.org/ka-perseus-graphie/43e5020c68f2b1cee7aa064e7aa38b04f406630a)\n\n**What is a reasonable estimate for $\\displaystyle\\lim_{x\\to -5}g(x)$?**\n\n[[☃ radio 1]]\n",
+    "images": {
+      "web+graphie://cdn.kastatic.org/ka-perseus-graphie/43e5020c68f2b1cee7aa064e7aa38b04f406630a": {
+        "height": 325,
+        "width": 325
+      }
+    },
+    "widgets": {
+      "radio 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "choices": [
+            {
+              "content": "$-8$",
+              "correct": false
+            },
+            {
+              "content": "$2$",
+              "correct": false
+            },
+            {
+              "content": "$-5$",
+              "correct": false,
+              "isNoneOfTheAbove": false
+            },
+            {
+              "content": "The limit doesn't exist",
+              "correct": true,
+              "isNoneOfTheAbove": false
+            }
+          ],
+          "deselectEnabled": false,
+          "displayCount": null,
+          "hasNoneOfTheAbove": false,
+          "multipleSelect": false,
+          "randomize": false
+        },
+        "static": false,
+        "type": "radio",
+        "version": {
+          "major": 1,
+          "minor": 0
+        }
+      }
+    }
+  }
+}
