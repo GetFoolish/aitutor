@@ -794,8 +794,8 @@ export const cleanLegacyContent = (text: string): string => {
   processedText = processedText.replace(/\|=/g, '=');
   // Remove standalone | characters that appear alone on lines
   processedText = processedText.replace(/^\s*\|\s*$/gm, '');
-  // Remove trailing | at end of lines after content
-  processedText = processedText.replace(/\s*\|\s*$/gm, '');
+  // Remove trailing | at end of lines if they seem like legacy artifacts (preceded by spaces)
+  processedText = processedText.replace(/\s{2,}\|\s*$/gm, '');
 
   // 6. Handle "Step N| content" patterns - remove pipe after "Step N"
   processedText = processedText.replace(/(Step\s*\d+)\|\s*/gi, '$1 ');

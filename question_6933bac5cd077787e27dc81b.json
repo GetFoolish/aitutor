@@ -1,0 +1,184 @@
+{
+  "_id": "6933bac5cd077787e27dc81b",
+  "questionId": "20.1.1.1.7_x47f2b6253514fbda",
+  "courseIdx": 20,
+  "courseName": "Integrated math 2",
+  "courseDirName": "20_Integrated_math_2",
+  "courseUrl": "https://www.khanacademy.org/math/math2",
+  "unitIdx": 1,
+  "unitName": "Absolute value & piecewise functions",
+  "unitDirName": "20.1_Absolute_value_&_piecewise_functions",
+  "lessonIdx": 1,
+  "lessonName": "Graphs of absolute value functions",
+  "lessonDirName": "20.1.1_Graphs_of_absolute_value_functions",
+  "exerciseIdx": 1,
+  "exerciseName": "Shift absolute value graphs",
+  "exerciseDirName": "20.1.1.1_Shift_absolute_value_graphs",
+  "exerciseId": "x881a37fff54cf35e",
+  "itemId": "x47f2b6253514fbda",
+  "assessmentData": {
+    "data": {
+      "assessmentItem": {
+        "__typename": "AssessmentItemOrError",
+        "error": null,
+        "item": {
+          "__typename": "AssessmentItem",
+          "id": "x47f2b6253514fbda",
+          "isContextInaccessible": false,
+          "itemData": "{\"answerArea\": {\"calculator\": false, \"chi2Table\": false, \"periodicTable\": false, \"tTable\": false, \"zTable\": false}, \"hints\": [{\"content\": \"The equation that results from translating the graph of the absolute value function $y=|x|$ to the right by $\\\\greenD{h}$ units and up by $\\\\goldE{k}$ units is:\\n\\n$y=|x-\\\\greenD{h}|+\\\\goldE{k}$\\n\\nNote that negative values of $\\\\greenD{h}$ represent leftward shifts and negative values for $\\\\goldE{k}$ represent downward shifts.\", \"images\": {}, \"replace\": false, \"widgets\": {}}, {\"content\": \"$g(x)=|x-(\\\\greenD{-2})|+\\\\goldE{4}$\\n\\nSince the function is translated right by $\\\\greenD{-2}$, that means it is translated **left** by $2$ units.\\n\\nThe function is translated **up** by $\\\\goldE{4}$ units.\", \"images\": {}, \"replace\": false, \"widgets\": {}}, {\"content\": \"To get the function $g$, shift $f$ *up* by $4$ units and to the *left* by $2$ units.\", \"images\": {}, \"replace\": false, \"widgets\": {}}], \"itemDataVersion\": {\"major\": 0, \"minor\": 1}, \"question\": {\"content\": \"$\\\\begin{align}\\nf(x)&=|x|\\n\\\\\\\\\\\\\\\\\\ng(x)&=|x+2|+4\\n\\\\end{align}$\\n\\nWe can think of $g$ as a translated (shifted) version of $f$.\\n\\n**Complete the description of the transformation.**  \\n*Use nonnegative numbers.*\\n\\nTo get the function $g$, shift $f$ [[\\u2603 dropdown 1]] by [[\\u2603 numeric-input 1]] units and to the [[\\u2603 dropdown 2]] by [[\\u2603 numeric-input 2]] units.\", \"images\": {}, \"widgets\": {\"dropdown 1\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"choices\": [{\"content\": \"up\", \"correct\": true}, {\"content\": \"down\", \"correct\": false}], \"placeholder\": \"up/down\", \"static\": false}, \"static\": false, \"type\": \"dropdown\", \"version\": {\"major\": 0, \"minor\": 0}}, \"dropdown 2\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"choices\": [{\"content\": \"right\", \"correct\": false}, {\"content\": \"left\", \"correct\": true}], \"placeholder\": \"right/left\", \"static\": false}, \"static\": false, \"type\": \"dropdown\", \"version\": {\"major\": 0, \"minor\": 0}}, \"numeric-input 1\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"answers\": [{\"maxError\": null, \"message\": \"\", \"simplify\": \"required\", \"status\": \"correct\", \"strict\": false, \"value\": 4}], \"coefficient\": false, \"labelText\": \"magnitude of vertical shift\", \"size\": \"small\", \"static\": false}, \"static\": false, \"type\": \"numeric-input\", \"version\": {\"major\": 0, \"minor\": 0}}, \"numeric-input 2\": {\"alignment\": \"default\", \"graded\": true, \"options\": {\"answers\": [{\"maxError\": null, \"message\": \"\", \"simplify\": \"required\", \"status\": \"correct\", \"strict\": false, \"value\": 2}], \"coefficient\": false, \"labelText\": \"magnitude of horizontal shift\", \"size\": \"small\", \"static\": false}, \"static\": false, \"type\": \"numeric-input\", \"version\": {\"major\": 0, \"minor\": 0}}}}}",
+          "problemType": "2. Equation to verbal",
+          "requiresScreenOrMouse": false,
+          "sha": "3b2ce69219acef688f4c7c5d475de65fba12bd35"
+        }
+      }
+    }
+  },
+  "scrapedAt": "2025-12-06 05:10:29.007000",
+  "difficulty": 0.6,
+  "expected_time_seconds": 70,
+  "inferred_grade": "10",
+  "grade_level": "10",
+  "grade_order": 11,
+  "learning_order": 1101101,
+  "age": 15,
+  "sequence_order": 72,
+  "total_in_course": 340,
+  "answerArea": {
+    "calculator": false,
+    "chi2Table": false,
+    "periodicTable": false,
+    "tTable": false,
+    "zTable": false
+  },
+  "fixedAt": "2025-12-21_v2",
+  "hints": [
+    {
+      "content": "The equation that results from translating the graph of the absolute value function $y=|x|$ to the right by $\\greenD{h}$ units and up by $\\goldE{k}$ units is:\n\n$y=|x-\\greenD{h}|+\\goldE{k}$\n\nNote that negative values of $\\greenD{h}$ represent leftward shifts and negative values for $\\goldE{k}$ represent downward shifts.",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    },
+    {
+      "content": "$g(x)=|x-(\\greenD{-2})|+\\goldE{4}$\n\nSince the function is translated right by $\\greenD{-2}$, that means it is translated **left** by $2$ units.\n\nThe function is translated **up** by $\\goldE{4}$ units.",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    },
+    {
+      "content": "To get the function $g$, shift $f$ *up* by $4$ units and to the *left* by $2$ units.",
+      "images": {},
+      "replace": false,
+      "widgets": {}
+    }
+  ],
+  "itemDataVersion": {
+    "major": 0,
+    "minor": 1
+  },
+  "question": {
+    "content": "$\\begin{align}\nf(x)&=|x|\n\\\\\\\\\ng(x)&=|x+2|+4\n\\end{align}$\n\nWe can think of $g$ as a translated (shifted) version of $f$.\n\n**Complete the description of the transformation.**  \n*Use nonnegative numbers.*\n\nTo get the function $g$, shift $f$[[☃ dropdown 1]] by [[☃ numeric-input 1]] units and to the [[☃ dropdown 2]] by [[☃ numeric-input 2]] units.",
+    "images": {},
+    "widgets": {
+      "dropdown 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "choices": [
+            {
+              "content": "up",
+              "correct": true
+            },
+            {
+              "content": "down",
+              "correct": false
+            }
+          ],
+          "placeholder": "up/down",
+          "static": false
+        },
+        "static": false,
+        "type": "dropdown",
+        "version": {
+          "major": 0,
+          "minor": 0
+        }
+      },
+      "dropdown 2": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "choices": [
+            {
+              "content": "right",
+              "correct": false
+            },
+            {
+              "content": "left",
+              "correct": true
+            }
+          ],
+          "placeholder": "right/left",
+          "static": false
+        },
+        "static": false,
+        "type": "dropdown",
+        "version": {
+          "major": 0,
+          "minor": 0
+        }
+      },
+      "numeric-input 1": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "answers": [
+            {
+              "maxError": null,
+              "message": "",
+              "simplify": "required",
+              "status": "correct",
+              "strict": false,
+              "value": 4
+            }
+          ],
+          "coefficient": false,
+          "labelText": "magnitude of vertical shift",
+          "size": "small",
+          "static": false
+        },
+        "static": false,
+        "type": "numeric-input",
+        "version": {
+          "major": 0,
+          "minor": 0
+        }
+      },
+      "numeric-input 2": {
+        "alignment": "default",
+        "graded": true,
+        "options": {
+          "answers": [
+            {
+              "maxError": null,
+              "message": "",
+              "simplify": "required",
+              "status": "correct",
+              "strict": false,
+              "value": 2
+            }
+          ],
+          "coefficient": false,
+          "labelText": "magnitude of horizontal shift",
+          "size": "small",
+          "static": false
+        },
+        "static": false,
+        "type": "numeric-input",
+        "version": {
+          "major": 0,
+          "minor": 0
+        }
+      }
+    }
+  }
+}
