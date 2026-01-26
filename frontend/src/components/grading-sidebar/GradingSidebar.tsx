@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import cn from "classnames";
-import { GraduationCap, ChevronRight, ChevronLeft, TrendingUp, Clock, Target, Upload, ChevronDown } from "lucide-react";
+import { GraduationCap, ChevronRight, ChevronLeft, TrendingUp, Clock, Target, Upload, Trash2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { apiUtils } from "../../lib/api-utils";
-import { HomeworkPanel } from "@/components/homework-panel/HomeworkPanel";
+import { HomeworkUpload } from "@/components/homework-panel/HomeworkUpload";
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 import {
@@ -14,10 +14,39 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 
+interface BoundingBox {
+    left: number;   // percentage from left (0-100)
+    top: number;    // percentage from top (0-100)
+    right: number;  // percentage from left to right edge (0-100)
+    bottom: number; // percentage from top to bottom edge (0-100)
+    page?: number;  // page number for multi-page PDFs (0-indexed)
+}
+
+interface HomeworkQuestion {
+    id: string;
+    number: number;
+    text: string;
+    answered: boolean;
+    correct?: boolean;
+    bbox?: BoundingBox;
+}
+
 interface GradingSidebarProps {
     open: boolean;
     onToggle: () => void;
     currentSkill?: string | null;
+    homeworkMode?: boolean;
+    homeworkImageUrl?: string | null;
+    homeworkFileType?: string | null;
+    homeworkQuestions?: HomeworkQuestion[];
+    currentHomeworkQuestionIndex?: number;
+    onHomeworkQuestionClick?: (index: number) => void;
+    onHomeworkUpload?: (file: File) => Promise<void>;
+    onHomeworkDelete?: () => Promise<void>;
+    // Page navigation for multi-page PDFs
+    currentPage?: number;
+    totalPages?: number;
+    onPageChange?: (page: number) => void;
 }
 
 
@@ -39,11 +68,29 @@ const formatTime = (timestamp: number | null) => {
     );
 };
 
-export default function GradingSidebar({ open, onToggle, currentSkill }: GradingSidebarProps) {
+export default function GradingSidebar({ open, onToggle, currentSkill, homeworkMode, homeworkImageUrl, homeworkFileType, homeworkQuestions = [], currentHomeworkQuestionIndex = 0, onHomeworkQuestionClick, onHomeworkUpload, onHomeworkDelete, currentPage = 0, totalPages = 1, onPageChange }: GradingSidebarProps) {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const isUserScrollingRef = useRef(false);
     const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const [homeworkExpanded, setHomeworkExpanded] = useState(true);
+    const [showAddMore, setShowAddMore] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+
+    const handleDelete = async () => {
+        if (!onHomeworkDelete) return;
+        setIsDeleting(true);
+        try {
+            await onHomeworkDelete();
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    const handleAddMore = async (file: File) => {
+        if (!onHomeworkUpload) return;
+        await onHomeworkUpload(file);
+        setShowAddMore(false);
+    };
     
     // Fetch grading panel data from API
     const { data: gradingData, isLoading } = useQuery({
@@ -200,54 +247,91 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                 "max-md:hidden" // Hide on mobile
             )}
         >
-            {/* Homework Section Header */}
-            <header className={cn(
-                "flex items-center h-[44px] lg:h-[48px] border-b-[3px] border-black dark:border-white shrink-0 overflow-hidden transition-all duration-300 bg-[#FFD93D]",
-                open ? "justify-between px-3 lg:px-4" : "justify-center"
-            )}>
-                {open ? (
-                    <div
-                        className="flex items-center gap-2 lg:gap-2.5 animate-in fade-in slide-in-from-left-4 duration-300 cursor-pointer flex-1"
-                        onClick={() => setHomeworkExpanded(!homeworkExpanded)}
-                    >
-                        <div className="px-[0.25rem] pt-[0.15rem] pb-[0.25rem] lg:px-[0.375rem] lg:pt-[0.25rem] lg:pb-[0.375rem] border-[2px] lg:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]">
-                            <Upload className="w-4 h-4 text-black dark:text-white font-bold" />
+            {/* Homework Section - Only visible in homework mode */}
+            {open && homeworkMode && (
+                <div className="border-b-[3px] border-black dark:border-white bg-[#FFD93D] shrink-0 max-h-[55vh] overflow-y-auto">
+                    <div className="px-3 py-3">
+                        {/* Header with action buttons */}
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                                <Upload className="w-4 h-4 text-black" />
+                                <span className="text-xs font-black text-black">HOMEWORK</span>
+                                {homeworkQuestions.length > 0 && (
+                                    <span className="text-[10px] font-bold text-black/70">
+                                        ({homeworkQuestions.filter(q => q.answered).length}/{homeworkQuestions.length})
+                                    </span>
+                                )}
+                            </div>
+                            {homeworkImageUrl && (
+                                <div className="flex items-center gap-1">
+                                    <button
+                                        onClick={() => setShowAddMore(!showAddMore)}
+                                        className={cn(
+                                            "w-6 h-6 flex items-center justify-center border-2 border-black transition-all",
+                                            showAddMore
+                                                ? "bg-[#4ECDC4] shadow-none translate-x-0.5 translate-y-0.5"
+                                                : "bg-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
+                                        )}
+                                        title="Add more"
+                                    >
+                                        <Plus className="w-3 h-3 text-black" />
+                                    </button>
+                                    <button
+                                        onClick={handleDelete}
+                                        disabled={isDeleting}
+                                        className="w-6 h-6 flex items-center justify-center border-2 border-black bg-[#FF6B6B] shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all disabled:opacity-50"
+                                        title="Delete"
+                                    >
+                                        <Trash2 className="w-3 h-3 text-white" />
+                                    </button>
+                                </div>
+                            )}
                         </div>
-                        <h2 className="text-xs lg:text-sm font-black text-black whitespace-nowrap tracking-tight">
-                            Homework
-                        </h2>
-                        <ChevronDown className={cn(
-                            "w-4 h-4 text-black transition-transform duration-200 ml-auto mr-2",
-                            homeworkExpanded && "rotate-180"
-                        )} />
+
+                        {/* Add more upload area (shown when clicking +) */}
+                        {showAddMore && (
+                            <div className="mb-3 p-2 border-2 border-dashed border-black bg-white/50">
+                                <HomeworkUpload onUpload={handleAddMore} />
+                            </div>
+                        )}
+
+                        {/* Show homework content or upload area */}
+                        {homeworkImageUrl ? (
+                            <>
+                            <div className="relative border-[2px] border-black bg-white shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+                                {/* Document preview - always use img since thumbnail endpoint returns PNG */}
+                                <img
+                                    src={homeworkImageUrl}
+                                    alt="Homework"
+                                    className="w-full"
+                                />
+
+                                {/* Page indicator for multi-page PDFs */}
+                                {totalPages > 1 && (
+                                    <div className="absolute top-1 left-1 px-1.5 py-0.5 bg-black/70 text-[10px] font-bold text-white rounded">
+                                        Page {currentPage + 1} of {totalPages}
+                                    </div>
+                                )}
+
+                                {/* Current question indicator overlay at bottom of image */}
+                                {homeworkQuestions.length > 0 && (
+                                    <div className="absolute bottom-0 left-0 right-0 px-2 py-1.5 bg-black/80 flex items-center gap-2">
+                                        <span className="px-1.5 py-0.5 bg-[#FF6B6B] text-white text-[10px] font-black shrink-0">
+                                            {currentHomeworkQuestionIndex + 1}/{homeworkQuestions.length}
+                                        </span>
+                                        <span className="text-[11px] font-bold text-white truncate">
+                                            {homeworkQuestions[currentHomeworkQuestionIndex]?.text || ''}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        </>) : (
+                            /* Show upload dropzone when no homework uploaded */
+                            <div className="min-h-[120px]">
+                                <HomeworkUpload onUpload={onHomeworkUpload || (async () => {})} />
+                            </div>
+                        )}
                     </div>
-                ) : (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => { onToggle(); setHomeworkExpanded(true); }}
-                        className="w-[1.8125rem] h-[1.6rem] lg:w-[2.025rem] lg:h-[1.8125rem] border-[2px] lg:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] transition-colors shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5"
-                    >
-                        <Upload className="w-3 h-3 text-black dark:text-white dark:hover:text-black font-bold" />
-                    </Button>
-                )}
-
-                {open && (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={onToggle}
-                        className="w-[2.125rem] h-[2.125rem] border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FF6B6B] dark:hover:bg-[#FF6B6B] text-black dark:text-white dark:hover:text-white transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1"
-                    >
-                        <ChevronLeft className="w-5 h-5 font-bold" />
-                    </Button>
-                )}
-            </header>
-
-            {/* Homework Content (collapsible) */}
-            {open && homeworkExpanded && (
-                <div className="border-b-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] p-3 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <HomeworkPanel />
                 </div>
             )}
 
@@ -257,14 +341,24 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                 open ? "justify-between px-3 lg:px-4" : "justify-center"
             )}>
                 {open ? (
-                    <div className="flex items-center gap-2 lg:gap-2.5 animate-in fade-in slide-in-from-left-4 duration-300">
-                        <div className="px-[0.25rem] pt-[0.15rem] pb-[0.25rem] lg:px-[0.375rem] lg:pt-[0.25rem] lg:pb-[0.375rem] border-[2px] lg:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]">
-                            <GraduationCap className="w-4 h-4 text-black dark:text-white font-bold" />
+                    <>
+                        <div className="flex items-center gap-2 lg:gap-2.5 animate-in fade-in slide-in-from-left-4 duration-300">
+                            <div className="px-[0.25rem] pt-[0.15rem] pb-[0.25rem] lg:px-[0.375rem] lg:pt-[0.25rem] lg:pb-[0.375rem] border-[2px] lg:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]">
+                                <GraduationCap className="w-4 h-4 text-black dark:text-white font-bold" />
+                            </div>
+                            <h2 className="text-xs lg:text-sm font-black text-white whitespace-nowrap tracking-tight">
+                                Grading & Skills
+                            </h2>
                         </div>
-                        <h2 className="text-xs lg:text-sm font-black text-white whitespace-nowrap tracking-tight">
-                            Grading & Skills
-                        </h2>
-                    </div>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={onToggle}
+                            className="w-[2.125rem] h-[2.125rem] border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black transition-all shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1"
+                        >
+                            <ChevronLeft className="w-5 h-5 font-bold" />
+                        </Button>
+                    </>
                 ) : (
                     <Button
                         variant="ghost"
@@ -284,18 +378,21 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                         className="h-full overflow-y-auto overflow-x-hidden animate-in fade-in duration-500 px-4 py-4"
                         onClick={handleContainerClick}
                     >
-                        {/* Overall Grade Display */}
-                        {!isLoading && overallGrade && (
-                            <div className="mb-4 border-[4px] border-black dark:border-white bg-[#FFD93D] dark:bg-[#FFD93D] p-4 shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
-                                <div className="text-center">
-                                    <div className="text-[10px] font-black tracking-wide text-black mb-1">Overall Grade</div>
-                                    <div className="text-5xl font-black text-black">{overallGrade}</div>
-                                    <div className="text-xs font-bold text-black mt-1">{overallMastery}% Mastery</div>
+                        {/* Show grades only when NOT in homework mode */}
+                        {!homeworkMode && (
+                          <>
+                            {/* Overall Grade Display */}
+                            {!isLoading && overallGrade && (
+                                <div className="mb-4 border-[4px] border-black dark:border-white bg-[#FFD93D] dark:bg-[#FFD93D] p-4 shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+                                    <div className="text-center">
+                                        <div className="text-[10px] font-black tracking-wide text-black mb-1">Overall Grade</div>
+                                        <div className="text-5xl font-black text-black">{overallGrade}</div>
+                                        <div className="text-xs font-bold text-black mt-1">{overallMastery}% Mastery</div>
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
 
-                        <Accordion
+                            <Accordion
                             type="single"
                             collapsible
                             value={currentSkill || undefined}
@@ -502,7 +599,9 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                         ))
                     ))
                 )}
-            </Accordion>
+                            </Accordion>
+                          </>
+                        )}
                     </div>
                 ) : (
                     <div className="h-full w-full flex items-center justify-center cursor-pointer hover:bg-[#FFE500]/20 transition-colors pb-[140px]" onClick={onToggle}>

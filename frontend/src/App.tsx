@@ -31,6 +31,7 @@ import { useMediaMixer } from "./hooks/useMediaMixer";
 import { useMediaCapture } from "./hooks/useMediaCapture";
 import { useDeveloperMode } from "./hooks/use-developer-mode";
 import { apiUtils } from "./lib/api-utils";
+import { homeworkService } from "./services/homework-service";
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 
@@ -40,6 +41,7 @@ const GradingSidebar = lazy(() => import("./components/grading-sidebar/GradingSi
 const ScratchpadCapture = lazy(() => import("./components/scratchpad-capture/ScratchpadCapture"));
 const FloatingControlPanel = lazy(() => import("./components/floating-control-panel/FloatingControlPanel"));
 const LearningAssetsPanel = lazy(() => import("./components/side-panel/LearningAssetsPanel"));
+const HomeworkView = lazy(() => import("./components/homework-view/HomeworkView"));
 
 function App() {
   // Developer mode hook for Gemini Console visibility
@@ -60,6 +62,17 @@ function App() {
   const [currentQuestionId, setCurrentQuestionId] = useState<string | null>(null);
   const [watchedVideoIds, setWatchedVideoIds] = useState<string[]>([]);
   
+  // Homework mode state
+  const [homeworkMode, setHomeworkMode] = useState(false);
+  const [homeworkRefreshKey, setHomeworkRefreshKey] = useState(0);
+  const [homeworkQuestions, setHomeworkQuestions] = useState<Array<{id: string; number: number; text: string; answered: boolean; correct?: boolean; bbox?: {left: number; top: number; right: number; bottom: number; page?: number}}>>([]);
+  const [currentHomeworkQuestionIndex, setCurrentHomeworkQuestionIndex] = useState(0);
+  const [homeworkImageUrl, setHomeworkImageUrl] = useState<string | null>(null);
+  const [homeworkFileType, setHomeworkFileType] = useState<string | null>(null);
+  const [currentHomeworkId, setCurrentHomeworkId] = useState<string | null>(null);
+  const [homeworkCurrentPage, setHomeworkCurrentPage] = useState(0);
+  const [homeworkTotalPages, setHomeworkTotalPages] = useState(1);
+
   // Assessment mode state
   const [assessmentMode, setAssessmentMode] = useState(false);
   const [assessmentSubject, setAssessmentSubject] = useState<string | null>(null);
@@ -118,6 +131,11 @@ function App() {
   const toggleGradingSidebar = () => {
     if (!isGradingSidebarOpen) setIsSidebarOpen(false);
     setIsGradingSidebarOpen(!isGradingSidebarOpen);
+  };
+
+  const toggleHomeworkMode = () => {
+    console.log('[App] toggleHomeworkMode called, current:', homeworkMode, '-> new:', !homeworkMode);
+    setHomeworkMode(!homeworkMode);
   };
 
   // Assessment functions
@@ -223,10 +241,13 @@ function App() {
                 <Header
                   sidebarOpen={isSidebarOpen}
                   onToggleSidebar={toggleSidebar}
+                  homeworkMode={homeworkMode}
+                  onHomeworkClick={toggleHomeworkMode}
                 />
 
                 <div className="streaming-console">
                   <Suspense fallback={<div className="flex items-center justify-center h-full w-full">Loading...</div>}>
+                    {/* Sidebars - Always visible */}
                     {isDeveloperMode && (
                       <SidePanel
                         open={isSidebarOpen}
@@ -246,7 +267,38 @@ function App() {
                       open={isGradingSidebarOpen}
                       onToggle={toggleGradingSidebar}
                       currentSkill={currentSkill}
+                      homeworkMode={homeworkMode}
+                      homeworkImageUrl={homeworkImageUrl}
+                      homeworkFileType={homeworkFileType}
+                      homeworkQuestions={homeworkQuestions}
+                      currentHomeworkQuestionIndex={currentHomeworkQuestionIndex}
+                      onHomeworkQuestionClick={setCurrentHomeworkQuestionIndex}
+                      onHomeworkUpload={async (file) => {
+                        // Upload the file first
+                        await homeworkService.uploadHomework(file);
+                        // Increment refresh key to trigger HomeworkView refresh
+                        setHomeworkRefreshKey(prev => prev + 1);
+                        // Then enter homework mode to display it
+                        setHomeworkMode(true);
+                      }}
+                      onHomeworkDelete={async () => {
+                        if (currentHomeworkId) {
+                          await homeworkService.deleteHomework(currentHomeworkId);
+                          // Clear homework state
+                          setHomeworkImageUrl(null);
+                          setHomeworkFileType(null);
+                          setHomeworkQuestions([]);
+                          setCurrentHomeworkQuestionIndex(0);
+                          setCurrentHomeworkId(null);
+                          // Refresh to load next homework if any
+                          setHomeworkRefreshKey(prev => prev + 1);
+                        }
+                      }}
+                      currentPage={homeworkCurrentPage}
+                      totalPages={homeworkTotalPages}
                     />
+
+                    {/* Main Content Area */}
                     <main style={{
                       marginRight: isSidebarOpen ? "260px" : "0",
                       marginLeft: isGradingSidebarOpen ? "260px" : "40px",
@@ -255,45 +307,71 @@ function App() {
                       <div className="main-app-area">
                         <div className="question-panel">
                           <BackgroundShapes />
-                          <ScratchpadCapture onFrameCaptured={(canvas) => {
-                            mediaMixer.updateScratchpadFrame(canvas);
-                          }}>
-                            <QuestionDisplay
-                              onSkillChange={setCurrentSkill}
-                              onQuestionChange={setCurrentQuestionId}
-                              watchedVideoIds={watchedVideoIds}
-                              onAnswerSubmitted={() => setWatchedVideoIds([])}
-                              assessmentMode={assessmentMode}
-                              assessmentQuestions={assessmentQuestions}
-                              currentQuestionIndex={assessmentCurrentIndex}
-                              onAssessmentAnswer={(questionId, isCorrect) => {
-                                const currentQuestion = assessmentQuestions[assessmentCurrentIndex];
-                                const newAnswer = {
-                                  question_id: questionId,
-                                  skill_id: currentQuestion.dash_metadata.skill_ids[0],
-                                  is_correct: isCorrect
-                                };
-                                const newAnswers = [...assessmentAnswers, newAnswer];
-                                setAssessmentAnswers(newAnswers);
-                                setWatchedVideoIds([]);
-
-                                if (assessmentCurrentIndex < assessmentQuestions.length - 1) {
-                                  setTimeout(() => {
-                                    setAssessmentCurrentIndex(assessmentCurrentIndex + 1);
-                                  }, 2000);
-                                } else {
-                                  setTimeout(() => {
-                                    submitAssessment(newAnswers);
-                                  }, 2000);
-                                }
+                          {homeworkMode ? (
+                            /* Homework Mode - Show document viewer */
+                            <HomeworkView
+                              key={homeworkRefreshKey}
+                              onClose={toggleHomeworkMode}
+                              onQuestionsExtracted={(questions) => {
+                                console.log('[App] onQuestionsExtracted called with', questions.length, 'questions:', questions);
+                                setHomeworkQuestions(questions);
+                                setCurrentHomeworkQuestionIndex(0);
+                              }}
+                              onQuestionIndexChange={(index) => {
+                                console.log('[App] onQuestionIndexChange called with index:', index);
+                                setCurrentHomeworkQuestionIndex(index);
+                              }}
+                              currentQuestionIndex={currentHomeworkQuestionIndex}
+                              onImageUrlChange={setHomeworkImageUrl}
+                              onFileTypeChange={setHomeworkFileType}
+                              onHomeworkIdChange={setCurrentHomeworkId}
+                              onPageInfoChange={(page, total) => {
+                                setHomeworkCurrentPage(page);
+                                setHomeworkTotalPages(total);
                               }}
                             />
-                            {isScratchpadOpen && (
-                              <div className="scratchpad-container">
-                                <Scratchpad />
-                              </div>
-                            )}
-                          </ScratchpadCapture>
+                          ) : (
+                            /* Normal Mode - Show Perseus questions */
+                            <ScratchpadCapture onFrameCaptured={(canvas) => {
+                              mediaMixer.updateScratchpadFrame(canvas);
+                            }}>
+                              <QuestionDisplay
+                                onSkillChange={setCurrentSkill}
+                                onQuestionChange={setCurrentQuestionId}
+                                watchedVideoIds={watchedVideoIds}
+                                onAnswerSubmitted={() => setWatchedVideoIds([])}
+                                assessmentMode={assessmentMode}
+                                assessmentQuestions={assessmentQuestions}
+                                currentQuestionIndex={assessmentCurrentIndex}
+                                onAssessmentAnswer={(questionId, isCorrect) => {
+                                  const currentQuestion = assessmentQuestions[assessmentCurrentIndex];
+                                  const newAnswer = {
+                                    question_id: questionId,
+                                    skill_id: currentQuestion.dash_metadata.skill_ids[0],
+                                    is_correct: isCorrect
+                                  };
+                                  const newAnswers = [...assessmentAnswers, newAnswer];
+                                  setAssessmentAnswers(newAnswers);
+                                  setWatchedVideoIds([]);
+
+                                  if (assessmentCurrentIndex < assessmentQuestions.length - 1) {
+                                    setTimeout(() => {
+                                      setAssessmentCurrentIndex(assessmentCurrentIndex + 1);
+                                    }, 2000);
+                                  } else {
+                                    setTimeout(() => {
+                                      submitAssessment(newAnswers);
+                                    }, 2000);
+                                  }
+                                }}
+                              />
+                              {isScratchpadOpen && (
+                                <div className="scratchpad-container">
+                                  <Scratchpad />
+                                </div>
+                              )}
+                            </ScratchpadCapture>
+                          )}
                         </div>
                         <FloatingControlPanel
                           renderCanvasRef={mediaMixer.canvasRef}

@@ -459,6 +459,92 @@ async def download_homework_file(
         raise HTTPException(status_code=500, detail=f"Failed to download file: {str(e)}")
 
 
+@app.get("/homework/{homework_id}/thumbnail")
+async def get_homework_thumbnail(
+    http_request: Request,
+    homework_id: str,
+    page: int = 0
+):
+    """
+    Get a PNG thumbnail of a homework file (renders PDF first page as image).
+    This allows overlay positioning to work correctly with CSS percentages.
+
+    Args:
+        homework_id: Homework ID
+        page: Page number (0-indexed, default 0)
+
+    Returns:
+        PNG image of the page
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        # Get homework metadata
+        homework = file_processor.get_homework(homework_id, user_id)
+
+        if not homework:
+            raise HTTPException(status_code=404, detail="Homework not found")
+
+        # Get file from GridFS
+        if 'file_id' not in homework:
+            raise HTTPException(status_code=404, detail="File not found")
+
+        try:
+            grid_out = file_processor.fs.get(homework['file_id'])
+            file_content = grid_out.read()
+        except Exception as e:
+            logger.error(f"[HOMEWORK] Error reading file from GridFS: {e}")
+            raise HTTPException(status_code=404, detail="File not found in storage")
+
+        file_type = homework.get('file_type', '').lower()
+
+        # For images, return as-is
+        # Note: file_type is 'image' (the category) not the extension like 'jpg'
+        if file_type in ['image', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp']:
+            from fastapi.responses import Response
+            content_type = grid_out.content_type or 'image/png'
+            return Response(content=file_content, media_type=content_type)
+
+        # For PDFs, render to image using PyMuPDF
+        if file_type == 'pdf':
+            try:
+                import fitz  # PyMuPDF
+
+                pdf_doc = fitz.open(stream=file_content, filetype="pdf")
+                if page >= len(pdf_doc):
+                    page = 0
+
+                pdf_page = pdf_doc[page]
+                # Render at 1.5x zoom for good quality thumbnail
+                mat = fitz.Matrix(1.5, 1.5)
+                pix = pdf_page.get_pixmap(matrix=mat)
+                img_bytes = pix.tobytes("png")
+                pdf_doc.close()
+
+                logger.info(f"[HOMEWORK] Generated thumbnail for {homework_id} page {page}")
+
+                from fastapi.responses import Response
+                return Response(
+                    content=img_bytes,
+                    media_type="image/png",
+                    headers={'Cache-Control': 'private, max-age=3600'}
+                )
+
+            except ImportError:
+                raise HTTPException(status_code=500, detail="PyMuPDF not installed for PDF thumbnails")
+            except Exception as e:
+                logger.error(f"[HOMEWORK] Error rendering PDF thumbnail: {e}")
+                raise HTTPException(status_code=500, detail=f"Failed to render thumbnail: {str(e)}")
+
+        raise HTTPException(status_code=400, detail=f"Unsupported file type: {file_type}")
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[HOMEWORK] Error in get_homework_thumbnail: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to get thumbnail: {str(e)}")
+
+
 # ============================================================================
 # Main entry point (for local development)
 # ============================================================================

@@ -241,81 +241,45 @@ const HomeworkUpload = React.forwardRef<HTMLDivElement, HomeworkUploadProps>(
           onChange={handleFileInputChange}
         />
 
-        {!selectedFile ? (
-          <div
-            onDragEnter={handleDragEnter}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            className={cn(
-              "relative flex flex-col items-center justify-center rounded border-[2px] border-dashed p-3 sm:p-4 min-h-[80px] transition-colors",
-              isDragging
-                ? "border-[#FFD93D] bg-[#FFD93D]/10"
-                : "border-gray-300 hover:border-[#FFD93D]",
-              "cursor-pointer"
-            )}
-            onClick={handleBrowseClick}
-          >
-            <Upload className="h-6 w-6 text-gray-400 mb-2" />
-            <p className="text-xs font-medium text-center text-gray-600">
-              Drop homework or click to browse
-            </p>
-            <p className="text-[10px] text-gray-400 text-center">
-              PDF, JPG, PNG, DOCX, TXT (max 10MB)
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg border-[3px] border-border bg-background min-h-[68px]">
-              {getFileIcon()}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm sm:text-base font-medium truncate">
-                  {selectedFile.name}
-                </p>
-                <p className="text-xs sm:text-sm text-muted-foreground">
-                  {formatFileSize(selectedFile.size)}
-                </p>
+        {/* Fixed-size dropzone - always visible */}
+        <div
+          onDragEnter={handleDragEnter}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={cn(
+            "relative flex flex-col items-center justify-center rounded border-[2px] border-dashed p-3 sm:p-4 h-[120px] transition-colors",
+            isDragging
+              ? "border-[#FFD93D] bg-[#FFD93D]/10"
+              : "border-gray-300 hover:border-[#FFD93D]",
+            "cursor-pointer"
+          )}
+          onClick={handleBrowseClick}
+        >
+          {isUploading ? (
+            <div className="w-full space-y-2">
+              <div className="w-full h-2 bg-gray-200 rounded overflow-hidden border border-black">
+                <div
+                  className="h-full bg-[#FFD93D] transition-all duration-200"
+                  style={{ width: `${uploadProgress}%` }}
+                />
               </div>
-              {!isUploading && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleRemoveFile}
-                  className="h-11 w-11 min-w-[44px] min-h-[44px] shrink-0 hover:bg-destructive/10 hover:text-destructive"
-                >
-                  <X className="h-5 w-5" />
-                </Button>
-              )}
+              <p className="text-[10px] text-center text-gray-500 font-medium">
+                Uploading... {uploadProgress}%
+              </p>
             </div>
-
-            {isUploading && (
-              <div className="space-y-1">
-                <div className="w-full h-2 bg-gray-200 rounded overflow-hidden border border-black">
-                  <div
-                    className="h-full bg-[#FFD93D] transition-all duration-200"
-                    style={{ width: `${uploadProgress}%` }}
-                  />
-                </div>
-                <p className="text-[10px] text-center text-gray-500 font-medium">
-                  Uploading... {uploadProgress}%
-                </p>
-              </div>
-            )}
-
-            {!isUploading && onUpload && (
-              <Button
-                onClick={() => {
-                  console.log('[HomeworkUpload] Button clicked!')
-                  handleUpload()
-                }}
-                className="w-full min-h-[48px] border-[3px] border-black bg-[#FFD93D] hover:bg-[#FFE566] text-black shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition-all text-sm sm:text-base font-bold"
-              >
-                <Upload className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                Upload Homework
-              </Button>
-            )}
-          </div>
-        )}
+          ) : (
+            <>
+              <Upload className="h-6 w-6 text-gray-400 mb-2" />
+              <p className="text-xs font-medium text-center text-gray-600">
+                Drop homework or click to browse
+              </p>
+              <p className="text-[10px] text-gray-400 text-center">
+                PDF, JPG, PNG, DOCX, TXT (max 10MB)
+              </p>
+            </>
+          )}
+        </div>
 
         {error && (
           <div className="p-3 sm:p-4 rounded-lg border-[3px] border-destructive bg-destructive/10 shadow-[2px_2px_0_0] shadow-destructive/50">

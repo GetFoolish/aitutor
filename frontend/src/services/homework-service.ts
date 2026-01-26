@@ -326,6 +326,41 @@ export class HomeworkService {
   }
 
   /**
+   * Fetch homework thumbnail image with authentication
+   *
+   * For PDFs, returns a PNG rendering of the specified page.
+   * For images, returns the original image.
+   * Used for sidebar preview where CSS overlay positioning needs to work.
+   *
+   * @param homeworkId - Homework ID
+   * @param page - Page number (0-indexed, default 0)
+   * @returns Blob containing the PNG thumbnail
+   * @throws Error if file not found or request fails
+   */
+  async getThumbnailBlob(homeworkId: string, page: number = 0): Promise<Blob> {
+    try {
+      const response = await apiUtils.authenticatedFetch(
+        `${HOMEWORK_SERVICE_URL}/homework/${homeworkId}/thumbnail?page=${page}`,
+        { method: 'GET' }
+      );
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Thumbnail not found.');
+        }
+        throw new Error(`Failed to fetch thumbnail: ${response.status}`);
+      }
+
+      return await response.blob();
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error. Please check your internet connection.');
+      }
+      throw error;
+    }
+  }
+
+  /**
    * Fetch homework file content with authentication
    *
    * Downloads the file content and returns it as a Blob.

@@ -70,7 +70,7 @@ class FileProcessor:
 
     def extract_text_from_pdf(self, file_content: bytes) -> str:
         """
-        Extract text from PDF file
+        Extract text from PDF file using Gemini Vision (for scanned/image PDFs) or PyPDF2 (for text PDFs)
 
         Args:
             file_content: Binary content of PDF file
@@ -78,15 +78,103 @@ class FileProcessor:
         Returns:
             Extracted text content
         """
+        # First, try to convert PDF to images and use Gemini Vision (best for homework/worksheets)
+        gemini_api_key = os.environ.get('GEMINI_API_KEY')
+        if gemini_api_key:
+            try:
+                import fitz  # PyMuPDF
+                import google.generativeai as genai
+                import base64
+
+                genai.configure(api_key=gemini_api_key)
+
+                # Open PDF with PyMuPDF
+                pdf_doc = fitz.open(stream=file_content, filetype="pdf")
+                logger.info(f"[PDF-OCR] Processing PDF with {len(pdf_doc)} page(s) using Gemini Vision")
+
+                all_text = []
+                for page_num in range(len(pdf_doc)):
+                    page = pdf_doc[page_num]
+                    # Render page to image (higher resolution for better OCR)
+                    mat = fitz.Matrix(2.0, 2.0)  # 2x zoom for better quality
+                    pix = page.get_pixmap(matrix=mat)
+                    img_bytes = pix.tobytes("png")
+
+                    # Convert to base64
+                    img_base64 = base64.b64encode(img_bytes).decode('utf-8')
+
+                    # Use Gemini Vision to extract text
+                    model = genai.GenerativeModel('gemini-2.0-flash')
+
+                    prompt = """Analyze this homework/worksheet page and extract ALL math problems with their EXACT visual positions.
+
+CRITICAL RULES:
+1. Read EXACTLY what is printed on the page - do NOT guess or complete partial equations
+2. If you see "4 =" then output "4 =" - do NOT assume it should be "3+4="
+3. The equation text MUST match EXACTLY what appears at the bounding box location
+
+FIRST, output the layout:
+LAYOUT: [columns]x[rows] starting at [top_margin]% from top, bottom at [bottom_margin]%
+
+Then for EACH problem, output its VISUAL bounding box as percentages:
+PROBLEM [num]: [equation] | BBOX: [left]%, [top]%, [right]%, [bottom]%
+
+BBOX coordinates are percentages of page dimensions:
+- LEFT% = distance from left edge (0-100)
+- TOP% = distance from top edge (0-100)
+- RIGHT% = distance from left edge to right side of problem
+- BOTTOM% = distance from top edge to bottom of problem
+
+IMPORTANT:
+- Read problems in order: left column first (top to bottom), then right column (top to bottom)
+- OR if numbered, follow the numbers on the worksheet
+- Transcribe EXACTLY what is printed - blanks, boxes, partial equations
+- If format is "__ + __ = __" with some numbers filled, write exactly that
+- Be thorough and don't miss any problems
+- This is page """ + str(page_num + 1)
+
+                    response = model.generate_content([
+                        prompt,
+                        {"mime_type": "image/png", "data": img_base64}
+                    ])
+
+                    page_text = response.text.strip()
+                    if page_text:
+                        all_text.append(f"--- Page {page_num + 1} ---\n{page_text}")
+                    logger.info(f"[PDF-OCR] Page {page_num + 1}: extracted {len(page_text)} characters")
+
+                num_pages = len(pdf_doc)
+                pdf_doc.close()
+
+                if all_text:
+                    combined_text = "\n\n".join(all_text)
+                    logger.info(f"[PDF-OCR] Total extracted: {len(combined_text)} characters from {num_pages} pages")
+                    return combined_text
+
+            except ImportError as e:
+                logger.warning(f"[PDF-OCR] PyMuPDF not installed, falling back to PyPDF2: {e}")
+            except Exception as e:
+                logger.warning(f"[PDF-OCR] Gemini Vision PDF processing failed, falling back to PyPDF2: {e}")
+
+        # Fallback to PyPDF2 for text-based PDFs
         try:
-            # Try PyPDF2 first
             try:
                 import PyPDF2
                 pdf_reader = PyPDF2.PdfReader(io.BytesIO(file_content))
                 text_content = []
                 for page in pdf_reader.pages:
-                    text_content.append(page.extract_text())
-                return "\n".join(text_content)
+                    page_text = page.extract_text()
+                    if page_text:
+                        text_content.append(page_text)
+
+                result = "\n".join(text_content)
+                if result.strip():
+                    logger.info(f"[PDF] PyPDF2 extracted {len(result)} characters")
+                    return result
+                else:
+                    logger.warning("[PDF] PyPDF2 found no text - PDF may contain only images")
+                    return "[PDF contains images - install PyMuPDF for OCR support: pip install pymupdf]"
+
             except ImportError:
                 logger.warning("PyPDF2 not installed, PDF text extraction not available")
                 return "[PDF content - text extraction not available]"
@@ -96,7 +184,7 @@ class FileProcessor:
 
     def extract_text_from_image(self, file_content: bytes) -> str:
         """
-        Extract text from image file using OCR (Tesseract)
+        Extract text from image file using Gemini Vision API (preferred) or Tesseract as fallback
 
         Args:
             file_content: Binary content of image file
@@ -104,19 +192,83 @@ class FileProcessor:
         Returns:
             Extracted text from the image
         """
+        # Try Gemini Vision API first (much better for math worksheets)
+        gemini_api_key = os.environ.get('GEMINI_API_KEY')
+        if gemini_api_key:
+            try:
+                import google.generativeai as genai
+                import base64
+
+                genai.configure(api_key=gemini_api_key)
+
+                # Open image to get dimensions
+                img = Image.open(io.BytesIO(file_content))
+                width, height = img.size
+                logger.info(f"[OCR] Processing image with Gemini Vision: {width}x{height} pixels")
+
+                # Convert image to base64
+                img_base64 = base64.b64encode(file_content).decode('utf-8')
+
+                # Use Gemini Vision to extract text
+                model = genai.GenerativeModel('gemini-2.0-flash')
+
+                prompt = """Analyze this homework/worksheet image and extract ALL math problems with their EXACT visual positions.
+
+CRITICAL RULES:
+1. Read EXACTLY what is printed on the page - do NOT guess or complete partial equations
+2. If you see "4 =" then output "4 =" - do NOT assume it should be "3+4="
+3. The equation text MUST match EXACTLY what appears at the bounding box location
+
+FIRST, output the layout:
+LAYOUT: [columns]x[rows] starting at [top_margin]% from top, bottom at [bottom_margin]%
+
+Then for EACH problem, output its VISUAL bounding box as percentages:
+PROBLEM [num]: [equation] | BBOX: [left]%, [top]%, [right]%, [bottom]%
+
+BBOX coordinates are percentages of image dimensions:
+- LEFT% = distance from left edge (0-100)
+- TOP% = distance from top edge (0-100)
+- RIGHT% = distance from left edge to right side of problem
+- BOTTOM% = distance from top edge to bottom of problem
+
+Example for 2-column worksheet:
+LAYOUT: 2x6 starting at 24% from top, bottom at 95%
+PROBLEM 1: 84+2= | BBOX: 5%, 24%, 48%, 32%
+PROBLEM 2: 30+4= | BBOX: 52%, 24%, 95%, 32%
+
+IMPORTANT:
+- Read problems in order: left column first (top to bottom), then right column (top to bottom)
+- OR if numbered, follow the numbers on the worksheet
+- Transcribe EXACTLY what is printed - blanks, boxes, partial equations
+- If format is "__ + __ = __" with some numbers filled, write exactly that
+- Be thorough and don't miss any problems"""
+
+                response = model.generate_content([
+                    prompt,
+                    {"mime_type": "image/png", "data": img_base64}
+                ])
+
+                extracted_text = response.text.strip()
+                logger.info(f"[OCR] Gemini Vision extracted {len(extracted_text)} characters")
+                return extracted_text
+
+            except Exception as e:
+                logger.warning(f"[OCR] Gemini Vision failed, falling back to Tesseract: {e}")
+
+        # Fallback to Tesseract
         try:
             import pytesseract
 
             # Open the image
             img = Image.open(io.BytesIO(file_content))
             width, height = img.size
-            logger.info(f"[OCR] Processing image: {width}x{height} pixels")
+            logger.info(f"[OCR] Processing image with Tesseract: {width}x{height} pixels")
 
             # Perform OCR
             extracted_text = pytesseract.image_to_string(img)
 
             if extracted_text.strip():
-                logger.info(f"[OCR] Successfully extracted {len(extracted_text)} characters")
+                logger.info(f"[OCR] Tesseract extracted {len(extracted_text)} characters")
                 return extracted_text.strip()
             else:
                 logger.warning("[OCR] No text found in image")

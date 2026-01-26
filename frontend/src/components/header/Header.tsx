@@ -17,7 +17,7 @@
 import { RiSidebarFoldLine, RiSidebarUnfoldLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import cn from "classnames";
-import { Moon, Sun, User, Settings, LogOut, Terminal, BookOpen } from "lucide-react";
+import { Moon, Sun, User, Settings, LogOut, Terminal, BookOpen, Upload } from "lucide-react";
 import { useTheme } from "../theme/theme-provier";
 import { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
@@ -40,9 +40,11 @@ import {
 interface HeaderProps {
     sidebarOpen: boolean;
     onToggleSidebar: () => void;
+    homeworkMode?: boolean;
+    onHomeworkClick?: () => void;
 }
 
-export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
+export default function Header({ sidebarOpen, onToggleSidebar, homeworkMode, onHomeworkClick }: HeaderProps) {
     const { theme, setTheme } = useTheme();
     const { user, logout } = useAuth();
     const history = useHistory();
@@ -94,6 +96,23 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
 
             {/* Right side - Actions */}
             <div className="flex items-center gap-1.5 md:gap-2">
+                {/* Homework Mode Button */}
+                <Button
+                    type="button"
+                    variant="ghost"
+                    className={cn(
+                        "h-7 md:h-8 lg:h-8 px-2 md:px-3 border-[2px] border-black dark:border-white hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 flex items-center gap-1.5",
+                        homeworkMode
+                            ? "bg-[#FFD93D] hover:bg-[#FFE566] text-black"
+                            : "bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black"
+                    )}
+                    onClick={onHomeworkClick}
+                >
+                    <Upload className="h-[0.9rem] w-[0.9rem] md:h-[1rem] md:w-[1rem]" />
+                    <span className="text-[10px] md:text-xs font-black">HOMEWORK</span>
+                </Button>
+
+                {/* Dark/Light Mode Toggle */}
                 <Button
                     type="button"
                     variant="ghost"
