@@ -36,6 +36,10 @@ jobs:
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> $GITHUB_ENV
           echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> $GITHUB_ENV
+          echo "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" >> $GITHUB_ENV
+          echo "STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}" >> $GITHUB_ENV
+          echo "PINECONE_API_KEY=${{ secrets.PINECONE_API_KEY }}" >> $GITHUB_ENV
+          echo "PINECONE_ENVIRONMENT=${{ secrets.PINECONE_ENVIRONMENT }}" >> $GITHUB_ENV
           echo "ALLOWED_ORIGINS=https://staging.teachr.live" >> $GITHUB_ENV
           echo "FRONTEND_URL=https://staging.teachr.live" >> $GITHUB_ENV
 
