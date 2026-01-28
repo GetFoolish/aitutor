@@ -6,6 +6,8 @@ Handles multi-format file uploads and text extraction
 import os
 import io
 import uuid
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from typing import Dict, Optional, Tuple
 from datetime import datetime
 from PIL import Image
@@ -90,23 +92,32 @@ class FileProcessor:
 
                 # Open PDF with PyMuPDF
                 pdf_doc = fitz.open(stream=file_content, filetype="pdf")
-                logger.info(f"[PDF-OCR] Processing PDF with {len(pdf_doc)} page(s) using Gemini Vision")
+                num_pages = len(pdf_doc)
+                logger.info(f"[PDF-OCR] Processing PDF with {num_pages} page(s) using Gemini Vision")
 
-                all_text = []
-                for page_num in range(len(pdf_doc)):
+                # Pre-render all pages to images (this is fast)
+                page_images = []
+                for page_num in range(num_pages):
                     page = pdf_doc[page_num]
                     # Render page to image (higher resolution for better OCR)
                     mat = fitz.Matrix(2.0, 2.0)  # 2x zoom for better quality
                     pix = page.get_pixmap(matrix=mat)
                     img_bytes = pix.tobytes("png")
+                    page_images.append((page_num, img_bytes))
 
-                    # Convert to base64
-                    img_base64 = base64.b64encode(img_bytes).decode('utf-8')
+                pdf_doc.close()
 
-                    # Use Gemini Vision to extract text
-                    model = genai.GenerativeModel('gemini-2.0-flash')
+                # Define function to process a single page with Gemini
+                def process_page(page_data):
+                    page_num, img_bytes = page_data
+                    try:
+                        # Convert to base64
+                        img_base64 = base64.b64encode(img_bytes).decode('utf-8')
 
-                    prompt = """Analyze this homework/worksheet page and extract ALL math problems with their EXACT visual positions.
+                        # Use Gemini Vision to extract text
+                        model = genai.GenerativeModel('gemini-2.0-flash')
+
+                        prompt = f"""Analyze this homework/worksheet page and extract ALL math problems with their EXACT visual positions.
 
 CRITICAL RULES:
 1. Read EXACTLY what is printed on the page - do NOT guess or complete partial equations
@@ -131,20 +142,32 @@ IMPORTANT:
 - Transcribe EXACTLY what is printed - blanks, boxes, partial equations
 - If format is "__ + __ = __" with some numbers filled, write exactly that
 - Be thorough and don't miss any problems
-- This is page """ + str(page_num + 1)
+- This is page {page_num + 1}"""
 
-                    response = model.generate_content([
-                        prompt,
-                        {"mime_type": "image/png", "data": img_base64}
-                    ])
+                        response = model.generate_content([
+                            prompt,
+                            {"mime_type": "image/png", "data": img_base64}
+                        ])
 
-                    page_text = response.text.strip()
-                    if page_text:
-                        all_text.append(f"--- Page {page_num + 1} ---\n{page_text}")
-                    logger.info(f"[PDF-OCR] Page {page_num + 1}: extracted {len(page_text)} characters")
+                        page_text = response.text.strip()
+                        logger.info(f"[PDF-OCR] Page {page_num + 1}: extracted {len(page_text)} characters")
+                        return (page_num, page_text)
+                    except Exception as e:
+                        logger.error(f"[PDF-OCR] Error processing page {page_num + 1}: {e}")
+                        return (page_num, "")
 
-                num_pages = len(pdf_doc)
-                pdf_doc.close()
+                # Process pages in parallel (up to 3 concurrent API calls to avoid rate limits)
+                all_text = []
+                with ThreadPoolExecutor(max_workers=min(3, num_pages)) as executor:
+                    results = list(executor.map(process_page, page_images))
+
+                    # Sort results by page number to maintain order
+                    results.sort(key=lambda x: x[0])
+
+                    # Build combined text
+                    for page_num, page_text in results:
+                        if page_text:
+                            all_text.append(f"--- Page {page_num + 1} ---\n{page_text}")
 
                 if all_text:
                     combined_text = "\n\n".join(all_text)
@@ -367,8 +390,15 @@ IMPORTANT:
             # Generate unique homework ID
             homework_id = str(uuid.uuid4())
 
-            # Extract text content from file
-            extracted_text = self.extract_text_from_file(file_content, file_type, filename)
+            # Extract text content from file (run in thread pool to avoid blocking)
+            loop = asyncio.get_event_loop()
+            extracted_text = await loop.run_in_executor(
+                None,
+                self.extract_text_from_file,
+                file_content,
+                file_type,
+                filename
+            )
 
             # Store file in GridFS (for large files)
             file_id = self.fs.put(

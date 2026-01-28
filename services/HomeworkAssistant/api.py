@@ -15,6 +15,12 @@ from shared.auth_middleware import get_current_user
 from shared.cors_config import ALLOWED_ORIGINS, ALLOW_CREDENTIALS, ALLOWED_METHODS, ALLOWED_HEADERS
 from shared.timing_middleware import UnpluggedTimingMiddleware
 from shared.logging_config import get_logger
+from shared.rate_limiter import (
+    check_rate_limit,
+    UPLOAD_RATE_LIMITER,
+    ASSIST_RATE_LIMITER,
+    GENERAL_RATE_LIMITER
+)
 from managers.mongodb_manager import mongo_db
 from services.HomeworkAssistant.file_processor import FileProcessor
 from services.HomeworkAssistant.homework_assistant import HomeworkAssistant
@@ -25,7 +31,79 @@ logger = get_logger(__name__)
 file_processor = FileProcessor(mongo_db)
 homework_assistant = HomeworkAssistant(mongo_db)
 
-app = FastAPI(title="Homework Assistant API")
+app = FastAPI(
+    title="Homework Assistant API",
+    description="""
+## AI-Powered Homework Assistant
+
+The Homework Assistant API provides intelligent tutoring and guidance for students' homework questions using AI.
+
+### Features
+- **Multi-format file upload**: PDF, images, text files, Word documents
+- **Intelligent OCR**: Extracts text from scanned homework using Google Gemini Vision AI
+- **Socratic teaching method**: Guides students to understand concepts rather than just providing answers
+- **Conversation history**: Maintains context across multiple questions about the same homework
+- **Secure authentication**: JWT-based user authentication
+- **Rate limiting**: Prevents abuse with tiered rate limits
+
+### Authentication
+All endpoints (except `/health`) require JWT authentication via Bearer token in the Authorization header:
+```
+Authorization: Bearer <your-jwt-token>
+```
+
+### Rate Limits
+- **Upload**: 10 files per 5 minutes
+- **Assist**: 30 questions per minute
+- **General operations**: 100 requests per minute
+
+When rate limit is exceeded, the API returns HTTP 429 with a `Retry-After` header.
+
+### Supported File Formats
+- **PDF** (.pdf) - Supports both text and scanned/image PDFs
+- **Images** (.jpg, .jpeg, .png, .gif, .bmp)
+- **Text files** (.txt)
+- **Word documents** (.doc, .docx)
+
+Maximum file size: 10 MB
+
+### API Documentation
+- **Interactive Swagger UI**: `/docs`
+- **ReDoc**: `/redoc`
+- **OpenAPI JSON**: `/openapi.json`
+    """,
+    version="1.0.0",
+    contact={
+        "name": "AI Tutor Support",
+        "email": "support@aitutor.example.com",
+    },
+    license_info={
+        "name": "MIT License",
+        "url": "https://opensource.org/licenses/MIT",
+    },
+    openapi_tags=[
+        {
+            "name": "Health",
+            "description": "Service health check and monitoring"
+        },
+        {
+            "name": "Homework Upload",
+            "description": "Upload and process homework files"
+        },
+        {
+            "name": "Homework Management",
+            "description": "List, retrieve, and delete homework items"
+        },
+        {
+            "name": "AI Assistance",
+            "description": "Ask questions and get tutoring help"
+        },
+        {
+            "name": "Files",
+            "description": "Download and preview homework files"
+        }
+    ]
+)
 
 # Add timing middleware for performance monitoring
 app.add_middleware(UnpluggedTimingMiddleware)
@@ -139,7 +217,23 @@ class DeleteResponse(BaseModel):
 # Health Check
 # ============================================================================
 
-@app.get("/health")
+@app.get(
+    "/health",
+    tags=["Health"],
+    summary="Health check",
+    description="Check if the Homework Assistant service is running and healthy. Does not require authentication.",
+    response_description="Service health status",
+    responses={
+        200: {
+            "description": "Service is healthy and operational",
+            "content": {
+                "application/json": {
+                    "example": {"status": "healthy", "service": "HomeworkAssistant"}
+                }
+            }
+        }
+    }
+)
 def health_check():
     """Health check endpoint for service monitoring"""
     return {"status": "healthy", "service": "HomeworkAssistant"}
@@ -149,10 +243,58 @@ def health_check():
 # Homework Upload Endpoint
 # ============================================================================
 
-@app.post("/homework/upload", response_model=UploadResponse, status_code=201)
+@app.post(
+    "/homework/upload",
+    response_model=UploadResponse,
+    status_code=201,
+    tags=["Homework Upload"],
+    summary="Upload homework file",
+    description="""
+Upload a homework file for AI-powered assistance.
+
+**Supported formats:**
+- PDF (.pdf) - Text or scanned homework worksheets
+- Images (.jpg, .jpeg, .png, .gif, .bmp) - Photos of homework
+- Text files (.txt) - Plain text homework
+- Word documents (.doc, .docx) - Formatted homework assignments
+
+**File size limit:** 10 MB
+
+**Processing:**
+1. File is validated for type and size
+2. Text is extracted using OCR (for images/PDFs) or direct parsing
+3. File is stored securely in GridFS
+4. Homework metadata is saved with unique ID
+
+**Rate limit:** 10 uploads per 5 minutes
+
+Returns a `homework_id` that can be used to ask questions about this homework.
+    """,
+    responses={
+        201: {
+            "description": "File uploaded and processed successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "homework_id": "a1b2c3d4-5e6f-7890-abcd-ef1234567890",
+                        "file_type": "pdf",
+                        "status": "uploaded",
+                        "filename": "math_worksheet.pdf",
+                        "file_size": 245760,
+                        "uploaded_at": "2025-01-28T10:00:00"
+                    }
+                }
+            }
+        },
+        400: {"description": "Invalid file (unsupported type, too large, or empty)"},
+        401: {"description": "Authentication required"},
+        429: {"description": "Rate limit exceeded"},
+        500: {"description": "Server error during file processing"}
+    }
+)
 async def upload_homework(
     http_request: Request,
-    file: UploadFile = File(...)
+    file: UploadFile = File(..., description="Homework file to upload (PDF, image, text, or Word document)")
 ):
     """
     Upload homework file with multi-format support
@@ -170,6 +312,9 @@ async def upload_homework(
         UploadResponse with homework_id, file_type, and status
     """
     user_id = get_current_user(http_request)
+
+    # Check rate limit for uploads (10 uploads per 5 minutes)
+    check_rate_limit(http_request, UPLOAD_RATE_LIMITER, user_id)
 
     try:
         # Read file content
@@ -202,7 +347,53 @@ async def upload_homework(
 # Homework Assistance Endpoint
 # ============================================================================
 
-@app.post("/homework/assist", response_model=AssistResponse, status_code=200)
+@app.post(
+    "/homework/assist",
+    response_model=AssistResponse,
+    status_code=200,
+    tags=["AI Assistance"],
+    summary="Ask homework question",
+    description="""
+Get AI-powered tutoring help for your homework.
+
+**Teaching approach:**
+Uses the Socratic method to guide students toward understanding rather than just providing answers. The AI tutor will:
+- Ask clarifying questions to understand your thinking
+- Break down complex problems into simpler steps
+- Guide you to discover the solution yourself
+- Provide hints and explanations without giving direct answers
+
+**Conversation history:**
+Maintains context of your previous questions (last 5 turns) for more coherent tutoring.
+
+**Rate limit:** 30 questions per minute
+
+**Example workflow:**
+1. Upload homework file → Get `homework_id`
+2. Ask question: "I don't understand problem 3"
+3. AI responds with guiding questions
+4. Continue conversation with follow-up questions
+    """,
+    responses={
+        200: {
+            "description": "AI response generated successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "response": "Great question! Let's think about this step by step. What do you know about addition? Can you tell me what 2+2 means in your own words?",
+                        "homework_id": "a1b2c3d4-5e6f-7890-abcd-ef1234567890",
+                        "timestamp": "2025-01-28T10:05:00"
+                    }
+                }
+            }
+        },
+        400: {"description": "Invalid request"},
+        401: {"description": "Authentication required"},
+        404: {"description": "Homework not found"},
+        429: {"description": "Rate limit exceeded"},
+        500: {"description": "AI service error"}
+    }
+)
 async def homework_assist(
     http_request: Request,
     request: AssistRequest
@@ -220,6 +411,9 @@ async def homework_assist(
         AssistResponse with AI response, homework_id, and timestamp
     """
     user_id = get_current_user(http_request)
+
+    # Check rate limit for AI assistance (30 questions per minute)
+    check_rate_limit(http_request, ASSIST_RATE_LIMITER, user_id)
 
     try:
         # Get AI response
@@ -251,7 +445,54 @@ async def homework_assist(
 # Homework List Endpoint
 # ============================================================================
 
-@app.get("/homework/list", response_model=HomeworkListResponse, status_code=200)
+@app.get(
+    "/homework/list",
+    response_model=HomeworkListResponse,
+    status_code=200,
+    tags=["Homework Management"],
+    summary="List all homework",
+    description="""
+Retrieve a list of all homework files uploaded by the authenticated user.
+
+**Returns:**
+- Homework metadata (filename, type, size, status)
+- Upload timestamp
+- Homework ID for asking questions
+
+**Does NOT include:**
+- Full extracted text content
+- Conversation history
+
+Sorted by upload date (most recent first). Limited to 50 most recent items.
+
+**Rate limit:** 100 requests per minute
+    """,
+    responses={
+        200: {
+            "description": "List retrieved successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "homework_items": [
+                            {
+                                "homework_id": "a1b2c3d4-...",
+                                "filename": "math_worksheet.pdf",
+                                "file_type": "pdf",
+                                "file_size": 245760,
+                                "status": "uploaded",
+                                "uploaded_at": "2025-01-28T10:00:00"
+                            }
+                        ],
+                        "total": 1
+                    }
+                }
+            }
+        },
+        401: {"description": "Authentication required"},
+        429: {"description": "Rate limit exceeded"},
+        500: {"description": "Server error"}
+    }
+)
 async def list_homework(http_request: Request):
     """
     List all homework for the authenticated user
@@ -263,6 +504,9 @@ async def list_homework(http_request: Request):
         HomeworkListResponse with array of homework items and total count
     """
     user_id = get_current_user(http_request)
+
+    # Check rate limit for general API calls (100 requests per minute)
+    check_rate_limit(http_request, GENERAL_RATE_LIMITER, user_id)
 
     try:
         # Get homework list from FileProcessor
@@ -296,7 +540,37 @@ async def list_homework(http_request: Request):
 # Homework Detail Endpoint
 # ============================================================================
 
-@app.get("/homework/{homework_id}", response_model=HomeworkDetailResponse, status_code=200)
+@app.get(
+    "/homework/{homework_id}",
+    response_model=HomeworkDetailResponse,
+    status_code=200,
+    tags=["Homework Management"],
+    summary="Get homework details",
+    description="""
+Retrieve detailed information about a specific homework assignment.
+
+**Includes:**
+- Homework metadata (filename, type, size, status)
+- Full conversation history with AI tutor
+- Extracted text content from the file (for reference)
+
+**Use cases:**
+- Review past conversations
+- Check what was extracted from the file
+- Get homework metadata for display
+
+**Rate limit:** 100 requests per minute
+    """,
+    responses={
+        200: {
+            "description": "Homework details retrieved successfully"
+        },
+        401: {"description": "Authentication required"},
+        404: {"description": "Homework not found or access denied"},
+        429: {"description": "Rate limit exceeded"},
+        500: {"description": "Server error"}
+    }
+)
 async def get_homework(
     http_request: Request,
     homework_id: str
@@ -313,6 +587,9 @@ async def get_homework(
         HomeworkDetailResponse with homework details and conversation history
     """
     user_id = get_current_user(http_request)
+
+    # Check rate limit for general API calls (100 requests per minute)
+    check_rate_limit(http_request, GENERAL_RATE_LIMITER, user_id)
 
     try:
         # Get homework from FileProcessor
@@ -354,7 +631,43 @@ async def get_homework(
 # Homework Delete Endpoint
 # ============================================================================
 
-@app.delete("/homework/{homework_id}", response_model=DeleteResponse, status_code=200)
+@app.delete(
+    "/homework/{homework_id}",
+    response_model=DeleteResponse,
+    status_code=200,
+    tags=["Homework Management"],
+    summary="Delete homework",
+    description="""
+Permanently delete a homework assignment and its associated file.
+
+**What gets deleted:**
+- Homework metadata (filename, status, timestamps)
+- Conversation history with AI tutor
+- Original uploaded file from GridFS storage
+- Extracted text content
+
+**Warning:** This action cannot be undone.
+
+**Rate limit:** 100 requests per minute
+    """,
+    responses={
+        200: {
+            "description": "Homework deleted successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "success": True,
+                        "message": "Homework a1b2c3d4-... deleted successfully"
+                    }
+                }
+            }
+        },
+        401: {"description": "Authentication required"},
+        404: {"description": "Homework not found or already deleted"},
+        429: {"description": "Rate limit exceeded"},
+        500: {"description": "Server error during deletion"}
+    }
+)
 async def delete_homework(
     http_request: Request,
     homework_id: str
@@ -371,6 +684,9 @@ async def delete_homework(
         DeleteResponse with success status and message
     """
     user_id = get_current_user(http_request)
+
+    # Check rate limit for general API calls (100 requests per minute)
+    check_rate_limit(http_request, GENERAL_RATE_LIMITER, user_id)
 
     try:
         # Delete homework via FileProcessor
@@ -398,7 +714,42 @@ async def delete_homework(
 # Homework File Download Endpoint
 # ============================================================================
 
-@app.get("/homework/{homework_id}/file")
+@app.get(
+    "/homework/{homework_id}/file",
+    tags=["Files"],
+    summary="Download homework file",
+    description="""
+Download the original uploaded homework file.
+
+**Returns:**
+- Raw file content with appropriate MIME type
+- Content-Disposition header for inline display
+- Cache-Control header (private, 1 hour)
+
+**Use cases:**
+- Preview PDFs in browser
+- Display uploaded images
+- Download original file
+
+**Rate limit:** 100 requests per minute
+    """,
+    responses={
+        200: {
+            "description": "File retrieved successfully",
+            "content": {
+                "application/pdf": {},
+                "image/jpeg": {},
+                "image/png": {},
+                "text/plain": {},
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {}
+            }
+        },
+        401: {"description": "Authentication required"},
+        404: {"description": "Homework or file not found"},
+        429: {"description": "Rate limit exceeded"},
+        500: {"description": "Server error reading file"}
+    }
+)
 async def download_homework_file(
     http_request: Request,
     homework_id: str
@@ -416,6 +767,9 @@ async def download_homework_file(
         File content with appropriate headers
     """
     user_id = get_current_user(http_request)
+
+    # Check rate limit for general API calls (100 requests per minute)
+    check_rate_limit(http_request, GENERAL_RATE_LIMITER, user_id)
 
     try:
         # Get homework metadata
@@ -459,7 +813,46 @@ async def download_homework_file(
         raise HTTPException(status_code=500, detail=f"Failed to download file: {str(e)}")
 
 
-@app.get("/homework/{homework_id}/thumbnail")
+@app.get(
+    "/homework/{homework_id}/thumbnail",
+    tags=["Files"],
+    summary="Get homework thumbnail",
+    description="""
+Get a PNG thumbnail image of a homework file.
+
+**For PDFs:**
+- Renders the specified page as a PNG image at 1.5x zoom
+- Useful for displaying PDF pages in web UI with overlay annotations
+- Page parameter is 0-indexed (0 = first page)
+
+**For images:**
+- Returns the original image as-is
+- No rendering needed
+
+**Benefits:**
+- Consistent PNG format for all file types
+- CSS percentage positioning works correctly on thumbnails
+- Faster loading than full PDF viewer
+
+**Parameters:**
+- `page`: Page number to render (default: 0, first page)
+
+**Rate limit:** 100 requests per minute
+    """,
+    responses={
+        200: {
+            "description": "Thumbnail generated successfully",
+            "content": {
+                "image/png": {}
+            }
+        },
+        400: {"description": "Unsupported file type for thumbnails"},
+        401: {"description": "Authentication required"},
+        404: {"description": "Homework or file not found"},
+        429: {"description": "Rate limit exceeded"},
+        500: {"description": "Error rendering thumbnail (PyMuPDF not installed)"}
+    }
+)
 async def get_homework_thumbnail(
     http_request: Request,
     homework_id: str,
@@ -477,6 +870,9 @@ async def get_homework_thumbnail(
         PNG image of the page
     """
     user_id = get_current_user(http_request)
+
+    # Check rate limit for general API calls (100 requests per minute)
+    check_rate_limit(http_request, GENERAL_RATE_LIMITER, user_id)
 
     try:
         # Get homework metadata
