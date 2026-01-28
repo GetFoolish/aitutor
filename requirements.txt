@@ -72,5 +72,8 @@ langchain>=0.2.0
 langchain-openai>=0.1.0
 langchain-core>=0.2.0
 
+# Token counting (Moltbot-style context management)
+tiktoken>=0.7.0
+
 # Optional: Pinecone (only needed if MEMORY_STORE_BACKEND=pinecone)
 # pinecone>=5.0.0
