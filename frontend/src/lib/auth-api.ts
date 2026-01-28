@@ -49,6 +49,8 @@ export interface AccountInfo {
   free_minutes?: {
     balance: number;
     last_reset_date: string | null;
+    next_reset_in_hours?: number | null;
+    next_reset_in_minutes?: number | null;
   };
   subscription_plan?: string | null;
 }

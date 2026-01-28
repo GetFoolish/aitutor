@@ -310,11 +310,12 @@ def feed_message_to_event(message: dict, session_id: str, user_id: str) -> Optio
 # ============================================================================
 
 class StartSessionRequest(BaseModel):
-    pass  # user_id now comes from JWT
+    assessment_mode: Optional[bool] = False  # Flag for assessment mode (no TA features)
 
 
 class EndSessionRequest(BaseModel):
     interrupt_audio: bool = True
+    assessment_mode: Optional[bool] = False  # Flag for assessment mode (no TA features)
 
 
 class QuestionAnsweredRequest(BaseModel):
@@ -357,23 +358,26 @@ def health_check():
 
 @app.post("/session/start", response_model=PromptResponse)
 async def start_session(http_request: Request, request: Optional[StartSessionRequest] = None):
-    """Start a new tutoring session"""
+    """Start a new tutoring session (supports both normal and assessment modes)"""
     user_id = get_current_user(http_request)
+    assessment_mode = request.assessment_mode if request else False
+
     try:
         # STEP 1: Allocate daily free minutes if needed
         from services.PaymentService.free_minutes_handler import (
             allocate_daily_free_minutes,
             check_user_balance
         )
-        
+
         # Allocate daily minutes (will only allocate if not already allocated today)
         allocate_daily_free_minutes(user_id)
-        
+
         # STEP 2: Check if user has enough minutes (at least 1 minute to start)
         balances = check_user_balance(user_id)
         total_balance = balances["total"]
-        logger.info(f"[SESSION_START] User {user_id[:8]}... has {total_balance} minutes available (free: {balances['free']}, paid: {balances['paid']})")
-        
+        mode_str = "ASSESSMENT" if assessment_mode else "NORMAL"
+        logger.info(f"[SESSION_START] [{mode_str}] User {user_id[:8]}... has {total_balance} minutes available (free: {balances['free']}, paid: {balances['paid']})")
+
         if total_balance < 1:
             logger.warning(f"[SESSION_START] ❌ User {user_id[:8]}... has insufficient minutes: {total_balance}")
             raise HTTPException(
@@ -385,52 +389,58 @@ async def start_session(http_request: Request, request: Optional[StartSessionReq
                     "required": 1
                 }
             )
-        
+
         # Create session in MongoDB (existing method)
         result = ta.start_session(user_id)
         session_id = result["session_info"]["session_id"]
-        
-        # STEP 3: Store credits_at_start for session monitoring
+
+        # STEP 3: Store credits_at_start and assessment_mode flag for session monitoring
         from managers.mongodb_manager import mongo_db
         mongo_db.sessions.update_one(
             {"session_id": session_id},
             {
                 "$set": {
                     "credits_at_start": total_balance,
-                    "max_duration_minutes": total_balance
+                    "max_duration_minutes": total_balance,
+                    "assessment_mode": assessment_mode
                 }
             }
         )
         logger.info(
             f"[SESSION_START] ✅ Session {session_id[:8]}... created with "
-            f"{total_balance} minutes available"
+            f"{total_balance} minutes available (mode: {mode_str})"
         )
-        
-        # Initialize memory and context components (new method)
-        greeting = await ta.start(user_id, session_id)
-        
-        # Create session_start event
-        start_event = Event(
-            type="session_start",
-            timestamp=time.time(),
-            session_id=session_id,
-            user_id=user_id,
-            data={"session_id": session_id, "user_id": user_id}
-        )
-        ta.queue_manager.enqueue(start_event)
-        
+
+        # CONDITIONAL: Initialize memory and context components only in normal mode
+        greeting = ""
+        if not assessment_mode:
+            # Initialize memory and context components (new method)
+            greeting = await ta.start(user_id, session_id)
+
+            # Create session_start event
+            start_event = Event(
+                type="session_start",
+                timestamp=time.time(),
+                session_id=session_id,
+                user_id=user_id,
+                data={"session_id": session_id, "user_id": user_id}
+            )
+            ta.queue_manager.enqueue(start_event)
+        else:
+            logger.info(f"[SESSION_START] Skipping TA initialization for assessment mode")
+
         # UPDATED: Return greeting in response for immediate delivery
         # Also sent via SSE for systems that listen to instruction queue
         # This ensures backward compatibility with frontends expecting prompt in response
         session_id = result["session_id"]
 
-        # Initialize cost tracking for this session
+        # Initialize cost tracking for this session (works for both modes)
         from services.CostTracking.cost_tracker import CostTracker
         cost_tracker = CostTracker(session_id, user_id)
         cost_tracker.start_session()
 
         return PromptResponse(
-            prompt=greeting or "",  # Return greeting directly (not empty!)
+            prompt=greeting or "",  # Return greeting (empty in assessment mode)
             session_info=result["session_info"]
         )
     except Exception as e:
@@ -475,8 +485,10 @@ def _preload_questions_background(user_id: str, token: str):
 
 @app.post("/session/end", response_model=PromptResponse)
 async def end_session(http_request: Request, request: Optional[EndSessionRequest] = None):
-    """End the current tutoring session"""
+    """End the current tutoring session (supports both normal and assessment modes)"""
     user_id = get_current_user(http_request)
+    assessment_mode = request.assessment_mode if request else False
+
     try:
         # Get active session for user
         session = ta.get_active_session(user_id)
@@ -487,10 +499,19 @@ async def end_session(http_request: Request, request: Optional[EndSessionRequest
             )
 
         session_id = session["session_id"]
-        
-        # End session with memory consolidation (new method)
-        closing = await ta.end(user_id, session_id)
-        
+
+        # Check if this session was created in assessment mode (fallback to request param)
+        session_assessment_mode = session.get("assessment_mode", assessment_mode)
+        mode_str = "ASSESSMENT" if session_assessment_mode else "NORMAL"
+
+        # CONDITIONAL: End session with memory consolidation only in normal mode
+        closing = ""
+        if not session_assessment_mode:
+            # End session with memory consolidation (new method)
+            closing = await ta.end(user_id, session_id)
+        else:
+            logger.info(f"[SESSION_END] Skipping TA cleanup for assessment mode")
+
         # Session end event is NO LONGER needed here because we called ta.end() directly above
         # Queuing it would cause the event loop to call ta.end() a second time!
         # end_event = Event(
@@ -501,11 +522,11 @@ async def end_session(http_request: Request, request: Optional[EndSessionRequest
         #     data={"session_id": session_id, "user_id": user_id}
         # )
         # ta.queue_manager.enqueue(end_event)
-        
-        # Get session summary (existing method for stats)
+
+        # Get session summary (existing method for stats - works for both modes)
         result = ta.end_session(session_id)
 
-        # Finalize cost tracking for this session
+        # Finalize cost tracking for this session (works for both modes)
         try:
             from services.CostTracking.cost_tracker import CostTracker
             cost_tracker = CostTracker(session_id, user_id)
@@ -513,32 +534,34 @@ async def end_session(http_request: Request, request: Optional[EndSessionRequest
         except Exception as cost_error:
             logger.error(f"[COST_TRACKING] Failed to finalize costs: {cost_error}", exc_info=True)
 
-        # Pre-load next session questions in background (non-blocking)
-        try:
-            auth_header = http_request.headers.get("Authorization", "")
-            if not auth_header:
-                auth_header = http_request.headers.get("authorization", "")
+        # CONDITIONAL: Pre-load next session questions only in normal mode
+        if not session_assessment_mode:
+            try:
+                auth_header = http_request.headers.get("Authorization", "")
+                if not auth_header:
+                    auth_header = http_request.headers.get("authorization", "")
 
-            token = ""
-            if auth_header.startswith("Bearer "):
-                token = auth_header.replace("Bearer ", "", 1)
-            elif auth_header.startswith("bearer "):
-                token = auth_header.replace("bearer ", "", 1)
+                token = ""
+                if auth_header.startswith("Bearer "):
+                    token = auth_header.replace("Bearer ", "", 1)
+                elif auth_header.startswith("bearer "):
+                    token = auth_header.replace("bearer ", "", 1)
 
-            if token and len(token) > 0:
-                preload_thread = threading.Thread(
-                    target=_preload_questions_background,
-                    args=(user_id, token),
-                    daemon=True
-                )
-                preload_thread.start()
-        except Exception as e:
-            logger.error(f"[PRELOAD] Failed to start pre-loading thread: {e}")
+                if token and len(token) > 0:
+                    preload_thread = threading.Thread(
+                        target=_preload_questions_background,
+                        args=(user_id, token),
+                        daemon=True
+                    )
+                    preload_thread.start()
+            except Exception as e:
+                logger.error(f"[PRELOAD] Failed to start pre-loading thread: {e}")
 
-        
-        # Return closing message directly (also sent via SSE)
+        logger.info(f"[SESSION_END] ✅ [{mode_str}] Session {session_id[:8]}... ended successfully")
+
+        # Return closing message directly (also sent via SSE) - empty in assessment mode
         return PromptResponse(
-            prompt=closing or result["prompt"],  # Use memory-aware closing or fallback
+            prompt=closing or result["prompt"],  # Use memory-aware closing or fallback (empty in assessment)
             session_info=result["session_info"]
         )
     except Exception as e:

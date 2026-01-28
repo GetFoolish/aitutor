@@ -183,7 +183,7 @@ const AssessmentFlow: React.FC = () => {
     <div className="auth-container">
       <BackgroundShapes />
 
-      <Header 
+      <Header
         sidebarOpen={sidebarOpen}
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
       />
@@ -194,131 +194,131 @@ const AssessmentFlow: React.FC = () => {
         </div>
       )}
 
-      {completed && (
-        <TutorProvider assessmentMode={true}>
-          <AssessmentResults
-            score={score}
-            total={total}
-            subject={subject}
-            onContinue={() => history.replace('/app')}
-          />
-        </TutorProvider>
-      )}
-
       {error && (
         <div style={{ padding: 40, color: 'red' }}>{error}</div>
       )}
 
-      {!loading && !completed && !error && (
-        <div style={{ position: 'relative', minHeight: '100vh', paddingTop: '60px' }}>
-          {/* Assessment Mode Banner */}
-          <div style={{
-            position: 'sticky',
-            top: '48px',
-            zIndex: 30,
-            width: '100%',
-            marginBottom: '24px'
-          }}>
-            <div style={{
-              border: '5px solid #000000',
-              backgroundColor: '#FF6B6B',
-              padding: '12px 24px',
-              boxShadow: '0 4px 0px 0px #000000',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '12px',
-              margin: '0 20px'
-            }}>
-              <div style={{
-                width: '12px',
-                height: '12px',
-                backgroundColor: '#FFFFFF',
-                border: '2px solid #000000',
-                borderRadius: '50%',
-                animation: 'pulse-dot 1.5s ease-in-out infinite'
-              }}></div>
-              <span style={{
-                fontSize: '16px',
-                fontWeight: 900,
-                color: '#FFFFFF',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-                fontFamily: 'system-ui, -apple-system, sans-serif'
-              }}>
-                ASSESSMENT MODE
-              </span>
-              <div style={{
-                width: '12px',
-                height: '12px',
-                backgroundColor: '#FFFFFF',
-                border: '2px solid #000000',
-                borderRadius: '50%',
-                animation: 'pulse-dot 1.5s ease-in-out infinite'
-              }}></div>
-            </div>
-          </div>
+      {!loading && !error && (
+        <TutorProvider assessmentMode={true}>
+          {completed && (
+            <AssessmentResults
+              score={score}
+              total={total}
+              subject={subject}
+              onContinue={() => history.replace('/app')}
+            />
+          )}
 
-          <div style={{ padding: '0 20px 40px', maxWidth: 900, margin: '0 auto' }}>
-            {submitting && (
+          {!completed && (
+            <div style={{ position: 'relative', minHeight: '100vh', paddingTop: '60px' }}>
+              {/* Assessment Mode Banner */}
               <div style={{
-                textAlign: 'center',
-                padding: '20px',
-                border: '5px solid #000000',
-                backgroundColor: '#FFD93D',
-                marginBottom: '24px',
-                boxShadow: '3px 3px 0 #000000'
+                position: 'sticky',
+                top: '48px',
+                zIndex: 30,
+                width: '100%',
+                marginBottom: '24px'
               }}>
-                <span style={{
-                  fontSize: '18px',
-                  fontWeight: 700,
-                  color: '#000000',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em'
+                <div style={{
+                  border: '5px solid #000000',
+                  backgroundColor: '#FF6B6B',
+                  padding: '12px 24px',
+                  boxShadow: '0 4px 0px 0px #000000',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '12px',
+                  margin: '0 20px'
                 }}>
-                  Submitting Assessment...
-                </span>
+                  <div style={{
+                    width: '12px',
+                    height: '12px',
+                    backgroundColor: '#FFFFFF',
+                    border: '2px solid #000000',
+                    borderRadius: '50%',
+                    animation: 'pulse-dot 1.5s ease-in-out infinite'
+                  }}></div>
+                  <span style={{
+                    fontSize: '16px',
+                    fontWeight: 900,
+                    color: '#FFFFFF',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    fontFamily: 'system-ui, -apple-system, sans-serif'
+                  }}>
+                    ASSESSMENT MODE
+                  </span>
+                  <div style={{
+                    width: '12px',
+                    height: '12px',
+                    backgroundColor: '#FFFFFF',
+                    border: '2px solid #000000',
+                    borderRadius: '50%',
+                    animation: 'pulse-dot 1.5s ease-in-out infinite'
+                  }}></div>
+                </div>
               </div>
-            )}
 
-            {questions[currentIndex] && (
-              <AssessmentQuestion
-                question={questions[currentIndex]}
-                questionNumber={currentIndex + 1}
-                totalQuestions={questions.length}
-                onAnswer={handleAnswer}
-              />
-            )}
-          </div>
+              <div style={{ padding: '0 20px 40px', maxWidth: 900, margin: '0 auto' }}>
+                {submitting && (
+                  <div style={{
+                    textAlign: 'center',
+                    padding: '20px',
+                    border: '5px solid #000000',
+                    backgroundColor: '#FFD93D',
+                    marginBottom: '24px',
+                    boxShadow: '3px 3px 0 #000000'
+                  }}>
+                    <span style={{
+                      fontSize: '18px',
+                      fontWeight: 700,
+                      color: '#000000',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em'
+                    }}>
+                      Submitting Assessment...
+                    </span>
+                  </div>
+                )}
 
-          <TutorProvider assessmentMode={true}>
-            {questions[currentIndex] && (
-              <QuestionSender question={questions[currentIndex]} />
-            )}
+                {questions[currentIndex] && (
+                  <AssessmentQuestion
+                    question={questions[currentIndex]}
+                    questionNumber={currentIndex + 1}
+                    totalQuestions={questions.length}
+                    onAnswer={handleAnswer}
+                  />
+                )}
+              </div>
 
-            <Suspense fallback={null}>
-              <FloatingControlPanel
-                renderCanvasRef={mediaMixerCanvasRef}
-                videoRef={videoRef}
-                supportsVideo
-                onVideoStreamChange={() => {}}
-                onMixerStreamChange={() => {}}
-                enableEditingSettings
-                onPaintClick={() => setIsScratchpadOpen(!isScratchpadOpen)}
-                isPaintActive={isScratchpadOpen}
-                cameraEnabled={cameraEnabled}
-                screenEnabled={screenEnabled}
-                onToggleCamera={setCameraEnabled}
-                onToggleScreen={setScreenEnabled}
-                mediaMixerCanvasRef={mediaMixerCanvasRef}
-                privacyMode={privacyMode}
-                onTogglePrivacy={setPrivacyMode}
-                processedEdgesRef={processedEdgesRef}
-                assessmentMode={true}
-              />
-            </Suspense>
-          </TutorProvider>
-        </div>
+              {questions[currentIndex] && (
+                <QuestionSender question={questions[currentIndex]} />
+              )}
+
+              <Suspense fallback={null}>
+                <FloatingControlPanel
+                  renderCanvasRef={mediaMixerCanvasRef}
+                  videoRef={videoRef}
+                  supportsVideo
+                  onVideoStreamChange={() => {}}
+                  onMixerStreamChange={() => {}}
+                  enableEditingSettings
+                  onPaintClick={() => setIsScratchpadOpen(!isScratchpadOpen)}
+                  isPaintActive={isScratchpadOpen}
+                  cameraEnabled={cameraEnabled}
+                  screenEnabled={screenEnabled}
+                  onToggleCamera={setCameraEnabled}
+                  onToggleScreen={setScreenEnabled}
+                  mediaMixerCanvasRef={mediaMixerCanvasRef}
+                  privacyMode={privacyMode}
+                  onTogglePrivacy={setPrivacyMode}
+                  processedEdgesRef={processedEdgesRef}
+                  assessmentMode={true}
+                />
+              </Suspense>
+            </div>
+          )}
+        </TutorProvider>
       )}
       <style>{`
         @keyframes pulse-dot {
