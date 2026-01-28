@@ -28,7 +28,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../ui/alert-dialog";
-import { homeworkService } from "../../services/homework-service";
 
 function extractTranscriptFromContent(content: LiveServerContent): string | null {
   const parts = content.modelTurn?.parts || [];
@@ -326,28 +325,6 @@ function FloatingControlPanel({
       client.off('interrupted', onInterrupted);
     };
   }, [client, connected]);
-
-  // Send homework to tutor when connected
-  useEffect(() => {
-    let cancelled = false;
-    const sendHomeworkToTutor = async () => {
-      if (!connected) return;
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      if (cancelled) return;
-      try {
-        const response = await homeworkService.listHomework();
-        if (cancelled || !response.homework_items?.length) return;
-        const latest = response.homework_items[0];
-        const details = await homeworkService.getHomework(latest.homework_id);
-        if (cancelled || !details.extracted_text) return;
-        await client.injectHomeworkContext(details.extracted_text, details.filename);
-      } catch (err) {
-        console.error('[FloatingControlPanel] Error sending homework:', err);
-      }
-    };
-    sendHomeworkToTutor();
-    return () => { cancelled = true; };
-  }, [connected, client]);
 
   useEffect(() => {
     const onContent = (content: any) => {
