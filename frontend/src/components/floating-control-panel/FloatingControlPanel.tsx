@@ -28,7 +28,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../ui/alert-dialog";
-import { HomeworkPanel } from "../homework-panel/HomeworkPanel";
 import { homeworkService } from "../../services/homework-service";
 
 function extractTranscriptFromContent(content: LiveServerContent): string | null {
@@ -113,8 +112,6 @@ function FloatingControlPanel({
   const [activeVideoStream] = useState<MediaStream | null>(null);
   const [sharedMediaOpen, setSharedMediaOpen] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
-  const [homeworkOpen, setHomeworkOpen] = useState(false);
-  const [isHomeworkAnimatingOut, setIsHomeworkAnimatingOut] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [sessionTime, setSessionTime] = useState(0);
@@ -330,6 +327,28 @@ function FloatingControlPanel({
     };
   }, [client, connected]);
 
+  // Send homework to tutor when connected
+  useEffect(() => {
+    let cancelled = false;
+    const sendHomeworkToTutor = async () => {
+      if (!connected) return;
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      if (cancelled) return;
+      try {
+        const response = await homeworkService.listHomework();
+        if (cancelled || !response.homework_items?.length) return;
+        const latest = response.homework_items[0];
+        const details = await homeworkService.getHomework(latest.homework_id);
+        if (cancelled || !details.extracted_text) return;
+        await client.injectHomeworkContext(details.extracted_text, details.filename);
+      } catch (err) {
+        console.error('[FloatingControlPanel] Error sending homework:', err);
+      }
+    };
+    sendHomeworkToTutor();
+    return () => { cancelled = true; };
+  }, [connected, client]);
+
   useEffect(() => {
     const onContent = (content: any) => {
       if (!connected) return;
@@ -346,65 +365,6 @@ function FloatingControlPanel({
       client.off('content', onContent);
     };
   }, [client, connected]);
-
-  // Send homework to tutor when connected (works even when homework panel is closed)
-  useEffect(() => {
-    let cancelled = false;
-
-    const sendHomeworkToTutor = async () => {
-      if (!connected) return;
-
-      console.log('[FloatingControlPanel] Tutor connected, checking for homework to send...');
-
-      // Wait for connection to stabilize
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      if (cancelled) return;
-
-      try {
-        // Fetch homework list
-        const response = await homeworkService.listHomework();
-
-        if (cancelled) return;
-
-        if (!response.homework_items || response.homework_items.length === 0) {
-          console.log('[FloatingControlPanel] No homework to send');
-          return;
-        }
-
-        const latestHomework = response.homework_items[0];
-        console.log('[FloatingControlPanel] Found homework to send:', latestHomework.filename);
-
-        // Get the full homework details with extracted text
-        const homeworkDetails = await homeworkService.getHomework(latestHomework.homework_id);
-
-        if (cancelled) return;
-
-        if (homeworkDetails.extracted_text) {
-          console.log('[FloatingControlPanel] Injecting homework into tutor context:', homeworkDetails.filename);
-          const success = await client.injectHomeworkContext(
-            homeworkDetails.extracted_text,
-            homeworkDetails.filename
-          );
-          if (success) {
-            console.log('[FloatingControlPanel] Successfully sent homework to tutor:', homeworkDetails.filename);
-          } else {
-            console.warn('[FloatingControlPanel] Failed to inject homework after retries');
-          }
-        } else {
-          console.log('[FloatingControlPanel] Homework has no extracted text:', latestHomework.filename);
-        }
-      } catch (err) {
-        console.error('[FloatingControlPanel] Error sending homework to tutor:', err);
-      }
-    };
-
-    sendHomeworkToTutor();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [connected, client]);
 
   useEffect(() => {
     const onInputTranscript = (data: TranscriptionData) => {
@@ -905,20 +865,6 @@ function FloatingControlPanel({
     }
   }, [sharedMediaOpen, updatePopoverPosition]);
 
-  const toggleHomework = useCallback(() => {
-    if (!homeworkOpen) {
-      updatePopoverPosition();
-      setHomeworkOpen(true);
-      setIsHomeworkAnimatingOut(false);
-    } else {
-      setIsHomeworkAnimatingOut(true);
-      setTimeout(() => {
-        setHomeworkOpen(false);
-        setIsHomeworkAnimatingOut(false);
-      }, 200);
-    }
-  }, [homeworkOpen, updatePopoverPosition]);
-
   const handleCollapse = useCallback(() => {
     setIsCollapsed(!isCollapsed);
   }, [isCollapsed]);
@@ -928,10 +874,10 @@ function FloatingControlPanel({
   }, [muted]);
 
   const handleDragEnd = useCallback(() => {
-    if (sharedMediaOpen || homeworkOpen) {
+    if (sharedMediaOpen) {
       updatePopoverPosition();
     }
-  }, [sharedMediaOpen, homeworkOpen, updatePopoverPosition]);
+  }, [sharedMediaOpen, updatePopoverPosition]);
 
   const panelClasses = useMemo(
     () =>
