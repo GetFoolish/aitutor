@@ -1992,6 +1992,115 @@ async def search_memories(http_request: Request, request: MemorySearchRequest):
         }
 
 
+# ============================================================================
+# Conversation Search API (Moltbot-inspired full-text search)
+# ============================================================================
+
+class ConversationSearchRequest(BaseModel):
+    query: str
+    limit: int = 20
+    session_id: Optional[str] = None
+
+
+@app.post("/conversation/search")
+async def search_conversations(http_request: Request, request: ConversationSearchRequest):
+    """
+    Search across all conversations for the current user.
+
+    Moltbot-style grep: find any message containing the query.
+
+    Returns matching turns with context.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        results = ta.session_manager.search_conversations(
+            student_id=user_id,
+            query=request.query,
+            limit=request.limit,
+            session_id=request.session_id
+        )
+
+        return {
+            "results": results,
+            "query": request.query,
+            "total": len(results)
+        }
+
+    except Exception as e:
+        logger.error(f"Error searching conversations: {e}", exc_info=True)
+        return {
+            "results": [],
+            "error": str(e)
+        }
+
+
+class CrossSessionRequest(BaseModel):
+    query: str
+    max_turns: int = 10
+
+
+@app.post("/conversation/cross-session")
+async def get_cross_session_context(http_request: Request, request: CrossSessionRequest):
+    """
+    Get relevant conversation snippets from past sessions.
+
+    Moltbot-style cross-session memory: find related past conversations
+    to provide context for current discussion.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        # Get current session to exclude
+        session = ta.get_active_session(user_id)
+        current_session_id = session["session_id"] if session else None
+
+        results = ta.session_manager.get_cross_session_context(
+            student_id=user_id,
+            query=request.query,
+            current_session_id=current_session_id,
+            max_turns=request.max_turns
+        )
+
+        return {
+            "results": results,
+            "query": request.query,
+            "total": len(results),
+            "excluded_session": current_session_id
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting cross-session context: {e}", exc_info=True)
+        return {
+            "results": [],
+            "error": str(e)
+        }
+
+
+@app.get("/conversation/stats")
+async def get_conversation_stats(http_request: Request):
+    """
+    Get conversation statistics for the current user.
+
+    Returns total sessions, turns, tokens, etc.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        stats = ta.session_manager.get_conversation_stats(user_id)
+
+        return {
+            "student_id": user_id,
+            **stats
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting conversation stats: {e}", exc_info=True)
+        return {
+            "error": str(e)
+        }
+
+
 # Include Cost Tracking API routes (Phase 4)
 from services.CostTracking.api import router as cost_router
 app.include_router(cost_router)

@@ -6,6 +6,11 @@ Integrates with the Cognitive Memory Pipeline for biography updates.
 v4 improvements integrated:
 - Config-driven architecture
 - Colored logging
+
+v1-memory additions (Moltbot-inspired):
+- ConversationStore integration for searchable history
+- Full-text search across all sessions
+- Token-aware context management
 """
 
 from datetime import datetime, timedelta
@@ -26,6 +31,21 @@ logger = get_logger(__name__)
 _biographer_agent = None
 _memory_extractor = None
 _student_manager = None
+_conversation_store = None
+
+
+def _get_conversation_store():
+    """Lazy load ConversationStore to avoid circular imports"""
+    global _conversation_store
+    if _conversation_store is None:
+        try:
+            from .Memory.conversation_store import get_conversation_store
+            _conversation_store = get_conversation_store
+            logger.info("[SESSION_MANAGER] ConversationStore loaded")
+        except ImportError as e:
+            logger.warning(f"[SESSION_MANAGER] ConversationStore not available: {e}")
+            _conversation_store = lambda x=None: None
+    return _conversation_store
 
 
 def _get_biographer():
@@ -171,6 +191,7 @@ class SessionManager:
         Add a conversation turn to the session log.
 
         NEW in v5: Full conversation tracking for biography updates.
+        NEW in v1-memory: Also stores in ConversationStore for search/compaction.
 
         Args:
             session_id: Session to add turn to
@@ -204,6 +225,27 @@ class SessionManager:
 
         self.sessions.update_one({"session_id": session_id}, update_ops)
         logger.debug(f"[SESSION_MANAGER] Added {speaker} turn to session {session_id}")
+
+        # NEW: Also store in ConversationStore for searchable history
+        try:
+            session = self.sessions.find_one({"session_id": session_id})
+            if session:
+                student_id = session.get("student_id", session.get("user_id"))
+                get_store = _get_conversation_store()
+                if get_store:
+                    store = get_store(student_id)
+                    if store and store.enabled:
+                        store.add_turn(
+                            session_id=session_id,
+                            student_id=student_id,
+                            speaker=speaker,
+                            text=text,
+                            emotion=emotion,
+                            metadata=metadata
+                        )
+                        logger.debug(f"[SESSION_MANAGER] Turn also stored in ConversationStore")
+        except Exception as e:
+            logger.warning(f"[SESSION_MANAGER] ConversationStore write failed (non-critical): {e}")
 
     def get_conversation(self, session_id: str) -> List[Dict[str, Any]]:
         """Get the full conversation log for a session"""
@@ -669,3 +711,121 @@ class SessionManager:
             "last_session_date": student.get("statistics", {}).get("last_session_date"),
             "total_questions": student.get("statistics", {}).get("total_questions_answered", 0),
         }
+
+    # =========================================================================
+    # NEW: Moltbot-inspired conversation search methods
+    # =========================================================================
+
+    def search_conversations(
+        self,
+        student_id: str,
+        query: str,
+        limit: int = 20,
+        session_id: str = None
+    ) -> List[Dict[str, Any]]:
+        """
+        Search across all conversations for a student.
+
+        Moltbot-style grep equivalent: find any message containing the query.
+
+        Args:
+            student_id: Student to search for
+            query: Search query
+            limit: Max results
+            session_id: Optional - filter to specific session
+
+        Returns:
+            List of matching turns with context
+        """
+        try:
+            get_store = _get_conversation_store()
+            if not get_store:
+                logger.warning("[SESSION_MANAGER] ConversationStore not available for search")
+                return []
+
+            store = get_store(student_id)
+            if not store or not store.enabled:
+                return []
+
+            return store.search_conversations(
+                query=query,
+                student_id=student_id,
+                session_id=session_id,
+                limit=limit
+            )
+        except Exception as e:
+            logger.error(f"[SESSION_MANAGER] Conversation search failed: {e}")
+            return []
+
+    def get_cross_session_context(
+        self,
+        student_id: str,
+        query: str,
+        current_session_id: str = None,
+        max_turns: int = 10
+    ) -> List[Dict[str, Any]]:
+        """
+        Retrieve relevant conversation snippets from past sessions.
+
+        Moltbot-style cross-session memory: find related past conversations.
+
+        Args:
+            student_id: Student ID
+            query: Current context/question
+            current_session_id: Exclude this session
+            max_turns: Max turns to return
+
+        Returns:
+            List of relevant turns from past sessions
+        """
+        try:
+            get_store = _get_conversation_store()
+            if not get_store:
+                return []
+
+            store = get_store(student_id)
+            if not store or not store.enabled:
+                return []
+
+            turns = store.get_cross_session_context(
+                student_id=student_id,
+                query=query,
+                current_session_id=current_session_id,
+                max_turns=max_turns
+            )
+
+            # Convert ConversationTurn objects to dicts
+            return [
+                {
+                    "session_id": t.session_id,
+                    "speaker": t.speaker,
+                    "text": t.text,
+                    "timestamp": t.timestamp.isoformat() if hasattr(t.timestamp, 'isoformat') else str(t.timestamp),
+                    "turn_number": t.turn_number,
+                }
+                for t in turns
+            ]
+        except Exception as e:
+            logger.error(f"[SESSION_MANAGER] Cross-session retrieval failed: {e}")
+            return []
+
+    def get_conversation_stats(self, student_id: str) -> Dict[str, Any]:
+        """
+        Get conversation statistics for a student.
+
+        Returns:
+            Dict with total sessions, turns, tokens, etc.
+        """
+        try:
+            get_store = _get_conversation_store()
+            if not get_store:
+                return {}
+
+            store = get_store(student_id)
+            if not store or not store.enabled:
+                return {}
+
+            return store.get_student_stats(student_id)
+        except Exception as e:
+            logger.error(f"[SESSION_MANAGER] Stats retrieval failed: {e}")
+            return {}
