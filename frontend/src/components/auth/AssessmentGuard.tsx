@@ -147,11 +147,12 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
   }
 
   // If assessment not completed, redirect to assessment
-  if (!assessmentStatus.completed) {
-    return <Redirect to={`/app/assessment/${subject}`} />;
-  }
+  // TEMPORARILY DISABLED FOR TESTING - uncomment to re-enable
+  // if (!assessmentStatus.completed) {
+  //   return <Redirect to={`/app/assessment/${subject}`} />;
+  // }
 
-  // Assessment completed, allow access to app
+  // Assessment completed (or skipped for testing), allow access to app
   return <>{children}</>;
 };
 

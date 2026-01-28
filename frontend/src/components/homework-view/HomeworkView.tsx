@@ -511,7 +511,6 @@ export function HomeworkView({ onClose, onQuestionsExtracted, onQuestionIndexCha
 
       // Refresh the list
       await fetchHomeworkList()
-      setShowAddUpload(false)
     } catch (err) {
       console.error('[HomeworkView] Delete failed:', err)
     }
@@ -524,14 +523,18 @@ export function HomeworkView({ onClose, onQuestionsExtracted, onQuestionIndexCha
     return <div className="h-full" />
   }
 
-  // Parse the question to extract numbers and operator for colored display
+  // Parse the question to extract numbers and operator
   const parseQuestion = (text: string) => {
     // Match patterns like "3+4=", "9 + 6 =", etc.
     const match = text.match(/(\d+)\s*([+\-×÷xX*\/])\s*(\d+)\s*=?/)
     if (match) {
+      // Normalize operators for display
+      let operator = match[2]
+      if (operator === '*' || operator.toLowerCase() === 'x') operator = '×'
+      if (operator === '/') operator = '÷'
       return {
         num1: match[1],
-        operator: match[2].replace(/[xX*]/g, '+').replace(/\//g, '÷').replace(/-/g, '-'),
+        operator: operator,
         num2: match[3]
       }
     }
@@ -586,86 +589,90 @@ export function HomeworkView({ onClose, onQuestionsExtracted, onQuestionIndexCha
         <CardContent className="px-4 md:px-6 py-4 md:py-6 bg-[#FFFDF5] dark:bg-[#000000]">
           <div className="relative w-full max-w-4xl mx-auto">
             {currentQuestion ? (
-              <div className="py-4">
-                {/* Instruction */}
-                <div className="text-lg md:text-xl font-bold text-black dark:text-white mb-6">
-                  Add.
-                </div>
-
-                {/* The Equation with inline input */}
-                <div className="flex items-center gap-3 md:gap-4 flex-wrap">
-                  {(() => {
-                    const parsed = parseQuestion(currentQuestion.text)
-                    if (parsed) {
+              <div className="space-y-4 md:space-y-6">
+                {/* Question content container - matches homepage exactly */}
+                <div id="question-content-container" className="border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white p-4 md:p-5 lg:p-6 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] overflow-x-auto">
+                  {/* The Equation with inline input */}
+                  <div className="flex items-center gap-3 md:gap-4 flex-wrap justify-start py-4 pl-4">
+                    {(() => {
+                      const parsed = parseQuestion(currentQuestion.text)
+                      if (parsed) {
+                        return (
+                          <>
+                            <span className="text-2xl md:text-3xl lg:text-4xl font-medium text-black dark:text-white">
+                              {parsed.num1}
+                            </span>
+                            <span className="text-2xl md:text-3xl lg:text-4xl font-medium text-black dark:text-white">
+                              {parsed.operator}
+                            </span>
+                            <span className="text-2xl md:text-3xl lg:text-4xl font-medium text-black dark:text-white">
+                              {parsed.num2}
+                            </span>
+                            <span className="text-2xl md:text-3xl lg:text-4xl font-medium text-black dark:text-white">
+                              =
+                            </span>
+                            {/* Inline answer input */}
+                            {showingFeedback ? (
+                              <div className={cn(
+                                "min-w-[60px] md:min-w-[80px] h-[40px] md:h-[50px] border-[2px] md:border-[3px] flex items-center justify-center text-xl md:text-2xl lg:text-3xl font-medium",
+                                feedback === 'correct'
+                                  ? "border-black dark:border-white bg-[#ADFF2F] text-black"
+                                  : "border-black dark:border-white bg-[#FF006E] text-white"
+                              )}>
+                                {userAnswer}
+                              </div>
+                            ) : (
+                              <input
+                                ref={inputRef}
+                                type="text"
+                                value={userAnswer}
+                                onChange={(e) => setUserAnswer(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                className="w-[60px] md:w-[80px] h-[40px] md:h-[50px] text-xl md:text-2xl lg:text-3xl font-medium text-center border-[2px] md:border-[3px] border-black dark:border-white focus:outline-none focus:ring-2 focus:ring-[#C4B5FD] bg-white dark:bg-neutral-900 text-black dark:text-white"
+                              />
+                            )}
+                          </>
+                        )
+                      }
+                      // Fallback for non-math questions
                       return (
-                        <>
-                          <span className="text-5xl md:text-6xl lg:text-7xl font-light text-[#4A90D9]">
-                            {parsed.num1}
-                          </span>
-                          <span className="text-5xl md:text-6xl lg:text-7xl font-light text-black dark:text-white">
-                            {parsed.operator}
-                          </span>
-                          <span className="text-5xl md:text-6xl lg:text-7xl font-light text-[#E91E63]">
-                            {parsed.num2}
-                          </span>
-                          <span className="text-5xl md:text-6xl lg:text-7xl font-light text-black dark:text-white">
-                            =
-                          </span>
-                          {/* Inline answer input */}
-                          {showingFeedback ? (
-                            <div className={cn(
-                              "min-w-[100px] md:min-w-[120px] h-[60px] md:h-[80px] border-[3px] rounded-lg flex items-center justify-center text-4xl md:text-5xl font-light",
-                              feedback === 'correct'
-                                ? "border-green-500 bg-green-100 text-green-600"
-                                : "border-[#FF6B6B] bg-red-100 text-[#FF6B6B]"
-                            )}>
-                              {userAnswer}
-                            </div>
-                          ) : (
-                            <input
-                              ref={inputRef}
-                              type="text"
-                              value={userAnswer}
-                              onChange={(e) => setUserAnswer(e.target.value)}
-                              onKeyDown={handleKeyDown}
-                              className="w-[100px] md:w-[120px] h-[60px] md:h-[80px] text-4xl md:text-5xl font-light text-center border-[3px] border-black dark:border-white rounded-lg focus:outline-none focus:border-[#4A90D9] bg-white dark:bg-[#1a1a1a]"
-                            />
-                          )}
-                        </>
+                        <span className="text-lg md:text-xl lg:text-2xl font-medium text-black dark:text-white">
+                          {currentQuestion.text}
+                        </span>
                       )
-                    }
-                    // Fallback for non-math questions
-                    return (
-                      <span className="text-3xl md:text-4xl font-bold text-black dark:text-white">
-                        {currentQuestion.text}
-                      </span>
-                    )
-                  })()}
+                    })()}
+                  </div>
                 </div>
 
-                {/* Feedback message */}
+                {/* Neo-Brutalist feedback - matches homepage exactly */}
                 {showingFeedback && (
-                  <div className={cn(
-                    "mt-6 flex items-center gap-3 text-xl font-bold",
-                    feedback === 'correct' ? "text-green-600" : "text-[#FF6B6B]"
-                  )}>
-                    {feedback === 'correct' ? (
-                      <>
-                        <Check className="w-6 h-6" />
-                        <span>Correct!</span>
-                      </>
-                    ) : (
-                      <>
-                        <X className="w-6 h-6" />
-                        <span>Not quite. Try again!</span>
-                      </>
-                    )}
+                  <div className="fixed top-[60px] lg:top-[64px] left-1/2 transform -translate-x-1/2 z-[200] animate-in slide-in-from-top-4 duration-300">
+                    <div className={cn(
+                      "flex items-center gap-2 md:gap-3 px-5 md:px-6 py-3 md:py-4 border-[3px] md:border-[4px] border-black dark:border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] md:shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)]",
+                      feedback === 'correct' ? "bg-[#ADFF2F]" : "bg-[#FF006E]"
+                    )}>
+                      {feedback === 'correct' ? (
+                        <div className="p-1.5 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-900">
+                          <Check className="w-5 h-5 md:w-6 md:h-6 text-black dark:text-white flex-shrink-0 font-bold" />
+                        </div>
+                      ) : (
+                        <div className="p-1.5 border-[2px] md:border-[3px] border-black dark:border-white bg-white">
+                          <X className="w-5 h-5 md:w-6 md:h-6 text-black flex-shrink-0 font-bold" />
+                        </div>
+                      )}
+                      <span className={cn(
+                        "text-base md:text-lg font-black uppercase tracking-tight",
+                        feedback === 'correct' ? "text-black" : "text-white"
+                      )}>
+                        {feedback === 'correct' ? "🎯 Correct!" : "📚 Not quite!"}
+                      </span>
+                    </div>
                   </div>
                 )}
 
-                {/* Hint Display for Homework */}
+                {/* Hint Display for Homework - matches homepage HintDisplay style */}
                 {showHints && currentQuestion && (
-                  <div className="mt-4 md:mt-6 border-[3px] md:border-[4px] border-black dark:border-white bg-[#FFE500] dark:bg-[#FFD93D] shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+                  <div className="border-[3px] md:border-[4px] border-black dark:border-white bg-[#FFE500] dark:bg-[#FFD93D] shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]">
                     <div className="p-4 md:p-5">
                       <div className="flex items-center gap-2 md:gap-3 mb-3 pb-2 border-b-[2px] border-black">
                         <div className="p-1.5 border-[2px] border-black bg-[#FFFDF5]">
@@ -687,7 +694,14 @@ export function HomeworkView({ onClose, onQuestionsExtracted, onQuestionIndexCha
                 )}
               </div>
             ) : (
-              <div className="text-gray-400 text-lg py-8 text-center">Loading questions...</div>
+              <div className="flex h-full items-center justify-center">
+                <div className="text-center space-y-2 md:space-y-3 border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 p-6 md:p-8 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]">
+                  <div className="text-3xl md:text-4xl mb-1 md:mb-2">📝</div>
+                  <p className="text-xs md:text-sm font-black uppercase text-black dark:text-white tracking-wider">
+                    Loading questions...
+                  </p>
+                </div>
+              </div>
             )}
           </div>
         </CardContent>
@@ -696,7 +710,7 @@ export function HomeworkView({ onClose, onQuestionsExtracted, onQuestionIndexCha
           {/* HINT button - uses HintContext */}
           <HintButton inline={true} />
 
-          {/* Right side buttons */}
+          {/* Right side buttons - matches homepage exactly */}
           <div className="flex gap-2 md:gap-3">
             {showingFeedback && feedback === 'incorrect' && (
               <Button
@@ -707,7 +721,7 @@ export function HomeworkView({ onClose, onQuestionsExtracted, onQuestionIndexCha
                   setShowingFeedback(false)
                   setUserAnswer('')
                 }}
-                className="border-[2px] md:border-[3px] border-black bg-[#FFD93D] hover:bg-[#FFE566] text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] transition-all"
+                className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-800 hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
               >
                 Try Again
               </Button>
@@ -718,7 +732,7 @@ export function HomeworkView({ onClose, onQuestionsExtracted, onQuestionIndexCha
                 size="sm"
                 onClick={handleSubmitAnswer}
                 disabled={!userAnswer.trim()}
-                className="border-[2px] md:border-[3px] border-black bg-[#4ECDC4] hover:bg-[#45B7AA] text-white font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] transition-all disabled:opacity-50"
+                className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-[#C4B5FD] hover:bg-[#C4B5FD] text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:hover:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
               >
                 Submit
               </Button>
@@ -729,7 +743,7 @@ export function HomeworkView({ onClose, onQuestionsExtracted, onQuestionIndexCha
               size="sm"
               onClick={() => setCurrentQuestionIndex(Math.min(extractedQuestions.length - 1, currentQuestionIndex + 1))}
               disabled={currentQuestionIndex === extractedQuestions.length - 1}
-              className="border-[2px] md:border-[3px] border-black bg-[#FFD93D] hover:bg-[#FFE566] text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] transition-all disabled:opacity-50"
+              className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-800 hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
             >
               Next →
             </Button>

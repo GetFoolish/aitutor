@@ -214,10 +214,15 @@ IMPORTANT:
 
                 prompt = """Analyze this homework/worksheet image and extract ALL math problems with their EXACT visual positions.
 
-CRITICAL RULES:
-1. Read EXACTLY what is printed on the page - do NOT guess or complete partial equations
-2. If you see "4 =" then output "4 =" - do NOT assume it should be "3+4="
-3. The equation text MUST match EXACTLY what appears at the bounding box location
+WORKSHEET TYPES:
+1. NUMBER-BASED: Problems like "3 + 4 =" with printed digits
+2. PICTURE-BASED (Count & Add): Problems with pictures/icons (fruits, animals, shapes) that must be COUNTED
+
+FOR PICTURE-BASED WORKSHEETS:
+- COUNT the pictures on each side of the + or - sign
+- Convert picture counts to numbers
+- Example: 🍎🍎🍎 + 🍎🍎 = ___ becomes "3 + 2 ="
+- Output the COUNTED numbers, not descriptions of pictures
 
 FIRST, output the layout:
 LAYOUT: [columns]x[rows] starting at [top_margin]% from top, bottom at [bottom_margin]%
@@ -231,16 +236,20 @@ BBOX coordinates are percentages of image dimensions:
 - RIGHT% = distance from left edge to right side of problem
 - BOTTOM% = distance from top edge to bottom of problem
 
-Example for 2-column worksheet:
+Example for picture-based worksheet:
+LAYOUT: 1x5 starting at 20% from top, bottom at 90%
+PROBLEM 1: 3 + 2 = | BBOX: 5%, 20%, 95%, 30%
+PROBLEM 2: 4 + 1 = | BBOX: 5%, 32%, 95%, 42%
+
+Example for number-based worksheet:
 LAYOUT: 2x6 starting at 24% from top, bottom at 95%
-PROBLEM 1: 84+2= | BBOX: 5%, 24%, 48%, 32%
-PROBLEM 2: 30+4= | BBOX: 52%, 24%, 95%, 32%
+PROBLEM 1: 84 + 2 = | BBOX: 5%, 24%, 48%, 32%
+PROBLEM 2: 30 + 4 = | BBOX: 52%, 24%, 95%, 32%
 
 IMPORTANT:
-- Read problems in order: left column first (top to bottom), then right column (top to bottom)
-- OR if numbered, follow the numbers on the worksheet
-- Transcribe EXACTLY what is printed - blanks, boxes, partial equations
-- If format is "__ + __ = __" with some numbers filled, write exactly that
+- For pictures: COUNT them and output as numbers (e.g., 3 apples + 2 apples = "3 + 2 =")
+- Read problems in order: top to bottom, left to right
+- Include the = sign in each equation
 - Be thorough and don't miss any problems"""
 
                 response = model.generate_content([
