@@ -519,8 +519,15 @@ export function HomeworkView({ onClose, onQuestionsExtracted, onQuestionIndexCha
 
   const currentQuestion = extractedQuestions[currentQuestionIndex]
 
-  // No homework uploaded - show empty state (upload via sidebar)
+  // No homework uploaded - show loading or empty state
   if (!currentHomework) {
+    if (isLoading) {
+      return (
+        <div className="h-full flex items-center justify-center">
+          <div className="text-xl font-bold">Loading homework...</div>
+        </div>
+      )
+    }
     return <div className="h-full" />
   }
 

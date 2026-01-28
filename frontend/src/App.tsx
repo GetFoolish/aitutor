@@ -274,12 +274,19 @@ function App() {
                       currentHomeworkQuestionIndex={currentHomeworkQuestionIndex}
                       onHomeworkQuestionClick={setCurrentHomeworkQuestionIndex}
                       onHomeworkUpload={async (file) => {
-                        // Upload the file first
+                        console.log('[App] onHomeworkUpload called, activating homework mode');
+                        // First enable homework mode BEFORE upload
+                        setHomeworkMode(true);
+                        // Upload the file
                         await homeworkService.uploadHomework(file);
+                        console.log('[App] Upload complete, incrementing refresh key');
                         // Increment refresh key to trigger HomeworkView refresh
                         setHomeworkRefreshKey(prev => prev + 1);
-                        // Then enter homework mode to display it
-                        setHomeworkMode(true);
+                        // Ensure homework mode stays active
+                        setTimeout(() => {
+                          console.log('[App] Ensuring homework mode is still active');
+                          setHomeworkMode(true);
+                        }, 100);
                       }}
                       onHomeworkDelete={async () => {
                         if (currentHomeworkId) {
