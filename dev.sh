@@ -158,7 +158,21 @@ cd ..
 echo ""
 
 # =================================
-# Step 5: Start Services
+# Step 5: Initialize Database
+# =================================
+print_info "Initializing database indexes..."
+cd services/DashSystem
+if python3 db_init.py; then
+    print_success "Database indexes created"
+else
+    print_warning "Database initialization had issues (may already exist)"
+fi
+cd ../..
+
+echo ""
+
+# =================================
+# Step 6: Start Services
 # =================================
 print_info "Starting services..."
 
@@ -209,6 +223,24 @@ start_service "homework-service" \
 start_service "frontend" \
     "cd frontend && npm run dev" \
     "${FRONTEND_PORT:-3000}"
+
+echo ""
+
+# =================================
+# Step 7: Health Check
+# =================================
+print_info "Running health checks..."
+sleep 3  # Give services time to initialize
+
+if [ -f "scripts/monitor-services.sh" ]; then
+    if bash scripts/monitor-services.sh; then
+        print_success "All services passed health checks"
+    else
+        print_warning "Some services are slow or unhealthy - check logs"
+    fi
+else
+    print_warning "Health monitor script not found, skipping checks"
+fi
 
 echo ""
 

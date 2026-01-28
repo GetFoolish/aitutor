@@ -50,8 +50,16 @@ class MongoDBManager:
             
             db_name = os.getenv('MONGODB_DB_NAME', 'ai_tutor')
             questions_db_name = os.getenv('MONGODB_QUESTIONS_DB_NAME', 'questions_db')
-            
-            self._client = MongoClient(mongo_uri)
+
+            # Create client with timeouts to prevent hanging queries
+            self._client = MongoClient(
+                mongo_uri,
+                serverSelectionTimeoutMS=5000,  # 5 second timeout for server selection
+                connectTimeoutMS=10000,         # 10 second timeout for initial connection
+                socketTimeoutMS=30000,          # 30 second timeout for socket operations
+                maxPoolSize=50,                  # Connection pool size
+                retryWrites=True
+            )
             self._db = self._client[db_name]
             self._questions_db = self._client[questions_db_name]
             
