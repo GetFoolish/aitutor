@@ -587,9 +587,15 @@ export function HomeworkView({ onClose, onQuestionsExtracted, onQuestionIndexCha
           <div className="relative w-full max-w-4xl mx-auto">
             {currentQuestion ? (
               <div className="py-4">
-                {/* Instruction */}
+                {/* Instruction - Dynamic based on question */}
                 <div className="text-lg md:text-xl font-bold text-black dark:text-white mb-6">
-                  Add.
+                  {currentQuestion.text.includes('count') || currentQuestion.text.includes('Count') ?
+                    'Count and Add.' :
+                    currentQuestion.text.includes('+') ? 'Add.' :
+                    currentQuestion.text.includes('-') ? 'Subtract.' :
+                    currentQuestion.text.includes('×') || currentQuestion.text.includes('*') || currentQuestion.text.toLowerCase().includes('x') ? 'Multiply.' :
+                    currentQuestion.text.includes('÷') || currentQuestion.text.includes('/') ? 'Divide.' :
+                    'Solve.'}
                 </div>
 
                 {/* The Equation with inline input */}
