@@ -172,6 +172,21 @@ class UploadResponse(BaseModel):
     uploaded_at: str
 
 
+class SkillDetection(BaseModel):
+    skill_name: str
+    skill_id: str
+    confidence: float
+    question_numbers: List[int]
+    description: str
+
+
+class AnalyzeResponse(BaseModel):
+    homework_id: str
+    skills: List[SkillDetection]
+    total_questions: int
+    analyzed_at: str
+
+
 class AssistRequest(BaseModel):
     homework_id: str
     question: str
@@ -341,6 +356,216 @@ async def upload_homework(
     except Exception as e:
         logger.error(f"[HOMEWORK] Error in upload_homework: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
+
+
+# ============================================================================
+# Homework Skill Analysis Endpoint
+# ============================================================================
+
+@app.post(
+    "/homework/{homework_id}/analyze",
+    response_model=AnalyzeResponse,
+    status_code=200,
+    tags=["Homework Upload"],
+    summary="Analyze homework skills",
+    description="""
+Analyze uploaded homework to identify math skills being practiced.
+
+**What it does:**
+- Extracts all questions from the homework
+- Identifies math skills (addition, counting, multiplication, etc.)
+- Maps questions to specific skills with confidence scores
+- Returns skill breakdown for grading panel
+
+**Use case:**
+After uploading homework, call this endpoint to populate the "Grading & Skills" panel
+with skills detected from the homework questions.
+
+**Rate limit:** 10 analyzes per minute
+    """,
+    responses={
+        200: {
+            "description": "Skills analyzed successfully",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "homework_id": "a1b2c3d4-5e6f-7890-abcd-ef1234567890",
+                        "skills": [
+                            {
+                                "skill_name": "Single Digit Addition",
+                                "skill_id": "xd61a2ef75a00d9db",
+                                "confidence": 0.95,
+                                "question_numbers": [1, 2, 3, 4],
+                                "description": "Adding two single-digit numbers"
+                            }
+                        ],
+                        "total_questions": 12,
+                        "analyzed_at": "2025-01-28T10:00:00"
+                    }
+                }
+            }
+        },
+        404: {"description": "Homework not found"},
+        429: {"description": "Rate limit exceeded"},
+        500: {"description": "Analysis error"}
+    }
+)
+async def analyze_homework_skills(
+    homework_id: str,
+    http_request: Request
+):
+    """
+    Analyze homework to detect math skills
+
+    Examines extracted text and questions to identify specific math skills
+    being practiced (e.g., addition, counting, fractions) and maps them
+    to the skill tracking system.
+
+    Args:
+        homework_id: ID of uploaded homework
+        http_request: HTTP request for auth
+
+    Returns:
+        AnalyzeResponse with detected skills and question mappings
+    """
+    user_id = get_current_user(http_request)
+
+    # Check rate limit
+    check_rate_limit(http_request, UPLOAD_RATE_LIMITER, user_id)
+
+    try:
+        # Get homework from database
+        homework = mongo_db.homework.find_one({
+            "homework_id": homework_id,
+            "user_id": user_id
+        })
+
+        if not homework:
+            raise HTTPException(status_code=404, detail="Homework not found")
+
+        extracted_text = homework.get("extracted_text", "")
+
+        if not extracted_text or extracted_text.startswith("["):
+            # No valid text extracted
+            logger.warning(f"[HOMEWORK] No valid text to analyze for {homework_id}")
+            return AnalyzeResponse(
+                homework_id=homework_id,
+                skills=[],
+                total_questions=0,
+                analyzed_at=datetime.now().isoformat()
+            )
+
+        # Use Gemini to analyze skills
+        import google.generativeai as genai
+        gemini_api_key = os.environ.get('GEMINI_API_KEY')
+
+        if not gemini_api_key:
+            logger.error("[HOMEWORK] GEMINI_API_KEY not set")
+            raise HTTPException(status_code=500, detail="AI service not configured")
+
+        genai.configure(api_key=gemini_api_key)
+        model = genai.GenerativeModel('gemini-2.0-flash')
+
+        prompt = f"""Analyze these homework questions and identify the math skills being practiced.
+
+HOMEWORK TEXT:
+{extracted_text}
+
+For each distinct skill, provide:
+1. Skill name (e.g., "Single Digit Addition", "Counting Objects")
+2. Question numbers that use this skill
+3. Confidence score (0.0-1.0)
+4. Brief description
+
+Output as JSON array:
+[
+  {{
+    "skill_name": "Single Digit Addition",
+    "question_numbers": [1, 2, 3],
+    "confidence": 0.95,
+    "description": "Adding two single-digit numbers"
+  }}
+]
+
+IMPORTANT: Only output the JSON array, nothing else."""
+
+        response = model.generate_content(prompt)
+        skills_text = response.text.strip()
+
+        # Parse JSON response
+        import json
+        import re
+
+        # Extract JSON from response (handle markdown code blocks)
+        json_match = re.search(r'```(?:json)?\s*(\[.*?\])\s*```', skills_text, re.DOTALL)
+        if json_match:
+            skills_text = json_match.group(1)
+        elif not skills_text.startswith('['):
+            # Try to find JSON array in text
+            json_match = re.search(r'\[.*\]', skills_text, re.DOTALL)
+            if json_match:
+                skills_text = json_match.group(0)
+
+        try:
+            skills_data = json.loads(skills_text)
+        except json.JSONDecodeError as e:
+            logger.error(f"[HOMEWORK] Failed to parse skills JSON: {e}\nResponse: {skills_text}")
+            skills_data = []
+
+        # Map to skill IDs (simple mapping for now)
+        skill_id_map = {
+            "single digit addition": "xd61a2ef75a00d9db",
+            "counting": "counting_basic",
+            "counting objects": "counting_objects",
+            "double digit addition": "double_digit_add",
+            "subtraction": "subtraction_basic",
+            "multiplication": "multiplication_basic",
+        }
+
+        skills = []
+        total_questions = 0
+
+        for skill_data in skills_data:
+            skill_name = skill_data.get("skill_name", "Unknown")
+            skill_key = skill_name.lower()
+            skill_id = skill_id_map.get(skill_key, f"skill_{skill_key.replace(' ', '_')}")
+
+            question_nums = skill_data.get("question_numbers", [])
+            total_questions = max(total_questions, max(question_nums) if question_nums else 0)
+
+            skills.append(SkillDetection(
+                skill_name=skill_name,
+                skill_id=skill_id,
+                confidence=skill_data.get("confidence", 0.8),
+                question_numbers=question_nums,
+                description=skill_data.get("description", "")
+            ))
+
+        # Update homework with analyzed skills
+        mongo_db.homework.update_one(
+            {"homework_id": homework_id},
+            {
+                "$set": {
+                    "analyzed_skills": [skill.dict() for skill in skills],
+                    "analyzed_at": datetime.now().isoformat()
+                }
+            }
+        )
+
+        logger.info(f"[HOMEWORK] Analyzed {len(skills)} skills from {homework_id}")
+
+        return AnalyzeResponse(
+            homework_id=homework_id,
+            skills=skills,
+            total_questions=total_questions,
+            analyzed_at=datetime.now().isoformat()
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[HOMEWORK] Error analyzing skills: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to analyze skills: {str(e)}")
 
 
 # ============================================================================

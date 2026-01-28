@@ -79,6 +79,21 @@ export interface DeleteResponse {
   message: string;
 }
 
+export interface SkillDetection {
+  skill_name: string;
+  skill_id: string;
+  confidence: number;
+  question_numbers: number[];
+  description: string;
+}
+
+export interface AnalyzeResponse {
+  homework_id: string;
+  skills: SkillDetection[];
+  total_questions: number;
+  analyzed_at: string;
+}
+
 // ============================================================================
 // Homework Service Class
 // ============================================================================
@@ -271,6 +286,49 @@ export class HomeworkService {
       }
 
       const data: AssistResponse = await response.json();
+      return data;
+    } catch (error) {
+      // Handle network errors
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error. Please check your internet connection and try again.');
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Analyze homework to detect math skills
+   *
+   * Examines extracted questions to identify specific math skills being practiced
+   * (e.g., addition, counting, fractions) and maps them to the skill tracking system.
+   *
+   * @param homeworkId - Homework ID
+   * @returns AnalyzeResponse with detected skills and question mappings
+   * @throws Error if homework not found or analysis fails
+   */
+  async analyzeHomeworkSkills(homeworkId: string): Promise<AnalyzeResponse> {
+    try {
+      const response = await apiUtils.post(`${HOMEWORK_SERVICE_URL}/homework/${homeworkId}/analyze`, {});
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Homework not found. It may have been deleted.');
+        }
+        if (response.status === 401 || response.status === 403) {
+          throw new Error('Authentication required. Please sign in and try again.');
+        }
+        if (response.status === 503) {
+          throw new Error('Service temporarily unavailable. Please try again in a few moments.');
+        }
+        if (response.status >= 500) {
+          throw new Error('Server error occurred. Please try again later.');
+        }
+
+        const errorData = await response.json().catch(() => ({ detail: 'Failed to analyze skills' }));
+        throw new Error(errorData.detail || `Request failed with status ${response.status}`);
+      }
+
+      const data: AnalyzeResponse = await response.json();
       return data;
     } catch (error) {
       // Handle network errors
