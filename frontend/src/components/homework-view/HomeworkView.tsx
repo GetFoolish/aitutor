@@ -243,14 +243,19 @@ export function HomeworkView({ onClose, onQuestionsExtracted, onQuestionIndexCha
   }, [currentHomework, onFileTypeChange])
 
   const fetchHomeworkList = async () => {
+    console.log('[HomeworkView] fetchHomeworkList called')
     setIsLoading(true)
     try {
       const response = await homeworkService.listHomework()
+      console.log('[HomeworkView] Fetched homework list:', response.homework_items.length, 'items')
       setHomeworkList(response.homework_items)
 
       // Auto-select the most recent homework
       if (response.homework_items.length > 0) {
+        console.log('[HomeworkView] Auto-selecting first homework:', response.homework_items[0].homework_id)
         setCurrentHomework(response.homework_items[0])
+      } else {
+        console.log('[HomeworkView] No homework items found')
       }
     } catch (err) {
       console.error('[HomeworkView] Failed to fetch homework list:', err)
@@ -260,11 +265,13 @@ export function HomeworkView({ onClose, onQuestionsExtracted, onQuestionIndexCha
   }
 
   const loadDocument = async (homework: HomeworkItem) => {
+    console.log('[HomeworkView] loadDocument called for:', homework.homework_id)
     try {
       // Load the THUMBNAIL for sidebar display (works with CSS % positioning)
       // For PDFs, this returns a rendered PNG; for images, returns the original
       // Always start with page 0
       loadedPageRef.current = 0
+      console.log('[HomeworkView] Fetching thumbnail for page 0...')
       const thumbnailBlob = await homeworkService.getThumbnailBlob(homework.homework_id, 0)
       const url = URL.createObjectURL(thumbnailBlob)
       setDocumentUrl(url)
@@ -519,8 +526,16 @@ export function HomeworkView({ onClose, onQuestionsExtracted, onQuestionIndexCha
 
   const currentQuestion = extractedQuestions[currentQuestionIndex]
 
+  console.log('[HomeworkView] Render state:', {
+    currentHomework: currentHomework?.homework_id,
+    extractedQuestions: extractedQuestions.length,
+    currentQuestionIndex,
+    isLoading
+  })
+
   // No homework uploaded - show loading or empty state
   if (!currentHomework) {
+    console.log('[HomeworkView] No currentHomework, isLoading:', isLoading)
     if (isLoading) {
       return (
         <div className="h-full flex items-center justify-center">
@@ -529,6 +544,16 @@ export function HomeworkView({ onClose, onQuestionsExtracted, onQuestionIndexCha
       )
     }
     return <div className="h-full" />
+  }
+
+  // Homework loaded but no questions extracted
+  if (extractedQuestions.length === 0) {
+    console.log('[HomeworkView] No questions extracted yet')
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="text-xl font-bold">Processing homework...</div>
+      </div>
+    )
   }
 
   // Parse the question to extract numbers and operator for colored display
