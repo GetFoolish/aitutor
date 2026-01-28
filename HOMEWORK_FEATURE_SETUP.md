@@ -20,15 +20,38 @@ pip install google-generativeai pymupdf pytesseract
 
 ### Environment Variables
 
-Ensure `.env` has:
+Create a `.env` file in the project root with:
 
-```
+```bash
+# Gemini API Key for OCR (required)
 GEMINI_API_KEY=your_gemini_api_key_here
+
+# MongoDB Atlas connection (required)
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/ai_tutor?retryWrites=true&w=majority
+MONGODB_DB_NAME=ai_tutor
+
+# Optional
+GEMINI_MODEL=models/gemini-2.5-flash-native-audio-preview-09-2025
+GEMINI_TEXT_MODEL=gemini-2.5-flash
 ```
 
-Get a key from: https://aistudio.google.com/apikey
+**Where to get keys:**
+- Gemini API Key: https://aistudio.google.com/apikey
+- MongoDB Atlas: https://cloud.mongodb.com (create free cluster)
 
 **Important**: The HomeworkAssistant service loads `.env` via `dotenv`. If you see OCR failures, verify the API key is valid and not expired.
+
+### Python Version
+
+**Requires Python 3.13** (Python 3.14 has compatibility issues with pydantic_core)
+
+```bash
+# Check your version
+python3 --version
+
+# If you have 3.14, use 3.13 explicitly
+python3.13 -m venv .venv
+```
 
 ## Architecture
 
