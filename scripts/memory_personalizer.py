@@ -7,20 +7,34 @@ Uses user memories to make questions personal and relatable.
 - If user has a dog named Buddy → "Buddy has 3 bones..."
 - If user struggles with fractions → extra gentle hints
 
-Integrates with v1-memory branch's Memory system.
+Integrates with v1-memory branch's Memory system (MemoryRetriever, MemoryStore).
 """
 
 import os
 import sys
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
+from pathlib import Path
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Add project paths
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+sys.path.insert(0, str(project_root / "services" / "TeachingAssistant"))
 
 from dotenv import load_dotenv
 load_dotenv()
 
 from pymongo import MongoClient
+
+# Try to import v1-memory components
+try:
+    from Memory.schema import Memory, MemoryType
+    from Memory.vector_store import MemoryStore, MemoryConfig
+    from Memory.retriever import MemoryRetriever
+    MEMORY_SYSTEM_AVAILABLE = True
+except ImportError:
+    MEMORY_SYSTEM_AVAILABLE = False
+    print("[memory_personalizer] v1-memory system not available, using MongoDB fallback")
 
 
 @dataclass
@@ -45,7 +59,11 @@ class PersonalizationContext:
     
 
 class MemoryPersonalizer:
-    """Retrieves and formats user memories for question personalization."""
+    """Retrieves and formats user memories for question personalization.
+    
+    Uses v1-memory system (MemoryStore/MemoryRetriever) when available,
+    falls back to direct MongoDB queries otherwise.
+    """
     
     def __init__(self, mongodb_uri: Optional[str] = None):
         self.uri = mongodb_uri or os.getenv("MONGODB_URI")
@@ -55,10 +73,49 @@ class MemoryPersonalizer:
         self.client = MongoClient(self.uri)
         self.db = self.client["ai_tutor"]
         
+        # Initialize v1-memory system if available
+        self.memory_store = None
+        self.memory_retriever = None
+        if MEMORY_SYSTEM_AVAILABLE:
+            try:
+                config = MemoryConfig(
+                    mongodb_uri=self.uri,
+                    collection_name="memory_vectors"
+                )
+                self.memory_store = MemoryStore(config)
+                self.memory_retriever = MemoryRetriever(self.memory_store)
+                print("[memory_personalizer] v1-memory system initialized")
+            except Exception as e:
+                print(f"[memory_personalizer] v1-memory init failed: {e}")
+        
     def get_user_memories(self, user_id: str, limit: int = 50) -> List[UserMemory]:
-        """Get all memories for a user."""
+        """Get all memories for a user.
+        
+        Uses v1-memory vector store when available for semantic retrieval,
+        falls back to MongoDB direct queries.
+        """
         memories = []
         
+        # Try v1-memory system first (semantic/vector retrieval)
+        if self.memory_store:
+            try:
+                # Get memories by type for comprehensive coverage
+                for mem_type in [MemoryType.PERSONAL, MemoryType.PREFERENCE, 
+                                MemoryType.ACADEMIC, MemoryType.EMOTIONAL]:
+                    results = self.memory_store.get_by_type(user_id, mem_type, limit=limit//4)
+                    for mem in results:
+                        memories.append(UserMemory(
+                            type=mem.type.value if hasattr(mem.type, 'value') else str(mem.type),
+                            text=mem.text,
+                            importance=mem.importance
+                        ))
+                if memories:
+                    print(f"[memory_personalizer] Retrieved {len(memories)} memories via v1-memory system")
+                    return memories
+            except Exception as e:
+                print(f"[memory_personalizer] v1-memory retrieval failed: {e}")
+        
+        # Fallback: Direct MongoDB queries
         # Try memories collection
         for doc in self.db.memories.find({"student_id": user_id}).limit(limit):
             memories.append(UserMemory(
@@ -74,7 +131,36 @@ class MemoryPersonalizer:
                 text=doc.get("content", doc.get("text", "")),
                 importance=doc.get("importance", 0.5)
             ))
-            
+        
+        print(f"[memory_personalizer] Retrieved {len(memories)} memories via MongoDB")
+        return memories
+    
+    def get_relevant_memories(self, user_id: str, topic: str, limit: int = 10) -> List[UserMemory]:
+        """Get memories relevant to a specific topic using semantic search.
+        
+        e.g., topic="addition" might retrieve "struggles with carrying numbers"
+        """
+        memories = []
+        
+        if self.memory_store:
+            try:
+                # Semantic search using v1-memory vector store
+                results = self.memory_store.search(
+                    user_id=user_id,
+                    query=topic,
+                    top_k=limit
+                )
+                for result in results:
+                    mem = result.get("memory") or result
+                    memories.append(UserMemory(
+                        type=getattr(mem, 'type', 'personal'),
+                        text=getattr(mem, 'text', str(mem)),
+                        importance=getattr(mem, 'importance', result.get("score", 0.5))
+                    ))
+                print(f"[memory_personalizer] Semantic search for '{topic}': {len(memories)} results")
+            except Exception as e:
+                print(f"[memory_personalizer] Semantic search failed: {e}")
+        
         return memories
     
     def build_personalization_context(self, user_id: str) -> PersonalizationContext:
@@ -188,35 +274,61 @@ example:
 def generate_personalized_question_prompt(
     user_id: str,
     base_prompt: str,
-    widget_type: str = None
+    widget_type: str = None,
+    topic: str = None,
+    grade_level: str = "K-2"
 ) -> str:
     """
     Generate a complete prompt for personalized question generation.
     
     Combines:
-    - User memories for personalization
+    - User memories for personalization (interests, pets, struggles)
+    - Topic-relevant memories (semantic search)
     - Tone guidelines (innocent drinks style)
     - Widget type examples from DB
+    
+    Args:
+        user_id: User to personalize for
+        base_prompt: The generation request
+        widget_type: Type of widget (radio, numeric-input, etc.)
+        topic: Math topic for relevant memory search (addition, fractions, etc.)
+        grade_level: K-2, 3-5, 6-8, 9-12
     """
+    # Import from same directory
+    scripts_dir = Path(__file__).parent
+    sys.path.insert(0, str(scripts_dir))
     from tone_guidelines import get_tone_prompt
     from example_retriever import ExampleRetriever
     
     personalizer = MemoryPersonalizer()
     
-    # Get user memories
+    # Get user memories (general)
     memory_prompt = personalizer.get_personalization_prompt(user_id)
     
-    # Get tone guidelines
-    tone_prompt = get_tone_prompt("K-2")  # or detect from user age
+    # Get topic-relevant memories if topic specified
+    topic_memories_prompt = ""
+    if topic:
+        relevant = personalizer.get_relevant_memories(user_id, topic, limit=5)
+        if relevant:
+            topic_memories_prompt = f"\nmemories specifically about {topic}:\n"
+            for mem in relevant:
+                topic_memories_prompt += f"  - {mem.text}\n"
+    
+    # Get tone guidelines (innocent drinks style)
+    tone_prompt = get_tone_prompt(grade_level)
     
     # Get widget examples if specified
     examples_prompt = ""
     if widget_type:
-        retriever = ExampleRetriever()
-        examples_prompt = retriever.get_examples_for_prompt(widget_type=widget_type, num_examples=2)
+        try:
+            retriever = ExampleRetriever()
+            examples_prompt = retriever.get_examples_for_prompt(widget_type=widget_type, num_examples=2)
+        except Exception as e:
+            print(f"[memory_personalizer] Example retrieval failed: {e}")
     
     full_prompt = f"""
 {memory_prompt}
+{topic_memories_prompt}
 
 {tone_prompt}
 
@@ -226,7 +338,11 @@ def generate_personalized_question_prompt(
 TASK:
 {base_prompt}
 
-Remember: make it personal, use their interests, keep it casual and friendly.
+remember: 
+- make it personal - use their interests, pets, family names
+- if they struggle with this topic, be extra gentle
+- keep the innocent drinks tone - casual, friendly, lowercase
+- like a nice friend who happens to know maths
 """
     
     return full_prompt
