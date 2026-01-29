@@ -9,91 +9,101 @@ for LLM-based question generation.
 # Tone examples by grade level
 TONE_GUIDELINES = {
     "K-2": {
-        "description": "Warm, playful, encouraging - like a friendly teacher",
+        "description": "innocent drinks style - chatty, humble, a bit cheeky, like your nice friend",
         "characteristics": [
-            "Use simple, short sentences",
-            "Add fun emojis or descriptions",
-            "Use 'you' and 'let's' to be inclusive",
-            "Celebrate small wins",
-            "Use relatable scenarios (toys, animals, snacks)",
+            "lowercase where possible, casual punctuation",
+            "short sentences. like this. easy peasy.",
+            "slightly self-aware and playful",
+            "no corporate speak, no trying too hard",
+            "gentle humour, never mean",
+            "talk like a real person, not a textbook",
         ],
         "example_rewrites": [
             {
                 "before": "Count the objects. How many are there?",
-                "after": "🎈 Look at all these colorful balloons! Can you count them with me? How many do you see?"
+                "after": "so there are some apples here. have a count. how many did you get?"
             },
             {
                 "before": "What is 3 + 2?",
-                "after": "You have 3 yummy cookies, and your friend gives you 2 more! 🍪 How many cookies do you have now?"
+                "after": "right then. you've got 3 apples. someone nice gives you 2 more. how many now? (we believe in you)"
             },
             {
                 "before": "Select the correct answer.",
-                "after": "You're doing great! Which answer looks right to you?"
+                "after": "pick the one you reckon is right. no pressure."
+            },
+            {
+                "before": "Calculate the sum of 5 and 7.",
+                "after": "5 plus 7. go on, you know this one."
+            },
+            {
+                "before": "Identify the shape.",
+                "after": "what shape is this then? take your time, it's not going anywhere."
             }
         ],
         "opening_phrases": [
-            "Let's have some fun with numbers!",
-            "You're doing amazing!",
-            "Here's a fun puzzle for you:",
-            "Can you help me figure this out?",
-            "Great job so far! Now try this:",
+            "here's a little question for you.",
+            "right, let's see.",
+            "okay, try this one.",
+            "here we go.",
+            "have a go at this.",
         ],
         "encouragement": [
-            "You've got this! 🌟",
-            "Take your time, no rush!",
-            "It's okay to try again!",
-            "You're getting better every day!",
+            "(no rush, we'll wait)",
+            "(you've got this)",
+            "(take your time)",
+            "(it's fine to guess)",
         ]
     },
     
     "3-5": {
-        "description": "Friendly, curious, building confidence",
+        "description": "innocent style - still chatty, a bit more substance, gentle wit",
         "characteristics": [
-            "Encourage problem-solving thinking",
-            "Use real-world scenarios",
-            "Build on what they know",
-            "Celebrate effort, not just correctness",
+            "conversational, like explaining to a friend",
+            "real scenarios but keep it simple",
+            "a tiny bit cheeky, never patronising",
+            "admit when things are tricky",
         ],
         "example_rewrites": [
             {
                 "before": "Calculate the area of the rectangle.",
-                "after": "Imagine you're designing a cool poster! 🎨 If your poster is 5 inches wide and 8 inches tall, how much space do you have to draw on?"
+                "after": "you've got a rectangle. it's 5 wide and 8 tall. how much space is that altogether? (multiply them, you'll be fine)"
             },
             {
                 "before": "Solve for x: 2x + 4 = 10",
-                "after": "Here's a mystery number puzzle! 🔍 If you double a secret number and add 4, you get 10. What's the secret number?"
+                "after": "there's a mystery number here. double it, add 4, and you get 10. what's the number? bit of a puzzle, this one."
             }
         ],
         "opening_phrases": [
-            "Here's a brain teaser for you!",
-            "Let's think like a detective:",
-            "Imagine this scenario:",
-            "You're getting really good at this!",
+            "alright, here's the thing.",
+            "let's figure this out.",
+            "okay this one's interesting.",
+            "have a think about this.",
         ]
     },
     
     "6-8": {
-        "description": "Respectful, challenging, real-world connections",
+        "description": "innocent style - more grown up, still friendly, no nonsense",
         "characteristics": [
-            "Connect to their interests (games, sports, tech)",
-            "Challenge them appropriately",
-            "Explain WHY it matters",
-            "Treat them as capable learners",
+            "straight talking but warm",
+            "acknowledge it can be hard",
+            "no fake enthusiasm",
+            "treat them like smart people",
         ],
         "example_rewrites": [
             {
                 "before": "Find the slope of the line passing through (2,3) and (5,9).",
-                "after": "In a video game, your character moves from position (2,3) to (5,9). How steep is the path they're taking? (That's the slope!)"
+                "after": "you've got two points: (2,3) and (5,9). what's the slope between them? (rise over run, remember)"
             }
         ]
     },
     
     "9-12": {
-        "description": "Mature, practical, career-connected",
+        "description": "innocent style - mature, honest, slightly dry wit",
         "characteristics": [
-            "Connect to real careers and applications",
-            "Respect their intelligence",
-            "Show relevance to their future",
+            "respect their intelligence",
+            "keep it real",
+            "okay to be a bit dry/witty",
+            "no dumbing down",
         ]
     }
 }
@@ -129,7 +139,7 @@ GOOD OPENING PHRASES:
 ENCOURAGEMENT TO ADD:
 {chr(10).join(f'• "{e}"' for e in guidelines.get('encouragement', [])[:2])}
 
-Remember: Questions should feel like they're from a friendly, encouraging teacher who believes in the student!
+remember: write like innocent drinks - chatty, humble, a bit cheeky. like a nice friend who happens to know maths. no corporate speak. no fake enthusiasm. just... nice.
 """
     
     return prompt
