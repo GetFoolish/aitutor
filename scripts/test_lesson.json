@@ -1,0 +1,78 @@
+{
+  "id": "counting-1-5-challenge",
+  "title": "Counting 1-5 Challenge",
+  "description": "Challenge problems for counting numbers 1-5",
+  "learningObjectives": [
+    "Count objects from 1 to 5",
+    "Recognize number patterns"
+  ],
+  "difficulty": "hard",
+  "practiceProblems": [
+    {
+      "id": "problem-1",
+      "question": "How many apples are in the basket?",
+      "widget": {
+        "type": "numeric-input",
+        "props": {
+          "minValue": 1,
+          "maxValue": 5,
+          "size": "normal"
+        }
+      },
+      "correctAnswer": 3,
+      "hints": [
+        "Count each apple one by one.",
+        "Point to each apple as you count.",
+        "The answer is 3 apples."
+      ],
+      "visualContext": {
+        "imageUrl": "https://example.com/apples.jpg",
+        "width": 400,
+        "height": 300,
+        "alt": "Three apples in a basket"
+      }
+    },
+    {
+      "id": "problem-2",
+      "question": "Which number comes after 4?",
+      "widget": {
+        "type": "radio",
+        "props": {
+          "choices": ["3", "4", "5", "6"],
+          "randomize": false
+        }
+      },
+      "correctAnswer": 2,
+      "hints": [
+        "Count: 1, 2, 3, 4, ...",
+        "What number comes next?",
+        "The answer is 5."
+      ]
+    },
+    {
+      "id": "problem-3",
+      "question": "Put the numbers in order from smallest to largest.",
+      "widget": {
+        "type": "orderer",
+        "props": {
+          "items": ["3", "1", "5", "2", "4"],
+          "layout": "horizontal"
+        }
+      },
+      "correctAnswer": ["1", "2", "3", "4", "5"],
+      "hints": [
+        "Start with the smallest number.",
+        "The smallest number is 1.",
+        "The correct order is: 1, 2, 3, 4, 5"
+      ]
+    }
+  ],
+  "commonMisconceptions": [
+    "Skipping numbers while counting",
+    "Counting the same object twice"
+  ],
+  "teachingTips": [
+    "Use physical objects for counting practice",
+    "Encourage pointing while counting"
+  ]
+}
