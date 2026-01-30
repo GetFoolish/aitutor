@@ -461,27 +461,47 @@ class SessionManager:
                 )
 
                 if memories:
-                    # Store in MongoDB
-                    memory_docs = []
+                    # Prefer vector store so memories get embeddings for semantic search
+                    try:
+                        from .Memory.mongodb_vector_store import MongoDBMemoryStore
+                        from .Memory.schema import Memory as VectorMemory, MemoryType as VectorMemoryType
 
-                    for memory in memories:
-                        memory_id = f"mem_{uuid.uuid4().hex[:12]}"
-                        memory_doc = {
-                            "_id": memory_id,
-                            "student_id": memory.student_id,
-                            "session_id": memory.session_id,
-                            "type": memory.type.value,
-                            "text": memory.text,
-                            "importance": memory.importance,
-                            "timestamp": now,
-                            "metadata": memory.metadata.model_dump() if memory.metadata else {},
-                        }
-                        memory_docs.append(memory_doc)
-
-                    # Insert to MongoDB
-                    if memory_docs:
-                        self.db.memories.insert_many(memory_docs)
-                        logger.info(f"[SESSION_MANAGER] Stored {len(memory_docs)} memories in MongoDB")
+                        store = MongoDBMemoryStore(user_id=student_id)
+                        if store.enabled:
+                            vector_memories = []
+                            for memory in memories:
+                                mem_type = VectorMemoryType(memory.type.value)
+                                vector_memories.append(VectorMemory(
+                                    student_id=memory.student_id,
+                                    session_id=memory.session_id,
+                                    type=mem_type,
+                                    text=memory.text,
+                                    importance=memory.importance,
+                                    metadata=memory.metadata.model_dump() if memory.metadata else {},
+                                ))
+                            saved = store.save_memories_batch(vector_memories)
+                            logger.info(f"[SESSION_MANAGER] Stored {saved} memories via MongoDBMemoryStore")
+                        else:
+                            raise RuntimeError("MongoDBMemoryStore not enabled")
+                    except Exception as store_err:
+                        # Fallback to raw insert if vector store fails
+                        logger.warning(f"[SESSION_MANAGER] Vector store save failed, falling back to raw insert: {store_err}")
+                        memory_docs = []
+                        for memory in memories:
+                            memory_id = f"mem_{uuid.uuid4().hex[:12]}"
+                            memory_docs.append({
+                                "_id": memory_id,
+                                "student_id": memory.student_id,
+                                "session_id": memory.session_id,
+                                "type": memory.type.value,
+                                "text": memory.text,
+                                "importance": memory.importance,
+                                "timestamp": now,
+                                "metadata": memory.metadata.model_dump() if memory.metadata else {},
+                            })
+                        if memory_docs:
+                            self.db.memories.insert_many(memory_docs)
+                            logger.info(f"[SESSION_MANAGER] Stored {len(memory_docs)} memories in MongoDB (fallback)")
 
             except Exception as e:
                 logger.error(f"[SESSION_MANAGER] Memory extraction failed: {e}")

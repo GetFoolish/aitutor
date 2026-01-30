@@ -1431,6 +1431,29 @@ def receive_feed(http_request: Request, request: FeedWebhookRequest):
     user_id = get_current_user(http_request)
     try:
         logger.debug(f"[FEED] Received {request.type} from user {user_id} at {request.timestamp}")
+        # Compatibility: persist transcript turns so memory extraction works with legacy feed
+        if request.type == "transcript":
+            payload = request.data or {}
+            session_id = payload.get("session_id")
+            if not session_id:
+                session = ta.get_active_session(user_id)
+                session_id = session.get("session_id") if session else None
+
+            transcript = payload.get("transcript", [])
+            if session_id and isinstance(transcript, list):
+                for turn in transcript:
+                    speaker = turn.get("speaker", "student")
+                    text = turn.get("text", "")
+                    emotion = turn.get("emotion")
+                    if text:
+                        ta.add_conversation_turn(
+                            session_id=session_id,
+                            speaker=speaker,
+                            text=text,
+                            emotion=emotion
+                        )
+                        ta.record_conversation_turn(session_id)
+                logger.info(f"[FEED] Stored {len(transcript)} transcript turns for session {session_id[:8]}...")
         return {"status": "received", "type": request.type}
     except Exception as e:
         logger.error(f"Error in receive_feed: {e}", exc_info=True)
@@ -2120,4 +2143,3 @@ if __name__ == "__main__":
     port = int(os.getenv("TEACHING_ASSISTANT_PORT", "8002"))
     print(f"[TeachingAssistant] Starting on port {port}")
     uvicorn.run(app, host="0.0.0.0", port=port)
-
