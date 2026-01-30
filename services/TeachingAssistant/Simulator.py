@@ -24,10 +24,10 @@ TEACHING_ASSISTANT_WS_URL = os.getenv("TEACHING_ASSISTANT_WS_URL", "ws://localho
 SAMPLE_CONVERSATIONS_PATH = Path(__file__).parent / "Memory" / "Memory_Brief" / "sample_conversations_for_testing"
 SESSION_FILES = [
     "session_1_intro.md",
-    "session_2_post_test.md",
+    "session_2_family.md",
     "session_3_emotional.md",
-    "session_4_deep_personal_connection.md",
-    "session_5_testing_sentient_feel.md",
+    "session_4_breakthrough.md",
+    "session_5_deep_connection.md",
 ]
 
 # Mode constants
@@ -463,7 +463,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--clean",
         action="store_true",
-        help="Clear all existing memories (Pinecone + local) for the user before starting simulation"
+        help="Clear all existing memories (vector store + local) for the user before starting simulation"
     )
 
     args = parser.parse_args()

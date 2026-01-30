@@ -1,140 +1,218 @@
 """
-Configuration Management for TeachingAssistant
-Centralized configuration with environment variable support.
+Configuration Module - TeachingAssistant configuration management
+Based on v4 teaching-assistant branch implementation
+
+Centralizes all configuration with environment variable overrides.
 """
 
 import os
 from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Optional
+from typing import Optional, List
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 @dataclass
 class TeachingAssistantConfig:
     """
-    Centralized configuration for TeachingAssistant service.
+    Configuration for the Teaching Assistant system.
+
     All settings can be overridden via environment variables.
     """
-    
-    # ============================================================================
-    # Paths Configuration
-    # ============================================================================
-    base_data_path: Path = field(default_factory=lambda: Path("services/TeachingAssistant/Memory/data"))
-    
-    # ============================================================================
-    # Session Management
-    # ============================================================================
-    session_sync_interval: float = 1.0  # Seconds between session cache refreshes
-    context_sync_interval: float = 1.0  # Seconds between context DB syncs
-    inactivity_threshold: int = 60  # Seconds before considering session inactive
-    grace_period: int = 60  # Seconds grace period after session start
-    
-    # ============================================================================
-    # Memory Management
-    # ============================================================================
-    memory_retrieval_debounce: float = 5.0  # Seconds between memory retrievals
-    
-    # ============================================================================
-    # Event Processing
-    # ============================================================================
-    event_batch_size: int = 5  # Maximum events to process in one batch
-    
-    # ============================================================================
-    # Thread Pool Configuration
-    # ============================================================================
-    io_thread_pool_workers: int = 4  # Workers for blocking I/O operations
-    thread_name_prefix: str = "ta_io"
-    
-    # ============================================================================
-    # Circuit Breaker Settings
-    # ============================================================================
-    llm_failure_threshold: int = 5  # Failures before opening circuit
-    llm_recovery_timeout: float = 60.0  # Seconds before attempting recovery
-    vector_store_failure_threshold: int = 5
-    vector_store_recovery_timeout: float = 60.0
-    
-    # ============================================================================
-    # Retry Configuration
-    # ============================================================================
-    default_retry_attempts: int = 3
-    default_retry_delay: float = 1.0
-    default_retry_backoff: float = 2.0
-    
-    # ============================================================================
-    # File Names
-    # ============================================================================
-    opening_retrieval_file: str = "TA-opening-retrieval.json"
-    closing_retrieval_file: str = "TA-closing-retrieval.json"
-    
-    # ============================================================================
-    # System Prompts
-    # ============================================================================
-    system_prompt_prefix: str = "[SYSTEM PROMPT FOR ADAM]"
-    system_instruction_prefix: str = "[SYSTEM INSTRUCTION]"
-    
-    @classmethod
-    def from_env(cls) -> 'TeachingAssistantConfig':
+
+    # =================================
+    # LLM Provider Configuration
+    # =================================
+    gemini_api_key: str = field(
+        default_factory=lambda: os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY", "")
+    )
+    gemini_text_model: str = field(
+        default_factory=lambda: os.getenv("GEMINI_TEXT_MODEL", "gemini-2.0-flash")
+    )
+    openai_api_key: str = field(
+        default_factory=lambda: os.getenv("OPENAI_API_KEY", "")
+    )
+
+    # =================================
+    # Vector Database (MongoDB default, Pinecone optional)
+    # =================================
+    memory_store_backend: str = field(
+        default_factory=lambda: os.getenv("MEMORY_STORE_BACKEND", "mongodb")
+    )
+    # Pinecone settings (only used if MEMORY_STORE_BACKEND=pinecone)
+    pinecone_api_key: str = field(
+        default_factory=lambda: os.getenv("PINECONE_API_KEY", "")
+    )
+    pinecone_environment: str = field(
+        default_factory=lambda: os.getenv("PINECONE_ENVIRONMENT", "us-east-1")
+    )
+    pinecone_index_name: str = field(
+        default_factory=lambda: os.getenv("PINECONE_INDEX_NAME", "student-memories")
+    )
+    embedding_dimension: int = field(
+        default_factory=lambda: int(os.getenv("EMBEDDING_DIMENSION", "768"))
+    )
+
+    # =================================
+    # MongoDB Configuration
+    # =================================
+    mongodb_uri: str = field(
+        default_factory=lambda: os.getenv("MONGODB_URI", "")
+    )
+    mongodb_db_name: str = field(
+        default_factory=lambda: os.getenv("MONGODB_DB_NAME", "ai_tutor")
+    )
+
+    # =================================
+    # Feature Flags
+    # =================================
+    enable_biographer: bool = field(
+        default_factory=lambda: os.getenv("ENABLE_BIOGRAPHER", "true").lower() == "true"
+    )
+    enable_memory_extraction: bool = field(
+        default_factory=lambda: os.getenv("ENABLE_MEMORY_EXTRACTION", "true").lower() == "true"
+    )
+    enable_semantic_search: bool = field(
+        default_factory=lambda: os.getenv("ENABLE_SEMANTIC_SEARCH", "true").lower() == "true"
+    )
+    enable_skills: bool = field(
+        default_factory=lambda: os.getenv("ENABLE_SKILLS", "true").lower() == "true"
+    )
+
+    # =================================
+    # Session Configuration
+    # =================================
+    max_conversation_history: int = field(
+        default_factory=lambda: int(os.getenv("MAX_CONVERSATION_HISTORY", "50"))
+    )
+    deep_retrieval_interval_seconds: int = field(
+        default_factory=lambda: int(os.getenv("DEEP_RETRIEVAL_INTERVAL", "180"))
+    )
+    session_timeout_minutes: int = field(
+        default_factory=lambda: int(os.getenv("SESSION_TIMEOUT_MINUTES", "60"))
+    )
+
+    # =================================
+    # Memory Configuration
+    # =================================
+    memory_similarity_threshold: float = field(
+        default_factory=lambda: float(os.getenv("MEMORY_SIMILARITY_THRESHOLD", "0.92"))
+    )
+    memory_weight_similarity: float = field(
+        default_factory=lambda: float(os.getenv("MEMORY_WEIGHT_SIMILARITY", "0.6"))
+    )
+    memory_weight_recency: float = field(
+        default_factory=lambda: float(os.getenv("MEMORY_WEIGHT_RECENCY", "0.3"))
+    )
+    memory_weight_importance: float = field(
+        default_factory=lambda: float(os.getenv("MEMORY_WEIGHT_IMPORTANCE", "0.1"))
+    )
+
+    # =================================
+    # Injection Configuration
+    # =================================
+    system_instruction_prefix: str = field(
+        default_factory=lambda: os.getenv(
+            "SYSTEM_INSTRUCTION_PREFIX",
+            "[SYSTEM INSTRUCTION - DO NOT SHOW TO STUDENT]"
+        )
+    )
+    max_injection_length: int = field(
+        default_factory=lambda: int(os.getenv("MAX_INJECTION_LENGTH", "1000"))
+    )
+
+    # =================================
+    # Biographer Configuration
+    # =================================
+    biography_max_words: int = field(
+        default_factory=lambda: int(os.getenv("BIOGRAPHY_MAX_WORDS", "500"))
+    )
+    biography_min_words: int = field(
+        default_factory=lambda: int(os.getenv("BIOGRAPHY_MIN_WORDS", "300"))
+    )
+
+    def __post_init__(self):
+        """Validate configuration after initialization"""
+        # Validate weights sum to 1.0
+        total_weight = (
+            self.memory_weight_similarity +
+            self.memory_weight_recency +
+            self.memory_weight_importance
+        )
+        if not (0.99 <= total_weight <= 1.01):
+            import logging
+            logging.warning(
+                f"[CONFIG] Memory weights sum to {total_weight:.3f}, not 1.0"
+            )
+
+    @property
+    def has_gemini(self) -> bool:
+        """Check if Gemini API key is configured"""
+        return bool(self.gemini_api_key)
+
+    @property
+    def has_openai(self) -> bool:
+        """Check if OpenAI API key is configured"""
+        return bool(self.openai_api_key)
+
+    @property
+    def has_pinecone(self) -> bool:
+        """Check if Pinecone is configured"""
+        return bool(self.pinecone_api_key)
+
+    @property
+    def has_mongodb(self) -> bool:
+        """Check if MongoDB is configured"""
+        return bool(self.mongodb_uri)
+
+    @property
+    def llm_provider(self) -> str:
+        """Get the primary LLM provider"""
+        if self.has_gemini:
+            return "gemini"
+        elif self.has_openai:
+            return "openai"
+        return "none"
+
+    def validate(self) -> List[str]:
         """
-        Load configuration from environment variables.
-        Environment variables should be prefixed with TA_
+        Validate configuration and return list of warnings/errors.
+
+        Returns:
+            List of warning/error messages
         """
-        config = cls()
-        
-        # Override from environment variables if present
-        if env_val := os.getenv('TA_BASE_DATA_PATH'):
-            config.base_data_path = Path(env_val)
-        
-        if env_val := os.getenv('TA_SESSION_SYNC_INTERVAL'):
-            config.session_sync_interval = float(env_val)
-            
-        if env_val := os.getenv('TA_CONTEXT_SYNC_INTERVAL'):
-            config.context_sync_interval = float(env_val)
-            
-        if env_val := os.getenv('TA_INACTIVITY_THRESHOLD'):
-            config.inactivity_threshold = int(env_val)
-            
-        if env_val := os.getenv('TA_GRACE_PERIOD'):
-            config.grace_period = int(env_val)
-            
-        if env_val := os.getenv('TA_MEMORY_RETRIEVAL_DEBOUNCE'):
-            config.memory_retrieval_debounce = float(env_val)
-            
-        if env_val := os.getenv('TA_EVENT_BATCH_SIZE'):
-            config.event_batch_size = int(env_val)
-            
-        if env_val := os.getenv('TA_IO_THREAD_POOL_WORKERS'):
-            config.io_thread_pool_workers = int(env_val)
-            
-        if env_val := os.getenv('TA_LLM_FAILURE_THRESHOLD'):
-            config.llm_failure_threshold = int(env_val)
-            
-        if env_val := os.getenv('TA_LLM_RECOVERY_TIMEOUT'):
-            config.llm_recovery_timeout = float(env_val)
-            
-        if env_val := os.getenv('TA_DEFAULT_RETRY_ATTEMPTS'):
-            config.default_retry_attempts = int(env_val)
-            
-        if env_val := os.getenv('TA_DEFAULT_RETRY_DELAY'):
-            config.default_retry_delay = float(env_val)
-        
-        return config
-    
-    def get_user_data_path(self, user_id: str) -> Path:
-        """Get the data directory path for a specific user"""
-        return self.base_data_path / user_id
-    
-    def get_memory_path(self, user_id: str) -> Path:
-        """Get the memory directory path for a specific user"""
-        return self.base_data_path / user_id / "memory" / "TeachingAssistant"
-    
-    def get_conversations_path(self, user_id: str) -> Path:
-        """Get the conversations directory path for a specific user"""
-        return self.base_data_path / user_id / "conversations"
-    
-    def get_opening_retrieval_path(self, user_id: str) -> Path:
-        """Get the opening retrieval file path for a specific user"""
-        return self.get_memory_path(user_id) / self.opening_retrieval_file
-    
-    def get_closing_retrieval_path(self, user_id: str) -> Path:
-        """Get the closing retrieval file path for a specific user"""
-        return self.get_memory_path(user_id) / self.closing_retrieval_file
+        issues = []
+
+        if not self.has_gemini and not self.has_openai:
+            issues.append("ERROR: No LLM provider configured (GEMINI_API_KEY or OPENAI_API_KEY)")
+
+        if not self.has_mongodb:
+            issues.append("WARNING: MONGODB_URI not set - memory system may not work")
+
+        # Only warn about Pinecone if explicitly using pinecone backend
+        if self.memory_store_backend == "pinecone" and not self.has_pinecone:
+            issues.append("WARNING: MEMORY_STORE_BACKEND=pinecone but PINECONE_API_KEY not set")
+
+        return issues
+
+    def to_dict(self) -> dict:
+        """Convert config to dictionary (masking sensitive values)"""
+        return {
+            "llm_provider": self.llm_provider,
+            "has_gemini": self.has_gemini,
+            "has_openai": self.has_openai,
+            "has_mongodb": self.has_mongodb,
+            "memory_store_backend": self.memory_store_backend,
+            "has_pinecone": self.has_pinecone,  # Legacy - kept for compatibility
+            "gemini_text_model": self.gemini_text_model,
+            "embedding_dimension": self.embedding_dimension,
+            "enable_biographer": self.enable_biographer,
+            "enable_memory_extraction": self.enable_memory_extraction,
+            "enable_semantic_search": self.enable_semantic_search,
+            "enable_skills": self.enable_skills,
+        }
+
+
+# Singleton instance
+config = TeachingAssistantConfig()

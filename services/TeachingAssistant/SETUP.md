@@ -4,21 +4,18 @@
 
 The TeachingAssistant service requires the following environment variables to function properly:
 
-### Memory System (Pinecone)
+### Memory System (MongoDB Atlas Vector Search)
+
+The memory system uses **MongoDB Atlas Vector Search** by default. No additional vector database is required.
 
 ```bash
-# Pinecone API Key (REQUIRED for memory functionality)
-PINECONE_API_KEY=pcsk_xxxxx
-
-# Pinecone Environment (optional, defaults to 'us-east-1')
-PINECONE_ENVIRONMENT=us-east-1
+# MongoDB Connection String (REQUIRED - includes vector search)
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/ai_tutor
+MONGODB_DB_NAME=ai_tutor
 ```
 
-**How to get your Pinecone API Key:**
-1. Sign up at https://www.pinecone.io/
-2. Create a new project
-3. Go to API Keys section
-4. Copy your API key (starts with `pcsk_`)
+> **Note:** Pinecone is available as an optional fallback but is NOT required.
+> Set `MEMORY_STORE_BACKEND=pinecone` only if you specifically need Pinecone.
 
 ### LLM (Gemini)
 
@@ -48,10 +45,9 @@ Create a `.env` file in the project root with all required variables:
 
 ```bash
 # .env file
-PINECONE_API_KEY=pcsk_your_key_here
-PINECONE_ENVIRONMENT=us-east-1
 GEMINI_API_KEY=AIzaSy_your_key_here
-MONGODB_URI=mongodb://localhost:27017/ai_tutor
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/ai_tutor
+MONGODB_DB_NAME=ai_tutor
 ```
 
 ## Verification
@@ -68,18 +64,18 @@ Check the logs for:
 - ✅ `[MEMORY_CONFIG] Loaded configuration`
 
 If you see errors:
-- ❌ `PINECONE_API_KEY not set` - Add the API key to your .env file
-- ❌ `Invalid API Key` - Check that your Pinecone API key is correct
+- ❌ `MONGODB_URI not set` - Add MongoDB connection string to your .env file
 - ❌ `Unauthorized` - Verify your Gemini API key
+- ❌ `MongoDB connection failed` - Check your MongoDB URI and network access
 
 ## Troubleshooting
 
 ### Memory System Not Working
 
-If you see `Error in background memory initialization: (401) Unauthorized`:
-1. Check that `PINECONE_API_KEY` is set in your environment
-2. Verify the key is valid and not expired
-3. Ensure the key starts with `pcsk_`
+If memories are not being saved/retrieved:
+1. Check that `MONGODB_URI` is set correctly
+2. Verify MongoDB Atlas Vector Search index is configured (see below)
+3. Check MongoDB Atlas IP whitelist includes your IP
 
 ### SSE Connection Blocked
 
