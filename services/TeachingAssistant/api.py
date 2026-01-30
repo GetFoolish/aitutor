@@ -4,6 +4,7 @@ import threading
 import requests
 import asyncio
 import time
+import re
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
@@ -337,6 +338,16 @@ class PromptResponse(BaseModel):
     session_info: dict
 
 
+_CONTROL_CHAR_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
+
+
+def _sanitize_prompt(text: str) -> str:
+    """Remove non-printable control characters that can break JSON parsers."""
+    if not text:
+        return ""
+    return _CONTROL_CHAR_RE.sub(" ", text)
+
+
 class FeedWebhookRequest(BaseModel):
     type: str  # "media" | "audio" | "transcript" | "combined"
     timestamp: str  # ISO 8601 timestamp
@@ -440,7 +451,7 @@ async def start_session(http_request: Request, request: Optional[StartSessionReq
         cost_tracker.start_session()
 
         return PromptResponse(
-            prompt=greeting or "",  # Return greeting (empty in assessment mode)
+            prompt=_sanitize_prompt(greeting or ""),  # Return greeting (empty in assessment mode)
             session_info=result["session_info"]
         )
     except Exception as e:
@@ -561,7 +572,7 @@ async def end_session(http_request: Request, request: Optional[EndSessionRequest
 
         # Return closing message directly (also sent via SSE) - empty in assessment mode
         return PromptResponse(
-            prompt=closing or result["prompt"],  # Use memory-aware closing or fallback (empty in assessment)
+            prompt=_sanitize_prompt(closing or result["prompt"]),  # Use memory-aware closing or fallback (empty in assessment)
             session_info=result["session_info"]
         )
     except Exception as e:
@@ -822,7 +833,7 @@ def check_inactivity(http_request: Request):
 
         prompt = ta.check_inactivity(session["session_id"])
         session_info = ta.get_session_info(session["session_id"])
-        return PromptResponse(prompt=prompt or "", session_info=session_info)
+        return PromptResponse(prompt=_sanitize_prompt(prompt or ""), session_info=session_info)
     except Exception as e:
         logger.error(f"Error in check_inactivity: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
@@ -1017,6 +1028,14 @@ async def process_transcript(session_id: str, transcript: str, timestamp: str, s
         return
 
     user_id = session["user_id"]
+    # Normalize speaker values coming from frontend ("user") to backend expectation ("student")
+    speaker_raw = (speaker or "tutor").strip().lower()
+    if speaker_raw in {"user", "learner", "student"}:
+        speaker_norm = "student"
+    elif speaker_raw in {"assistant", "tutor", "teacher"}:
+        speaker_norm = "tutor"
+    else:
+        speaker_norm = speaker_raw
 
     # Define callback for when buffered transcript is ready
     async def on_transcript_ready(buffered_text: str):
@@ -1027,7 +1046,7 @@ async def process_transcript(session_id: str, transcript: str, timestamp: str, s
                 "timestamp": timestamp,
                 "data": {
                     "transcript": buffered_text,
-                    "speaker": speaker
+                    "speaker": speaker_norm
                 }
             },
             session_id,
@@ -1039,18 +1058,18 @@ async def process_transcript(session_id: str, transcript: str, timestamp: str, s
             ta.queue_manager.enqueue(event)
 
         # Log aggregated transcript
-        speaker_label = "USER" if speaker == "user" else "TUTOR"
+        speaker_label = "USER" if speaker_norm == "student" else "TUTOR"
         logger.debug(f"[TRANSCRIPT] Session {session_id} [{speaker_label}]: {buffered_text[:100] if buffered_text else 'empty'}...")
 
         # Broadcast to observers
         await broadcast_to_observers(session_id, {
             "type": "transcript",
             "timestamp": timestamp,
-            "data": {"transcript": buffered_text, "speaker": speaker}
+            "data": {"transcript": buffered_text, "speaker": speaker_norm}
         })
 
     # Add to buffer (will be flushed after debounce)
-    await transcript_buffer.add(session_id, speaker, transcript, on_transcript_ready)
+    await transcript_buffer.add(session_id, speaker_norm, transcript, on_transcript_ready)
 
 
 # ============================================================================
@@ -1398,7 +1417,7 @@ def send_instruction_to_tutor(http_request: Request):
             logger.info(f"[INSTRUCTION → TUTOR] {truncated_instruction}")
 
             return PromptResponse(
-                prompt=instruction["text"],
+                prompt=_sanitize_prompt(instruction["text"]),
                 session_info=ta.get_session_info(session_id)
             )
 
