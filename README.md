@@ -438,6 +438,7 @@ Frontend uses build-time environment variables (injected during Docker build):
 - `VITE_SHERLOCKED_API_URL` - SherlockED API endpoint
 - `VITE_TEACHING_ASSISTANT_API_URL` - Teaching Assistant API endpoint
 - `VITE_AUTH_SERVICE_URL` - Auth Service endpoint (for API key retrieval)
+- `VITE_SHOW_DEBUG_BANNER` - Enables assessment debug banners (set to `true` to show)
 
 **Note**: Tutor service connects directly to Gemini Live API. API key is fetched securely from AuthService at runtime (not baked into frontend).
 
@@ -1125,4 +1126,3 @@ For issues and questions:
 - **Feed Webhook System**: Added real-time feed webhook for media mixer, audio input, and transcripts
 - **Instruction Injection**: Added dynamic instruction injection to tutor based on feed analysis
 - **Architecture Simplification**: Removed backend Tutor service from deployment pipeline
-

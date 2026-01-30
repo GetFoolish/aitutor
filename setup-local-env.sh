@@ -28,6 +28,10 @@ GEMINI_API_KEY=your_gemini_api_key_here
 
 # Optional: Gemini Model (has default)
 GEMINI_MODEL=models/gemini-2.5-flash-native-audio-preview-09-2025
+
+# Frontend debug (optional)
+# If you run Vite from the repo root, it can read this. Otherwise set it in frontend/.env.
+VITE_SHOW_DEBUG_BANNER=false
 EOF
 
 echo "✅ Created .env file"
@@ -38,4 +42,3 @@ echo "   2. Run: ./run_tutor.sh"
 echo ""
 echo "💡 The frontend will automatically use localhost URLs for local development"
 echo "   No need to configure frontend environment variables!"
-

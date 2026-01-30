@@ -102,10 +102,54 @@ cleanup() {
 trap cleanup INT
 
 
+# Extract ports dynamically from configuration files
+FRONTEND_PORT=$(grep -o '"port":[[:space:]]*[0-9]*' "$SCRIPT_DIR/frontend/vite.config.ts" 2>/dev/null | grep -o '[0-9]*' || echo "3000")
+DASH_API_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/DashSystem/dash_api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8000")
+CONTENT_API_PORT=$(grep -o 'port=8[0-9]*' "$SCRIPT_DIR/content/api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8001")
+TEACHING_ASSISTANT_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/TeachingAssistant/api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8002")
+AUTH_SERVICE_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/AuthService/auth_api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8003")
+COST_TRACKING_PORT=${COST_TRACKING_PORT:-8004}
+
+# Ensure all port variables are properly set (fallback to defaults if extraction failed)
+FRONTEND_PORT=${FRONTEND_PORT:-3000}
+DASH_API_PORT=${DASH_API_PORT:-8000}
+CONTENT_API_PORT=${CONTENT_API_PORT:-8001}
+TEACHING_ASSISTANT_PORT=${TEACHING_ASSISTANT_PORT:-8002}
+AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT:-8003}
+
+port_in_use() {
+    local port="$1"
+    if command -v lsof >/dev/null 2>&1; then
+        lsof -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1
+    elif command -v nc >/dev/null 2>&1; then
+        nc -z localhost "$port" >/dev/null 2>&1
+    else
+        return 1
+    fi
+}
+
+dash_api_ready() {
+    curl -s "http://localhost:$DASH_API_PORT/health" 2>/dev/null | grep -q '"ready":true'
+}
+
+SKIP_DASH_API=0
+if port_in_use "$DASH_API_PORT"; then
+    if dash_api_ready; then
+        echo "✅ DASH API already running on port $DASH_API_PORT. Skipping startup."
+        SKIP_DASH_API=1
+    else
+        echo "❌ Port $DASH_API_PORT is already in use, and no DASH API health response was detected."
+        echo "👉 Stop the process using this port or set a different PORT in services/DashSystem/dash_api.py."
+        exit 1
+    fi
+fi
+
 # Start the FastAPI server in the background
-echo "Starting DASH API server... Logs -> logs/dash_api.log"
-(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/DashSystem/dash_api.py) > "$SCRIPT_DIR/logs/dash_api.log" 2>&1 &
-pids+=($!)
+if [[ "$SKIP_DASH_API" -eq 0 ]]; then
+    echo "Starting DASH API server... Logs -> logs/dash_api.log"
+    (cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/DashSystem/dash_api.py) > "$SCRIPT_DIR/logs/dash_api.log" 2>&1 &
+    pids+=($!)
+fi
 
 # Start the Content API server (Question Generation) in the background
 echo "Starting Content API server (Question Generation)... Logs -> logs/content_api.log"
@@ -124,10 +168,6 @@ pids+=($!)
 echo "Starting Auth Service API server... Logs -> logs/auth_service.log"
 (cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/AuthService/auth_api.py) > "$SCRIPT_DIR/logs/auth_service.log" 2>&1 &
 pids+=($!)
-
-# Extract ports dynamically from configuration files
-FRONTEND_PORT=$(grep -o '"port":[[:space:]]*[0-9]*' "$SCRIPT_DIR/frontend/vite.config.ts" 2>/dev/null | grep -o '[0-9]*' || echo "3000")
-DASH_API_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/DashSystem/dash_api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8000")
 
 # Give the backend servers a moment to start
 echo "Waiting for backend services to initialize..."
@@ -154,16 +194,6 @@ done
 if [ $WAIT_COUNT -eq $MAX_WAIT ]; then
     echo "⚠️  Warning: DASH API may not be fully ready, but continuing..."
 fi
-CONTENT_API_PORT=$(grep -o 'port=8[0-9]*' "$SCRIPT_DIR/content/api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8001")
-TEACHING_ASSISTANT_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/TeachingAssistant/api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8002")
-AUTH_SERVICE_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/AuthService/auth_api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8003")
-
-# Ensure all port variables are properly set (fallback to defaults if extraction failed)
-FRONTEND_PORT=${FRONTEND_PORT:-3000}
-DASH_API_PORT=${DASH_API_PORT:-8000}
-CONTENT_API_PORT=${CONTENT_API_PORT:-8001}
-TEACHING_ASSISTANT_PORT=${TEACHING_ASSISTANT_PORT:-8002}
-AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT:-8003}
 
 # Start the Node.js frontend in the background (after backend services are ready)
 echo "Starting Node.js frontend... Logs -> logs/frontend.log"

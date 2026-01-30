@@ -1427,6 +1427,68 @@ def send_instruction_to_tutor(http_request: Request):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+class MemorySearchRequest(BaseModel):
+    query: str
+    top_k: int = 10
+
+
+@app.post("/memory/search")
+async def search_memories(http_request: Request, request: MemorySearchRequest):
+    """
+    Search stored memories for the current user.
+    """
+    user_id = get_current_user(http_request)
+    try:
+        from services.TeachingAssistant.Memory.mongodb_vector_store import MongoDBMemoryStore
+
+        store = MongoDBMemoryStore(user_id=user_id)
+        if not store.enabled:
+            return {"results": [], "error": "Memory store not configured"}
+
+        memories = store.search(
+            query_text=request.query,
+            student_id=user_id,
+            top_k=request.top_k,
+            min_importance=0.0
+        )
+
+        formatted = []
+        for mem in memories:
+            formatted.append({
+                "text": mem.get("text", ""),
+                "type": mem.get("type", ""),
+                "importance": mem.get("importance", 0.0),
+                "timestamp": mem.get("timestamp")
+            })
+
+        return {"results": formatted, "query": request.query, "total": len(formatted)}
+    except Exception as e:
+        logger.error(f"[MEMORY_SEARCH] {e}", exc_info=True)
+        return {"results": [], "error": str(e)}
+
+
+@app.get("/memory/stats")
+async def memory_stats(http_request: Request):
+    user_id = get_current_user(http_request)
+    try:
+        from services.TeachingAssistant.Memory.mongodb_vector_store import MongoDBMemoryStore
+
+        store = MongoDBMemoryStore(user_id=user_id)
+        if not store.enabled:
+            return {"enabled": False, "error": "Memory store not configured"}
+
+        stats = store.get_stats()
+        return {
+            "enabled": True,
+            "total_memories": stats.get("user_memories") or stats.get("total_memories", 0),
+            "by_type": stats.get("by_type", {}),
+            "index_stats": stats
+        }
+    except Exception as e:
+        logger.error(f"[MEMORY_STATS] {e}", exc_info=True)
+        return {"enabled": False, "error": str(e)}
+
+
 # Include Cost Tracking API routes (Phase 4)
 from services.CostTracking.api import router as cost_router
 app.include_router(cost_router)

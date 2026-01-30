@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import '../auth/auth.scss';
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
+const SHOW_DEBUG_BANNER = import.meta.env.VITE_SHOW_DEBUG_BANNER === 'true';
 
 interface Question {
   question: any;
@@ -32,6 +33,7 @@ interface Question {
 interface LocationState {
   assessmentId: string;
   questions: Question[];
+  totalQuestions?: number;
   onboardingData: {
     ageRange: string;
     grade: string;
@@ -61,21 +63,95 @@ const DynamicAssessment: React.FC = () => {
   const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now());
   const [assessmentId, setAssessmentId] = useState<string>('');
   const [showIntro, setShowIntro] = useState(true);
+  const [totalQuestions, setTotalQuestions] = useState(0);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [onboardingData, setOnboardingData] = useState<LocationState["onboardingData"] | null>(null);
 
   useEffect(() => {
-    // Get questions from navigation state
-    if (location.state?.questions) {
-      setQuestions(location.state.questions);
-      setAssessmentId(location.state.assessmentId);
+    const applyPayload = (payload: {
+      assessmentId: string;
+      questions: Question[];
+      onboardingData?: LocationState["onboardingData"];
+      totalQuestions?: number;
+    }) => {
+      const incomingQuestions = payload.questions || [];
+      if (!incomingQuestions.length) {
+        console.warn('[DynamicAssessment] Empty questions payload');
+        setLoading(false);
+        setLoadError('No questions were generated. Please try again.');
+        return;
+      }
+
+      console.log('[DynamicAssessment] Loaded assessment payload', {
+        assessmentId: payload.assessmentId,
+        questions: incomingQuestions.length,
+        totalQuestions: payload.totalQuestions,
+        source: 'applyPayload'
+      });
+
+      setQuestions(incomingQuestions);
+      setAssessmentId(payload.assessmentId || '');
+      setTotalQuestions(payload.totalQuestions ?? incomingQuestions.length ?? 0);
+      setOnboardingData(payload.onboardingData ?? null);
       setLoading(false);
-    } else {
-      // Fallback - redirect to onboarding
-      history.push('/app/onboarding');
-    }
+    };
+
+    const loadAssessment = async () => {
+      setLoading(true);
+      setLoadError(null);
+
+      const statePayload = location.state;
+      if (statePayload?.questions?.length) {
+        console.log('[DynamicAssessment] Using navigation state payload');
+        applyPayload(statePayload);
+        return;
+      }
+
+      const cached = sessionStorage.getItem('dynamic_assessment_payload');
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (parsed?.questions?.length) {
+            console.log('[DynamicAssessment] Using cached assessment payload');
+            applyPayload(parsed);
+            return;
+          }
+        } catch (error) {
+          console.warn('Failed to parse cached assessment payload', error);
+        }
+      }
+
+      const cachedId = statePayload?.assessmentId || sessionStorage.getItem('dynamic_assessment_id');
+      if (cachedId) {
+        try {
+          console.log('[DynamicAssessment] Reloading assessment from API', { assessmentId: cachedId });
+          const response = await apiUtils.get(`${DASH_API_URL}/api/assessment/dynamic/${cachedId}`);
+          if (response.ok) {
+            const data = await response.json();
+            const payload = {
+              assessmentId: data.assessment_id || cachedId,
+              questions: data.questions || [],
+              totalQuestions: data.total_questions ?? data.questions?.length ?? 0,
+              onboardingData: statePayload?.onboardingData,
+            };
+            sessionStorage.setItem('dynamic_assessment_payload', JSON.stringify(payload));
+            applyPayload(payload);
+            return;
+          }
+        } catch (error) {
+          console.error('Failed to reload assessment from API:', error);
+        }
+      }
+
+      setLoading(false);
+      setLoadError('We could not load your assessment. Please start again.');
+    };
+
+    loadAssessment();
   }, [location.state, history]);
 
   const currentQuestion = questions[currentIndex];
-  const progress = ((currentIndex + 1) / questions.length) * 100;
+  const progress = questions.length ? ((currentIndex + 1) / questions.length) * 100 : 0;
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -149,16 +225,32 @@ const DynamicAssessment: React.FC = () => {
 
   const startLearning = () => {
     // Navigate to Learning Plan Dashboard
-    const onboardingData = location.state?.onboardingData;
     history.push('/app/learning-plan', {
       skillLevel: results?.learning_path?.skill_level || 'Beginner',
       focusTopics: results?.learning_path?.focus_topics || [],
       strongTopics: results?.learning_path?.strong_topics || [],
-      grade: onboardingData?.grade || 'K-2',
+      grade: onboardingData?.grade || location.state?.onboardingData?.grade || 'K-2',
       subject: 'math',
       fromAssessment: true,
     });
   };
+
+  if (loadError && !loading) {
+    return (
+      <div className="login-container" style={{ minHeight: '100vh' }}>
+        <BackgroundShapes />
+        <div className="login-card" style={{ maxWidth: '600px', padding: '40px', textAlign: 'center' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
+          <h2 style={{ fontFamily: 'var(--neo-heading)', marginBottom: '12px' }}>
+            {loadError}
+          </h2>
+          <Button onClick={() => history.push('/app/onboarding')}>
+            back to onboarding
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   // Pre-Assessment Intro Screen
   if (showIntro && !loading && !completed) {
@@ -166,6 +258,21 @@ const DynamicAssessment: React.FC = () => {
       <div className="login-container" style={{ minHeight: '100vh' }}>
         <BackgroundShapes />
         <div className="login-card" style={{ maxWidth: '600px', padding: '48px' }}>
+          {SHOW_DEBUG_BANNER && (
+            <div style={{
+              background: '#FFF4CC',
+              border: '2px dashed #000',
+              borderRadius: '12px',
+              padding: '12px 16px',
+              marginBottom: '24px',
+              fontSize: '12px',
+              textTransform: 'uppercase',
+              fontWeight: 700,
+              letterSpacing: '0.08em'
+            }}>
+              debug: {assessmentId ? `assessment ${assessmentId}` : 'no assessment id'} · {totalQuestions || questions.length} questions · source {location.state?.questions?.length ? 'nav' : sessionStorage.getItem('dynamic_assessment_payload') ? 'cache' : 'api'}
+            </div>
+          )}
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
             <div style={{ fontSize: '64px', marginBottom: '16px' }}>🎯</div>
             <h2 style={{ fontFamily: 'var(--neo-heading)', fontSize: '32px', marginBottom: '12px' }}>
@@ -182,7 +289,7 @@ const DynamicAssessment: React.FC = () => {
               <li style={{ marginBottom: '12px', display: 'flex', alignItems: 'start', gap: '12px' }}>
                 <span style={{ fontSize: '24px' }}>📝</span>
                 <div>
-                  <strong>{questions.length} questions</strong> about {location.state?.onboardingData?.selectedTopics?.join(', ') || 'your chosen subjects'}
+                  <strong>{totalQuestions || questions.length} questions</strong> about {onboardingData?.selectedTopics?.join(', ') || location.state?.onboardingData?.selectedTopics?.join(', ') || 'your chosen subjects'}
                 </div>
               </li>
               <li style={{ marginBottom: '12px', display: 'flex', alignItems: 'start', gap: '12px' }}>
@@ -342,6 +449,21 @@ const DynamicAssessment: React.FC = () => {
       <Header />
       
       <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px' }}>
+        {SHOW_DEBUG_BANNER && (
+          <div style={{
+            background: '#FFF4CC',
+            border: '2px dashed #000',
+            borderRadius: '12px',
+            padding: '10px 14px',
+            marginBottom: '16px',
+            fontSize: '12px',
+            textTransform: 'uppercase',
+            fontWeight: 700,
+            letterSpacing: '0.08em'
+          }}>
+            debug: {assessmentId ? `assessment ${assessmentId}` : 'no assessment id'} · {totalQuestions || questions.length} questions · source {location.state?.questions?.length ? 'nav' : sessionStorage.getItem('dynamic_assessment_payload') ? 'cache' : 'api'} · index {currentIndex + 1}
+          </div>
+        )}
         {/* Progress Bar */}
         <div style={{ marginBottom: '24px' }}>
           <div style={{ 

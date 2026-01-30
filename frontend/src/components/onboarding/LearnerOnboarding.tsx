@@ -127,17 +127,28 @@ const LearnerOnboarding: React.FC = () => {
       }
 
       const assessmentData = await response.json();
+      if (!assessmentData.questions || assessmentData.questions.length === 0) {
+        throw new Error('No questions were generated');
+      }
 
       // Mark learner onboarding complete for this session
       sessionStorage.setItem('learner_onboarding_complete', 'true');
       window.dispatchEvent(new CustomEvent('learner-onboarding-complete'));
       
-      // Navigate to dynamic assessment
-      history.push('/app/assessment/dynamic', {
+      const totalQuestions = assessmentData.total_questions ?? assessmentData.questions?.length ?? 0;
+      const assessmentPayload = {
         assessmentId: assessmentData.assessment_id,
         questions: assessmentData.questions,
         onboardingData: data,
-      });
+        totalQuestions,
+      };
+
+      // Cache for refresh/resume flows
+      sessionStorage.setItem('dynamic_assessment_payload', JSON.stringify(assessmentPayload));
+      sessionStorage.setItem('dynamic_assessment_id', assessmentData.assessment_id);
+
+      // Navigate to dynamic assessment
+      history.push('/app/assessment/dynamic', assessmentPayload);
 
     } catch (err) {
       console.error('Failed to start assessment:', err);

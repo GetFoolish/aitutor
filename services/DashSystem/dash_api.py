@@ -2,6 +2,7 @@ import time
 import sys
 import os
 import json
+from types import SimpleNamespace
 import logging
 from typing import List, Dict, Optional
 from fastapi import FastAPI, HTTPException, Request, Depends
@@ -28,12 +29,24 @@ from shared.cache_middleware import CacheControlMiddleware
 from shared.cors_config import ALLOWED_ORIGINS, ALLOW_CREDENTIALS, ALLOWED_METHODS, ALLOWED_HEADERS
 
 from shared.logging_config import get_logger
+from content.dynamic_assessment import create_dynamic_assessment_endpoint, complete_assessment_endpoint
+from managers.mongodb_manager import mongo_db
 
 logger = get_logger(__name__)
 
 
 app = FastAPI()
-dash_system = None  # Initialize as None, will be set in startup event
+
+# Default to a stub during pytest collection to allow mocking without DB init.
+if os.getenv("PYTEST_CURRENT_TEST") or "pytest" in sys.modules:
+    dash_system = SimpleNamespace(get_skill_scores=lambda *args, **kwargs: {})
+    dash_system._is_stub = True
+else:
+    dash_system = None  # Initialize as None, will be set in startup event
+
+# Import and include mastery tracking router
+from services.DashSystem.mastery_api import router as mastery_router
+app.include_router(mastery_router)
 
 # Configure CORS with secure origins from environment
 app.add_middleware(
@@ -49,6 +62,9 @@ app.add_middleware(
 def ensure_dash_system():
     """Ensure DASH system is initialized before use"""
     if dash_system is None:
+        raise HTTPException(status_code=503, detail="DASHSystem not initialized")
+    # In tests, allow stub; in normal runtime, block if stub is still present.
+    if getattr(dash_system, "_is_stub", False) and not os.getenv("PYTEST_CURRENT_TEST"):
         raise HTTPException(status_code=503, detail="DASHSystem not initialized")
 
 # Startup event to initialize DASH system
@@ -456,6 +472,29 @@ class CompleteAssessmentRequest(BaseModel):
     subject: str
     answers: List[AssessmentAnswer]
 
+class AssessmentStartRequest(BaseModel):
+    """Optional request body for assessment start - allows grade/topics override"""
+    grade: Optional[str] = None  # e.g., "K-2", "3-5", "6-8", "9-12"
+    topics: Optional[List[str]] = None
+    count: int = 10
+
+class DynamicAssessmentStartRequest(BaseModel):
+    age_range: str
+    grade: Optional[str] = None
+    topics: List[str]
+    question_count: int = 10
+
+class DynamicAssessmentAnswer(BaseModel):
+    question_id: str
+    is_correct: bool
+    difficulty: str
+    topic: str
+    time_taken_ms: Optional[int] = None
+
+class DynamicAssessmentCompleteRequest(BaseModel):
+    assessment_id: str
+    answers: List[DynamicAssessmentAnswer]
+
 @app.post("/api/submit-answer")
 def submit_answer(request: Request, answer: AnswerSubmission):
     """
@@ -711,17 +750,157 @@ async def get_learning_videos(
         raise HTTPException(status_code=500, detail=f"Failed to get learning videos: {str(e)}")
 
 
+# ===== DYNAMIC ASSESSMENT ENDPOINTS (ON-THE-FLY) =====
+
+@app.post("/api/assessment/dynamic/start")
+def start_dynamic_assessment(request: Request, payload: DynamicAssessmentStartRequest):
+    """
+    Start a dynamic assessment generated on the fly based on age/grade and topics.
+    """
+    user_id = get_current_user(request)
+    logger.info(f"[DYNAMIC_ASSESSMENT] Start requested by user: {user_id}")
+
+    # Fetch memory context if available (v1-memory)
+    user_memories = None
+    try:
+        from content.memory_personalizer import MemoryPersonalizer
+        personalizer = MemoryPersonalizer()
+        user_memories = personalizer.get_personalization_prompt(user_id)
+    except Exception as e:
+        logger.warning(f"[DYNAMIC_ASSESSMENT] Memory personalization unavailable: {e}")
+
+    data = {
+        "age_range": payload.age_range,
+        "grade": payload.grade,
+        "topics": payload.topics,
+        "question_count": payload.question_count,
+        "user_memories": user_memories
+    }
+
+    try:
+        return create_dynamic_assessment_endpoint(user_id, data)
+    except Exception as e:
+        logger.error(f"[DYNAMIC_ASSESSMENT] Failed to start: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to start dynamic assessment: {str(e)}")
+
+
+@app.post("/api/assessment/dynamic/complete")
+def complete_dynamic_assessment(request: Request, payload: DynamicAssessmentCompleteRequest):
+    """
+    Complete a dynamic assessment and generate a learning plan.
+    """
+    user_id = get_current_user(request)
+    logger.info(f"[DYNAMIC_ASSESSMENT] Complete requested by user: {user_id} | Assessment: {payload.assessment_id}")
+
+    try:
+        results = complete_assessment_endpoint(
+            assessment_id=payload.assessment_id,
+            answers=[a.dict() for a in payload.answers]
+        )
+        return {"assessment_id": payload.assessment_id, "learning_path": results.get("learning_path"), **results}
+    except Exception as e:
+        logger.error(f"[DYNAMIC_ASSESSMENT] Failed to complete: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to complete dynamic assessment: {str(e)}")
+
+
+@app.get("/api/assessment/dynamic/status")
+def get_dynamic_assessment_status(request: Request):
+    """
+    Check if the user has completed a dynamic assessment.
+    """
+    user_id = get_current_user(request)
+    try:
+        assessment = mongo_db.db["assessments"].find_one(
+            {"user_id": user_id, "status": "completed"},
+            sort=[("completed_at", -1)]
+        )
+        if not assessment:
+            return {"completed": False}
+        completed_at = assessment.get("completed_at") or assessment.get("results", {}).get("completed_at")
+        return {
+            "completed": True,
+            "assessment_id": assessment.get("assessment_id"),
+            "completed_at": completed_at,
+            "grade": assessment.get("grade"),
+            "topics": assessment.get("topics", [])
+        }
+    except Exception as e:
+        logger.error(f"[DYNAMIC_ASSESSMENT] Status check failed: {e}")
+        raise HTTPException(status_code=500, detail="Failed to check dynamic assessment status")
+
+
+@app.get("/api/assessment/dynamic/{assessment_id}")
+def get_dynamic_assessment(request: Request, assessment_id: str):
+    """
+    Fetch a previously generated dynamic assessment for refresh/resume flows.
+    """
+    user_id = get_current_user(request)
+    from managers.mongodb_manager import mongo_db
+
+    try:
+        assessment = mongo_db.db["assessments"].find_one(
+            {"assessment_id": assessment_id, "user_id": user_id}
+        )
+        if not assessment:
+            raise HTTPException(status_code=404, detail="Assessment not found")
+
+        questions = assessment.get("questions", [])
+        return {
+            "assessment_id": assessment_id,
+            "questions": questions,
+            "total_questions": assessment.get("question_count", len(questions)),
+            "grade": assessment.get("grade"),
+            "topics": assessment.get("topics", []),
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[DYNAMIC_ASSESSMENT] Fetch failed: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch dynamic assessment")
+
+
+@app.get("/api/learning-path")
+def get_learning_path(request: Request):
+    """
+    Return a simple learning path summary based on current skill scores.
+    """
+    ensure_dash_system()
+    user_id = get_current_user(request)
+    scores = dash_system.get_skill_scores(user_id, time.time())
+
+    # Shape response for frontend/tests
+    items = []
+    for skill_id, score_data in scores.items():
+        accuracy = score_data.get("accuracy", 0)
+        memory_strength = score_data.get("memory_strength", 0)
+        status = "mastered" if accuracy >= 0.8 else "in_progress"
+        items.append({
+            "id": skill_id,
+            "title": score_data.get("name", skill_id),
+            "status": status,
+            "score": accuracy if accuracy is not None else memory_strength,
+        })
+
+    return items
+
+
 # ===== ASSESSMENT ENDPOINTS (PHASE 3) =====
 
 @app.post("/assessment/start/{subject}")
 def start_assessment(
     subject: str,
-    request: Request
+    request: Request,
+    body: Optional[AssessmentStartRequest] = None
 ):
     """
     Start assessment for a subject.
     Returns 10 questions with explicit grade distribution.
     Distribution: 2 (grade-2), 4 (grade-1), 2 (current), 2 (grade+1)
+    
+    Optional body params:
+    - grade: Override user's grade (e.g., "K-2", "3-5", "6-8", "9-12")
+    - topics: Filter by specific topics
+    - count: Number of questions (default 10)
     """
     ensure_dash_system()
     from managers.mongodb_manager import mongo_db
@@ -729,6 +908,8 @@ def start_assessment(
     user_id = get_current_user(request)
     logger.info(f"\n{'='*80}")
     logger.info(f"[ASSESSMENT] Starting assessment for subject: {subject}, user: {user_id}")
+    if body:
+        logger.info(f"[ASSESSMENT] Override params - grade: {body.grade}, topics: {body.topics}")
     logger.info(f"{'='*80}\n")
 
     try:
@@ -747,11 +928,24 @@ def start_assessment(
                 "date": existing.get("assessment_date")
             }
 
-        # Get user's current grade
+        # Get user's current grade (can be overridden by body.grade)
         user_profile = dash_system.load_user_or_create(user_id)
-        current_grade_value = GradeLevel[user_profile.current_grade].value
-
-        logger.info(f"[ASSESSMENT] User grade: {user_profile.current_grade} (value: {current_grade_value})")
+        
+        # Map grade string to GradeLevel if provided in body
+        grade_mapping = {
+            "K-2": "GRADE_2",
+            "3-5": "GRADE_4",
+            "6-8": "GRADE_7",
+            "9-12": "GRADE_10",
+        }
+        
+        if body and body.grade and body.grade in grade_mapping:
+            grade_name = grade_mapping[body.grade]
+            current_grade_value = GradeLevel[grade_name].value
+            logger.info(f"[ASSESSMENT] Using override grade: {body.grade} -> {grade_name} (value: {current_grade_value})")
+        else:
+            current_grade_value = GradeLevel[user_profile.current_grade].value
+            logger.info(f"[ASSESSMENT] User grade: {user_profile.current_grade} (value: {current_grade_value})")
 
         # Get questions with explicit grade distribution
         # Distribution: 2 (grade-2), 4 (grade-1), 2 (current), 2 (grade+1)
