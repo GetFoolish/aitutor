@@ -28,7 +28,9 @@ import HintDisplay from "../hint-display/HintDisplay";
 import HintButton from "../hint-button/HintButton";
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
+const CONTENT_API_URL = import.meta.env.VITE_CONTENT_API_URL || 'http://localhost:8001';
 const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
+const USE_GENERATED_QUESTIONS = import.meta.env.VITE_USE_GENERATED_QUESTIONS === 'true';
 
 interface RendererComponentProps {
     onSkillChange?: (skill: string) => void;
@@ -101,6 +103,44 @@ const RendererComponent = ({
             
             const attemptFetch = async (): Promise<void> => {
                 try {
+                    // Use Generated Questions API (Innocent Drinks style) if enabled
+                    if (USE_GENERATED_QUESTIONS) {
+                        console.log('🍪 Using Generated Questions API (Innocent Drinks style)');
+                        const storedTopic = localStorage.getItem('learning_pref_topic') || 'general practice';
+                        const storedGrade = localStorage.getItem('learning_pref_grade') || '3-5';
+                        const storedSubject = localStorage.getItem('learning_pref_subject') || 'math';
+                        const storedLanguage = localStorage.getItem('learning_pref_language') || 'en';
+
+                        const genUrl = user_id
+                            ? `${CONTENT_API_URL}/api/generate/personalized?student_id=${encodeURIComponent(user_id)}`
+                            : `${CONTENT_API_URL}/api/generate/live`;
+
+                        const response = await fetch(genUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                prompt: storedTopic,
+                                grade: storedGrade,
+                                subject: storedSubject,
+                                language: storedLanguage,
+                                count: 5
+                            })
+                        });
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data && data.length > 0) {
+                                setPerseusItems(data);
+                                setItem(0);
+                                setEndOfTest(false);
+                                setIsAnswered(false);
+                                setStartTime(Date.now());
+                                setIsLoading(false);
+                                return;
+                            }
+                        }
+                        console.warn('Generated questions not available, falling back to DASH API');
+                    }
+
                     // First, check for pre-loaded questions
                     const preloadedResponse = await apiUtils.get(`${DASH_API_URL}/api/questions/preloaded`);
                     if (preloadedResponse.ok) {
@@ -319,73 +359,70 @@ const RendererComponent = ({
         if (rendererRef.current) {
             // getUserInput() returns UserInputMap (the new object format)
             const userInput = rendererRef.current.getUserInput();
-            const itemData = perseusItem; // Full item with question AND answer
+            const itemData = perseusItem as any; // Full item with question AND answer
             
             console.log('[SCORING] User input:', JSON.stringify(userInput, null, 2));
             console.log('[SCORING] Item data keys:', Object.keys(itemData));
             console.log('[SCORING] Has answer key:', !!itemData.answer);
             console.log('[SCORING] Answer:', JSON.stringify(itemData.answer, null, 2));
             
-            // Custom scoring since Perseus doesn't have answer keys in our questions
-            // Score based on the 'correct' property in widget choices
-            let isCorrect = false;
             const question = itemData.question;
-            
-            // Check each widget in the user input
-            for (const [widgetId, widgetInput] of Object.entries(userInput)) {
-                const widgetDef = question.widgets?.[widgetId];
-                if (!widgetDef) continue;
-                
-                if (widgetDef.type === 'radio') {
-                    const choices = widgetDef.options?.choices || [];
-                    const selectedIds = (widgetInput as any).selectedChoiceIds || [];
-                    const isMultiSelect = widgetDef.options?.multipleSelect || false;
 
-                    if (isMultiSelect) {
-                        // For multi-select: all selected choices must be correct, and all correct choices must be selected
-                        const correctIndices = choices
-                            .map((c, i) => c.correct ? i : -1)
-                            .filter(i => i >= 0);
-                        const selectedIndices = selectedIds.map((id: string) => {
-                            const match = id.match(/choice-(\d+)-/);
-                            return match ? parseInt(match[1]) : -1;
-                        }).filter((i: number) => i >= 0);
+            const fallbackIsCorrect = () => {
+                let fallbackCorrect = false;
 
-                        isCorrect = correctIndices.length === selectedIndices.length &&
-                                   correctIndices.every((idx: number) => selectedIndices.includes(idx));
-                    } else {
-                        // For single-select: the one selected choice must be correct
-                        if (selectedIds.length === 1) {
-                            const selectedId = selectedIds[0];
-                            const match = selectedId.match(/choice-(\d+)-/);
-                            if (match) {
-                                const selectedIndex = parseInt(match[1]);
-                                isCorrect = choices[selectedIndex]?.correct === true;
+                for (const [widgetId, widgetInput] of Object.entries(userInput)) {
+                    const widgetDef = (question.widgets as Record<string, any>)?.[widgetId];
+                    if (!widgetDef) continue;
+
+                    if (widgetDef.type === 'radio') {
+                        const choices = widgetDef.options?.choices || [];
+                        const selectedIds = (widgetInput as any).selectedChoiceIds || [];
+                        const isMultiSelect = widgetDef.options?.multipleSelect || false;
+
+                        if (isMultiSelect) {
+                            const correctIndices = choices
+                                .map((c: any, i: number) => c.correct ? i : -1)
+                                .filter((i: number) => i >= 0);
+                            const selectedIndices = selectedIds.map((id: string) => {
+                                const match = id.match(/choice-(\d+)-/);
+                                return match ? parseInt(match[1]) : -1;
+                            }).filter((i: number) => i >= 0);
+
+                            fallbackCorrect = correctIndices.length === selectedIndices.length &&
+                                correctIndices.every((idx: number) => selectedIndices.includes(idx));
+                        } else {
+                            if (selectedIds.length === 1) {
+                                const selectedId = selectedIds[0];
+                                const match = selectedId.match(/choice-(\d+)-/);
+                                if (match) {
+                                    const selectedIndex = parseInt(match[1]);
+                                    fallbackCorrect = choices[selectedIndex]?.correct === true;
+                                }
                             }
                         }
-                    }
-                } else if (widgetDef.type === 'orderer') {
-                    // For orderer widget: check if user's order matches correctOptions
-                    const correctOptions = widgetDef.options?.correctOptions || [];
-                    const userOrder = (widgetInput as any).current || [];
+                    } else if (widgetDef.type === 'orderer') {
+                        const correctOptions = widgetDef.options?.correctOptions || [];
+                        const userOrder = (widgetInput as any).current || [];
 
-                    // Compare content of each item in order
-                    if (correctOptions.length === userOrder.length) {
-                        isCorrect = correctOptions.every((correctOpt: any, index: number) => {
-                            return correctOpt.content === userOrder[index];
-                        });
+                        if (correctOptions.length === userOrder.length) {
+                            fallbackCorrect = correctOptions.every((correctOpt: any, index: number) => {
+                                return correctOpt.content === userOrder[index];
+                            });
+                        }
                     }
                 }
-            }
-            
-            console.log('[SCORING] Custom score - is correct:', isCorrect);
-            
-            const scoreResult = {
-                type: isCorrect ? 'points' : 'points',
-                earned: isCorrect ? 1 : 0,
-                total: 1,
-                message: null
+
+                return fallbackCorrect;
             };
+
+            let scoreResult: any;
+            try {
+                scoreResult = scorePerseusItem(question, userInput, "en");
+            } catch (error) {
+                console.error('[SCORING] scorePerseusItem failed:', error);
+                scoreResult = { type: 'invalid', message: 'scoring_error' };
+            }
 
             // Continue to include an empty guess for the now defunct answer area.
             const maxCompatGuess = [rendererRef.current.getUserInputLegacy(), []];
@@ -401,6 +438,23 @@ const RendererComponent = ({
                 guess: keScore.guess
             });
 
+            let isCorrect = false;
+
+            if (scoreResult.type === 'points') {
+                isCorrect = scoreResult.earned === scoreResult.total && scoreResult.total > 0;
+            } else if (scoreResult.type === 'invalid') {
+                isCorrect = fallbackIsCorrect();
+            } else {
+                isCorrect = Boolean(keScore.correct === true || keScore.correct === 'true');
+            }
+
+            const sanitizedScore = {
+                ...keScore,
+                correct: isCorrect
+            };
+
+            console.log('[SCORING] Final correct value:', sanitizedScore.correct);
+
             // Calculate response time
             const responseTimeSeconds = (Date.now() - startTime) / 1000;
 
@@ -411,11 +465,11 @@ const RendererComponent = ({
                 const questionId = metadata.dash_question_id || `q_${item}`;
                 
                 setIsAnswered(true);
-                setScore(keScore);
+                setScore(sanitizedScore);
                 setShowFeedback(true);
                 
                 // Call the callback with question ID and correctness
-                onAssessmentAnswer(questionId, keScore.correct);
+                onAssessmentAnswer(questionId, sanitizedScore.correct);
                 return;
             }
 
@@ -429,7 +483,7 @@ const RendererComponent = ({
                     user_id: user_id,
                     question_id: questionId,
                     skill_ids: metadata.skill_ids || ["counting_1_10"],
-                    is_correct: keScore.correct,
+                    is_correct: sanitizedScore.correct,
                     response_time_seconds: responseTimeSeconds
                 });
                 
@@ -441,7 +495,7 @@ const RendererComponent = ({
                     try {
                         for (const videoId of watchedVideoIds) {
                             await apiUtils.post(
-                                `${DASH_API_URL}/api/videos/mark-helpful?question_id=${encodeURIComponent(questionId)}&video_id=${encodeURIComponent(videoId)}&is_correct=${keScore.correct}`,
+                                `${DASH_API_URL}/api/videos/mark-helpful?question_id=${encodeURIComponent(questionId)}&video_id=${encodeURIComponent(videoId)}&is_correct=${sanitizedScore.correct}`,
                                 {}
                             );
                         }
@@ -457,8 +511,8 @@ const RendererComponent = ({
 
             // Display score to user
             setIsAnswered(true);
-            setScore(keScore);
-            console.log("Score:", keScore);
+            setScore(sanitizedScore);
+            console.log("Score:", sanitizedScore);
         }
     };
 

@@ -545,8 +545,8 @@ const AccountPage: React.FC = () => {
                           {accountInfo.free_minutes.next_reset_in_hours > 0 &&
                             `${accountInfo.free_minutes.next_reset_in_hours}h`}
                           {accountInfo.free_minutes.next_reset_in_hours > 0 &&
-                           accountInfo.free_minutes.next_reset_in_minutes > 0 && ' '}
-                          {accountInfo.free_minutes.next_reset_in_minutes > 0 &&
+                           (accountInfo.free_minutes.next_reset_in_minutes ?? 0) > 0 && ' '}
+                          {(accountInfo.free_minutes.next_reset_in_minutes ?? 0) > 0 &&
                             `${accountInfo.free_minutes.next_reset_in_minutes}m`}
                         </span>
                       </>

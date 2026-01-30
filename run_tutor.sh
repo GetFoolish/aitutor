@@ -32,7 +32,11 @@ mkdir -p "$SCRIPT_DIR/logs"
 # Detect Python environment
 if [[ -z "$VIRTUAL_ENV" ]]; then
     # Not already in a virtual environment
-    if [[ -d "$SCRIPT_DIR/venv" ]]; then
+    if [[ -d "$SCRIPT_DIR/.venv" ]]; then
+        echo "Activating local .venv..."
+        # shellcheck source=/dev/null
+        source "$SCRIPT_DIR/.venv/bin/activate"
+    elif [[ -d "$SCRIPT_DIR/venv" ]]; then
         echo "Activating local venv..."
         # shellcheck source=/dev/null
         source "$SCRIPT_DIR/venv/bin/activate"
@@ -40,10 +44,6 @@ if [[ -z "$VIRTUAL_ENV" ]]; then
         echo "Activating local env..."
         # shellcheck source=/dev/null
         source "$SCRIPT_DIR/env/bin/activate"
-    elif [[ -d "$SCRIPT_DIR/.env" ]]; then
-        echo "Activating local .env..."
-        # shellcheck source=/dev/null
-        source "$SCRIPT_DIR/.env/bin/activate"
     else
         echo "❌ No virtual environment found."
         echo "👉 Please create one with:"
@@ -107,14 +107,14 @@ echo "Starting DASH API server... Logs -> logs/dash_api.log"
 (cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/DashSystem/dash_api.py) > "$SCRIPT_DIR/logs/dash_api.log" 2>&1 &
 pids+=($!)
 
-# Start the SherlockEDExam FastAPI server in the background
-echo "Starting SherlockED Exam API server... Logs -> logs/sherlocked_exam.log"
-(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/SherlockEDApi/run_backend.py) > "$SCRIPT_DIR/logs/sherlocked_exam.log" 2>&1 &
+# Start the Content API server (Question Generation) in the background
+echo "Starting Content API server (Question Generation)... Logs -> logs/content_api.log"
+(cd "$SCRIPT_DIR" && "$PYTHON_BIN" -m uvicorn content.api:app --host 0.0.0.0 --port 8001) > "$SCRIPT_DIR/logs/content_api.log" 2>&1 &
 pids+=($!)
 
-# Start the TeachingAssistant API server in the background
-echo "Starting TeachingAssistant API server... Logs -> logs/teaching_assistant.log"
-(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/TeachingAssistant/api.py) > "$SCRIPT_DIR/logs/teaching_assistant.log" 2>&1 &
+# Start the TeachingAssistant API server in the background (logs visible in console)
+echo "Starting TeachingAssistant API server... Logs -> console"
+(cd "$SCRIPT_DIR" && "$PYTHON_BIN" services/TeachingAssistant/api.py) &
 pids+=($!)
 
 # Note: Tutor service has been moved to frontend (frontend/src/services/tutor/)
@@ -154,14 +154,14 @@ done
 if [ $WAIT_COUNT -eq $MAX_WAIT ]; then
     echo "⚠️  Warning: DASH API may not be fully ready, but continuing..."
 fi
-SHERLOCKED_API_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/SherlockEDApi/run_backend.py" 2>/dev/null | grep -o '[0-9]*' || echo "8001")
+CONTENT_API_PORT=$(grep -o 'port=8[0-9]*' "$SCRIPT_DIR/content/api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8001")
 TEACHING_ASSISTANT_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/TeachingAssistant/api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8002")
 AUTH_SERVICE_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/AuthService/auth_api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8003")
 
 # Ensure all port variables are properly set (fallback to defaults if extraction failed)
 FRONTEND_PORT=${FRONTEND_PORT:-3000}
 DASH_API_PORT=${DASH_API_PORT:-8000}
-SHERLOCKED_API_PORT=${SHERLOCKED_API_PORT:-8001}
+CONTENT_API_PORT=${CONTENT_API_PORT:-8001}
 TEACHING_ASSISTANT_PORT=${TEACHING_ASSISTANT_PORT:-8002}
 AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT:-8003}
 
@@ -179,7 +179,7 @@ echo "📡 Service URLs:"
 echo "  🌐 Frontend:           http://localhost:$FRONTEND_PORT"
 echo "  🔐 Auth Service:       http://localhost:$AUTH_SERVICE_PORT"
 echo "  🔧 DASH API:           http://localhost:$DASH_API_PORT"
-echo "  🕵️  SherlockED API:     http://localhost:$SHERLOCKED_API_PORT"
+echo "  📝 Content API:        http://localhost:$CONTENT_API_PORT (Question Generation)"
 echo "  👨‍🏫 TeachingAssistant:  http://localhost:$TEACHING_ASSISTANT_PORT"
 echo "  🎓 Tutor Service:      (integrated in frontend)"
 echo "  🎓 Cost Tracking Service:  http://localhost:$COST_TRACKING_PORT"

@@ -1,0 +1,49 @@
+{
+  "question_id": "gen_3-5_math_decimals_e278793f",
+  "question": {
+    "content": "quick one. emma's got a new spaceship. it needs 3.5 litres of fuel to get to the moon.\n\nyou've got a fuel tank that holds 8.2 litres. if you fill emma's spaceship, how much fuel is left in the tank? \n\n [[\u2603 input-number 1]] litres",
+    "widgets": {
+      "input-number 1": {
+        "type": "input-number",
+        "options": {
+          "answerType": "number",
+          "inexact": false,
+          "maxError": 0.1,
+          "rightAlign": false,
+          "simplify": "required",
+          "size": "normal",
+          "value": 4.7
+        }
+      }
+    },
+    "images": {}
+  },
+  "hints": [
+    {
+      "content": "think about what happens when you *take away* some fuel.",
+      "widgets": {}
+    },
+    {
+      "content": "decimals can be a bit fiddly, but you're good at spotting patterns. maybe write it out carefully?",
+      "widgets": {}
+    },
+    {
+      "content": "you've got this. (no rush, we'll wait)",
+      "widgets": {}
+    }
+  ],
+  "answer_area": {},
+  "widget_types": [
+    "input-number"
+  ],
+  "grade": "3-5",
+  "subject": "math",
+  "topic": "decimals",
+  "metadata": {
+    "widget_type": "input-number",
+    "generated_at": "2026-01-29T15:58:44.386365+00:00",
+    "generator": "QuestionGenerator",
+    "model": "gemini-2.0-flash",
+    "personalized": true
+  }
+}

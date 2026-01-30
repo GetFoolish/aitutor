@@ -52,6 +52,22 @@ code {
 .question-panel {
   position: relative;
   min-height: 500px;
+  /* Prevent content from going under floating control panel */
+  padding-right: 340px !important;
+  box-sizing: border-box;
+  /* Center the question content */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Question content should not overflow */
+.question-panel .framework-perseus,
+.question-panel #question-content-container {
+  max-width: 100% !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
 }
 
 /* Scratchpad capture wrapper */
@@ -680,4 +696,61 @@ a[target="lint-help-window"] {
   .dark ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.2);
   }
+}
+/* Assessment Question Text Legibility Fix */
+.framework-perseus .paragraph {
+  font-size: 20px !important;
+  line-height: 1.6 !important;
+  color: #000000 !important;
+  font-weight: 500 !important;
+}
+
+.framework-perseus p {
+  font-size: 20px !important;
+  line-height: 1.6 !important;
+  color: #000000 !important;
+}
+
+/* Make inputs more visible */
+.framework-perseus input[type="text"],
+.framework-perseus input[type="number"] {
+  font-size: 24px !important;
+  padding: 12px 16px !important;
+  border: 3px solid #000 !important;
+  border-radius: 8px !important;
+  background: #FFFEF0 !important;
+}
+
+/* Force legible text in question container */
+#question-content-container,
+#question-content-container * {
+  font-size: 22px !important;
+  line-height: 1.6 !important;
+  color: #000000 !important;
+}
+
+#question-content-container p,
+#question-content-container span,
+#question-content-container div {
+  font-size: 22px !important;
+  color: #000000 !important;
+}
+
+/* Make sure inputs don't get the large font */
+#question-content-container input {
+  font-size: 24px !important;
+  padding: 12px 16px !important;
+  min-width: 80px !important;
+}
+
+/* Reduce dot pattern opacity for better readability */
+.auth-container::before {
+  opacity: 0.15 !important;
+}
+
+/* Make question container fully opaque */
+#question-content-container {
+  background: #FFFFFF !important;
+  position: relative;
+  z-index: 2;
 }

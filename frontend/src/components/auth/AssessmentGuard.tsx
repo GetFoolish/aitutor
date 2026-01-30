@@ -7,16 +7,17 @@
 import React, { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { apiUtils } from '../../lib/api-utils';
 import UserOnboardingFlow from './UserOnboardingFlow';
+import LearnerOnboarding from '../onboarding/LearnerOnboarding';
+import { jwtUtils } from '../../lib/jwt-utils';
 
 interface AssessmentGuardProps {
   children: React.ReactNode;
   subject?: string;
 }
 
-const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 const DEFAULT_SUBJECT = 'math';
+const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 
 const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
   children,
@@ -25,13 +26,18 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
   const { isAuthenticated, isLoading } = useAuth();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
+  const [showLearnerOnboarding, setShowLearnerOnboarding] = useState(false);
+  
+  // Check sessionStorage for cached completion status (prevents redirect loop)
+  const cachedCompleted = sessionStorage.getItem('assessment_completed_dynamic') === 'true';
+  
   const [assessmentStatus, setAssessmentStatus] = useState<{
     loading: boolean;
     completed: boolean;
     checkFailed: boolean;
   }>({
-    loading: true,
-    completed: false,
+    loading: !cachedCompleted, // Don't load if already completed
+    completed: cachedCompleted,
     checkFailed: false
   });
 
@@ -49,6 +55,11 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
     } else {
       // Onboarding done - check assessment status normally
       setOnboardingComplete(true);
+      const learnerDone = sessionStorage.getItem('learner_onboarding_complete') === 'true';
+      if (!learnerDone) {
+        setShowLearnerOnboarding(true);
+        return;
+      }
       checkAssessmentStatus();
     }
   }, [isAuthenticated, isLoading, subject]);
@@ -59,6 +70,11 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
       setShowOnboarding(false);
       setOnboardingComplete(true);
       sessionStorage.setItem('onboarding_complete', 'true');
+      const learnerDone = sessionStorage.getItem('learner_onboarding_complete') === 'true';
+      if (!learnerDone) {
+        setShowLearnerOnboarding(true);
+        return;
+      }
       checkAssessmentStatus();
     };
 
@@ -68,31 +84,60 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
     };
   }, []);
 
+  useEffect(() => {
+    const handleLearnerOnboardingComplete = () => {
+      setShowLearnerOnboarding(false);
+    };
+
+    window.addEventListener('learner-onboarding-complete', handleLearnerOnboardingComplete);
+    return () => {
+      window.removeEventListener('learner-onboarding-complete', handleLearnerOnboardingComplete);
+    };
+  }, []);
+
   const checkAssessmentStatus = async () => {
+    // Skip API call if already cached as completed
+    if (sessionStorage.getItem('assessment_completed_dynamic') === 'true') {
+      setAssessmentStatus({
+        loading: false,
+        completed: true,
+        checkFailed: false
+      });
+      return;
+    }
+
+    setAssessmentStatus({
+      loading: true,
+      completed: false,
+      checkFailed: false
+    });
+
     try {
-      const response = await apiUtils.get(
-        `${DASH_API_URL}/assessment/status/${subject}`
-      );
+      const token = jwtUtils.getToken();
+      const response = await fetch(`${DASH_API_URL}/api/assessment/dynamic/status`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
 
       if (!response.ok) {
-        console.warn(`Failed to check assessment status: ${response.status}`);
-        setAssessmentStatus({
-          loading: false,
-          completed: false,
-          checkFailed: true
-        });
-        return;
+        throw new Error(`Status check failed: ${response.status}`);
       }
 
       const data = await response.json();
+      const completed = data?.completed === true;
+
+      if (completed) {
+        sessionStorage.setItem('assessment_completed_dynamic', 'true');
+      }
 
       setAssessmentStatus({
         loading: false,
-        completed: data.completed || false,
+        completed,
         checkFailed: false
       });
     } catch (error) {
-      console.error('Error checking assessment status:', error);
+      console.error('[AssessmentGuard] Failed to check dynamic assessment status:', error);
       setAssessmentStatus({
         loading: false,
         completed: false,
@@ -126,6 +171,10 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
     return <UserOnboardingFlow />;
   }
 
+  if (showLearnerOnboarding) {
+    return <LearnerOnboarding />;
+  }
+
   // Show loading while checking assessment status
   if (!onboardingComplete || assessmentStatus.loading) {
     return (
@@ -146,9 +195,9 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
     return <>{children}</>;
   }
 
-  // If assessment not completed, redirect to assessment
+  // If assessment not completed, redirect to learner onboarding
   if (!assessmentStatus.completed) {
-    return <Redirect to={`/app/assessment/${subject}`} />;
+    return <Redirect to="/app/onboarding" />;
   }
 
   // Assessment completed, allow access to app

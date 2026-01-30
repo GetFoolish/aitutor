@@ -1,0 +1,67 @@
+{
+  "question_id": "gen_3-5_math_multiplication_d60917c0",
+  "question": {
+    "content": "have a go at this one. you're building a t-rex enclosure in minecraft. it's gonna be 7 blocks wide and 9 blocks long. how many blocks do you need to fill the whole area? [[\u2603 radio 1]]",
+    "widgets": {
+      "radio 1": {
+        "type": "radio",
+        "options": {
+          "choices": [
+            {
+              "clue": "are you sure? maybe try multiplying the numbers?",
+              "content": "14",
+              "correct": false
+            },
+            {
+              "clue": "nope, think bigger. t-rexes need loads of space!",
+              "content": "16",
+              "correct": false
+            },
+            {
+              "content": "63",
+              "correct": true,
+              "isNoneOfTheAbove": false
+            },
+            {
+              "clue": "nearly! double check your times tables",
+              "content": "54",
+              "correct": false,
+              "isNoneOfTheAbove": false
+            }
+          ],
+          "countChoices": false,
+          "deselectEnabled": false,
+          "displayCount": null,
+          "hasNoneOfTheAbove": false,
+          "multipleSelect": false,
+          "randomize": true
+        }
+      }
+    },
+    "images": {}
+  },
+  "hints": [
+    {
+      "content": "think about how many blocks you need in each row, and how many rows there are.",
+      "widgets": {}
+    },
+    {
+      "content": "remember, multiplication is just adding the same number again and again.",
+      "widgets": {}
+    }
+  ],
+  "answer_area": {},
+  "widget_types": [
+    "radio"
+  ],
+  "grade": "3-5",
+  "subject": "math",
+  "topic": "multiplication",
+  "metadata": {
+    "widget_type": "radio",
+    "generated_at": "2026-01-29T15:58:24.051705+00:00",
+    "generator": "QuestionGenerator",
+    "model": "gemini-2.0-flash",
+    "personalized": true
+  }
+}

@@ -37,11 +37,11 @@ import {
 } from "@/components/ui/avatar";
 
 interface HeaderProps {
-    sidebarOpen: boolean;
-    onToggleSidebar: () => void;
+    sidebarOpen?: boolean;
+    onToggleSidebar?: () => void;
 }
 
-export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
+export default function Header({ sidebarOpen = false, onToggleSidebar }: HeaderProps) {
     const { theme, setTheme } = useTheme();
     const [isDarkMode, setIsDarkMode] = useState(false);
 

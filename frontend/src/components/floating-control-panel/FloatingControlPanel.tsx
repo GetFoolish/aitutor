@@ -859,7 +859,7 @@ function FloatingControlPanel({
   const panelClasses = useMemo(
     () =>
       cn(
-        "fixed z-[1000] bg-[#FFFDF5] dark:bg-[#000000] border-[2px] md:border-[3px] border-black dark:border-white rounded-lg md:rounded-xl",
+        "fixed z-[1000] bg-[#FFFDF5] dark:bg-[#000000] border-[2px] md:border-[3px] border-black dark:border-white rounded-lg md:rounded-xl cursor-grab active:cursor-grabbing",
         isCollapsed
           ? "w-[50px] md:w-[55px] py-2 md:py-2.5 px-1 md:px-1.5 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)]"
           : "w-[220px] md:w-[250px] p-2.5 md:p-3 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1),_6px_6px_16px_rgba(0,0,0,0.15),_12px_12px_32px_rgba(0,0,0,0.1)]",
@@ -874,7 +874,6 @@ function FloatingControlPanel({
       className={panelClasses}
       drag
       dragControls={dragControls}
-      dragListener={false}
       dragMomentum={false}
       dragElastic={0}
       dragConstraints={{
@@ -914,12 +913,14 @@ function FloatingControlPanel({
           style={{ display: 'none' }}
         />
         
+        {/* Drag handle indicator */}
+        <div className="w-12 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-1 cursor-grab active:cursor-grabbing" />
+        
         <div
           className={cn(
             "cursor-grab active:cursor-grabbing flex items-center mb-1.5 md:mb-2",
             isCollapsed ? "justify-center mb-1 md:mb-1.5" : "justify-between",
           )}
-          onPointerDown={(e) => dragControls.start(e)}
         >
           {!isCollapsed && (
             <div className="flex items-center gap-1.5 md:gap-2">

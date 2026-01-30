@@ -1,0 +1,60 @@
+/* Assessment Question Styling - Minimal, matches v1 */
+
+/* Question content container */
+#question-content-container {
+  font-family: 'Comic Neue', 'Nunito', 'Quicksand', system-ui, -apple-system, sans-serif;
+  font-size: 18px;
+  line-height: 1.7;
+  color: #333;
+}
+
+/* Perseus question text */
+#question-content-container .paragraph,
+#question-content-container p,
+#question-content-container .perseus-paragraph,
+.framework-perseus .paragraph,
+.framework-perseus p {
+  font-family: 'Comic Neue', 'Nunito', 'Quicksand', system-ui, sans-serif !important;
+  font-size: 20px !important;
+  line-height: 1.8 !important;
+  color: #2d3436 !important;
+}
+
+/* Input boxes for numeric answers */
+#question-content-container input[type="text"],
+#question-content-container .perseus-input,
+#question-content-container .numeric-input {
+  font-family: 'Comic Neue', 'Nunito', system-ui, sans-serif !important;
+  font-size: 24px !important;
+  padding: 16px 20px !important;
+  border: 3px solid #000 !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  min-width: 100px !important;
+  text-align: center !important;
+  font-weight: 600 !important;
+  box-shadow: 3px 3px 0 0 #000 !important;
+}
+
+#question-content-container input[type="text"]:focus,
+#question-content-container .perseus-input:focus {
+  outline: none !important;
+  border-color: #FFD93D !important;
+  box-shadow: 4px 4px 0 0 #FFD93D !important;
+}
+
+/* Animation for question entrance */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#question-content-container {
+  animation: fadeInUp 0.4s ease-out;
+}

@@ -30,8 +30,12 @@ const LandingPageWrapper = lazy(() => import("./components/landing/LandingPageWr
 const AccountPage = lazy(() => import("./components/account/AccountPage"));
 const PricingPage = lazy(() => import("./components/pricing/PricingPage"));
 const AssessmentFlow = lazy(() => import("./components/assessment/AssessmentFlow"));
+const DynamicAssessment = lazy(() => import("./components/assessment/DynamicAssessment"));
 const AdminVideoPanel = lazy(() => import("./components/admin/AdminVideoPanel"));
 const CostTrackingPage = lazy(() => import("./components/admin/CostTrackingPage"));
+const LearningPlanDashboard = lazy(() => import("./components/learning-plan/LearningPlanDashboard"));
+const PracticeSession = lazy(() => import("./components/practice/PracticeSession"));
+const LearnerOnboarding = lazy(() => import("./components/onboarding/LearnerOnboarding"));
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
@@ -151,12 +155,18 @@ root.render(
               <Switch>
                 <Route path="/app/auth/setup" component={LoginPage} />
                 <Route path="/app/login" component={LoginPage} />
+                <Route path="/app/admin/videos" component={AdminVideoPanel} />
+                <Route path="/app/admin/cost-tracking" component={CostTrackingPage} />
+                <Route path="/app/onboarding" component={LearnerOnboarding} />
+                <Route path="/app/learning-plan" component={LearningPlanDashboard} />
+                <Route path="/app/practice" component={PracticeSession} />
+                <Route path="/app/assessment/dynamic" component={DynamicAssessment} />
+                <Route path="/app/assessment/:subject" render={() => <Redirect to="/app/onboarding" />} />
                 <Route path="/app/account" component={AccountPage} />
                 <Route path="/app/pricing" component={PricingPage} />
                 <Route path="/pricing" component={PricingPage} />
-                <Route path="/app/admin/videos" component={AdminVideoPanel} />
-                <Route path="/app/admin/cost-tracking" component={CostTrackingPage} />
-                <Route path="/app/assessment/:subject" component={AssessmentFlow} />
+                <Route path="/assessment/:subject" render={() => <Redirect to="/app/onboarding" />} />
+                <Route path="/assessment" exact render={() => <Redirect to="/app/onboarding" />} />
                 <Route path="/landing/:id" component={LandingPageWrapper} /> {/* Dynamic landing page routes */}
                 <Route path="/app" exact component={LandingPageOrApp} />
                 <Route path="/app" component={App} />

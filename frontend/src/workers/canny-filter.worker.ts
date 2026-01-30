@@ -206,6 +206,7 @@ self.onmessage = (e: MessageEvent) => {
       throw new Error(`Invalid data type: ${typeof data}`);
     }
 
+    // @ts-ignore - TypeScript struggles with worker context ImageData constructor
     const imageData = new ImageData(imageDataArray, width, height);
 
     // Apply Canny edge detection
@@ -224,7 +225,7 @@ self.onmessage = (e: MessageEvent) => {
       width: resultImageData.width,
       height: resultImageData.height,
       data: resultBuffer
-    }, [resultBuffer]);
+    }, { transfer: [resultBuffer] });
 
   } catch (error: any) {
     console.error('[Canny Worker] Error:', error);

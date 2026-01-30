@@ -14,7 +14,7 @@ export interface Country {
 export function getCountryList(): Country[] {
   const countries = getData();
   return countries
-    .map((country: any) => ({
+    .map((country) => ({
       code: country.code,
       name: country.name
     }))

@@ -1,0 +1,58 @@
+{
+  "question_id": "gen_3-5_math_fractions_f1d4314a",
+  "question": {
+    "content": "alright, let's bake some cookies! you're helping mom, and the recipe says you need 1/4 cup of sugar. but you only want to make *half* the recipe. how much sugar do you need then? is it [[\u2603 dropdown 1]] cup?",
+    "widgets": {
+      "dropdown 1": {
+        "type": "dropdown",
+        "options": {
+          "choices": [
+            {
+              "content": "1/2",
+              "correct": false
+            },
+            {
+              "content": "1/8",
+              "correct": true
+            },
+            {
+              "content": "1/3",
+              "correct": false
+            },
+            {
+              "content": "1/6",
+              "correct": false
+            }
+          ],
+          "placeholder": "",
+          "static": false
+        }
+      }
+    },
+    "images": {}
+  },
+  "hints": [
+    {
+      "content": "think about what half of a quarter looks like. maybe draw a picture? (take your time)",
+      "widgets": {}
+    },
+    {
+      "content": "remember, when you find a fraction *of* something, you usually multiply. so 1/2 * 1/4...",
+      "widgets": {}
+    }
+  ],
+  "answer_area": {},
+  "widget_types": [
+    "dropdown"
+  ],
+  "grade": "3-5",
+  "subject": "math",
+  "topic": "fractions",
+  "metadata": {
+    "widget_type": "dropdown",
+    "generated_at": "2026-01-29T15:58:28.946640+00:00",
+    "generator": "QuestionGenerator",
+    "model": "gemini-2.0-flash",
+    "personalized": true
+  }
+}

@@ -146,7 +146,7 @@ const UserOnboardingFlow: React.FC = () => {
         
         window.dispatchEvent(new CustomEvent('onboarding-complete'));
         sessionStorage.setItem('onboarding_complete', 'true');
-        history.replace(`/app/assessment/${data.assessment_subject}`);
+        history.replace('/app');
       } else if (data.readiness_status === 'complete') {
         window.dispatchEvent(new CustomEvent('onboarding-complete'));
         sessionStorage.setItem('onboarding_complete', 'true');
@@ -255,7 +255,7 @@ const UserOnboardingFlow: React.FC = () => {
       sessionStorage.setItem('onboarding_complete', 'true');
 
       if (completeness && !completeness.assessment_completed) {
-        history.replace(`/app/assessment/${completeness.assessment_subject}`);
+        history.replace('/app');
       } else {
         history.replace('/app');
       }
@@ -393,9 +393,10 @@ const UserOnboardingFlow: React.FC = () => {
                       <Controller
                         name="dateOfBirth"
                         control={control}
-                        render={({ field }) => (
+                        render={({ field: { ref, ...fieldProps } }) => (
                           <Input
-                            {...field}
+                            {...fieldProps}
+                            value={fieldProps.value as string || ''}
                             id="dateOfBirth"
                             type="date"
                             className="h-12 text-lg"
@@ -442,7 +443,7 @@ const UserOnboardingFlow: React.FC = () => {
                         name="gender"
                         control={control}
                         render={({ field }) => (
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value as string | undefined}>
                             <SelectTrigger className="h-12 text-lg" style={{
                               border: '4px solid #000000',
                               backgroundColor: '#FFFFFF',
@@ -495,7 +496,7 @@ const UserOnboardingFlow: React.FC = () => {
                         name="preferredLanguage"
                         control={control}
                         render={({ field }) => (
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value as string | undefined}>
                             <SelectTrigger className="h-12 text-lg" style={{
                               border: '4px solid #000000',
                               backgroundColor: '#FFFFFF',
@@ -559,7 +560,7 @@ const UserOnboardingFlow: React.FC = () => {
                         name="location"
                         control={control}
                         render={({ field }) => (
-                          <Select onValueChange={(value) => { field.onChange(value); setCountrySearch(''); }} value={field.value}>
+                          <Select onValueChange={(value) => { field.onChange(value); setCountrySearch(''); }} value={field.value as string | undefined}>
                             <SelectTrigger className="h-12 text-lg" style={{
                               border: '4px solid #000000',
                               backgroundColor: '#FFFFFF',

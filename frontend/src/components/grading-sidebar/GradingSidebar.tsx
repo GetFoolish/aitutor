@@ -17,6 +17,7 @@ interface GradingSidebarProps {
     open: boolean;
     onToggle: () => void;
     currentSkill?: string | null;
+    onShowQuestionConfig?: () => void;
 }
 
 
@@ -38,7 +39,7 @@ const formatTime = (timestamp: number | null) => {
     );
 };
 
-export default function GradingSidebar({ open, onToggle, currentSkill }: GradingSidebarProps) {
+export default function GradingSidebar({ open, onToggle, currentSkill, onShowQuestionConfig }: GradingSidebarProps) {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const isUserScrollingRef = useRef(false);
     const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -250,6 +251,19 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                                     <div className="text-xs font-bold text-black mt-1">{overallMastery}% Mastery</div>
                                 </div>
                             </div>
+                        )}
+                        
+                        {/* New Practice Button */}
+                        {onShowQuestionConfig && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onShowQuestionConfig();
+                                }}
+                                className="w-full mb-4 px-4 py-3 border-[3px] border-black dark:border-white bg-[#4ADE80] hover:bg-[#22C55E] font-black text-sm uppercase tracking-wide shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                            >
+                                📝 New Practice Session
+                            </button>
                         )}
 
                         <Accordion

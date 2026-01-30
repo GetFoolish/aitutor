@@ -1,0 +1,46 @@
+{
+  "count": 5,
+  "updated_at": "2026-01-29T15:58:08.190975+00:00",
+  "questions": [
+    {
+      "question_id": "gen_K-2_math_subtraction_3aafa339",
+      "topic": "subtraction",
+      "widget_types": [
+        "numeric-input"
+      ],
+      "file": "gen_K-2_math_subtraction_3aafa339.json"
+    },
+    {
+      "question_id": "gen_K-2_math_counting_108df543",
+      "topic": "counting",
+      "widget_types": [
+        "radio"
+      ],
+      "file": "gen_K-2_math_counting_108df543.json"
+    },
+    {
+      "question_id": "gen_K-2_math_shapes_26be515f",
+      "topic": "shapes",
+      "widget_types": [
+        "radio"
+      ],
+      "file": "gen_K-2_math_shapes_26be515f.json"
+    },
+    {
+      "question_id": "gen_K-2_math_patterns_aca9fec4",
+      "topic": "patterns",
+      "widget_types": [
+        "orderer"
+      ],
+      "file": "gen_K-2_math_patterns_aca9fec4.json"
+    },
+    {
+      "question_id": "gen_K-2_math_addition_fa647dcc",
+      "topic": "addition",
+      "widget_types": [
+        "numeric-input"
+      ],
+      "file": "gen_K-2_math_addition_fa647dcc.json"
+    }
+  ]
+}

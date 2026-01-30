@@ -1,0 +1,70 @@
+{
+  "question_id": "gen_K-2_math_counting_108df543",
+  "question": {
+    "content": "grandma's making pancakes! she puts blueberries on some of them. have a look:\n\n\ud83e\udd5e\ud83e\udd5e\ud83e\uded0\ud83e\udd5e\ud83e\uded0\ud83e\udd5e\ud83e\udd5e\ud83e\uded0\n\nhow many pancakes have blueberries? pick the right number:",
+    "widgets": {
+      "radio 1": {
+        "type": "radio",
+        "options": {
+          "choices": [
+            {
+              "content": "2",
+              "correct": false,
+              "isNoneOfTheAbove": false
+            },
+            {
+              "content": "4",
+              "correct": false,
+              "isNoneOfTheAbove": false
+            },
+            {
+              "content": "3",
+              "correct": true,
+              "isNoneOfTheAbove": false
+            },
+            {
+              "content": "5",
+              "correct": false,
+              "isNoneOfTheAbove": false
+            }
+          ],
+          "countChoices": false,
+          "deselectEnabled": false,
+          "displayCount": null,
+          "hasNoneOfTheAbove": false,
+          "multipleSelect": false,
+          "randomize": true
+        }
+      }
+    },
+    "images": {}
+  },
+  "hints": [
+    {
+      "content": "count each blueberry pancake carefully. maybe point with your finger?",
+      "widgets": {}
+    },
+    {
+      "content": "remember to only count the pancakes with blueberries on top!",
+      "widgets": {}
+    },
+    {
+      "content": "think of buddy... buddy loves pancakes. you can do it!",
+      "widgets": {}
+    }
+  ],
+  "answer_area": {},
+  "widget_types": [
+    "radio"
+  ],
+  "grade": "K-2",
+  "subject": "math",
+  "topic": "counting",
+  "metadata": {
+    "widget_type": "radio",
+    "generated_at": "2026-01-29T15:57:52.797755+00:00",
+    "generator": "QuestionGenerator",
+    "model": "gemini-2.0-flash",
+    "personalized": true
+  }
+}

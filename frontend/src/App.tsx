@@ -31,8 +31,12 @@ import { useMediaMixer } from "./hooks/useMediaMixer";
 import { useMediaCapture } from "./hooks/useMediaCapture";
 import { useDeveloperMode } from "./hooks/use-developer-mode";
 import { apiUtils } from "./lib/api-utils";
+import { useAuth } from "./contexts/AuthContext";
+import { MemoryDebugInitializer } from "./components/memory-debug/MemoryDebugInitializer";
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
+const CONTENT_API_URL = import.meta.env.VITE_CONTENT_API_URL || 'http://localhost:8001';
+const USE_GENERATED_QUESTIONS = import.meta.env.VITE_USE_GENERATED_QUESTIONS === 'true';
 
 // Lazy load heavy components
 const SidePanel = lazy(() => import("./components/side-panel/SidePanel"));
@@ -40,8 +44,10 @@ const GradingSidebar = lazy(() => import("./components/grading-sidebar/GradingSi
 const ScratchpadCapture = lazy(() => import("./components/scratchpad-capture/ScratchpadCapture"));
 const FloatingControlPanel = lazy(() => import("./components/floating-control-panel/FloatingControlPanel"));
 const LearningAssetsPanel = lazy(() => import("./components/side-panel/LearningAssetsPanel"));
+const QuestionConfig = lazy(() => import("./components/question-config/QuestionConfig"));
 
 function App() {
+  const { user } = useAuth();
   // Developer mode hook for Gemini Console visibility
   const { isDeveloperMode, toggleDeveloperMode } = useDeveloperMode();
 
@@ -49,6 +55,7 @@ function App() {
   // feel free to style as you see fit
   const videoRef = useRef<HTMLVideoElement>(null);
   const renderCanvasRef = useRef<HTMLCanvasElement>(null);
+  const processedEdgesRef = useRef<ImageData | null>(null);
   // either the screen capture, the video or null, if null we hide it
   const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
   const [mixerStream, setMixerStream] = useState<MediaStream | null>(null);
@@ -66,6 +73,10 @@ function App() {
   const [assessmentQuestions, setAssessmentQuestions] = useState<any[]>([]);
   const [assessmentCurrentIndex, setAssessmentCurrentIndex] = useState(0);
   const [assessmentAnswers, setAssessmentAnswers] = useState<any[]>([]);
+  
+  // Question configuration state (subject/grade/language picker)
+  const [showQuestionConfig, setShowQuestionConfig] = useState(false);
+  const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
 
   // Ref to hold mediaMixer instance for use in callbacks
   const mediaMixerRef = useRef<any>(null);
@@ -121,26 +132,73 @@ function App() {
   };
 
   // Assessment functions
-  const startAssessment = async (subject: string) => {
+  const startAssessment = async (subject: string, config?: { grade?: string; language?: string; count?: number; topic?: string }) => {
     try {
-      const response = await apiUtils.post(`${DASH_API_URL}/assessment/start/${subject}`, {});
-      
-      if (!response.ok) {
-        throw new Error(`Failed to start assessment: ${response.status}`);
+      let questions = [];
+      const grade = config?.grade || '3-5';
+      const language = config?.language || 'en';
+      const count = config?.count || 10;
+      const topic = config?.topic || subject;
+
+      // Use Generated Questions API (Innocent Drinks style) if enabled
+      if (USE_GENERATED_QUESTIONS) {
+        console.log(`🍪 Using Generated Questions: topic="${topic}", subject=${subject}, ${grade}, ${language}, ${count} questions`);
+        
+        const userId = user?.user_id;
+        const genUrl = userId
+          ? `${CONTENT_API_URL}/api/generate/personalized?student_id=${encodeURIComponent(userId)}`
+          : `${CONTENT_API_URL}/api/generate/live`;
+
+        // Try live generation with language support
+        const genResponse = await fetch(genUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt: topic,
+            grade: grade,
+            subject: subject,
+            language: language,
+            count: count
+          })
+        });
+        
+        if (genResponse.ok) {
+          questions = await genResponse.json();
+          console.log(`✅ Loaded ${questions.length} generated questions`);
+        } else {
+          // Fallback to static generated questions
+          const fallbackResponse = await fetch(`${CONTENT_API_URL}/api/generated/questions/${count}?grade=${grade}&subject=${subject}`);
+          if (fallbackResponse.ok) {
+            questions = await fallbackResponse.json();
+            console.log(`✅ Loaded ${questions.length} questions from static pool`);
+          } else {
+            console.warn('Generated questions not available, falling back to DASH API');
+          }
+        }
       }
 
-      const data = await response.json();
+      // Fallback to DASH API if no generated questions
+      if (questions.length === 0) {
+        const response = await apiUtils.post(`${DASH_API_URL}/assessment/start/${subject}`, {});
+        
+        if (!response.ok) {
+          throw new Error(`Failed to start assessment: ${response.status}`);
+        }
 
-      if (data.error) {
-        // Already completed - show results
-        alert(`You've already completed this assessment! Score: ${data.score}/${data.total || 0}`);
-        return;
+        const data = await response.json();
+
+        if (data.error) {
+          // Already completed - show results
+          alert(`You've already completed this assessment! Score: ${data.score}/${data.total || 0}`);
+          return;
+        }
+        questions = data.questions;
       }
 
       // Enter assessment mode
       setAssessmentMode(true);
       setAssessmentSubject(subject);
-      setAssessmentQuestions(data.questions);
+      setAssessmentQuestions(questions);
       setAssessmentCurrentIndex(0);
       setAssessmentAnswers([]);
       // Hide both sidebars
@@ -182,9 +240,32 @@ function App() {
     }
   };
 
+  // Handler for question config submission
+  const handleQuestionConfigStart = async (config: { subject: string; grade: string; language: string; count: number; topic: string }) => {
+    setIsLoadingQuestions(true);
+    try {
+      localStorage.setItem('learning_pref_topic', config.topic);
+      localStorage.setItem('learning_pref_grade', config.grade);
+      localStorage.setItem('learning_pref_subject', config.subject);
+      localStorage.setItem('learning_pref_language', config.language);
+      await startAssessment(config.subject, {
+        grade: config.grade,
+        language: config.language,
+        count: config.count,
+        topic: config.topic
+      });
+      setShowQuestionConfig(false);
+    } catch (error) {
+      console.error('Failed to start with config:', error);
+    } finally {
+      setIsLoadingQuestions(false);
+    }
+  };
+
   // Expose startAssessment globally for testing
   useEffect(() => {
     (window as any).startAssessment = startAssessment;
+    (window as any).showQuestionConfig = () => setShowQuestionConfig(true);
     (window as any).exitAssessmentMode = () => {
       setAssessmentMode(false);
       setAssessmentSubject(null);
@@ -217,13 +298,62 @@ function App() {
     <ThemeProvider defaultTheme="light" storageKey="ai-tutor-theme">
       <div className="App">
         <AuthGuard>
-          <AssessmentGuard subject="math" onStartAssessment={startAssessment}>
+          {/* Initialize memory debug functions for console testing (window.memoryDebug) */}
+          <MemoryDebugInitializer />
+          <AssessmentGuard subject="math">
             <TutorProvider>
               <HintProvider>
                 <Header
                   sidebarOpen={isSidebarOpen}
                   onToggleSidebar={toggleSidebar}
                 />
+
+                {/* Question Config Modal */}
+                {showQuestionConfig && (
+                  <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    zIndex: 1000,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    <div style={{
+                      backgroundColor: 'var(--neo-bg, #FFF8E7)',
+                      border: '4px solid var(--neo-black, #000)',
+                      boxShadow: '8px 8px 0 var(--neo-black, #000)',
+                      maxWidth: '650px',
+                      maxHeight: '90vh',
+                      overflow: 'auto',
+                      position: 'relative',
+                    }}>
+                      <button
+                        onClick={() => setShowQuestionConfig(false)}
+                        style={{
+                          position: 'absolute',
+                          top: '12px',
+                          right: '12px',
+                          background: 'none',
+                          border: 'none',
+                          fontSize: '24px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        ✕
+                      </button>
+                      <Suspense fallback={<div>Loading...</div>}>
+                        <QuestionConfig 
+                          onStart={handleQuestionConfigStart}
+                          isLoading={isLoadingQuestions}
+                        />
+                      </Suspense>
+                    </div>
+                  </div>
+                )}
 
                 <div className="streaming-console">
                   <Suspense fallback={<div className="flex items-center justify-center h-full w-full">Loading...</div>}>
@@ -235,17 +365,15 @@ function App() {
                     )}
                     {!isDeveloperMode && (
                       <LearningAssetsPanel
-                        questionId={currentQuestionId}
                         open={isSidebarOpen}
                         onToggle={toggleSidebar}
-                        onVideosWatched={setWatchedVideoIds}
-                        isDeveloperMode={isDeveloperMode}
                       />
                     )}
                     <GradingSidebar
                       open={isGradingSidebarOpen}
                       onToggle={toggleGradingSidebar}
                       currentSkill={currentSkill}
+                      onShowQuestionConfig={() => setShowQuestionConfig(true)}
                     />
                     <main style={{
                       marginRight: isSidebarOpen ? "260px" : "0",
@@ -311,7 +439,7 @@ function App() {
                           privacyMode={privacyEnabled}
                           onTogglePrivacy={setPrivacyEnabled}
                           mediaMixerCanvasRef={mediaMixer.canvasRef}
-                          processedEdgesRef={mediaMixer.processedEdgesRef}
+                          processedEdgesRef={processedEdgesRef}
                           assessmentMode={assessmentMode}
                         />
                       </div>

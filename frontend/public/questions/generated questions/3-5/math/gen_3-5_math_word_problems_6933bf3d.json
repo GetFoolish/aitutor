@@ -1,0 +1,70 @@
+{
+  "question_id": "gen_3-5_math_word_problems_6933bf3d",
+  "question": {
+    "content": "try this puzzle. buddy the golden retriever buried some bones in the yard. he buried 3 bones under the big oak tree, 5 bones near your mom's flower garden, and 2 bones next to the shed. but uh oh, emma dug up 4 of them! how many bones are still buried in the yard? [[\u2603 radio 1]]",
+    "widgets": {
+      "radio 1": {
+        "type": "radio",
+        "options": {
+          "choices": [
+            {
+              "clue": "did you remember to add up all the bones first?",
+              "content": "14",
+              "correct": false
+            },
+            {
+              "clue": "double check your adding and subtracting. slow and steady wins the race (like a T-Rex... kinda!)",
+              "content": "6",
+              "correct": true
+            },
+            {
+              "clue": "think about how many bones buddy started with!",
+              "content": "4",
+              "correct": false
+            },
+            {
+              "clue": "are you sure you subtracted the bones emma dug up?",
+              "content": "10",
+              "correct": false
+            }
+          ],
+          "countChoices": false,
+          "deselectEnabled": false,
+          "displayCount": null,
+          "hasNoneOfTheAbove": false,
+          "multipleSelect": false,
+          "randomize": true
+        }
+      }
+    },
+    "images": {}
+  },
+  "hints": [
+    {
+      "content": "first, add up all the bones buddy buried. (you're great at addition, remember?)",
+      "widgets": {}
+    },
+    {
+      "content": "then, take away the bones emma dug up. (take your time, no rush)",
+      "widgets": {}
+    },
+    {
+      "content": "remember to focus on what the question is asking. it's about the bones *still* buried.",
+      "widgets": {}
+    }
+  ],
+  "answer_area": {},
+  "widget_types": [
+    "radio"
+  ],
+  "grade": "3-5",
+  "subject": "math",
+  "topic": "word problems",
+  "metadata": {
+    "widget_type": "radio",
+    "generated_at": "2026-01-29T15:58:39.480866+00:00",
+    "generator": "QuestionGenerator",
+    "model": "gemini-2.0-flash",
+    "personalized": true
+  }
+}

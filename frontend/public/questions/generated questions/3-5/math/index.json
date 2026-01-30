@@ -1,0 +1,46 @@
+{
+  "count": 5,
+  "updated_at": "2026-01-29T15:58:44.389046+00:00",
+  "questions": [
+    {
+      "question_id": "gen_3-5_math_decimals_e278793f",
+      "topic": "decimals",
+      "widget_types": [
+        "input-number"
+      ],
+      "file": "gen_3-5_math_decimals_e278793f.json"
+    },
+    {
+      "question_id": "gen_3-5_math_word_problems_6933bf3d",
+      "topic": "word problems",
+      "widget_types": [
+        "radio"
+      ],
+      "file": "gen_3-5_math_word_problems_6933bf3d.json"
+    },
+    {
+      "question_id": "gen_3-5_math_division_870568a7",
+      "topic": "division",
+      "widget_types": [
+        "numeric-input"
+      ],
+      "file": "gen_3-5_math_division_870568a7.json"
+    },
+    {
+      "question_id": "gen_3-5_math_multiplication_d60917c0",
+      "topic": "multiplication",
+      "widget_types": [
+        "radio"
+      ],
+      "file": "gen_3-5_math_multiplication_d60917c0.json"
+    },
+    {
+      "question_id": "gen_3-5_math_fractions_f1d4314a",
+      "topic": "fractions",
+      "widget_types": [
+        "dropdown"
+      ],
+      "file": "gen_3-5_math_fractions_f1d4314a.json"
+    }
+  ]
+}

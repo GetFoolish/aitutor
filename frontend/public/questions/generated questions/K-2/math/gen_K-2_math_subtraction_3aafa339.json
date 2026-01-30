@@ -1,0 +1,51 @@
+{
+  "question_id": "gen_K-2_math_subtraction_3aafa339",
+  "question": {
+    "content": "so buddy the golden retriever had 8 tennis balls. he buried 5 of them in the garden. how many tennis balls does buddy have left? [[\u2603 numeric-input 1]]",
+    "widgets": {
+      "numeric-input 1": {
+        "type": "numeric-input",
+        "options": {
+          "answers": [
+            {
+              "maxError": null,
+              "message": "",
+              "simplify": "required",
+              "status": "correct",
+              "strict": false,
+              "value": 3
+            }
+          ],
+          "coefficient": false,
+          "labelText": "",
+          "size": "normal"
+        }
+      }
+    },
+    "images": {}
+  },
+  "hints": [
+    {
+      "content": "think about taking away. buddy started with 8, then some disappeared.",
+      "widgets": {}
+    },
+    {
+      "content": "you're super good at spotting patterns. maybe there's one hiding in the numbers 8 and 5?",
+      "widgets": {}
+    }
+  ],
+  "answer_area": {},
+  "widget_types": [
+    "numeric-input"
+  ],
+  "grade": "K-2",
+  "subject": "math",
+  "topic": "subtraction",
+  "metadata": {
+    "widget_type": "numeric-input",
+    "generated_at": "2026-01-29T15:57:57.420069+00:00",
+    "generator": "QuestionGenerator",
+    "model": "gemini-2.0-flash",
+    "personalized": true
+  }
+}

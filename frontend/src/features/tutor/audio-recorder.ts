@@ -45,53 +45,74 @@ export class AudioRecorder extends EventEmitter {
     super();
   }
 
-  async start(deviceId?: string) {
+  async start(deviceId?: string): Promise<void> {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       throw new Error("Could not request user media");
     }
 
-    this.starting = new Promise(async (resolve, reject) => {
-      this.stream = await navigator.mediaDevices.getUserMedia({
-        audio: deviceId ? { deviceId: { exact: deviceId } } : true,
-      });
-      this.audioContext = await audioContext({ sampleRate: this.sampleRate });
-      this.source = this.audioContext.createMediaStreamSource(this.stream);
+    this.starting = new Promise<void>(async (resolve, reject) => {
+      try {
+        // Only use exact deviceId if it's a non-empty string
+        const audioConstraints = deviceId && deviceId.trim()
+          ? { deviceId: { exact: deviceId } }
+          : true;
 
-      const workletName = "audio-recorder-worklet";
-      const src = createWorketFromSrc(workletName, AudioRecordingWorklet);
+        console.log("[AudioRecorder] Requesting audio with constraints:", audioConstraints);
 
-      await this.audioContext.audioWorklet.addModule(src);
-      this.recordingWorklet = new AudioWorkletNode(
-        this.audioContext,
-        workletName,
-      );
+        this.stream = await navigator.mediaDevices.getUserMedia({
+          audio: audioConstraints,
+        });
 
-      this.recordingWorklet.port.onmessage = async (ev: MessageEvent) => {
-        // worklet processes recording floats and messages converted buffer
-        const arrayBuffer = ev.data.data.int16arrayBuffer;
+        console.log("[AudioRecorder] Got media stream, setting up audio context...");
 
-        if (arrayBuffer) {
-          const arrayBufferString = arrayBufferToBase64(arrayBuffer);
-          this.emit("data", arrayBufferString);
-        }
-      };
-      this.source.connect(this.recordingWorklet);
+        this.audioContext = await audioContext({ sampleRate: this.sampleRate });
+        this.source = this.audioContext.createMediaStreamSource(this.stream);
 
-      // vu meter worklet
-      const vuWorkletName = "vu-meter";
-      await this.audioContext.audioWorklet.addModule(
-        createWorketFromSrc(vuWorkletName, VolMeterWorket),
-      );
-      this.vuWorklet = new AudioWorkletNode(this.audioContext, vuWorkletName);
-      this.vuWorklet.port.onmessage = (ev: MessageEvent) => {
-        this.emit("volume", ev.data.volume);
-      };
+        const workletName = "audio-recorder-worklet";
+        const src = createWorketFromSrc(workletName, AudioRecordingWorklet);
 
-      this.source.connect(this.vuWorklet);
-      this.recording = true;
-      resolve();
-      this.starting = null;
+        await this.audioContext.audioWorklet.addModule(src);
+        this.recordingWorklet = new AudioWorkletNode(
+          this.audioContext,
+          workletName,
+        );
+
+        this.recordingWorklet.port.onmessage = async (ev: MessageEvent) => {
+          // worklet processes recording floats and messages converted buffer
+          const arrayBuffer = ev.data.data.int16arrayBuffer;
+
+          if (arrayBuffer) {
+            const arrayBufferString = arrayBufferToBase64(arrayBuffer);
+            this.emit("data", arrayBufferString);
+          }
+        };
+        this.source.connect(this.recordingWorklet);
+
+        // vu meter worklet
+        const vuWorkletName = "vu-meter";
+        await this.audioContext.audioWorklet.addModule(
+          createWorketFromSrc(vuWorkletName, VolMeterWorket),
+        );
+        this.vuWorklet = new AudioWorkletNode(this.audioContext, vuWorkletName);
+        this.vuWorklet.port.onmessage = (ev: MessageEvent) => {
+          this.emit("volume", ev.data.volume);
+        };
+
+        this.source.connect(this.vuWorklet);
+        this.recording = true;
+        console.log("[AudioRecorder] Started successfully");
+        resolve();
+      } catch (error: any) {
+        const errorMessage = error?.message || error?.name || String(error);
+        console.error("[AudioRecorder] Failed to start:", errorMessage, error);
+        this.emit("error", error);
+        reject(error);
+      } finally {
+        this.starting = null;
+      }
     });
+
+    return this.starting;
   }
 
   stop() {

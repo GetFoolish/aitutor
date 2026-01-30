@@ -1,0 +1,55 @@
+{
+  "question_id": "gen_K-2_math_addition_fa647dcc",
+  "question": {
+    "content": "alright, let's bake some cookies. you've got 7 chocolate chip cookies ready to go. then emma sneaks in and puts 5 more on the baking tray (cheeky emma!). how many cookies are there altogether ready for the oven? [[\u2603 numeric-input 1]]",
+    "widgets": {
+      "numeric-input 1": {
+        "type": "numeric-input",
+        "options": {
+          "answers": [
+            {
+              "maxError": null,
+              "message": "",
+              "simplify": "required",
+              "status": "correct",
+              "strict": false,
+              "value": 12
+            }
+          ],
+          "coefficient": false,
+          "labelText": "",
+          "size": "normal"
+        }
+      }
+    },
+    "images": {}
+  },
+  "hints": [
+    {
+      "content": "remember, addition is just putting things together. like buddy's toys all in one pile.",
+      "widgets": {}
+    },
+    {
+      "content": "you're really good at spotting patterns. can you see a pattern in the numbers to help you add them?",
+      "widgets": {}
+    },
+    {
+      "content": "count on from 7. so 8, 9, 10... keep going until you've added 5. (no rush, we'll wait)",
+      "widgets": {}
+    }
+  ],
+  "answer_area": {},
+  "widget_types": [
+    "numeric-input"
+  ],
+  "grade": "K-2",
+  "subject": "math",
+  "topic": "addition",
+  "metadata": {
+    "widget_type": "numeric-input",
+    "generated_at": "2026-01-29T15:57:47.350642+00:00",
+    "generator": "QuestionGenerator",
+    "model": "gemini-2.0-flash",
+    "personalized": true
+  }
+}

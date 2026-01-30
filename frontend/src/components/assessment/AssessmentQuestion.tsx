@@ -9,6 +9,9 @@ import { keScoreFromPerseusScore } from "../../package/perseus/src/util/scoring"
 import { CheckCircle2, XCircle } from "lucide-react";
 import { KEScore } from "@khanacademy/perseus-core";
 
+// Innocent Drinks style formatting
+import './assessment-questions.css';
+
 interface Props {
   question: any;
   questionNumber: number;
@@ -29,29 +32,147 @@ const AssessmentQuestion: React.FC<Props> = ({
 
   // Reset answer state when question changes
   useEffect(() => {
+    console.log('[QUESTION] New question loaded:', JSON.stringify(question, null, 2));
+    console.log('[QUESTION] Question structure check:', {
+      hasQuestion: !!question,
+      hasQuestionProperty: !!question?.question,
+      hasContent: !!question?.question?.content,
+      hasWidgets: !!question?.question?.widgets,
+      questionKeys: question ? Object.keys(question) : [],
+      questionQuestionKeys: question?.question ? Object.keys(question.question) : []
+    });
     setIsAnswered(false);
     setShowFeedback(false);
     setKeScore(null);
   }, [question]);
 
   const handleSubmit = () => {
-    if (!rendererRef.current) return;
+    console.log('[SUBMIT] Button clicked');
 
-    const userInput = rendererRef.current.getUserInput();
-    const questionData = question.question;
-    const scoreResult = scorePerseusItem(questionData, userInput, "en");
+    if (!rendererRef.current) {
+      console.error('[SUBMIT] ERROR: rendererRef.current is null!');
+      return;
+    }
 
-    const maxCompatGuess = [rendererRef.current.getUserInputLegacy(), []];
-    const score = keScoreFromPerseusScore(
-      scoreResult,
-      maxCompatGuess,
-      rendererRef.current.getSerializedState().question,
-    );
+    try {
+      console.log('[SUBMIT] Getting user input...');
+      const userInput = rendererRef.current.getUserInput();
+      console.log('[SUBMIT] Got user input:', userInput);
 
-    setIsAnswered(true);
-    setShowFeedback(true);
-    setKeScore(score);
-    onAnswer(score.correct);
+      // Use original question data for widgets, but get current state for validation
+      const questionData = question.question;
+      console.log('[SCORING] User input:', JSON.stringify(userInput));
+      console.log('[SCORING] Question widgets:', JSON.stringify(questionData?.widgets));
+
+      if (!questionData || !questionData.widgets) {
+        console.error('[SUBMIT] ERROR: Question data or widgets are undefined!');
+        alert('Error: Question data is missing. Please refresh and try again.');
+        return;
+      }
+
+      console.log('[SUBMIT] Scoring answer...');
+      const scoreResult = scorePerseusItem(questionData, userInput, "en");
+      console.log('[SCORING] Perseus score result:', JSON.stringify(scoreResult));
+      console.log('[SCORING] Score type:', scoreResult.type);
+
+      if (scoreResult.type === 'points') {
+        console.log('[SCORING] Earned:', scoreResult.earned, 'Total:', scoreResult.total);
+      }
+
+      const maxCompatGuess = [rendererRef.current.getUserInputLegacy(), []];
+      const serializedState = rendererRef.current.getSerializedState();
+
+      const score = keScoreFromPerseusScore(
+        scoreResult,
+        maxCompatGuess,
+        serializedState.question,
+      );
+
+      console.log('[SCORING] Final KE score:', JSON.stringify(score));
+      console.log('[SCORING] Is correct (raw):', score.correct, 'type:', typeof score.correct);
+
+      const fallbackIsCorrect = () => {
+        let fallbackCorrect = false;
+        const widgets = questionData?.widgets || {};
+
+        for (const [widgetId, widgetInput] of Object.entries(userInput)) {
+          const widgetDef = (widgets as Record<string, any>)?.[widgetId];
+          if (!widgetDef) continue;
+
+          if (widgetDef.type === 'radio') {
+            const choices = widgetDef.options?.choices || [];
+            const selectedIds = (widgetInput as any).selectedChoiceIds || [];
+            const isMultiSelect = widgetDef.options?.multipleSelect || false;
+
+            if (isMultiSelect) {
+              const correctIndices = choices
+                .map((c: any, i: number) => c.correct ? i : -1)
+                .filter((i: number) => i >= 0);
+              const selectedIndices = selectedIds.map((id: string) => {
+                const match = id.match(/choice-(\d+)-/);
+                return match ? parseInt(match[1]) : -1;
+              }).filter((i: number) => i >= 0);
+
+              fallbackCorrect = correctIndices.length === selectedIndices.length &&
+                correctIndices.every((idx: number) => selectedIndices.includes(idx));
+            } else {
+              if (selectedIds.length === 1) {
+                const selectedId = selectedIds[0];
+                const match = selectedId.match(/choice-(\d+)-/);
+                if (match) {
+                  const selectedIndex = parseInt(match[1]);
+                  fallbackCorrect = choices[selectedIndex]?.correct === true;
+                }
+              }
+            }
+          } else if (widgetDef.type === 'orderer') {
+            const correctOptions = widgetDef.options?.correctOptions || [];
+            const userOrder = (widgetInput as any).current || [];
+
+            if (correctOptions.length === userOrder.length) {
+              fallbackCorrect = correctOptions.every((correctOpt: any, index: number) => {
+                return correctOpt.content === userOrder[index];
+              });
+            }
+          }
+        }
+
+        return fallbackCorrect;
+      };
+
+      // Handle different score types
+      let isCorrectBoolean = false;
+
+      if (scoreResult.type === 'points') {
+        // For points-based scoring, check if earned equals total
+        isCorrectBoolean = scoreResult.earned === scoreResult.total && scoreResult.total > 0;
+      } else if (scoreResult.type === 'invalid') {
+        // Fall back to lightweight widget checks
+        isCorrectBoolean = fallbackIsCorrect();
+      } else {
+        // Default to score.correct with boolean conversion
+        isCorrectBoolean = Boolean(score.correct === true || score.correct === 'true' ||
+          (typeof score.correct === 'object' && score.correct?.correct === true));
+      }
+
+      const sanitizedScore = {
+        ...score,
+        correct: isCorrectBoolean
+      };
+
+      console.log('[SCORING] Sanitized correct value:', sanitizedScore.correct, 'type:', typeof sanitizedScore.correct);
+      console.log('[SUBMIT] Setting answered state and calling onAnswer callback...');
+
+      setIsAnswered(true);
+      setShowFeedback(true);
+      setKeScore(sanitizedScore);
+      onAnswer(sanitizedScore.correct);
+
+      console.log('[SUBMIT] Complete!');
+    } catch (error) {
+      console.error('[SUBMIT] ERROR during scoring:', error);
+      alert('Error scoring answer: ' + (error instanceof Error ? error.message : String(error)));
+    }
   };
 
   const progressPercentage = (questionNumber / totalQuestions) * 100;
@@ -131,6 +252,12 @@ const AssessmentQuestion: React.FC<Props> = ({
       <div 
         id="question-content-container"
         className="border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white p-4 md:p-5 lg:p-6 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] mb-6"
+        style={{
+          fontSize: '22px',
+          lineHeight: '1.6',
+          fontWeight: 500,
+          color: '#000000',
+        }}
       >
         <PerseusI18nContextProvider locale="en" strings={mockStrings}>
           <RenderStateRoot>

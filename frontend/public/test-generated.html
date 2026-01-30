@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generated Questions Preview</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      background: #f8f9fa;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      color: #2d3436;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #636e72;
+      margin-bottom: 40px;
+    }
+    .grade-section {
+      margin-bottom: 40px;
+    }
+    .grade-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #2d3436;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #dfe6e9;
+    }
+    .question-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .question-meta {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .tag {
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .tag.widget { background: #e3f2fd; color: #1565c0; }
+    .tag.topic { background: #fff3e0; color: #ef6c00; }
+    .tag.grade { background: #f3e5f5; color: #7b1fa2; }
+    .question-content {
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .widget-preview {
+      background: #f5f5f5;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .widget-title {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .radio-option {
+      padding: 10px 16px;
+      background: white;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 2px solid #e0e0e0;
+      cursor: pointer;
+    }
+    .radio-option:hover {
+      border-color: #90caf9;
+    }
+    .radio-option.correct {
+      border-color: #81c784;
+      background: #e8f5e9;
+    }
+    .numeric-input {
+      padding: 12px 16px;
+      font-size: 18px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      width: 120px;
+    }
+    .answer-hint {
+      font-size: 13px;
+      color: #666;
+      font-style: italic;
+      margin-top: 8px;
+    }
+    .hints {
+      border-top: 1px solid #eee;
+      padding-top: 16px;
+      margin-top: 16px;
+    }
+    .hints-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 12px;
+    }
+    .hint {
+      background: #fff8e1;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 14px;
+      border-left: 3px solid #ffc107;
+    }
+    .orderer-item {
+      background: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 2px solid #e0e0e0;
+      cursor: grab;
+      display: inline-block;
+      margin-right: 8px;
+    }
+    .dropdown-select {
+      padding: 10px 16px;
+      font-size: 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      min-width: 200px;
+    }
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎯 Generated Questions Preview</h1>
+  <p class="subtitle">personalized with innocent drinks tone + user memories</p>
+  
+  <div id="questions-container">
+    <div class="loading">Loading questions...</div>
+  </div>
+
+  <script>
+    // Load generated questions from the folder structure
+    async function loadQuestions() {
+      const container = document.getElementById('questions-container');
+      
+      try {
+        // Fetch questions from both grades
+        const grades = ['K-2', '3-5'];
+        const allQuestions = {};
+        
+        for (const grade of grades) {
+          try {
+            const indexRes = await fetch(`/questions/generated questions/${grade}/math/index.json`);
+            if (indexRes.ok) {
+              const index = await indexRes.json();
+              allQuestions[grade] = [];
+              
+              for (const q of index.questions) {
+                const qRes = await fetch(`/questions/generated questions/${grade}/math/${q.file}`);
+                if (qRes.ok) {
+                  const question = await qRes.json();
+                  allQuestions[grade].push(question);
+                }
+              }
+            }
+          } catch (e) {
+            console.log(`No questions for ${grade}`);
+          }
+        }
+        
+        // Render questions
+        container.innerHTML = '';
+        
+        for (const [grade, questions] of Object.entries(allQuestions)) {
+          if (questions.length === 0) continue;
+          
+          const section = document.createElement('div');
+          section.className = 'grade-section';
+          section.innerHTML = `<h2 class="grade-title">${grade} Math</h2>`;
+          
+          for (const q of questions) {
+            const card = renderQuestion(q);
+            section.appendChild(card);
+          }
+          
+          container.appendChild(section);
+        }
+        
+        if (container.children.length === 0) {
+          container.innerHTML = '<div class="loading">No generated questions found. Run the generator first!</div>';
+        }
+        
+      } catch (error) {
+        container.innerHTML = `<div class="loading">Error loading questions: ${error.message}</div>`;
+      }
+    }
+    
+    function renderQuestion(q) {
+      const card = document.createElement('div');
+      card.className = 'question-card';
+      
+      // Get widget info
+      const widgets = q.question?.widgets || {};
+      const widgetEntries = Object.entries(widgets);
+      const [widgetName, widgetConfig] = widgetEntries[0] || ['unknown', {}];
+      const widgetType = widgetConfig.type || 'unknown';
+      
+      // Content (remove widget placeholder)
+      let content = q.question?.content || '';
+      content = content.replace(/\[\[☃[^\]]+\]\]/g, '').trim();
+      
+      card.innerHTML = `
+        <div class="question-meta">
+          <span class="tag grade">${q.grade}</span>
+          <span class="tag topic">${q.topic}</span>
+          <span class="tag widget">${widgetType}</span>
+        </div>
+        <div class="question-content">${content}</div>
+        <div class="widget-preview">
+          <div class="widget-title">${widgetType} widget</div>
+          ${renderWidget(widgetType, widgetConfig.options || {})}
+        </div>
+        ${renderHints(q.hints || [])}
+      `;
+      
+      return card;
+    }
+    
+    function renderWidget(type, options) {
+      switch (type) {
+        case 'radio':
+          const choices = options.choices || [];
+          return choices.map(c => 
+            `<div class="radio-option ${c.correct ? 'correct' : ''}">○ ${c.content}</div>`
+          ).join('');
+        
+        case 'numeric-input':
+        case 'input-number':
+          const answers = options.answers || options.value || [{}];
+          const answer = Array.isArray(answers) ? answers[0]?.value : answers;
+          return `<input type="text" class="numeric-input" placeholder="?" disabled>
+                  <div class="answer-hint">correct answer: ${answer || '?'}</div>`;
+        
+        case 'dropdown':
+          const dropChoices = options.choices || [];
+          const correctChoice = dropChoices.find(c => c.correct)?.content || '?';
+          return `<select class="dropdown-select" disabled>
+                    ${dropChoices.map(c => `<option ${c.correct ? 'selected' : ''}>${c.content}</option>`).join('')}
+                  </select>
+                  <div class="answer-hint">correct: ${correctChoice}</div>`;
+        
+        case 'orderer':
+          const items = options.options || options.correctOptions || [];
+          return `<div>${items.map(i => `<span class="orderer-item">↕️ ${i}</span>`).join('')}</div>`;
+        
+        default:
+          return `<div class="answer-hint">${type} widget</div>`;
+      }
+    }
+    
+    function renderHints(hints) {
+      if (!hints || hints.length === 0) return '';
+      
+      return `
+        <div class="hints">
+          <div class="hints-title">💡 hints</div>
+          ${hints.slice(0, 3).map(h => 
+            `<div class="hint">${h.content || h}</div>`
+          ).join('')}
+        </div>
+      `;
+    }
+    
+    // Load on page load
+    loadQuestions();
+  </script>
+</body>
+</html>

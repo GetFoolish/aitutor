@@ -127,17 +127,17 @@ const AssessmentResults: React.FC<Props> = ({
   }, [connected, client, disconnect]);
 
   // Auto-redirect after showing personalizing animation with fade
-  // Wait for skills to load before starting transition
+  // Shortened animation for better UX
   useEffect(() => {
     if (skillCards.length === 0) return; // Don't start timers until skills are loaded
 
     const fadeTimer = setTimeout(() => {
-      setIsFading(true); // Start fade out at 1.7s
-    }, 1700);
+      setIsFading(true); // Start fade out at 1s
+    }, 1000);
 
     const showTimer = setTimeout(() => {
-      setShowPersonalizing(true); // Show cards at 2s
-    }, 2000);
+      setShowPersonalizing(true); // Show cards at 1.2s
+    }, 1200);
 
     return () => {
       clearTimeout(fadeTimer);

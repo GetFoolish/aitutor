@@ -1,0 +1,66 @@
+{
+  "question_id": "gen_K-2_math_shapes_26be515f",
+  "question": {
+    "content": "emma's got a shape puzzle! she needs help figuring out which shape has 4 sides AND 4 corners. can you pick the right one for her? [[\u2603 radio 1]]",
+    "widgets": {
+      "radio 1": {
+        "type": "radio",
+        "options": {
+          "choices": [
+            {
+              "clue": "this shape is round like a cookie!",
+              "content": "circle",
+              "correct": false
+            },
+            {
+              "clue": "this shape has 3 sides. think triceratops - tri means three!",
+              "content": "triangle",
+              "correct": false
+            },
+            {
+              "clue": "this shape has 4 sides and all the sides are the same length.",
+              "content": "square",
+              "correct": true
+            },
+            {
+              "clue": "this shape has no corners at all!",
+              "content": "oval",
+              "correct": false
+            }
+          ],
+          "countChoices": false,
+          "deselectEnabled": false,
+          "displayCount": null,
+          "hasNoneOfTheAbove": false,
+          "multipleSelect": false,
+          "randomize": true
+        }
+      }
+    },
+    "images": {}
+  },
+  "hints": [
+    {
+      "content": "corners are where the sides meet. like the corners of your minecraft house!",
+      "widgets": {}
+    },
+    {
+      "content": "try counting the sides and corners of each shape really carefully. (take your time)",
+      "widgets": {}
+    }
+  ],
+  "answer_area": {},
+  "widget_types": [
+    "radio"
+  ],
+  "grade": "K-2",
+  "subject": "math",
+  "topic": "shapes",
+  "metadata": {
+    "widget_type": "radio",
+    "generated_at": "2026-01-29T15:58:03.020460+00:00",
+    "generator": "QuestionGenerator",
+    "model": "gemini-2.0-flash",
+    "personalized": true
+  }
+}

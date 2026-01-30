@@ -1,0 +1,69 @@
+{
+  "question_id": "gen_K-2_math_patterns_aca9fec4",
+  "question": {
+    "content": "ooh, this is good. nugget the hamster loves making patterns with his sunflower seeds. but he gets them a bit muddled. can you put these pictures in the right order to show the pattern nugget is making? [[\u2603 orderer 1]]",
+    "widgets": {
+      "orderer 1": {
+        "type": "orderer",
+        "options": {
+          "correctOptions": [
+            {
+              "content": "3 seeds"
+            },
+            {
+              "content": "3 seeds, 1 leaf"
+            },
+            {
+              "content": "3 seeds, 2 leaves"
+            },
+            {
+              "content": "3 seeds, 3 leaves"
+            }
+          ],
+          "height": "normal",
+          "layout": "vertical",
+          "options": [
+            {
+              "content": "3 seeds, 2 leaves"
+            },
+            {
+              "content": "3 seeds"
+            },
+            {
+              "content": "3 seeds, 3 leaves"
+            },
+            {
+              "content": "3 seeds, 1 leaf"
+            }
+          ],
+          "otherOptions": []
+        }
+      }
+    },
+    "images": {}
+  },
+  "hints": [
+    {
+      "content": "what comes first, the seeds or the leaves?",
+      "widgets": {}
+    },
+    {
+      "content": "count the leaves each time. what happens next?",
+      "widgets": {}
+    }
+  ],
+  "answer_area": {},
+  "widget_types": [
+    "orderer"
+  ],
+  "grade": "K-2",
+  "subject": "math",
+  "topic": "patterns",
+  "metadata": {
+    "widget_type": "orderer",
+    "generated_at": "2026-01-29T15:58:08.187280+00:00",
+    "generator": "QuestionGenerator",
+    "model": "gemini-2.0-flash",
+    "personalized": true
+  }
+}

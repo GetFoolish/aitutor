@@ -1,0 +1,51 @@
+{
+  "question_id": "gen_3-5_math_division_870568a7",
+  "question": {
+    "content": "so here's the thing. you're sharing your minecraft cake with your sister emma. the cake has 10 slices (it's a big cake). if you share them equally, how many slices does emma get? [[\u2603 numeric-input 1]] (no rush, we'll wait)",
+    "widgets": {
+      "numeric-input 1": {
+        "type": "numeric-input",
+        "options": {
+          "answers": [
+            {
+              "maxError": null,
+              "message": "",
+              "simplify": "required",
+              "status": "correct",
+              "strict": false,
+              "value": 5
+            }
+          ],
+          "coefficient": false,
+          "labelText": "",
+          "size": "normal"
+        }
+      }
+    },
+    "images": {}
+  },
+  "hints": [
+    {
+      "content": "remember, equally means the same amount for everyone",
+      "widgets": {}
+    },
+    {
+      "content": "what's 10 divided by 2? (you've got this)",
+      "widgets": {}
+    }
+  ],
+  "answer_area": {},
+  "widget_types": [
+    "numeric-input"
+  ],
+  "grade": "3-5",
+  "subject": "math",
+  "topic": "division",
+  "metadata": {
+    "widget_type": "numeric-input",
+    "generated_at": "2026-01-29T15:58:33.219916+00:00",
+    "generator": "QuestionGenerator",
+    "model": "gemini-2.0-flash",
+    "personalized": true
+  }
+}
