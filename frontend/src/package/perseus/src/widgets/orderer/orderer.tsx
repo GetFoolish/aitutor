@@ -483,6 +483,10 @@ class Orderer
         }
     };
 
+    // Throttle state for performance
+    _lastIndexUpdate: number = 0;
+    _lastCalculatedIndex: number | null = null;
+
     onMouseMove: (arg1: any) => void = (loc) => {
         // eslint-disable-next-line react/no-string-refs
         const draggable = this.refs.dragging;
@@ -490,20 +494,37 @@ class Orderer
             return;
         }
 
-        let index;
-        if (this.isCardInBank(draggable)) {
-            index = null;
-        } else {
-            index = this.findCorrectIndex(
-                draggable,
-                this.props.userInput.current,
-            );
+        // Always update mouse position for smooth dragging
+        const now = Date.now();
+        const THROTTLE_MS = 50; // Only recalculate index every 50ms (20fps)
+
+        let index = this._lastCalculatedIndex;
+
+        // Only recalculate expensive index if enough time has passed
+        if (now - this._lastIndexUpdate >= THROTTLE_MS) {
+            if (this.isCardInBank(draggable)) {
+                index = null;
+            } else {
+                index = this.findCorrectIndex(
+                    draggable,
+                    this.props.userInput.current,
+                );
+            }
+            this._lastIndexUpdate = now;
+            this._lastCalculatedIndex = index;
         }
 
-        this.setState({
-            mousePos: loc,
-            placeholderIndex: index,
-        });
+        // Only update state if something changed
+        if (
+            this.state.mousePos?.left !== loc.left ||
+            this.state.mousePos?.top !== loc.top ||
+            this.state.placeholderIndex !== index
+        ) {
+            this.setState({
+                mousePos: loc,
+                placeholderIndex: index,
+            });
+        }
     };
 
     findCorrectIndex: (arg1: any, arg2: any) => any = (draggable, list) => {

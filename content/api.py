@@ -144,6 +144,69 @@ def fix_numeric_input_widgets(widgets: dict) -> dict:
     return widgets
 
 
+def fix_radio_widgets(widgets: dict) -> dict:
+    """
+    Fix radio widgets for proper Perseus rendering.
+
+    The AI sometimes generates radio widgets in wrong format:
+    - Wrong: {"options": {"3": false, "4": true, "5": false}}
+    - Correct: {"options": {"choices": [{"content": "3", "correct": false}, ...]}}
+
+    This function converts the wrong format to the correct Perseus format.
+    """
+    for widget_name, widget_config in widgets.items():
+        if widget_config.get("type") == "radio":
+            options = widget_config.get("options", {})
+
+            # Check if choices already exists and is properly formatted
+            if "choices" in options and isinstance(options["choices"], list):
+                # Already correct format - just ensure each choice has required fields
+                for choice in options["choices"]:
+                    if isinstance(choice, dict):
+                        if "content" not in choice:
+                            choice["content"] = ""
+                        if "correct" not in choice:
+                            choice["correct"] = False
+                continue
+
+            # Check for wrong format: options like {"3": false, "4": true}
+            # These are key-value pairs where keys are answer text and values are booleans
+            wrong_format_choices = {}
+            for key, value in list(options.items()):
+                # Skip known Perseus option keys
+                if key in ["choices", "randomize", "multipleSelect", "countChoices",
+                          "deselectEnabled", "displayCount", "noneOfTheAbove"]:
+                    continue
+                # If value is boolean, this is likely wrong format
+                if isinstance(value, bool):
+                    wrong_format_choices[key] = value
+
+            # Convert wrong format to correct format
+            if wrong_format_choices:
+                choices = []
+                for answer_text, is_correct in wrong_format_choices.items():
+                    choices.append({
+                        "content": str(answer_text),
+                        "correct": bool(is_correct)
+                    })
+
+                # Remove the wrong keys from options
+                for key in wrong_format_choices.keys():
+                    options.pop(key, None)
+
+                # Add proper choices array
+                options["choices"] = choices
+                options["randomize"] = options.get("randomize", True)
+
+                print(f"[FIX_RADIO] Converted {widget_name}: {len(choices)} choices")
+
+            # Ensure at least one choice exists
+            if not options.get("choices"):
+                print(f"[FIX_RADIO] WARNING: {widget_name} has no choices!")
+
+    return widgets
+
+
 class PerseusQuestion(BaseModel):
     """Perseus-compatible question format."""
     question: dict
@@ -204,9 +267,10 @@ def get_generated_questions(count: int, grade: Optional[str] = None, subject: st
         content = question_data.get("content", "")
         widgets = question_data.get("widgets", {})
         
-        # FIX: Clean up numeric-input widgets for proper scoring
+        # FIX: Clean up widgets for proper scoring/rendering
         widgets = fix_numeric_input_widgets(widgets)
-        
+        widgets = fix_radio_widgets(widgets)
+
         # FIX: Ensure content has widget placeholders
         # If content doesn't have [[☃ widget-name]], append them
         for widget_name in widgets.keys():
@@ -544,18 +608,19 @@ def generate_assessment_on_the_fly(request: AssessmentRequest):
         content = question_data.get("content", "")
         widgets = question_data.get("widgets", {})
         
-        # FIX: Clean up numeric-input widgets for proper scoring
+        # FIX: Clean up widgets for proper scoring/rendering
         widgets = fix_numeric_input_widgets(widgets)
-        
+        widgets = fix_radio_widgets(widgets)
+
         # FIX: Ensure content has widget placeholders
         for widget_name in widgets.keys():
             placeholder = f"[[☃ {widget_name}]]"
             if placeholder not in content:
                 content = content.rstrip() + f" {placeholder}"
-        
+
         question_data["content"] = content
         question_data["widgets"] = widgets
-        
+
         perseus_items.append({
             "question": question_data,
             "answerArea": q.get("answer_area", {}),
@@ -574,7 +639,7 @@ def generate_assessment_on_the_fly(request: AssessmentRequest):
                 "source": "generated"
             }
         })
-    
+
     return perseus_items
 
 
@@ -730,6 +795,7 @@ async def generate_questions_live(request: LiveGenerationRequest):
 
             widgets = perseus_data.get("question", {}).get("widgets", {})
             fix_numeric_input_widgets(widgets)
+            fix_radio_widgets(widgets)
             questions.append({
                 "question": perseus_data.get("question", {}),
                 "hints": perseus_data.get("hints", []),
@@ -934,9 +1000,10 @@ Generate {request.count} questions now:'''
             if "itemDataVersion" not in q:
                 q["itemDataVersion"] = {"major": 0, "minor": 1}
             
-            # Fix numeric-input widgets for proper scoring
+            # Fix widgets for proper scoring/rendering
             widgets = q.get("question", {}).get("widgets", {})
             fix_numeric_input_widgets(widgets)
+            fix_radio_widgets(widgets)
             
             # Step 3: Store in MongoDB with FULL Khan Academy format
             question_data = q.get("question", {})
@@ -1031,6 +1098,7 @@ Generate {request.count} questions now:'''
 
             widgets = perseus_data.get("question", {}).get("widgets", {})
             fix_numeric_input_widgets(widgets)
+            fix_radio_widgets(widgets)
             result.append({
                 "question": perseus_data.get("question", {}),
                 "hints": perseus_data.get("hints", []),

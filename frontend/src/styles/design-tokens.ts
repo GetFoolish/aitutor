@@ -39,14 +39,14 @@ export const spacing = {
   '7xl': '80px',
 } as const;
 
-// Neo-Brutalist Shadows (solid black offsets, NO blur)
+// EXTREME NEO-BRUTALIST Shadows (HARSH solid black offsets)
 export const shadows = {
-  /** 2px 2px - Small elements, hover state */
-  sm: '2px 2px 0 #000',
-  /** 4px 4px - Standard cards, buttons */
-  md: '4px 4px 0 #000',
-  /** 6px 6px - Large/hero elements */
-  lg: '6px 6px 0 #000',
+  /** 4px 4px - Small elements, hover state */
+  sm: '4px 4px 0 #000',
+  /** 6px 6px - Standard cards, buttons */
+  md: '6px 6px 0 #000',
+  /** 8px 8px - Large/hero elements */
+  lg: '8px 8px 0 #000',
   /** None */
   none: 'none',
 } as const;
@@ -59,14 +59,14 @@ export const shadowsDark = {
   none: 'none',
 } as const;
 
-// Neo-Brutalist Borders
+// EXTREME NEO-BRUTALIST Borders - THICK AND BOLD
 export const borders = {
-  /** 3px solid #000 - Primary elements (cards, buttons) */
-  primary: '3px solid #000',
-  /** 2px solid #000 - Secondary elements */
-  secondary: '2px solid #000',
-  /** 4px solid #000 - Large/hero elements */
-  heavy: '4px solid #000',
+  /** 4px solid #000 - Primary elements (cards, buttons) */
+  primary: '4px solid #000',
+  /** 3px solid #000 - Secondary elements */
+  secondary: '3px solid #000',
+  /** 5px solid #000 - Large/hero elements */
+  heavy: '5px solid #000',
 } as const;
 
 // Dark mode border variants
@@ -76,74 +76,75 @@ export const bordersDark = {
   heavy: '4px solid #fff',
 } as const;
 
-// Border Radius
+// Border Radius - EXTREME NEO-BRUTALISM: NO ROUNDED CORNERS
 export const borderRadius = {
-  /** 8px - Small elements */
-  sm: '8px',
-  /** 12px - Standard (cards, buttons) */
-  md: '12px',
-  /** 16px - Large cards */
-  lg: '16px',
-  /** 999px - Pills, badges */
-  full: '999px',
+  /** 0 - Sharp corners everywhere */
+  sm: '0',
+  /** 0 - Sharp corners everywhere */
+  md: '0',
+  /** 0 - Sharp corners everywhere */
+  lg: '0',
+  /** 0 - Even pills are sharp in extreme brutalism */
+  full: '0',
 } as const;
 
-// Color Palette
+// EXTREME NEO-BRUTALISM Color Palette
+// Pure, bold colors only - no pastels, no muted tones
 export const colors = {
-  // Primary Brand
-  primary: '#6C63FF',
-  primaryHover: '#5B52E0',
+  // Primary Brand - BOLD YELLOW
+  primary: '#FCD34D',
+  primaryHover: '#FBBF24',
 
-  // Neutrals
-  background: '#FFFDF5',
+  // Neutrals - HIGH CONTRAST
+  background: '#FFFFFF',
   surface: '#FFFFFF',
-  surfaceSecondary: '#F5F5F5',
+  surfaceSecondary: '#FCD34D',
   border: '#000000',
 
-  // Text
+  // Text - PURE BLACK
   textPrimary: '#000000',
-  textSecondary: '#666666',
-  textMuted: '#888888',
+  textSecondary: '#000000',
+  textMuted: '#000000',
 
-  // Semantic
-  success: '#4CAF50',
-  successBg: '#ADFF2F',
-  warning: '#FF9800',
-  warningBg: '#FFD93D',
-  error: '#F44336',
-  errorBg: '#FF006E',
+  // Semantic - BOLD COLORS
+  success: '#22C55E',
+  successBg: '#22C55E',
+  warning: '#FCD34D',
+  warningBg: '#FCD34D',
+  error: '#FF6B6B',
+  errorBg: '#FF6B6B',
 
-  // Subject Colors
-  mathBg: '#E3F2FD',
-  scienceBg: '#E8F5E9',
-  readingBg: '#FFF3E0',
+  // Subject Colors - BOLD, NO PASTELS
+  mathBg: '#FCD34D',
+  scienceBg: '#22C55E',
+  readingBg: '#FF6B6B',
 
-  // Accent colors for neo-brutalism
-  accent1: '#C4B5FD', // Purple tint
-  accent2: '#FFD93D', // Yellow
-  accent3: '#4ADE80', // Green
+  // Accent colors for EXTREME neo-brutalism
+  accent1: '#FF6B6B', // Coral/Red
+  accent2: '#FCD34D', // Yellow
+  accent3: '#22C55E', // Green
 } as const;
 
-// Typography Scale
+// EXTREME Typography Scale - MASSIVE HEADINGS
 export const fontSize = {
-  /** 12px - Captions, helper text */
-  caption: '12px',
-  /** 14px - Small body, labels */
-  small: '14px',
-  /** 16px - Body text (minimum for readability) */
-  body: '16px',
-  /** 18px - Large body */
-  bodyLarge: '18px',
-  /** 20px - Small heading (h5) */
-  h5: '20px',
-  /** 24px - Medium heading (h4) */
-  h4: '24px',
-  /** 32px - Large heading (h3) */
-  h3: '32px',
-  /** 40px - XL heading (h2) */
-  h2: '40px',
-  /** 48px - Hero heading (h1) */
-  h1: '48px',
+  /** 14px - Captions, helper text */
+  caption: '14px',
+  /** 16px - Small body, labels */
+  small: '16px',
+  /** 18px - Body text */
+  body: '18px',
+  /** 20px - Large body */
+  bodyLarge: '20px',
+  /** 28px - Small heading (h5) */
+  h5: '28px',
+  /** 36px - Medium heading (h4) */
+  h4: '36px',
+  /** 48px - Large heading (h3) */
+  h3: '48px',
+  /** 64px - XL heading (h2) */
+  h2: '64px',
+  /** 80px - MASSIVE Hero heading (h1) */
+  h1: '80px',
 } as const;
 
 // Line Heights

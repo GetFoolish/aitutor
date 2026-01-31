@@ -697,6 +697,86 @@ a[target="lint-help-window"] {
     background: rgba(255, 255, 255, 0.2);
   }
 }
+
+/* ============================================
+   NEO-BRUTALISM GLOBAL STYLES
+   Sharp corners, thick borders, offset shadows
+   EXCEPTION: FloatingControlPanel keeps v1 soft styling
+   ============================================ */
+
+/* Remove rounded corners globally EXCEPT FloatingControlPanel */
+*:not([class*="floating-control"]):not([data-floating-panel]):not([data-floating-panel] *),
+*:not([class*="floating-control"]):not([data-floating-panel]):not([data-floating-panel] *)::before,
+*:not([class*="floating-control"]):not([data-floating-panel]):not([data-floating-panel] *)::after {
+  /* Only apply to non-floating-panel elements */
+}
+
+/* Neo-brutalism for cards and containers */
+.login-card,
+.question-panel,
+[class*="Card"],
+.assessment-card {
+  border-radius: 0 !important;
+  border: 3px solid #000 !important;
+  box-shadow: 6px 6px 0 #000 !important;
+}
+
+/* Neo-brutalism for buttons (except in floating panel) */
+button:not([class*="rounded"]) {
+  border-radius: 0 !important;
+}
+
+/* Neo-brutalism for inputs */
+input:not([type="radio"]):not([type="checkbox"]),
+textarea,
+select {
+  border-radius: 0 !important;
+  border: 3px solid #000 !important;
+}
+
+/* Progress bars */
+.progress-bar,
+[class*="progress"] {
+  border-radius: 0 !important;
+}
+
+/* Assessment question text legibility */
+.framework-perseus .paragraph,
+.framework-perseus p {
+  font-size: 20px !important;
+  line-height: 1.6 !important;
+  color: #000000 !important;
+}
+
+/* Question container styling */
+#question-content-container {
+  background: #FFFFFF !important;
+  border: 3px solid #000 !important;
+  box-shadow: 6px 6px 0 #000 !important;
+}
+
+/* Prevent content from going under floating panel */
+.question-panel {
+  padding-right: 280px !important;
+}
+
+/* ============================================
+   FLOATING CONTROL PANEL - V1 SOFT STYLING
+   Override neo-brutalism for the floating panel
+   ============================================ */
+
+/* Main floating panel container - preserve rounded corners */
+[class*="fixed"][class*="z-[1000]"][class*="bg-[#FFFDF5]"] {
+  border-radius: 0.5rem !important; /* rounded-lg */
+  box-shadow: 1px 1px 0 0 rgba(0,0,0,1), 4px 4px 12px rgba(0,0,0,0.12), 8px 8px 24px rgba(0,0,0,0.08) !important;
+}
+
+@media (min-width: 768px) {
+  [class*="fixed"][class*="z-[1000]"][class*="bg-[#FFFDF5]"] {
+    border-radius: 0.75rem !important; /* rounded-xl */
+    box-shadow: 2px 2px 0 0 rgba(0,0,0,1), 6px 6px 16px rgba(0,0,0,0.15), 12px 12px 32px rgba(0,0,0,0.1) !important;
+  }
+}
 /* Assessment Question Text Legibility Fix */
 .framework-perseus .paragraph {
   font-size: 20px !important;

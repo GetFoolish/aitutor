@@ -59,7 +59,6 @@ import {
   ToggleRight,
   Loader2,
   Clock,
-  Book,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -83,8 +82,6 @@ export type FloatingControlPanelProps = {
   onTogglePrivacy: (enabled: boolean) => void;
   processedEdgesRef: RefObject<ImageData | null>;
   assessmentMode?: boolean;
-  onBiographyClick?: () => void;
-  isBiographyActive?: boolean;
 };
 
 function FloatingControlPanel({
@@ -103,8 +100,6 @@ function FloatingControlPanel({
   onTogglePrivacy,
   processedEdgesRef,
   assessmentMode = false,
-  onBiographyClick,
-  isBiographyActive = false,
 }: FloatingControlPanelProps) {
   const { client, connected, connect, disconnect, interruptAudio } = useTutorContext();
   const { theme } = useTheme();
@@ -874,7 +869,7 @@ function FloatingControlPanel({
   const panelClasses = useMemo(
     () =>
       cn(
-        "fixed z-[1000] bg-[#FFFDF5] dark:bg-[#000000] border-[2px] md:border-[3px] border-black dark:border-white rounded-lg md:rounded-xl cursor-grab active:cursor-grabbing",
+        "fixed z-[1000] bg-[#FFFDF5] dark:bg-[#000000] border-[2px] md:border-[3px] border-black dark:border-white rounded-lg md:rounded-xl",
         isCollapsed
           ? "w-[50px] md:w-[55px] py-2 md:py-2.5 px-1 md:px-1.5 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)]"
           : "w-[220px] md:w-[250px] p-2.5 md:p-3 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1),_6px_6px_16px_rgba(0,0,0,0.15),_12px_12px_32px_rgba(0,0,0,0.1)]",
@@ -889,6 +884,7 @@ function FloatingControlPanel({
       className={panelClasses}
       drag
       dragControls={dragControls}
+      dragListener={false}
       dragMomentum={false}
       dragElastic={0}
       dragConstraints={{
@@ -928,14 +924,12 @@ function FloatingControlPanel({
           style={{ display: 'none' }}
         />
         
-        {/* Drag handle indicator */}
-        <div className="w-12 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-auto mb-1 cursor-grab active:cursor-grabbing" />
-        
         <div
           className={cn(
             "cursor-grab active:cursor-grabbing flex items-center mb-1.5 md:mb-2",
             isCollapsed ? "justify-center mb-1 md:mb-1.5" : "justify-between",
           )}
+          onPointerDown={(e) => dragControls.start(e)}
         >
           {!isCollapsed && (
             <div className="flex items-center gap-1.5 md:gap-2">
@@ -1094,21 +1088,6 @@ function FloatingControlPanel({
             >
               <PenTool className="w-3.5 h-3.5 font-bold" />
             </button>
-
-            {onBiographyClick && (
-              <button
-                onClick={onBiographyClick}
-                className={cn(
-                  "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
-                  isBiographyActive
-                    ? "bg-[#C4B5FD] text-black"
-                    : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#C4B5FD] border-black dark:border-white",
-                )}
-                title="Biography & Memory"
-              >
-                <Book className="w-3.5 h-3.5 font-bold" />
-              </button>
-            )}
 
             <button
               onClick={toggleSharedMedia}
@@ -1407,29 +1386,6 @@ function FloatingControlPanel({
                 </div>
                 <span className="text-[7px] md:text-[8px] font-black uppercase">Canvas</span>
               </button>
-              {onBiographyClick && (
-                <button
-                  onClick={onBiographyClick}
-                  className={cn(
-                    "flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group",
-                    isBiographyActive
-                      ? "bg-[#C4B5FD] text-black"
-                      : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#C4B5FD]",
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "p-1 border-[2px] border-black dark:border-white transition-colors",
-                      isBiographyActive
-                        ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
-                        : "bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#C4B5FD]",
-                    )}
-                  >
-                    <Book className="w-3 h-3 md:w-4 md:h-4 font-bold" />
-                  </div>
-                  <span className="text-[7px] md:text-[8px] font-black uppercase">Memory</span>
-                </button>
-              )}
               <button
                 onClick={toggleSharedMedia}
                 className={cn(

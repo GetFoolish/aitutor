@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+// EXTREME NEO-BRUTALISM Textarea Component
 const Textarea = React.forwardRef<
   HTMLTextAreaElement,
   React.ComponentProps<"textarea">
@@ -9,9 +10,25 @@ const Textarea = React.forwardRef<
   return (
     <textarea
       className={cn(
-        "flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+        // Base styles - EXTREME NEO-BRUTALISM
+        "flex min-h-[120px] w-full bg-white px-4 py-3 text-base font-bold font-mono text-black resize-y",
+        // Border - thick black, NO rounded corners
+        "border-[3px] border-black",
+        // Shadow - brutal offset
+        "shadow-[4px_4px_0_0_#000]",
+        // Focus - yellow highlight, larger shadow
+        "focus:bg-[#FCD34D] focus:shadow-[6px_6px_0_0_#000] focus:outline-none",
+        // Hover
+        "hover:shadow-[5px_5px_0_0_#000]",
+        // Placeholder
+        "placeholder:text-black placeholder:opacity-50 placeholder:font-bold",
+        // Disabled
+        "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-gray-100",
+        // Transition
+        "transition-all duration-100",
         className
       )}
+      style={{ borderRadius: 0 }}
       ref={ref}
       {...props}
     />

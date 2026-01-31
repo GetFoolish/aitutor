@@ -1,24 +1,24 @@
 :root {
-  // Web 1.0 Neo-Brutalism Color Palette
+  // EXTREME NEO-BRUTALISM Color Palette
   --neo-black: #000000;
   --neo-white: #FFFFFF;
-  --neo-yellow: #FFD93D; // Vivid Yellow
-  --neo-red: #FF6B6B; // Hot Red
-  --neo-violet: #C4B5FD; // Soft Violet
-  --neo-bg: #FFFDF5; // Cream background (aged paper)
+  --neo-yellow: #FCD34D; // Bold Yellow
+  --neo-red: #FF6B6B; // Coral Red
+  --neo-violet: #000000; // No violet - use black
+  --neo-bg: #FFFFFF; // Pure white background
 
-  // Legacy color mappings for backward compatibility
-  --neo-cyan: #C4B5FD; // Map cyan to violet
-  --neo-pink: #FF6B6B; // Map pink to red
-  --neo-lime: #FFD93D; // Map lime to yellow
-  --neo-orange: #FF6B6B; // Map orange to red
+  // Legacy color mappings - all bold colors
+  --neo-cyan: #FCD34D; // Map to yellow
+  --neo-pink: #FF6B6B; // Coral
+  --neo-lime: #22C55E; // Bold green
+  --neo-orange: #FF6B6B; // Coral
 
-  // Neo-Brutalism Borders & Shadows
+  // EXTREME Neo-Brutalism Borders & Shadows - HARSH
   --neo-border-width: 5px;
   --neo-border: 5px solid var(--neo-black);
-  --neo-shadow: 3px 3px 0 var(--neo-black);
-  --neo-shadow-hover: 4px 4px 0 var(--neo-black);
-  --neo-shadow-small: 2px 2px 0 var(--neo-black);
+  --neo-shadow: 6px 6px 0 var(--neo-black);
+  --neo-shadow-hover: 8px 8px 0 var(--neo-black);
+  --neo-shadow-small: 4px 4px 0 var(--neo-black);
 
   // Legacy variables (keeping for compatibility)
   --text: var(--neo-black);

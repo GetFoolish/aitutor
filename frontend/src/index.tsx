@@ -112,28 +112,79 @@ class ErrorBoundary extends React.Component<
           justifyContent: 'center',
           alignItems: 'center',
           height: '100vh',
-          background: '#FFFDF5',
+          background: '#FFFFFF',
           padding: '20px',
           textAlign: 'center'
         }}>
-          <h1 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '16px' }}>Something went wrong</h1>
-          <p style={{ fontSize: '14px', marginBottom: '8px' }}>{this.state.error?.message}</p>
-          <button
-            onClick={() => window.location.reload()}
-            style={{
-              padding: '12px 24px',
-              border: '4px solid #000000',
-              background: '#FFD93D',
+          {/* EXTREME NEO-BRUTALISM Error Card */}
+          <div style={{
+            background: '#FF6B6B',
+            border: '5px solid #000000',
+            padding: '48px',
+            maxWidth: '500px',
+            boxShadow: '8px 8px 0px 0px #000000'
+          }}>
+            <div style={{ fontSize: '64px', marginBottom: '24px' }}>⚠️</div>
+            <h1 style={{
+              fontSize: '32px',
+              fontWeight: 900,
+              marginBottom: '16px',
+              textTransform: 'uppercase',
+              fontFamily: 'Space Mono, monospace',
+              color: '#000000'
+            }}>
+              SOMETHING WENT WRONG
+            </h1>
+            <p style={{
+              fontSize: '16px',
+              fontWeight: 700,
+              marginBottom: '24px',
+              color: '#000000'
+            }}>
+              {this.state.error?.message}
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              style={{
+                padding: '16px 32px',
+                border: '4px solid #000000',
+                background: '#FCD34D',
+                cursor: 'pointer',
+                fontWeight: 900,
+                textTransform: 'uppercase',
+                fontSize: '18px',
+                fontFamily: 'Space Mono, monospace',
+                boxShadow: '4px 4px 0px 0px #000000'
+              }}
+            >
+              RELOAD PAGE
+            </button>
+          </div>
+          <details style={{
+            marginTop: '24px',
+            textAlign: 'left',
+            maxWidth: '600px',
+            background: '#FFFFFF',
+            border: '3px solid #000000',
+            padding: '16px',
+            boxShadow: '4px 4px 0px 0px #000000'
+          }}>
+            <summary style={{
               cursor: 'pointer',
+              marginBottom: '10px',
               fontWeight: 700,
               textTransform: 'uppercase'
-            }}
-          >
-            Reload Page
-          </button>
-          <details style={{ marginTop: '20px', textAlign: 'left', maxWidth: '600px' }}>
-            <summary style={{ cursor: 'pointer', marginBottom: '10px' }}>Error Details</summary>
-            <pre style={{ background: '#f5f5f5', padding: '10px', overflow: 'auto', fontSize: '12px' }}>
+            }}>
+              ERROR DETAILS
+            </summary>
+            <pre style={{
+              background: '#FCD34D',
+              padding: '16px',
+              overflow: 'auto',
+              fontSize: '12px',
+              fontFamily: 'Space Mono, monospace',
+              border: '2px solid #000000'
+            }}>
               {this.state.error?.stack}
             </pre>
           </details>

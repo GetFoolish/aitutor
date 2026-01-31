@@ -19,9 +19,23 @@ import { TutorClient } from "./tutor-client";
 import { AudioStreamer } from "./audio-streamer";
 import { audioContext } from "../../lib/utils";
 import VolMeterWorket from "../../lib/worklets/vol-meter";
-import { LiveConnectConfig } from "@google/genai";
+import { LiveConnectConfig, Modality } from "@google/genai";
 import { useAuth } from "../../contexts/AuthContext";
 import { apiUtils } from "../../lib/api-utils";
+
+// Default audio config - ensures tutor works even before SettingsDialog opens
+const DEFAULT_CONFIG: LiveConnectConfig = {
+  responseModalities: [Modality.AUDIO],
+  speechConfig: {
+    voiceConfig: {
+      prebuiltVoiceConfig: {
+        voiceName: "Puck", // Friendly voice
+      },
+    },
+  },
+  inputAudioTranscription: {},
+  outputAudioTranscription: {},
+};
 
 export type UseTutorResults = {
   client: TutorClient;
@@ -40,7 +54,7 @@ export function useTutor(assessmentMode?: boolean): UseTutorResults {
   const audioStreamerRef = useRef<AudioStreamer | null>(null);
   const { user } = useAuth();
 
-  const [config, setConfig] = useState<LiveConnectConfig>({});
+  const [config, setConfig] = useState<LiveConnectConfig>(DEFAULT_CONFIG);
   const [connected, setConnected] = useState(false);
   const [volume, setVolume] = useState(0);
 
@@ -124,8 +138,9 @@ export function useTutor(assessmentMode?: boolean): UseTutorResults {
   }, [client]);
 
   const connect = useCallback(async () => {
-    if (!config) {
-      throw new Error("config has not been set");
+    // Validate config has required responseModalities (empty {} would fail silently)
+    if (!config || !config.responseModalities || config.responseModalities.length === 0) {
+      throw new Error("Tutor config not properly initialized - missing responseModalities");
     }
     client.disconnect();
     // Pass preferred language and assessment mode from context

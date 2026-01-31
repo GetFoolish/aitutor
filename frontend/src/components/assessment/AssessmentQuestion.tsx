@@ -179,83 +179,63 @@ const AssessmentQuestion: React.FC<Props> = ({
 
   return (
     <div className="framework-perseus" style={{ marginTop: '0' }}>
-      {/* Enhanced Question Header with Progress */}
+      {/* EXTREME NEO-BRUTALISM Question Header with Progress */}
       <div style={{
         marginBottom: '32px',
         border: '5px solid #000000',
-        backgroundColor: '#FFD93D',
-        boxShadow: '4px 4px 0px 0px #000000',
+        borderRadius: '0',
+        backgroundColor: '#FCD34D',
+        boxShadow: '6px 6px 0px 0px #000000',
         overflow: 'hidden'
       }}>
         <div style={{
-          padding: '20px 24px',
+          padding: '24px 32px',
           textAlign: 'center',
-          borderBottom: '3px solid #000000'
+          borderBottom: '4px solid #000000'
         }}>
           <div style={{
-            fontSize: '20px',
+            fontSize: '28px',
             fontWeight: 900,
             color: '#000000',
             textTransform: 'uppercase',
-            letterSpacing: '0.1em',
-            marginBottom: '8px',
-            fontFamily: 'system-ui, -apple-system, sans-serif'
-          }}>
-            QUESTION {questionNumber} OF {totalQuestions}
-          </div>
-          <div style={{
-            fontSize: '14px',
-            fontWeight: 700,
-            color: '#000000',
-            textTransform: 'uppercase',
             letterSpacing: '0.05em',
-            opacity: 0.8
+            marginBottom: '8px',
+            fontFamily: 'Space Mono, monospace'
           }}>
-            Assessment in Progress
+            QUESTION {questionNumber}/{totalQuestions}
           </div>
         </div>
-        
-        {/* Progress Bar */}
+
+        {/* Progress Bar - EXTREME */}
         <div style={{
-          height: '12px',
+          height: '16px',
           backgroundColor: '#FFFFFF',
-          borderTop: '3px solid #000000',
+          borderTop: '4px solid #000000',
           position: 'relative',
           overflow: 'hidden'
         }}>
           <div style={{
             height: '100%',
             width: `${progressPercentage}%`,
-            backgroundColor: '#FF6B6B',
-            borderRight: '3px solid #000000',
-            transition: 'width 0.3s ease-out',
-            boxShadow: 'inset 0 0 0 2px #000000'
+            backgroundColor: '#22C55E',
+            borderRight: progressPercentage < 100 ? '4px solid #000000' : 'none',
+            transition: 'width 0.3s ease-out'
           }}></div>
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            fontSize: '10px',
-            fontWeight: 900,
-            color: '#000000',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            zIndex: 1,
-            textShadow: '0 0 4px #FFFFFF'
-          }}>
-            {Math.round(progressPercentage)}%
-          </div>
         </div>
       </div>
 
-      <div 
+      <div
         id="question-content-container"
-        className="border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white p-4 md:p-5 lg:p-6 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] mb-6"
         style={{
-          fontSize: '22px',
+          border: '5px solid #000000',
+          borderRadius: '0',
+          backgroundColor: '#FFFFFF',
+          padding: '32px',
+          boxShadow: '6px 6px 0px 0px #000000',
+          marginBottom: '24px',
+          fontSize: '20px',
           lineHeight: '1.6',
-          fontWeight: 500,
+          fontWeight: 600,
           color: '#000000',
         }}
       >
@@ -287,33 +267,34 @@ const AssessmentQuestion: React.FC<Props> = ({
             onClick={handleSubmit}
             style={{
               width: '100%',
-              padding: '20px 32px',
-              fontSize: '18px',
+              padding: '24px 32px',
+              fontSize: '24px',
               fontWeight: 900,
               textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              backgroundColor: '#FFD93D',
+              letterSpacing: '0.05em',
+              backgroundColor: '#22C55E',
               color: '#000000',
               border: '5px solid #000000',
+              borderRadius: '0',
               cursor: 'pointer',
-              boxShadow: '4px 4px 0px 0px #000000',
+              boxShadow: '6px 6px 0px 0px #000000',
               transition: 'all 0.1s ease-out',
-              fontFamily: 'system-ui, -apple-system, sans-serif'
+              fontFamily: 'Space Mono, monospace'
             }}
             onMouseDown={(e) => {
-              (e.target as HTMLElement).style.boxShadow = '2px 2px 0px 0px #000000';
-              (e.target as HTMLElement).style.transform = 'translate(2px, 2px)';
+              (e.target as HTMLElement).style.boxShadow = '3px 3px 0px 0px #000000';
+              (e.target as HTMLElement).style.transform = 'translate(3px, 3px)';
             }}
             onMouseUp={(e) => {
-              (e.target as HTMLElement).style.boxShadow = '4px 4px 0px 0px #000000';
+              (e.target as HTMLElement).style.boxShadow = '6px 6px 0px 0px #000000';
               (e.target as HTMLElement).style.transform = 'translate(0, 0)';
             }}
             onMouseLeave={(e) => {
-              (e.target as HTMLElement).style.boxShadow = '4px 4px 0px 0px #000000';
+              (e.target as HTMLElement).style.boxShadow = '6px 6px 0px 0px #000000';
               (e.target as HTMLElement).style.transform = 'translate(0, 0)';
             }}
           >
-            Submit Answer
+            SUBMIT ANSWER
           </button>
         </div>
       )}
@@ -321,39 +302,42 @@ const AssessmentQuestion: React.FC<Props> = ({
       {showFeedback && keScore && (
         <div style={{
           marginBottom: '24px',
-          padding: '20px',
+          padding: '24px',
           border: '5px solid #000000',
-          backgroundColor: keScore.correct ? '#E8F5E9' : '#FFEBEE',
-          boxShadow: '4px 4px 0px 0px #000000',
+          borderRadius: '0',
+          backgroundColor: keScore.correct ? '#22C55E' : '#FF6B6B',
+          boxShadow: '6px 6px 0px 0px #000000',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '16px'
+          gap: '20px'
         }}>
           {keScore.correct ? (
             <>
-              <CheckCircle2 size={32} style={{ color: '#2E7D32', flexShrink: 0 }} />
+              <CheckCircle2 size={40} style={{ color: '#000000', flexShrink: 0 }} />
               <span style={{
-                color: '#2E7D32',
-                fontWeight: 700,
-                fontSize: '18px',
+                color: '#000000',
+                fontWeight: 900,
+                fontSize: '24px',
                 textTransform: 'uppercase',
-                letterSpacing: '0.05em'
+                letterSpacing: '0.05em',
+                fontFamily: 'Space Mono, monospace'
               }}>
-                Correct!
+                CORRECT!
               </span>
             </>
           ) : (
             <>
-              <XCircle size={32} style={{ color: '#C62828', flexShrink: 0 }} />
+              <XCircle size={40} style={{ color: '#000000', flexShrink: 0 }} />
               <span style={{
-                color: '#C62828',
-                fontWeight: 700,
-                fontSize: '18px',
+                color: '#000000',
+                fontWeight: 900,
+                fontSize: '24px',
                 textTransform: 'uppercase',
-                letterSpacing: '0.05em'
+                letterSpacing: '0.05em',
+                fontFamily: 'Space Mono, monospace'
               }}>
-                Incorrect
+                INCORRECT
               </span>
             </>
           )}
@@ -362,20 +346,21 @@ const AssessmentQuestion: React.FC<Props> = ({
 
       {showFeedback && !isAnswered && (
         <div style={{
-          padding: '20px',
+          padding: '24px',
           border: '5px solid #000000',
-          backgroundColor: '#FFD93D',
-          boxShadow: '4px 4px 0px 0px #000000',
+          borderRadius: '0',
+          backgroundColor: '#FCD34D',
+          boxShadow: '6px 6px 0px 0px #000000',
           textAlign: 'center',
-          fontSize: '16px',
+          fontSize: '20px',
           fontWeight: 900,
           color: '#000000',
           textTransform: 'uppercase',
-          letterSpacing: '0.1em',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
+          letterSpacing: '0.05em',
+          fontFamily: 'Space Mono, monospace',
           animation: 'pulse 1.5s ease-in-out infinite'
         }}>
-          Moving to next question...
+          NEXT QUESTION...
         </div>
       )}
       <style>{`

@@ -33,6 +33,63 @@ const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_U
 const USE_GENERATED_QUESTIONS = import.meta.env.VITE_USE_GENERATED_QUESTIONS === 'true';
 
 /**
+ * Fixes malformed widget options before rendering.
+ * The AI sometimes generates radio widgets in wrong format:
+ * - Wrong: {"options": {"3": false, "4": true}}
+ * - Correct: {"options": {"choices": [{"content": "3", "correct": false}, ...]}}
+ */
+function fixMalformedWidgets(item: any): any {
+    if (!item?.question?.widgets) return item;
+
+    const fixedItem = JSON.parse(JSON.stringify(item)); // Deep clone
+    const widgets = fixedItem.question.widgets;
+
+    for (const [widgetId, widget] of Object.entries(widgets)) {
+        const w = widget as any;
+        if (w?.type === 'radio' && w?.options) {
+            // Check if choices already exists
+            if (!Array.isArray(w.options.choices)) {
+                // Look for wrong format: options like {"3": false, "4": true}
+                const wrongFormatChoices: { text: string; correct: boolean }[] = [];
+                const keysToRemove: string[] = [];
+
+                for (const [key, value] of Object.entries(w.options)) {
+                    // Skip known Perseus option keys
+                    if (['choices', 'randomize', 'multipleSelect', 'countChoices',
+                         'deselectEnabled', 'displayCount', 'noneOfTheAbove', 'hasNoneOfTheAbove'].includes(key)) {
+                        continue;
+                    }
+                    // If value is boolean, this is likely wrong format
+                    if (typeof value === 'boolean') {
+                        wrongFormatChoices.push({ text: String(key), correct: value });
+                        keysToRemove.push(key);
+                    }
+                }
+
+                // Convert wrong format to correct format
+                if (wrongFormatChoices.length >= 2) {
+                    console.warn(`[RendererComponent] Fixing malformed radio widget ${widgetId}:`, wrongFormatChoices);
+
+                    // Remove wrong keys
+                    for (const key of keysToRemove) {
+                        delete w.options[key];
+                    }
+
+                    // Add proper choices array
+                    w.options.choices = wrongFormatChoices.map(c => ({
+                        content: c.text,
+                        correct: c.correct
+                    }));
+                    w.options.randomize = w.options.randomize ?? true;
+                }
+            }
+        }
+    }
+
+    return fixedItem;
+}
+
+/**
  * Validates a Perseus item has proper widget structure before rendering.
  * This catches malformed questions early and provides actionable error messages.
  */
@@ -87,6 +144,22 @@ function validatePerseusItem(item: any): { valid: boolean; error?: string } {
             const choices = w.options?.choices;
             if (!Array.isArray(choices) || choices.length < 2) {
                 return { valid: false, error: `Dropdown widget "${widgetId}" needs at least 2 choices` };
+            }
+        }
+
+        // Validate orderer widgets have options to sort
+        if (w.type === 'orderer') {
+            const options = w.options?.options;
+            if (!Array.isArray(options) || options.length < 2) {
+                return { valid: false, error: `Sorting widget "${widgetId}" needs at least 2 items to sort` };
+            }
+        }
+
+        // Validate expression widgets have answer forms
+        if (w.type === 'expression') {
+            const answerForms = w.options?.answerForms;
+            if (!Array.isArray(answerForms) || answerForms.length === 0) {
+                return { valid: false, error: `Math expression widget "${widgetId}" has no answer defined` };
             }
         }
     }
@@ -185,15 +258,17 @@ const RendererComponent = ({
     useEffect(() => {
         // In assessment mode, use provided questions instead of fetching
         if (assessmentMode) {
-            setPerseusItems(assessmentQuestions);
+            // Apply widget fixes to assessment questions
+            const fixedQuestions = assessmentQuestions.map((q: any) => fixMalformedWidgets(q));
+            setPerseusItems(fixedQuestions);
             setItem(currentQuestionIndex);
             setIsLoading(false);
             setHasRenderError(debugForceRenderError);
-                setIsAnswered(false);
-                setShowFeedback(false);
-                setStartTime(Date.now());
-                return;
-            }
+            setIsAnswered(false);
+            setShowFeedback(false);
+            setStartTime(Date.now());
+            return;
+        }
 
         const fetchQuestions = async () => {
             if (!jwtUtils.getToken()) {
@@ -237,12 +312,14 @@ const RendererComponent = ({
                         if (response.ok) {
                             const data = await response.json();
                             if (data && data.length > 0) {
-                setPerseusItems(data);
-                setItem(0);
-                setEndOfTest(false);
-                setIsAnswered(false);
-                setHasRenderError(false);
-                setStartTime(Date.now());
+                                // Apply widget fixes to all questions
+                                const fixedData = data.map((q: any) => fixMalformedWidgets(q));
+                                setPerseusItems(fixedData);
+                                setItem(0);
+                                setEndOfTest(false);
+                                setIsAnswered(false);
+                                setHasRenderError(false);
+                                setStartTime(Date.now());
                                 setIsLoading(false);
                                 return;
                             }
@@ -255,7 +332,9 @@ const RendererComponent = ({
                     if (preloadedResponse.ok) {
                         const preloadedData = await preloadedResponse.json();
                         if (preloadedData && preloadedData.length > 0) {
-                            setPerseusItems(preloadedData);
+                            // Apply widget fixes to preloaded questions
+                            const fixedData = preloadedData.map((q: any) => fixMalformedWidgets(q));
+                            setPerseusItems(fixedData);
                             setItem(0);
                             setEndOfTest(false);
                             setIsAnswered(false);
@@ -267,17 +346,19 @@ const RendererComponent = ({
                         // 422 means validation error, but we can still try fallback
                         console.warn('Pre-loaded questions endpoint returned 422, using fallback');
                     }
-                    
+
                     // Fallback: Load initial 5 questions
                     const response = await apiUtils.get(`${DASH_API_URL}/api/questions/5`);
-                    
+
                     if (!response.ok) {
                         // Don't retry on HTTP error codes (401, 403, 404, 500, etc.)
                         throw new Error(`Failed to fetch questions: ${response.status}`);
                     }
 
                     const data = await response.json();
-                    setPerseusItems(data);
+                    // Apply widget fixes to DASH API questions
+                    const fixedData = data.map((q: any) => fixMalformedWidgets(q));
+                    setPerseusItems(fixedData);
                     setItem(0);
                     setEndOfTest(false);
                     setIsAnswered(false);
@@ -428,10 +509,12 @@ const RendererComponent = ({
             }
             
             const newQuestions = await response.json();
-            
+
             // Only update if we got new questions (non-empty response means questions changed)
             if (newQuestions.length > 0) {
-                setPerseusItems(prev => [...prev, ...newQuestions]);
+                // Apply widget fixes to new questions
+                const fixedQuestions = newQuestions.map((q: any) => fixMalformedWidgets(q));
+                setPerseusItems(prev => [...prev, ...fixedQuestions]);
             }
         } catch (err) {
             console.error('Error loading next batch:', err);
@@ -659,70 +742,81 @@ const RendererComponent = ({
 
     return (
         <div className="framework-perseus relative flex w-full h-full items-start justify-center px-3 md:px-4">
-            {/* Neo-Brutalism Card */}
-            <Card className="relative flex w-full max-w-4xl md:max-w-5xl my-4 md:my-6 flex-col border-[4px] md:border-[5px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-200">
-                {/* Progress bar at top */}
-                <div className="absolute top-0 left-0 right-0 h-2 md:h-3 bg-[#FFFDF5] dark:bg-[#000000] border-b-[2px] md:border-b-[3px] border-black dark:border-white">
-                    <div
-                        className="h-full bg-[#C4B5FD] transition-all duration-500 ease-out"
-                        style={{ width: `${progressPercentage}%` }}
-                    />
-                </div>
-
-                <CardHeader className="space-y-2 pt-6 md:pt-7 px-4 md:px-6 border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#FFD93D]">
-                    <div className="flex items-start justify-between gap-3 md:gap-4 flex-wrap">
-                        <div className="space-y-1.5 flex-1">
-                            {/* Breadcrumb Navigation */}
-                            {perseusItems.length > 0 && !isLoading && (
-                                <div className="flex items-center gap-2 flex-wrap text-xs md:text-sm font-bold text-black">
-                                    {(() => {
-                                        const currentItem = perseusItems[item];
-                                        const metadata = (currentItem as any).dash_metadata || {};
-                                        const unitName = metadata.unit_name || 'Unknown Unit';
-                                        const lessonName = metadata.lesson_name || 'Unknown Lesson';
-                                        const exerciseName = metadata.exercise_name || 'Unknown Exercise';
-                                        const mongodbId = metadata.mongodb_id || 'N/A';
-                                        
-                                        return (
-                                            <>
-                                                <span className="uppercase tracking-wide">{unitName}</span>
-                                                <ChevronRight className="w-4 h-4 flex-shrink-0" />
-                                                <span className="uppercase tracking-wide">{lessonName}</span>
-                                                <ChevronRight className="w-4 h-4 flex-shrink-0" />
-                                                <span className="uppercase tracking-wide">{exerciseName}</span>
-                                                <ChevronRight className="w-4 h-4 flex-shrink-0" />
-                                                <span className="font-mono text-gray-600 dark:text-gray-400 normal-case">{mongodbId}</span>
-                                            </>
-                                        );
-                                    })()}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Neo-Brutalist Progress Badge */}
-                        <div className="flex items-center gap-2 md:gap-3">
-                            {!isLoading && perseusItems.length > 0 && (
-                                <>
-                                    <div className="text-right hidden sm:block">
-                                        <div className="text-[10px] md:text-xs font-black uppercase tracking-wider text-black mb-0.5">
-                                            Progress
-                                        </div>
-                                        <div className="text-xs md:text-sm font-black text-black">
-                                            Q <span className="text-[#FF6B6B]">{item + 1}</span>/{perseusItems.length}
-                                        </div>
-                                    </div>
-                                    <div className="px-3 md:px-4 py-2 md:py-3 border-[2px] md:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]">
-                                        <div className="text-xl md:text-2xl font-black text-black dark:text-white">
-                                            {Math.round(progressPercentage)}%
-                                        </div>
-                                    </div>
-                                </>
-                            )}
-                        </div>
+            {/* EXTREME Neo-Brutalism Card - Simplified in assessment mode */}
+            <Card className={`relative flex w-full max-w-4xl md:max-w-5xl my-4 md:my-6 flex-col border-[5px] border-black dark:border-white bg-white dark:bg-[#000000] transition-all duration-200 ${
+                assessmentMode
+                    ? 'shadow-none rounded-none'
+                    : 'shadow-[4px_4px_0_0_rgba(0,0,0,1)] md:shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)]'
+            }`} style={{ borderRadius: 0 }}>
+                {/* Progress bar at top - hide in assessment mode (parent shows progress) */}
+                {!assessmentMode && (
+                    <div className="absolute top-0 left-0 right-0 h-3 md:h-4 bg-white dark:bg-[#000000] border-b-[3px] md:border-b-[4px] border-black dark:border-white">
+                        <div
+                            className="h-full bg-[#22C55E] transition-all duration-500 ease-out"
+                            style={{ width: `${progressPercentage}%` }}
+                        />
                     </div>
-                </CardHeader>
+                )}
 
-                <CardContent className="px-4 md:px-6 py-4 md:py-6 bg-[#FFFDF5] dark:bg-[#000000]">
+                {/* Hide CardHeader in assessment mode - parent handles progress UI */}
+                {!assessmentMode && (
+                    <CardHeader className="space-y-2 pt-6 md:pt-7 px-4 md:px-6 border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#FCD34D]">
+                        <div className="flex items-start justify-between gap-3 md:gap-4 flex-wrap">
+                            <div className="space-y-1.5 flex-1">
+                                {/* Breadcrumb Navigation - only show when we have valid metadata */}
+                                {perseusItems.length > 0 && !isLoading && (
+                                    <div className="flex items-center gap-2 flex-wrap text-xs md:text-sm font-bold text-black">
+                                        {(() => {
+                                            const currentItem = perseusItems[item];
+                                            const metadata = (currentItem as any).dash_metadata || {};
+                                            const unitName = metadata.unit_name;
+                                            const lessonName = metadata.lesson_name;
+                                            const exerciseName = metadata.exercise_name;
+
+                                            // Don't show breadcrumb if all values are missing
+                                            if (!unitName && !lessonName && !exerciseName) {
+                                                return null;
+                                            }
+
+                                            return (
+                                                <>
+                                                    {unitName && <span className="uppercase tracking-wide">{unitName}</span>}
+                                                    {unitName && lessonName && <ChevronRight className="w-4 h-4 flex-shrink-0" />}
+                                                    {lessonName && <span className="uppercase tracking-wide">{lessonName}</span>}
+                                                    {lessonName && exerciseName && <ChevronRight className="w-4 h-4 flex-shrink-0" />}
+                                                    {exerciseName && <span className="uppercase tracking-wide">{exerciseName}</span>}
+                                                </>
+                                            );
+                                        })()}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Neo-Brutalist Progress Badge */}
+                            <div className="flex items-center gap-2 md:gap-3">
+                                {!isLoading && perseusItems.length > 0 && (
+                                    <>
+                                        <div className="text-right hidden sm:block">
+                                            <div className="text-[10px] md:text-xs font-black uppercase tracking-wider text-black mb-0.5">
+                                                PROGRESS
+                                            </div>
+                                            <div className="text-xs md:text-sm font-black text-black">
+                                                Q <span className="text-[#FF6B6B]">{item + 1}</span>/{perseusItems.length}
+                                            </div>
+                                        </div>
+                                        <div className="px-3 md:px-4 py-2 md:py-3 border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-[#000000] shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]">
+                                            <div className="text-xl md:text-2xl font-black text-black dark:text-white">
+                                                {Math.round(progressPercentage)}%
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </CardHeader>
+                )}
+
+                <CardContent className={`px-4 md:px-6 py-4 md:py-6 ${assessmentMode ? 'pt-4' : 'pt-8 md:pt-10'} bg-white dark:bg-[#000000]`}>
                     <div
                         ref={scrollContainerRef}
                         className="relative w-full max-w-4xl mx-auto"
@@ -823,6 +917,7 @@ const RendererComponent = ({
                                         <PerseusI18nContextProvider locale="en" strings={mockStrings}>
                                             <RenderStateRoot>
                                                 <ServerItemRenderer
+                                                    key={`question-${(perseusItem as any)?.dash_metadata?.dash_question_id || item}-${item}`}
                                                     ref={rendererRef}
                                                     problemNum={0}
                                                     item={perseusItem}

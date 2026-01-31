@@ -27,11 +27,12 @@ interface ShapeConfig {
   height?: number;
 }
 
-// Web 1.0 Neo-brutalist color palette - high saturation primary colors
+// EXTREME NEO-BRUTALISM color palette - BOLD primary colors only
 const WEB1_COLORS = [
-  '#FF6B6B', // Hot Red - like unmixed paint
-  '#FFD93D', // Vivid Yellow - like highlighter markers
-  '#C4B5FD', // Soft Violet - gentle yet vibrant
+  '#FF6B6B', // Coral Red
+  '#FCD34D', // Bold Yellow
+  '#22C55E', // Bold Green
+  '#000000', // Pure Black for contrast
 ];
 
 interface BackgroundShapesProps {
@@ -40,14 +41,16 @@ interface BackgroundShapesProps {
 
 const generateRandomShapes = (count: number): ShapeConfig[] => {
   const shapes: ShapeConfig[] = [];
+  // EXTREME: Only squares and triangles - no circles for brutal aesthetic
   const shapeTypes: ('circle' | 'square' | 'triangle')[] = [
-    'circle', 'square', 'triangle'
+    'square', 'square', 'triangle' // More squares for brutalism
   ];
 
   for (let i = 0; i < count; i++) {
     const type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
     const color = WEB1_COLORS[Math.floor(Math.random() * WEB1_COLORS.length)];
-    const size = Math.floor(Math.random() * 29) + 29; // 29-58px (20% bigger than before)
+    // EXTREME: 2-3x LARGER shapes (60-120px)
+    const size = Math.floor(Math.random() * 60) + 60;
 
     // Generate positions that can be partially off-screen for visual interest
     const x = Math.floor(Math.random() * 120) - 10; // -10% to 110%
@@ -73,26 +76,38 @@ export default function BackgroundShapes({ count = 15 }: BackgroundShapesProps) 
   }, [count]);
 
   const renderShape = (shape: ShapeConfig, index: number) => {
-    const strokeColor = 'currentColor'; // Will inherit from parent (black in light mode, white in dark)
-    const strokeWidth = 3;
+    const strokeColor = '#000000'; // EXTREME: Always black stroke
+    const strokeWidth = 5; // EXTREME: Thicker strokes
+    const shadowOffset = 4; // Offset shadow
 
     switch (shape.type) {
       case 'circle':
+        // EXTREME: Circles become squares
         return (
           <svg
             key={index}
-            width={shape.size}
-            height={shape.size}
+            width={shape.size + shadowOffset}
+            height={shape.size + shadowOffset}
             style={{
               position: 'absolute',
               left: `${shape.x}%`,
               top: `${shape.y}%`,
             }}
           >
-            <circle
-              cx={shape.size / 2}
-              cy={shape.size / 2}
-              r={(shape.size / 2) - (strokeWidth + 2)}
+            {/* Shadow */}
+            <rect
+              x={strokeWidth + shadowOffset}
+              y={strokeWidth + shadowOffset}
+              width={shape.size - strokeWidth * 2}
+              height={shape.size - strokeWidth * 2}
+              fill="#000"
+            />
+            {/* Main shape */}
+            <rect
+              x={strokeWidth}
+              y={strokeWidth}
+              width={shape.size - strokeWidth * 2}
+              height={shape.size - strokeWidth * 2}
               fill={shape.color}
               stroke={strokeColor}
               strokeWidth={strokeWidth}
@@ -104,19 +119,28 @@ export default function BackgroundShapes({ count = 15 }: BackgroundShapesProps) 
         return (
           <svg
             key={index}
-            width={shape.size}
-            height={shape.size}
+            width={shape.size + shadowOffset}
+            height={shape.size + shadowOffset}
             style={{
               position: 'absolute',
               left: `${shape.x}%`,
               top: `${shape.y}%`,
             }}
           >
+            {/* Shadow */}
             <rect
-              x={strokeWidth + 2}
-              y={strokeWidth + 2}
-              width={shape.size - (strokeWidth + 2) * 2}
-              height={shape.size - (strokeWidth + 2) * 2}
+              x={strokeWidth + shadowOffset}
+              y={strokeWidth + shadowOffset}
+              width={shape.size - strokeWidth * 2}
+              height={shape.size - strokeWidth * 2}
+              fill="#000"
+            />
+            {/* Main shape */}
+            <rect
+              x={strokeWidth}
+              y={strokeWidth}
+              width={shape.size - strokeWidth * 2}
+              height={shape.size - strokeWidth * 2}
               fill={shape.color}
               stroke={strokeColor}
               strokeWidth={strokeWidth}
@@ -128,19 +152,28 @@ export default function BackgroundShapes({ count = 15 }: BackgroundShapesProps) 
         return (
           <svg
             key={index}
-            width={shape.width}
-            height={shape.height}
+            width={(shape.width || shape.size) + shadowOffset}
+            height={(shape.height || shape.size) + shadowOffset}
             style={{
               position: 'absolute',
               left: `${shape.x}%`,
               top: `${shape.y}%`,
             }}
           >
+            {/* Shadow */}
             <rect
-              x={strokeWidth + 2}
-              y={strokeWidth + 2}
-              width={(shape.width || shape.size) - (strokeWidth + 2) * 2}
-              height={(shape.height || shape.size) - (strokeWidth + 2) * 2}
+              x={strokeWidth + shadowOffset}
+              y={strokeWidth + shadowOffset}
+              width={(shape.width || shape.size) - strokeWidth * 2}
+              height={(shape.height || shape.size) - strokeWidth * 2}
+              fill="#000"
+            />
+            {/* Main shape */}
+            <rect
+              x={strokeWidth}
+              y={strokeWidth}
+              width={(shape.width || shape.size) - strokeWidth * 2}
+              height={(shape.height || shape.size) - strokeWidth * 2}
               fill={shape.color}
               stroke={strokeColor}
               strokeWidth={strokeWidth}
@@ -156,17 +189,28 @@ export default function BackgroundShapes({ count = 15 }: BackgroundShapesProps) 
           ${triangleSize - padding},${triangleSize - padding}
           ${padding},${triangleSize - padding}
         `;
+        const shadowPoints = `
+          ${triangleSize / 2 + shadowOffset},${padding + shadowOffset}
+          ${triangleSize - padding + shadowOffset},${triangleSize - padding + shadowOffset}
+          ${padding + shadowOffset},${triangleSize - padding + shadowOffset}
+        `;
         return (
           <svg
             key={index}
-            width={shape.size}
-            height={shape.size}
+            width={shape.size + shadowOffset}
+            height={shape.size + shadowOffset}
             style={{
               position: 'absolute',
               left: `${shape.x}%`,
               top: `${shape.y}%`,
             }}
           >
+            {/* Shadow */}
+            <polygon
+              points={shadowPoints}
+              fill="#000"
+            />
+            {/* Main shape */}
             <polygon
               points={points}
               fill={shape.color}

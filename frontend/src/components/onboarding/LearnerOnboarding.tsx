@@ -1,13 +1,13 @@
 /**
  * Learner Onboarding - Post-Login
- * 
+ *
  * Collects:
  * 1. Age/Grade level
  * 2. What they want to learn (predefined options + custom input)
- * 
+ *
  * Then triggers dynamic assessment generation
  */
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { jwtUtils } from '../../lib/jwt-utils';
@@ -15,7 +15,14 @@ import BackgroundShapes from '../background-shapes/BackgroundShapes';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { TutorProvider } from '../../features/tutor';
+import { useMediaCapture } from '../../hooks/useMediaCapture';
+import { useMediaMixer } from '../../hooks/useMediaMixer';
 import '../auth/auth.scss';
+
+// Lazy load FloatingControlPanel
+const FloatingControlPanel = lazy(() => import('../floating-control-panel/FloatingControlPanel'));
+const BiographyPanel = lazy(() => import('../biography-panel/BiographyPanel'));
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 
@@ -51,7 +58,7 @@ interface OnboardingData {
 const LearnerOnboarding: React.FC = () => {
   const history = useHistory();
   const { user } = useAuth();
-  
+
   const [step, setStep] = useState<'age' | 'topics' | 'loading'>('age');
   const [data, setData] = useState<OnboardingData>({
     ageRange: '',
@@ -61,6 +68,50 @@ const LearnerOnboarding: React.FC = () => {
   });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // FloatingControlPanel state
+  const [isScratchpadOpen, setScratchpadOpen] = useState(false);
+  const [isBiographyPanelOpen, setIsBiographyPanelOpen] = useState(false);
+  const [privacyEnabled, setPrivacyEnabled] = useState(false);
+  const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
+  const [mixerStream, setMixerStream] = useState<MediaStream | null>(null);
+
+  // Refs for FloatingControlPanel
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const processedEdgesRef = useRef<ImageData | null>(null);
+
+  // Media capture hooks
+  const {
+    cameraEnabled,
+    screenEnabled,
+    toggleCamera,
+    toggleScreen,
+    cameraVideoRef,
+    screenVideoRef
+  } = useMediaCapture({});
+
+  // MediaMixer hook
+  const mediaMixer = useMediaMixer({
+    width: 1280,
+    height: 2160,
+    fps: 2,
+    quality: 0.85,
+    cameraEnabled: cameraEnabled,
+    screenEnabled: screenEnabled,
+    privacyEnabled: privacyEnabled,
+    cameraVideoRef: cameraVideoRef,
+    screenVideoRef: screenVideoRef
+  });
+
+  // Start mixer when component mounts
+  useEffect(() => {
+    if (mediaMixer.canvasRef.current) {
+      mediaMixer.setIsRunning(true);
+      return () => {
+        mediaMixer.setIsRunning(false);
+      };
+    }
+  }, [mediaMixer]);
 
   const handleAgeSelect = (ageOption: typeof AGE_OPTIONS[0]) => {
     setData(prev => ({
@@ -161,8 +212,9 @@ const LearnerOnboarding: React.FC = () => {
   };
 
   return (
-    <div className="login-container" style={{ minHeight: '100vh' }}>
-      <BackgroundShapes />
+    <TutorProvider>
+      <div className="login-container" style={{ minHeight: '100vh' }}>
+        <BackgroundShapes />
       
       <div className="login-card" style={{ maxWidth: '600px', padding: '40px' }}>
         {/* Step 1: Age Selection */}
@@ -357,18 +409,49 @@ const LearnerOnboarding: React.FC = () => {
               </div>
             )}
 
-            <p style={{ 
-              textAlign: 'center', 
-              marginTop: '16px', 
-              fontSize: '13px', 
-              color: '#888' 
+            <p style={{
+              textAlign: 'center',
+              marginTop: '16px',
+              fontSize: '13px',
+              color: '#888'
             }}>
               we'll ask you a few questions to figure out the best starting point
             </p>
           </>
         )}
       </div>
+
+      {/* Floating Control Panel with AI Tutor */}
+      <Suspense fallback={null}>
+        <FloatingControlPanel
+          renderCanvasRef={mediaMixer.canvasRef}
+          videoRef={videoRef}
+          supportsVideo={true}
+          onVideoStreamChange={setVideoStream}
+          onMixerStreamChange={setMixerStream}
+          enableEditingSettings={false}
+          onPaintClick={() => setScratchpadOpen(!isScratchpadOpen)}
+          isPaintActive={isScratchpadOpen}
+          cameraEnabled={cameraEnabled}
+          screenEnabled={screenEnabled}
+          onToggleCamera={toggleCamera}
+          onToggleScreen={toggleScreen}
+          privacyMode={privacyEnabled}
+          onTogglePrivacy={setPrivacyEnabled}
+          mediaMixerCanvasRef={mediaMixer.canvasRef}
+          processedEdgesRef={processedEdgesRef}
+          assessmentMode={false}
+          onBiographyClick={() => setIsBiographyPanelOpen(!isBiographyPanelOpen)}
+          isBiographyActive={isBiographyPanelOpen}
+        />
+        <BiographyPanel
+          isOpen={isBiographyPanelOpen}
+          onClose={() => setIsBiographyPanelOpen(false)}
+          position="right"
+        />
+      </Suspense>
     </div>
+    </TutorProvider>
   );
 };
 

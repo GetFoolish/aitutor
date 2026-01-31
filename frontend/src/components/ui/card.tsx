@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+// EXTREME NEO-BRUTALISM: No rounded corners
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -9,9 +10,10 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "rounded-xl border bg-card text-card-foreground shadow",
+      "border-4 border-black bg-white text-black shadow-[6px_6px_0_0_#000]",
       className
     )}
+    style={{ borderRadius: 0 }}
     {...props}
   />
 ))

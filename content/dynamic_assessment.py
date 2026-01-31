@@ -48,6 +48,64 @@ def get_grade_from_age_range(age_range: str) -> str:
     return mapping.get(age_range, "3-5")
 
 
+def fix_radio_widgets(widgets: Dict) -> Dict:
+    """
+    Fix radio widgets for proper Perseus rendering.
+
+    The AI sometimes generates radio widgets in wrong format:
+    - Wrong: {"options": {"3": false, "4": true, "5": false}}
+    - Correct: {"options": {"choices": [{"content": "3", "correct": false}, ...]}}
+
+    This function converts the wrong format to the correct Perseus format.
+    """
+    for widget_name, widget_config in widgets.items():
+        if widget_config.get("type") == "radio":
+            options = widget_config.get("options", {})
+
+            # Check if choices already exists and is properly formatted
+            if "choices" in options and isinstance(options["choices"], list):
+                # Already correct format - just ensure each choice has required fields
+                for choice in options["choices"]:
+                    if isinstance(choice, dict):
+                        if "content" not in choice:
+                            choice["content"] = ""
+                        if "correct" not in choice:
+                            choice["correct"] = False
+                continue
+
+            # Check for wrong format: options like {"3": false, "4": true}
+            wrong_format_choices = {}
+            for key, value in list(options.items()):
+                # Skip known Perseus option keys
+                if key in ["choices", "randomize", "multipleSelect", "countChoices",
+                          "deselectEnabled", "displayCount", "noneOfTheAbove", "hasNoneOfTheAbove"]:
+                    continue
+                # If value is boolean, this is likely wrong format
+                if isinstance(value, bool):
+                    wrong_format_choices[key] = value
+
+            # Convert wrong format to correct format
+            if wrong_format_choices:
+                choices = []
+                for answer_text, is_correct in wrong_format_choices.items():
+                    choices.append({
+                        "content": str(answer_text),
+                        "correct": bool(is_correct)
+                    })
+
+                # Remove the wrong keys from options
+                for key in wrong_format_choices.keys():
+                    options.pop(key, None)
+
+                # Add proper choices array
+                options["choices"] = choices
+                options["randomize"] = options.get("randomize", True)
+
+                print(f"[DYNAMIC_ASSESSMENT] Fixed radio widget {widget_name}: {len(choices)} choices")
+
+    return widgets
+
+
 def _normalize_subject(subject: str) -> str:
     """Normalize incoming subject values to our supported set."""
     s = (subject or "").strip().lower()
@@ -233,6 +291,11 @@ def _to_perseus_item(
         answer_area = generated.get("answer_area", {})
         hints = generated.get("hints", [])
         topic = generated.get("topic") or planned.get("sub_topic")
+
+    # Fix any malformed widget formats (especially radio widgets)
+    widgets = question.get("widgets", {})
+    if widgets:
+        fix_radio_widgets(widgets)
 
     return {
         "question": question,

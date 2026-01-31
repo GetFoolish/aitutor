@@ -4,20 +4,83 @@
  * Uses on-the-fly generated questions based on user's age and selected topics.
  * Shows progress, difficulty indicators, and creates learning path on completion.
  */
-import React, { useState, useEffect } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { useHistory, useLocation, Redirect } from 'react-router-dom';
 import { apiUtils } from '../../lib/api-utils';
 import BackgroundShapes from '../background-shapes/BackgroundShapes';
 import Header from '../header/Header';
 import RendererComponent from '../question-widget-renderer/RendererComponent';
 import { HintProvider } from '../../contexts/HintContext';
+import { TutorProvider } from '../../features/tutor';
 import { Button } from '@/components/ui/button';
+import { useMediaCapture } from '../../hooks/useMediaCapture';
+import { useMediaMixer } from '../../hooks/useMediaMixer';
 import '../auth/auth.scss';
 
+// Lazy load heavy components
+const FloatingControlPanel = lazy(() => import('../floating-control-panel/FloatingControlPanel'));
+const BiographyPanel = lazy(() => import('../biography-panel/BiographyPanel'));
+
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
-const SHOW_DEBUG_BANNER = import.meta.env.VITE_SHOW_DEBUG_BANNER === 'true';
-const SHOW_DEBUG_FORCE_ERROR = import.meta.env.VITE_DEBUG_WIDGET_ERROR === 'true';
+// EXTREME NEO-BRUTALISM: Hide all debug info by default
+const SHOW_DEBUG_BANNER = false;
+const SHOW_DEBUG_FORCE_ERROR = false;
 type LoadSource = 'nav' | 'cache' | 'api' | 'unknown';
+
+/**
+ * Fixes malformed widget options before rendering.
+ * The AI sometimes generates radio widgets in wrong format.
+ */
+function fixMalformedWidgets(item: any): any {
+  if (!item?.question?.widgets) return item;
+
+  const fixedItem = JSON.parse(JSON.stringify(item)); // Deep clone
+  const widgets = fixedItem.question.widgets;
+
+  for (const [widgetId, widget] of Object.entries(widgets)) {
+    const w = widget as any;
+    if (w?.type === 'radio' && w?.options) {
+      // Check if choices already exists
+      if (!Array.isArray(w.options.choices)) {
+        // Look for wrong format: options like {"3": false, "4": true}
+        const wrongFormatChoices: { text: string; correct: boolean }[] = [];
+        const keysToRemove: string[] = [];
+
+        for (const [key, value] of Object.entries(w.options)) {
+          // Skip known Perseus option keys
+          if (['choices', 'randomize', 'multipleSelect', 'countChoices',
+               'deselectEnabled', 'displayCount', 'noneOfTheAbove', 'hasNoneOfTheAbove'].includes(key)) {
+            continue;
+          }
+          // If value is boolean, this is likely wrong format
+          if (typeof value === 'boolean') {
+            wrongFormatChoices.push({ text: String(key), correct: value });
+            keysToRemove.push(key);
+          }
+        }
+
+        // Convert wrong format to correct format
+        if (wrongFormatChoices.length >= 2) {
+          console.warn(`[DynamicAssessment] Fixing malformed radio widget ${widgetId}:`, wrongFormatChoices);
+
+          // Remove wrong keys
+          for (const key of keysToRemove) {
+            delete w.options[key];
+          }
+
+          // Add proper choices array
+          w.options.choices = wrongFormatChoices.map(c => ({
+            content: c.text,
+            correct: c.correct
+          }));
+          w.options.randomize = w.options.randomize ?? true;
+        }
+      }
+    }
+  }
+
+  return fixedItem;
+}
 
 interface Question {
   question: any;
@@ -58,7 +121,22 @@ const DynamicAssessment: React.FC = () => {
   const history = useHistory();
   const location = useLocation<LocationState>();
 
-  const [questions, setQuestions] = useState<Question[]>([]);
+  // Check if user JUST came from onboarding with freshly generated questions
+  // Use a function to compute initial value ONCE (not on every render)
+  // Apply widget fixes to questions from onboarding
+  const questionsFromOnboarding = (location.state?.questions || []).map((q: any) => fixMalformedWidgets(q));
+  const onboardingDataFromNav = location.state?.onboardingData || null;
+
+  // Track valid session in state so it persists across re-renders
+  // Computed once on mount based on sessionStorage flag + questions
+  const [hasValidSession] = useState(() => {
+    const justCompletedOnboarding = sessionStorage.getItem('learner_onboarding_complete') === 'true';
+    const hasQuestions = questionsFromOnboarding.length > 0;
+    return justCompletedOnboarding && hasQuestions;
+  });
+
+  // Initialize state with questions from onboarding (or empty if redirecting)
+  const [questions, setQuestions] = useState<Question[]>(questionsFromOnboarding);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,131 +152,79 @@ const DynamicAssessment: React.FC = () => {
   const [loadSource, setLoadSource] = useState<LoadSource>('unknown');
   const [forceRenderError, setForceRenderError] = useState(false);
 
+  // Answer feedback state
+  const [showAnswerFeedback, setShowAnswerFeedback] = useState(false);
+  const [lastAnswerCorrect, setLastAnswerCorrect] = useState<boolean | null>(null);
+  const [feedbackMessage, setFeedbackMessage] = useState<string>('');
+
+  // FloatingControlPanel state
+  const [isScratchpadOpen, setScratchpadOpen] = useState(false);
+  const [isBiographyPanelOpen, setIsBiographyPanelOpen] = useState(false);
+  const [privacyEnabled, setPrivacyEnabled] = useState(false);
+  const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
+  const [mixerStream, setMixerStream] = useState<MediaStream | null>(null);
+
+  // Refs for FloatingControlPanel
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const processedEdgesRef = useRef<ImageData | null>(null);
+
+  // Media capture hooks
+  const {
+    cameraEnabled,
+    screenEnabled,
+    toggleCamera,
+    toggleScreen,
+    cameraVideoRef,
+    screenVideoRef
+  } = useMediaCapture({});
+
+  // MediaMixer hook
+  const mediaMixer = useMediaMixer({
+    width: 1280,
+    height: 2160,
+    fps: 2,
+    quality: 0.85,
+    cameraEnabled: cameraEnabled,
+    screenEnabled: screenEnabled,
+    privacyEnabled: privacyEnabled,
+    cameraVideoRef: cameraVideoRef,
+    screenVideoRef: screenVideoRef
+  });
+
+  // Start mixer when component mounts
   useEffect(() => {
-    const isReload = (() => {
-      try {
-        const navEntries = performance.getEntriesByType?.('navigation') as PerformanceNavigationTiming[] | undefined;
-        if (navEntries && navEntries.length > 0) {
-          return navEntries[0].type === 'reload';
-        }
-        // Legacy fallback
-        // @ts-expect-error - legacy browser API
-        return performance?.navigation?.type === 1;
-      } catch {
-        return false;
-      }
-    })();
-    const wasUnloaded = sessionStorage.getItem('dynamic_assessment_was_unloaded') === 'true';
-    if (wasUnloaded) {
-      sessionStorage.removeItem('dynamic_assessment_was_unloaded');
+    if (mediaMixer.canvasRef.current) {
+      mediaMixer.setIsRunning(true);
+      return () => {
+        mediaMixer.setIsRunning(false);
+      };
     }
+  }, [mediaMixer]);
 
-    const applyPayload = (payload: {
-      assessmentId: string;
-      subject?: string;
-      questions: Question[];
-      onboardingData?: LocationState["onboardingData"];
-      totalQuestions?: number;
-    }, source: LoadSource) => {
-      const incomingQuestions = payload.questions || [];
-      if (!incomingQuestions.length) {
-        console.warn('[DynamicAssessment] Empty questions payload');
-        setLoading(false);
-        setLoadError('No questions were generated. Please try again.');
-        return;
-      }
+  // Initialize from onboarding data - NO cache, only fresh questions from user flow
+  useEffect(() => {
+    // Clear ALL stale cache - questions must come fresh from onboarding
+    sessionStorage.removeItem('dynamic_assessment_payload');
+    sessionStorage.removeItem('dynamic_assessment_id');
+    sessionStorage.removeItem('dynamic_assessment_last_source');
+    sessionStorage.removeItem('dynamic_assessment_was_unloaded');
 
-      console.log('[DynamicAssessment] Loaded assessment payload', {
-        assessmentId: payload.assessmentId,
-        questions: incomingQuestions.length,
-        totalQuestions: payload.totalQuestions,
-        source
-      });
+    // Set state from navigation (questions already in useState from initialization)
+    if (hasValidSession && location.state) {
+      // Clear the onboarding flag NOW - so page refresh sends back to onboarding
+      // This is safe because hasValidSession is already captured in state
+      sessionStorage.removeItem('learner_onboarding_complete');
 
-      setQuestions(incomingQuestions);
-      setAssessmentId(payload.assessmentId || '');
-      const inferredSubject = payload.subject || incomingQuestions?.[0]?.dash_metadata?.subject || 'math';
+      setAssessmentId(location.state.assessmentId || '');
+      const inferredSubject = location.state.subject || questionsFromOnboarding[0]?.dash_metadata?.subject || 'math';
       setSubject(inferredSubject);
-      setTotalQuestions(payload.totalQuestions ?? incomingQuestions.length ?? 0);
-      setOnboardingData(payload.onboardingData ?? null);
-      setLoadSource(source);
+      setTotalQuestions(location.state.totalQuestions ?? questionsFromOnboarding.length);
+      setOnboardingData(onboardingDataFromNav);
+      setLoadSource('nav');
       setLoading(false);
-    };
-
-    const loadAssessment = async () => {
-      setLoading(true);
-      setLoadError(null);
-
-      const statePayload = location.state;
-      const lastSource = sessionStorage.getItem('dynamic_assessment_last_source');
-      const shouldTreatAsNav = !isReload && !wasUnloaded && lastSource !== 'cache' && lastSource !== 'api';
-      console.log('[DynamicAssessment] Load source flags', { isReload, wasUnloaded, lastSource });
-      if (shouldTreatAsNav && statePayload?.questions?.length) {
-        console.log('[DynamicAssessment] Using navigation state payload');
-        applyPayload(statePayload, 'nav');
-        return;
-      }
-
-      const cached = sessionStorage.getItem('dynamic_assessment_payload');
-      if (cached) {
-        try {
-          const parsed = JSON.parse(cached);
-          if (parsed?.questions?.length) {
-            console.log('[DynamicAssessment] Using cached assessment payload');
-            applyPayload(parsed, 'cache');
-            return;
-          }
-        } catch (error) {
-          console.warn('Failed to parse cached assessment payload', error);
-        }
-      }
-
-      const cachedId = statePayload?.assessmentId || sessionStorage.getItem('dynamic_assessment_id');
-      if (cachedId) {
-        try {
-          console.log('[DynamicAssessment] Reloading assessment from API', { assessmentId: cachedId });
-          const response = await apiUtils.get(`${DASH_API_URL}/api/assessment/dynamic/${cachedId}`);
-          if (response.ok) {
-            const data = await response.json();
-            const payload = {
-              assessmentId: data.assessment_id || cachedId,
-              subject: data.subject,
-              questions: data.questions || [],
-              totalQuestions: data.total_questions ?? data.questions?.length ?? 0,
-              onboardingData: statePayload?.onboardingData,
-            };
-            sessionStorage.setItem('dynamic_assessment_payload', JSON.stringify(payload));
-            applyPayload(payload, 'api');
-            return;
-          }
-        } catch (error) {
-          console.error('Failed to reload assessment from API:', error);
-        }
-      }
-
-      setLoading(false);
-      setLoadError('We could not load your assessment. Please start again.');
-    };
-
-    loadAssessment();
-
-    const markUnload = () => {
-      sessionStorage.setItem('dynamic_assessment_was_unloaded', 'true');
-    };
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
-        markUnload();
-      }
-    };
-    window.addEventListener('beforeunload', markUnload);
-    window.addEventListener('pagehide', markUnload);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => {
-      window.removeEventListener('beforeunload', markUnload);
-      window.removeEventListener('pagehide', markUnload);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [location.state, history]);
+      console.log('[DynamicAssessment] Ready with fresh questions from onboarding:', questionsFromOnboarding.length);
+    }
+  }, []);
 
   useEffect(() => {
     if (loadSource !== 'unknown') {
@@ -241,8 +267,8 @@ const DynamicAssessment: React.FC = () => {
       setResults(null);
       setQuestionStartTime(Date.now());
 
-      // Reuse the existing payload loader path
-      setQuestions(payload.questions);
+      // Reuse the existing payload loader path - apply widget fixes
+      setQuestions(payload.questions.map((q: any) => fixMalformedWidgets(q)));
       setAssessmentId(payload.assessmentId);
       setSubject(payload.subject || chosenSubject);
       setTotalQuestions(payload.totalQuestions);
@@ -266,7 +292,9 @@ const DynamicAssessment: React.FC = () => {
       const response = await apiUtils.get(`${DASH_API_URL}/api/assessment/dynamic/${assessmentId}/batch?start=${start}&limit=${limit}`);
       if (!response.ok) return;
       const data = await response.json();
-      const newQuestions: Question[] = data.questions || [];
+      const rawQuestions: Question[] = data.questions || [];
+      // Apply widget fixes to new questions
+      const newQuestions = rawQuestions.map((q: any) => fixMalformedWidgets(q));
       if (newQuestions.length) {
         const merged = [...questions, ...newQuestions];
         setQuestions(merged);
@@ -294,6 +322,12 @@ const DynamicAssessment: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assessmentId, currentIndex]);
+
+  // REDIRECT: If no valid session from onboarding, send to onboarding
+  // This MUST be after all hooks
+  if (!hasValidSession) {
+    return <Redirect to="/app/onboarding" />;
+  }
 
   const currentQuestion = questions[currentIndex];
   const progress = questions.length ? ((currentIndex + 1) / questions.length) * 100 : 0;
@@ -330,30 +364,70 @@ const DynamicAssessment: React.FC = () => {
     const newAnswers = [...answers, answer];
     setAnswers(newAnswers);
 
-    // Move to next question or complete
+    // Show feedback immediately
+    setLastAnswerCorrect(isCorrect);
+    setFeedbackMessage(isCorrect
+      ? getCorrectFeedback()
+      : getIncorrectFeedback()
+    );
+    setShowAnswerFeedback(true);
+
+    // Move to next question or complete after showing feedback
     const hasNextLoaded = currentIndex < questions.length - 1;
     const hasMoreTotal = totalQuestions > 0 && questions.length < totalQuestions;
 
+    const advanceDelay = 2000; // Show feedback for 2 seconds
+
     if (hasNextLoaded) {
       setTimeout(() => {
+        setShowAnswerFeedback(false);
         setCurrentIndex(currentIndex + 1);
         setQuestionStartTime(Date.now());
-      }, 1500);
+      }, advanceDelay);
       return;
     }
 
     if (hasMoreTotal) {
-      // Pull more questions, then advance.
+      // Pull more questions while showing feedback
       await fetchMoreQuestions(3);
       setTimeout(() => {
+        setShowAnswerFeedback(false);
         setCurrentIndex((idx) => idx + 1);
         setQuestionStartTime(Date.now());
-      }, 400);
+      }, advanceDelay);
       return;
     }
 
-    // Complete assessment
-    await completeAssessment(newAnswers);
+    // Complete assessment after feedback
+    setTimeout(async () => {
+      setShowAnswerFeedback(false);
+      await completeAssessment(newAnswers);
+    }, advanceDelay);
+  };
+
+  // Innocent Drinks tone feedback messages
+  const getCorrectFeedback = () => {
+    const messages = [
+      "nailed it! 🎯",
+      "yes! you absolute legend! ✨",
+      "boom! correct! 💥",
+      "look at you go! 🚀",
+      "that's the one! 🌟",
+      "brilliant! (we knew you had it in you) 💪",
+    ];
+    return messages[Math.floor(Math.random() * messages.length)];
+  };
+
+  const getIncorrectFeedback = () => {
+    const messages = [
+      "not quite! (but hey, that's how we learn) 📚",
+      "oops! close though! 💭",
+      "hmm, not this time (we believe in you!) 🌱",
+      "nearly! let's keep going 💪",
+      "that's ok! mistakes help us grow 🌟",
+      "whoops! (happens to the best of us) ✨",
+    ];
+    return messages[Math.floor(Math.random() * messages.length)];
   };
 
   const completeAssessment = async (finalAnswers: Answer[]) => {
@@ -396,37 +470,86 @@ const DynamicAssessment: React.FC = () => {
 
   if (loadError && !loading) {
     return (
-      <div className="login-container" style={{ minHeight: '100vh' }}>
+      <div className="login-container" style={{ minHeight: '100vh', background: '#FFFFFF' }}>
         <BackgroundShapes />
-        <div className="login-card" style={{ maxWidth: '600px', padding: '40px', textAlign: 'center' }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
-          <h2 style={{ fontFamily: 'var(--neo-heading)', marginBottom: '12px' }}>
+        <div className="login-card" style={{
+          maxWidth: '600px',
+          padding: '48px',
+          textAlign: 'center',
+          border: '5px solid #000',
+          borderRadius: '0',
+          boxShadow: '8px 8px 0 #000',
+          background: '#FCD34D'
+        }}>
+          <div style={{ fontSize: '80px', marginBottom: '24px' }}>⚠️</div>
+          <h2 style={{
+            fontFamily: 'Space Mono, monospace',
+            fontSize: '36px',
+            fontWeight: 900,
+            textTransform: 'uppercase',
+            letterSpacing: '-0.02em',
+            marginBottom: '16px'
+          }}>
             {loadError}
           </h2>
 
-          <div style={{ marginTop: '18px', marginBottom: '18px', fontSize: '14px', color: '#666' }}>
-            want to just jump in? pick a subject and we'll get you rolling.
+          <div style={{
+            marginTop: '24px',
+            marginBottom: '24px',
+            fontSize: '18px',
+            fontWeight: 700,
+            textTransform: 'uppercase'
+          }}>
+            PICK A SUBJECT AND LET'S GO
           </div>
 
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '18px' }}>
-            <Button onClick={() => startNewAssessment('math')}>math</Button>
-            <Button onClick={() => startNewAssessment('science')}>science</Button>
-            <Button onClick={() => startNewAssessment('reading')}>reading</Button>
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '24px' }}>
+            {['MATH', 'SCIENCE', 'READING'].map(subj => (
+              <button
+                key={subj}
+                onClick={() => startNewAssessment(subj.toLowerCase())}
+                style={{
+                  padding: '16px 32px',
+                  fontSize: '20px',
+                  fontWeight: 900,
+                  fontFamily: 'Space Mono, monospace',
+                  background: '#FFFFFF',
+                  border: '4px solid #000',
+                  borderRadius: '0',
+                  boxShadow: '6px 6px 0 #000',
+                  cursor: 'pointer',
+                  textTransform: 'uppercase'
+                }}
+              >
+                {subj}
+              </button>
+            ))}
           </div>
 
-          <Button variant="outline" onClick={() => history.push('/app/onboarding')}>
-            back to onboarding
-          </Button>
+          <button
+            onClick={() => history.push('/app/onboarding')}
+            style={{
+              padding: '12px 24px',
+              fontSize: '16px',
+              fontWeight: 700,
+              fontFamily: 'Space Mono, monospace',
+              background: 'transparent',
+              border: '3px solid #000',
+              borderRadius: '0',
+              cursor: 'pointer',
+              textTransform: 'uppercase'
+            }}
+          >
+            ← BACK TO ONBOARDING
+          </button>
         </div>
       </div>
     );
   }
 
   // Pre-Assessment Intro Screen
+  // Note: If we reach here, hasValidQuestions is true (redirect guard passed)
   if (showIntro && !loading && !completed) {
-    // Check if we have questions already (came from onboarding) or need to pick a subject
-    const hasQuestions = questions.length > 0;
-    
     return (
       <div className="login-container" style={{ minHeight: '100vh' }}>
         <BackgroundShapes />
@@ -482,141 +605,108 @@ const DynamicAssessment: React.FC = () => {
               )}
             </div>
           )}
-          
-          {/* If no questions loaded yet, show subject picker */}
-          {!hasQuestions ? (
-            <>
-              <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                <div style={{ fontSize: '64px', marginBottom: '16px' }}>🎯</div>
-                <h2 style={{ fontFamily: 'var(--neo-heading)', fontSize: '32px', marginBottom: '12px' }}>
-                  pick a subject
+
+          {/* Questions loaded from onboarding - show ready screen */}
+          <>
+              <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+                <div style={{ fontSize: '100px', marginBottom: '24px' }}>🎯</div>
+                <h2 style={{
+                  fontFamily: 'Space Mono, monospace',
+                  fontSize: '48px',
+                  fontWeight: 900,
+                  textTransform: 'uppercase',
+                  letterSpacing: '-0.02em',
+                  marginBottom: '16px'
+                }}>
+                  READY?
                 </h2>
-                <p style={{ fontSize: '16px', color: '#666' }}>
-                  what do you want to practice today?
+                <p style={{
+                  fontSize: '20px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase'
+                }}>
+                  LET'S SEE WHAT YOU KNOW!
                 </p>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
-                {[
-                  { id: 'math', label: 'math', icon: '🔢', color: '#E3F2FD', desc: 'numbers, shapes, and problem solving' },
-                  { id: 'science', label: 'science', icon: '🔬', color: '#E8F5E9', desc: 'how the world works' },
-                  { id: 'reading', label: 'reading', icon: '📚', color: '#FFF3E0', desc: 'understanding and comprehension' },
-                ].map((subj) => (
-                  <button
-                    key={subj.id}
-                    onClick={() => startNewAssessment(subj.id)}
-                    style={{
-                      padding: '20px 24px',
-                      border: '3px solid #000',
-                      borderRadius: '12px',
-                      background: subj.color,
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      transition: 'all 0.2s',
-                      boxShadow: '4px 4px 0 #000',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'translate(2px, 2px)';
-                      e.currentTarget.style.boxShadow = '2px 2px 0 #000';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'translate(0, 0)';
-                      e.currentTarget.style.boxShadow = '4px 4px 0 #000';
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                      <span style={{ fontSize: '32px' }}>{subj.icon}</span>
-                      <div>
-                        <div style={{ fontSize: '20px', fontWeight: 700, fontFamily: 'var(--neo-heading)' }}>
-                          {subj.label}
-                        </div>
-                        <div style={{ fontSize: '14px', color: '#666', marginTop: '4px' }}>
-                          {subj.desc}
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-
-              <Button variant="outline" onClick={() => history.push('/app/onboarding')} style={{ width: '100%' }}>
-                ← go through full onboarding instead
-              </Button>
-            </>
-          ) : (
-            /* Questions loaded - show ready screen */
-            <>
-              <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-                <div style={{ fontSize: '64px', marginBottom: '16px' }}>🎯</div>
-                <h2 style={{ fontFamily: 'var(--neo-heading)', fontSize: '32px', marginBottom: '12px' }}>
-                  ready to start your assessment?
-                </h2>
-                <p style={{ fontSize: '16px', color: '#666' }}>
-                  let's see what you know! no pressure, just do your best ✨
-                </p>
-              </div>
-
-              <div style={{ backgroundColor: '#f5f5f5', borderRadius: '12px', padding: '24px', marginBottom: '32px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>what to expect:</h3>
+              <div style={{
+                background: '#FCD34D',
+                border: '5px solid #000',
+                borderRadius: '0',
+                padding: '32px',
+                marginBottom: '32px',
+                boxShadow: '6px 6px 0 #000'
+              }}>
+                <h3 style={{
+                  fontSize: '24px',
+                  fontWeight: 900,
+                  marginBottom: '24px',
+                  textTransform: 'uppercase',
+                  fontFamily: 'Space Mono, monospace'
+                }}>WHAT TO EXPECT:</h3>
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                  <li style={{ marginBottom: '12px', display: 'flex', alignItems: 'start', gap: '12px' }}>
-                    <span style={{ fontSize: '24px' }}>📝</span>
-                    <div>
-                      <strong>{totalQuestions || questions.length} questions</strong> about {subject || onboardingData?.selectedTopics?.join(', ') || location.state?.onboardingData?.selectedTopics?.join(', ') || 'your chosen subjects'}
+                  <li style={{ marginBottom: '16px', display: 'flex', alignItems: 'start', gap: '16px' }}>
+                    <span style={{ fontSize: '32px' }}>📝</span>
+                    <div style={{ fontSize: '18px', fontWeight: 700, textTransform: 'uppercase' }}>
+                      {totalQuestions || questions.length} QUESTIONS ABOUT {(
+                        onboardingData?.customTopic ||
+                        onboardingData?.selectedTopics?.join(', ') ||
+                        location.state?.onboardingData?.customTopic ||
+                        location.state?.onboardingData?.selectedTopics?.join(', ') ||
+                        'YOUR TOPICS'
+                      ).toUpperCase()}
                     </div>
                   </li>
-                  <li style={{ marginBottom: '12px', display: 'flex', alignItems: 'start', gap: '12px' }}>
-                    <span style={{ fontSize: '24px' }}>⏱️</span>
-                    <div>
-                      <strong>about 5 minutes</strong> - take your time, no rush!
+                  <li style={{ marginBottom: '16px', display: 'flex', alignItems: 'start', gap: '16px' }}>
+                    <span style={{ fontSize: '32px' }}>⏱️</span>
+                    <div style={{ fontSize: '18px', fontWeight: 700, textTransform: 'uppercase' }}>
+                      ABOUT 5 MINUTES - NO RUSH!
                     </div>
                   </li>
-                  <li style={{ marginBottom: '12px', display: 'flex', alignItems: 'start', gap: '12px' }}>
-                    <span style={{ fontSize: '24px' }}>📊</span>
-                    <div>
-                      <strong>personalized plan</strong> created based on your answers
+                  <li style={{ marginBottom: '16px', display: 'flex', alignItems: 'start', gap: '16px' }}>
+                    <span style={{ fontSize: '32px' }}>📊</span>
+                    <div style={{ fontSize: '18px', fontWeight: 700, textTransform: 'uppercase' }}>
+                      PERSONALIZED PLAN CREATED FOR YOU
                     </div>
                   </li>
-                  <li style={{ display: 'flex', alignItems: 'start', gap: '12px' }}>
-                    <span style={{ fontSize: '24px' }}>🎯</span>
-                    <div>
-                      <strong>focus topics</strong> identified to help you improve
+                  <li style={{ display: 'flex', alignItems: 'start', gap: '16px' }}>
+                    <span style={{ fontSize: '32px' }}>🎯</span>
+                    <div style={{ fontSize: '18px', fontWeight: 700, textTransform: 'uppercase' }}>
+                      FOCUS TOPICS IDENTIFIED
                     </div>
                   </li>
                 </ul>
               </div>
-              <p style={{ fontSize: '14px', color: '#666', textAlign: 'center', marginBottom: '20px' }}>
-                after this, we'll build your plan and jump into practice
-              </p>
 
               <button
                 onClick={() => setShowIntro(false)}
                 style={{
                   width: '100%',
-                  padding: '16px',
-                  fontSize: '18px',
-                  fontWeight: 700,
-                  background: '#6C63FF',
-                  color: 'white',
-                  border: '3px solid #000',
-                  borderRadius: '12px',
+                  padding: '20px',
+                  fontSize: '24px',
+                  fontWeight: 900,
+                  fontFamily: 'Space Mono, monospace',
+                  background: '#22C55E',
+                  color: '#000',
+                  border: '5px solid #000',
+                  borderRadius: '0',
                   cursor: 'pointer',
-                  boxShadow: '4px 4px 0 #000',
-                  transition: 'all 0.2s'
+                  boxShadow: '6px 6px 0 #000',
+                  transition: 'all 0.1s',
+                  textTransform: 'uppercase'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translate(2px, 2px)';
-                  e.currentTarget.style.boxShadow = '2px 2px 0 #000';
+                  e.currentTarget.style.transform = 'translate(3px, 3px)';
+                  e.currentTarget.style.boxShadow = '3px 3px 0 #000';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translate(0, 0)';
-                  e.currentTarget.style.boxShadow = '4px 4px 0 #000';
+                  e.currentTarget.style.boxShadow = '6px 6px 0 #000';
                 }}
               >
-                let's go! 🚀
+                LET'S GO! 🚀
               </button>
             </>
-          )}
         </div>
       </div>
     );
@@ -624,64 +714,123 @@ const DynamicAssessment: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="login-container" style={{ minHeight: '100vh' }}>
+      <div className="login-container" style={{ minHeight: '100vh', background: '#FFFFFF' }}>
         <BackgroundShapes />
-        <div className="login-card" style={{ textAlign: 'center', padding: '60px' }}>
-          <div style={{ fontSize: '48px', marginBottom: '24px' }}>🎯</div>
-          <h2 style={{ fontFamily: 'var(--neo-heading)', marginBottom: '16px' }}>
-            {completed ? 'analyzing your results...' : 'loading your assessment...'}
+        <div className="login-card" style={{
+          textAlign: 'center',
+          padding: '64px',
+          border: '5px solid #000',
+          borderRadius: '0',
+          boxShadow: '8px 8px 0 #000',
+          background: '#FCD34D'
+        }}>
+          <div style={{ fontSize: '80px', marginBottom: '32px' }}>🎯</div>
+          <h2 style={{
+            fontFamily: 'Space Mono, monospace',
+            fontSize: '36px',
+            fontWeight: 900,
+            textTransform: 'uppercase',
+            marginBottom: '24px'
+          }}>
+            {completed ? 'ANALYZING RESULTS...' : 'LOADING...'}
           </h2>
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
             <div style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '50%',
-              border: '3px solid #000',
-              borderTopColor: '#6C63FF',
-              animation: 'spin 1s linear infinite'
+              width: '48px',
+              height: '48px',
+              borderRadius: '0',
+              border: '5px solid #000',
+              borderTopColor: '#22C55E',
+              animation: 'spin 0.8s linear infinite'
             }} />
           </div>
-          <p style={{ color: '#666', marginBottom: '8px' }}>building your questions…</p>
-          <p style={{ color: '#888', fontSize: '13px' }}>this usually takes ~10-20 seconds</p>
+          <p style={{
+            fontSize: '18px',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            marginBottom: '8px'
+          }}>BUILDING YOUR QUESTIONS</p>
+          <p style={{
+            fontSize: '14px',
+            fontWeight: 700,
+            textTransform: 'uppercase'
+          }}>~10-20 SECONDS</p>
         </div>
       </div>
     );
   }
 
-  // Results Screen
+  // Results Screen - EXTREME NEO-BRUTALISM
   if (completed && results) {
     const scorePercent = Math.round(results.overall_score * 100);
 
     return (
-      <div className="login-container" style={{ minHeight: '100vh' }}>
+      <div className="login-container" style={{ minHeight: '100vh', background: '#FFFFFF' }}>
         <BackgroundShapes />
-        <div className="login-card" style={{ maxWidth: '600px', padding: '40px' }}>
-          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <div style={{ fontSize: '64px', marginBottom: '16px' }}>
+        <div className="login-card" style={{
+          maxWidth: '650px',
+          padding: '48px',
+          border: '5px solid #000',
+          borderRadius: '0',
+          boxShadow: '8px 8px 0 #000',
+          background: '#FFFFFF'
+        }}>
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <div style={{ fontSize: '100px', marginBottom: '24px' }}>
               {scorePercent >= 80 ? '🌟' : scorePercent >= 60 ? '👍' : '💪'}
             </div>
-            <h1 style={{ fontFamily: 'var(--neo-heading)', fontSize: '32px', marginBottom: '8px' }}>
-              {scorePercent >= 80 ? 'amazing work!' : scorePercent >= 60 ? 'nice job!' : 'good effort!'}
+            <h1 style={{
+              fontFamily: 'Space Mono, monospace',
+              fontSize: '48px',
+              fontWeight: 900,
+              textTransform: 'uppercase',
+              marginBottom: '16px'
+            }}>
+              {scorePercent >= 80 ? 'AMAZING!' : scorePercent >= 60 ? 'NICE JOB!' : 'GOOD EFFORT!'}
             </h1>
-            <p style={{ fontSize: '24px', color: '#666' }}>
-              you got <strong>{results.total_correct}</strong> out of <strong>{results.total_questions}</strong> right
+            <p style={{
+              fontSize: '28px',
+              fontWeight: 900,
+              textTransform: 'uppercase'
+            }}>
+              {results.total_correct}/{results.total_questions} CORRECT
             </p>
           </div>
 
           {/* Score Breakdown */}
           <div style={{
-            background: '#f5f5f5',
-            borderRadius: '12px',
-            padding: '20px',
-            marginBottom: '24px'
+            background: '#FCD34D',
+            border: '5px solid #000',
+            borderRadius: '0',
+            padding: '24px',
+            marginBottom: '24px',
+            boxShadow: '6px 6px 0 #000'
           }}>
-            <h3 style={{ marginBottom: '16px', fontSize: '16px' }}>how you did by difficulty:</h3>
-            <div style={{ display: 'grid', gap: '12px' }}>
+            <h3 style={{
+              marginBottom: '20px',
+              fontSize: '20px',
+              fontWeight: 900,
+              textTransform: 'uppercase',
+              fontFamily: 'Space Mono, monospace'
+            }}>BY DIFFICULTY:</h3>
+            <div style={{ display: 'grid', gap: '16px' }}>
               {Object.entries(results.difficulty_scores || {}).map(([diff, scores]: [string, any]) => (
-                <div key={diff} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <span style={{ fontSize: '20px' }}>{getDifficultyEmoji(diff)}</span>
-                  <span style={{ flex: 1, textTransform: 'capitalize' }}>{diff}</span>
-                  <span style={{ fontWeight: 600 }}>
+                <div key={diff} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '16px',
+                  fontSize: '18px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase'
+                }}>
+                  <span style={{ fontSize: '28px' }}>{getDifficultyEmoji(diff)}</span>
+                  <span style={{ flex: 1 }}>{diff}</span>
+                  <span style={{
+                    background: '#000',
+                    color: '#FCD34D',
+                    padding: '4px 12px',
+                    fontWeight: 900
+                  }}>
                     {scores.correct}/{scores.total}
                   </span>
                 </div>
@@ -691,172 +840,254 @@ const DynamicAssessment: React.FC = () => {
 
           {/* Learning Path Preview */}
           <div style={{
-            background: '#E3F2FD',
-            borderRadius: '12px',
-            padding: '20px',
-            marginBottom: '24px'
+            background: '#22C55E',
+            border: '5px solid #000',
+            borderRadius: '0',
+            padding: '24px',
+            marginBottom: '32px',
+            boxShadow: '6px 6px 0 #000'
           }}>
-            <h3 style={{ marginBottom: '12px', fontSize: '16px' }}>your personalized plan:</h3>
-            <p style={{ marginBottom: '8px' }}>
-              <strong>skill level:</strong> {results.learning_path?.skill_level || 'intermediate'}
+            <h3 style={{
+              marginBottom: '16px',
+              fontSize: '20px',
+              fontWeight: 900,
+              textTransform: 'uppercase',
+              fontFamily: 'Space Mono, monospace'
+            }}>YOUR PLAN:</h3>
+            <p style={{
+              marginBottom: '12px',
+              fontSize: '18px',
+              fontWeight: 700,
+              textTransform: 'uppercase'
+            }}>
+              LEVEL: {(results.learning_path?.skill_level || 'intermediate').toUpperCase()}
             </p>
             {results.learning_path?.focus_topics?.length > 0 && (
-              <p style={{ marginBottom: '8px' }}>
-                <strong>we'll focus on:</strong> {results.learning_path.focus_topics.join(', ')}
+              <p style={{
+                marginBottom: '12px',
+                fontSize: '18px',
+                fontWeight: 700,
+                textTransform: 'uppercase'
+              }}>
+                FOCUS: {results.learning_path.focus_topics.join(', ').toUpperCase()}
               </p>
             )}
             {results.learning_path?.strong_topics?.length > 0 && (
-              <p>
-                <strong>you're great at:</strong> {results.learning_path.strong_topics.join(', ')}
+              <p style={{
+                fontSize: '18px',
+                fontWeight: 700,
+                textTransform: 'uppercase'
+              }}>
+                STRENGTHS: {results.learning_path.strong_topics.join(', ').toUpperCase()}
               </p>
             )}
           </div>
 
-          <Button
+          <button
             onClick={startLearning}
             style={{
               width: '100%',
-              padding: '16px',
-              fontSize: '18px',
-              fontWeight: 700,
-              background: '#6C63FF',
-              border: '3px solid #000',
-              borderRadius: '12px',
-              boxShadow: '4px 4px 0 #000',
+              padding: '20px',
+              fontSize: '24px',
+              fontWeight: 900,
+              fontFamily: 'Space Mono, monospace',
+              background: '#FF6B6B',
+              color: '#000',
+              border: '5px solid #000',
+              borderRadius: '0',
+              cursor: 'pointer',
+              boxShadow: '6px 6px 0 #000',
+              transition: 'all 0.1s',
+              textTransform: 'uppercase'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translate(3px, 3px)';
+              e.currentTarget.style.boxShadow = '3px 3px 0 #000';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translate(0, 0)';
+              e.currentTarget.style.boxShadow = '6px 6px 0 #000';
             }}
           >
-            let's start learning! 🚀
-          </Button>
+            START LEARNING! 🚀
+          </button>
         </div>
       </div>
     );
   }
 
-  // Question Screen
+  // Question Screen - EXTREME NEO-BRUTALISM
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--neo-bg, #FFFDF5)' }}>
-      <Header />
+    <TutorProvider assessmentMode={true}>
+      <div style={{ minHeight: '100vh', background: '#FFFFFF' }}>
+        <Header />
 
-      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px' }}>
-        {SHOW_DEBUG_BANNER && (
+        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '24px' }}>
+          {/* Progress Bar - EXTREME */}
           <div style={{
-            background: '#FFF4CC',
-            border: '2px dashed #000',
-            borderRadius: '12px',
-            padding: '10px 14px',
-            marginBottom: '16px',
-            fontSize: '12px',
-            textTransform: 'uppercase',
-            fontWeight: 700,
-            letterSpacing: '0.08em',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            justifyContent: 'space-between'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{
-                background: '#D32F2F',
-                color: '#fff',
-                padding: '2px 8px',
-                borderRadius: '999px',
-                fontSize: '10px',
-                letterSpacing: '0.12em'
-              }}>
-                DEBUG
-              </span>
-              <span>
-                assessment {assessmentId || 'unknown'} · {totalQuestions || questions.length} questions · source {loadSource} · index {currentIndex + 1}
-              </span>
-            </div>
-            {SHOW_DEBUG_FORCE_ERROR && (
-              <button
-                type="button"
-                onClick={() => setForceRenderError(!forceRenderError)}
-                style={{
-                  background: forceRenderError ? '#FF6B6B' : '#000',
-                  color: '#fff',
-                  border: '2px solid #000',
-                  borderRadius: '999px',
-                  padding: '2px 10px',
-                  fontSize: '10px',
-                  letterSpacing: '0.12em',
-                  cursor: 'pointer'
-                }}
-              >
-                {forceRenderError ? 'clear error' : 'force error'}
-              </button>
-            )}
-          </div>
-        )}
-        {/* Progress Bar */}
-        <div style={{ marginBottom: '24px' }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '8px'
-          }}>
-            <span style={{ fontSize: '14px', color: '#666' }}>
-              question {currentIndex + 1} of {questions.length}
-            </span>
-            <span style={{
-              fontSize: '14px',
-              color: getDifficultyColor(currentQuestion?.dash_metadata?.difficulty),
-              fontWeight: 600
-            }}>
-              {getDifficultyEmoji(currentQuestion?.dash_metadata?.difficulty)} {currentQuestion?.dash_metadata?.difficulty}
-            </span>
-          </div>
-          <div style={{
-            height: '8px',
-            background: '#e0e0e0',
-            borderRadius: '4px',
-            overflow: 'hidden'
+            marginBottom: '32px',
+            background: '#FCD34D',
+            border: '5px solid #000',
+            borderRadius: '0',
+            padding: '16px 24px',
+            boxShadow: '6px 6px 0 #000'
           }}>
             <div style={{
-              height: '100%',
-              width: `${progress}%`,
-              background: '#6C63FF',
-              transition: 'width 0.3s ease'
-            }} />
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '12px'
+            }}>
+              <span style={{
+                fontSize: '20px',
+                fontWeight: 900,
+                fontFamily: 'Space Mono, monospace',
+                textTransform: 'uppercase'
+              }}>
+                QUESTION {currentIndex + 1}/{questions.length}
+              </span>
+              <span style={{
+                fontSize: '20px',
+                fontWeight: 900,
+                fontFamily: 'Space Mono, monospace',
+                textTransform: 'uppercase',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                {getDifficultyEmoji(currentQuestion?.dash_metadata?.difficulty)} {currentQuestion?.dash_metadata?.difficulty?.toUpperCase()}
+              </span>
+            </div>
+            <div style={{
+              height: '16px',
+              background: '#FFFFFF',
+              border: '4px solid #000',
+              borderRadius: '0',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                height: '100%',
+                width: `${progress}%`,
+                background: '#22C55E',
+                transition: 'width 0.3s ease'
+              }} />
+            </div>
+          </div>
+
+          {/* Answer Feedback Banner - Fixed position for visibility */}
+          {showAnswerFeedback && (
+            <div
+              style={{
+                position: 'fixed',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                zIndex: 9999,
+                background: lastAnswerCorrect ? '#ADFF2F' : '#FF6B6B',
+                border: '5px solid #000',
+                borderRadius: '0',
+                padding: '32px 48px',
+                boxShadow: '8px 8px 0 #000',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '16px',
+                minWidth: '300px',
+              }}
+            >
+              <span style={{
+                fontSize: '64px',
+                lineHeight: 1,
+              }}>
+                {lastAnswerCorrect ? '✓' : '✗'}
+              </span>
+              <span style={{
+                fontSize: '24px',
+                fontWeight: 900,
+                fontFamily: 'Space Mono, monospace',
+                textTransform: 'lowercase',
+                color: '#000',
+                textAlign: 'center',
+              }}>
+                {feedbackMessage}
+              </span>
+            </div>
+          )}
+
+          {/* Overlay when feedback showing */}
+          {showAnswerFeedback && (
+            <div
+              style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: 'rgba(0,0,0,0.3)',
+                zIndex: 9998,
+              }}
+            />
+          )}
+
+          {/* Question - EXTREME */}
+          <div style={{
+            background: '#FFFFFF',
+            borderRadius: '0',
+            border: '5px solid #000',
+            padding: '32px',
+            boxShadow: '8px 8px 0 #000',
+            opacity: showAnswerFeedback ? 0.6 : 1,
+            transition: 'opacity 0.3s ease',
+            pointerEvents: showAnswerFeedback ? 'none' : 'auto',
+          }}>
+            <HintProvider>
+              {currentQuestion && (
+                <RendererComponent
+                  assessmentMode={true}
+                  assessmentQuestions={[currentQuestion]}
+                  currentQuestionIndex={0}
+                  onAssessmentAnswer={(questionId, isCorrect) => {
+                    handleAnswerSubmit(isCorrect);
+                  }}
+                  debugForceRenderError={forceRenderError}
+                />
+              )}
+            </HintProvider>
           </div>
         </div>
 
-        {/* Question */}
-        <div style={{
-          background: '#fff',
-          borderRadius: '16px',
-          border: '3px solid #000',
-          padding: '24px',
-          boxShadow: '6px 6px 0 #000'
-        }}>
-          <HintProvider>
-            {currentQuestion && (
-              <RendererComponent
-                assessmentMode={true}
-                assessmentQuestions={[currentQuestion]}
-                currentQuestionIndex={0}
-                onAssessmentAnswer={(questionId, isCorrect) => {
-                  handleAnswerSubmit(isCorrect);
-                }}
-                debugForceRenderError={forceRenderError}
-              />
-            )}
-          </HintProvider>
-        </div>
-
-        {/* Topic indicator */}
-        <div style={{
-          marginTop: '16px',
-          textAlign: 'center',
-          fontSize: '13px',
-          color: '#888'
-        }}>
-          topic: {currentQuestion?.dash_metadata?.topic}
-        </div>
+        {/* Floating Control Panel with AI Tutor */}
+        <Suspense fallback={null}>
+          <FloatingControlPanel
+            renderCanvasRef={mediaMixer.canvasRef}
+            videoRef={videoRef}
+            supportsVideo={true}
+            onVideoStreamChange={setVideoStream}
+            onMixerStreamChange={setMixerStream}
+            enableEditingSettings={false}
+            onPaintClick={() => setScratchpadOpen(!isScratchpadOpen)}
+            isPaintActive={isScratchpadOpen}
+            cameraEnabled={cameraEnabled}
+            screenEnabled={screenEnabled}
+            onToggleCamera={toggleCamera}
+            onToggleScreen={toggleScreen}
+            privacyMode={privacyEnabled}
+            onTogglePrivacy={setPrivacyEnabled}
+            mediaMixerCanvasRef={mediaMixer.canvasRef}
+            processedEdgesRef={processedEdgesRef}
+            assessmentMode={true}
+            onBiographyClick={() => setIsBiographyPanelOpen(!isBiographyPanelOpen)}
+            isBiographyActive={isBiographyPanelOpen}
+          />
+          <BiographyPanel
+            isOpen={isBiographyPanelOpen}
+            onClose={() => setIsBiographyPanelOpen(false)}
+            position="right"
+          />
+        </Suspense>
       </div>
-    </div>
+    </TutorProvider>
   );
 };
 

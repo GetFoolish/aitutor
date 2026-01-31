@@ -1,5 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import { TutorProvider } from '../../features/tutor';
+import { useMediaCapture } from '../../hooks/useMediaCapture';
+import { useMediaMixer } from '../../hooks/useMediaMixer';
+import BackgroundShapes from '../background-shapes/BackgroundShapes';
+
+// Lazy load FloatingControlPanel
+const FloatingControlPanel = lazy(() => import('../floating-control-panel/FloatingControlPanel'));
+const BiographyPanel = lazy(() => import('../biography-panel/BiographyPanel'));
 
 interface TopicProgress {
   topic: string;
@@ -33,6 +41,50 @@ export const LearningPlanDashboard: React.FC<LearningPlanProps> = (props) => {
   const location = useLocation<LocationState>();
   const [topicProgress, setTopicProgress] = useState<TopicProgress[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // FloatingControlPanel state
+  const [isScratchpadOpen, setScratchpadOpen] = useState(false);
+  const [isBiographyPanelOpen, setIsBiographyPanelOpen] = useState(false);
+  const [privacyEnabled, setPrivacyEnabled] = useState(false);
+  const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
+  const [mixerStream, setMixerStream] = useState<MediaStream | null>(null);
+
+  // Refs for FloatingControlPanel
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const processedEdgesRef = useRef<ImageData | null>(null);
+
+  // Media capture hooks
+  const {
+    cameraEnabled,
+    screenEnabled,
+    toggleCamera,
+    toggleScreen,
+    cameraVideoRef,
+    screenVideoRef
+  } = useMediaCapture({});
+
+  // MediaMixer hook
+  const mediaMixer = useMediaMixer({
+    width: 1280,
+    height: 2160,
+    fps: 2,
+    quality: 0.85,
+    cameraEnabled: cameraEnabled,
+    screenEnabled: screenEnabled,
+    privacyEnabled: privacyEnabled,
+    cameraVideoRef: cameraVideoRef,
+    screenVideoRef: screenVideoRef
+  });
+
+  // Start mixer when component mounts
+  useEffect(() => {
+    if (mediaMixer.canvasRef.current) {
+      mediaMixer.setIsRunning(true);
+      return () => {
+        mediaMixer.setIsRunning(false);
+      };
+    }
+  }, [mediaMixer]);
 
   // Get data from either props or location.state
   const skillLevel = props.skillLevel || location.state?.skillLevel || 'Beginner';
@@ -114,30 +166,47 @@ export const LearningPlanDashboard: React.FC<LearningPlanProps> = (props) => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="text-2xl">loading your learning plan... ✨</div>
-      </div>
+      <TutorProvider>
+        <div className="flex items-center justify-center min-h-screen bg-[#FFFDF5]">
+          <BackgroundShapes />
+          <div className="text-2xl font-black uppercase">loading your learning plan... ✨</div>
+        </div>
+      </TutorProvider>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <TutorProvider>
+      <div className="min-h-screen bg-[#FFFDF5] p-6 relative">
+        <BackgroundShapes />
+        <div className="max-w-6xl mx-auto space-y-8 relative z-10">
 
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-black" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-            your learning plan ✨
-          </h1>
-          <p className="text-xl text-gray-600">
-            let's master {subject} together! you got this 🌟
-          </p>
-        </div>
+          {/* Header */}
+          <div className="text-center space-y-2">
+            <h1 className="text-4xl font-black uppercase" style={{ fontFamily: 'Space Mono, monospace' }}>
+              your learning plan ✨
+            </h1>
+            <p className="text-xl font-bold lowercase text-gray-600">
+              let's master {subject} together! you got this 🌟
+            </p>
+          </div>
 
-        {/* Skill Level Card */}
-        <div
-          className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-8 rounded-xl"
-        >
+          {/* Grade & Subject Cards */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-[#FFD93D] border-[4px] border-black shadow-[6px_6px_0_0_#000] p-6">
+              <div className="text-sm font-black uppercase mb-2 text-black/60">your grade</div>
+              <div className="text-3xl font-black uppercase">{grade}</div>
+            </div>
+            <div className="bg-[#C4B5FD] border-[4px] border-black shadow-[6px_6px_0_0_#000] p-6">
+              <div className="text-sm font-black uppercase mb-2 text-black/60">subject</div>
+              <div className="text-3xl font-black uppercase">{subject}</div>
+            </div>
+          </div>
+
+          {/* Skill Level Card */}
+          <div
+            className="bg-white border-[4px] border-black shadow-[8px_8px_0_0_#000] p-8"
+          >
           <div className="flex items-center justify-between">
             <div>
               <div className="text-sm font-bold text-gray-600 mb-2">your current level</div>
@@ -157,7 +226,7 @@ export const LearningPlanDashboard: React.FC<LearningPlanProps> = (props) => {
 
         {/* Overall Progress */}
         <div
-          className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 rounded-xl"
+          className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 "
         >
           <div className="flex items-center justify-between mb-4">
             <div className="text-xl font-black">overall progress</div>
@@ -165,7 +234,7 @@ export const LearningPlanDashboard: React.FC<LearningPlanProps> = (props) => {
               {overallProgress}%
             </div>
           </div>
-          <div className="w-full h-8 bg-gray-200 border-4 border-black rounded-lg overflow-hidden">
+          <div className="w-full h-8 bg-gray-200 border-4 border-black  overflow-hidden">
             <div
               className="h-full transition-all duration-500 ease-out flex items-center justify-center text-sm font-bold"
               style={{
@@ -199,7 +268,7 @@ export const LearningPlanDashboard: React.FC<LearningPlanProps> = (props) => {
               return (
                 <div
                   key={topic.topic}
-                  className={`bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 rounded-xl transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${
+                  className={`bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6  transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${
                     topic.mastered ? 'opacity-70' : ''
                   }`}
                 >
@@ -223,7 +292,7 @@ export const LearningPlanDashboard: React.FC<LearningPlanProps> = (props) => {
 
                   {/* Progress Bar */}
                   <div className="mb-4">
-                    <div className="w-full h-6 bg-gray-200 border-3 border-black rounded-lg overflow-hidden">
+                    <div className="w-full h-6 bg-gray-200 border-3 border-black  overflow-hidden">
                       <div
                         className="h-full transition-all duration-500 ease-out"
                         style={{
@@ -238,7 +307,7 @@ export const LearningPlanDashboard: React.FC<LearningPlanProps> = (props) => {
                   {!topic.mastered && (
                     <button
                       onClick={() => handleStartPractice(topic.topic)}
-                      className="w-full bg-purple-400 hover:bg-purple-500 border-4 border-black font-black py-3 px-6 rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+                      className="w-full bg-purple-400 hover:bg-purple-500 border-4 border-black font-black py-3 px-6  shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
                     >
                       {topic.questionsAnswered === 0 ? 'start practicing ✨' : 'continue practicing 🚀'}
                     </button>
@@ -247,7 +316,7 @@ export const LearningPlanDashboard: React.FC<LearningPlanProps> = (props) => {
                   {topic.mastered && (
                     <button
                       onClick={() => handleStartPractice(topic.topic)}
-                      className="w-full bg-gray-200 hover:bg-gray-300 border-4 border-black font-black py-3 px-6 rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
+                      className="w-full bg-gray-200 hover:bg-gray-300 border-4 border-black font-black py-3 px-6  shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
                     >
                       review again 📚
                     </button>
@@ -272,7 +341,7 @@ export const LearningPlanDashboard: React.FC<LearningPlanProps> = (props) => {
               {strongTopics.map((topic, index) => (
                 <div
                   key={topic}
-                  className="bg-green-100 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-4 rounded-xl text-center"
+                  className="bg-green-100 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-4  text-center"
                 >
                   <div className="text-3xl mb-2">🌟</div>
                   <div className="text-sm font-bold capitalize">{topic}</div>
@@ -285,7 +354,7 @@ export const LearningPlanDashboard: React.FC<LearningPlanProps> = (props) => {
         {/* Next Steps */}
         {focusTopics.length > 0 && (
           <div
-            className="bg-gradient-to-r from-purple-400 to-pink-400 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-8 rounded-xl"
+            className="bg-gradient-to-r from-purple-400 to-pink-400 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-8 "
           >
             <div className="text-center space-y-4">
               <div className="text-3xl">✨</div>
@@ -306,7 +375,7 @@ export const LearningPlanDashboard: React.FC<LearningPlanProps> = (props) => {
                     handleStartPractice(nextTopic.topic);
                   }
                 }}
-                className="bg-white hover:bg-gray-100 border-4 border-black font-black py-4 px-8 rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all text-xl"
+                className="bg-white hover:bg-gray-100 border-4 border-black font-black py-4 px-8  shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all text-xl"
               >
                 let's go! 🎯
               </button>
@@ -314,8 +383,39 @@ export const LearningPlanDashboard: React.FC<LearningPlanProps> = (props) => {
           </div>
         )}
 
+        </div>
+
+        {/* Floating Control Panel with AI Tutor */}
+        <Suspense fallback={null}>
+          <FloatingControlPanel
+            renderCanvasRef={mediaMixer.canvasRef}
+            videoRef={videoRef}
+            supportsVideo={true}
+            onVideoStreamChange={setVideoStream}
+            onMixerStreamChange={setMixerStream}
+            enableEditingSettings={false}
+            onPaintClick={() => setScratchpadOpen(!isScratchpadOpen)}
+            isPaintActive={isScratchpadOpen}
+            cameraEnabled={cameraEnabled}
+            screenEnabled={screenEnabled}
+            onToggleCamera={toggleCamera}
+            onToggleScreen={toggleScreen}
+            privacyMode={privacyEnabled}
+            onTogglePrivacy={setPrivacyEnabled}
+            mediaMixerCanvasRef={mediaMixer.canvasRef}
+            processedEdgesRef={processedEdgesRef}
+            assessmentMode={false}
+            onBiographyClick={() => setIsBiographyPanelOpen(!isBiographyPanelOpen)}
+            isBiographyActive={isBiographyPanelOpen}
+          />
+          <BiographyPanel
+            isOpen={isBiographyPanelOpen}
+            onClose={() => setIsBiographyPanelOpen(false)}
+            position="right"
+          />
+        </Suspense>
       </div>
-    </div>
+    </TutorProvider>
   );
 };
 
