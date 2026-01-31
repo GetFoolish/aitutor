@@ -70,6 +70,20 @@ const DynamicAssessment: React.FC = () => {
   const [loadSource, setLoadSource] = useState<LoadSource>('unknown');
 
   useEffect(() => {
+    const isReload = (() => {
+      try {
+        const navEntries = performance.getEntriesByType?.('navigation') as PerformanceNavigationTiming[] | undefined;
+        if (navEntries && navEntries.length > 0) {
+          return navEntries[0].type === 'reload';
+        }
+        // Legacy fallback
+        // @ts-expect-error - legacy browser API
+        return performance?.navigation?.type === 1;
+      } catch {
+        return false;
+      }
+    })();
+
     const applyPayload = (payload: {
       assessmentId: string;
       questions: Question[];
@@ -104,7 +118,7 @@ const DynamicAssessment: React.FC = () => {
       setLoadError(null);
 
       const statePayload = location.state;
-      if (statePayload?.questions?.length) {
+      if (!isReload && statePayload?.questions?.length) {
         console.log('[DynamicAssessment] Using navigation state payload');
         applyPayload(statePayload, 'nav');
         return;
