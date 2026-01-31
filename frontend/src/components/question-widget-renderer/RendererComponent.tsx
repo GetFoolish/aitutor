@@ -103,6 +103,23 @@ const RendererComponent = ({
     }, [debugForceRenderError]);
 
     useEffect(() => {
+        const handleWidgetError = () => {
+            if (!hasRenderError) {
+                console.error('[RendererComponent] Widget render error event received');
+            }
+            setHasRenderError(true);
+        };
+        window.addEventListener('perseus-widget-render-error', handleWidgetError as EventListener);
+        return () => {
+            window.removeEventListener('perseus-widget-render-error', handleWidgetError as EventListener);
+        };
+    }, [hasRenderError]);
+
+    useEffect(() => {
+        setHasRenderError(debugForceRenderError);
+    }, [item, currentQuestionIndex, debugForceRenderError]);
+
+    useEffect(() => {
         // In assessment mode, use provided questions instead of fetching
         if (assessmentMode) {
             setPerseusItems(assessmentQuestions);

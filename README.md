@@ -439,6 +439,7 @@ Frontend uses build-time environment variables (injected during Docker build):
 - `VITE_TEACHING_ASSISTANT_API_URL` - Teaching Assistant API endpoint
 - `VITE_AUTH_SERVICE_URL` - Auth Service endpoint (for API key retrieval)
 - `VITE_SHOW_DEBUG_BANNER` - Enables assessment debug banners (set to `true` to show)
+- `VITE_DEBUG_WIDGET_ERROR` - Shows the "force error" debug toggle for widget fallback testing
 
 **Note**: Tutor service connects directly to Gemini Live API. API key is fetched securely from AuthService at runtime (not baked into frontend).
 
