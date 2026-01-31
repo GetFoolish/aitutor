@@ -67,6 +67,17 @@ def ensure_dash_system():
     if getattr(dash_system, "_is_stub", False) and not os.getenv("PYTEST_CURRENT_TEST"):
         raise HTTPException(status_code=503, detail="DASHSystem not initialized")
 
+def get_current_user_or_dev(request: Request) -> str:
+    """Allow a dev fallback user when auth is missing and DEV_MODE is true."""
+    try:
+        return get_current_user(request)
+    except HTTPException as e:
+        if os.getenv("DEV_MODE", "true").lower() == "true":
+            dev_user = os.getenv("DEV_USER_ID", "mongodb_test_user")
+            logger.warning(f"[AUTH] Falling back to DEV_USER_ID={dev_user} due to auth error: {e.detail}")
+            return dev_user
+        raise
+
 # Startup event to initialize DASH system
 @app.on_event("startup")
 async def startup_event():
@@ -363,7 +374,7 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
     """
     ensure_dash_system()
     # Get user_id from JWT token
-    user_id = get_current_user(request)
+    user_id = get_current_user_or_dev(request)
     
     logger.info(f"\n{'='*80}")
     logger.info(f"[NEW_SESSION] Requesting {sample_size} questions for user: {user_id}")
@@ -426,10 +437,10 @@ def log_question_displayed(request: Request, display_info: dict):
     """Log when student views a question (Next button clicked)"""
     ensure_dash_system()
     # Get user_id from JWT token
-    user_id = get_current_user(request)
+    user_id = get_current_user_or_dev(request)
     
     # Get user_id from JWT token
-    user_id = get_current_user(request)
+    user_id = get_current_user_or_dev(request)
     
     idx = display_info.get('question_index', 0)
     metadata = display_info.get('metadata', {})
@@ -518,7 +529,7 @@ def submit_answer(request: Request, answer: AnswerSubmission):
     from managers.mongodb_manager import mongo_db
     
     # Get user_id from JWT token
-    user_id = get_current_user(request)
+    user_id = get_current_user_or_dev(request)
 
     logger.info(f"\n{'-'*80}")
     logger.info(f"[SUBMIT_ANSWER] User: {user_id}")
