@@ -45,6 +45,7 @@ const ScratchpadCapture = lazy(() => import("./components/scratchpad-capture/Scr
 const FloatingControlPanel = lazy(() => import("./components/floating-control-panel/FloatingControlPanel"));
 const LearningAssetsPanel = lazy(() => import("./components/side-panel/LearningAssetsPanel"));
 const QuestionConfig = lazy(() => import("./components/question-config/QuestionConfig"));
+const BiographyPanel = lazy(() => import("./components/biography-panel/BiographyPanel"));
 
 function App() {
   const { user } = useAuth();
@@ -77,6 +78,9 @@ function App() {
   // Question configuration state (subject/grade/language picker)
   const [showQuestionConfig, setShowQuestionConfig] = useState(false);
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
+
+  // Biography panel state (Living Biography / Memory panel)
+  const [isBiographyPanelOpen, setIsBiographyPanelOpen] = useState(false);
 
   // Ref to hold mediaMixer instance for use in callbacks
   const mediaMixerRef = useRef<any>(null);
@@ -441,6 +445,13 @@ function App() {
                           mediaMixerCanvasRef={mediaMixer.canvasRef}
                           processedEdgesRef={processedEdgesRef}
                           assessmentMode={assessmentMode}
+                          onBiographyClick={() => setIsBiographyPanelOpen(!isBiographyPanelOpen)}
+                          isBiographyActive={isBiographyPanelOpen}
+                        />
+                        <BiographyPanel
+                          isOpen={isBiographyPanelOpen}
+                          onClose={() => setIsBiographyPanelOpen(false)}
+                          position="right"
                         />
                       </div>
                     </main>

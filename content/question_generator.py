@@ -109,19 +109,19 @@ class QuestionGenerator:
         # Ensure output directories exist
         QUESTIONS_DIR.mkdir(parents=True, exist_ok=True)
         
-        # Load tone guidelines
-        self.tone_guidelines = self._load_tone_guidelines()
+        # Load tone guidelines (prefer shared tone_guidelines.py)
+        self.tone_guidelines = None  # computed per-question by grade via content.tone_guidelines.get_tone_prompt()
         
         print(f"[QuestionGenerator] Connected to local MongoDB")
         print(f"[QuestionGenerator] Reference questions: {self.questions.count_documents({}):,}")
         print(f"[QuestionGenerator] Output dir: {QUESTIONS_DIR}")
     
     def _load_tone_guidelines(self) -> str:
-        """Load Innocent Drinks tone guidelines."""
+        """Load Innocent Drinks tone guidelines (fallback if module import fails)."""
         return """
 TONE GUIDELINES (innocent drinks style):
 
-Write like innocent drinks - chatty, humble, a bit cheeky. Like a nice friend who happens to know maths.
+Write like innocent drinks - chatty, humble, a bit cheeky. Like a nice friend who happens to know the subject.
 
 WRITING STYLE:
 • lowercase where possible, casual punctuation
@@ -141,29 +141,134 @@ EXAMPLE REWRITES:
 ❌ "Select the correct answer."
 ✅ "pick the one you reckon is right. no pressure."
 
+❌ "What is the main idea of this passage?"
+✅ "what's this passage really about? sum it up in your own words."
+
+❌ "Which state of matter is ice?"
+✅ "ice. solid, liquid, or gas? (think about what happens when you touch it)"
+
 CRITICAL: vary your openings! use different ones each time:
 • "so here's the thing."
 • "have a go at this."
 • "here we go."
-• "this one's interesting."
 • "quick one."
 • "try this."
-• "alright."
 • "ooh, this is good."
-• "here's a puzzle."
 • just dive straight into the scenario (no opener)
 
-BANNED PHRASES (never use):
-• "right then"
-• "right,"  
-• "okay this is a fun one"
-• "okay, try this one"
+🚫 BANNED PHRASES (never use):
+• "right then" / "right," / "right, so"
+• "okay this is a fun one" / "okay, try this one"
+• "okay, let's..." / "let's dive in" / "let's see if"
+• "alright, here's the thing" / "alright, so"
+• "can you figure out" / "let's see if you can"
+• "here's a head-scratcher" / "here's a fun one"
+• "Great job!" / "Excellent!" / "Amazing!"
 
 ENCOURAGEMENT TO ADD:
 • "(no rush, we'll wait)"
 • "(you've got this)"
 • "(take your time)"
+• "(we believe in you)"
 """
+
+    def _get_subject_context(self, subject: str) -> str:
+        """Get subject-specific context for question generation."""
+        contexts = {
+            "math": """
+SUBJECT: MATH
+Make numbers feel friendly. Use real-world scenarios kids can picture.
+- use food, toys, animals, games as context
+- if personalization available, use their interests/pets
+- fractions? think pizza slices, cake pieces
+- geometry? shapes are everywhere, point them out
+""",
+            "science": """
+SUBJECT: SCIENCE  
+Science is about curiosity. Frame questions as mini-discoveries.
+- "what do you reckon happens when..."
+- "here's something cool about..."
+- make it feel like an experiment, not a test
+- use everyday examples they can relate to
+""",
+            "reading": """
+SUBJECT: READING
+Reading comprehension should feel like a conversation about a story.
+- "what's this passage really saying?"
+- "if you had to explain this to a friend..."
+- avoid formal literary analysis language
+- focus on understanding, not memorizing
+""",
+            "computer_science": """
+SUBJECT: CODING
+Code is just giving instructions to a computer.
+- think of it like writing a recipe
+- break things into simple steps
+- "what happens if we..."
+- make debugging feel like solving a puzzle
+""",
+        }
+        return contexts.get(subject, contexts["math"])
+
+    def _validate_question_structure(self, question: Dict, expected_widget_type: str) -> None:
+        """
+        Validate the generated question has proper widget data.
+
+        Raises ValueError if validation fails - this allows retry logic to
+        regenerate the question.
+        """
+        widgets = question.get("widgets", {})
+
+        if not widgets:
+            raise ValueError("Generated question has no widgets")
+
+        for widget_id, widget in widgets.items():
+            if not isinstance(widget, dict):
+                raise ValueError(f"Widget '{widget_id}' is not a dict: {type(widget)}")
+
+            wtype = widget.get("type")
+            if not wtype:
+                raise ValueError(f"Widget '{widget_id}' has no type")
+
+            options = widget.get("options", {})
+
+            if wtype == "radio":
+                choices = options.get("choices", [])
+                if not isinstance(choices, list):
+                    raise ValueError(f"Radio widget '{widget_id}' choices is not a list")
+                if len(choices) < 2:
+                    raise ValueError(
+                        f"Radio widget '{widget_id}' has {len(choices)} choices, need at least 2"
+                    )
+                # Validate each choice has content
+                for i, choice in enumerate(choices):
+                    if not isinstance(choice, dict):
+                        raise ValueError(f"Choice {i} in widget '{widget_id}' is not a dict")
+                    if not choice.get("content"):
+                        raise ValueError(f"Choice {i} in widget '{widget_id}' has no content")
+                # Ensure at least one correct answer
+                has_correct = any(c.get("correct") for c in choices)
+                if not has_correct:
+                    raise ValueError(f"Radio widget '{widget_id}' has no correct answer marked")
+
+            elif wtype == "numeric-input":
+                answers = options.get("answers", [])
+                if not answers:
+                    raise ValueError(f"Numeric input '{widget_id}' has no answers")
+
+            elif wtype == "dropdown":
+                choices = options.get("choices", [])
+                if not isinstance(choices, list) or len(choices) < 2:
+                    raise ValueError(
+                        f"Dropdown widget '{widget_id}' needs at least 2 choices"
+                    )
+
+            elif wtype == "orderer":
+                correct_options = options.get("correctOptions", [])
+                if not correct_options:
+                    raise ValueError(f"Orderer widget '{widget_id}' has no correctOptions")
+
+        print(f"  [VALIDATION] Question structure valid: {len(widgets)} widget(s)")
     
     def get_reference_examples(
         self,
@@ -234,19 +339,32 @@ ENCOURAGEMENT TO ADD:
                 examples_prompt += f"Content: {q.get('content', '')[:200]}...\n"
                 examples_prompt += f"Widgets: {json.dumps(list(q.get('widgets', {}).keys()))}\n"
         
-        # Build avoid openers prompt
+        # Build avoid openers prompt - show first 3-4 words of each used opener
         avoid_prompt = ""
         if used_openers:
-            avoid_prompt = f"\nALREADY USED OPENERS (use completely different ones):\n" + "\n".join(f"- {o}" for o in used_openers[-5:])
+            avoid_prompt = f"""
+🚨 CRITICAL - ALREADY USED OPENERS (you MUST use a COMPLETELY different opening structure):
+{chr(10).join(f'- "{o}"' for o in used_openers[-8:])}
+
+DO NOT start your question with any variation of the above phrases.
+Try: starting directly with the scenario, using "so", "here we go", "quick one", or no opener at all."""
         
         # Build user memories prompt
         memories_prompt = ""
         if user_memories:
             memories_prompt = f"\nUSER MEMORIES (personalize with these):\n{user_memories}"
         
+        # Tone prompt - use the authoritative tone_guidelines module
+        from content.tone_guidelines import get_tone_prompt
+        tone_prompt = get_tone_prompt(grade)
+        
+        # Get subject-specific context
+        subject_context = self._get_subject_context(subject)
+
         # Main prompt
         prompt = f"""
-{self.tone_guidelines}
+{tone_prompt}
+{subject_context}
 {memories_prompt}
 {avoid_prompt}
 
@@ -266,6 +384,28 @@ Requirements:
 4. Include 2-3 helpful hints in the same friendly tone
 5. Ensure the answer is correct and clear
 6. Use a UNIQUE opening - not one from the "already used" list
+
+🚨 CRITICAL TONE RULES (the server validates output and REJECTS violations):
+
+BANNED OPENERS (these WILL fail validation - never use):
+• "right," / "right, so" / "right so" / "right, let's" / "right then"
+• "okay," / "okay, so" / "okay so" / "okay, let's" / "okay let's" 
+• "okay, here's" / "okay here's the thing" / "okay, check" / "okay check"
+• "okay this one" / "okay this one's" / "okay this is a fun one"
+• "alright," / "alright, so" / "alright so" / "alright, let's"
+• "alright, here's" / "alright here's the thing"
+
+BANNED PATTERNS:
+• "let's dive in" / "let's get started" / "let's see if" / "let's try"
+• "can you figure out" / "here's a head-scratcher" / "here's a fun one"
+• "Great job!" / "Excellent!" / "Amazing!" (too hype-y)
+
+✅ SAFE OPENERS (use these, or skip opener entirely):
+• "so" (alone, not "okay so")
+• "here we go." / "have a go at this." / "try this." / "quick one."
+• or just start directly with the scenario (no opener)
+
+Keep it warm and casual. Encouragement: "(you've got this)" or "(no rush)" - gentle, not hype.
 
 Return ONLY valid JSON in this exact format:
 {{
@@ -287,18 +427,25 @@ Return ONLY the JSON, no markdown code blocks.
 """
         
         # Generate with retry
+        # - attempt 0: normal generation
+        # - attempt 1-2: tone-corrected retries if validation fails
+        tone_corrections: str = ""
         for attempt in range(3):
             try:
+                attempt_prompt = prompt
+                if tone_corrections:
+                    attempt_prompt = f"{prompt}\n\n---\n\nTONE FIX NEEDED (you broke the rules last time):\n{tone_corrections}\n\nRewrite the output so it passes validation. Return ONLY JSON." 
+
                 if self.genai_provider == "google-genai":
                     response = self.genai_client.models.generate_content(
                         model="gemini-2.0-flash",
-                        contents=prompt
+                        contents=attempt_prompt
                     )
                     text = (getattr(response, "text", None) or "").strip()
                     if not text:
                         text = str(response)
                 else:
-                    response = self.genai_model.generate_content(prompt)
+                    response = self.genai_model.generate_content(attempt_prompt)
                     text = response.text.strip()
                 
                 # Clean up response
@@ -310,7 +457,33 @@ Return ONLY the JSON, no markdown code blocks.
                 
                 # Parse JSON
                 data = json.loads(text)
+
+                # Tone validation (content itself, not wrapper text)
+                # Import with explicit error handling - DO NOT skip validation
+                from content.tone_guidelines import validate_tone
                 
+                content_text = str(data.get("content", ""))
+                violations: List[str] = list(validate_tone(content_text))
+                
+                for h in (data.get("hints") or []):
+                    if isinstance(h, dict):
+                        violations.extend(validate_tone(str(h.get("content", ""))))
+
+                violations = sorted(set(v for v in violations if v))
+                
+                if violations:
+                    tone_corrections = "\n".join(f"- {v}" for v in violations)
+                    print(f"  [TONE_VALIDATION] FAILED (attempt {attempt+1}/3): {content_text[:80]}...")
+                    print(f"    Violations: {tone_corrections}")
+                    if attempt < 2:
+                        # Feed back into the next attempt.
+                        time.sleep(0.5)
+                        continue
+                    # Last attempt: hard fail so caller can retry at a higher level.
+                    raise ValueError(f"Tone validation failed: {tone_corrections}")
+                else:
+                    print(f"  [TONE_VALIDATION] PASSED (attempt {attempt+1}/3): {content_text[:60]}...")
+
                 # Generate unique ID
                 question_id = f"gen_{grade}_{subject}_{topic.replace(' ', '_')}_{uuid.uuid4().hex[:8]}"
                 
@@ -318,6 +491,9 @@ Return ONLY the JSON, no markdown code blocks.
                 widgets = data.get("widgets", {})
                 widget_types_list = [w.get("type") for w in widgets.values() if isinstance(w, dict)]
                 
+                # Validate question structure before returning
+                self._validate_question_structure(data, widget_type)
+
                 return GeneratedQuestion(
                     question_id=question_id,
                     question={
@@ -394,9 +570,12 @@ Return ONLY the JSON, no markdown code blocks.
             if question:
                 questions.append(question)
                 
-                # Track opener
-                opener = question.question.get("content", "")[:30].lower()
-                used_openers.append(opener)
+                # Track opener - extract first 3-4 words for more robust comparison
+                # This catches "alright, here's the thing." vs "alright, here's the thing, leo."
+                content = question.question.get("content", "").lower().strip()
+                words = content.split()[:4]  # First 4 words
+                opener_pattern = " ".join(words)
+                used_openers.append(opener_pattern)
                 
                 # Save to disk
                 if save_to_disk:

@@ -32,6 +32,68 @@ const CONTENT_API_URL = import.meta.env.VITE_CONTENT_API_URL || 'http://localhos
 const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
 const USE_GENERATED_QUESTIONS = import.meta.env.VITE_USE_GENERATED_QUESTIONS === 'true';
 
+/**
+ * Validates a Perseus item has proper widget structure before rendering.
+ * This catches malformed questions early and provides actionable error messages.
+ */
+function validatePerseusItem(item: any): { valid: boolean; error?: string } {
+    if (!item || typeof item !== 'object') {
+        return { valid: false, error: 'Question data is missing or invalid' };
+    }
+
+    const question = item.question;
+    if (!question) {
+        return { valid: false, error: 'Question has no question field' };
+    }
+
+    const widgets = question.widgets;
+    if (!widgets || typeof widgets !== 'object' || Object.keys(widgets).length === 0) {
+        return { valid: false, error: 'Question has no widgets defined' };
+    }
+
+    // Validate each widget has required structure
+    for (const [widgetId, widget] of Object.entries(widgets)) {
+        const w = widget as any;
+        if (!w || typeof w !== 'object') {
+            return { valid: false, error: `Widget ${widgetId} is not a valid object` };
+        }
+
+        if (!w.type) {
+            return { valid: false, error: `Widget ${widgetId} has no type` };
+        }
+
+        // Validate radio widgets have choices
+        if (w.type === 'radio') {
+            const choices = w.options?.choices;
+            if (!Array.isArray(choices) || choices.length < 2) {
+                console.error(`[RendererComponent] Radio widget ${widgetId} missing choices:`, w.options);
+                return {
+                    valid: false,
+                    error: `Radio widget "${widgetId}" has no answer choices (found ${choices?.length || 0}, need at least 2)`
+                };
+            }
+        }
+
+        // Validate numeric-input widgets have answers
+        if (w.type === 'numeric-input') {
+            const answers = w.options?.answers;
+            if (!Array.isArray(answers) || answers.length === 0) {
+                return { valid: false, error: `Numeric input widget "${widgetId}" has no answers defined` };
+            }
+        }
+
+        // Validate dropdown widgets have choices
+        if (w.type === 'dropdown') {
+            const choices = w.options?.choices;
+            if (!Array.isArray(choices) || choices.length < 2) {
+                return { valid: false, error: `Dropdown widget "${widgetId}" needs at least 2 choices` };
+            }
+        }
+    }
+
+    return { valid: true };
+}
+
 interface RendererComponentProps {
     onSkillChange?: (skill: string) => void;
     onQuestionChange?: (questionId: string | null) => void;
@@ -68,6 +130,7 @@ const RendererComponent = ({
     const [showFeedback, setShowFeedback] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [hasRenderError, setHasRenderError] = useState(false);
+    const [validationError, setValidationError] = useState<string | null>(null);
     const [isError, setIsError] = useState(false);
     const [error, setError] = useState<Error | null>(null);
     const [isLoadingNextBatch, setIsLoadingNextBatch] = useState(false);
@@ -568,6 +631,23 @@ const RendererComponent = ({
         ? ((item + 1) / perseusItems.length) * 100
         : 0;
 
+    // Validate Perseus item structure before rendering
+    useEffect(() => {
+        if (perseusItems.length > 0 && !isLoading) {
+            const currentItem = perseusItems[item];
+            const validation = validatePerseusItem(currentItem);
+            if (!validation.valid) {
+                console.error('[RendererComponent] Question validation failed:', validation.error);
+                console.error('[RendererComponent] Invalid question data:', JSON.stringify(currentItem, null, 2));
+                setValidationError(validation.error || 'Question structure is invalid');
+            } else {
+                setValidationError(null);
+            }
+        } else {
+            setValidationError(null);
+        }
+    }, [item, perseusItems, isLoading]);
+
     // Extract hints from current question
     const hints = (perseusItem as any)?.hints || [];
 
@@ -702,11 +782,31 @@ const RendererComponent = ({
                         ) : perseusItems.length > 0 ? (
                             <div className="space-y-4 md:space-y-6">
                                 <div id="question-content-container" className="border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white p-4 md:p-5 lg:p-6 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] overflow-x-auto">
-                                    {hasRenderError ? (
+                                    {validationError ? (
+                                        <div className="flex flex-col items-center justify-center gap-3 text-center py-6">
+                                            <div className="text-3xl">🔧</div>
+                                            <div className="text-sm md:text-base font-black uppercase tracking-wide text-red-600">
+                                                question data is incomplete
+                                            </div>
+                                            <p className="text-xs md:text-sm text-neutral-600 dark:text-neutral-300 max-w-md">
+                                                {validationError}
+                                            </p>
+                                            <p className="text-xs text-neutral-500 dark:text-neutral-400 max-w-md">
+                                                this usually means the question was generated incorrectly. let's try another one!
+                                            </p>
+                                            <Button
+                                                type="button"
+                                                onClick={handleSkipQuestion}
+                                                className="border-[2px] border-black bg-[#FFD93D] text-black font-black uppercase tracking-wide shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)]"
+                                            >
+                                                try another question →
+                                            </Button>
+                                        </div>
+                                    ) : hasRenderError ? (
                                         <div className="flex flex-col items-center justify-center gap-3 text-center py-6">
                                             <div className="text-3xl">⚠️</div>
                                             <div className="text-sm md:text-base font-black uppercase tracking-wide">
-                                                this question didn’t load
+                                                this question didn't load
                                             </div>
                                             <p className="text-xs md:text-sm text-neutral-600 dark:text-neutral-300 max-w-md">
                                                 want a different one? you can skip this question and keep going.
@@ -745,7 +845,7 @@ const RendererComponent = ({
                                 </div>
 
                                 {/* Hints Display */}
-                                {!hasRenderError && hints.length > 0 && (
+                                {!hasRenderError && !validationError && hints.length > 0 && (
                                     <HintDisplay hints={hints} />
                                 )}
 
@@ -791,13 +891,13 @@ const RendererComponent = ({
                 </CardContent>
 
                 <CardFooter className="flex justify-between items-center gap-2 md:gap-3 px-4 md:px-6 pb-4 md:pb-5 pt-3 md:pt-4 border-t-[3px] md:border-t-[4px] border-black dark:border-white bg-white dark:bg-neutral-900">
-                    {!hasRenderError && <HintButton inline={true} />}
+                    {!hasRenderError && !validationError && <HintButton inline={true} />}
                     <div className="flex gap-2 md:gap-3">
                         <Button
                             type="button"
                             size="sm"
                             onClick={handleSubmit}
-                            disabled={isLoading || endOfTest || hasRenderError || perseusItems.length === 0 || isAnswered}
+                            disabled={isLoading || endOfTest || hasRenderError || validationError !== null || perseusItems.length === 0 || isAnswered}
                             className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-[#C4B5FD] hover:bg-[#C4B5FD] text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:hover:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
                         >
                             Submit
