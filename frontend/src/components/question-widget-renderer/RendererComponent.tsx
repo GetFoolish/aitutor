@@ -99,9 +99,7 @@ const RendererComponent = ({
 
     // Fetch questions using apiUtils with JWT authentication
     useEffect(() => {
-        if (debugForceRenderError) {
-            setHasRenderError(true);
-        }
+        setHasRenderError(debugForceRenderError);
     }, [debugForceRenderError]);
 
     useEffect(() => {
@@ -110,7 +108,7 @@ const RendererComponent = ({
             setPerseusItems(assessmentQuestions);
             setItem(currentQuestionIndex);
             setIsLoading(false);
-            setHasRenderError(false);
+            setHasRenderError(debugForceRenderError);
                 setIsAnswered(false);
                 setShowFeedback(false);
                 setStartTime(Date.now());
@@ -776,7 +774,7 @@ const RendererComponent = ({
                 </CardContent>
 
                 <CardFooter className="flex justify-between items-center gap-2 md:gap-3 px-4 md:px-6 pb-4 md:pb-5 pt-3 md:pt-4 border-t-[3px] md:border-t-[4px] border-black dark:border-white bg-white dark:bg-neutral-900">
-                    <HintButton inline={true} />
+                    {!hasRenderError && <HintButton inline={true} />}
                     <div className="flex gap-2 md:gap-3">
                         <Button
                             type="button"
