@@ -1,6 +1,6 @@
 /**
  * Dynamic Assessment Flow
- * 
+ *
  * Uses on-the-fly generated questions based on user's age and selected topics.
  * Shows progress, difficulty indicators, and creates learning path on completion.
  */
@@ -28,15 +28,17 @@ interface Question {
     assessment_id: string;
     difficulty: string;
     topic: string;
+    subject?: string;
     [key: string]: any;
   };
 }
 
 interface LocationState {
-  assessmentId: string;
-  questions: Question[];
+  assessmentId?: string;
+  subject?: string;
+  questions?: Question[];
   totalQuestions?: number;
-  onboardingData: {
+  onboardingData?: {
     ageRange: string;
     grade: string;
     selectedTopics: string[];
@@ -55,7 +57,7 @@ interface Answer {
 const DynamicAssessment: React.FC = () => {
   const history = useHistory();
   const location = useLocation<LocationState>();
-  
+
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
@@ -64,6 +66,7 @@ const DynamicAssessment: React.FC = () => {
   const [results, setResults] = useState<any>(null);
   const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now());
   const [assessmentId, setAssessmentId] = useState<string>('');
+  const [subject, setSubject] = useState<string>('math');
   const [showIntro, setShowIntro] = useState(true);
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -92,6 +95,7 @@ const DynamicAssessment: React.FC = () => {
 
     const applyPayload = (payload: {
       assessmentId: string;
+      subject?: string;
       questions: Question[];
       onboardingData?: LocationState["onboardingData"];
       totalQuestions?: number;
@@ -113,6 +117,8 @@ const DynamicAssessment: React.FC = () => {
 
       setQuestions(incomingQuestions);
       setAssessmentId(payload.assessmentId || '');
+      const inferredSubject = payload.subject || incomingQuestions?.[0]?.dash_metadata?.subject || 'math';
+      setSubject(inferredSubject);
       setTotalQuestions(payload.totalQuestions ?? incomingQuestions.length ?? 0);
       setOnboardingData(payload.onboardingData ?? null);
       setLoadSource(source);
@@ -156,6 +162,7 @@ const DynamicAssessment: React.FC = () => {
             const data = await response.json();
             const payload = {
               assessmentId: data.assessment_id || cachedId,
+              subject: data.subject,
               questions: data.questions || [],
               totalQuestions: data.total_questions ?? data.questions?.length ?? 0,
               onboardingData: statePayload?.onboardingData,
@@ -199,6 +206,95 @@ const DynamicAssessment: React.FC = () => {
     }
   }, [loadSource]);
 
+  const startNewAssessment = async (chosenSubject: string) => {
+    setLoading(true);
+    setLoadError(null);
+
+    try {
+      // Lightweight defaults for dev / out-of-the-box local use.
+      const response = await apiUtils.post(`${DASH_API_URL}/api/assessment/dynamic/start`, {
+        age_range: '8-10',
+        subject: chosenSubject,
+        grade: '3-5',
+        topics: chosenSubject === 'science' ? ['science'] : chosenSubject === 'reading' ? ['reading'] : ['math-basics'],
+        question_count: 10,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to start assessment');
+      }
+
+      const assessmentData = await response.json();
+      const payload = {
+        assessmentId: assessmentData.assessment_id,
+        subject: assessmentData.subject,
+        questions: assessmentData.questions || [],
+        totalQuestions: assessmentData.total_questions ?? assessmentData.questions?.length ?? 0,
+      };
+
+      sessionStorage.setItem('dynamic_assessment_payload', JSON.stringify(payload));
+      sessionStorage.setItem('dynamic_assessment_id', assessmentData.assessment_id);
+
+      setCurrentIndex(0);
+      setAnswers([]);
+      setCompleted(false);
+      setResults(null);
+      setQuestionStartTime(Date.now());
+
+      // Reuse the existing payload loader path
+      setQuestions(payload.questions);
+      setAssessmentId(payload.assessmentId);
+      setSubject(payload.subject || chosenSubject);
+      setTotalQuestions(payload.totalQuestions);
+      setLoading(false);
+      setLoadSource('api');
+    } catch (err) {
+      console.error('Failed to start assessment:', err);
+      setLoading(false);
+      setLoadError('could not start the assessment. try again?');
+    }
+  };
+
+  const fetchMoreQuestions = async (minToFetch: number = 3) => {
+    if (!assessmentId) return;
+    if (questions.length >= totalQuestions) return;
+
+    const start = questions.length;
+    const limit = Math.max(1, Math.min(4, minToFetch));
+
+    try {
+      const response = await apiUtils.get(`${DASH_API_URL}/api/assessment/dynamic/${assessmentId}/batch?start=${start}&limit=${limit}`);
+      if (!response.ok) return;
+      const data = await response.json();
+      const newQuestions: Question[] = data.questions || [];
+      if (newQuestions.length) {
+        const merged = [...questions, ...newQuestions];
+        setQuestions(merged);
+        sessionStorage.setItem('dynamic_assessment_payload', JSON.stringify({
+          assessmentId,
+          subject,
+          questions: merged,
+          totalQuestions,
+          onboardingData,
+        }));
+      }
+    } catch (err) {
+      console.warn('[DynamicAssessment] Failed to fetch more questions', err);
+    }
+  };
+
+  // Background prefetch: when we show question N, ask the backend to ensure N+1..N+3 exist.
+  useEffect(() => {
+    if (!assessmentId) return;
+    apiUtils.get(`${DASH_API_URL}/api/assessment/dynamic/${assessmentId}/prefetch?index=${currentIndex}&prefetch_ahead=3`).catch(() => {});
+
+    // If we're close to running out of local questions, pull a new batch.
+    if (totalQuestions > 0 && questions.length < totalQuestions && currentIndex >= questions.length - 2) {
+      fetchMoreQuestions(3);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assessmentId, currentIndex]);
+
   const currentQuestion = questions[currentIndex];
   const progress = questions.length ? ((currentIndex + 1) / questions.length) * 100 : 0;
 
@@ -222,7 +318,7 @@ const DynamicAssessment: React.FC = () => {
 
   const handleAnswerSubmit = async (isCorrect: boolean) => {
     const timeTaken = Date.now() - questionStartTime;
-    
+
     const answer: Answer = {
       question_id: currentQuestion.dash_metadata.dash_question_id,
       is_correct: isCorrect,
@@ -230,20 +326,34 @@ const DynamicAssessment: React.FC = () => {
       topic: currentQuestion.dash_metadata.topic,
       time_taken_ms: timeTaken,
     };
-    
+
     const newAnswers = [...answers, answer];
     setAnswers(newAnswers);
 
     // Move to next question or complete
-    if (currentIndex < questions.length - 1) {
+    const hasNextLoaded = currentIndex < questions.length - 1;
+    const hasMoreTotal = totalQuestions > 0 && questions.length < totalQuestions;
+
+    if (hasNextLoaded) {
       setTimeout(() => {
         setCurrentIndex(currentIndex + 1);
         setQuestionStartTime(Date.now());
       }, 1500);
-    } else {
-      // Complete assessment
-      await completeAssessment(newAnswers);
+      return;
     }
+
+    if (hasMoreTotal) {
+      // Pull more questions, then advance.
+      await fetchMoreQuestions(3);
+      setTimeout(() => {
+        setCurrentIndex((idx) => idx + 1);
+        setQuestionStartTime(Date.now());
+      }, 400);
+      return;
+    }
+
+    // Complete assessment
+    await completeAssessment(newAnswers);
   };
 
   const completeAssessment = async (finalAnswers: Answer[]) => {
@@ -279,7 +389,7 @@ const DynamicAssessment: React.FC = () => {
       focusTopics: results?.learning_path?.focus_topics || [],
       strongTopics: results?.learning_path?.strong_topics || [],
       grade: onboardingData?.grade || location.state?.onboardingData?.grade || 'K-2',
-      subject: 'math',
+      subject: subject || 'math',
       fromAssessment: true,
     });
   };
@@ -293,7 +403,18 @@ const DynamicAssessment: React.FC = () => {
           <h2 style={{ fontFamily: 'var(--neo-heading)', marginBottom: '12px' }}>
             {loadError}
           </h2>
-          <Button onClick={() => history.push('/app/onboarding')}>
+
+          <div style={{ marginTop: '18px', marginBottom: '18px', fontSize: '14px', color: '#666' }}>
+            want to just jump in? pick a subject and we'll get you rolling.
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '18px' }}>
+            <Button onClick={() => startNewAssessment('math')}>math</Button>
+            <Button onClick={() => startNewAssessment('science')}>science</Button>
+            <Button onClick={() => startNewAssessment('reading')}>reading</Button>
+          </div>
+
+          <Button variant="outline" onClick={() => history.push('/app/onboarding')}>
             back to onboarding
           </Button>
         </div>
@@ -303,6 +424,9 @@ const DynamicAssessment: React.FC = () => {
 
   // Pre-Assessment Intro Screen
   if (showIntro && !loading && !completed) {
+    // Check if we have questions already (came from onboarding) or need to pick a subject
+    const hasQuestions = questions.length > 0;
+    
     return (
       <div className="login-container" style={{ minHeight: '100vh' }}>
         <BackgroundShapes />
@@ -358,75 +482,141 @@ const DynamicAssessment: React.FC = () => {
               )}
             </div>
           )}
-          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <div style={{ fontSize: '64px', marginBottom: '16px' }}>🎯</div>
-            <h2 style={{ fontFamily: 'var(--neo-heading)', fontSize: '32px', marginBottom: '12px' }}>
-              ready to start your assessment?
-            </h2>
-            <p style={{ fontSize: '16px', color: '#666' }}>
-              let's see what you know! no pressure, just do your best ✨
-            </p>
-          </div>
+          
+          {/* If no questions loaded yet, show subject picker */}
+          {!hasQuestions ? (
+            <>
+              <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                <div style={{ fontSize: '64px', marginBottom: '16px' }}>🎯</div>
+                <h2 style={{ fontFamily: 'var(--neo-heading)', fontSize: '32px', marginBottom: '12px' }}>
+                  pick a subject
+                </h2>
+                <p style={{ fontSize: '16px', color: '#666' }}>
+                  what do you want to practice today?
+                </p>
+              </div>
 
-          <div style={{ backgroundColor: '#f5f5f5', borderRadius: '12px', padding: '24px', marginBottom: '32px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>what to expect:</h3>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              <li style={{ marginBottom: '12px', display: 'flex', alignItems: 'start', gap: '12px' }}>
-                <span style={{ fontSize: '24px' }}>📝</span>
-                <div>
-                  <strong>{totalQuestions || questions.length} questions</strong> about {onboardingData?.selectedTopics?.join(', ') || location.state?.onboardingData?.selectedTopics?.join(', ') || 'your chosen subjects'}
-                </div>
-              </li>
-              <li style={{ marginBottom: '12px', display: 'flex', alignItems: 'start', gap: '12px' }}>
-                <span style={{ fontSize: '24px' }}>⏱️</span>
-                <div>
-                  <strong>about 5 minutes</strong> - take your time, no rush!
-                </div>
-              </li>
-              <li style={{ marginBottom: '12px', display: 'flex', alignItems: 'start', gap: '12px' }}>
-                <span style={{ fontSize: '24px' }}>📊</span>
-                <div>
-                  <strong>personalized plan</strong> created based on your answers
-                </div>
-              </li>
-              <li style={{ display: 'flex', alignItems: 'start', gap: '12px' }}>
-                <span style={{ fontSize: '24px' }}>🎯</span>
-                <div>
-                  <strong>focus topics</strong> identified to help you improve
-                </div>
-              </li>
-            </ul>
-          </div>
-          <p style={{ fontSize: '14px', color: '#666', textAlign: 'center', marginBottom: '20px' }}>
-            after this, we’ll build your plan and jump into practice
-          </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
+                {[
+                  { id: 'math', label: 'math', icon: '🔢', color: '#E3F2FD', desc: 'numbers, shapes, and problem solving' },
+                  { id: 'science', label: 'science', icon: '🔬', color: '#E8F5E9', desc: 'how the world works' },
+                  { id: 'reading', label: 'reading', icon: '📚', color: '#FFF3E0', desc: 'understanding and comprehension' },
+                ].map((subj) => (
+                  <button
+                    key={subj.id}
+                    onClick={() => startNewAssessment(subj.id)}
+                    style={{
+                      padding: '20px 24px',
+                      border: '3px solid #000',
+                      borderRadius: '12px',
+                      background: subj.color,
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      transition: 'all 0.2s',
+                      boxShadow: '4px 4px 0 #000',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translate(2px, 2px)';
+                      e.currentTarget.style.boxShadow = '2px 2px 0 #000';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translate(0, 0)';
+                      e.currentTarget.style.boxShadow = '4px 4px 0 #000';
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                      <span style={{ fontSize: '32px' }}>{subj.icon}</span>
+                      <div>
+                        <div style={{ fontSize: '20px', fontWeight: 700, fontFamily: 'var(--neo-heading)' }}>
+                          {subj.label}
+                        </div>
+                        <div style={{ fontSize: '14px', color: '#666', marginTop: '4px' }}>
+                          {subj.desc}
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
 
-          <button
-            onClick={() => setShowIntro(false)}
-            style={{
-              width: '100%',
-              padding: '16px',
-              fontSize: '18px',
-              fontWeight: 700,
-              background: '#6C63FF',
-              color: 'white',
-              border: '3px solid #000',
-              borderRadius: '12px',
-              cursor: 'pointer',
-              boxShadow: '4px 4px 0 #000',
-              transition: 'all 0.2s'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translate(2px, 2px)';
-              e.currentTarget.style.boxShadow = '2px 2px 0 #000';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translate(0, 0)';
-              e.currentTarget.style.boxShadow = '4px 4px 0 #000';
-            }}
-          >
-            let's go! 🚀
-          </button>
+              <Button variant="outline" onClick={() => history.push('/app/onboarding')} style={{ width: '100%' }}>
+                ← go through full onboarding instead
+              </Button>
+            </>
+          ) : (
+            /* Questions loaded - show ready screen */
+            <>
+              <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                <div style={{ fontSize: '64px', marginBottom: '16px' }}>🎯</div>
+                <h2 style={{ fontFamily: 'var(--neo-heading)', fontSize: '32px', marginBottom: '12px' }}>
+                  ready to start your assessment?
+                </h2>
+                <p style={{ fontSize: '16px', color: '#666' }}>
+                  let's see what you know! no pressure, just do your best ✨
+                </p>
+              </div>
+
+              <div style={{ backgroundColor: '#f5f5f5', borderRadius: '12px', padding: '24px', marginBottom: '32px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>what to expect:</h3>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  <li style={{ marginBottom: '12px', display: 'flex', alignItems: 'start', gap: '12px' }}>
+                    <span style={{ fontSize: '24px' }}>📝</span>
+                    <div>
+                      <strong>{totalQuestions || questions.length} questions</strong> about {subject || onboardingData?.selectedTopics?.join(', ') || location.state?.onboardingData?.selectedTopics?.join(', ') || 'your chosen subjects'}
+                    </div>
+                  </li>
+                  <li style={{ marginBottom: '12px', display: 'flex', alignItems: 'start', gap: '12px' }}>
+                    <span style={{ fontSize: '24px' }}>⏱️</span>
+                    <div>
+                      <strong>about 5 minutes</strong> - take your time, no rush!
+                    </div>
+                  </li>
+                  <li style={{ marginBottom: '12px', display: 'flex', alignItems: 'start', gap: '12px' }}>
+                    <span style={{ fontSize: '24px' }}>📊</span>
+                    <div>
+                      <strong>personalized plan</strong> created based on your answers
+                    </div>
+                  </li>
+                  <li style={{ display: 'flex', alignItems: 'start', gap: '12px' }}>
+                    <span style={{ fontSize: '24px' }}>🎯</span>
+                    <div>
+                      <strong>focus topics</strong> identified to help you improve
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <p style={{ fontSize: '14px', color: '#666', textAlign: 'center', marginBottom: '20px' }}>
+                after this, we'll build your plan and jump into practice
+              </p>
+
+              <button
+                onClick={() => setShowIntro(false)}
+                style={{
+                  width: '100%',
+                  padding: '16px',
+                  fontSize: '18px',
+                  fontWeight: 700,
+                  background: '#6C63FF',
+                  color: 'white',
+                  border: '3px solid #000',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  boxShadow: '4px 4px 0 #000',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translate(2px, 2px)';
+                  e.currentTarget.style.boxShadow = '2px 2px 0 #000';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translate(0, 0)';
+                  e.currentTarget.style.boxShadow = '4px 4px 0 #000';
+                }}
+              >
+                let's go! 🚀
+              </button>
+            </>
+          )}
         </div>
       </div>
     );
@@ -452,7 +642,7 @@ const DynamicAssessment: React.FC = () => {
             }} />
           </div>
           <p style={{ color: '#666', marginBottom: '8px' }}>building your questions…</p>
-          <p style={{ color: '#888', fontSize: '13px' }}>this usually takes ~10–20 seconds</p>
+          <p style={{ color: '#888', fontSize: '13px' }}>this usually takes ~10-20 seconds</p>
         </div>
       </div>
     );
@@ -461,7 +651,7 @@ const DynamicAssessment: React.FC = () => {
   // Results Screen
   if (completed && results) {
     const scorePercent = Math.round(results.overall_score * 100);
-    
+
     return (
       <div className="login-container" style={{ minHeight: '100vh' }}>
         <BackgroundShapes />
@@ -479,9 +669,9 @@ const DynamicAssessment: React.FC = () => {
           </div>
 
           {/* Score Breakdown */}
-          <div style={{ 
-            background: '#f5f5f5', 
-            borderRadius: '12px', 
+          <div style={{
+            background: '#f5f5f5',
+            borderRadius: '12px',
             padding: '20px',
             marginBottom: '24px'
           }}>
@@ -500,9 +690,9 @@ const DynamicAssessment: React.FC = () => {
           </div>
 
           {/* Learning Path Preview */}
-          <div style={{ 
-            background: '#E3F2FD', 
-            borderRadius: '12px', 
+          <div style={{
+            background: '#E3F2FD',
+            borderRadius: '12px',
             padding: '20px',
             marginBottom: '24px'
           }}>
@@ -546,7 +736,7 @@ const DynamicAssessment: React.FC = () => {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--neo-bg, #FFFDF5)' }}>
       <Header />
-      
+
       <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px' }}>
         {SHOW_DEBUG_BANNER && (
           <div style={{
@@ -601,17 +791,17 @@ const DynamicAssessment: React.FC = () => {
         )}
         {/* Progress Bar */}
         <div style={{ marginBottom: '24px' }}>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
             marginBottom: '8px'
           }}>
             <span style={{ fontSize: '14px', color: '#666' }}>
               question {currentIndex + 1} of {questions.length}
             </span>
-            <span style={{ 
-              fontSize: '14px', 
+            <span style={{
+              fontSize: '14px',
               color: getDifficultyColor(currentQuestion?.dash_metadata?.difficulty),
               fontWeight: 600
             }}>
@@ -657,8 +847,8 @@ const DynamicAssessment: React.FC = () => {
         </div>
 
         {/* Topic indicator */}
-        <div style={{ 
-          marginTop: '16px', 
+        <div style={{
+          marginTop: '16px',
           textAlign: 'center',
           fontSize: '13px',
           color: '#888'

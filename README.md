@@ -683,7 +683,10 @@ cd frontend
 npm run dev
 ```
 
-Frontend will be available at `http://localhost:3000` (or the port Vite assigns).
+Frontend will be available at `http://localhost:5173` (or the port Vite assigns).
+
+Make sure the frontend is pointing at the DASH API:
+- `frontend/.env` → `VITE_DASH_API_URL=http://localhost:8000`
 
 ### Verify Services
 
@@ -693,6 +696,42 @@ Check health endpoints:
 - Auth Service: `http://localhost:8003/health`
 - Teaching Assistant: `http://localhost:8002/health`
 - SherlockED API: `http://localhost:8001/health`
+
+---
+
+## Troubleshooting (local dev)
+
+### Frontend calls the wrong port (e.g. tries `localhost:8005`)
+
+If the browser console shows `ERR_CONNECTION_REFUSED` or requests going to the wrong port:
+
+1. Verify `frontend/.env` has:
+   - `VITE_DASH_API_URL=http://localhost:8000`
+2. Fully restart the Vite dev server. If you recently changed `.env`, Vite can hold onto a stale optimized bundle.
+3. Clear Vite's cache and restart:
+
+```bash
+cd frontend
+npm run dev:clean
+```
+
+If you're still stuck, kill any leftover Node/Vite processes and retry.
+
+### Smoke tests
+
+Backend (requires a running backend on port 8000):
+
+```bash
+DEV_MODE=true python scripts/test_dynamic_assessment_api.py
+```
+
+Frontend E2E smoke (requires backend + frontend already running):
+
+```bash
+cd frontend
+npx playwright install --with-deps
+npm run test:e2e
+```
 
 ---
 

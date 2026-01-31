@@ -102,7 +102,8 @@ const LearnerOnboarding: React.FC = () => {
       // Persist preferences for later practice sessions
       const primaryTopicId = data.selectedTopics[0];
       const primaryTopic = LEARNING_TOPICS.find(t => t.id === primaryTopicId);
-      const inferredSubject = primaryTopic?.category || 'math';
+      const inferredCategory = primaryTopic?.category || 'math';
+      const inferredSubject = inferredCategory === 'english' ? 'reading' : inferredCategory;
       localStorage.setItem('learning_pref_topic', allTopics.join(', '));
       localStorage.setItem('learning_pref_grade', data.grade);
       localStorage.setItem('learning_pref_subject', inferredSubject);
@@ -116,6 +117,7 @@ const LearnerOnboarding: React.FC = () => {
         },
         body: JSON.stringify({
           age_range: data.ageRange,
+          subject: inferredSubject,
           grade: data.grade,
           topics: allTopics,
           question_count: 10, // Mix of easy/medium/hard

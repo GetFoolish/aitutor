@@ -29,7 +29,13 @@ from shared.cache_middleware import CacheControlMiddleware
 from shared.cors_config import ALLOWED_ORIGINS, ALLOW_CREDENTIALS, ALLOWED_METHODS, ALLOWED_HEADERS
 
 from shared.logging_config import get_logger
-from content.dynamic_assessment import create_dynamic_assessment_endpoint, complete_assessment_endpoint
+from content.dynamic_assessment import (
+    create_dynamic_assessment_endpoint,
+    complete_assessment_endpoint,
+    get_batch as dynamic_assessment_get_batch,
+    get_question as dynamic_assessment_get_question,
+    ensure_prefetched as dynamic_assessment_ensure_prefetched,
+)
 from managers.mongodb_manager import mongo_db
 
 logger = get_logger(__name__)
@@ -498,8 +504,9 @@ class AssessmentStartRequest(BaseModel):
 
 class DynamicAssessmentStartRequest(BaseModel):
     age_range: str
+    subject: Optional[str] = "math"
     grade: Optional[str] = None
-    topics: List[str]
+    topics: Optional[List[str]] = None
     question_count: int = 10
 
 class DynamicAssessmentAnswer(BaseModel):
@@ -775,7 +782,7 @@ def start_dynamic_assessment(request: Request, payload: DynamicAssessmentStartRe
     """
     Start a dynamic assessment generated on the fly based on age/grade and topics.
     """
-    user_id = get_current_user(request)
+    user_id = get_current_user_or_dev(request)
     logger.info(f"[DYNAMIC_ASSESSMENT] Start requested by user: {user_id}")
 
     # Fetch memory context if available (v1-memory)
@@ -789,10 +796,11 @@ def start_dynamic_assessment(request: Request, payload: DynamicAssessmentStartRe
 
     data = {
         "age_range": payload.age_range,
+        "subject": payload.subject,
         "grade": payload.grade,
         "topics": payload.topics,
         "question_count": payload.question_count,
-        "user_memories": user_memories
+        "user_memories": user_memories,
     }
 
     try:
@@ -807,7 +815,7 @@ def complete_dynamic_assessment(request: Request, payload: DynamicAssessmentComp
     """
     Complete a dynamic assessment and generate a learning plan.
     """
-    user_id = get_current_user(request)
+    user_id = get_current_user_or_dev(request)
     logger.info(f"[DYNAMIC_ASSESSMENT] Complete requested by user: {user_id} | Assessment: {payload.assessment_id}")
 
     try:
@@ -826,7 +834,7 @@ def get_dynamic_assessment_status(request: Request):
     """
     Check if the user has completed a dynamic assessment.
     """
-    user_id = get_current_user(request)
+    user_id = get_current_user_or_dev(request)
     try:
         assessment = mongo_db.db["assessments"].find_one(
             {"user_id": user_id, "status": "completed"},
@@ -839,8 +847,9 @@ def get_dynamic_assessment_status(request: Request):
             "completed": True,
             "assessment_id": assessment.get("assessment_id"),
             "completed_at": completed_at,
+            "subject": assessment.get("subject"),
             "grade": assessment.get("grade"),
-            "topics": assessment.get("topics", [])
+            "topics": assessment.get("topics", []),
         }
     except Exception as e:
         logger.error(f"[DYNAMIC_ASSESSMENT] Status check failed: {e}")
@@ -852,7 +861,7 @@ def get_dynamic_assessment(request: Request, assessment_id: str):
     """
     Fetch a previously generated dynamic assessment for refresh/resume flows.
     """
-    user_id = get_current_user(request)
+    user_id = get_current_user_or_dev(request)
     from managers.mongodb_manager import mongo_db
 
     try:
@@ -865,6 +874,7 @@ def get_dynamic_assessment(request: Request, assessment_id: str):
         questions = assessment.get("questions", [])
         return {
             "assessment_id": assessment_id,
+            "subject": assessment.get("subject"),
             "questions": questions,
             "total_questions": assessment.get("question_count", len(questions)),
             "grade": assessment.get("grade"),
@@ -875,6 +885,57 @@ def get_dynamic_assessment(request: Request, assessment_id: str):
     except Exception as e:
         logger.error(f"[DYNAMIC_ASSESSMENT] Fetch failed: {e}")
         raise HTTPException(status_code=500, detail="Failed to fetch dynamic assessment")
+
+
+@app.get("/api/assessment/dynamic/{assessment_id}/prefetch")
+def prefetch_dynamic_assessment(request: Request, assessment_id: str, index: int = 0, prefetch_ahead: int = 3):
+    """Ensure questions are generated up to index+prefetch_ahead.
+
+    This endpoint is safe to call repeatedly; it will not generate duplicates.
+    """
+    _ = get_current_user_or_dev(request)
+    try:
+        return dynamic_assessment_ensure_prefetched(
+            assessment_id=assessment_id,
+            target_index=index,
+            prefetch_ahead=prefetch_ahead,
+        )
+    except Exception as e:
+        logger.error(f"[DYNAMIC_ASSESSMENT] Prefetch failed: {e}")
+        raise HTTPException(status_code=500, detail="Failed to prefetch dynamic assessment")
+
+
+@app.get("/api/assessment/dynamic/{assessment_id}/question/{index}")
+def get_dynamic_assessment_question(request: Request, assessment_id: str, index: int):
+    """Fetch question at index, ensuring pre-generation of the next 2-3."""
+    _ = get_current_user_or_dev(request)
+    try:
+        return dynamic_assessment_get_question(
+            assessment_id=assessment_id,
+            index=index,
+            prefetch_ahead=3,
+        )
+    except IndexError:
+        raise HTTPException(status_code=404, detail="Question not found")
+    except Exception as e:
+        logger.error(f"[DYNAMIC_ASSESSMENT] Question fetch failed: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch dynamic assessment question")
+
+
+@app.get("/api/assessment/dynamic/{assessment_id}/batch")
+def get_dynamic_assessment_batch(request: Request, assessment_id: str, start: int = 0, limit: int = 4):
+    """Fetch a batch of already-generated questions (and pre-generate ahead)."""
+    _ = get_current_user_or_dev(request)
+    try:
+        return dynamic_assessment_get_batch(
+            assessment_id=assessment_id,
+            start_index=start,
+            limit=limit,
+            prefetch_ahead=3,
+        )
+    except Exception as e:
+        logger.error(f"[DYNAMIC_ASSESSMENT] Batch fetch failed: {e}")
+        raise HTTPException(status_code=500, detail="Failed to fetch dynamic assessment batch")
 
 
 @app.get("/api/learning-path")
