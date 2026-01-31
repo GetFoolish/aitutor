@@ -216,7 +216,15 @@ const LearnerOnboarding: React.FC = () => {
       <div className="login-container" style={{ minHeight: '100vh' }}>
         <BackgroundShapes />
       
-      <div className="login-card" style={{ maxWidth: '600px', padding: '40px' }}>
+      <div className="login-card" style={{
+        maxWidth: '600px',
+        padding: '40px',
+        background: '#FFFFFF',
+        position: 'relative',
+        zIndex: 10,
+        border: '4px solid #000',
+        boxShadow: '6px 6px 0 #000'
+      }}>
         {/* Step 1: Age Selection */}
         {step === 'age' && (
           <>
@@ -243,22 +251,26 @@ const LearnerOnboarding: React.FC = () => {
                   onClick={() => handleAgeSelect(option)}
                   style={{
                     padding: '16px 20px',
-                    border: '3px solid #000',
-                    borderRadius: '12px',
+                    border: '4px solid #000',
+                    borderRadius: '0',
                     background: '#fff',
                     cursor: 'pointer',
                     textAlign: 'left',
-                    fontSize: '16px',
-                    fontFamily: 'var(--neo-body)',
-                    transition: 'all 0.2s',
+                    fontSize: '18px',
+                    fontWeight: '700',
+                    fontFamily: '"Space Mono", monospace',
+                    transition: 'all 0.15s ease',
+                    boxShadow: '4px 4px 0 #000',
                   }}
                   onMouseOver={(e) => {
                     e.currentTarget.style.background = '#FFD93D';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.transform = 'translate(-2px, -2px)';
+                    e.currentTarget.style.boxShadow = '6px 6px 0 #000';
                   }}
                   onMouseOut={(e) => {
                     e.currentTarget.style.background = '#fff';
-                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.transform = 'translate(0, 0)';
+                    e.currentTarget.style.boxShadow = '4px 4px 0 #000';
                   }}
                 >
                   {option.label}

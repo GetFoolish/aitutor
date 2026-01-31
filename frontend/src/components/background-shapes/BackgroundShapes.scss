@@ -1,13 +1,15 @@
 .background-shapes {
-    position: absolute;
+    position: fixed;
     inset: 0;
-    z-index: 0;
+    z-index: -10;
     pointer-events: none;
     overflow: hidden;
     color: #000000;
-  
+    opacity: 0.08; /* Very subtle - barely visible */
+
     svg {
       pointer-events: none;
+      opacity: 0.5;
     }
   }
   

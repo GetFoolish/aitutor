@@ -551,8 +551,9 @@ const DynamicAssessment: React.FC = () => {
   // Note: If we reach here, hasValidQuestions is true (redirect guard passed)
   if (showIntro && !loading && !completed) {
     return (
-      <div className="login-container" style={{ minHeight: '100vh' }}>
-        <BackgroundShapes />
+      <TutorProvider>
+        <div className="login-container" style={{ minHeight: '100vh' }}>
+          <BackgroundShapes />
         <div className="login-card" style={{ maxWidth: '600px', padding: '48px' }}>
           {SHOW_DEBUG_BANNER && (
             <div style={{
@@ -708,14 +709,41 @@ const DynamicAssessment: React.FC = () => {
               </button>
             </>
         </div>
+
+        {/* Floating Control Panel with AI Tutor */}
+        <Suspense fallback={null}>
+          <FloatingControlPanel
+            renderCanvasRef={mediaMixer.canvasRef}
+            videoRef={videoRef}
+            supportsVideo={true}
+            onVideoStreamChange={setVideoStream}
+            onMixerStreamChange={setMixerStream}
+            enableEditingSettings={false}
+            onPaintClick={() => setScratchpadOpen(!isScratchpadOpen)}
+            isPaintActive={isScratchpadOpen}
+            cameraEnabled={cameraEnabled}
+            screenEnabled={screenEnabled}
+            onToggleCamera={toggleCamera}
+            onToggleScreen={toggleScreen}
+            privacyMode={privacyEnabled}
+            onTogglePrivacy={setPrivacyEnabled}
+            mediaMixerCanvasRef={mediaMixer.canvasRef}
+            processedEdgesRef={processedEdgesRef}
+            assessmentMode={true}
+            onBiographyClick={() => setIsBiographyPanelOpen(!isBiographyPanelOpen)}
+            isBiographyActive={isBiographyPanelOpen}
+          />
+        </Suspense>
       </div>
+      </TutorProvider>
     );
   }
 
   if (loading) {
     return (
-      <div className="login-container" style={{ minHeight: '100vh', background: '#FFFFFF' }}>
-        <BackgroundShapes />
+      <TutorProvider>
+        <div className="login-container" style={{ minHeight: '100vh', background: '#FFFFFF' }}>
+          <BackgroundShapes />
         <div className="login-card" style={{
           textAlign: 'center',
           padding: '64px',
@@ -756,7 +784,33 @@ const DynamicAssessment: React.FC = () => {
             textTransform: 'uppercase'
           }}>~10-20 SECONDS</p>
         </div>
+
+        {/* Floating Control Panel */}
+        <Suspense fallback={null}>
+          <FloatingControlPanel
+            renderCanvasRef={mediaMixer.canvasRef}
+            videoRef={videoRef}
+            supportsVideo={true}
+            onVideoStreamChange={setVideoStream}
+            onMixerStreamChange={setMixerStream}
+            enableEditingSettings={false}
+            onPaintClick={() => setScratchpadOpen(!isScratchpadOpen)}
+            isPaintActive={isScratchpadOpen}
+            cameraEnabled={cameraEnabled}
+            screenEnabled={screenEnabled}
+            onToggleCamera={toggleCamera}
+            onToggleScreen={toggleScreen}
+            privacyMode={privacyEnabled}
+            onTogglePrivacy={setPrivacyEnabled}
+            mediaMixerCanvasRef={mediaMixer.canvasRef}
+            processedEdgesRef={processedEdgesRef}
+            assessmentMode={true}
+            onBiographyClick={() => setIsBiographyPanelOpen(!isBiographyPanelOpen)}
+            isBiographyActive={isBiographyPanelOpen}
+          />
+        </Suspense>
       </div>
+      </TutorProvider>
     );
   }
 

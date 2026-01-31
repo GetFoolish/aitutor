@@ -49,8 +49,8 @@ const generateRandomShapes = (count: number): ShapeConfig[] => {
   for (let i = 0; i < count; i++) {
     const type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
     const color = WEB1_COLORS[Math.floor(Math.random() * WEB1_COLORS.length)];
-    // EXTREME: 2-3x LARGER shapes (60-120px)
-    const size = Math.floor(Math.random() * 60) + 60;
+    // Smaller, subtle decorative shapes (30-60px)
+    const size = Math.floor(Math.random() * 30) + 30;
 
     // Generate positions that can be partially off-screen for visual interest
     const x = Math.floor(Math.random() * 120) - 10; // -10% to 110%
@@ -68,7 +68,7 @@ const generateRandomShapes = (count: number): ShapeConfig[] => {
   return shapes;
 };
 
-export default function BackgroundShapes({ count = 15 }: BackgroundShapesProps) {
+export default function BackgroundShapes({ count = 8 }: BackgroundShapesProps) {
   const [shapes, setShapes] = useState<ShapeConfig[]>([]);
 
   useEffect(() => {
