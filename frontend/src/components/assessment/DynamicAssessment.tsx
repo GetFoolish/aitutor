@@ -16,6 +16,7 @@ import '../auth/auth.scss';
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 const SHOW_DEBUG_BANNER = import.meta.env.VITE_SHOW_DEBUG_BANNER === 'true';
+type LoadSource = 'nav' | 'cache' | 'api' | 'unknown';
 
 interface Question {
   question: any;
@@ -66,6 +67,7 @@ const DynamicAssessment: React.FC = () => {
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [onboardingData, setOnboardingData] = useState<LocationState["onboardingData"] | null>(null);
+  const [loadSource, setLoadSource] = useState<LoadSource>('unknown');
 
   useEffect(() => {
     const applyPayload = (payload: {
@@ -73,7 +75,7 @@ const DynamicAssessment: React.FC = () => {
       questions: Question[];
       onboardingData?: LocationState["onboardingData"];
       totalQuestions?: number;
-    }) => {
+    }, source: LoadSource) => {
       const incomingQuestions = payload.questions || [];
       if (!incomingQuestions.length) {
         console.warn('[DynamicAssessment] Empty questions payload');
@@ -86,13 +88,14 @@ const DynamicAssessment: React.FC = () => {
         assessmentId: payload.assessmentId,
         questions: incomingQuestions.length,
         totalQuestions: payload.totalQuestions,
-        source: 'applyPayload'
+        source
       });
 
       setQuestions(incomingQuestions);
       setAssessmentId(payload.assessmentId || '');
       setTotalQuestions(payload.totalQuestions ?? incomingQuestions.length ?? 0);
       setOnboardingData(payload.onboardingData ?? null);
+      setLoadSource(source);
       setLoading(false);
     };
 
@@ -103,7 +106,7 @@ const DynamicAssessment: React.FC = () => {
       const statePayload = location.state;
       if (statePayload?.questions?.length) {
         console.log('[DynamicAssessment] Using navigation state payload');
-        applyPayload(statePayload);
+        applyPayload(statePayload, 'nav');
         return;
       }
 
@@ -113,7 +116,7 @@ const DynamicAssessment: React.FC = () => {
           const parsed = JSON.parse(cached);
           if (parsed?.questions?.length) {
             console.log('[DynamicAssessment] Using cached assessment payload');
-            applyPayload(parsed);
+            applyPayload(parsed, 'cache');
             return;
           }
         } catch (error) {
@@ -135,7 +138,7 @@ const DynamicAssessment: React.FC = () => {
               onboardingData: statePayload?.onboardingData,
             };
             sessionStorage.setItem('dynamic_assessment_payload', JSON.stringify(payload));
-            applyPayload(payload);
+            applyPayload(payload, 'api');
             return;
           }
         } catch (error) {
@@ -270,7 +273,7 @@ const DynamicAssessment: React.FC = () => {
               fontWeight: 700,
               letterSpacing: '0.08em'
             }}>
-              debug: {assessmentId ? `assessment ${assessmentId}` : 'no assessment id'} · {totalQuestions || questions.length} questions · source {location.state?.questions?.length ? 'nav' : sessionStorage.getItem('dynamic_assessment_payload') ? 'cache' : 'api'}
+            debug: {assessmentId ? `assessment ${assessmentId}` : 'no assessment id'} · {totalQuestions || questions.length} questions · source {loadSource}
             </div>
           )}
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
@@ -461,7 +464,7 @@ const DynamicAssessment: React.FC = () => {
             fontWeight: 700,
             letterSpacing: '0.08em'
           }}>
-            debug: {assessmentId ? `assessment ${assessmentId}` : 'no assessment id'} · {totalQuestions || questions.length} questions · source {location.state?.questions?.length ? 'nav' : sessionStorage.getItem('dynamic_assessment_payload') ? 'cache' : 'api'} · index {currentIndex + 1}
+            debug: {assessmentId ? `assessment ${assessmentId}` : 'no assessment id'} · {totalQuestions || questions.length} questions · source {loadSource} · index {currentIndex + 1}
           </div>
         )}
         {/* Progress Bar */}

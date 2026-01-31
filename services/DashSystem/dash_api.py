@@ -439,7 +439,14 @@ def log_question_displayed(request: Request, display_info: dict):
     logger.info(f"  Slug: {metadata.get('slug', 'unknown')}")
     logger.info(f"  DASH ID: {metadata.get('dash_question_id', 'unknown')}")
     logger.info(f"  Skills: {', '.join(metadata.get('skill_names', []))}")
-    logger.info(f"  Difficulty: {metadata.get('difficulty', 0):.2f} | Expected: {metadata.get('expected_time_seconds', 0)}s")
+    difficulty = metadata.get('difficulty', 0)
+    try:
+        difficulty_value = float(difficulty)
+        difficulty_label = f"{difficulty_value:.2f}"
+    except (TypeError, ValueError):
+        difficulty_label = str(difficulty)
+
+    logger.info(f"  Difficulty: {difficulty_label} | Expected: {metadata.get('expected_time_seconds', 0)}s")
     
     # Show current student state from question_attempts
     try:
