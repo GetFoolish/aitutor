@@ -116,8 +116,9 @@
     "preview": "vite preview",
     "serve": "vite preview",
     "test:e2e": "playwright test",
-    "validate:all": "npm run validate:preflight && npm run validate:visual && npm run test:e2e",
+    "validate:all": "npm run validate:preflight && npm run validate:assessment && npm run validate:visual",
     "validate:preflight": "npx tsx ../scripts/preflight-check.ts",
+    "validate:assessment": "npx tsx ../scripts/verify-assessment.ts",
     "validate:visual": "npx tsx ../scripts/visual-review.ts",
     "perf:lighthouse": "lhci autorun",
     "perf:bundle": "npm run build && npx vite-bundle-visualizer"

@@ -283,23 +283,73 @@ Code is just giving instructions to a computer.
         
         return examples
     
+    # Hardcoded fallback schemas in case DB lookup fails
+    FALLBACK_WIDGET_SCHEMAS = {
+        "radio": {
+            "widget_name": "radio 1",
+            "type": "radio",
+            "options": {
+                "choices": [
+                    {"content": "Choice A text here", "correct": False},
+                    {"content": "Choice B text here", "correct": False},
+                    {"content": "Choice C text here", "correct": True},
+                    {"content": "Choice D text here", "correct": False}
+                ],
+                "randomize": False,
+                "multipleSelect": False
+            }
+        },
+        "numeric-input": {
+            "widget_name": "numeric-input 1",
+            "type": "numeric-input",
+            "options": {
+                "value": 42,
+                "correctAnswer": "42",
+                "answerFormat": "integer"
+            }
+        },
+        "dropdown": {
+            "widget_name": "dropdown 1",
+            "type": "dropdown",
+            "options": {
+                "choices": [
+                    {"content": "Option A", "correct": False},
+                    {"content": "Option B", "correct": True},
+                    {"content": "Option C", "correct": False}
+                ]
+            }
+        },
+        "orderer": {
+            "widget_name": "orderer 1",
+            "type": "orderer",
+            "options": {
+                "correctOptions": ["First", "Second", "Third"],
+                "otherOptions": []
+            }
+        }
+    }
+
     def get_widget_schema(self, widget_type: str) -> Dict:
-        """Get widget schema from a real example."""
+        """Get widget schema from a real example, with fallback to hardcoded schemas."""
+        # Try DB first
         example = self.questions.find_one({"widget_types": widget_type})
-        if not example:
-            return {}
-        
-        question = example.get("question", {})
-        widgets = question.get("widgets", {})
-        
-        for widget_name, widget_config in widgets.items():
-            if widget_config.get("type") == widget_type:
-                return {
-                    "widget_name": widget_name,
-                    "type": widget_type,
-                    "options": widget_config.get("options", {})
-                }
-        
+        if example:
+            question = example.get("question", {})
+            widgets = question.get("widgets", {})
+
+            for widget_name, widget_config in widgets.items():
+                if widget_config.get("type") == widget_type:
+                    return {
+                        "widget_name": widget_name,
+                        "type": widget_type,
+                        "options": widget_config.get("options", {})
+                    }
+
+        # Fallback to hardcoded schema
+        if widget_type in self.FALLBACK_WIDGET_SCHEMAS:
+            print(f"  [WARNING] Using fallback schema for {widget_type} (DB lookup failed)")
+            return self.FALLBACK_WIDGET_SCHEMAS[widget_type]
+
         return {}
     
     def generate_question(
