@@ -122,7 +122,9 @@ const DynamicAssessment: React.FC = () => {
       setLoadError(null);
 
       const statePayload = location.state;
-      if (!isReload && !wasUnloaded && statePayload?.questions?.length) {
+      const lastSource = sessionStorage.getItem('dynamic_assessment_last_source');
+      const shouldTreatAsNav = !isReload && !wasUnloaded && lastSource !== 'cache' && lastSource !== 'api';
+      if (shouldTreatAsNav && statePayload?.questions?.length) {
         console.log('[DynamicAssessment] Using navigation state payload');
         applyPayload(statePayload, 'nav');
         return;
@@ -178,6 +180,12 @@ const DynamicAssessment: React.FC = () => {
       window.removeEventListener('beforeunload', markUnload);
     };
   }, [location.state, history]);
+
+  useEffect(() => {
+    if (loadSource !== 'unknown') {
+      sessionStorage.setItem('dynamic_assessment_last_source', loadSource);
+    }
+  }, [loadSource]);
 
   const currentQuestion = questions[currentIndex];
   const progress = questions.length ? ((currentIndex + 1) / questions.length) * 100 : 0;
@@ -297,9 +305,24 @@ const DynamicAssessment: React.FC = () => {
               fontSize: '12px',
               textTransform: 'uppercase',
               fontWeight: 700,
-              letterSpacing: '0.08em'
+              letterSpacing: '0.08em',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px'
             }}>
-            debug: {assessmentId ? `assessment ${assessmentId}` : 'no assessment id'} · {totalQuestions || questions.length} questions · source {loadSource}
+              <span style={{
+                background: '#D32F2F',
+                color: '#fff',
+                padding: '2px 8px',
+                borderRadius: '999px',
+                fontSize: '10px',
+                letterSpacing: '0.12em'
+              }}>
+                DEBUG
+              </span>
+              <span>
+                assessment {assessmentId || 'unknown'} · {totalQuestions || questions.length} questions · source {loadSource}
+              </span>
             </div>
           )}
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
@@ -313,7 +336,7 @@ const DynamicAssessment: React.FC = () => {
           </div>
 
           <div style={{ backgroundColor: '#f5f5f5', borderRadius: '12px', padding: '24px', marginBottom: '32px' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>what to expect:</h3>
+          <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>what to expect:</h3>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               <li style={{ marginBottom: '12px', display: 'flex', alignItems: 'start', gap: '12px' }}>
                 <span style={{ fontSize: '24px' }}>📝</span>
@@ -341,6 +364,9 @@ const DynamicAssessment: React.FC = () => {
               </li>
             </ul>
           </div>
+          <p style={{ fontSize: '14px', color: '#666', textAlign: 'center', marginBottom: '20px' }}>
+            after this, we’ll build your plan and jump into practice
+          </p>
 
           <button
             onClick={() => setShowIntro(false)}
@@ -382,7 +408,18 @@ const DynamicAssessment: React.FC = () => {
           <h2 style={{ fontFamily: 'var(--neo-heading)', marginBottom: '16px' }}>
             {completed ? 'analyzing your results...' : 'loading your assessment...'}
           </h2>
-          <p style={{ color: '#666' }}>hang tight, this won't take long</p>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+            <div style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              border: '3px solid #000',
+              borderTopColor: '#6C63FF',
+              animation: 'spin 1s linear infinite'
+            }} />
+          </div>
+          <p style={{ color: '#666', marginBottom: '8px' }}>building your questions…</p>
+          <p style={{ color: '#888', fontSize: '13px' }}>this usually takes ~10–20 seconds</p>
         </div>
       </div>
     );
@@ -488,9 +525,24 @@ const DynamicAssessment: React.FC = () => {
             fontSize: '12px',
             textTransform: 'uppercase',
             fontWeight: 700,
-            letterSpacing: '0.08em'
+            letterSpacing: '0.08em',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px'
           }}>
-            debug: {assessmentId ? `assessment ${assessmentId}` : 'no assessment id'} · {totalQuestions || questions.length} questions · source {loadSource} · index {currentIndex + 1}
+            <span style={{
+              background: '#D32F2F',
+              color: '#fff',
+              padding: '2px 8px',
+              borderRadius: '999px',
+              fontSize: '10px',
+              letterSpacing: '0.12em'
+            }}>
+              DEBUG
+            </span>
+            <span>
+              assessment {assessmentId || 'unknown'} · {totalQuestions || questions.length} questions · source {loadSource} · index {currentIndex + 1}
+            </span>
           </div>
         )}
         {/* Progress Bar */}

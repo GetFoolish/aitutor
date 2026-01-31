@@ -21,6 +21,12 @@
   }
 }
 
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .auth-card {
   background: #FFFDF5;
   border: 4px solid #000000;

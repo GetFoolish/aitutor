@@ -65,6 +65,7 @@ const RendererComponent = ({
     const [startTime, setStartTime] = useState<number>(Date.now());
     const [showFeedback, setShowFeedback] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [hasRenderError, setHasRenderError] = useState(false);
     const [isError, setIsError] = useState(false);
     const [error, setError] = useState<Error | null>(null);
     const [isLoadingNextBatch, setIsLoadingNextBatch] = useState(false);
@@ -74,18 +75,39 @@ const RendererComponent = ({
     // Get user_id from auth context
     const user_id = user?.user_id || 'mongodb_test_user';
 
+    const handleRenderError = () => {
+        if (!hasRenderError) {
+            console.error('[RendererComponent] Widget rendering error - showing fallback UI');
+        }
+        setHasRenderError(true);
+    };
+
+    const handleSkipQuestion = () => {
+        setHasRenderError(false);
+        setIsAnswered(false);
+        if (assessmentMode && onAssessmentAnswer) {
+            const currentItem = perseusItems[item] as any;
+            const metadata = currentItem?.dash_metadata || {};
+            const dashQuestionId = metadata.dash_question_id || `assessment-${item}`;
+            onAssessmentAnswer(dashQuestionId, false);
+            return;
+        }
+        handleNext();
+    };
+
     // Fetch questions using apiUtils with JWT authentication
     useEffect(() => {
         // In assessment mode, use provided questions instead of fetching
-        if (assessmentMode) {
-            setPerseusItems(assessmentQuestions);
-            setItem(currentQuestionIndex);
-            setIsLoading(false);
-            setIsAnswered(false);
-            setShowFeedback(false);
-            setStartTime(Date.now());
-            return;
-        }
+            if (assessmentMode) {
+                setPerseusItems(assessmentQuestions);
+                setItem(currentQuestionIndex);
+                setIsLoading(false);
+                setHasRenderError(false);
+                setIsAnswered(false);
+                setShowFeedback(false);
+                setStartTime(Date.now());
+                return;
+            }
 
         const fetchQuestions = async () => {
             if (!jwtUtils.getToken()) {
@@ -129,11 +151,12 @@ const RendererComponent = ({
                         if (response.ok) {
                             const data = await response.json();
                             if (data && data.length > 0) {
-                                setPerseusItems(data);
-                                setItem(0);
-                                setEndOfTest(false);
-                                setIsAnswered(false);
-                                setStartTime(Date.now());
+                setPerseusItems(data);
+                setItem(0);
+                setEndOfTest(false);
+                setIsAnswered(false);
+                setHasRenderError(false);
+                setStartTime(Date.now());
                                 setIsLoading(false);
                                 return;
                             }
@@ -172,6 +195,7 @@ const RendererComponent = ({
                     setItem(0);
                     setEndOfTest(false);
                     setIsAnswered(false);
+                    setHasRenderError(false);
                     setStartTime(Date.now());
                 } catch (err) {
                     // Check if it's a network/connection error that we should retry
@@ -655,30 +679,50 @@ const RendererComponent = ({
                         ) : perseusItems.length > 0 ? (
                             <div className="space-y-4 md:space-y-6">
                                 <div id="question-content-container" className="border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white p-4 md:p-5 lg:p-6 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] overflow-x-auto">
-                                    <PerseusI18nContextProvider locale="en" strings={mockStrings}>
-                                        <RenderStateRoot>
-                                            <ServerItemRenderer
-                                                ref={rendererRef}
-                                                problemNum={0}
-                                                item={perseusItem}
-                                                dependencies={storybookDependenciesV2}
-                                                apiOptions={{}}
-                                                linterContext={{
-                                                    contentType: "",
-                                                    highlightLint: true,
-                                                    paths: [],
-                                                    stack: [],
-                                                }}
-                                                showSolutions="none"
-                                                hintsVisible={0}
-                                                reviewMode={false}
-                                            />
-                                        </RenderStateRoot>
-                                    </PerseusI18nContextProvider>
+                                    {hasRenderError ? (
+                                        <div className="flex flex-col items-center justify-center gap-3 text-center py-6">
+                                            <div className="text-3xl">⚠️</div>
+                                            <div className="text-sm md:text-base font-black uppercase tracking-wide">
+                                                this question didn’t load
+                                            </div>
+                                            <p className="text-xs md:text-sm text-neutral-600 dark:text-neutral-300 max-w-md">
+                                                want a different one? you can skip this question and keep going.
+                                            </p>
+                                            <Button
+                                                type="button"
+                                                onClick={handleSkipQuestion}
+                                                className="border-[2px] border-black bg-[#FFD93D] text-black font-black uppercase tracking-wide shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)]"
+                                            >
+                                                skip question →
+                                            </Button>
+                                        </div>
+                                    ) : (
+                                        <PerseusI18nContextProvider locale="en" strings={mockStrings}>
+                                            <RenderStateRoot>
+                                                <ServerItemRenderer
+                                                    ref={rendererRef}
+                                                    problemNum={0}
+                                                    item={perseusItem}
+                                                    dependencies={storybookDependenciesV2}
+                                                    apiOptions={{}}
+                                                    linterContext={{
+                                                        contentType: "",
+                                                        highlightLint: true,
+                                                        paths: [],
+                                                        stack: [],
+                                                    }}
+                                                    showSolutions="none"
+                                                    hintsVisible={0}
+                                                    reviewMode={false}
+                                                    onError={handleRenderError}
+                                                />
+                                            </RenderStateRoot>
+                                        </PerseusI18nContextProvider>
+                                    )}
                                 </div>
 
                                 {/* Hints Display */}
-                                {hints.length > 0 && (
+                                {!hasRenderError && hints.length > 0 && (
                                     <HintDisplay hints={hints} />
                                 )}
 
@@ -730,7 +774,7 @@ const RendererComponent = ({
                             type="button"
                             size="sm"
                             onClick={handleSubmit}
-                            disabled={isLoading || endOfTest || perseusItems.length === 0 || isAnswered}
+                            disabled={isLoading || endOfTest || hasRenderError || perseusItems.length === 0 || isAnswered}
                             className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-[#C4B5FD] hover:bg-[#C4B5FD] text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:hover:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
                         >
                             Submit
