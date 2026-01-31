@@ -95,7 +95,7 @@ const BaseRadio = function ({
     apiOptions,
     reviewModeRubric,
     reviewMode,
-    choices,
+    choices: choicesProp,
     editMode = false,
     multipleSelect = false,
     labelWrap,
@@ -107,6 +107,16 @@ const BaseRadio = function ({
     registerFocusFunction,
 }: Props): React.ReactElement {
     const {strings} = usePerseusI18n();
+    const safeChoices = Array.isArray(choicesProp) ? choicesProp : [];
+    const choices = safeChoices;
+
+    if (safeChoices.length === 0) {
+        return (
+            <div className="perseus-widget-radio" aria-live="polite">
+                No answer choices available.
+            </div>
+        );
+    }
 
     // useEffect doesn't have previous props
     const prevReviewModeRubric = useRef();
@@ -208,8 +218,8 @@ const BaseRadio = function ({
     // some commonly used shorthands
     const isMobile = apiOptions.isMobile;
 
-    const firstChoiceHighlighted = choices[0].highlighted;
-    const lastChoiceHighlighted = choices[choices.length - 1].highlighted;
+    const firstChoiceHighlighted = safeChoices[0].highlighted;
+    const lastChoiceHighlighted = safeChoices[safeChoices.length - 1].highlighted;
 
     const className = classNames(
         "perseus-widget-radio",
@@ -247,7 +257,7 @@ const BaseRadio = function ({
                 {instructions}
             </div>
             <ul className={className} style={{listStyle: "none"}}>
-                {choices.map((choice, i) => {
+                {safeChoices.map((choice, i) => {
                     let Element = Choice;
                     const ref = React.createRef<any>();
                     // @ts-expect-error - TS2322 - Type 'RefObject<unknown>' is not assignable to type 'never'.
@@ -288,7 +298,7 @@ const BaseRadio = function ({
                         });
                     }
 
-                    const nextChoice = choices[i + 1];
+                    const nextChoice = safeChoices[i + 1];
                     const nextChoiceHighlighted =
                         // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
                         !!nextChoice && nextChoice.highlighted;

@@ -83,6 +83,10 @@ const DynamicAssessment: React.FC = () => {
         return false;
       }
     })();
+    const wasUnloaded = sessionStorage.getItem('dynamic_assessment_was_unloaded') === 'true';
+    if (wasUnloaded) {
+      sessionStorage.removeItem('dynamic_assessment_was_unloaded');
+    }
 
     const applyPayload = (payload: {
       assessmentId: string;
@@ -118,7 +122,7 @@ const DynamicAssessment: React.FC = () => {
       setLoadError(null);
 
       const statePayload = location.state;
-      if (!isReload && statePayload?.questions?.length) {
+      if (!isReload && !wasUnloaded && statePayload?.questions?.length) {
         console.log('[DynamicAssessment] Using navigation state payload');
         applyPayload(statePayload, 'nav');
         return;
@@ -165,6 +169,14 @@ const DynamicAssessment: React.FC = () => {
     };
 
     loadAssessment();
+
+    const markUnload = () => {
+      sessionStorage.setItem('dynamic_assessment_was_unloaded', 'true');
+    };
+    window.addEventListener('beforeunload', markUnload);
+    return () => {
+      window.removeEventListener('beforeunload', markUnload);
+    };
   }, [location.state, history]);
 
   const currentQuestion = questions[currentIndex];
