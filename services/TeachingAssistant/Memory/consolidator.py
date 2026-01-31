@@ -193,7 +193,7 @@ class SessionClosingCache:
             self.cache["key_moments"].extend(key_moments)
             self.cache["unfinished_topics"].extend(unfinished_topics)
             
-            # Save extracted memories to store (Pinecone + local)
+            # Save extracted memories to store (vector store + local)
             if extracted_memories:
                 # Count by type before saving
                 type_counts = {}
@@ -220,7 +220,7 @@ class SessionClosingCache:
                     self.cache["memories_by_type"][mem_type] = self.cache["memories_by_type"].get(mem_type, 0) + count
                 
                 logger.info(
-                    "[MEMORY_CONSOLIDATION] Successfully saved %s memories from %s exchanges to Pinecone and local storage",
+                    "[MEMORY_CONSOLIDATION] Successfully saved %s memories from %s exchanges to vector store and local storage",
                     len(extracted_memories),
                     batch_size,
                 )
@@ -502,7 +502,7 @@ class MemoryConsolidator:
         
         logger.info("[MEMORY_CONSOLIDATION] Total memories generated this session: %s (breakdown: %s)", 
                    total_memories, memory_counts)
-        logger.info("[MEMORY_CONSOLIDATION] All memories already saved in real-time batches to Pinecone and local storage")
+        logger.info("[MEMORY_CONSOLIDATION] All memories already saved in real-time batches to vector store and local storage")
 
         logger.info(
             "[MEMORY_CONSOLIDATION] Session stats - Emotions: %s, Key moments: %s, Topics covered: %s, Unfinished topics: %s",

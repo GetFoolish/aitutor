@@ -1,30 +1,21 @@
 """
-Teaching Assistant - Enhanced with Memory, Skills, and Event Processing
-All session state is stored in MongoDB via SessionManager.
-Integrates memory management, skills system, and event-driven processing.
+Teaching Assistant v5 - Cognitive Memory Pipeline
+All state is stored in MongoDB via SessionManager.
+Integrates with Living Biography for personalized tutoring.
+
+v4 improvements integrated:
+- Event processing loop support (running, ongoing)
+- Colored logging
 """
 
 import asyncio
-import time
-from concurrent.futures import ThreadPoolExecutor
-from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
+from .greeting_handler import GreetingHandler
 from .session_manager import SessionManager
-from .core.context_manager import ContextManager
-from .core.event_processor import EventProcessor
-from .core.config import TeachingAssistantConfig
-from .core.decorators import with_retry
-from .core.exceptions import MemoryRetrievalError, MemoryConsolidationError, FileOperationError
-from .core.file_utils import save_json_file
 from .handlers.queue_manager import EventQueueManager
-from .handlers.injection_manager import InjectionManager
+from .core.event_processor import EventProcessor, ContextManager
 from .skills_manager import SkillsManager
-from .Memory.vector_store import MemoryStore
-from .Memory.retriever import MemoryRetriever
-from .Memory.extractor import MemoryExtractor
-from .Memory.consolidator import MemoryConsolidator, SessionClosingCache
-
 from managers.mongodb_manager import MongoDBManager
 
 from shared.logging_config import get_logger
@@ -34,132 +25,336 @@ logger = get_logger(__name__)
 
 class TeachingAssistant:
     """
-    TeachingAssistant with memory management, skills, and event processing.
-    
-    Now includes:
-    - Dependency injection for testability
-    - Centralized configuration
-    - Managed thread pool for blocking I/O
-    - Path handling with pathlib
-    - Enhanced error handling
-    
-    Maintains backward compatibility with existing API methods.
+    Teaching Assistant v5 with Cognitive Memory Pipeline.
+
+    Key innovations:
+    - Living Biography: Narrative documents that evolve with each session
+    - Semantic Memory: Pinecone-powered retrieval for relevant memories
+    - Conversation Tracking: Full conversation logs for biography updates
+    - Personalized Prompts: Biography-driven session openings and closings
     """
 
-    def __init__(
-        self,
-        session_manager: Optional[SessionManager] = None,
-        context_manager: Optional[ContextManager] = None,
-        injection_manager: Optional[InjectionManager] = None,
-        skills_manager: Optional[SkillsManager] = None,
-        config: Optional[TeachingAssistantConfig] = None
-    ):
-        """
-        Initialize TeachingAssistant with dependency injection support.
-        
-        Args:
-            session_manager: Optional SessionManager instance (creates default if None)
-            context_manager: Optional ContextManager instance (creates default if None)
-            injection_manager: Optional InjectionManager instance (creates default if None)
-            skills_manager: Optional SkillsManager instance (creates default if None)
-            config: Optional configuration (loads from environment if None)
-        """
-        # Configuration (load from environment or use default)
-        self.config = config or TeachingAssistantConfig.from_env()
-        
-        # MongoDB client (shared dependency)
+    def __init__(self):
         mongo = MongoDBManager()
-        
-        # Core components (with dependency injection)
-        self.session_manager = session_manager or SessionManager(mongo, self.config)
-        self.context_manager = context_manager or ContextManager(mongo, self.config)
-        self.injection_manager = injection_manager or InjectionManager(self.session_manager, self.config)
-        
-        # Event processing components
-        self.queue_manager = EventQueueManager()
-        self.event_processor = EventProcessor(self.context_manager, None)  # Skills added later
-        
-        # Skills system with dynamic loading
-        if skills_manager:
-            self.skills_manager = skills_manager
-        else:
-            skills_dir = Path(__file__).parent / "skills"
-            self.skills_manager = SkillsManager(
-                skills_dir=str(skills_dir),
-                config=self.config
-            )
-        
-        # Memory system
-        self.memory_stores: Dict[str, MemoryStore] = {}
-        self.memory_extractor = MemoryExtractor()
-        self.memory_consolidators: Dict[str, MemoryConsolidator] = {}
-        self.memory_retrievers: Dict[str, MemoryRetriever] = {}
-        self.closing_caches: Dict[str, SessionClosingCache] = {}
-        
-        # Memory management - LRU cache for stores
-        self._memory_store_access_times: Dict[str, float] = {}
-        self._max_memory_stores = 100  # Maximum number of user memory stores to keep in memory
-        
-        # Thread pool for blocking I/O operations (managed lifecycle)
-        self._executor = ThreadPoolExecutor(
-            max_workers=self.config.io_thread_pool_workers,
-            thread_name_prefix=self.config.thread_name_prefix
-        )
-        
-        # Optimization: Cache active sessions to avoid frequent DB polling
-        self.active_session_cache = []
-        self.last_session_sync_time = 0
-        self.last_context_sync_time = 0
-        
-        # Event processing loop
-        self.running = False
-        
-        # Update event processor with skills manager
-        self.event_processor.skills_manager = self.skills_manager
-        
-        logger.info(
-            "[TEACHING_ASSISTANT] Initialized with config-driven architecture, "
-            f"thread pool ({self.config.io_thread_pool_workers} workers), and dependency injection"
-        )
-    
-    def _get_greeting_skill(self):
-        """Get the greeting skill from skills manager"""
-        for skill in self.skills_manager.skills:
-            if skill.name == "greeting":
-                return skill
-        return None
+        self.session_manager = SessionManager(mongo)
+        self.greeting_handler = GreetingHandler()
+        self.mongo = mongo
 
-    def start_session(self, user_id: str) -> dict:
-        """Start a new session, returns session info (greeting moved to start() method)"""
-        session = self.session_manager.create_session(user_id)
-        # Greeting is now handled in self.start() to ensure it's memory-aware
+        # v4 improvement: Event queue manager for priority-based event processing
+        self.queue_manager = EventQueueManager()
+
+        # v4 improvement: Context manager for session state
+        self.context_manager = ContextManager()
+
+        # v4 improvement: Skills manager for skill execution
+        self.skills_manager = SkillsManager(load_defaults=True)
+
+        # v4 improvement: Event processor for coordinating components
+        self.event_processor = EventProcessor(
+            context_manager=self.context_manager,
+            skills_manager=self.skills_manager
+        )
+
+        # v4 improvement: Event processing loop support
+        self.running = False
+
+        logger.info("[TEACHING_ASSISTANT] v5 Initialized with Cognitive Memory Pipeline")
+
+    async def ongoing(self):
+        """
+        Event processing loop (v4 improvement).
+        Called by lifespan manager in api.py.
+
+        Handles background tasks like:
+        - Processing queued events through EventProcessor
+        - Executing skills based on context
+        - Inactivity checks
+        - Memory consolidation
+        - Session cleanup
+        """
+        logger.info("[TEACHING_ASSISTANT] Event processing loop started")
+
+        inactivity_check_counter = 0
+
+        while self.running:
+            try:
+                # v4: Process events from queue
+                events = self.queue_manager.dequeue_batch(max_batch_size=10)
+                for event in events:
+                    try:
+                        # Ensure context exists for this session
+                        context = self.context_manager.get_or_create_context(
+                            session_id=event.session_id,
+                            user_id=event.user_id
+                        )
+
+                        # MEMORY FEATURE: Real-time memory extraction and retrieval
+                        from .core.context import EventType
+                        speaker = event.data.get("speaker", "user") if event.data else "user"
+                        if event.event_type == EventType.USER_MESSAGE and event.user_text and speaker == "user":
+                            user_text = event.user_text.strip()
+
+                            # Skip very short messages
+                            if len(user_text) > 10:
+                                # 1. RETRIEVE: Search for relevant past memories
+                                logger.info(f"[MEMORY] 🔍 RETRIEVING memories for: \"{user_text[:50]}...\"")
+                                memory_injection = self.retrieve_memories(
+                                    session_id=event.session_id,
+                                    query_text=user_text
+                                )
+                                if memory_injection:
+                                    logger.info(f"[MEMORY] ✅ Retrieved memories injected into session")
+                                else:
+                                    logger.info(f"[MEMORY] ❌ No relevant past memories found")
+
+                                # 2. EXTRACT: Try to form new memories from meaningful messages
+                                await self._extract_realtime_memory(
+                                    session_id=event.session_id,
+                                    student_id=event.user_id,
+                                    user_text=user_text
+                                )
+                        elif event.event_type == EventType.USER_MESSAGE and event.user_text and speaker == "tutor":
+                            logger.debug(f"[MEMORY] Skipping tutor message")
+
+                        # Process event through EventProcessor (triggers skills)
+                        injections = self.event_processor.process_event(event)
+
+                        # Push any skill-generated injections to the session
+                        for injection in injections:
+                            self.session_manager.push_instruction(event.session_id, injection)
+                            logger.debug(f"[TEACHING_ASSISTANT] Pushed skill injection to session {event.session_id[:8]}...")
+
+                    except Exception as e:
+                        logger.error(f"[TEACHING_ASSISTANT] Error processing event: {e}")
+
+                # Check inactivity less frequently (every ~30 seconds)
+                inactivity_check_counter += 1
+                if inactivity_check_counter >= 30:
+                    inactivity_check_counter = 0
+                    active_sessions = self.session_manager.list_active_sessions()
+                    for session in active_sessions:
+                        session_id = session.get("session_id")
+                        if session_id:
+                            self.check_inactivity(session_id)
+
+                # Short sleep to not busy-wait
+                await asyncio.sleep(1)
+
+            except asyncio.CancelledError:
+                logger.info("[TEACHING_ASSISTANT] Event processing loop cancelled")
+                break
+            except Exception as e:
+                logger.error(f"[TEACHING_ASSISTANT] Error in event processing loop: {e}")
+                await asyncio.sleep(5)  # Brief pause before retrying
+
+        logger.info("[TEACHING_ASSISTANT] Event processing loop stopped")
+
+    def start_session(self, user_id: str, student_name: str = None) -> dict:
+        """
+        Start a new session with biography-driven personalization.
+
+        NEW in v5: Loads student biography and injects into system prompt.
+
+        Args:
+            user_id: Auth user ID (maps to student_id)
+            student_name: Optional name for new students
+
+        Returns:
+            Dict with session_id, prompt (with biography), and session_info
+        """
+        # Ensure student exists (create if needed)
+        student = self._ensure_student(user_id, student_name)
+        student_id = student.get("_id", user_id)
+
+        # Create session linked to student
+        session = self.session_manager.create_session(user_id, student_id)
+        session_id = session["session_id"]
+
+        # Get biography data for personalized greeting
+        biography_data = self.session_manager.get_student_biography(student_id)
+        biography_text = biography_data.get("biography", "")
+
+        # v4 improvement: Create session context for event processing
+        is_first_session = student.get("statistics", {}).get("total_sessions", 0) == 0
+        self.context_manager.create_context(
+            session_id=session_id,
+            user_id=user_id,
+            student_name=student.get("name"),
+            biography=biography_text,
+            is_first_session=is_first_session
+        )
+
+        # Generate personalized greeting with biography
+        greeting = self.greeting_handler.get_greeting(user_id, biography_data)
+
+        logger.info(
+            f"[TEACHING_ASSISTANT] Started session {session_id} "
+            f"for student {student_id} (biography version: {student.get('biography', {}).get('version', 0)})"
+        )
+
         return {
-            "session_id": session["session_id"],
-            "prompt": "",  # Will be populated by ta.start() in the API layer
-            "session_info": self.session_manager.get_session_info(session["session_id"])
+            "session_id": session_id,
+            "prompt": greeting,
+            "session_info": self.session_manager.get_session_info(session_id),
+            "biography_version": student.get("biography", {}).get("version", 0),
         }
 
+    def _ensure_student(self, user_id: str, name: str = None) -> Dict[str, Any]:
+        """Ensure student document exists, create if needed"""
+        student = self.mongo.db.students.find_one({"_id": user_id})
+
+        if not student:
+            # Create new student document
+            from datetime import datetime
+            student = {
+                "_id": user_id,
+                "name": name or "Student",
+                "onboarding_data": {
+                    "core_values": [],
+                    "north_star_goals": [],
+                    "personality_traits": [],
+                    "blind_spots": [],
+                    "emotional_baseline": "neutral",
+                    "interests": [],
+                    "created_at": datetime.utcnow(),
+                },
+                "biography": {
+                    "text": "",
+                    "version": 0,
+                    "last_updated": datetime.utcnow(),
+                    "session_count": 0,
+                },
+                "biography_history": [],
+                "academic_journey": {
+                    "current_topic": "",
+                    "mastered_topics": [],
+                    "struggling_topics": [],
+                    "milestones": [],
+                },
+                "statistics": {
+                    "total_sessions": 0,
+                    "total_questions_answered": 0,
+                    "total_questions_correct": 0,
+                    "average_session_duration_minutes": 0.0,
+                    "last_session_date": None,
+                },
+                "created_at": datetime.utcnow(),
+                "updated_at": datetime.utcnow(),
+            }
+            self.mongo.db.students.insert_one(student)
+            logger.info(f"[TEACHING_ASSISTANT] Created new student {user_id}")
+
+        return student
+
     def end_session(self, session_id: str) -> dict:
-        """End session, returns closing prompt with stats"""
+        """
+        End session with cognitive memory processing.
+
+        NEW in v5:
+        - Extracts memories from conversation
+        - Updates biography via Biographer Agent
+        - Stores data in MongoDB and Pinecone
+
+        Returns:
+            Dict with closing prompt and session summary
+        """
+        # End session (this triggers biography update and memory extraction)
         session_summary = self.session_manager.end_session(session_id)
+
         if not session_summary:
             return {
                 "prompt": "",
                 "session_info": {"session_active": False}
             }
 
-        greeting_skill = self._get_greeting_skill()
-        if greeting_skill:
-            closing = greeting_skill.get_closing(
-                duration_minutes=session_summary.get("duration_minutes", 0),
-                questions_answered=session_summary.get("questions_answered", 0)
+        # Generate personalized closing with session insights
+        closing = self.greeting_handler.get_closing(
+            duration_minutes=session_summary.get("duration_minutes", 0),
+            questions_answered=session_summary.get("questions_answered", 0),
+            topics_covered=session_summary.get("topics_covered", []),
+            key_moments=session_summary.get("key_moments", []),
+        )
+
+        # Update student statistics
+        session = self.session_manager.get_session_by_id(session_id)
+        if session:
+            student_id = session.get("student_id", session.get("user_id"))
+            self._update_student_stats(
+                student_id,
+                session_summary.get("duration_minutes", 0),
+                session_summary.get("questions_answered", 0),
+                session_summary.get("questions_correct", 0),
             )
-        else:
-            closing = "[SYSTEM PROMPT FOR ADAM]\nThe tutoring session is ending now. Please give the student a warm closing message."
+
+        # v4 improvement: Clean up session context
+        self.context_manager.delete_context(session_id)
+
         return {
             "prompt": closing,
             "session_info": session_summary
         }
+
+    def _update_student_stats(
+        self,
+        student_id: str,
+        duration: float,
+        questions: int,
+        correct: int
+    ):
+        """Update student statistics after session"""
+        from datetime import datetime
+
+        student = self.mongo.db.students.find_one({"_id": student_id})
+        if not student:
+            return
+
+        stats = student.get("statistics", {})
+        total_sessions = stats.get("total_sessions", 0) + 1
+        total_questions = stats.get("total_questions_answered", 0) + questions
+        total_correct = stats.get("total_questions_correct", 0) + correct
+
+        # Calculate running average
+        prev_avg = stats.get("average_session_duration_minutes", 0)
+        new_avg = ((prev_avg * (total_sessions - 1)) + duration) / total_sessions if total_sessions > 0 else duration
+
+        self.mongo.db.students.update_one(
+            {"_id": student_id},
+            {
+                "$set": {
+                    "statistics.total_sessions": total_sessions,
+                    "statistics.total_questions_answered": total_questions,
+                    "statistics.total_questions_correct": total_correct,
+                    "statistics.average_session_duration_minutes": round(new_avg, 2),
+                    "statistics.last_session_date": datetime.utcnow(),
+                    "updated_at": datetime.utcnow(),
+                }
+            }
+        )
+
+    def add_conversation_turn(
+        self,
+        session_id: str,
+        speaker: str,
+        text: str,
+        emotion: str = None
+    ) -> None:
+        """
+        Add a conversation turn to the session log.
+
+        NEW in v5: Full conversation tracking for biography updates.
+
+        Args:
+            session_id: Session to add turn to
+            speaker: "adam", "student", or "system"
+            text: What was said
+            emotion: Detected emotion (optional)
+        """
+        self.session_manager.add_conversation_turn(
+            session_id=session_id,
+            speaker=speaker,
+            text=text,
+            emotion=emotion
+        )
 
     def record_question_answered(
         self,
@@ -171,17 +366,13 @@ class TeachingAssistant:
         self.session_manager.record_question_answered(session_id, is_correct)
 
     def record_conversation_turn(self, session_id: str) -> None:
-        """Record a conversation turn"""
+        """Record a conversation turn (legacy method for inactivity tracking)"""
         self.session_manager.record_conversation_turn(session_id)
 
     def check_inactivity(self, session_id: str) -> Optional[str]:
         """Check inactivity and return prompt if needed"""
         if self.session_manager.check_inactivity(session_id):
-            greeting_skill = self._get_greeting_skill()
-            if greeting_skill:
-                prompt = greeting_skill.get_inactivity_prompt()
-            else:
-                prompt = "[SYSTEM PROMPT FOR ADAM]\nCheck with the student if they're there and if they want to continue."
+            prompt = self.greeting_handler.get_inactivity_prompt()
             self.session_manager.push_instruction(session_id, prompt)
             return prompt
         return None
@@ -198,454 +389,324 @@ class TeachingAssistant:
         """Push an instruction to be delivered via SSE"""
         return self.session_manager.push_instruction(session_id, instruction)
 
-    # ============================================================================
-    # New Methods for Memory, Skills, and Event Processing
-    # ============================================================================
-
-    def _get_or_create_memory_store(self, user_id: str) -> MemoryStore:
-        """Get or create MemoryStore for user with LRU eviction"""
-        current_time = time.time()
-        
-        if user_id not in self.memory_stores:
-            # Check if we need to evict old stores (LRU)
-            if len(self.memory_stores) >= self._max_memory_stores:
-                self._evict_oldest_memory_store()
-            
-            logger.info(f"[TEACHING_ASSISTANT] Creating MemoryStore for user: {user_id}")
-            self.memory_stores[user_id] = MemoryStore(user_id=user_id)
-        
-        # Update access time for LRU
-        self._memory_store_access_times[user_id] = current_time
-        return self.memory_stores[user_id]
-    
-    def _evict_oldest_memory_store(self):
-        """Evict the least recently used memory store"""
-        if not self._memory_store_access_times:
-            return
-        
-        # Find oldest user
-        oldest_user = min(self._memory_store_access_times.items(), key=lambda x: x[1])[0]
-        
-        logger.info(f"[TEACHING_ASSISTANT] Evicting MemoryStore for user {oldest_user} (LRU eviction)")
-        
-        # Clean up
-        if oldest_user in self.memory_stores:
-            del self.memory_stores[oldest_user]
-        if oldest_user in self._memory_store_access_times:
-            del self._memory_store_access_times[oldest_user]
-        if oldest_user in self.memory_consolidators:
-            del self.memory_consolidators[oldest_user]
-
-
-    async def start(self, user_id: str, session_id: str) -> Optional[str]:
+    def retrieve_memories(
+        self,
+        session_id: str,
+        query_text: str
+    ) -> Optional[str]:
         """
-        Start session with memory and context initialization.
-        Called after session is created in MongoDB.
+        Retrieve relevant memories and inject as system update.
+
+        NEW in v5: Semantic memory retrieval during conversation.
+
+        Args:
+            session_id: Current session
+            query_text: Current conversation context
+
+        Returns:
+            Memory injection prompt if relevant memories found, None otherwise
         """
-        # Get session to get start_time
         session = self.session_manager.get_session_by_id(session_id)
         if not session:
-            return None
-        
-        # Parse start_time from MongoDB datetime
-        start_time = session["started_at"]
-        if hasattr(start_time, 'timestamp'):
-            start_time = start_time.timestamp()
-        elif isinstance(start_time, str):
-            from datetime import datetime
-            start_time = datetime.fromisoformat(start_time.replace('Z', '+00:00')).timestamp()
-        else:
-            start_time = time.time()
-        
-        # Create context
-        self.context_manager.create_context(session_id, user_id, start_time)
-        
-        # 1. Generate Greeting FIRST (Fast Path)
-        # We try to use cached opening data if available, but don't block heavily.
-        logger.info(f"[TEACHING_ASSISTANT] Requesting greeting for session {session_id}")
-        
-        # Get greeting skill from skills manager
-        greeting_skill = self._get_greeting_skill()
-        if greeting_skill:
-            greeting = await greeting_skill.start_session(user_id, session_id)
-        else:
-            logger.warning("[TEACHING_ASSISTANT] Greeting skill not found, using fallback")
-            greeting = "[SYSTEM PROMPT FOR ADAM]\nYou are Adam, an advanced AI Teaching Assistant.\nPlease greet the student warmly."
-        
-        logger.info(f"[TEACHING_ASSISTANT] Greeting received: {bool(greeting)}, Length: {len(greeting) if greeting else 0}")
-
-        # Also record greeting into conversation context immediately so it's ready
-        context = self.context_manager.get_context(session_id)
-        if context and greeting:
-            ts = context.start_time or time.time()
-            context.add_turn(speaker="adam", text=greeting, timestamp=ts)
-
-        # 2. Initialize Memory Components in Background (Async)
-        # This prevents pinecone/memory setup from blocking the greeting response.
-        asyncio.create_task(self._initialize_memory_components_async(user_id, session_id))
-
-        return greeting
-
-    async def _initialize_memory_components_async(self, user_id: str, session_id: str):
-        """Initialize memory components (Pinecone, etc.) in background"""
-        try:
-            # Initialize memory components
-            # Use asyncio.to_thread for MemoryStore creation as it involves blocking network calls
-            if user_id not in self.memory_stores:
-                logger.info(f"[TEACHING_ASSISTANT] Creating MemoryStore for user: {user_id} (Background)")
-                # Offload heavy initialization to thread to avoid blocking event loop
-                memory_store = await asyncio.to_thread(MemoryStore, user_id=user_id)
-                self.memory_stores[user_id] = memory_store
-            else:
-                memory_store = self.memory_stores[user_id]
-            
-            if user_id not in self.memory_consolidators:
-                self.memory_consolidators[user_id] = MemoryConsolidator(memory_store, self.memory_extractor)
-            
-            memory_retriever = MemoryRetriever(memory_store)
-            self.memory_retrievers[session_id] = memory_retriever
-            
-            closing_cache = SessionClosingCache(session_id, user_id)
-            self.closing_caches[session_id] = closing_cache
-            
-            logger.info(f"[TEACHING_ASSISTANT] Background memory initialization complete for session {session_id}")
-        except Exception as e:
-            logger.error(f"[TEACHING_ASSISTANT] Error in background memory initialization: {e}", exc_info=True)
-
-    async def ongoing(self):
-        """Main event processing loop"""
-        while self.running:
-            # Dequeue batch of events
-            events = self.queue_manager.dequeue_batch(max_batch_size=self.config.event_batch_size)
-            
-            if events:
-                for event in events:
-                    # Handle session lifecycle events
-                    if event.type == 'session_start':
-                        # Session initialization and greeting are handled in the API layer
-                        # via `ta.start(...)` to avoid double greetings.
-                        continue
-                    elif event.type == 'session_end':
-                        await self._handle_session_end(event)
-                        # Force refresh active sessions cache
-                        self.last_session_sync_time = 0
-                        continue
-                    
-                    # Update context from event
-                    self.context_manager.update_from_event(event)
-                    
-                    # Process text events for memory
-                    if event.type == 'text':
-                        speaker = event.data.get('speaker')
-                        text = event.data.get('text', '')
-                        timestamp = event.timestamp
-
-
-
-                        context = self.context_manager.get_context(event.session_id)
-                        closing_cache = self.closing_caches.get(event.session_id)
-                        memory_retriever = self.memory_retrievers.get(event.session_id)
-                        
-                        if speaker == 'user' and context and text:
-                            user_text = text
-                            adam_text = context.last_adam_text or ""
-                            
-                            # ===== DETAILED LOGGING: Conversation Exchange =====
-                            safe_user_text = user_text.encode("utf-8", "replace").decode("utf-8")
-                            safe_adam_text = adam_text.encode("utf-8", "replace").decode("utf-8")
-                            logger.info("=" * 80)
-                            logger.info("[CONVERSATION] New Exchange")
-                            logger.info(f"[CONVERSATION] Session: {event.session_id[:20]}... | User: {event.user_id}")
-                            logger.info(f"[CONVERSATION] USER >> {safe_user_text}")
-                            logger.info(f"[CONVERSATION] ADAM >> {safe_adam_text}")
-                            logger.info("=" * 80)
-                            # ===================================================
-                            
-                            # Trigger TA-light retrieval (async) but debounce to avoid
-                            # running on every tiny turn in very quick succession.
-                            if memory_retriever:
-                                # simple debounce: skip if last retrieval was < Ns ago
-                                last_rt = context.last_retrieval_time or 0
-                                if (timestamp - last_rt) >= self.config.memory_retrieval_debounce:
-                                    context.last_retrieval_time = timestamp
-                                    asyncio.create_task(self._trigger_memory_retrieval_async(
-                                        memory_retriever=memory_retriever,
-                                        session_id=event.session_id,
-                                        user_id=event.user_id,
-                                        user_text=user_text,
-                                        timestamp=timestamp,
-                                        adam_text=adam_text
-                                    ))
-                            
-                            # Trigger memory extraction (async)
-                            if closing_cache:
-                                asyncio.create_task(self._extract_memories_async(
-                                    closing_cache=closing_cache,
-                                    user_text=user_text,
-                                    adam_text=adam_text,
-                                    topic=event.data.get('topic', 'general'),
-                                    session_id=event.session_id
-                                ))
-                            
-                            # Real-time Conversation Saving (Condition 5)
-                            # Save the updated context to file immediately to prevent data loss
-                            if context:
-                                asyncio.create_task(self._save_conversation_async(
-                                    event.user_id,
-                                    event.session_id,
-                                    context
-                                ))
-                    
-                    # Process event through skills
-                    injections = self.event_processor.process_event(event)
-                    
-                    # Send injections, but avoid queueing exact duplicates back-to-back
-                    if injections:
-                        context = self.context_manager.get_context(event.session_id)
-                        last_injected: Optional[str] = getattr(context, "_last_injection", None) if context else None
-                        for injection in injections:
-                            if not injection:
-                                continue
-                            if last_injected and injection.strip() == last_injected.strip():
-                                continue
-                            await self.injection_manager.send_to_adam(
-                                injection,
-                                event.session_id,
-                                event.user_id
-                            )
-                            if context:
-                                setattr(context, "_last_injection", injection.strip())
-            # === Optimization: Periodic Maintenance Tasks ===
-            now = time.time()
-
-            # 1. Sync dirty contexts to MongoDB (Write-Behind)
-            if now - self.last_context_sync_time >= self.config.context_sync_interval:
-                self.context_manager.sync_dirty_contexts()
-                # Also cleanup stale contexts (TTL enforcement)
-                self.context_manager.cleanup_stale_contexts()
-                self.last_context_sync_time = now
-
-            # 2. Refresh active session cache periodically (DB Polling Optimization)
-            if now - self.last_session_sync_time >= self.config.session_sync_interval:
-                self.active_session_cache = self.session_manager.list_active_sessions()
-                self.last_session_sync_time = now
-                
-                # 3. Cleanup orphaned caches (sessions that ended but caches still exist)
-                self._cleanup_orphaned_caches()
-                
-            # Execute skills on cached active sessions (instead of querying DB every loop)
-            if not events and self.active_session_cache:
-                for session in self.active_session_cache:
-                    session_id = session["session_id"]
-                    context = self.context_manager.get_context(session_id)
-                    if context:
-                        injections = self.skills_manager.execute_skills(context)
-                        for injection in injections:
-                            if injection:
-                                await self.injection_manager.send_to_adam(
-                                    injection,
-                                    session_id,
-                                    session["user_id"]
-                                )
-            
-            
-            # Continuous processing - yield to event loop to prevent starvation
-            if not events:
-                await asyncio.sleep(0)  # Yield control without delay
-    
-    def _cleanup_orphaned_caches(self):
-        """Clean up closing caches for sessions that have ended"""
-        active_session_ids = {session["session_id"] for session in self.active_session_cache}
-        orphaned_sessions = []
-        
-        for session_id in list(self.closing_caches.keys()):
-            if session_id not in active_session_ids:
-                orphaned_sessions.append(session_id)
-        
-        for session_id in orphaned_sessions:
-            logger.info(f"[TEACHING_ASSISTANT] Cleaning up orphaned closing cache for session {session_id}")
-            del self.closing_caches[session_id]
-        
-        # Also cleanup memory retrievers for ended sessions
-        for session_id in list(self.memory_retrievers.keys()):
-            if session_id not in active_session_ids:
-                logger.info(f"[TEACHING_ASSISTANT] Cleaning up orphaned memory retriever for session {session_id}")
-                self.memory_retrievers[session_id].clear_session(session_id)
-                del self.memory_retrievers[session_id]
-
-
-    async def end(self, user_id: str, session_id: str) -> Optional[str]:
-        """End session with memory consolidation"""
-        try:
-            # 1. Get closing message FIRST (using last generated state)
-            # This ensures we don't wait for final consolidation
-            logger.info(f"[TEACHING_ASSISTANT] Requesting closing for session {session_id}")
-            greeting_skill = self._get_greeting_skill()
-            if greeting_skill:
-                closing = greeting_skill.end_session(user_id, session_id)
-            else:
-                logger.warning("[TEACHING_ASSISTANT] Greeting skill not found, using fallback")
-                closing = "[SYSTEM PROMPT FOR ADAM]\nThe tutoring session is ending now. Please give the student a warm closing message."
-            logger.info(f"[TEACHING_ASSISTANT] Closing received: {bool(closing)}, Length: {len(closing) if closing else 0}")
-            
-            # Get context before clearing
-            context = self.context_manager.get_context(session_id)
-            
-            if context:
-                # Flush any remaining turn
-                context.flush_current_turn()
-                
-                # Save conversation
-                await self._save_conversation_async(user_id, session_id, context)
-            
-            # Consolidate memories (BACKGROUND)
-            closing_cache = self.closing_caches.get(session_id)
-            if closing_cache:
-                consolidator = self.memory_consolidators.get(user_id)
-                if consolidator:
-                    # Async consolidation - FIRE AND FORGET
-                    # Run in background so user doesn't wait
-                    asyncio.create_task(consolidator.consolidate_session(user_id, session_id, closing_cache))
-                del self.closing_caches[session_id]
-            
-            # Clean up memory retriever
-            memory_retriever = self.memory_retrievers.get(session_id)
-            if memory_retriever:
-                memory_retriever.clear_session(session_id)
-                del self.memory_retrievers[session_id]
-            
-            # Clear context
-            self.context_manager.clear_context(session_id)
-            
-            return closing
-        except Exception as e:
-            logger.error(f"[TEACHING_ASSISTANT] Error ending session {session_id}: {e}", exc_info=True)
+            logger.warning(f"[MEMORY] No session found for {session_id}")
             return None
 
-    async def _trigger_memory_retrieval_async(self, memory_retriever: MemoryRetriever, session_id: str, 
-                                               user_id: str, user_text: str, timestamp: float, adam_text: str):
-        """
-        Trigger memory retrieval (TA-light and TA-deep) asynchronously and inject memories after completion.
-        Uses managed thread pool for blocking Pinecone operations.
-        """
-        try:
-            # Run memory retrieval in managed executor to avoid blocking
-            loop = asyncio.get_event_loop()
-            await loop.run_in_executor(
-                self._executor,  # Use managed executor instead of None
-                memory_retriever.on_user_turn,
-                session_id,
-                user_id,
-                user_text,
-                timestamp,
-                adam_text
-            )
-            logger.info(f"[TEACHING_ASSISTANT] Memory retrieval completed for session: {session_id}")
-            
-            # After retrieval completes, get injection and send it
-            injection_text = memory_retriever.get_memory_injection(session_id)
-            if injection_text:
-                logger.info(f"[TEACHING_ASSISTANT] Memory injection ready for session: {session_id}")
-                await self.injection_manager.send_to_adam(
-                    injection_text,
-                    session_id,
-                    user_id
-                )
-        except Exception as e:
-            # Wrap in specific exception for better error tracking
-            raise MemoryRetrievalError(f"Memory retrieval failed for session {session_id}") from e
+        student_id = session.get("student_id", session.get("user_id"))
+        logger.info(f"[MEMORY] 🔍 Retrieving memories for student {student_id[:8]}... Query: '{query_text[:50]}'")
 
-    async def _extract_memories_async(self, closing_cache, user_text: str, adam_text: str, topic: str, session_id: str):
-        """Extract memories asynchronously without blocking the event loop"""
-        try:
-            # Get user_id from closing_cache
-            user_id = closing_cache.user_id
-            
-            # Get user-specific memory store
-            memory_store = self._get_or_create_memory_store(user_id)
-            
-            # Now native async, await directly
-            await closing_cache.update_after_exchange(
-                user_text,
-                adam_text,
-                topic,
-                self.memory_extractor,
-                memory_store
-            )
-            logger.debug(f"[TEACHING_ASSISTANT] Memory extraction step completed for session: {session_id}")
-        except Exception as e:
-            logger.error(f"[TEACHING_ASSISTANT] Error in async memory extraction: {e}", exc_info=True)
+        # Retrieve relevant memories
+        memories = self.session_manager.retrieve_relevant_memories(
+            student_id=student_id,
+            query_text=query_text,
+            top_k=3
+        )
 
-    async def _save_conversation_async(self, user_id: str, session_id: str, context):
-        """Save conversation to file (non-blocking via managed thread executor)"""
-        try:
-            loop = asyncio.get_event_loop()
-            await loop.run_in_executor(
-                self._executor,  # Use managed executor
-                self._save_conversation_sync,
-                user_id,
-                session_id,
-                context
-            )
-        except Exception as e:
-            raise FileOperationError(f"Failed to save conversation for session {session_id}") from e
-    
-    def _save_conversation_sync(self, user_id: str, session_id: str, context):
+        if not memories:
+            logger.info(f"[MEMORY] ❌ No relevant memories found")
+            return None
+
+        logger.info(f"[MEMORY] ✅ Found {len(memories)} relevant memories!")
+        for i, mem in enumerate(memories):
+            mem_text = mem.get("text", mem.get("memory", {}).get("text", ""))
+            mem_score = mem.get("score", mem.get("similarity", 0))
+            mem_type = mem.get("type", "unknown")
+            logger.info(f"[MEMORY]   {i+1}. [type={mem_type}] (score={mem_score:.2f})")
+            logger.info(f"[MEMORY]      📝 \"{mem_text}\"")
+
+        # Generate memory injection prompt
+        prompt = self.greeting_handler.get_memory_injection_prompt(
+            memories=memories,
+            current_context=query_text
+        )
+
+        if prompt:
+            # Push as system update
+            self.session_manager.push_instruction(session_id, prompt)
+            logger.info(f"[MEMORY] 📤 Injected {len(memories)} memories into session via SSE")
+
+        return prompt
+
+    def get_student_biography(self, user_id: str) -> Dict[str, Any]:
         """
-        Synchronous file save (runs in thread executor).
-        Now uses pathlib and file_utils for better path handling.
+        Get student's current biography and stats.
+
+        Args:
+            user_id: Student/user ID
+
+        Returns:
+            Dict with biography, academic journey, and statistics
+        """
+        student = self.mongo.db.students.find_one({"_id": user_id})
+        if not student:
+            return {
+                "biography": "",
+                "academic_journey": {},
+                "statistics": {},
+            }
+
+        return {
+            "biography": student.get("biography", {}).get("text", ""),
+            "biography_version": student.get("biography", {}).get("version", 0),
+            "academic_journey": student.get("academic_journey", {}),
+            "statistics": student.get("statistics", {}),
+            "onboarding_data": student.get("onboarding_data", {}),
+        }
+
+    def update_onboarding_data(
+        self,
+        user_id: str,
+        onboarding_data: Dict[str, Any]
+    ) -> bool:
+        """
+        Update student onboarding data and optionally regenerate initial biography.
+
+        Args:
+            user_id: Student ID
+            onboarding_data: New onboarding data
+
+        Returns:
+            True if successful
         """
         from datetime import datetime
-        
-        try:
-            # Use pathlib for cross-platform compatibility
-            data_dir = self.config.get_conversations_path(user_id)
-            data_dir.mkdir(parents=True, exist_ok=True)
-            
-            file_path = data_dir / f"{session_id}.json"
-            conversation_data = {
-                "session_id": session_id,
-                "user_id": user_id,
-                "start_time": datetime.fromtimestamp(context.start_time).isoformat(),
-                "end_time": datetime.now().isoformat(),
-                "turn_count": context.turn_count,
-                "turns": context.conversation_turns
+
+        result = self.mongo.db.students.update_one(
+            {"_id": user_id},
+            {
+                "$set": {
+                    "onboarding_data": onboarding_data,
+                    "updated_at": datetime.utcnow(),
+                }
             }
-            
-            # Use file_utils for consistent error handling
-            if save_json_file(file_path, conversation_data):
-                logger.debug(f"[TEACHING_ASSISTANT] Saved conversation to {file_path} ({len(context.conversation_turns)} turns)")
-            else:
-                raise FileOperationError(f"Failed to save conversation to {file_path}")
-        except Exception as e:
-            logger.error(f"[TEACHING_ASSISTANT] Error saving conversation: {e}", exc_info=True)
+        )
 
+        if result.modified_count > 0:
+            # Optionally regenerate biography if this is initial onboarding
+            student = self.mongo.db.students.find_one({"_id": user_id})
+            if student and not student.get("biography", {}).get("text"):
+                self._generate_initial_biography(user_id, onboarding_data)
 
+        return result.modified_count > 0
 
-    async def _handle_session_end(self, event):
-        """Handle session end event"""
+    def _generate_initial_biography(
+        self,
+        user_id: str,
+        onboarding_data: Dict[str, Any]
+    ) -> None:
+        """Generate initial biography from onboarding data"""
         try:
-            session = self.session_manager.get_session_by_id(event.session_id)
-            if session:
-                await self.end(session["user_id"], event.session_id)
-        except Exception as e:
-             logger.error(f"[TEACHING_ASSISTANT] Error in _handle_session_end: {e}", exc_info=True)
+            from .core.biographer import biographer_agent
 
-    async def shutdown(self):
+            student = self.mongo.db.students.find_one({"_id": user_id})
+            name = student.get("name", "Student") if student else "Student"
+
+            biography = biographer_agent.generate_initial_biography(
+                name=name,
+                onboarding_data=onboarding_data
+            )
+
+            if biography:
+                from datetime import datetime
+                self.mongo.db.students.update_one(
+                    {"_id": user_id},
+                    {
+                        "$set": {
+                            "biography.text": biography,
+                            "biography.version": 1,
+                            "biography.last_updated": datetime.utcnow(),
+                            "updated_at": datetime.utcnow(),
+                        },
+                        "$push": {
+                            "biography_history": {
+                                "version": 1,
+                                "text": biography,
+                                "created_at": datetime.utcnow(),
+                                "session_count": 0,
+                            }
+                        }
+                    }
+                )
+                logger.info(f"[TEACHING_ASSISTANT] Generated initial biography for {user_id}")
+
+        except Exception as e:
+            logger.error(f"[TEACHING_ASSISTANT] Failed to generate initial biography: {e}")
+
+    def set_academic_topic(self, user_id: str, topic: str) -> bool:
+        """Set the current academic topic for a student"""
+        from datetime import datetime
+
+        result = self.mongo.db.students.update_one(
+            {"_id": user_id},
+            {
+                "$set": {
+                    "academic_journey.current_topic": topic,
+                    "updated_at": datetime.utcnow(),
+                }
+            }
+        )
+        return result.modified_count > 0
+
+    async def _extract_realtime_memory(
+        self,
+        session_id: str,
+        student_id: str,
+        user_text: str
+    ) -> Optional[Dict[str, Any]]:
         """
-        Graceful shutdown of TeachingAssistant.
-        Ensures all resources are properly cleaned up.
+        Extract and store memories in real-time during live sessions.
+
+        This enables the user to see memories being formed as they chat,
+        and those memories can be retrieved when similar topics come up again.
+
+        Args:
+            session_id: Current session ID
+            student_id: Student's ID for memory storage
+            user_text: The user's message to analyze
+
+        Returns:
+            The created memory document if one was formed, None otherwise
         """
-        logger.info("[TEACHING_ASSISTANT] Initiating graceful shutdown...")
-        
-        # Stop the event processing loop
-        self.running = False
-        
-        # Wait a moment for ongoing operations to complete
-        await asyncio.sleep(0.5)
-        
-        # Shutdown the thread pool executor
-        self._executor.shutdown(wait=True, cancel_futures=False)
-        logger.info("[TEACHING_ASSISTANT] Thread pool executor shut down")
-        
-        logger.info("[TEACHING_ASSISTANT] Shutdown complete")
+        import os
+        import re
+        from datetime import datetime
+
+        # Skip if text is too short or too generic
+        if len(user_text) < 20:
+            return None
+
+        # Skip generic responses that aren't memory-worthy
+        generic_patterns = [
+            r'^(ok|okay|yes|no|maybe|sure|thanks|thank you|hi|hello|bye|goodbye)\.?$',
+            r'^(i don\'?t know|idk|nm|nothing much)\.?$',
+            r'^\?+$',
+        ]
+        text_lower = user_text.lower().strip()
+        for pattern in generic_patterns:
+            if re.match(pattern, text_lower):
+                return None
+
+        try:
+            # Use Gemini to analyze if this message contains memory-worthy content
+            import google.genai as genai
+
+            api_key = os.environ.get("GOOGLE_API_KEY")
+            if not api_key:
+                logger.warning("[MEMORY] No GOOGLE_API_KEY set, skipping real-time extraction")
+                return None
+
+            client = genai.Client(api_key=api_key)
+
+            extraction_prompt = f"""Analyze this student message and determine if it contains personal information worth remembering for future tutoring sessions.
+
+Student message: "{user_text}"
+
+Memory-worthy content includes:
+- Personal facts (family, pets, hobbies, interests)
+- Emotional states or feelings
+- Academic struggles or strengths
+- Goals or aspirations
+- Preferences (likes/dislikes)
+- Experiences they share
+
+If this message contains memory-worthy content, respond with ONLY a JSON object like:
+{{"extract": true, "memory": "concise summary of the memory", "type": "personal|emotional|academic|preference", "importance": 0.5}}
+
+If this message is NOT memory-worthy (just a question, generic response, or academic answer), respond with ONLY:
+{{"extract": false}}
+
+Respond with ONLY the JSON object, no explanation."""
+
+            response = client.models.generate_content(
+                model=os.environ.get("GEMINI_TEXT_MODEL", "gemini-1.5-flash"),
+                contents=extraction_prompt
+            )
+
+            response_text = response.text.strip()
+
+            # Parse JSON response
+            import json
+            # Handle potential markdown code blocks
+            if response_text.startswith("```"):
+                response_text = response_text.split("```")[1]
+                if response_text.startswith("json"):
+                    response_text = response_text[4:]
+                response_text = response_text.strip()
+
+            result = json.loads(response_text)
+
+            if not result.get("extract", False):
+                logger.debug(f"[MEMORY] 💭 Message not memory-worthy: \"{user_text[:40]}...\"")
+                return None
+
+            memory_text = result.get("memory", user_text)
+            memory_type = result.get("type", "personal")
+            importance = float(result.get("importance", 0.5))
+
+            logger.info(f"[MEMORY] 💾 FORMING new memory from live session!")
+            logger.info(f"[MEMORY]    📝 Original: \"{user_text[:60]}...\"")
+            logger.info(f"[MEMORY]    💡 Memory: \"{memory_text}\"")
+            logger.info(f"[MEMORY]    🏷️  Type: {memory_type}, Importance: {importance:.2f}")
+
+            # Store the memory using MongoDBMemoryStore
+            from .Memory.mongodb_vector_store import MongoDBMemoryStore
+
+            store = MongoDBMemoryStore(user_id=student_id)
+            if not store.enabled:
+                logger.warning("[MEMORY] MongoDBMemoryStore not enabled, cannot store memory")
+                return None
+
+            # Generate embedding for the memory
+            embedding = store._generate_embedding(memory_text)
+            if not embedding:
+                logger.error("[MEMORY] Failed to generate embedding for new memory")
+                return None
+
+            # Create the memory document
+            memory_doc = {
+                "student_id": student_id,
+                "session_id": session_id,
+                "text": memory_text,
+                "original_text": user_text,
+                "type": memory_type,
+                "importance": importance,
+                "embedding": embedding,
+                "source": "realtime_extraction",
+                "created_at": datetime.utcnow(),
+                "accessed_count": 0,
+                "last_accessed": None,
+            }
+
+            # Insert into MongoDB
+            result = store.collection.insert_one(memory_doc)
+            memory_doc["_id"] = result.inserted_id
+
+            logger.info(f"[MEMORY] ✅ Memory stored successfully! ID: {result.inserted_id}")
+            logger.info(f"[MEMORY]    Student: {student_id[:8]}..., Session: {session_id[:8]}...")
+
+            return memory_doc
+
+        except json.JSONDecodeError as e:
+            logger.debug(f"[MEMORY] Failed to parse extraction response: {e}")
+            return None
+        except Exception as e:
+            logger.error(f"[MEMORY] Real-time memory extraction failed: {e}")
+            return None

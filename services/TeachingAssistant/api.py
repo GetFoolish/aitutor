@@ -18,7 +18,7 @@ from sse_starlette.sse import EventSourceResponse
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from services.TeachingAssistant.teaching_assistant import TeachingAssistant
-from services.TeachingAssistant.core.context import Event
+from services.TeachingAssistant.core.context import Event, EventType
 from shared.auth_middleware import get_current_user, get_user_from_token
 from shared.cors_config import ALLOWED_ORIGINS, ALLOW_CREDENTIALS, ALLOWED_METHODS, ALLOWED_HEADERS
 from shared.timing_middleware import UnpluggedTimingMiddleware
@@ -271,10 +271,11 @@ def feed_message_to_event(message: dict, session_id: str, user_id: str) -> Optio
     # Convert based on message type
     if msg_type == "transcript":
         return Event(
-            type="text",
+            event_type=EventType.USER_MESSAGE,
             timestamp=timestamp,
             session_id=session_id,
             user_id=user_id,
+            user_text=payload.get("transcript", ""),
             data={
                 "speaker": payload.get("speaker", "user"),
                 "text": payload.get("transcript", ""),
@@ -283,7 +284,7 @@ def feed_message_to_event(message: dict, session_id: str, user_id: str) -> Optio
         )
     elif msg_type == "audio":
         return Event(
-            type="audio",
+            event_type=EventType.USER_MESSAGE,
             timestamp=timestamp,
             session_id=session_id,
             user_id=user_id,
@@ -294,7 +295,7 @@ def feed_message_to_event(message: dict, session_id: str, user_id: str) -> Optio
         )
     elif msg_type == "media":
         return Event(
-            type="media",
+            event_type=EventType.USER_MESSAGE,
             timestamp=timestamp,
             session_id=session_id,
             user_id=user_id,
@@ -372,7 +373,6 @@ async def start_session(http_request: Request, request: Optional[StartSessionReq
     """Start a new tutoring session (supports both normal and assessment modes)"""
     user_id = get_current_user(http_request)
     assessment_mode = request.assessment_mode if request else False
-
     try:
         # STEP 1: Allocate daily free minutes if needed
         from services.PaymentService.free_minutes_handler import (
@@ -388,7 +388,7 @@ async def start_session(http_request: Request, request: Optional[StartSessionReq
         total_balance = balances["total"]
         mode_str = "ASSESSMENT" if assessment_mode else "NORMAL"
         logger.info(f"[SESSION_START] [{mode_str}] User {user_id[:8]}... has {total_balance} minutes available (free: {balances['free']}, paid: {balances['paid']})")
-
+        
         if total_balance < 1:
             logger.warning(f"[SESSION_START] ❌ User {user_id[:8]}... has insufficient minutes: {total_balance}")
             raise HTTPException(
@@ -400,11 +400,11 @@ async def start_session(http_request: Request, request: Optional[StartSessionReq
                     "required": 1
                 }
             )
-
+        
         # Create session in MongoDB (existing method)
         result = ta.start_session(user_id)
         session_id = result["session_info"]["session_id"]
-
+        
         # STEP 3: Store credits_at_start and assessment_mode flag for session monitoring
         from managers.mongodb_manager import mongo_db
         mongo_db.sessions.update_one(
@@ -425,13 +425,13 @@ async def start_session(http_request: Request, request: Optional[StartSessionReq
         # CONDITIONAL: Initialize memory and context components only in normal mode
         greeting = ""
         if not assessment_mode:
-            # Initialize memory and context components (new method)
-            greeting = await ta.start(user_id, session_id)
+            # Get greeting from start_session result (includes biography-driven personalization)
+            greeting = result.get("prompt", "")
+            logger.info(f"[SESSION_START] Got personalized greeting for session {session_id[:8]}...")
 
-            # Create session_start event
+            # v4 improvement: Create session_start event and enqueue for processing
             start_event = Event(
-                type="session_start",
-                timestamp=time.time(),
+                event_type=EventType.SESSION_START,
                 session_id=session_id,
                 user_id=user_id,
                 data={"session_id": session_id, "user_id": user_id}
@@ -439,13 +439,13 @@ async def start_session(http_request: Request, request: Optional[StartSessionReq
             ta.queue_manager.enqueue(start_event)
         else:
             logger.info(f"[SESSION_START] Skipping TA initialization for assessment mode")
-
+        
         # UPDATED: Return greeting in response for immediate delivery
         # Also sent via SSE for systems that listen to instruction queue
         # This ensures backward compatibility with frontends expecting prompt in response
         session_id = result["session_id"]
 
-        # Initialize cost tracking for this session (works for both modes)
+        # Initialize cost tracking for this session
         from services.CostTracking.cost_tracker import CostTracker
         cost_tracker = CostTracker(session_id, user_id)
         cost_tracker.start_session()
@@ -515,29 +515,15 @@ async def end_session(http_request: Request, request: Optional[EndSessionRequest
         session_assessment_mode = session.get("assessment_mode", assessment_mode)
         mode_str = "ASSESSMENT" if session_assessment_mode else "NORMAL"
 
-        # CONDITIONAL: End session with memory consolidation only in normal mode
-        closing = ""
-        if not session_assessment_mode:
-            # End session with memory consolidation (new method)
-            closing = await ta.end(user_id, session_id)
-        else:
-            logger.info(f"[SESSION_END] Skipping TA cleanup for assessment mode")
+        # Get session summary and handle cleanup
+        mode_label = "ASSESSMENT" if session_assessment_mode else "NORMAL"
+        logger.info(f"[SESSION_END] [{mode_label}] Ending session {session_id[:12]}...")
 
-        # Session end event is NO LONGER needed here because we called ta.end() directly above
-        # Queuing it would cause the event loop to call ta.end() a second time!
-        # end_event = Event(
-        #     type="session_end",
-        #     timestamp=time.time(),
-        #     session_id=session_id,
-        #     user_id=user_id,
-        #     data={"session_id": session_id, "user_id": user_id}
-        # )
-        # ta.queue_manager.enqueue(end_event)
-
-        # Get session summary (existing method for stats - works for both modes)
+        # End session (handles memory consolidation)
         result = ta.end_session(session_id)
+        closing = result.get("prompt", "")
 
-        # Finalize cost tracking for this session (works for both modes)
+        # Finalize cost tracking for this session
         try:
             from services.CostTracking.cost_tracker import CostTracker
             cost_tracker = CostTracker(session_id, user_id)
@@ -545,34 +531,32 @@ async def end_session(http_request: Request, request: Optional[EndSessionRequest
         except Exception as cost_error:
             logger.error(f"[COST_TRACKING] Failed to finalize costs: {cost_error}", exc_info=True)
 
-        # CONDITIONAL: Pre-load next session questions only in normal mode
-        if not session_assessment_mode:
-            try:
-                auth_header = http_request.headers.get("Authorization", "")
-                if not auth_header:
-                    auth_header = http_request.headers.get("authorization", "")
+        # Pre-load next session questions in background (non-blocking)
+        try:
+            auth_header = http_request.headers.get("Authorization", "")
+            if not auth_header:
+                auth_header = http_request.headers.get("authorization", "")
 
-                token = ""
-                if auth_header.startswith("Bearer "):
-                    token = auth_header.replace("Bearer ", "", 1)
-                elif auth_header.startswith("bearer "):
-                    token = auth_header.replace("bearer ", "", 1)
+            token = ""
+            if auth_header.startswith("Bearer "):
+                token = auth_header.replace("Bearer ", "", 1)
+            elif auth_header.startswith("bearer "):
+                token = auth_header.replace("bearer ", "", 1)
 
-                if token and len(token) > 0:
-                    preload_thread = threading.Thread(
-                        target=_preload_questions_background,
-                        args=(user_id, token),
-                        daemon=True
-                    )
-                    preload_thread.start()
-            except Exception as e:
-                logger.error(f"[PRELOAD] Failed to start pre-loading thread: {e}")
+            if token and len(token) > 0:
+                preload_thread = threading.Thread(
+                    target=_preload_questions_background,
+                    args=(user_id, token),
+                    daemon=True
+                )
+                preload_thread.start()
+        except Exception as e:
+            logger.error(f"[PRELOAD] Failed to start pre-loading thread: {e}")
 
-        logger.info(f"[SESSION_END] ✅ [{mode_str}] Session {session_id[:8]}... ended successfully")
-
-        # Return closing message directly (also sent via SSE) - empty in assessment mode
+        
+        # Return closing message directly (also sent via SSE)
         return PromptResponse(
-            prompt=_sanitize_prompt(closing or result["prompt"]),  # Use memory-aware closing or fallback (empty in assessment)
+            prompt=_sanitize_prompt(closing or result["prompt"]),  # Use memory-aware closing or fallback
             session_info=result["session_info"]
         )
     except Exception as e:
@@ -801,6 +785,86 @@ def get_session_info(http_request: Request):
     if not session:
         return {"session_active": False, "user_id": user_id}
     return ta.get_session_info(session["session_id"])
+
+
+@app.get("/session/transcript")
+def get_session_transcript(http_request: Request, session_id: Optional[str] = None):
+    """
+    Get the conversation transcript for a session.
+    If no session_id provided, gets transcript for current active session.
+    """
+    user_id = get_current_user(http_request)
+    try:
+        if not session_id:
+            session = ta.get_active_session(user_id)
+            if not session:
+                return {"error": "No active session", "transcript": []}
+            session_id = session["session_id"]
+
+        # Get conversation from session manager
+        conversation = ta.session_manager.get_conversation(session_id)
+
+        # Format for easy reading
+        formatted = []
+        for turn in conversation:
+            formatted.append({
+                "speaker": turn.get("speaker", "unknown"),
+                "text": turn.get("text", ""),
+                "timestamp": str(turn.get("timestamp", "")),
+                "emotion": turn.get("emotion")
+            })
+
+        return {
+            "session_id": session_id,
+            "turn_count": len(formatted),
+            "transcript": formatted
+        }
+    except Exception as e:
+        logger.error(f"Error getting transcript: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/session/transcript/latest")
+def get_latest_transcript(http_request: Request, limit: int = 50):
+    """
+    Get the most recent session transcript for the user.
+    Useful for debugging - shows conversations from today's sessions.
+    """
+    user_id = get_current_user(http_request)
+    try:
+        # Get most recent session (active or completed)
+        sessions = list(ta.session_manager.sessions.find(
+            {"user_id": user_id},
+            {"session_id": 1, "conversation": 1, "started_at": 1, "ended_at": 1, "status": 1}
+        ).sort("started_at", -1).limit(1))
+
+        if not sessions:
+            return {"error": "No sessions found", "transcript": []}
+
+        session = sessions[0]
+        conversation = session.get("conversation", [])
+
+        # Format transcript
+        formatted = []
+        for turn in conversation[-limit:]:  # Get last N turns
+            formatted.append({
+                "speaker": turn.get("speaker", "unknown"),
+                "text": turn.get("text", ""),
+                "timestamp": str(turn.get("timestamp", "")),
+                "emotion": turn.get("emotion")
+            })
+
+        return {
+            "session_id": session["session_id"],
+            "status": session.get("status", "unknown"),
+            "started_at": str(session.get("started_at", "")),
+            "ended_at": str(session.get("ended_at", "")),
+            "total_turns": len(conversation),
+            "transcript": formatted
+        }
+    except Exception as e:
+        logger.error(f"Error getting latest transcript: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/conversation/turn")
@@ -1493,8 +1557,648 @@ async def memory_stats(http_request: Request):
 from services.CostTracking.api import router as cost_router
 app.include_router(cost_router)
 
+# ============================================================================
+# Personalization API Endpoints
+# ============================================================================
+
+# Import personalization components
+from services.TeachingAssistant.core.interest_mapper import get_interest_mapper
+from services.TeachingAssistant.core.learning_style_tracker import (
+    get_learning_style_tracker,
+    LearningStyleProfile
+)
+from services.TeachingAssistant.core.followup_tracker import get_followup_tracker
+
+
+class InterestMappingRequest(BaseModel):
+    interests: List[str]
+    topic: str
+    subject: Optional[str] = "general"
+    difficulty_level: Optional[str] = "middle school"
+
+
+class LearningStyleUpdateRequest(BaseModel):
+    student_text: str
+    tutor_text: str
+    emotion: Optional[str] = None
+    topic: Optional[str] = None
+
+
+class FollowupExtractRequest(BaseModel):
+    conversation_text: str
+    session_id: Optional[str] = None
+
+
+@app.post("/personalization/map-interest")
+async def map_interest_to_concept(http_request: Request, request: InterestMappingRequest):
+    """
+    Map student interests to a learning concept using LLM.
+
+    Returns teaching connections, analogies, and example problems
+    personalized to the student's interests.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        interest_mapper = get_interest_mapper()
+
+        if not interest_mapper.enabled:
+            raise HTTPException(
+                status_code=503,
+                detail="Interest mapping service unavailable (Gemini not configured)"
+            )
+
+        # Get student name from profile if available
+        student = ta.session_manager.get_or_create_student(user_id)
+        student_name = student.get("name") or student.get("display_name")
+
+        connection = interest_mapper.generate_connection(
+            interests=request.interests,
+            current_topic=request.topic,
+            student_name=student_name,
+            difficulty_level=request.difficulty_level
+        )
+
+        if not connection:
+            return {
+                "success": False,
+                "message": "Could not generate a natural connection",
+                "connection": None
+            }
+
+        logger.info(f"[PERSONALIZATION] Generated interest mapping for user {user_id[:8]}...")
+
+        return {
+            "success": True,
+            "connection": connection,
+            "user_id": user_id
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in map_interest: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/personalization/learning-style")
+async def get_learning_style(http_request: Request):
+    """
+    Get the student's learning style profile.
+
+    Returns preferences for explanation styles, pace, and
+    what approaches have worked/not worked.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        # Get student profile from MongoDB
+        student = ta.session_manager.get_or_create_student(user_id)
+
+        # Get learning style data
+        learning_style_data = student.get("learning_style", {})
+
+        if learning_style_data:
+            profile = LearningStyleProfile.from_dict(learning_style_data)
+        else:
+            profile = LearningStyleProfile()
+
+        return {
+            "user_id": user_id,
+            "profile": profile.to_dict(),
+            "prompt_text": profile.to_prompt_text()
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting learning style: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/personalization/learning-style/update")
+async def update_learning_style(http_request: Request, request: LearningStyleUpdateRequest):
+    """
+    Analyze a conversation turn and update learning style profile.
+
+    Uses LLM to detect style preferences, engagement levels,
+    pace signals, and breakthrough moments.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        tracker = get_learning_style_tracker()
+
+        # Analyze the turn
+        analysis = tracker.analyze_turn(
+            student_text=request.student_text,
+            tutor_text=request.tutor_text,
+            emotion=request.emotion,
+            topic=request.topic
+        )
+
+        # Get current profile
+        student = ta.session_manager.get_or_create_student(user_id)
+        learning_style_data = student.get("learning_style", {})
+
+        if learning_style_data:
+            current_profile = LearningStyleProfile.from_dict(learning_style_data)
+        else:
+            current_profile = LearningStyleProfile()
+
+        # Update profile based on analysis
+        updated_profile = tracker.update_profile(
+            current_profile=current_profile,
+            turn_analysis=analysis,
+            topic=request.topic
+        )
+
+        # Save to MongoDB
+        from managers.mongodb_manager import mongo_db
+        mongo_db.users.update_one(
+            {"user_id": user_id},
+            {"$set": {"learning_style": updated_profile.to_dict()}}
+        )
+
+        logger.info(f"[PERSONALIZATION] Updated learning style for user {user_id[:8]}...")
+
+        return {
+            "success": True,
+            "analysis": {
+                "style_preferences": [s.value for s in analysis.get("style_preferences", [])],
+                "engagement": analysis.get("engagement"),
+                "pace_signal": analysis.get("pace_signal"),
+                "breakthrough": analysis.get("breakthrough"),
+                "observation": analysis.get("observation")
+            },
+            "updated_profile": updated_profile.to_dict()
+        }
+
+    except Exception as e:
+        logger.error(f"Error updating learning style: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/personalization/followups")
+async def get_followups(http_request: Request):
+    """
+    Get pending follow-ups for the student.
+
+    Returns tests, events, commitments, and other items
+    that should be followed up on.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        # Get student profile from MongoDB
+        student = ta.session_manager.get_or_create_student(user_id)
+
+        # Get followups list
+        followups_data = student.get("followups", [])
+
+        tracker = get_followup_tracker()
+        followups = []
+        due_followups = []
+
+        for fu_data in followups_data:
+            try:
+                from services.TeachingAssistant.core.followup_tracker import Followup
+                fu = Followup.from_dict(fu_data)
+                followups.append(fu.to_dict())
+                if fu.is_due():
+                    due_followups.append({
+                        **fu.to_dict(),
+                        "prompt_text": fu.to_prompt_text()
+                    })
+            except Exception as e:
+                logger.warning(f"Error parsing followup: {e}")
+
+        return {
+            "user_id": user_id,
+            "all_followups": followups,
+            "due_followups": due_followups,
+            "total": len(followups),
+            "due_count": len(due_followups)
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting followups: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/personalization/followups/extract")
+async def extract_followups(http_request: Request, request: FollowupExtractRequest):
+    """
+    Extract follow-up items from conversation text using LLM.
+
+    Identifies tests, events, commitments, unfinished topics,
+    and personal situations worth following up on.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        tracker = get_followup_tracker()
+
+        if not tracker.enabled:
+            raise HTTPException(
+                status_code=503,
+                detail="Follow-up extraction unavailable (Gemini not configured)"
+            )
+
+        # Extract followups from conversation
+        extracted = tracker.extract_followups(
+            text=request.conversation_text,
+            session_id=request.session_id
+        )
+
+        if not extracted:
+            return {
+                "success": True,
+                "extracted": [],
+                "message": "No follow-ups identified"
+            }
+
+        # Save new followups to MongoDB
+        from managers.mongodb_manager import mongo_db
+
+        followups_dicts = [fu.to_dict() for fu in extracted]
+
+        mongo_db.users.update_one(
+            {"user_id": user_id},
+            {"$push": {"followups": {"$each": followups_dicts}}}
+        )
+
+        logger.info(f"[PERSONALIZATION] Extracted {len(extracted)} followups for user {user_id[:8]}...")
+
+        return {
+            "success": True,
+            "extracted": followups_dicts,
+            "count": len(extracted)
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error extracting followups: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/personalization/session-context")
+async def get_session_personalization_context(http_request: Request):
+    """
+    Get full personalization context for the current session.
+
+    Combines biography, learning style, interests, and due followups
+    into a single context object for injection into prompts.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        # Get student profile
+        student = ta.session_manager.get_or_create_student(user_id)
+
+        # Get biography
+        biography = student.get("biography", {})
+        biography_text = biography.get("text", "")
+
+        # Get learning style
+        learning_style_data = student.get("learning_style", {})
+        if learning_style_data:
+            learning_profile = LearningStyleProfile.from_dict(learning_style_data)
+            learning_style_text = learning_profile.to_prompt_text()
+        else:
+            learning_style_text = "Learning style not yet determined"
+
+        # Get interests
+        interests = student.get("interests", [])
+
+        # Get due followups
+        followups_data = student.get("followups", [])
+        due_followups_text = []
+        for fu_data in followups_data:
+            try:
+                from services.TeachingAssistant.core.followup_tracker import Followup
+                fu = Followup.from_dict(fu_data)
+                if fu.is_due():
+                    due_followups_text.append(fu.to_prompt_text())
+            except:
+                pass
+
+        # Build combined context
+        context_parts = []
+
+        if biography_text:
+            context_parts.append(f"STUDENT BIOGRAPHY:\n{biography_text}")
+
+        if learning_style_text:
+            context_parts.append(f"LEARNING STYLE:\n{learning_style_text}")
+
+        if interests:
+            context_parts.append(f"INTERESTS: {', '.join(interests)}")
+
+        if due_followups_text:
+            context_parts.append(f"FOLLOW-UPS TO MENTION:\n" + "\n".join(due_followups_text))
+
+        combined_context = "\n\n".join(context_parts) if context_parts else "No personalization data available yet."
+
+        return {
+            "user_id": user_id,
+            "biography": biography_text,
+            "learning_style": learning_style_data,
+            "interests": interests,
+            "due_followups": due_followups_text,
+            "combined_context": combined_context
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting session context: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/student/biography")
+async def get_student_biography(http_request: Request):
+    """
+    Get the student's biography and academic journey.
+
+    Returns the Living Biography text and related stats.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        biography_data = ta.get_student_biography(user_id)
+
+        return {
+            "user_id": user_id,
+            **biography_data
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting biography: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================================
+# Memory Debug Endpoints (for frontend testing)
+# ============================================================================
+
+@app.get("/config/info")
+async def get_config_info(http_request: Request):
+    """
+    Get system configuration for debugging.
+
+    Returns feature flags and enabled services.
+    """
+    user_id = get_current_user(http_request)
+
+    # Check what's available
+    has_gemini = bool(os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"))
+    has_openai = bool(os.getenv("OPENAI_API_KEY"))
+    has_mongodb = bool(os.getenv("MONGODB_URI"))
+
+    validation_issues = []
+    if not has_gemini and not has_openai:
+        validation_issues.append("No LLM API key configured (GEMINI_API_KEY or OPENAI_API_KEY)")
+    if not has_mongodb:
+        validation_issues.append("MongoDB not configured")
+
+    return {
+        "config": {
+            "llm_provider": "gemini" if has_gemini else ("openai" if has_openai else "none"),
+            "has_gemini": has_gemini,
+            "has_openai": has_openai,
+            "has_mongodb": has_mongodb,
+            "enable_biographer": has_gemini or has_openai,
+            "enable_memory_extraction": has_mongodb and (has_gemini or has_openai),
+            "enable_semantic_search": has_mongodb,
+            "enable_skills": True
+        },
+        "validation": validation_issues
+    }
+
+
+@app.get("/memory/stats")
+async def get_memory_stats(http_request: Request):
+    """
+    Get memory statistics for the current user.
+
+    Returns total memories, breakdown by type, etc.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        from services.TeachingAssistant.Memory.mongodb_vector_store import MongoDBMemoryStore
+
+        # Get or create memory store for this user
+        store = MongoDBMemoryStore(user_id=user_id)
+
+        if not store.enabled:
+            return {
+                "enabled": False,
+                "error": "Memory system not configured"
+            }
+
+        stats = store.get_stats()
+
+        # MongoDB stats format
+        total_memories = stats.get("user_memories") or stats.get("total_memories", 0)
+
+        return {
+            "enabled": True,
+            "total_memories": total_memories,
+            "by_type": stats.get("by_type", {}),
+            "index_stats": stats
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting memory stats: {e}", exc_info=True)
+        return {
+            "enabled": False,
+            "error": str(e)
+        }
+
+
+class MemorySearchRequest(BaseModel):
+    query: str
+    top_k: int = 10
+
+
+@app.post("/memory/search")
+async def search_memories(http_request: Request, request: MemorySearchRequest):
+    """
+    Search memories for the current user.
+
+    Returns semantically similar memories based on query.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        from services.TeachingAssistant.Memory.mongodb_vector_store import MongoDBMemoryStore
+
+        store = MongoDBMemoryStore(user_id=user_id)
+
+        if not store.enabled:
+            return {
+                "results": [],
+                "error": "Memory system not configured"
+            }
+
+        # Search for memories
+        memories = store.search(
+            query_text=request.query,
+            student_id=user_id,
+            top_k=request.top_k,
+            min_importance=0.0  # Return all for debugging
+        )
+
+        # Format results
+        results = []
+        for mem in memories:
+            results.append({
+                "text": mem.get("text", ""),
+                "type": mem.get("type", "unknown"),
+                "importance": mem.get("importance", 0),
+                "score": mem.get("score", 0),
+                "timestamp": mem.get("timestamp", "")
+            })
+
+        return {
+            "results": results,
+            "query": request.query,
+            "total": len(results)
+        }
+
+    except Exception as e:
+        logger.error(f"Error searching memories: {e}", exc_info=True)
+        return {
+            "results": [],
+            "error": str(e)
+        }
+
+
+# ============================================================================
+# Conversation Search API (Moltbot-inspired full-text search)
+# ============================================================================
+
+class ConversationSearchRequest(BaseModel):
+    query: str
+    limit: int = 20
+    session_id: Optional[str] = None
+
+
+@app.post("/conversation/search")
+async def search_conversations(http_request: Request, request: ConversationSearchRequest):
+    """
+    Search across all conversations for the current user.
+
+    Moltbot-style grep: find any message containing the query.
+
+    Returns matching turns with context.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        results = ta.session_manager.search_conversations(
+            student_id=user_id,
+            query=request.query,
+            limit=request.limit,
+            session_id=request.session_id
+        )
+
+        return {
+            "results": results,
+            "query": request.query,
+            "total": len(results)
+        }
+
+    except Exception as e:
+        logger.error(f"Error searching conversations: {e}", exc_info=True)
+        return {
+            "results": [],
+            "error": str(e)
+        }
+
+
+class CrossSessionRequest(BaseModel):
+    query: str
+    max_turns: int = 10
+
+
+@app.post("/conversation/cross-session")
+async def get_cross_session_context(http_request: Request, request: CrossSessionRequest):
+    """
+    Get relevant conversation snippets from past sessions.
+
+    Moltbot-style cross-session memory: find related past conversations
+    to provide context for current discussion.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        # Get current session to exclude
+        session = ta.get_active_session(user_id)
+        current_session_id = session["session_id"] if session else None
+
+        results = ta.session_manager.get_cross_session_context(
+            student_id=user_id,
+            query=request.query,
+            current_session_id=current_session_id,
+            max_turns=request.max_turns
+        )
+
+        return {
+            "results": results,
+            "query": request.query,
+            "total": len(results),
+            "excluded_session": current_session_id
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting cross-session context: {e}", exc_info=True)
+        return {
+            "results": [],
+            "error": str(e)
+        }
+
+
+@app.get("/conversation/stats")
+async def get_conversation_stats(http_request: Request):
+    """
+    Get conversation statistics for the current user.
+
+    Returns total sessions, turns, tokens, etc.
+    """
+    user_id = get_current_user(http_request)
+
+    try:
+        stats = ta.session_manager.get_conversation_stats(user_id)
+
+        return {
+            "student_id": user_id,
+            **stats
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting conversation stats: {e}", exc_info=True)
+        return {
+            "error": str(e)
+        }
+
+
+# Include Cost Tracking API routes (Phase 4)
+from services.CostTracking.api import router as cost_router
+app.include_router(cost_router)
+
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv("PORT", os.getenv("TEACHING_ASSISTANT_PORT", "8002")))
+    # Explicitly use TEACHING_ASSISTANT_PORT, ignore PORT env var to avoid conflicts
+    port = int(os.getenv("TEACHING_ASSISTANT_PORT", "8002"))
+    print(f"[TeachingAssistant] Starting on port {port}")
     uvicorn.run(app, host="0.0.0.0", port=port)
+
+
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.getenv("TEACHING_ASSISTANT_PORT", "8002"))
+    print(f"[TeachingAssistant] Starting on port {port}")
+    uvicorn.run(app, host="0.0.0.0", port=port)
+

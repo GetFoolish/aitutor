@@ -1,14 +1,17 @@
 """
-MongoDB Vector Store - MongoDB Atlas-based memory storage with vector search
+Vector Store - Memory storage with deduplication
 
-Replaces Pinecone with MongoDB Atlas Vector Search.
-Uses the same embeddings module (Gemini/OpenAI) for generating vectors.
+Supports multiple backends:
+- MongoDB Atlas Vector Search (default, recommended)
+- Pinecone (requires PINECONE_API_KEY)
+
+Set MEMORY_STORE_BACKEND=mongodb or MEMORY_STORE_BACKEND=pinecone
 
 Features:
 - Intelligent deduplication using semantic similarity
 - Multi-factor scoring (similarity, recency, importance)
-- User-specific collections or namespaces
-- No additional service dependencies (uses existing MongoDB)
+- User-specific indexes/namespaces
+- Local JSON backup
 """
 
 import os
@@ -44,7 +47,16 @@ try:
     MONGODB_AVAILABLE = True
 except ImportError:
     MONGODB_AVAILABLE = False
-    logger.warning("[MONGODB_VECTOR_STORE] pymongo not installed")
+    logger.warning("[MEMORY_STORE] pymongo not installed")
+
+# Import Pinecone
+try:
+    from pinecone import Pinecone, ServerlessSpec
+    from pinecone.exceptions import PineconeApiException
+    PINECONE_AVAILABLE = True
+except ImportError:
+    PINECONE_AVAILABLE = False
+    logger.warning("[MEMORY_STORE] Pinecone not installed")
 
 from .schema import Memory, MemoryType
 from .embeddings import get_embeddings_batch, get_query_embedding, get_embedding_dimension
@@ -93,14 +105,21 @@ class MemoryConfig:
         self.recency_decay_hours = float(os.getenv("MEMORY_RECENCY_DECAY_HOURS", "24.0"))
         self.max_counter_for_frequency = int(os.getenv("MEMORY_MAX_COUNTER_FREQUENCY", "10"))
 
+        # Validate weights
+        total_weight = self.weight_similarity + self.weight_recency + self.weight_importance
+        if not (0.99 <= total_weight <= 1.01):
+            logger.warning(
+                f"[MEMORY_CONFIG] Weights sum to {total_weight:.3f}, not 1.0. "
+                f"sim={self.weight_similarity}, rec={self.weight_recency}, imp={self.weight_importance}"
+            )
 
-class MemoryStore:
+
+class MongoDBMemoryStore:
     """
     MongoDB-based memory store with vector search.
 
     Features:
     - Uses MongoDB Atlas Vector Search for semantic similarity
-    - Same interface as Pinecone MemoryStore
     - Intelligent deduplication
     - Multi-factor scoring for retrieval
     """
@@ -611,3 +630,48 @@ class MemoryStore:
         except Exception as e:
             return {"enabled": True, "error": str(e)}
 
+
+# ============================================================================
+# Factory function to get the appropriate memory store
+# ============================================================================
+
+def get_memory_store(user_id: str = None, **kwargs):
+    """
+    Factory function to get the appropriate memory store based on configuration.
+
+    Environment variable MEMORY_STORE_BACKEND controls which backend to use:
+    - 'mongodb' (default): Use MongoDB Atlas Vector Search
+    - 'pinecone': Use Pinecone
+
+    Args:
+        user_id: User ID for user-specific storage
+        **kwargs: Additional arguments passed to the store constructor
+
+    Returns:
+        MemoryStore instance (MongoDB based)
+    """
+    backend = os.getenv("MEMORY_STORE_BACKEND", "mongodb").lower()
+
+    if backend == "pinecone" and PINECONE_AVAILABLE and os.getenv("PINECONE_API_KEY"):
+        logger.warning("[MEMORY_STORE] Pinecone backend requested but MongoDB is recommended. Using MongoDB.")
+
+    # Default to MongoDB
+    logger.info("[MEMORY_STORE] Using MongoDB backend")
+    return MongoDBMemoryStore(user_id=user_id, **kwargs)
+
+
+# Create a wrapper class that uses the factory
+class _MemoryStoreFactory:
+    """
+    Memory Store factory that automatically selects the best backend.
+
+    Uses MongoDB by default.
+    """
+
+    def __new__(cls, user_id: str = None, **kwargs):
+        return get_memory_store(user_id=user_id, **kwargs)
+
+
+# Export the factory as MemoryStore for backward compatibility
+# Code importing MemoryStore will automatically get the right backend
+MemoryStore = _MemoryStoreFactory

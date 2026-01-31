@@ -304,7 +304,7 @@ function App() {
         <AuthGuard>
           {/* Initialize memory debug functions for console testing (window.memoryDebug) */}
           <MemoryDebugInitializer />
-          <AssessmentGuard subject="math">
+<AssessmentGuard subject="math" onStartAssessment={startAssessment}>
             <TutorProvider>
               <HintProvider>
                 <Header

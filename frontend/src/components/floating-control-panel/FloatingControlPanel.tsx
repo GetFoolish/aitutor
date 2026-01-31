@@ -270,7 +270,17 @@ function FloatingControlPanel({
       feedWebSocketService.sendAudio(base64);
     };
     if (connected && !muted && audioRecorder) {
-      audioRecorder.on("data", onData).start(selectedAudioDevice);
+      audioRecorder.on("data", onData);
+      audioRecorder.start(selectedAudioDevice).catch((error) => {
+        console.error("[FloatingControlPanel] Audio recorder failed to start:", error);
+        // Try again with default device if specific device failed
+        if (selectedAudioDevice) {
+          console.log("[FloatingControlPanel] Retrying with default audio device...");
+          audioRecorder.start().catch((retryError) => {
+            console.error("[FloatingControlPanel] Audio recorder retry also failed:", retryError);
+          });
+        }
+      });
     } else {
       audioRecorder.stop();
     }
