@@ -16,6 +16,7 @@ import '../auth/auth.scss';
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 const SHOW_DEBUG_BANNER = import.meta.env.VITE_SHOW_DEBUG_BANNER === 'true';
+const SHOW_DEBUG_FORCE_ERROR = import.meta.env.VITE_DEBUG_WIDGET_ERROR === 'true';
 type LoadSource = 'nav' | 'cache' | 'api' | 'unknown';
 
 interface Question {
@@ -337,22 +338,24 @@ const DynamicAssessment: React.FC = () => {
                   assessment {assessmentId || 'unknown'} · {totalQuestions || questions.length} questions · source {loadSource}
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={() => setForceRenderError(!forceRenderError)}
-                style={{
-                  background: forceRenderError ? '#FF6B6B' : '#000',
-                  color: '#fff',
-                  border: '2px solid #000',
-                  borderRadius: '999px',
-                  padding: '2px 10px',
-                  fontSize: '10px',
-                  letterSpacing: '0.12em',
-                  cursor: 'pointer'
-                }}
-              >
-                {forceRenderError ? 'clear error' : 'force error'}
-              </button>
+              {SHOW_DEBUG_FORCE_ERROR && (
+                <button
+                  type="button"
+                  onClick={() => setForceRenderError(!forceRenderError)}
+                  style={{
+                    background: forceRenderError ? '#FF6B6B' : '#000',
+                    color: '#fff',
+                    border: '2px solid #000',
+                    borderRadius: '999px',
+                    padding: '2px 10px',
+                    fontSize: '10px',
+                    letterSpacing: '0.12em',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {forceRenderError ? 'clear error' : 'force error'}
+                </button>
+              )}
             </div>
           )}
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
@@ -576,22 +579,24 @@ const DynamicAssessment: React.FC = () => {
                 assessment {assessmentId || 'unknown'} · {totalQuestions || questions.length} questions · source {loadSource} · index {currentIndex + 1}
               </span>
             </div>
-            <button
-              type="button"
-              onClick={() => setForceRenderError(!forceRenderError)}
-              style={{
-                background: forceRenderError ? '#FF6B6B' : '#000',
-                color: '#fff',
-                border: '2px solid #000',
-                borderRadius: '999px',
-                padding: '2px 10px',
-                fontSize: '10px',
-                letterSpacing: '0.12em',
-                cursor: 'pointer'
-              }}
-            >
-              {forceRenderError ? 'clear error' : 'force error'}
-            </button>
+            {SHOW_DEBUG_FORCE_ERROR && (
+              <button
+                type="button"
+                onClick={() => setForceRenderError(!forceRenderError)}
+                style={{
+                  background: forceRenderError ? '#FF6B6B' : '#000',
+                  color: '#fff',
+                  border: '2px solid #000',
+                  borderRadius: '999px',
+                  padding: '2px 10px',
+                  fontSize: '10px',
+                  letterSpacing: '0.12em',
+                  cursor: 'pointer'
+                }}
+              >
+                {forceRenderError ? 'clear error' : 'force error'}
+              </button>
+            )}
           </div>
         )}
         {/* Progress Bar */}
