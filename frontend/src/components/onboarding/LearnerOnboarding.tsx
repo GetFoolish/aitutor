@@ -326,6 +326,35 @@ const LearnerOnboarding: React.FC = () => {
               {isLoading ? 'setting things up...' : "let's see where you're at 🚀"}
             </Button>
 
+            {isLoading && (
+              <div style={{
+                marginTop: '16px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '12px',
+                background: '#FFF4CC',
+                border: '2px dashed #000',
+                borderRadius: '10px',
+              }}>
+                <div style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '50%',
+                  border: '3px solid #000',
+                  borderTopColor: '#6C63FF',
+                  animation: 'spin 1s linear infinite'
+                }} />
+                <div style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  building your questions…
+                </div>
+                <div style={{ fontSize: '12px', color: '#555' }}>
+                  this usually takes ~10–20 seconds
+                </div>
+              </div>
+            )}
+
             <p style={{ 
               textAlign: 'center', 
               marginTop: '16px', 

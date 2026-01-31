@@ -42,6 +42,7 @@ interface RendererComponentProps {
     assessmentQuestions?: any[];
     onAssessmentAnswer?: (questionId: string, isCorrect: boolean) => void;
     currentQuestionIndex?: number;
+    debugForceRenderError?: boolean;
 }
 
 const RendererComponent = ({ 
@@ -52,7 +53,8 @@ const RendererComponent = ({
     assessmentMode = false,
     assessmentQuestions = [],
     onAssessmentAnswer,
-    currentQuestionIndex = 0
+    currentQuestionIndex = 0,
+    debugForceRenderError = false
 }: RendererComponentProps) => {
     const { user } = useAuth();
     const { setTotalHints, setCurrentHintIndex, showHints, setShowHints } = useHint();
@@ -97,12 +99,18 @@ const RendererComponent = ({
 
     // Fetch questions using apiUtils with JWT authentication
     useEffect(() => {
+        if (debugForceRenderError) {
+            setHasRenderError(true);
+        }
+    }, [debugForceRenderError]);
+
+    useEffect(() => {
         // In assessment mode, use provided questions instead of fetching
-            if (assessmentMode) {
-                setPerseusItems(assessmentQuestions);
-                setItem(currentQuestionIndex);
-                setIsLoading(false);
-                setHasRenderError(false);
+        if (assessmentMode) {
+            setPerseusItems(assessmentQuestions);
+            setItem(currentQuestionIndex);
+            setIsLoading(false);
+            setHasRenderError(false);
                 setIsAnswered(false);
                 setShowFeedback(false);
                 setStartTime(Date.now());

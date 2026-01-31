@@ -68,6 +68,7 @@ const DynamicAssessment: React.FC = () => {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [onboardingData, setOnboardingData] = useState<LocationState["onboardingData"] | null>(null);
   const [loadSource, setLoadSource] = useState<LoadSource>('unknown');
+  const [forceRenderError, setForceRenderError] = useState(false);
 
   useEffect(() => {
     const isReload = (() => {
@@ -124,6 +125,7 @@ const DynamicAssessment: React.FC = () => {
       const statePayload = location.state;
       const lastSource = sessionStorage.getItem('dynamic_assessment_last_source');
       const shouldTreatAsNav = !isReload && !wasUnloaded && lastSource !== 'cache' && lastSource !== 'api';
+      console.log('[DynamicAssessment] Load source flags', { isReload, wasUnloaded, lastSource });
       if (shouldTreatAsNav && statePayload?.questions?.length) {
         console.log('[DynamicAssessment] Using navigation state payload');
         applyPayload(statePayload, 'nav');
@@ -175,9 +177,18 @@ const DynamicAssessment: React.FC = () => {
     const markUnload = () => {
       sessionStorage.setItem('dynamic_assessment_was_unloaded', 'true');
     };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        markUnload();
+      }
+    };
     window.addEventListener('beforeunload', markUnload);
+    window.addEventListener('pagehide', markUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => {
       window.removeEventListener('beforeunload', markUnload);
+      window.removeEventListener('pagehide', markUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [location.state, history]);
 
@@ -308,21 +319,40 @@ const DynamicAssessment: React.FC = () => {
               letterSpacing: '0.08em',
               display: 'flex',
               alignItems: 'center',
-              gap: '10px'
+              gap: '10px',
+              justifyContent: 'space-between'
             }}>
-              <span style={{
-                background: '#D32F2F',
-                color: '#fff',
-                padding: '2px 8px',
-                borderRadius: '999px',
-                fontSize: '10px',
-                letterSpacing: '0.12em'
-              }}>
-                DEBUG
-              </span>
-              <span>
-                assessment {assessmentId || 'unknown'} · {totalQuestions || questions.length} questions · source {loadSource}
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{
+                  background: '#D32F2F',
+                  color: '#fff',
+                  padding: '2px 8px',
+                  borderRadius: '999px',
+                  fontSize: '10px',
+                  letterSpacing: '0.12em'
+                }}>
+                  DEBUG
+                </span>
+                <span>
+                  assessment {assessmentId || 'unknown'} · {totalQuestions || questions.length} questions · source {loadSource}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setForceRenderError(!forceRenderError)}
+                style={{
+                  background: forceRenderError ? '#FF6B6B' : '#000',
+                  color: '#fff',
+                  border: '2px solid #000',
+                  borderRadius: '999px',
+                  padding: '2px 10px',
+                  fontSize: '10px',
+                  letterSpacing: '0.12em',
+                  cursor: 'pointer'
+                }}
+              >
+                {forceRenderError ? 'clear error' : 'force error'}
+              </button>
             </div>
           )}
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
@@ -528,21 +558,40 @@ const DynamicAssessment: React.FC = () => {
             letterSpacing: '0.08em',
             display: 'flex',
             alignItems: 'center',
-            gap: '10px'
+            gap: '10px',
+            justifyContent: 'space-between'
           }}>
-            <span style={{
-              background: '#D32F2F',
-              color: '#fff',
-              padding: '2px 8px',
-              borderRadius: '999px',
-              fontSize: '10px',
-              letterSpacing: '0.12em'
-            }}>
-              DEBUG
-            </span>
-            <span>
-              assessment {assessmentId || 'unknown'} · {totalQuestions || questions.length} questions · source {loadSource} · index {currentIndex + 1}
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{
+                background: '#D32F2F',
+                color: '#fff',
+                padding: '2px 8px',
+                borderRadius: '999px',
+                fontSize: '10px',
+                letterSpacing: '0.12em'
+              }}>
+                DEBUG
+              </span>
+              <span>
+                assessment {assessmentId || 'unknown'} · {totalQuestions || questions.length} questions · source {loadSource} · index {currentIndex + 1}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setForceRenderError(!forceRenderError)}
+              style={{
+                background: forceRenderError ? '#FF6B6B' : '#000',
+                color: '#fff',
+                border: '2px solid #000',
+                borderRadius: '999px',
+                padding: '2px 10px',
+                fontSize: '10px',
+                letterSpacing: '0.12em',
+                cursor: 'pointer'
+              }}
+            >
+              {forceRenderError ? 'clear error' : 'force error'}
+            </button>
           </div>
         )}
         {/* Progress Bar */}
@@ -596,6 +645,7 @@ const DynamicAssessment: React.FC = () => {
                 onAssessmentAnswer={(questionId, isCorrect) => {
                   handleAnswerSubmit(isCorrect);
                 }}
+                debugForceRenderError={forceRenderError}
               />
             )}
           </HintProvider>
