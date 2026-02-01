@@ -34,17 +34,19 @@ const ENCOURAGEMENTS_INCORRECT = [
 
 // Fire confetti bursts
 const fireConfetti = () => {
+  console.log('🎉 FIRING CONFETTI!');
   const duration = 2000;
   const end = Date.now() + duration;
 
   const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#FF69B4', '#00FF7F'];
 
-  // Initial burst
+  // Initial burst - BIG explosion
   confetti({
-    particleCount: 100,
-    spread: 70,
+    particleCount: 150,
+    spread: 100,
     origin: { y: 0.6 },
     colors,
+    zIndex: 999999,
   });
 
   // Continuous smaller bursts
@@ -55,18 +57,20 @@ const fireConfetti = () => {
     }
 
     confetti({
-      particleCount: 50,
+      particleCount: 80,
       angle: 60,
-      spread: 55,
+      spread: 70,
       origin: { x: 0 },
       colors,
+      zIndex: 999999,
     });
     confetti({
-      particleCount: 50,
+      particleCount: 80,
       angle: 120,
-      spread: 55,
+      spread: 70,
       origin: { x: 1 },
       colors,
+      zIndex: 999999,
     });
   }, 250);
 };
@@ -76,12 +80,16 @@ const AnswerFeedback: React.FC<AnswerFeedbackProps> = ({ isCorrect, show, onComp
 
   useEffect(() => {
     if (show && isCorrect !== null) {
+      console.log('📣 AnswerFeedback showing:', { show, isCorrect });
       const messages = isCorrect ? ENCOURAGEMENTS_CORRECT : ENCOURAGEMENTS_INCORRECT;
       setMessage(messages[Math.floor(Math.random() * messages.length)]);
       
       // Fire confetti for correct answers
       if (isCorrect) {
+        console.log('✅ Correct answer - firing confetti!');
         fireConfetti();
+      } else {
+        console.log('❌ Incorrect answer - no confetti');
       }
 
       // Callback after feedback shown
