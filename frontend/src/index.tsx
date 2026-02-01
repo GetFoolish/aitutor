@@ -32,6 +32,7 @@ const PricingPage = lazy(() => import("./components/pricing/PricingPage"));
 const AssessmentFlow = lazy(() => import("./components/assessment/AssessmentFlow"));
 const AdminVideoPanel = lazy(() => import("./components/admin/AdminVideoPanel"));
 const CostTrackingPage = lazy(() => import("./components/admin/CostTrackingPage"));
+const ScratchpadDemo = lazy(() => import("./components/scratchpad/ScratchpadDemo"));
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
@@ -149,6 +150,7 @@ root.render(
           <ComingSoonGuard>
             <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
               <Switch>
+                <Route path="/test/demo" component={ScratchpadDemo} />
                 <Route path="/app/auth/setup" component={LoginPage} />
                 <Route path="/app/login" component={LoginPage} />
                 <Route path="/app/account" component={AccountPage} />
