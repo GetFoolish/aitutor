@@ -14,14 +14,16 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Loader2 } from "lucide-react";
+import { useOptionalScratchpad } from "../../contexts/ScratchpadContext";
 
 /**
  * A full-featured whiteboard using Excalidraw.
- * Replaces the limited 'react-sketch-canvas' implementation.
+ * Now connected to ScratchpadContext so AI tutor can draw on it.
  */
 const Scratchpad = () => {
-  const [excalidrawAPI, setExcalidrawAPI] = useState<any>(null);
+  const [localExcalidrawAPI, setLocalExcalidrawAPI] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const scratchpadContext = useOptionalScratchpad();
 
   // Excalidraw loads asynchronously
   useEffect(() => {
@@ -32,20 +34,32 @@ const Scratchpad = () => {
     return () => clearTimeout(timer); // Cleanup on unmount
   }, []);
 
+  // Share the API with context when available
+  useEffect(() => {
+    if (localExcalidrawAPI && scratchpadContext?.setExcalidrawAPI) {
+      scratchpadContext.setExcalidrawAPI(localExcalidrawAPI);
+      console.log('🎨 Scratchpad API shared with context - AI teacher can now draw!');
+    }
+  }, [localExcalidrawAPI, scratchpadContext]);
 
   const handleClearAll = () => {
-    if (excalidrawAPI) {
-      excalidrawAPI.resetScene();
+    if (localExcalidrawAPI) {
+      localExcalidrawAPI.resetScene();
     }
   };
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-md border border-border bg-card/60 shadow-sm">
-      {/* Custom absolute toolbar for external actions if needed, 
-          but Excalidraw has its own internal UI which is superior */}
+      {/* AI Teacher indicator when connected */}
+      {scratchpadContext?.excalidrawAPI && (
+        <div className="absolute left-4 top-4 z-50 flex items-center gap-2 rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800 shadow-sm">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-green-500"></span>
+          AI Teacher Ready
+        </div>
+      )}
+
+      {/* Custom absolute toolbar for external actions */}
       <div className="absolute right-4 top-4 z-50 flex gap-2">
-        {/* Clear All with Confirmation - We keep this external for easy access 
-             although Excalidraw has a reset, this is safer/explicit */}
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button
@@ -87,17 +101,17 @@ const Scratchpad = () => {
         {/* @ts-ignore - Excalidraw types mismatch with current version */}
         <Excalidraw
           onMount={(api: any) => {
-            setExcalidrawAPI(api);
+            setLocalExcalidrawAPI(api);
             setIsLoading(false);
           }}
           theme="light"
           UIOptions={{
             canvasActions: {
               changeViewBackgroundColor: true,
-              clearCanvas: false, // We use our own clear button or key shortcut
+              clearCanvas: false,
               loadScene: false,
               saveToActiveFile: false,
-              toggleTheme: false, // Force light mode or controlled by app
+              toggleTheme: false,
               saveAsImage: true,
             },
           }}
@@ -105,7 +119,7 @@ const Scratchpad = () => {
           <WelcomeScreen>
             <WelcomeScreen.Center>
               <WelcomeScreen.Center.Heading>
-                Whiteboard
+                AI Whiteboard
               </WelcomeScreen.Center.Heading>
               <WelcomeScreen.Center.Menu>
                 <WelcomeScreen.Center.MenuItemHelp />
