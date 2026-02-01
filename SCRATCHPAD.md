@@ -1,97 +1,41 @@
 # ✏️ Scratchpad Feature
 
-A tldraw-based drawing canvas for students to work through problems.
+Replaced Excalidraw with tldraw for the scratchpad whiteboard functionality.
 
-## Quick Start
+## What Changed
 
-```bash
-# 1. Install dependencies
-cd frontend
-npm install
+**Only the scratchpad implementation changed - UI remains the same as v1.**
 
-# 2. Start the frontend
-npm run dev
+| File | Change |
+|------|--------|
+| `frontend/src/components/scratchpad/Scratchpad.tsx` | Excalidraw → tldraw |
+| `frontend/package.json` | Removed `@excalidraw/excalidraw`, added `tldraw` |
 
-# 3. Open the demo page
-open http://localhost:3000/test/demo
-```
+## Why tldraw?
 
-## Demo Page
+- Better stability than Excalidraw
+- Simpler API
+- Same drawing features (pencil, shapes, text, arrows)
+- Built-in undo/redo
 
-**URL**: `http://localhost:3000/test/demo`
-
-Shows the scratchpad alongside a sample math question. Use this to verify the feature works.
-
-## Components
-
-### `src/components/scratchpad/Scratchpad.tsx`
-The main scratchpad component using tldraw.
-
-Basic usage:
-```tsx
-import Scratchpad from '@/components/scratchpad/Scratchpad';
-
-function MyComponent() {
-  return <Scratchpad />;
-}
-```
-
-### `src/components/scratchpad/ScratchpadDemo.tsx`
-Demo page showing scratchpad with a sample question.
-
-**Route**: `/test/demo`
-
-## Features
+## Features (unchanged from v1)
 
 - ✏️ **Drawing tools**: Pencil, shapes, text, arrows
-- 🔄 **Undo/Redo**: Full history support  
-- 🖐️ **Pan & Zoom**: Navigate large drawings
-- 📷 **Export**: Save drawings as images
-- 👁️ **Show/Hide toggle**: Minimize when not needed
-
-## Dependencies
-
-- `tldraw` - Canvas/drawing library
-- React 18+
+- 🔄 **Undo/Redo**: Full history support
+- 🗑️ **Clear All**: With confirmation dialog
+- 🖐️ **Pan & Zoom**: Navigate drawings
 
 ## Testing
 
-1. Open demo page: `http://localhost:3000/test/demo`
-2. Select the Draw tool (pencil icon)
-3. Draw on the canvas
-4. Try Text tool to add labels
-5. Test Hide/Show Scratchpad toggle
-6. Test undo/redo
+1. Start the app as normal: `npm run dev`
+2. Navigate to any page with the scratchpad
+3. Draw on the canvas - should work exactly like before
 
-## Integration Example
+## Dependencies
 
-```tsx
-import React, { useState } from 'react';
-import { Tldraw } from 'tldraw';
-import 'tldraw/tldraw.css';
-
-function QuestionWithScratchpad({ question }) {
-  const [showScratchpad, setShowScratchpad] = useState(true);
-
-  return (
-    <div style={{ display: 'flex', gap: '24px' }}>
-      <div className="question-panel">
-        <h2>{question.title}</h2>
-        <p>{question.content}</p>
-      </div>
-      
-      {showScratchpad && (
-        <div style={{ width: '400px', height: '500px' }}>
-          <Tldraw />
-        </div>
-      )}
-    </div>
-  );
+```json
+{
+  "tldraw": "^2.x"  // Added
+  // "@excalidraw/excalidraw" removed
 }
 ```
-
-## Notes
-
-- Uses tldraw (not Excalidraw) for better stability
-- The scratchpad state is local to each session
-- Drawing data can be exported for AI analysis if needed
