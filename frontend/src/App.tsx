@@ -20,6 +20,7 @@ import "./styles/mobile-fixes.css"; // Mobile UI fixes
 import { TutorProvider } from "./features/tutor";
 import AuthGuard from "./components/auth/AuthGuard";
 import AssessmentGuard from "./components/auth/AssessmentGuard";
+import AnswerFeedback from "./components/feedback/AnswerFeedback";
 import Header from "./components/header/Header";
 import BackgroundShapes from "./components/background-shapes/BackgroundShapes";
 import QuestionDisplay from "./components/question-display/QuestionDisplay";
@@ -66,6 +67,10 @@ function App() {
   const [assessmentQuestions, setAssessmentQuestions] = useState<any[]>([]);
   const [assessmentCurrentIndex, setAssessmentCurrentIndex] = useState(0);
   const [assessmentAnswers, setAssessmentAnswers] = useState<any[]>([]);
+  
+  // Answer feedback state (confetti animation)
+  const [showAnswerFeedback, setShowAnswerFeedback] = useState(false);
+  const [lastAnswerCorrect, setLastAnswerCorrect] = useState<boolean | null>(null);
 
   // Ref to hold mediaMixer instance for use in callbacks
   const mediaMixerRef = useRef<any>(null);
@@ -219,6 +224,11 @@ function App() {
         <AuthGuard>
           <AssessmentGuard subject="math" onStartAssessment={startAssessment}>
             <TutorProvider>
+              {/* Answer Feedback with Confetti */}
+              <AnswerFeedback 
+                isCorrect={lastAnswerCorrect} 
+                show={showAnswerFeedback}
+              />
               <HintProvider>
                 <Header
                   sidebarOpen={isSidebarOpen}
@@ -276,13 +286,19 @@ function App() {
                                 const newAnswers = [...assessmentAnswers, newAnswer];
                                 setAssessmentAnswers(newAnswers);
                                 setWatchedVideoIds([]);
+                                
+                                // Show feedback with confetti for correct answers
+                                setLastAnswerCorrect(isCorrect);
+                                setShowAnswerFeedback(true);
 
                                 if (assessmentCurrentIndex < assessmentQuestions.length - 1) {
                                   setTimeout(() => {
+                                    setShowAnswerFeedback(false);
                                     setAssessmentCurrentIndex(assessmentCurrentIndex + 1);
                                   }, 2000);
                                 } else {
                                   setTimeout(() => {
+                                    setShowAnswerFeedback(false);
                                     submitAssessment(newAnswers);
                                   }, 2000);
                                 }

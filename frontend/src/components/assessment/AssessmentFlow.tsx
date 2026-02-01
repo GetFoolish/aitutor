@@ -6,6 +6,7 @@ import AssessmentQuestion from './AssessmentQuestion';
 import AssessmentResults from './AssessmentResults';
 import Header from '../../components/header/Header';
 import BackgroundShapes from '../background-shapes/BackgroundShapes';
+import AnswerFeedback from '../feedback/AnswerFeedback';
 
 /* 🔥 COPY LOGIN BG STYLES */
 import '../auth/auth.scss';
@@ -97,6 +98,10 @@ const AssessmentFlow: React.FC = () => {
   const [cameraEnabled, setCameraEnabled] = useState(false);
   const [screenEnabled, setScreenEnabled] = useState(false);
   const [privacyMode, setPrivacyMode] = useState(false);
+  
+  // Answer feedback state
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [lastAnswerCorrect, setLastAnswerCorrect] = useState<boolean | null>(null);
 
   useEffect(() => {
     startAssessment();
@@ -143,14 +148,19 @@ const AssessmentFlow: React.FC = () => {
     ];
 
     setAnswers(updated);
+    
+    // Show feedback with confetti
+    setLastAnswerCorrect(isCorrect);
+    setShowFeedback(true);
 
     setTimeout(() => {
+      setShowFeedback(false);
       if (currentIndex < questions.length - 1) {
         setCurrentIndex((i) => i + 1);
       } else {
         submitAssessment(updated);
       }
-    }, 1500);
+    }, 2000);
   };
 
   const submitAssessment = async (finalAnswers: any[]) => {
@@ -200,6 +210,12 @@ const AssessmentFlow: React.FC = () => {
 
       {!loading && !error && (
         <TutorProvider assessmentMode={true}>
+          {/* Answer Feedback with Confetti */}
+          <AnswerFeedback 
+            isCorrect={lastAnswerCorrect} 
+            show={showFeedback}
+          />
+          
           {completed && (
             <AssessmentResults
               score={score}

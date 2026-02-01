@@ -59,6 +59,7 @@
     "@types/react-window": "^1.8.8",
     "aphrodite": "^2.4.0",
     "canny-edge-detector": "^1.0.0",
+    "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
