@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { useMediaCapture } from '../../hooks/useMediaCapture';
 import { useMediaMixer } from '../../hooks/useMediaMixer';
 import '../auth/auth.scss';
+import AnswerFeedback from '../feedback/AnswerFeedback';
 
 // Lazy load heavy components
 const FloatingControlPanel = lazy(() => import('../floating-control-panel/FloatingControlPanel'));
@@ -330,7 +331,8 @@ const DynamicAssessment: React.FC = () => {
   }
 
   const currentQuestion = questions[currentIndex];
-  const progress = questions.length ? ((currentIndex + 1) / questions.length) * 100 : 0;
+  const effectiveTotal = totalQuestions || questions.length;
+  const progress = effectiveTotal ? ((currentIndex + 1) / effectiveTotal) * 100 : 0;
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -995,10 +997,9 @@ const DynamicAssessment: React.FC = () => {
               <span style={{
                 fontSize: '20px',
                 fontWeight: 900,
-                fontFamily: 'Space Mono, monospace',
-                textTransform: 'uppercase'
+                fontFamily: 'Space Mono, monospace'
               }}>
-                QUESTION {currentIndex + 1}/{questions.length}
+                Question {currentIndex + 1} of {effectiveTotal}
               </span>
               <span style={{
                 fontSize: '20px',
@@ -1026,48 +1027,34 @@ const DynamicAssessment: React.FC = () => {
                 transition: 'width 0.3s ease'
               }} />
             </div>
-          </div>
-
-          {/* Answer Feedback Banner - Fixed position for visibility */}
-          {showAnswerFeedback && (
-            <div
+            <button
+              onClick={() => {
+                sessionStorage.removeItem('dash-session');
+                sessionStorage.removeItem('dash-questions');
+                history.push('/app/onboarding');
+              }}
               style={{
-                position: 'fixed',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                zIndex: 9999,
-                background: lastAnswerCorrect ? '#ADFF2F' : '#FF6B6B',
-                border: '5px solid #000',
+                marginTop: '12px',
+                padding: '8px 16px',
+                background: '#FFF',
+                border: '3px solid #000',
                 borderRadius: '0',
-                padding: '32px 48px',
-                boxShadow: '8px 8px 0 #000',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '16px',
-                minWidth: '300px',
+                fontFamily: 'Space Mono, monospace',
+                fontWeight: 700,
+                fontSize: '14px',
+                cursor: 'pointer',
+                boxShadow: '3px 3px 0 #000'
               }}
             >
-              <span style={{
-                fontSize: '64px',
-                lineHeight: 1,
-              }}>
-                {lastAnswerCorrect ? '✓' : '✗'}
-              </span>
-              <span style={{
-                fontSize: '24px',
-                fontWeight: 900,
-                fontFamily: 'Space Mono, monospace',
-                textTransform: 'lowercase',
-                color: '#000',
-                textAlign: 'center',
-              }}>
-                {feedbackMessage}
-              </span>
-            </div>
-          )}
+              Start over
+            </button>
+          </div>
+
+          {/* Animated Feedback with Confetti */}
+          <AnswerFeedback 
+            isCorrect={lastAnswerCorrect} 
+            show={showAnswerFeedback}
+          />
 
           {/* Overlay when feedback showing */}
           {showAnswerFeedback && (
@@ -1079,7 +1066,7 @@ const DynamicAssessment: React.FC = () => {
                 right: 0,
                 bottom: 0,
                 background: 'rgba(0,0,0,0.3)',
-                zIndex: 9998,
+                zIndex: 998,
               }}
             />
           )}
