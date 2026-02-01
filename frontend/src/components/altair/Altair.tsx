@@ -22,6 +22,7 @@ import {
   Modality,
   Type,
 } from "@google/genai";
+import { scratchpadTools } from "../../features/tutor/scratchpad-tools";
 
 const declaration: FunctionDeclaration = {
   name: "render_altair",
@@ -52,7 +53,10 @@ function AltairComponent() {
       tools: [
         // there is a free-tier quota for search
         { googleSearch: {} },
+        // Altair graph rendering
         { functionDeclarations: [declaration] },
+        // AI Teacher scratchpad drawing tools - allows Gemini to draw like a real teacher!
+        { functionDeclarations: scratchpadTools },
       ],
     });
   }, [setConfig]);

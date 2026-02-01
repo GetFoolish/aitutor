@@ -24,8 +24,10 @@ import Header from "./components/header/Header";
 import BackgroundShapes from "./components/background-shapes/BackgroundShapes";
 import QuestionDisplay from "./components/question-display/QuestionDisplay";
 import Scratchpad from "./components/scratchpad/Scratchpad";
+import ScratchpadToolHandler from "./components/scratchpad/ScratchpadToolHandler";
 import { ThemeProvider } from "./components/theme/theme-provier";
 import { HintProvider } from "./contexts/HintContext";
+import { ScratchpadProvider } from "./contexts/ScratchpadContext";
 import { Toaster } from "@/components/ui/sonner";
 import { useMediaMixer } from "./hooks/useMediaMixer";
 import { useMediaCapture } from "./hooks/useMediaCapture";
@@ -218,8 +220,11 @@ function App() {
       <div className="App">
         <AuthGuard>
           <AssessmentGuard subject="math" onStartAssessment={startAssessment}>
-            <TutorProvider>
-              <HintProvider>
+            <ScratchpadProvider>
+              <TutorProvider>
+                {/* AI Teacher Drawing Handler - allows Gemini to draw on whiteboard */}
+                <ScratchpadToolHandler />
+                <HintProvider>
                 <Header
                   sidebarOpen={isSidebarOpen}
                   onToggleSidebar={toggleSidebar}
@@ -320,7 +325,8 @@ function App() {
                 </div>
                 <Toaster richColors closeButton />
               </HintProvider>
-            </TutorProvider>
+              </TutorProvider>
+            </ScratchpadProvider>
           </AssessmentGuard>
         </AuthGuard>
       </div>

@@ -14,13 +14,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Loader2 } from "lucide-react";
+import { useScratchpad } from "@/contexts/ScratchpadContext";
 
 /**
  * A full-featured whiteboard using Excalidraw.
- * Replaces the limited 'react-sketch-canvas' implementation.
+ * Now integrated with AI Teacher - Gemini can draw on this whiteboard!
  */
 const Scratchpad = () => {
-  const [excalidrawAPI, setExcalidrawAPI] = useState<any>(null);
+  const { setExcalidrawAPI, excalidrawAPI } = useScratchpad();
   const [isLoading, setIsLoading] = useState(true);
 
   // Excalidraw loads asynchronously
@@ -37,6 +38,12 @@ const Scratchpad = () => {
     if (excalidrawAPI) {
       excalidrawAPI.resetScene();
     }
+  };
+
+  // Store API in context when mounted
+  const handleMount = (api: any) => {
+    setExcalidrawAPI(api);
+    setIsLoading(false);
   };
 
   return (
@@ -86,10 +93,7 @@ const Scratchpad = () => {
       <div className="h-full w-full" style={{ height: "100%", width: "100%" }}>
         {/* @ts-ignore - Excalidraw types mismatch with current version */}
         <Excalidraw
-          onMount={(api: any) => {
-            setExcalidrawAPI(api);
-            setIsLoading(false);
-          }}
+          onMount={handleMount}
           theme="light"
           UIOptions={{
             canvasActions: {
