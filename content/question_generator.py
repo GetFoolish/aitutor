@@ -182,30 +182,91 @@ Make numbers feel friendly. Use real-world scenarios kids can picture.
 - if personalization available, use their interests/pets
 - fractions? think pizza slices, cake pieces
 - geometry? shapes are everywhere, point them out
+- calculations and arithmetic are expected here
 """,
             "science": """
-SUBJECT: SCIENCE  
-Science is about curiosity. Frame questions as mini-discoveries.
-- "what do you reckon happens when..."
-- "here's something cool about..."
-- make it feel like an experiment, not a test
-- use everyday examples they can relate to
+SUBJECT: SCIENCE
+
+🚨 CRITICAL: This is a SCIENCE question, NOT a math question.
+DO NOT ask arithmetic/calculation questions (no "how many", "what is X + Y", counting).
+
+Focus on CONCEPTUAL understanding:
+- states of matter (solid, liquid, gas)
+- life cycles (plants, animals, insects)
+- weather and seasons
+- body systems and health
+- ecosystems and habitats
+- forces and motion concepts (not calculations)
+- earth and space (planets, day/night, seasons)
+
+QUESTION TYPES for science:
+✅ "ice is which state of matter: solid, liquid, or gas?"
+✅ "what happens to water when it freezes?"
+✅ "which part of the plant makes food from sunlight?"
+✅ "what do herbivores eat?"
+✅ "which planet is closest to the sun?"
+
+❌ AVOID: "how many legs does a spider have?" (that's counting, not science)
+❌ AVOID: "if a plant grows 2cm per day..." (that's math word problem)
+❌ AVOID: any arithmetic disguised as science
+
+Frame as curiosity and discovery, not calculation.
 """,
             "reading": """
-SUBJECT: READING
-Reading comprehension should feel like a conversation about a story.
-- "what's this passage really saying?"
-- "if you had to explain this to a friend..."
-- avoid formal literary analysis language
-- focus on understanding, not memorizing
+SUBJECT: READING / LANGUAGE ARTS
+
+🚨 CRITICAL: This is a READING question, NOT a math question.
+DO NOT ask arithmetic/calculation questions.
+
+Focus on COMPREHENSION and LANGUAGE:
+- main idea and themes
+- character feelings and motivations
+- cause and effect in stories
+- vocabulary in context
+- sequencing events
+- making inferences
+- fact vs opinion
+- author's purpose
+
+QUESTION TYPES for reading:
+✅ "what is the main idea of this passage?"
+✅ "how do you think the character felt when...?"
+✅ "what does the word 'enormous' mean in this sentence?"
+✅ "what happened first, second, third?"
+✅ "why do you think the author wrote this?"
+
+❌ AVOID: any counting or arithmetic
+❌ AVOID: "how many characters..." (counting)
+
+Frame as having a conversation about a story.
 """,
             "computer_science": """
-SUBJECT: CODING
-Code is just giving instructions to a computer.
-- think of it like writing a recipe
-- break things into simple steps
-- "what happens if we..."
-- make debugging feel like solving a puzzle
+SUBJECT: CODING / COMPUTER SCIENCE
+
+🚨 CRITICAL: This is a CODING question, NOT a math question.
+DO NOT ask arithmetic/calculation questions.
+
+Focus on COMPUTATIONAL THINKING:
+- sequences and algorithms (step by step)
+- loops and repetition concepts
+- conditionals (if/then thinking)
+- debugging (finding what's wrong)
+- patterns and abstraction
+- decomposition (breaking problems down)
+- basic logic (true/false, and/or)
+
+QUESTION TYPES for coding:
+✅ "if you want to make a sandwich, what step comes first?"
+✅ "the robot needs to turn left, then walk forward. what happens next?"
+✅ "which instruction is wrong in this sequence?"
+✅ "what happens when the loop runs 3 times?" (conceptual, not "3 x 4")
+✅ "true or false: a computer follows instructions exactly"
+
+❌ AVOID: "how many times does the loop run?" (arithmetic)
+❌ AVOID: math word problems dressed up as coding
+❌ AVOID: pure calculation questions
+
+Frame as giving instructions or solving puzzles.
 """,
         }
         return contexts.get(subject, contexts["math"])
@@ -411,6 +472,19 @@ Try: starting directly with the scenario, using "so", "here we go", "quick one",
         # Get subject-specific context
         subject_context = self._get_subject_context(subject)
 
+        # Build subject-specific instructions to avoid arithmetic in non-math subjects
+        if subject in ("science", "reading", "computer_science"):
+            subject_reminder = f"""
+⚠️ SUBJECT REMINDER: This is a {subject.upper()} question, NOT math!
+- DO NOT include arithmetic, calculations, or counting
+- Focus on conceptual understanding appropriate for {subject}
+- If the topic seems math-related, reframe it as a {subject} concept
+"""
+            arithmetic_instruction = f"NO arithmetic or calculations - this is {subject}, test understanding not math"
+        else:
+            subject_reminder = ""
+            arithmetic_instruction = "Include calculations/arithmetic as appropriate for math questions"
+
         # Main prompt
         prompt = f"""
 {tone_prompt}
@@ -426,6 +500,7 @@ WIDGET SCHEMA: {json.dumps(widget_schema, indent=2)}
 ---
 
 TASK: Generate a {grade} level {subject} question about {topic} using the {widget_type} widget.
+{subject_reminder}
 
 Requirements:
 1. Use the innocent drinks tone (chatty, lowercase, friendly)
@@ -434,6 +509,7 @@ Requirements:
 4. Include 2-3 helpful hints in the same friendly tone
 5. Ensure the answer is correct and clear
 6. Use a UNIQUE opening - not one from the "already used" list
+7. {arithmetic_instruction}
 
 🚨 CRITICAL TONE RULES (the server validates output and REJECTS violations):
 

@@ -113,8 +113,10 @@ def _normalize_subject(subject: str) -> str:
         return "math"
     if s in {"science"}:
         return "science"
-    if s in {"reading", "english", "ela", "language-arts"}:
+    if s in {"reading", "english", "ela", "language-arts", "language_arts"}:
         return "reading"
+    if s in {"coding", "tech", "computer_science", "computer-science", "cs"}:
+        return "computer_science"
     # default
     return "math"
 
@@ -125,6 +127,8 @@ def _default_topics_for_subject(subject: str) -> List[str]:
         return ["science"]
     if s == "reading":
         return ["reading"]
+    if s == "computer_science":
+        return ["coding"]
     return ["math-basics"]
 
 
@@ -219,11 +223,23 @@ def _difficulty_topics(difficulty: str, topic: str) -> List[str]:
 
 
 def _difficulty_widgets(difficulty: str, subject: str) -> List[str]:
-    """Widget types to use.
+    """Widget types to use, adjusted by subject.
 
-    For now we keep it fairly generic so it works across subjects.
+    Math: numeric-input heavy (calculations).
+    Science/Reading/CS: conceptual widgets (radio/dropdown) - avoid arithmetic.
     """
-    # Many non-math topics still work fine with radio/numeric-input.
+    s = _normalize_subject(subject)
+
+    # Non-math subjects should be conceptual, not arithmetic
+    if s in {"science", "reading", "computer_science"}:
+        widgets = {
+            "easy": ["radio", "dropdown"],
+            "medium": ["radio", "dropdown"],
+            "hard": ["radio", "dropdown", "orderer"],
+        }
+        return widgets.get(difficulty, ["radio"])
+
+    # Math: include numeric-input for calculations
     widgets = {
         "easy": ["radio", "numeric-input"],
         "medium": ["numeric-input", "dropdown"],
