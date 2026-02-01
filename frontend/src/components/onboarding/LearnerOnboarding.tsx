@@ -154,7 +154,14 @@ const LearnerOnboarding: React.FC = () => {
       const primaryTopicId = data.selectedTopics[0];
       const primaryTopic = LEARNING_TOPICS.find(t => t.id === primaryTopicId);
       const inferredCategory = primaryTopic?.category || 'math';
-      const inferredSubject = inferredCategory === 'english' ? 'reading' : inferredCategory;
+      // Map categories to backend subject values
+      const categoryToSubject: Record<string, string> = {
+        'math': 'math',
+        'english': 'reading',
+        'science': 'science',
+        'tech': 'computer_science',
+      };
+      const inferredSubject = categoryToSubject[inferredCategory] || 'math';
       localStorage.setItem('learning_pref_topic', allTopics.join(', '));
       localStorage.setItem('learning_pref_grade', data.grade);
       localStorage.setItem('learning_pref_subject', inferredSubject);

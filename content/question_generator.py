@@ -190,6 +190,13 @@ Science is about curiosity. Frame questions as mini-discoveries.
 - "here's something cool about..."
 - make it feel like an experiment, not a test
 - use everyday examples they can relate to
+
+🚨 CRITICAL: This is a SCIENCE assessment, NOT math!
+- Questions must be about scientific concepts, phenomena, or understanding
+- DO NOT ask arithmetic/calculation questions (no "how many", "what is X + Y")
+- Focus on: understanding, observation, cause-effect, classification, prediction
+- Good examples: "what state of matter is ice?", "which planet is closest to the sun?", "what happens when water freezes?"
+- Bad examples: "how many legs do 3 spiders have?" (that's math disguised as science)
 """,
             "reading": """
 SUBJECT: READING
@@ -198,14 +205,28 @@ Reading comprehension should feel like a conversation about a story.
 - "if you had to explain this to a friend..."
 - avoid formal literary analysis language
 - focus on understanding, not memorizing
+
+🚨 CRITICAL: This is a READING assessment, NOT math!
+- Questions must be about comprehension, vocabulary, inference, or language
+- DO NOT ask arithmetic/calculation questions
+- Focus on: main idea, inference, vocabulary in context, author's purpose
+- Good examples: "what's the main idea?", "what does this word mean here?", "why did the character do that?"
+- Bad examples: "how many characters are mentioned?" (that's counting, not comprehension)
 """,
             "computer_science": """
-SUBJECT: CODING
+SUBJECT: CODING / COMPUTER SCIENCE
 Code is just giving instructions to a computer.
 - think of it like writing a recipe
 - break things into simple steps
 - "what happens if we..."
 - make debugging feel like solving a puzzle
+
+🚨 CRITICAL: This is a CODING assessment, NOT math!
+- Questions must be about programming concepts, logic, or computational thinking
+- DO NOT ask pure arithmetic questions (no "calculate", "what is X + Y")
+- Focus on: sequences, loops, conditionals, debugging, algorithms, patterns
+- Good examples: "what does this code print?", "which instruction comes next?", "spot the bug in this code"
+- Bad examples: "what is 5 * 3?" (that's math, not coding)
 """,
         }
         return contexts.get(subject, contexts["math"])
