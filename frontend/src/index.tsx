@@ -32,7 +32,7 @@ const PricingPage = lazy(() => import("./components/pricing/PricingPage"));
 const AssessmentFlow = lazy(() => import("./components/assessment/AssessmentFlow"));
 const AdminVideoPanel = lazy(() => import("./components/admin/AdminVideoPanel"));
 const CostTrackingPage = lazy(() => import("./components/admin/CostTrackingPage"));
-
+const TestScratchpadPage = lazy(() => import("./pages/test-scratchpad"));
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
 );
@@ -156,6 +156,7 @@ root.render(
                 <Route path="/pricing" component={PricingPage} />
                 <Route path="/app/admin/videos" component={AdminVideoPanel} />
                 <Route path="/app/admin/cost-tracking" component={CostTrackingPage} />
+                <Route path="/test-scratchpad" component={TestScratchpadPage} />
                 <Route path="/app/assessment/:subject" component={AssessmentFlow} />
                 <Route path="/landing/:id" component={LandingPageWrapper} /> {/* Dynamic landing page routes */}
                 <Route path="/app" exact component={LandingPageOrApp} />
