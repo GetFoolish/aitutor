@@ -7,6 +7,7 @@ import { storybookDependenciesV2 } from "../../package/perseus/testing/test-depe
 import { RenderStateRoot } from "@khanacademy/wonder-blocks-core";
 import { PerseusI18nContextProvider } from "../../package/perseus/src/components/i18n-context";
 import { mockStrings } from "../../package/perseus/src/strings";
+import { scorePerseusItem } from "@khanacademy/perseus-score";
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || "http://localhost:8000";
 const PROFILE_KEY = "content_v1_profile_id";
@@ -45,44 +46,14 @@ const ContentV1Experience: React.FC = () => {
   const scoreCurrentQuestion = () => {
     if (!rendererRef.current || !question) return false;
     const userInput = rendererRef.current.getUserInput();
-    const widgets = question?.question?.widgets || {};
-
-    for (const [widgetId, widgetInput] of Object.entries(userInput)) {
-      const widgetDef: any = widgets[widgetId];
-      if (!widgetDef) continue;
-
-      if (widgetDef.type === "radio") {
-        const choices = widgetDef.options?.choices || [];
-        const selectedIds = (widgetInput as any).selectedChoiceIds || [];
-        const isMultiSelect = !!widgetDef.options?.multipleSelect;
-
-        if (isMultiSelect) {
-          const correctIndices = choices.map((c: any, i: number) => (c.correct ? i : -1)).filter((i: number) => i >= 0);
-          const selectedIndices = selectedIds
-            .map((id: string) => {
-              const m = id.match(/choice-(\d+)-/);
-              return m ? parseInt(m[1], 10) : -1;
-            })
-            .filter((i: number) => i >= 0);
-          return correctIndices.length === selectedIndices.length && correctIndices.every((idx: number) => selectedIndices.includes(idx));
-        }
-
-        if (selectedIds.length === 1) {
-          const m = selectedIds[0].match(/choice-(\d+)-/);
-          if (!m) return false;
-          const selectedIndex = parseInt(m[1], 10);
-          return choices[selectedIndex]?.correct === true;
-        }
-      }
-
-      if (widgetDef.type === "orderer") {
-        const correctOptions = widgetDef.options?.correctOptions || [];
-        const userOrder = (widgetInput as any).current || [];
-        if (correctOptions.length !== userOrder.length) return false;
-        return correctOptions.every((c: any, idx: number) => c.content === userOrder[idx]);
-      }
+    try {
+      const questionData = question.question;
+      const scoreResult = scorePerseusItem(questionData, userInput, "en");
+      return !!scoreResult?.correct;
+    } catch (err) {
+      console.warn("[ContentV1] Scoring failed, falling back to incorrect.", err);
+      return false;
     }
-    return false;
   };
 
   const handleOnboarding = async () => {
