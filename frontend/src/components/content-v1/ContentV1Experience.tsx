@@ -10,6 +10,8 @@ import { mockStrings } from "../../package/perseus/src/strings";
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || "http://localhost:8000";
 const PROFILE_KEY = "content_v1_profile_id";
+const CONTENT_V1_STARTED_KEY = "content_v1_started";
+const CONTENT_V1_MODE_KEY = "content_v1_mode";
 
 type Step = { id?: string; topic?: string; title?: string; description?: string };
 type Plan = { title?: string; steps?: Step[] };
@@ -26,6 +28,13 @@ const ContentV1Experience: React.FC = () => {
   const [resultText, setResultText] = useState<string>("");
   const [submitted, setSubmitted] = useState(false);
   const [questionStartMs, setQuestionStartMs] = useState<number>(Date.now());
+
+  React.useEffect(() => {
+    sessionStorage.setItem(CONTENT_V1_MODE_KEY, "true");
+    return () => {
+      sessionStorage.removeItem(CONTENT_V1_MODE_KEY);
+    };
+  }, []);
 
   const currentStep = useMemo(() => {
     const steps = plan?.steps || [];
@@ -94,6 +103,7 @@ const ContentV1Experience: React.FC = () => {
       setSubmitted(false);
       setQuestionStartMs(Date.now());
       localStorage.setItem(PROFILE_KEY, data.learner_profile_id);
+      sessionStorage.setItem(CONTENT_V1_STARTED_KEY, "true");
     } catch (e: any) {
       setResultText(e?.message || "Failed to create plan");
     } finally {
@@ -230,6 +240,7 @@ const ContentV1Experience: React.FC = () => {
             className="border-[3px] border-black bg-white text-black font-black"
             onClick={() => {
               localStorage.removeItem(PROFILE_KEY);
+              sessionStorage.removeItem(CONTENT_V1_STARTED_KEY);
               setProfileId("");
               setPlan(null);
               setQuestion(null);

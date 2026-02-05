@@ -20,6 +20,8 @@ interface GradingSidebarProps {
 }
 
 const CONTENT_V1_PROFILE_KEY = "content_v1_profile_id";
+const CONTENT_V1_STARTED_KEY = "content_v1_started";
+const CONTENT_V1_MODE_KEY = "content_v1_mode";
 
 
 const formatSkillName = (name: string) => {
@@ -40,20 +42,31 @@ const formatTime = (timestamp: number | null) => {
 };
 
 export default function GradingSidebar({ open, onToggle, currentSkill }: GradingSidebarProps) {
+    const contentV1Enabled = import.meta.env.VITE_CONTENT_V1_ENABLED !== "false";
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const isUserScrollingRef = useRef(false);
     const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [contentV1ProfileId, setContentV1ProfileId] = useState<string | null>(
         () => localStorage.getItem(CONTENT_V1_PROFILE_KEY),
     );
+    const [contentV1Started, setContentV1Started] = useState<boolean>(
+        () => sessionStorage.getItem(CONTENT_V1_STARTED_KEY) === "true",
+    );
+    const [contentV1Mode, setContentV1Mode] = useState<boolean>(
+        () => sessionStorage.getItem(CONTENT_V1_MODE_KEY) === "true",
+    );
 
     useEffect(() => {
-        const syncProfileId = () => setContentV1ProfileId(localStorage.getItem(CONTENT_V1_PROFILE_KEY));
+        const syncContentV1State = () => {
+            setContentV1ProfileId(localStorage.getItem(CONTENT_V1_PROFILE_KEY));
+            setContentV1Started(sessionStorage.getItem(CONTENT_V1_STARTED_KEY) === "true");
+            setContentV1Mode(sessionStorage.getItem(CONTENT_V1_MODE_KEY) === "true");
+        };
         const onStorage = (e: StorageEvent) => {
-            if (!e.key || e.key === CONTENT_V1_PROFILE_KEY) syncProfileId();
+            if (!e.key || e.key === CONTENT_V1_PROFILE_KEY || e.key === CONTENT_V1_STARTED_KEY || e.key === CONTENT_V1_MODE_KEY) syncContentV1State();
         };
         window.addEventListener("storage", onStorage);
-        const timer = setInterval(syncProfileId, 1500);
+        const timer = setInterval(syncContentV1State, 1500);
         return () => {
             window.removeEventListener("storage", onStorage);
             clearInterval(timer);
@@ -64,14 +77,17 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
     const { data: gradingData, isLoading } = useQuery({
         queryKey: ["grading-panel", contentV1ProfileId],
         queryFn: async () => {
-            if (contentV1ProfileId) {
-                const planRes = await apiUtils.get(
-                    `${DASH_API_URL}/api/content-v1/plan?learner_profile_id=${encodeURIComponent(contentV1ProfileId)}`,
-                );
-                if (planRes.ok) {
-                    const planJson = await planRes.json();
-                    return { mode: "content_v1", ...planJson };
+            if (contentV1Enabled) {
+                if (contentV1ProfileId && contentV1Started) {
+                    const planRes = await apiUtils.get(
+                        `${DASH_API_URL}/api/content-v1/plan?learner_profile_id=${encodeURIComponent(contentV1ProfileId)}`,
+                    );
+                    if (planRes.ok) {
+                        const planJson = await planRes.json();
+                        return { mode: "content_v1", ...planJson };
+                    }
                 }
+                return { mode: "content_v1_pending", subjects: {}, overall_grade: "N/A", overall_mastery: 0 };
             }
             const res = await apiUtils.get(`${DASH_API_URL}/api/grading-panel`);
             if (!res.ok) {
@@ -82,7 +98,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
         staleTime: 10_000, // Keep fresh enough to reflect step progression.
         refetchOnWindowFocus: false, // Don't refetch when window regains focus
         refetchOnMount: true, // Only refetch when component mounts
-        refetchInterval: contentV1ProfileId ? 5000 : false,
+        refetchInterval: contentV1Enabled && contentV1ProfileId && contentV1Started ? 5000 : false,
     });
     
     const isContentV1 = gradingData?.mode === "content_v1";
@@ -324,7 +340,9 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                                 </div>
                             ) : Object.keys(subjects).length === 0 ? (
                                 <div className="text-center py-8 text-sm text-gray-500">
-                                    Start answering questions to see your progress!
+                                    {gradingData?.mode === "content_v1_pending"
+                                        ? "Choose what to learn first. Your journey will appear here."
+                                        : "Start answering questions to see your progress!"}
                                 </div>
                             ) : (
                                 // Render Subject → Grade → Units hierarchy
