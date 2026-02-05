@@ -3,6 +3,8 @@ import sys
 import os
 import json
 import logging
+import random
+import threading
 from typing import List, Dict, Optional
 from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -23,6 +25,7 @@ logger = logging.getLogger(__name__)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from services.DashSystem.dash_system import DASHSystem, Question, GradeLevel
+from services.DashSystem.content_v1 import ContentV1Engine
 from shared.auth_middleware import get_current_user
 from shared.cache_middleware import CacheControlMiddleware
 from shared.cors_config import ALLOWED_ORIGINS, ALLOW_CREDENTIALS, ALLOWED_METHODS, ALLOWED_HEADERS
@@ -34,6 +37,7 @@ logger = get_logger(__name__)
 
 app = FastAPI()
 dash_system = None  # Initialize as None, will be set in startup event
+content_v1_engine = None  # Initialize as None, will be set in startup event
 
 # Configure CORS with secure origins from environment
 app.add_middleware(
@@ -51,14 +55,35 @@ def ensure_dash_system():
     if dash_system is None:
         raise HTTPException(status_code=503, detail="DASHSystem not initialized")
 
+
+def ensure_content_v1():
+    """Ensure Content V1 engine is initialized before use."""
+    if content_v1_engine is None:
+        raise HTTPException(status_code=503, detail="ContentV1 engine not initialized")
+
+
+def trigger_content_v1_queue_fill(profile_id: str, target_depth: int = 5) -> None:
+    """Top up Content V1 queue in the background so API responses stay fast."""
+    if content_v1_engine is None:
+        return
+
+    def _bg_fill() -> None:
+        try:
+            content_v1_engine.ensure_queue_depth(profile_id, target_depth=target_depth)
+        except Exception as e:
+            logger.warning(f"[CONTENT_V1] Background queue fill failed for {profile_id}: {e}")
+
+    threading.Thread(target=_bg_fill, daemon=True).start()
+
 # Startup event to initialize DASH system
 @app.on_event("startup")
 async def startup_event():
     """Initialize DASHSystem on startup"""
-    global dash_system
+    global dash_system, content_v1_engine
     logger.info("Initializing DASHSystem...")
     try:
         dash_system = DASHSystem()
+        content_v1_engine = ContentV1Engine()
         logger.info(f"DASHSystem initialized: {len(dash_system.skills)} skills, {len(dash_system.question_index)} questions in index")
     except Exception as e:
         logger.error(f"Failed to initialize DASHSystem: {e}")
@@ -83,6 +108,43 @@ class PerseusQuestion(BaseModel):
     class Config:
         extra = "allow"  # Allow additional fields that aren't in the model
 
+
+class AnswerSubmission(BaseModel):
+    question_id: str
+    skill_ids: List[str]
+    is_correct: bool
+    response_time_seconds: float
+
+
+class RecommendNextRequest(BaseModel):
+    current_question_ids: List[str]
+    count: int = 5
+
+
+class AssessmentAnswer(BaseModel):
+    question_id: str
+    skill_id: str
+    is_correct: bool
+
+
+class CompleteAssessmentRequest(BaseModel):
+    subject: str
+    answers: List[AssessmentAnswer]
+
+
+class ContentV1OnboardingRequest(BaseModel):
+    age: int = Field(ge=5, le=18)
+    learning_goal: str = Field(min_length=3, max_length=300)
+
+
+class ContentV1SubmitRequest(BaseModel):
+    learner_profile_id: str
+    question_id: str
+    is_correct: bool
+    response_time_ms: int = Field(ge=0)
+    signals: Dict = Field(default_factory=dict)
+
+
 # Health check endpoint for startup verification
 @app.get("/health")
 def health_check():
@@ -99,6 +161,190 @@ def health_check():
         "ready": True,
         "skills_count": len(dash_system.skills),
         "questions_count": len(dash_system.question_index)
+    }
+
+
+@app.post("/api/content-v1/onboarding")
+def content_v1_onboarding(request: Request, payload: ContentV1OnboardingRequest):
+    """
+    Start Content V1 with a learner profile, generated learning plan, and first question.
+    """
+    ensure_content_v1()
+    user_id = get_current_user(request)
+
+    memory = content_v1_engine._memory_context(user_id)
+    plan = content_v1_engine.generate_learning_plan(payload.age, payload.learning_goal, memory)
+
+    profile_id = f"c1p_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{user_id[-6:]}"
+    profile_doc = {
+        "profile_id": profile_id,
+        "learner_profile_id": profile_id,
+        "user_id": user_id,
+        "age": payload.age,
+        "learning_goal": payload.learning_goal.strip(),
+        "learning_plan": plan,
+        "current_step_index": 0,
+        "difficulty_cursor": 0.35,
+        "topic_mastery": {},
+        "created_at": datetime.utcnow(),
+        "updated_at": datetime.utcnow(),
+    }
+
+    from managers.mongodb_manager import mongo_db
+    mongo_db.db["content_v1_profiles"].insert_one(profile_doc)
+
+    # Fast-path: generate first question directly so onboarding stays low-latency.
+    topic, step_index = content_v1_engine._next_topic(profile_doc)
+    first_doc = None
+    first_error = None
+    for _ in range(3):
+        try:
+            first_doc = content_v1_engine.create_or_reuse_question(
+                user_id=user_id,
+                profile_id=profile_id,
+                learning_goal=payload.learning_goal.strip(),
+                topic=topic,
+                age=payload.age,
+                difficulty=float(profile_doc.get("difficulty_cursor", 0.35)),
+                fmt=random.choice(["radio_single", "radio_multi", "orderer"]),
+                memory=memory,
+            )
+            break
+        except Exception as e:
+            first_error = e
+
+    if not first_doc:
+        raise HTTPException(status_code=500, detail=f"Failed to generate first question for Content V1: {first_error}")
+
+    first_question = content_v1_engine.to_question_payload(first_doc, topic, step_index)
+
+    # Track first question as already served.
+    mongo_db.db["content_v1_queue"].insert_one(
+        {
+            "profile_id": profile_id,
+            "question_id": first_doc["question_id"],
+            "step_index": step_index,
+            "topic": topic,
+            "status": "served",
+            "created_at": datetime.utcnow(),
+            "served_at": datetime.utcnow(),
+        }
+    )
+
+    seed_text = (((first_doc.get("item") or {}).get("question") or {}).get("content") or "").strip()
+    next_ready = 0
+    if seed_text:
+        try:
+            next_ready = content_v1_engine.prime_queue_from_seed(
+                profile_id=profile_id,
+                user_id=user_id,
+                learning_goal=payload.learning_goal.strip(),
+                topic=topic,
+                age=payload.age,
+                difficulty=float(profile_doc.get("difficulty_cursor", 0.35)),
+                step_index=step_index,
+                seed_text=seed_text,
+                count=5,
+            )
+        except Exception as e:
+            logger.warning(f"[CONTENT_V1] Seed queue prime failed for {profile_id}: {e}")
+
+    # Fill queue in background while user works on first question.
+    trigger_content_v1_queue_fill(profile_id, target_depth=5)
+
+    return {
+        "learner_profile_id": profile_id,
+        "learning_plan": plan,
+        "first_question": first_question,
+        "next_ready_count": next_ready,
+    }
+
+
+@app.get("/api/content-v1/questions/next")
+def content_v1_next_question(request: Request, learner_profile_id: str):
+    """
+    Return next Content V1 question from queue. Queue is auto-refilled to depth 5.
+    """
+    ensure_content_v1()
+    user_id = get_current_user(request)
+    from managers.mongodb_manager import mongo_db
+
+    profile = mongo_db.db["content_v1_profiles"].find_one(
+        {"learner_profile_id": learner_profile_id, "user_id": user_id}
+    )
+    if not profile:
+        raise HTTPException(status_code=404, detail="Content V1 learner profile not found")
+
+    question = content_v1_engine.pop_next_question(learner_profile_id)
+    if not question:
+        # Fail-soft: try to materialize one question just-in-time.
+        content_v1_engine.ensure_queue_depth(learner_profile_id, target_depth=1)
+        question = content_v1_engine.pop_next_question(learner_profile_id)
+    if not question:
+        raise HTTPException(status_code=404, detail="No Content V1 question available")
+
+    next_ready = mongo_db.db["content_v1_queue"].count_documents(
+        {"profile_id": learner_profile_id, "status": "ready"}
+    )
+    trigger_content_v1_queue_fill(learner_profile_id, target_depth=5)
+    return {"question": question, "next_ready_count": next_ready}
+
+
+@app.post("/api/content-v1/questions/submit")
+def content_v1_submit(request: Request, payload: ContentV1SubmitRequest):
+    """
+    Record Content V1 answer and update mastery/progression.
+    """
+    ensure_content_v1()
+    user_id = get_current_user(request)
+    from managers.mongodb_manager import mongo_db
+
+    profile = mongo_db.db["content_v1_profiles"].find_one(
+        {"learner_profile_id": payload.learner_profile_id, "user_id": user_id}
+    )
+    if not profile:
+        raise HTTPException(status_code=404, detail="Content V1 learner profile not found")
+
+    result = content_v1_engine.submit_result(
+        payload.learner_profile_id,
+        payload.question_id,
+        payload.is_correct,
+        payload.response_time_ms,
+        payload.signals or {},
+    )
+    result["next_ready_count"] = mongo_db.db["content_v1_queue"].count_documents(
+        {"profile_id": payload.learner_profile_id, "status": "ready"}
+    )
+    trigger_content_v1_queue_fill(payload.learner_profile_id, target_depth=5)
+    return result
+
+
+@app.get("/api/content-v1/plan")
+def content_v1_plan(request: Request, learner_profile_id: str):
+    """
+    Return Content V1 plan + current progression state.
+    """
+    ensure_content_v1()
+    user_id = get_current_user(request)
+    from managers.mongodb_manager import mongo_db
+
+    profile = mongo_db.db["content_v1_profiles"].find_one(
+        {"learner_profile_id": learner_profile_id, "user_id": user_id},
+        {"_id": 0},
+    )
+    if not profile:
+        raise HTTPException(status_code=404, detail="Content V1 learner profile not found")
+
+    ready_count = mongo_db.db["content_v1_queue"].count_documents(
+        {"profile_id": learner_profile_id, "status": "ready"}
+    )
+    return {
+        "learner_profile_id": profile["learner_profile_id"],
+        "learning_plan": profile.get("learning_plan", {}),
+        "current_step_index": profile.get("current_step_index", 0),
+        "difficulty_cursor": profile.get("difficulty_cursor", 0.35),
+        "topic_mastery": profile.get("topic_mastery", {}),
+        "next_ready_count": ready_count,
     }
 
 
@@ -436,25 +682,6 @@ def log_question_displayed(request: Request, display_info: dict):
     logger.info(f"{'='*80}\n")
     return {"success": True}
 
-
-class AnswerSubmission(BaseModel):
-    question_id: str
-    skill_ids: List[str]
-    is_correct: bool
-    response_time_seconds: float
-
-class RecommendNextRequest(BaseModel):
-    current_question_ids: List[str]
-    count: int = 5
-
-class AssessmentAnswer(BaseModel):
-    question_id: str
-    skill_id: str
-    is_correct: bool
-
-class CompleteAssessmentRequest(BaseModel):
-    subject: str
-    answers: List[AssessmentAnswer]
 
 @app.post("/api/submit-answer")
 def submit_answer(request: Request, answer: AnswerSubmission):

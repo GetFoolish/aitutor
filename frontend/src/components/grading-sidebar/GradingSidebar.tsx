@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import cn from "classnames";
 import { GraduationCap, ChevronRight, ChevronLeft, TrendingUp, Clock, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ interface GradingSidebarProps {
     currentSkill?: string | null;
 }
 
+const CONTENT_V1_PROFILE_KEY = "content_v1_profile_id";
 
 
 const formatSkillName = (name: string) => {
@@ -42,27 +43,82 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const isUserScrollingRef = useRef(false);
     const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const [contentV1ProfileId, setContentV1ProfileId] = useState<string | null>(
+        () => localStorage.getItem(CONTENT_V1_PROFILE_KEY),
+    );
+
+    useEffect(() => {
+        const syncProfileId = () => setContentV1ProfileId(localStorage.getItem(CONTENT_V1_PROFILE_KEY));
+        const onStorage = (e: StorageEvent) => {
+            if (!e.key || e.key === CONTENT_V1_PROFILE_KEY) syncProfileId();
+        };
+        window.addEventListener("storage", onStorage);
+        const timer = setInterval(syncProfileId, 1500);
+        return () => {
+            window.removeEventListener("storage", onStorage);
+            clearInterval(timer);
+        };
+    }, []);
     
     // Fetch grading panel data from API
     const { data: gradingData, isLoading } = useQuery({
-        queryKey: ["grading-panel"],
+        queryKey: ["grading-panel", contentV1ProfileId],
         queryFn: async () => {
+            if (contentV1ProfileId) {
+                const planRes = await apiUtils.get(
+                    `${DASH_API_URL}/api/content-v1/plan?learner_profile_id=${encodeURIComponent(contentV1ProfileId)}`,
+                );
+                if (planRes.ok) {
+                    const planJson = await planRes.json();
+                    return { mode: "content_v1", ...planJson };
+                }
+            }
             const res = await apiUtils.get(`${DASH_API_URL}/api/grading-panel`);
             if (!res.ok) {
                 throw new Error(`Failed to fetch grading panel (${res.status})`);
             }
-            return res.json();
+            return { mode: "legacy", ...(await res.json()) };
         },
-        staleTime: 60_000, // Consider data fresh for 60 seconds
+        staleTime: 10_000, // Keep fresh enough to reflect step progression.
         refetchOnWindowFocus: false, // Don't refetch when window regains focus
         refetchOnMount: true, // Only refetch when component mounts
-        // Removed refetchInterval - we'll manually invalidate on answer submission
+        refetchInterval: contentV1ProfileId ? 5000 : false,
     });
     
-    // Extract data from grading panel response
-    const subjects = gradingData?.subjects || {};
-    const overallGrade = gradingData?.overall_grade || "N/A";
-    const overallMastery = gradingData?.overall_mastery || 0;
+    const isContentV1 = gradingData?.mode === "content_v1";
+    const v1Plan = gradingData?.learning_plan || {};
+    const v1Steps = v1Plan?.steps || [];
+    const v1CurrentStep = Number(gradingData?.current_step_index || 0);
+    const v1ReadyCount = Number(gradingData?.next_ready_count || 0);
+    const v1ProgressPct = v1Steps.length > 0 ? Math.max(0, Math.min(100, Math.round((v1CurrentStep / v1Steps.length) * 100))) : 0;
+
+    const subjects = isContentV1
+        ? {
+              "Content V1 Journey": {
+                  grade_levels: {
+                      "Learning Path": {
+                          units: v1Steps.map((step: any, idx: number) => ({
+                              id: step?.id || `step_${idx + 1}`,
+                              name: step?.title || step?.topic || `Step ${idx + 1}`,
+                              mastery: idx < v1CurrentStep ? 100 : idx === v1CurrentStep ? Math.max(5, v1ProgressPct) : 0,
+                              questions_answered: idx < v1CurrentStep ? 1 : 0,
+                              questions_correct: idx < v1CurrentStep ? 1 : 0,
+                              last_practiced: null,
+                          })),
+                      },
+                  },
+              },
+          }
+        : gradingData?.subjects || {};
+
+    const overallGrade = isContentV1
+        ? (v1Steps.length ? `${Math.min(v1CurrentStep + 1, v1Steps.length)}/${v1Steps.length}` : "N/A")
+        : gradingData?.overall_grade || "N/A";
+    const overallMastery = isContentV1 ? v1ProgressPct : gradingData?.overall_mastery || 0;
+    const effectiveCurrentSkill =
+        isContentV1 && v1Steps.length
+            ? v1Steps[Math.min(v1CurrentStep, v1Steps.length - 1)]?.id || `step_${Math.min(v1CurrentStep + 1, v1Steps.length)}`
+            : currentSkill;
     
     // Debug logging
     useEffect(() => {
@@ -82,10 +138,10 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
     
     // Debug current skill changes
     useEffect(() => {
-        if (currentSkill) {
+        if (effectiveCurrentSkill) {
             console.log('[GradingSidebar] Current skill changed to:', currentSkill);
         }
-    }, [currentSkill]);
+    }, [effectiveCurrentSkill, currentSkill]);
 
     const scrollToSkill = (skill: string) => {
         const container = scrollContainerRef.current;
@@ -114,9 +170,9 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
 
     // Auto-scroll when open, currentSkill, or data loading state changes
     useEffect(() => {
-        if (open && currentSkill && !isLoading && gradingData) {
+        if (open && effectiveCurrentSkill && !isLoading && gradingData) {
             // If skill changed, reset user scrolling flag and scroll immediately
-            const skillChanged = prevSkillRef.current !== currentSkill;
+            const skillChanged = prevSkillRef.current !== effectiveCurrentSkill;
             if (skillChanged) {
                 isUserScrollingRef.current = false;
             }
@@ -130,15 +186,15 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
             // Small delay to ensure content is rendered/expanded
             const timeoutId = setTimeout(() => {
                 if (!isUserScrollingRef.current) {
-                    scrollToSkill(currentSkill);
+                    scrollToSkill(effectiveCurrentSkill);
                 }
             }, delay);
 
-            prevSkillRef.current = currentSkill;
+            prevSkillRef.current = effectiveCurrentSkill;
             return () => clearTimeout(timeoutId);
         }
         prevOpenRef.current = open;
-    }, [open, currentSkill, isLoading, gradingData]);
+    }, [open, effectiveCurrentSkill, isLoading, gradingData]);
 
     // Handle user scrolling and inactivity
     useEffect(() => {
@@ -154,8 +210,8 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
 
             scrollTimeoutRef.current = setTimeout(() => {
                 isUserScrollingRef.current = false;
-                if (currentSkill && open) {
-                    scrollToSkill(currentSkill);
+                if (effectiveCurrentSkill && open) {
+                    scrollToSkill(effectiveCurrentSkill);
                 }
             }, 3000);
         };
@@ -168,7 +224,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                 clearTimeout(scrollTimeoutRef.current);
             }
         };
-    }, [currentSkill, open]);
+    }, [effectiveCurrentSkill, open]);
 
     // Handle click elsewhere (on the container background) to re-center immediately
     const handleContainerClick = (e: React.MouseEvent) => {
@@ -184,8 +240,8 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
             clearTimeout(scrollTimeoutRef.current);
         }
 
-        if (currentSkill && open) {
-            scrollToSkill(currentSkill);
+        if (effectiveCurrentSkill && open) {
+            scrollToSkill(effectiveCurrentSkill);
         }
     };
 
@@ -248,6 +304,9 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                                     <div className="text-[10px] font-black tracking-wide text-black mb-1">Overall Grade</div>
                                     <div className="text-5xl font-black text-black">{overallGrade}</div>
                                     <div className="text-xs font-bold text-black mt-1">{overallMastery}% Mastery</div>
+                                    {isContentV1 ? (
+                                        <div className="text-[10px] font-black text-black mt-1">Queue Ready: {v1ReadyCount}</div>
+                                    ) : null}
                                 </div>
                             </div>
                         )}
@@ -291,7 +350,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                                     ? Math.round((unit.questions_correct / unit.questions_answered) * 100)
                                     : 0;
 
-                                const isCurrentSkill = unit.id === currentSkill;
+                                const isCurrentSkill = unit.id === effectiveCurrentSkill;
                                 
                                 return (
                                     <AccordionItem
