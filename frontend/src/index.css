@@ -20,45 +20,35 @@ code {
 }
 
 /* ============================================
-   SCRATCHPAD / EXCALIDRAW CANVAS STYLES
+   TEACHING CANVAS / WHITEBOARD STYLES
    ============================================ */
 
-/* Container for the Excalidraw whiteboard */
-.scratchpad-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 9999;
+/* Always-visible teaching canvas below the question area */
+.teaching-canvas-container {
+  position: relative;
+  width: 100%;
+  min-height: 400px;
+  max-height: 600px;
   background: #fff;
   border-radius: 8px;
   overflow: hidden;
+  border: 2px solid #e5e5e5;
+  margin-top: 12px;
   pointer-events: auto !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-/* Ensure Excalidraw fills its container and is interactive */
-.scratchpad-container > div {
+.teaching-canvas-container > div {
   height: 100% !important;
   width: 100% !important;
   pointer-events: auto !important;
 }
 
-.scratchpad-container .excalidraw {
-  height: 100% !important;
-  width: 100% !important;
+.teaching-canvas-container canvas {
   pointer-events: auto !important;
 }
 
-.scratchpad-container .excalidraw-container {
-  pointer-events: auto !important;
-}
-
-.scratchpad-container canvas {
-  pointer-events: auto !important;
-}
-
-/* Make question panel relative for absolute positioning of scratchpad */
+/* Make question panel relative for proper stacking */
 .question-panel {
   position: relative;
   min-height: 500px;

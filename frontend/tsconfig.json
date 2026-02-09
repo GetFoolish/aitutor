@@ -47,6 +47,7 @@
     "src/**/*.test.tsx",
     "src/**/*.stories.tsx",
     "src/**/*.cypress.ts",
+    "src/test-setup.ts",
     "src/package/**/*"
   ],
   "ts-node": {

@@ -1,10 +1,9 @@
 """
 Password hashing and validation utilities
+Uses bcrypt directly (passlib has compatibility issues with bcrypt >= 4.1)
 """
-from passlib.context import CryptContext
+import bcrypt
 
-# Create password context with bcrypt
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(password: str) -> str:
     """
@@ -14,9 +13,14 @@ def hash_password(password: str) -> str:
         password: Plain text password
 
     Returns:
-        Hashed password
+        Hashed password string
     """
-    return pwd_context.hash(password)
+    # bcrypt requires bytes, and ignores anything past 72 bytes anyway
+    password_bytes = password.encode('utf-8')[:72]
+    salt = bcrypt.gensalt(rounds=12)
+    hashed = bcrypt.hashpw(password_bytes, salt)
+    return hashed.decode('utf-8')
+
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
@@ -24,12 +28,18 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
     Args:
         plain_password: Plain text password
-        hashed_password: Bcrypt hash
+        hashed_password: Bcrypt hash string
 
     Returns:
         True if password matches, False otherwise
     """
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        password_bytes = plain_password.encode('utf-8')[:72]
+        hashed_bytes = hashed_password.encode('utf-8')
+        return bcrypt.checkpw(password_bytes, hashed_bytes)
+    except Exception:
+        return False
+
 
 def validate_password_strength(password: str) -> tuple[bool, str]:
     """

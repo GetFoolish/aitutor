@@ -1,5 +1,5 @@
-import React, { useRef, useState } from "react";
-import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
+import React, { useRef, useState, useEffect } from "react";
+import { TeachingCanvas, TeachingCanvasHandle } from "../teaching-canvas";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -14,13 +14,13 @@ import {
 } from "@/components/ui/alert-dialog";
 
 interface ScratchpadProps {
-  onCanvasReady?: (canvasRef: ReactSketchCanvasRef) => void;
+  onCanvasReady?: (canvasRef: TeachingCanvasHandle) => void;
 }
 
 // Global reference for TutorDrawingHandler and frame capture
 declare global {
   interface Window {
-    __sketchCanvasRef?: ReactSketchCanvasRef | null;
+    __teachingCanvasRef?: TeachingCanvasHandle | null;
   }
 }
 
@@ -36,13 +36,13 @@ const COLORS = [
 const STROKE_WIDTHS = [2, 4, 8, 12];
 
 const Scratchpad = ({ onCanvasReady }: ScratchpadProps) => {
-  const canvasRef = useRef<ReactSketchCanvasRef>(null);
+  const canvasRef = useRef<TeachingCanvasHandle>(null);
   const [strokeColor, setStrokeColor] = useState("#1e1e1e");
   const [strokeWidth, setStrokeWidth] = useState(4);
   const [isEraser, setIsEraser] = useState(false);
 
   const handleClearAll = () => {
-    canvasRef.current?.clearCanvas();
+    canvasRef.current?.clear();
   };
 
   const handleUndo = () => {
@@ -55,22 +55,22 @@ const Scratchpad = ({ onCanvasReady }: ScratchpadProps) => {
 
   const toggleEraser = () => {
     if (isEraser) {
-      canvasRef.current?.eraseMode(false);
+      canvasRef.current?.setEraserMode(false);
       setIsEraser(false);
     } else {
-      canvasRef.current?.eraseMode(true);
+      canvasRef.current?.setEraserMode(true);
       setIsEraser(true);
     }
   };
 
   // Store ref globally when canvas is ready
-  React.useEffect(() => {
+  useEffect(() => {
     if (canvasRef.current) {
-      window.__sketchCanvasRef = canvasRef.current;
+      window.__teachingCanvasRef = canvasRef.current;
       onCanvasReady?.(canvasRef.current);
     }
     return () => {
-      window.__sketchCanvasRef = null;
+      window.__teachingCanvasRef = null;
     };
   }, [onCanvasReady]);
 
@@ -103,7 +103,7 @@ const Scratchpad = ({ onCanvasReady }: ScratchpadProps) => {
               onClick={() => {
                 setStrokeColor(color);
                 setIsEraser(false);
-                canvasRef.current?.eraseMode(false);
+                canvasRef.current?.setStrokeColor(color);
               }}
               style={{
                 width: 24,
@@ -126,7 +126,10 @@ const Scratchpad = ({ onCanvasReady }: ScratchpadProps) => {
           {STROKE_WIDTHS.map((width) => (
             <button
               key={width}
-              onClick={() => setStrokeWidth(width)}
+              onClick={() => {
+                setStrokeWidth(width);
+                canvasRef.current?.setStrokeWidth(width);
+              }}
               style={{
                 width: 28,
                 height: 28,
@@ -197,17 +200,11 @@ const Scratchpad = ({ onCanvasReady }: ScratchpadProps) => {
 
       {/* Canvas */}
       <div style={{ flex: 1, position: 'relative' }}>
-        <ReactSketchCanvas
+        <TeachingCanvas
           ref={canvasRef}
-          strokeWidth={strokeWidth}
-          strokeColor={strokeColor}
-          canvasColor="#ffffff"
-          style={{
-            border: 'none',
-            borderRadius: 0,
-          }}
-          exportWithBackgroundImage={false}
-          withTimestamp={false}
+          width={800}
+          height={600}
+          backgroundColor="#ffffff"
         />
       </div>
     </div>

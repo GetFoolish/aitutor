@@ -32,6 +32,7 @@ import { useMediaCapture } from "./hooks/useMediaCapture";
 import { useDeveloperMode } from "./hooks/use-developer-mode";
 import { apiUtils } from "./lib/api-utils";
 import { TutorDrawingHandler } from "./components/tutor-drawing-handler/TutorDrawingHandler";
+import type { TeachingCanvasHandle } from "./components/teaching-canvas";
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 
@@ -54,7 +55,8 @@ function App() {
   const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
   const [mixerStream, setMixerStream] = useState<MediaStream | null>(null);
   const mixerVideoRef = useRef<HTMLVideoElement>(null);
-  const [isScratchpadOpen, setScratchpadOpen] = useState(false);
+  // Canvas is always visible; this controls whether the student can draw on it
+  const [isScratchpadOpen, setScratchpadOpen] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isGradingSidebarOpen, setIsGradingSidebarOpen] = useState(true);
   const [currentSkill, setCurrentSkill] = useState<string | null>(null);
@@ -85,23 +87,14 @@ function App() {
 
   const [privacyEnabled, setPrivacyEnabled] = useState(false);
 
-  // Sketch canvas reference for scratchpad capture
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [sketchCanvasRef, setSketchCanvasRef] = useState<any>(null);
+  // Teaching canvas reference for scratchpad capture and AI drawing
+  const [teachingCanvasRef, setTeachingCanvasRef] = useState<TeachingCanvasHandle | null>(null);
 
-  // Callback for when sketch canvas is ready
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleCanvasReady = useCallback((canvasRef: any) => {
-    setSketchCanvasRef(canvasRef);
-    console.log('✅ Sketch canvas ready for frame capture');
+  // Callback for when teaching canvas is ready
+  const handleCanvasReady = useCallback((canvasRef: TeachingCanvasHandle) => {
+    setTeachingCanvasRef(canvasRef);
+    console.log('✅ Teaching canvas ready for frame capture');
   }, []);
-
-  // Clear canvas ref when scratchpad closes
-  useEffect(() => {
-    if (!isScratchpadOpen) {
-      setSketchCanvasRef(null);
-    }
-  }, [isScratchpadOpen]);
 
   // MediaMixer hook for local video mixing - uses state from useMediaCapture
   const mediaMixer = useMediaMixer({
@@ -279,7 +272,7 @@ function App() {
                         onFrameCaptured={(canvas) => {
                           mediaMixer.updateScratchpadFrame(canvas);
                         }}
-                        sketchCanvasRef={sketchCanvasRef}
+                        teachingCanvasRef={teachingCanvasRef}
                         isScratchpadOpen={isScratchpadOpen}
                       >
                           <QuestionDisplay
@@ -314,12 +307,10 @@ function App() {
                             }}
                           />
                         </ScratchpadCapture>
-                        {/* Scratchpad */}
-                        {isScratchpadOpen && (
-                          <div className="scratchpad-container">
-                            <Scratchpad onCanvasReady={handleCanvasReady} />
-                          </div>
-                        )}
+                        {/* Teaching Canvas — always visible as primary whiteboard */}
+                        <div className="teaching-canvas-container">
+                          <Scratchpad onCanvasReady={handleCanvasReady} />
+                        </div>
                       </div>
                       <FloatingControlPanel
                         renderCanvasRef={mediaMixer.canvasRef}

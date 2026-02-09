@@ -1,6 +1,12 @@
 /**
  * Tutor Client - Direct Gemini Live API client wrapper
  * Provides event-driven interface for Gemini Live API communication
+ *
+ * Improvements over prototype:
+ * - Auto-reconnection with exponential backoff
+ * - Session activity tracking (idle detection)
+ * - Graceful disconnect vs error disconnect handling
+ * - Resilient sendToolResponse / sendRealtimeInput
  */
 
 import { EventEmitter } from "eventemitter3";
@@ -28,50 +34,48 @@ export interface TranscriptionData {
 
 /**
  * Event types that can be emitted by the tutor client.
- * Each event corresponds to a specific message from Gemini or client state change.
  */
 export interface TutorClientEventTypes {
-  // Emitted when audio data is received
   audio: (data: ArrayBuffer) => void;
-  // Emitted when the connection closes
   close: (event: CloseEvent) => void;
-  // Emitted when content is received from the server
   content: (data: LiveServerContent) => void;
-  // Emitted when an error occurs
   error: (error: ErrorEvent) => void;
-  // Emitted when the server interrupts the current generation
   interrupted: () => void;
-  // Emitted when user's speech is transcribed (input audio transcription)
   inputTranscript: (data: TranscriptionData) => void;
-  // Emitted for logging events
   log: (log: StreamingLog) => void;
-  // Emitted when the connection opens
   open: () => void;
-  // Emitted when model's speech is transcribed (output audio transcription)
   outputTranscript: (data: TranscriptionData) => void;
-  // Emitted when the initial setup is complete
   setupcomplete: () => void;
-  // Emitted when a tool call is received
   toolcall: (toolCall: LiveServerToolCall) => void;
-  // Emitted when a tool call is cancelled
-  toolcallcancellation: (
-    toolcallCancellation: LiveServerToolCallCancellation
-  ) => void;
-  // Emitted when the current turn is complete
+  toolcallcancellation: (tc: LiveServerToolCallCancellation) => void;
   turncomplete: () => void;
 }
 
+// ──────────────────────────────────────────────────────────
+// Reconnection settings
+// ──────────────────────────────────────────────────────────
+const MAX_RECONNECT_ATTEMPTS = 3;
+const BASE_RECONNECT_DELAY_MS = 2_000;
+
 export class TutorClient extends EventEmitter<TutorClientEventTypes> {
   private tutorService: TutorService | null = null;
-  private _status: "connected" | "disconnected" | "connecting" = "disconnected";
+  private _status: "connected" | "disconnected" | "connecting" | "reconnecting" = "disconnected";
   private config: LiveConnectConfig | null = null;
+  private preferredLanguage: string = "English";
+
+  // Reconnection state
+  private reconnectAttempts = 0;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private intentionalDisconnect = false;
+
+  // Activity tracking
+  private lastActivityTime = 0;
 
   public get status() {
     return this._status;
   }
 
   public get session() {
-    // Return a proxy session object for compatibility
     return this.tutorService?.isConnected() ? {} : null;
   }
 
@@ -93,6 +97,10 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
     this.emit("log", log);
   }
 
+  private touchActivity() {
+    this.lastActivityTime = Date.now();
+  }
+
   async connect(config: LiveConnectConfig, preferredLanguage?: string): Promise<boolean> {
     if (this._status === "connected" || this._status === "connecting") {
       return false;
@@ -100,50 +108,100 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
 
     this._status = "connecting";
     this.config = config;
+    this.preferredLanguage = preferredLanguage || "English";
+    this.intentionalDisconnect = false;
+    this.reconnectAttempts = 0;
 
+    return this.doConnect();
+  }
+
+  private async doConnect(): Promise<boolean> {
     try {
       // Initialize Tutor Service with preferred language
       this.tutorService = new TutorService();
-      await this.tutorService.initialize(preferredLanguage || "English");
+      await this.tutorService.initialize(this.preferredLanguage);
 
       // Connect directly to Gemini Live API
-      await this.tutorService.connect(config, {
+      await this.tutorService.connect(this.config!, {
         onopen: () => {
           this._status = "connected";
+          this.reconnectAttempts = 0;
+          this.touchActivity();
           this.log("client.open", "Connected");
           this.emit("open");
         },
         onmessage: (message: LiveServerMessage) => {
-          // Process Gemini message directly
+          this.touchActivity();
           this.processGeminiMessage(message);
         },
         onerror: (error: Error) => {
-          this._status = "disconnected";
-          const errorEvent = new ErrorEvent("error", { message: error.message });
           this.log("server.error", error.message);
-          this.emit("error", errorEvent);
+          this.emit("error", new ErrorEvent("error", { message: error.message }));
+          // Don't set _status here - let onclose handle reconnection
         },
         onclose: (event: { reason?: string }) => {
+          const wasConnected = this._status === "connected";
           this._status = "disconnected";
-          const closeEvent = new CloseEvent("close", { reason: event.reason });
           this.log(
             "server.close",
             `disconnected ${event.reason ? `with reason: ${event.reason}` : ""}`
           );
-          this.emit("close", closeEvent);
+
+          if (this.intentionalDisconnect) {
+            // User initiated disconnect — no reconnection
+            this.emit("close", new CloseEvent("close", { reason: event.reason }));
+          } else if (wasConnected && this.reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+            // Unexpected disconnect — try to reconnect
+            this.scheduleReconnect();
+          } else {
+            // Give up
+            this.emit("close", new CloseEvent("close", { reason: event.reason }));
+          }
         },
       });
 
       return true;
     } catch (error) {
       console.error("Error connecting to Gemini:", error);
+
+      if (!this.intentionalDisconnect && this.reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+        this.scheduleReconnect();
+        return false;
+      }
+
       this._status = "disconnected";
-      const errorEvent = new ErrorEvent("error", {
+      this.emit("error", new ErrorEvent("error", {
         message: error instanceof Error ? error.message : "Failed to connect to Gemini",
-      });
-      this.emit("error", errorEvent);
+      }));
       return false;
     }
+  }
+
+  private scheduleReconnect() {
+    this.reconnectAttempts++;
+    const delay = BASE_RECONNECT_DELAY_MS * Math.pow(2, this.reconnectAttempts - 1);
+    this._status = "reconnecting";
+
+    console.log(
+      `🔄 TutorClient: Reconnecting in ${delay / 1000}s (attempt ${this.reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`
+    );
+    this.log("client.reconnecting", `Attempt ${this.reconnectAttempts} in ${delay}ms`);
+
+    this.reconnectTimer = setTimeout(async () => {
+      this.reconnectTimer = null;
+      if (this.intentionalDisconnect) return;
+
+      try {
+        // Cleanup old service
+        if (this.tutorService) {
+          try { this.tutorService.disconnect(); } catch { /* ignore */ }
+          this.tutorService = null;
+        }
+        await this.doConnect();
+      } catch (err) {
+        console.error("Reconnect failed:", err);
+      }
+    }, delay);
   }
 
   private processGeminiMessage(message: LiveServerMessage) {
@@ -228,6 +286,14 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
   }
 
   public disconnect() {
+    this.intentionalDisconnect = true;
+
+    // Cancel any pending reconnection
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+
     if (!this.tutorService) {
       return false;
     }
@@ -244,22 +310,22 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
       return;
     }
 
+    this.touchActivity();
+
     let hasAudio = false;
     let hasVideo = false;
 
     for (const ch of chunks) {
-      // Send directly to Gemini
-      this.tutorService.sendRealtimeInput(ch);
+      try {
+        this.tutorService.sendRealtimeInput(ch);
+      } catch (err) {
+        console.warn("TutorClient: Error sending realtime input chunk:", err);
+        continue;
+      }
 
-      if (ch.mimeType.includes("audio")) {
-        hasAudio = true;
-      }
-      if (ch.mimeType.includes("image")) {
-        hasVideo = true;
-      }
-      if (hasAudio && hasVideo) {
-        break;
-      }
+      if (ch.mimeType.includes("audio")) hasAudio = true;
+      if (ch.mimeType.includes("image")) hasVideo = true;
+      if (hasAudio && hasVideo) break;
     }
 
     const message =
@@ -275,16 +341,17 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
 
   sendToolResponse(toolResponse: LiveClientToolResponse) {
     if (!this.tutorService || this._status !== "connected") {
+      console.warn("TutorClient: Cannot send tool response — not connected");
       return;
     }
 
-    if (
-      toolResponse.functionResponses &&
-      toolResponse.functionResponses.length
-    ) {
-      // Send directly to Gemini
-      this.tutorService.sendToolResponse(toolResponse);
-      this.log(`client.toolResponse`, toolResponse);
+    if (toolResponse.functionResponses && toolResponse.functionResponses.length) {
+      try {
+        this.tutorService.sendToolResponse(toolResponse);
+        this.log(`client.toolResponse`, toolResponse);
+      } catch (err) {
+        console.error("TutorClient: Error sending tool response:", err);
+      }
     }
   }
 
@@ -293,7 +360,8 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
       return;
     }
 
-    // Send directly to Gemini
+    this.touchActivity();
+
     this.tutorService.sendClientContent(
       Array.isArray(parts) ? parts : [parts],
       turnComplete

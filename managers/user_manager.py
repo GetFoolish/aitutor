@@ -541,13 +541,21 @@ class UserManager:
         # Calculate grade from age
         current_grade = calculate_grade_from_age(age)
 
-        # Get all skills for cold-start initialization
-        from services.DashSystem.dash_system import DASHSystem
-        dash_system = DASHSystem()
-        all_skills = dash_system.skills
+        # NOTE: Skill cold-start initialization is deferred to first question load
+        # via DASHSystem (Dash API). Loading the full Khan Academy hierarchy here
+        # would block the Auth Service event loop for minutes.
+        # The DASHSystem on the Dash API will initialize skills lazily.
+        skill_states = {}
 
-        # Initialize skills based on grade
-        skill_states = self.initialize_skills_for_grade(current_grade, all_skills)
+        try:
+            from services.DashSystem.dash_system import DASHSystem
+            dash_system = DASHSystem.get_instance() if hasattr(DASHSystem, 'get_instance') else None
+            if dash_system and hasattr(dash_system, 'skills') and dash_system.skills:
+                skill_states = self.initialize_skills_for_grade(current_grade, dash_system.skills)
+                logger.info(f"[COLD_START] Initialized {len(skill_states)} skills for grade {current_grade}")
+        except Exception as e:
+            logger.warning(f"[COLD_START] Deferred skill initialization (will init on first question): {e}")
+            skill_states = {}
 
         current_time = time.time()
 
