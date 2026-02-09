@@ -1,0 +1,49 @@
+{
+  "session_id": "sess_a1ba3ed10fe74375",
+  "user_id": "user_de43ef867ee7",
+  "start_time": "2026-01-05T14:00:13.530000",
+  "end_time": "2026-01-05T19:02:42.332374",
+  "turn_count": 39,
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "[SYSTEM PROMPT FOR ADAM] You are Adam, an advanced AI Teaching Assistant. You are starting a tutoring session. Please greet the student warmly and ask how they're doing today. Make them feel welcome and excited to learn.",
+      "timestamp": 1767603613.53
+    },
+    {
+      "speaker": "tutor",
+      "text": "Hey there! Welcome. How are you feeling today? Ready to dive into some math together?",
+      "timestamp": 1767621623.493
+    },
+    {
+      "speaker": "user",
+      "text": "Hi Adam, how are you?",
+      "timestamp": 1767621633.275
+    },
+    {
+      "speaker": "tutor",
+      "text": "I'm doing great, thanks for asking! It's wonderful to have you here. It looks like you have a problem about horses. Where would you like to start?",
+      "timestamp": 1767621642.356
+    },
+    {
+      "speaker": "user",
+      "text": "O kay so Adam can you please read this que stion lo ud for me and al so ex pla in it to me and re ad the op tions that are available.",
+      "timestamp": 1767621658.341
+    },
+    {
+      "speaker": "tutor",
+      "text": "**Analyzing the Task** Okay, I've got it. I'm focusing on breaking down the steps. First, it's a verbal recitation of the math problem, reading aloud precisely what's written. Next, a clear explanation of *how* to solve it, without giving away the answer. Finally, I'll read out the provided options. This is a structured approach, keeping it simple. Sure thing! The problem says: \"Mia had 4 horses. She got 1 more horse. Now she has ____ horses.\" The options",
+      "timestamp": 1767621668.476
+    },
+    {
+      "speaker": "user",
+      "text": "That would be fi ve .",
+      "timestamp": 1767621725.182
+    },
+    {
+      "speaker": "tutor",
+      "text": "That's exactly right! When you add 1 more horse to the 4 you already have, you get 5 horses in total. So, the correct answer is A.",
+      "timestamp": 1767621729.503
+    }
+  ]
+}

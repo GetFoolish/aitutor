@@ -1,0 +1,1038 @@
+[
+  {
+    "session_id": "sess_2a253c199c194c90",
+    "timestamp": 1767182910.8955176,
+    "results": []
+  },
+  {
+    "session_id": "sess_2a253c199c194c90",
+    "timestamp": 1767182935.505253,
+    "results": []
+  },
+  {
+    "session_id": "sess_50eac038229f4a7a",
+    "timestamp": 1767285887.8459141,
+    "results": []
+  },
+  {
+    "session_id": "sess_50eac038229f4a7a",
+    "timestamp": 1767285931.8509178,
+    "results": [
+      {
+        "memory": {
+          "id": "d9a2f1a3-712c-44ff-af1c-72dffef32abe",
+          "type": "academic",
+          "text": "Seeking assistance with math.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_2a253c199c194c90",
+          "timestamp": "2025-12-31T17:09:46.947692",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1767182986.947692,
+          "last_epoch": 1767182986.947692
+        },
+        "score": 0.6041586821476201
+      }
+    ]
+  },
+  {
+    "session_id": "sess_50eac038229f4a7a",
+    "timestamp": 1767285989.6063197,
+    "results": [
+      {
+        "memory": {
+          "id": "b4fb6189-0f19-452f-adc4-9bed002c223b",
+          "type": "academic",
+          "text": "Seeking assistance with math.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_2a253c199c194c90",
+          "timestamp": "2025-12-31T17:09:46.947692",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1767182986.947692,
+          "last_epoch": 1767182986.947692
+        },
+        "score": 0.6026540523024864
+      }
+    ]
+  },
+  {
+    "session_id": "sess_50eac038229f4a7a",
+    "timestamp": 1767286008.760693,
+    "results": [
+      {
+        "memory": {
+          "id": "cee599cd-6430-472b-82a8-097cda3a4ef7",
+          "type": "academic",
+          "text": "Seeking assistance with math.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_2a253c199c194c90",
+          "timestamp": "2025-12-31T17:09:46.947692",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1767182986.947692,
+          "last_epoch": 1767182986.947692
+        },
+        "score": 0.6006927501490067
+      }
+    ]
+  },
+  {
+    "session_id": "sess_22ea4ba480724183",
+    "timestamp": 1767287262.7340958,
+    "results": []
+  },
+  {
+    "session_id": "sess_22ea4ba480724183",
+    "timestamp": 1767287307.8372219,
+    "results": []
+  },
+  {
+    "session_id": "sess_22ea4ba480724183",
+    "timestamp": 1767287350.2640333,
+    "results": [
+      {
+        "memory": {
+          "id": "88b8d479-2b64-42a0-b7a2-38b8a58fe83b",
+          "type": "academic",
+          "text": "Is learning or discussing English grammar related to 'will have' and numbers.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:46:46.028109",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767286006.028109,
+          "last_epoch": 1767286006.028109
+        },
+        "score": 0.6999902959199387
+      },
+      {
+        "memory": {
+          "id": "ac30af33-01a4-4238-8ee7-10cf235cb22f",
+          "type": "academic",
+          "text": "Asks questions related to general topics.",
+          "importance": 0.7,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:46:46.028109",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767286006.028109,
+          "last_epoch": 1767286006.028109
+        },
+        "score": 0.6883560795199387
+      },
+      {
+        "memory": {
+          "id": "48408a13-1d64-4af8-bc1f-07c2690f3ff8",
+          "type": "academic",
+          "text": "Requests help understanding questions.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:45:28.703002",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767285928.703002,
+          "last_epoch": 1767285928.703002
+        },
+        "score": 0.6834129416109411
+      },
+      {
+        "memory": {
+          "id": "7d34bb76-0d67-4782-a6e5-da8300e3409e",
+          "type": "personal",
+          "text": "Has five horses.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:47:06.990019",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767286026.990019,
+          "last_epoch": 1767286026.990019
+        },
+        "score": 0.6810574012667445
+      },
+      {
+        "memory": {
+          "id": "2191868c-d506-4c43-a020-508adda32bb8",
+          "type": "academic",
+          "text": "Seeking assistance with math.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_2a253c199c194c90",
+          "timestamp": "2025-12-31T17:09:46.947692",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1767182986.947692,
+          "last_epoch": 1767182986.947692
+        },
+        "score": 0.6144706787911032
+      }
+    ]
+  },
+  {
+    "session_id": "sess_22ea4ba480724183",
+    "timestamp": 1767287418.687364,
+    "results": [
+      {
+        "memory": {
+          "id": "61937041-5dba-4b30-95c4-74ca1de7756d",
+          "type": "academic",
+          "text": "Is learning or discussing English grammar related to 'will have' and numbers.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:46:46.028109",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767286006.028109,
+          "last_epoch": 1767286006.028109
+        },
+        "score": 0.7049352970192921
+      },
+      {
+        "memory": {
+          "id": "ef9a9be8-8d5d-4b71-a895-63f3362508c0",
+          "type": "academic",
+          "text": "Requests help understanding questions.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:45:28.703002",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767285928.703002,
+          "last_epoch": 1767285928.703002
+        },
+        "score": 0.6895530968489589
+      },
+      {
+        "memory": {
+          "id": "30ca4830-0908-487e-8ad2-d54a368259bb",
+          "type": "academic",
+          "text": "Asks questions related to general topics.",
+          "importance": 0.7,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:46:46.028109",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767286006.028109,
+          "last_epoch": 1767286006.028109
+        },
+        "score": 0.6819351306192921
+      },
+      {
+        "memory": {
+          "id": "3f67443d-d667-4696-984e-b95fd1990793",
+          "type": "personal",
+          "text": "Has five horses.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:47:06.990019",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767286026.990019,
+          "last_epoch": 1767286026.990019
+        },
+        "score": 0.6679668879680316
+      },
+      {
+        "memory": {
+          "id": "a8ddecdb-d110-4b81-ba16-2a94871d2158",
+          "type": "academic",
+          "text": "Seeking assistance with math.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_2a253c199c194c90",
+          "timestamp": "2025-12-31T17:09:46.947692",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1767182986.947692,
+          "last_epoch": 1767182986.947692
+        },
+        "score": 0.598966141975888
+      }
+    ]
+  },
+  {
+    "session_id": "sess_22ea4ba480724183",
+    "timestamp": 1767287425.3445241,
+    "results": []
+  },
+  {
+    "session_id": "sess_744050821dba4955",
+    "timestamp": 1767288518.6726265,
+    "results": []
+  },
+  {
+    "session_id": "sess_744050821dba4955",
+    "timestamp": 1767288555.3203828,
+    "results": [
+      {
+        "memory": {
+          "id": "4960d6ca-df72-441a-853a-2390bf07afd5",
+          "type": "personal",
+          "text": "Has multiple horses.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_22ea4ba480724183",
+          "timestamp": "2026-01-01T22:10:20.249745",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 2,
+          "first_epoch": 1767287420.249745,
+          "last_epoch": 1767287420.249745
+        },
+        "score": 0.7027110307820483
+      },
+      {
+        "memory": {
+          "id": "767e8cde-fcf2-4fb8-8bbb-023ba9b65564",
+          "type": "academic",
+          "text": "Is learning or discussing English grammar related to 'will have' and numbers.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:46:46.028109",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767286006.028109,
+          "last_epoch": 1767286006.028109
+        },
+        "score": 0.7015376255549011
+      },
+      {
+        "memory": {
+          "id": "503cd056-56a9-4739-9d94-2d971490f8d5",
+          "type": "academic",
+          "text": "Requests help with a question.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_22ea4ba480724183",
+          "timestamp": "2026-01-01T22:09:05.236974",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767287345.236974,
+          "last_epoch": 1767287345.236974
+        },
+        "score": 0.699930114475962
+      },
+      {
+        "memory": {
+          "id": "c52a0d04-d4f8-4131-8ea5-02ea7ff91002",
+          "type": "academic",
+          "text": "Requests help understanding questions.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:45:28.703002",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767285928.703002,
+          "last_epoch": 1767285928.703002
+        },
+        "score": 0.6888577647188991
+      },
+      {
+        "memory": {
+          "id": "967548f4-1514-4691-a62e-f7a445b6406c",
+          "type": "personal",
+          "text": "Has five horses.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:47:06.990019",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767286026.990019,
+          "last_epoch": 1767286026.990019
+        },
+        "score": 0.6816758077784222
+      },
+      {
+        "memory": {
+          "id": "aa64c68a-ac58-476e-b494-9cc7a6956e08",
+          "type": "academic",
+          "text": "Asks questions related to general topics.",
+          "importance": 0.7,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:46:46.028109",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767286006.028109,
+          "last_epoch": 1767286006.028109
+        },
+        "score": 0.6769543477549012
+      },
+      {
+        "memory": {
+          "id": "0671ce6c-3375-437d-93d5-fb1c30852f89",
+          "type": "academic",
+          "text": "Seeking assistance with math.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_2a253c199c194c90",
+          "timestamp": "2025-12-31T17:09:46.947692",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1767182986.947692,
+          "last_epoch": 1767182986.947692
+        },
+        "score": 0.6285535020252848
+      },
+      {
+        "memory": {
+          "id": "f36c3580-c81b-406f-a9d5-db3c970fdbb7",
+          "type": "academic",
+          "text": "Discussed horses.",
+          "importance": 0.2,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_22ea4ba480724183",
+          "timestamp": "2026-01-01T22:11:20.031235",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767287480.031235,
+          "last_epoch": 1767287480.031235
+        },
+        "score": 0.6266025009306315
+      }
+    ]
+  },
+  {
+    "session_id": "sess_a1ba3ed10fe74375",
+    "timestamp": 1767621646.151,
+    "results": []
+  },
+  {
+    "session_id": "sess_a1ba3ed10fe74375",
+    "timestamp": 1767621683.8067589,
+    "results": []
+  },
+  {
+    "session_id": "sess_a1ba3ed10fe74375",
+    "timestamp": 1767621738.1259637,
+    "results": [
+      {
+        "memory": {
+          "id": "452d2053-8eb0-48d5-aeab-30a2ca2c75fa",
+          "type": "academic",
+          "text": "Is learning or discussing English grammar related to 'will have' and numbers.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:46:46.028109",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767286006.028109,
+          "last_epoch": 1767286006.028109
+        },
+        "score": 0.5847311093326479
+      },
+      {
+        "memory": {
+          "id": "0d5aa557-5924-4cb4-84e2-39348e225276",
+          "type": "personal",
+          "text": "Has multiple horses.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_22ea4ba480724183",
+          "timestamp": "2026-01-01T22:10:20.249745",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 2,
+          "first_epoch": 1767287420.249745,
+          "last_epoch": 1767287420.249745
+        },
+        "score": 0.5831865895609842
+      },
+      {
+        "memory": {
+          "id": "e69ac240-914c-41c2-9db3-193c3714b371",
+          "type": "academic",
+          "text": "Requests help understanding questions.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:45:28.703002",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767285928.703002,
+          "last_epoch": 1767285928.703002
+        },
+        "score": 0.5757496689761016
+      },
+      {
+        "memory": {
+          "id": "8e9b97ad-6c90-4fd1-beaf-796c9008675e",
+          "type": "academic",
+          "text": "Requests help with a question.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_22ea4ba480724183",
+          "timestamp": "2026-01-01T22:09:05.236974",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767287345.236974,
+          "last_epoch": 1767287345.236974
+        },
+        "score": 0.5751754409885632
+      },
+      {
+        "memory": {
+          "id": "d829e2e9-d4f8-43a5-a45a-ed670f3ec7d8",
+          "type": "academic",
+          "text": "Seeking assistance with math.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_2a253c199c194c90",
+          "timestamp": "2025-12-31T17:09:46.947692",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1767182986.947692,
+          "last_epoch": 1767182986.947692
+        },
+        "score": 0.5697670147179816
+      },
+      {
+        "memory": {
+          "id": "cbece2e2-5787-45e0-b171-27b6ef87e253",
+          "type": "academic",
+          "text": "Asks questions related to general topics.",
+          "importance": 0.7,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:46:46.028109",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767286006.028109,
+          "last_epoch": 1767286006.028109
+        },
+        "score": 0.5615020609326479
+      },
+      {
+        "memory": {
+          "id": "5e3cc15b-2015-462e-b995-7f69db6cecd2",
+          "type": "personal",
+          "text": "Has five horses.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:47:06.990019",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767286026.990019,
+          "last_epoch": 1767286026.990019
+        },
+        "score": 0.5561854163494935
+      },
+      {
+        "memory": {
+          "id": "7c13e1d3-c732-4cf9-8c53-315ce7d441f4",
+          "type": "academic",
+          "text": "Discussed horses.",
+          "importance": 0.2,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_22ea4ba480724183",
+          "timestamp": "2026-01-01T22:11:20.031235",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767287480.031235,
+          "last_epoch": 1767287480.031235
+        },
+        "score": 0.504463555517142
+      }
+    ]
+  },
+  {
+    "session_id": "sess_1cbcedabbab44af6",
+    "timestamp": 1767622471.799648,
+    "results": [
+      {
+        "memory": {
+          "id": "f527a0d0-250e-4cb5-a28d-0df339c23ffa",
+          "type": "academic",
+          "text": "Requests help with a general topic.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_a1ba3ed10fe74375",
+          "timestamp": "2026-01-05T19:02:45.679907",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 2,
+          "first_epoch": 1767286006.028109,
+          "last_epoch": 1767621765.679907
+        },
+        "score": 0.6989622672201372
+      },
+      {
+        "memory": {
+          "id": "490a7f80-ae6c-4eee-a89c-7c27520155a0",
+          "type": "academic",
+          "text": "Requests assistance, but the specific subject is unknown.",
+          "importance": 0.3,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_a1ba3ed10fe74375",
+          "timestamp": "2026-01-05T19:02:12.306487",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767621732.306487,
+          "last_epoch": 1767621732.306487
+        },
+        "score": 0.6382324737001198
+      },
+      {
+        "memory": {
+          "id": "34353dcd-1bc7-4cfb-b028-d0d1885a0dfb",
+          "type": "academic",
+          "text": "Is learning or discussing English grammar related to 'will have' and numbers.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:46:46.028109",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767286006.028109,
+          "last_epoch": 1767286006.028109
+        },
+        "score": 0.5794709997170713
+      },
+      {
+        "memory": {
+          "id": "069184a1-4ed9-4e83-9178-50fd53f7bf19",
+          "type": "personal",
+          "text": "Has multiple horses.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_22ea4ba480724183",
+          "timestamp": "2026-01-01T22:10:20.249745",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 2,
+          "first_epoch": 1767287420.249745,
+          "last_epoch": 1767287420.249745
+        },
+        "score": 0.5758465518178002
+      },
+      {
+        "memory": {
+          "id": "3368476c-c0e6-4232-b9aa-770da8202fb6",
+          "type": "academic",
+          "text": "Requests help with a question.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_22ea4ba480724183",
+          "timestamp": "2026-01-01T22:09:05.236974",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767287345.236974,
+          "last_epoch": 1767287345.236974
+        },
+        "score": 0.5747737245317388
+      },
+      {
+        "memory": {
+          "id": "a27d27dd-143e-4ca2-83ce-0dcaa4d02c9c",
+          "type": "academic",
+          "text": "Requests help understanding questions.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:45:28.703002",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767285928.703002,
+          "last_epoch": 1767285928.703002
+        },
+        "score": 0.5686498354381863
+      },
+      {
+        "memory": {
+          "id": "bd3098c8-1940-4623-93e0-dafb875a449a",
+          "type": "academic",
+          "text": "Seeking assistance with math.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_2a253c199c194c90",
+          "timestamp": "2025-12-31T17:09:46.947692",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1767182986.947692,
+          "last_epoch": 1767182986.947692
+        },
+        "score": 0.5666143101295948
+      },
+      {
+        "memory": {
+          "id": "e1ba912b-de48-4894-a6b8-20ad4d481d36",
+          "type": "personal",
+          "text": "Has five horses.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:47:06.990019",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767286026.990019,
+          "last_epoch": 1767286026.990019
+        },
+        "score": 0.5536442050519135
+      },
+      {
+        "memory": {
+          "id": "1e764a3c-3673-4e6d-aed9-71ad4d907276",
+          "type": "academic",
+          "text": "Discussed horses.",
+          "importance": 0.2,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_22ea4ba480724183",
+          "timestamp": "2026-01-01T22:11:20.031235",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767287480.031235,
+          "last_epoch": 1767287480.031235
+        },
+        "score": 0.4987559303557624
+      }
+    ]
+  },
+  {
+    "session_id": "sess_1cbcedabbab44af6",
+    "timestamp": 1767622493.6498299,
+    "results": []
+  },
+  {
+    "session_id": "sess_4edd8c93ff314ba0",
+    "timestamp": 1767624594.4444816,
+    "results": [
+      {
+        "memory": {
+          "id": "fad93470-e94b-49ba-a33b-3357241ac596",
+          "type": "academic",
+          "text": "Requests explanation of options.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_1cbcedabbab44af6",
+          "timestamp": "2026-01-05T19:15:31.960642",
+          "metadata": {
+            "emotion": "confused",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767622531.960642,
+          "last_epoch": 1767622531.960642
+        },
+        "score": 0.7475080580667446
+      },
+      {
+        "memory": {
+          "id": "04aee251-2b6e-4464-89ab-0584d3cc68c2",
+          "type": "academic",
+          "text": "Requests help with a general topic.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_a1ba3ed10fe74375",
+          "timestamp": "2026-01-05T19:02:45.679907",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 2,
+          "first_epoch": 1767286006.028109,
+          "last_epoch": 1767621765.679907
+        },
+        "score": 0.7275388780506142
+      },
+      {
+        "memory": {
+          "id": "3c86f732-3c60-4c80-8370-0a047800dc58",
+          "type": "academic",
+          "text": "Identifies an option, likely related to a question.",
+          "importance": 0.6,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_1cbcedabbab44af6",
+          "timestamp": "2026-01-05T19:15:31.960642",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767622531.960642,
+          "last_epoch": 1767622531.960642
+        },
+        "score": 0.7077772632667445
+      },
+      {
+        "memory": {
+          "id": "28eef633-0fd5-41a2-8f9f-12510e17fa75",
+          "type": "academic",
+          "text": "Requests assistance, but the specific subject is unknown.",
+          "importance": 0.3,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_a1ba3ed10fe74375",
+          "timestamp": "2026-01-05T19:02:12.306487",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767621732.306487,
+          "last_epoch": 1767621732.306487
+        },
+        "score": 0.6666211118076002
+      },
+      {
+        "memory": {
+          "id": "110cb9d7-66f1-4333-9cd7-f1b8365d1032",
+          "type": "academic",
+          "text": "Requests help understanding questions.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:45:28.703002",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767285928.703002,
+          "last_epoch": 1767285928.703002
+        },
+        "score": 0.6207829727407199
+      },
+      {
+        "memory": {
+          "id": "f3ab7e35-d12d-4199-9c45-c709765ec511",
+          "type": "academic",
+          "text": "Requests help with a question.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_22ea4ba480724183",
+          "timestamp": "2026-01-01T22:09:05.236974",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767287345.236974,
+          "last_epoch": 1767287345.236974
+        },
+        "score": 0.6126541845877118
+      },
+      {
+        "memory": {
+          "id": "49b0507e-0657-47b5-a38c-edadb30625ee",
+          "type": "academic",
+          "text": "Is learning or discussing English grammar related to 'will have' and numbers.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:46:46.028109",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767286006.028109,
+          "last_epoch": 1767286006.028109
+        },
+        "score": 0.6094037229777289
+      },
+      {
+        "memory": {
+          "id": "516bb439-bc8d-4021-b03e-ec2143018b60",
+          "type": "academic",
+          "text": "Seeking assistance with math.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_2a253c199c194c90",
+          "timestamp": "2025-12-31T17:09:46.947692",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "math"
+          },
+          "counter": 1,
+          "first_epoch": 1767182986.947692,
+          "last_epoch": 1767182986.947692
+        },
+        "score": 0.5963837070615066
+      },
+      {
+        "memory": {
+          "id": "e1473eeb-ed47-4f7c-a88d-964ec1a5cf74",
+          "type": "personal",
+          "text": "Has multiple horses.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_22ea4ba480724183",
+          "timestamp": "2026-01-01T22:10:20.249745",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 2,
+          "first_epoch": 1767287420.249745,
+          "last_epoch": 1767287420.249745
+        },
+        "score": 0.5916750503556021
+      },
+      {
+        "memory": {
+          "id": "59b18de7-aa34-45d9-a1a1-cc1634e307ef",
+          "type": "personal",
+          "text": "Has five horses.",
+          "importance": 0.8,
+          "student_id": "user_de43ef867ee7",
+          "session_id": "sess_50eac038229f4a7a",
+          "timestamp": "2026-01-01T21:47:06.990019",
+          "metadata": {
+            "emotion": "neutral",
+            "topic": "general"
+          },
+          "counter": 1,
+          "first_epoch": 1767286026.990019,
+          "last_epoch": 1767286026.990019
+        },
+        "score": 0.5762343837692423
+      }
+    ]
+  },
+  {
+    "session_id": "sess_4edd8c93ff314ba0",
+    "timestamp": 1767624595.3136375,
+    "results": []
+  },
+  {
+    "session_id": "sess_4edd8c93ff314ba0",
+    "timestamp": 1767624618.2001421,
+    "results": []
+  },
+  {
+    "session_id": "sess_4edd8c93ff314ba0",
+    "timestamp": 1767624642.4649765,
+    "results": []
+  },
+  {
+    "session_id": "sess_4edd8c93ff314ba0",
+    "timestamp": 1767624692.7987316,
+    "results": []
+  }
+]

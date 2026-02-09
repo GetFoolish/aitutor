@@ -49,6 +49,15 @@ export interface TutorClientEventTypes {
   toolcall: (toolCall: LiveServerToolCall) => void;
   toolcallcancellation: (tc: LiveServerToolCallCancellation) => void;
   turncomplete: () => void;
+  // Emitted when token usage data is received from Gemini
+  tokenUsage: (usage: { 
+    promptTokenCount: number; 
+    candidatesTokenCount: number; 
+    totalTokenCount: number;
+    cachedContentTokenCount?: number;
+    thoughtTokenCount?: number;
+    promptTokensDetails?: Array<{ modality: string; tokenCount: number }>;
+  }) => void;
 }
 
 // ──────────────────────────────────────────────────────────
@@ -62,6 +71,7 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
   private _status: "connected" | "disconnected" | "connecting" | "reconnecting" = "disconnected";
   private config: LiveConnectConfig | null = null;
   private preferredLanguage: string = "English";
+  private assessmentMode: boolean = false;
 
   // Reconnection state
   private reconnectAttempts = 0;
@@ -101,7 +111,7 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
     this.lastActivityTime = Date.now();
   }
 
-  async connect(config: LiveConnectConfig, preferredLanguage?: string): Promise<boolean> {
+  async connect(config: LiveConnectConfig, preferredLanguage?: string, assessmentMode?: boolean): Promise<boolean> {
     if (this._status === "connected" || this._status === "connecting") {
       return false;
     }
@@ -109,6 +119,7 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
     this._status = "connecting";
     this.config = config;
     this.preferredLanguage = preferredLanguage || "English";
+    this.assessmentMode = assessmentMode || false;
     this.intentionalDisconnect = false;
     this.reconnectAttempts = 0;
 
@@ -117,9 +128,9 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
 
   private async doConnect(): Promise<boolean> {
     try {
-      // Initialize Tutor Service with preferred language
+      // Initialize Tutor Service with preferred language and mode
       this.tutorService = new TutorService();
-      await this.tutorService.initialize(this.preferredLanguage);
+      await this.tutorService.initialize(this.preferredLanguage, this.assessmentMode);
 
       // Connect directly to Gemini Live API
       await this.tutorService.connect(this.config!, {
@@ -281,6 +292,28 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
         const content = { modelTurn: { parts } };
         this.emit("content", content);
         this.log(`server.content`, message);
+      }
+    }
+
+    // Extract and emit token usage if available
+    if (message.usageMetadata) {
+      // Use type assertion to access properties that may not be in the type definition
+      const usage = message.usageMetadata as any;
+      const tokenUsage = {
+        promptTokenCount: usage.promptTokenCount || usage.inputTokenCount || 0,
+        candidatesTokenCount: usage.candidatesTokenCount || usage.outputTokenCount || usage.candidateTokenCount || 0,
+        totalTokenCount: usage.totalTokenCount || 0,
+        // Extract cached content tokens (for 90% discount)
+        cachedContentTokenCount: usage.cachedContentTokenCount || usage.cached_content_token_count || 0,
+        // Extract thinking tokens (billed as output)
+        thoughtTokenCount: usage.thoughtTokenCount || usage.thought_token_count || 0,
+        // Extract modality breakdown for accurate pricing
+        promptTokensDetails: usage.promptTokensDetails || usage.prompt_tokens_details || []
+      };
+      
+      // Only emit if we have actual token counts
+      if (tokenUsage.totalTokenCount > 0) {
+        this.emit("tokenUsage", tokenUsage);
       }
     }
   }

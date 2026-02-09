@@ -9,8 +9,6 @@ import React, {
 } from "react";
 import { motion, useDragControls } from "framer-motion";
 import { useTutorContext, AudioRecorder, TranscriptionData } from "../../features/tutor";
-// import { useLiveAPIContext } from "../../contexts/LiveAPIContext"; // Commented out - useLiveAPIContext is an alias for useTutorContext, import from correct location
-// import { AudioRecorder } from "../../lib/audio-recorder"; // Commented out - AudioRecorder is exported from ../../features/tutor, not from lib
 import { jwtUtils } from "../../lib/jwt-utils";
 import { apiUtils } from "../../lib/api-utils";
 import SettingsDialog from "../settings-dialog/SettingsDialog";
@@ -20,10 +18,17 @@ import { useTheme } from "../theme/theme-provier";
 import { feedWebSocketService } from "../../services/feed-websocket-service";
 import { instructionSSEService } from "../../services/instruction-sse-service";
 import { LiveServerContent } from '@google/genai';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../ui/alert-dialog";
 
-/**
- * Extract transcript text from Gemini content event
- */
 function extractTranscriptFromContent(content: LiveServerContent): string | null {
   const parts = content.modelTurn?.parts || [];
   const textParts = parts
@@ -31,6 +36,7 @@ function extractTranscriptFromContent(content: LiveServerContent): string | null
     .map((p: any) => p.text.trim());
   return textParts.length > 0 ? textParts.join(' ') : null;
 }
+
 import {
   Mic,
   MicOff,
@@ -49,8 +55,12 @@ import {
   Home,
   X,
   Eye,
-  VenetianMask,
+  ToggleLeft,
+  ToggleRight,
+  Loader2,
+  Clock,
 } from "lucide-react";
+import { toast } from "sonner";
 
 const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
 
@@ -63,15 +73,15 @@ export type FloatingControlPanelProps = {
   enableEditingSettings?: boolean;
   onPaintClick: () => void;
   isPaintActive: boolean;
-  // Camera/screen control props (from parent)
   cameraEnabled: boolean;
   screenEnabled: boolean;
   onToggleCamera: (enabled: boolean) => void;
   onToggleScreen: (enabled: boolean) => void;
-  // MediaMixer canvas ref for display
   mediaMixerCanvasRef: RefObject<HTMLCanvasElement>;
-  privacyEnabled?: boolean;
-  onTogglePrivacy?: (enabled: boolean) => void;
+  privacyMode: boolean;
+  onTogglePrivacy: (enabled: boolean) => void;
+  processedEdgesRef: RefObject<ImageData | null>;
+  assessmentMode?: boolean;
 };
 
 function FloatingControlPanel({
@@ -86,13 +96,14 @@ function FloatingControlPanel({
   onToggleCamera,
   onToggleScreen,
   mediaMixerCanvasRef,
-  privacyEnabled = false,
+  privacyMode,
   onTogglePrivacy,
+  processedEdgesRef,
+  assessmentMode = false,
 }: FloatingControlPanelProps) {
   const { client, connected, connect, disconnect, interruptAudio } = useTutorContext();
   const { theme } = useTheme();
   const dragControls = useDragControls();
-  // const { client, connected, connect, disconnect, interruptAudio } = useTutorContext(); // Commented out - duplicate declaration, already declared above
   const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>([]);
   const [selectedAudioDevice, setSelectedAudioDevice] = useState<string>("");
   const [audioRecorder] = useState(() => new AudioRecorder());
@@ -103,17 +114,22 @@ function FloatingControlPanel({
   const panelRef = useRef<HTMLDivElement>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [sessionTime, setSessionTime] = useState(0);
-  const [popoverPosition, setPopoverPosition] = useState<"left" | "right">(
-    "right",
-  );
+  const [popoverPosition, setPopoverPosition] = useState<"left" | "right">("right");
   const [mediaMixerStatus, setMediaMixerStatus] = useState<{
     isConnected: boolean;
     error: string | null;
-  }>({ isConnected: true, error: null }); // Default to connected since it's frontend-based now
+  }>({ isConnected: true, error: null });
   const turnCompleteRef = useRef(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [userBalance, setUserBalance] = useState<number | null>(null);
+  const [checkingBalance, setCheckingBalance] = useState(false);
+  const [showNoMinutesDialog, setShowNoMinutesDialog] = useState(false);
+  const [nextResetInHours, setNextResetInHours] = useState<number | null>(null);
+  const [nextResetInMinutes, setNextResetInMinutes] = useState<number | null>(null);
 
-  // Dark mode detection for logo
+  // Compute whether user has no minutes (but don't disable button - show modal instead)
+  const hasNoMinutes = userBalance !== null && userBalance < 1;
+
   useEffect(() => {
     const checkDarkMode = () => {
       if (theme === 'dark') {
@@ -121,14 +137,12 @@ function FloatingControlPanel({
       } else if (theme === 'light') {
         setIsDarkMode(false);
       } else if (theme === 'system') {
-        // Check if dark class is applied to document root
         setIsDarkMode(document.documentElement.classList.contains('dark'));
       }
     };
 
     checkDarkMode();
 
-    // Listen for theme changes when using system theme
     if (theme === 'system') {
       const observer = new MutationObserver(checkDarkMode);
       observer.observe(document.documentElement, {
@@ -139,6 +153,39 @@ function FloatingControlPanel({
       return () => observer.disconnect();
     }
   }, [theme]);
+
+  // Check user balance on mount and when disconnecting
+  useEffect(() => {
+    const checkBalance = async () => {
+      try {
+        setCheckingBalance(true);
+        const token = jwtUtils.getToken();
+        if (!token) return;
+
+        const response = await apiUtils.get(`${import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003'}/account/info`);
+        if (response.ok) {
+          const data = await response.json();
+          const totalBalance = (data.credits?.balance || 0) + (data.free_minutes?.balance || 0);
+          setUserBalance(totalBalance);
+
+          // Extract reset time metadata for better UX
+          const resetHours = data.free_minutes?.next_reset_in_hours;
+          const resetMinutes = data.free_minutes?.next_reset_in_minutes;
+          setNextResetInHours(resetHours !== undefined && resetHours !== null ? resetHours : null);
+          setNextResetInMinutes(resetMinutes !== undefined && resetMinutes !== null ? resetMinutes : null);
+        }
+      } catch (error) {
+        console.error('Failed to check balance:', error);
+      } finally {
+        setCheckingBalance(false);
+      }
+    };
+
+    // Check balance on mount and when disconnecting
+    if (!connected) {
+      checkBalance();
+    }
+  }, [connected]);
 
   // Timer for session duration
   useEffect(() => {
@@ -160,6 +207,40 @@ function FloatingControlPanel({
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   }, []);
 
+  const userTranscriptBuffer = useRef('');
+  const userTranscriptTimer = useRef<number | null>(null);
+  const tutorTranscriptBuffer = useRef('');
+  const tutorTranscriptTimer = useRef<number | null>(null);
+
+  const isSentenceComplete = useCallback((text: string): boolean => {
+    const trimmed = text.trim();
+    return /[.!?;]$/.test(trimmed) && trimmed.length > 10;
+  }, []);
+
+  const flushUserTranscript = useCallback(() => {
+    const text = userTranscriptBuffer.current.trim();
+    if (text && connected) {
+      feedWebSocketService.sendTranscript(text, 'user');
+      userTranscriptBuffer.current = '';
+    }
+    if (userTranscriptTimer.current) {
+      clearTimeout(userTranscriptTimer.current);
+      userTranscriptTimer.current = null;
+    }
+  }, [connected]);
+
+  const flushTutorTranscript = useCallback(() => {
+    const text = tutorTranscriptBuffer.current.trim();
+    if (text && connected) {
+      feedWebSocketService.sendTranscript(text, 'tutor');
+      tutorTranscriptBuffer.current = '';
+    }
+    if (tutorTranscriptTimer.current) {
+      clearTimeout(tutorTranscriptTimer.current);
+      tutorTranscriptTimer.current = null;
+    }
+  }, [connected]);
+
   useEffect(() => {
     navigator.mediaDevices.enumerateDevices().then((devices) => {
       const audioInputs = devices.filter(
@@ -174,7 +255,6 @@ function FloatingControlPanel({
 
   useEffect(() => {
     const onData = (base64: string) => {
-      // Send to Gemini (existing functionality)
       client.sendRealtimeInput([
         {
           mimeType: "audio/pcm;rate=16000",
@@ -182,7 +262,6 @@ function FloatingControlPanel({
         },
       ]);
 
-      // Also send via WebSocket (batched, non-blocking)
       feedWebSocketService.sendAudio(base64);
     };
     if (connected && !muted && audioRecorder) {
@@ -195,11 +274,9 @@ function FloatingControlPanel({
     };
   }, [connected, client, muted, audioRecorder, selectedAudioDevice]);
 
-  // Subscribe to SSE instructions from TeachingAssistant
   useEffect(() => {
     const unsubscribe = instructionSSEService.onInstruction((instruction) => {
       if (client && client.status === "connected") {
-        // Send instruction to Gemini tutor
         client.send({ text: instruction });
       }
     });
@@ -209,16 +286,14 @@ function FloatingControlPanel({
     };
   }, [client]);
 
-  // Record conversation turns for TeachingAssistant (optional - fails gracefully if service unavailable)
   useEffect(() => {
     const onTurnComplete = () => {
       turnCompleteRef.current = true;
-
+      
       if (connected) {
         const token = jwtUtils.getToken();
         if (token) {
           apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/conversation/turn`).catch((error: any) => {
-            // Only log if it's not a connection refused error (service not available)
             if (!error.message?.includes('Failed to fetch') && !error.message?.includes('ERR_CONNECTION_REFUSED')) {
               console.error('Failed to record conversation turn:', error);
             }
@@ -229,12 +304,11 @@ function FloatingControlPanel({
 
     const onInterrupted = () => {
       turnCompleteRef.current = true;
-
+      
       if (connected) {
         const token = jwtUtils.getToken();
         if (token) {
           apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/conversation/turn`).catch((error: any) => {
-            // Only log if it's not a connection refused error (service not available)
             if (!error.message?.includes('Failed to fetch') && !error.message?.includes('ERR_CONNECTION_REFUSED')) {
               console.error('Failed to record conversation turn:', error);
             }
@@ -252,15 +326,12 @@ function FloatingControlPanel({
     };
   }, [client, connected]);
 
-  // Handle content events (transcript) - send via WebSocket
   useEffect(() => {
     const onContent = (content: any) => {
       if (!connected) return;
 
-      // Extract transcript from content
       const transcript = extractTranscriptFromContent(content);
       if (transcript) {
-        // Send transcript via WebSocket (fire-and-forget)
         feedWebSocketService.sendTranscript(transcript, 'tutor');
       }
     };
@@ -272,14 +343,23 @@ function FloatingControlPanel({
     };
   }, [client, connected]);
 
-  // Handle input audio transcription (user's speech) - send via WebSocket
   useEffect(() => {
     const onInputTranscript = (data: TranscriptionData) => {
       if (!connected) return;
 
-      // Send user's speech transcript via WebSocket
       if (data.text) {
-        feedWebSocketService.sendTranscript(data.text, 'user');
+        userTranscriptBuffer.current += data.text;
+
+        if (isSentenceComplete(userTranscriptBuffer.current)) {
+          flushUserTranscript();
+        } else {
+          if (userTranscriptTimer.current) {
+            clearTimeout(userTranscriptTimer.current);
+          }
+          userTranscriptTimer.current = window.setTimeout(() => {
+            flushUserTranscript();
+          }, 3000);
+        }
       }
     };
 
@@ -287,17 +367,30 @@ function FloatingControlPanel({
 
     return () => {
       client.off('inputTranscript', onInputTranscript);
+      if (userTranscriptTimer.current) {
+        clearTimeout(userTranscriptTimer.current);
+      }
+      flushUserTranscript();
     };
-  }, [client, connected]);
+  }, [client, connected, isSentenceComplete, flushUserTranscript]);
 
-  // Handle output audio transcription (tutor's speech) - send via WebSocket
   useEffect(() => {
     const onOutputTranscript = (data: TranscriptionData) => {
       if (!connected) return;
 
-      // Send tutor's speech transcript via WebSocket
       if (data.text) {
-        feedWebSocketService.sendTranscript(data.text, 'tutor');
+        tutorTranscriptBuffer.current += data.text;
+
+        if (isSentenceComplete(tutorTranscriptBuffer.current)) {
+          flushTutorTranscript();
+        } else {
+          if (tutorTranscriptTimer.current) {
+            clearTimeout(tutorTranscriptTimer.current);
+          }
+          tutorTranscriptTimer.current = window.setTimeout(() => {
+            flushTutorTranscript();
+          }, 3000);
+        }
       }
     };
 
@@ -305,8 +398,72 @@ function FloatingControlPanel({
 
     return () => {
       client.off('outputTranscript', onOutputTranscript);
+      if (tutorTranscriptTimer.current) {
+        clearTimeout(tutorTranscriptTimer.current);
+      }
+      flushTutorTranscript();
     };
-  }, [client, connected]);
+  }, [client, connected, isSentenceComplete, flushTutorTranscript]);
+
+  // Listen for backend-initiated disconnect (when credits run out)
+  useEffect(() => {
+    const handleBackendDisconnect = async (event: Event) => {
+      const customEvent = event as CustomEvent;
+      console.warn('[FloatingControlPanel] Backend initiated disconnect:', customEvent.detail);
+
+      if (connected) {
+        try {
+          // Disconnect Gemini tutor
+          interruptAudio();
+          disconnect();
+
+          // Disconnect WebSocket and SSE
+          try {
+            feedWebSocketService.disconnect();
+          } catch (e) {
+            console.error('Error disconnecting WebSocket:', e);
+          }
+
+          try {
+            instructionSSEService.disconnect();
+          } catch (e) {
+            console.error('Error disconnecting SSE:', e);
+          }
+
+          // Toast is already shown by feedWebSocketService
+
+          // Refresh balance after a short delay
+          setTimeout(async () => {
+            try {
+              const response = await apiUtils.get(`${import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003'}/account/info`);
+              if (response.ok) {
+                const data = await response.json();
+                const totalBalance = (data.credits?.balance || 0) + (data.free_minutes?.balance || 0);
+                setUserBalance(totalBalance);
+
+                // Extract reset time metadata
+                const resetHours = data.free_minutes?.next_reset_in_hours;
+                const resetMinutes = data.free_minutes?.next_reset_in_minutes;
+                setNextResetInHours(resetHours !== undefined && resetHours !== null ? resetHours : null);
+                setNextResetInMinutes(resetMinutes !== undefined && resetMinutes !== null ? resetMinutes : null);
+              }
+            } catch (e) {
+              console.error('Failed to refresh balance:', e);
+            }
+          }, 1000);
+
+        } catch (error) {
+          console.error('[FloatingControlPanel] Error handling backend disconnect:', error);
+        }
+      }
+    };
+
+    window.addEventListener('backend-disconnect', handleBackendDisconnect);
+
+    return () => {
+      window.removeEventListener('backend-disconnect', handleBackendDisconnect);
+    };
+  }, [connected, disconnect, interruptAudio]);
 
   // Video handling - capture full MediaMixer canvas and send to tutor as JPEG
   useEffect(() => {
@@ -316,40 +473,53 @@ function FloatingControlPanel({
 
     let timeoutId: number | null = null;
     let rafId: number | null = null;
-    let isRunning = false; // Track if loop is running to prevent multiple concurrent loops
+    let isRunning = false;
 
     function sendVideoFrame() {
       if (!connected || !isRunning) {
         return;
       }
 
-      const canvas = mediaMixerCanvasRef.current;
-      if (canvas && canvas.width + canvas.height > 0) {
-        const base64 = canvas.toDataURL("image/jpeg", 1.0);
-        const data = base64.slice(base64.indexOf(",") + 1, Infinity);
+      if (privacyMode && processedEdgesRef.current) {
+        const edges = processedEdgesRef.current;
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = edges.width;
+        tempCanvas.height = edges.height;
+        const tempCtx = tempCanvas.getContext('2d');
+        
+        if (tempCtx) {
+          tempCtx.putImageData(edges, 0, 0);
+          const base64 = tempCanvas.toDataURL("image/jpeg", 1.0);
+          const data = base64.slice(base64.indexOf(",") + 1, Infinity);
+          
+          client.sendRealtimeInput([{ mimeType: "image/jpeg", data }]);
 
-        // Send to Gemini (existing functionality)
-        client.sendRealtimeInput([{ mimeType: "image/jpeg", data }]);
+          feedWebSocketService.sendMedia(data);
+        }
+      } else {
+        const canvas = mediaMixerCanvasRef.current;
+        if (canvas && canvas.width + canvas.height > 0) {
+          const base64 = canvas.toDataURL("image/jpeg", 1.0);
+          const data = base64.slice(base64.indexOf(",") + 1, Infinity);
+          
+          client.sendRealtimeInput([{ mimeType: "image/jpeg", data }]);
 
-        // Also send via WebSocket (fire-and-forget, non-blocking)
-        feedWebSocketService.sendMedia(data);
+          feedWebSocketService.sendMedia(data);
+        }
       }
-
-      // Schedule next frame only if still connected and running
+      
       if (connected && isRunning) {
         timeoutId = window.setTimeout(sendVideoFrame, 1000 / 0.5);
       }
     }
-
-    // Start sending frames when connected
+    
     if (connected && !isRunning) {
       isRunning = true;
-      // Send first frame immediately, then schedule subsequent frames
       rafId = requestAnimationFrame(sendVideoFrame);
     }
-
+    
     return () => {
-      isRunning = false; // Stop the loop
+      isRunning = false;
       if (rafId !== null) {
         cancelAnimationFrame(rafId);
       }
@@ -357,36 +527,48 @@ function FloatingControlPanel({
         clearTimeout(timeoutId);
       }
     };
-  }, [connected, activeVideoStream, client]);
+  }, [connected, activeVideoStream, client, privacyMode, processedEdgesRef]);
 
   const handleConnect = useCallback(async () => {
+    // Check if user has no minutes before connecting
+    if (!connected && hasNoMinutes) {
+      setShowNoMinutesDialog(true);
+      return;
+    }
+
     if (connected) {
-      // Handle disconnect with TeachingAssistant session end
       try {
+        flushUserTranscript();
+        flushTutorTranscript();
+
         interruptAudio();
 
-        // Disconnect WebSocket and SSE first (optional - may not be connected)
-        try {
-          feedWebSocketService.disconnect();
-        } catch (e) {
-          // WebSocket may not be connected - ignore
-        }
-        try {
-          instructionSSEService.disconnect();
-        } catch (e) {
-          // SSE may not be connected - ignore
+        // Skip Teaching Assistant integration during assessment mode
+        if (!assessmentMode) {
+          try {
+            feedWebSocketService.disconnect();
+          } catch (e) {}
+
+          try {
+            instructionSSEService.disconnect();
+          } catch (e) {}
         }
 
         await new Promise((resolve) => setTimeout(resolve, 300));
 
+        // Call session end for both normal and assessment mode (for minute tracking)
         const token = jwtUtils.getToken();
         if (token) {
           try {
-            const response = await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/session/end`, { interrupt_audio: true });
+            const response = await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/session/end`, {
+              interrupt_audio: true,
+              assessment_mode: assessmentMode
+            });
 
             if (response.ok) {
               const data = await response.json();
-              if (data.prompt && client.status === 'connected') {
+              // Only play goodbye prompt in normal mode (not assessment mode)
+              if (data.prompt && client.status === 'connected' && !assessmentMode) {
                 const goodbyeTurnComplete = { current: false };
                 const goodbyeAudioReceived = { current: false };
                 let lastAudioTime = 0;
@@ -431,7 +613,6 @@ function FloatingControlPanel({
               }
             }
           } catch (taError: any) {
-            // Teaching Assistant service is not available - log warning but continue
             if (taError.message?.includes('Failed to fetch') || taError.message?.includes('ERR_CONNECTION_REFUSED')) {
               console.warn('TeachingAssistant service is not available during disconnect - continuing');
             } else {
@@ -444,11 +625,30 @@ function FloatingControlPanel({
       }
 
       disconnect();
+      
+      // Refresh balance after disconnect
+      setTimeout(async () => {
+        try {
+          const response = await apiUtils.get(`${import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003'}/account/info`);
+          if (response.ok) {
+            const data = await response.json();
+            const totalBalance = (data.credits?.balance || 0) + (data.free_minutes?.balance || 0);
+            setUserBalance(totalBalance);
+
+            // Extract reset time metadata
+            const resetHours = data.free_minutes?.next_reset_in_hours;
+            const resetMinutes = data.free_minutes?.next_reset_in_minutes;
+            setNextResetInHours(resetHours !== undefined && resetHours !== null ? resetHours : null);
+            setNextResetInMinutes(resetMinutes !== undefined && resetMinutes !== null ? resetMinutes : null);
+          }
+        } catch (e) {
+          console.error('Failed to refresh balance:', e);
+        }
+      }, 1000);
     } else {
-      // Handle connect with TeachingAssistant session start
       let setupCompleteReceived = false;
       let setupCompleteResolver: (() => void) | null = null;
-
+      
       const onSetupComplete = () => {
         setupCompleteReceived = true;
         if (setupCompleteResolver) {
@@ -458,10 +658,9 @@ function FloatingControlPanel({
         client.off('setupcomplete', onSetupComplete);
       };
       client.on('setupcomplete', onSetupComplete);
-
+      
       await connect();
-
-      // Wait for connection to be established
+      
       const waitForConnection = () => {
         return new Promise<void>((resolve) => {
           if (client.status === 'connected') {
@@ -478,16 +677,15 @@ function FloatingControlPanel({
         });
       };
 
-      // Wait for setupComplete with timeout fallback
       const waitForSetupComplete = () => {
         return new Promise<void>((resolve) => {
           if (setupCompleteReceived) {
             resolve();
             return;
           }
-
+          
           setupCompleteResolver = resolve;
-
+          
           setTimeout(() => {
             if (setupCompleteResolver === resolve) {
               setupCompleteResolver = null;
@@ -508,37 +706,74 @@ function FloatingControlPanel({
           return;
         }
 
-        // Start TeachingAssistant session (creates MongoDB session)
-        // Make this optional - if service is not available, continue without it
         try {
-          const response = await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/session/start`);
+          // Call session start for both normal and assessment mode (for minute tracking)
+          const response = await apiUtils.post(`${TEACHING_ASSISTANT_API_URL}/session/start`, {
+            assessment_mode: assessmentMode
+          });
 
           if (response.ok) {
             const data = await response.json();
 
-            // Connect WebSocket for feed streaming
+            // Always connect WebSocket for session monitoring (credit exhaustion signals)
             try {
               await feedWebSocketService.connect();
             } catch (wsError) {
               console.warn('Failed to connect WebSocket feed service (optional):', wsError);
             }
 
-            // Connect SSE for receiving instructions
-            try {
-              instructionSSEService.connect();
-            } catch (sseError) {
-              console.warn('Failed to connect SSE instruction service (optional):', sseError);
-            }
+            // Only connect SSE and play greeting in normal mode (not assessment mode)
+            if (!assessmentMode) {
+              try {
+                instructionSSEService.connect();
+              } catch (sseError) {
+                console.warn('Failed to connect SSE instruction service (optional):', sseError);
+              }
 
-            // Send greeting if available
-            if (data.prompt && client.status === 'connected') {
-              client.send({ text: data.prompt });
+              if (data.prompt && client.status === 'connected') {
+                client.send({ text: data.prompt });
+              }
+            } else {
+              console.log('[ASSESSMENT MODE] Session started with minute tracking - WebSocket connected for monitoring');
+            }
+          } else if (response.status === 403) {
+            // Handle insufficient minutes with user-friendly toast
+            try {
+              const errorData = await response.json();
+              const errorMessage = errorData.detail?.message || errorData.detail || "Insufficient minutes";
+
+              // Show toast notification
+              toast.error("⏰ Out of Minutes", {
+                description: errorMessage,
+                duration: 7000,
+                action: {
+                  label: "Buy Plan",
+                  onClick: () => {
+                    window.location.href = '/app/pricing';
+                  }
+                }
+              });
+
+              console.warn('[SESSION] Insufficient minutes - session start blocked');
+
+              // Disconnect Gemini if already connected
+              if (client.status === 'connected') {
+                disconnect();
+              }
+
+              return;
+            } catch (parseError) {
+              console.error('Failed to parse 403 error response:', parseError);
+              toast.error("Cannot Start Session", {
+                description: "You've used your free minutes. Please purchase a plan or try again tomorrow.",
+                duration: 5000
+              });
+              return;
             }
           } else {
             console.warn(`TeachingAssistant service returned status ${response.status} - continuing without it`);
           }
         } catch (taError: any) {
-          // Teaching Assistant service is not available - log warning but continue
           if (taError.message?.includes('Failed to fetch') || taError.message?.includes('ERR_CONNECTION_REFUSED')) {
             console.warn('TeachingAssistant service is not available - continuing without advanced features');
           } else {
@@ -552,7 +787,7 @@ function FloatingControlPanel({
         setupCompleteResolver = null;
       }
     }
-  }, [connected, connect, disconnect, client, interruptAudio]);
+  }, [connected, connect, disconnect, client, interruptAudio, flushUserTranscript, flushTutorTranscript, assessmentMode, hasNoMinutes]);
 
   const [verticalAlign, setVerticalAlign] = useState<"top" | "bottom">("top");
 
@@ -562,7 +797,6 @@ function FloatingControlPanel({
     return { x: window.innerWidth - 380, y: 96 };
   }, []);
 
-  // Memoize popover position calculation to avoid expensive DOM queries
   const calculatePopoverPosition = useCallback(() => {
     if (!panelRef.current) return { side: "right" as const, vertical: "top" as const };
 
@@ -581,7 +815,6 @@ function FloatingControlPanel({
       side = "left";
     }
 
-    // Calculate vertical alignment based on panel's center relative to screen center
     const panelCenterY = panelRect.top + panelRect.height / 2;
     const screenCenterY = viewportHeight / 2;
     const vertical: "top" | "bottom" = panelCenterY > screenCenterY ? "bottom" : "top";
@@ -597,17 +830,15 @@ function FloatingControlPanel({
 
   const toggleSharedMedia = useCallback(() => {
     if (!sharedMediaOpen) {
-      // Opening
       updatePopoverPosition();
       setSharedMediaOpen(true);
       setIsAnimatingOut(false);
     } else {
-      // Closing
       setIsAnimatingOut(true);
       setTimeout(() => {
         setSharedMediaOpen(false);
         setIsAnimatingOut(false);
-      }, 200); // Match CSS animation duration
+      }, 200);
     }
   }, [sharedMediaOpen, updatePopoverPosition]);
 
@@ -619,15 +850,12 @@ function FloatingControlPanel({
     setMuted(!muted);
   }, [muted]);
 
-  // Simplified drag end handler for Framer Motion
   const handleDragEnd = useCallback(() => {
-    // Recalculate popover position after drag ends
     if (sharedMediaOpen) {
       updatePopoverPosition();
     }
   }, [sharedMediaOpen, updatePopoverPosition]);
 
-  // Memoize panel classes to avoid recalculating on every render
   const panelClasses = useMemo(
     () =>
       cn(
@@ -657,7 +885,7 @@ function FloatingControlPanel({
       }}
       onDragEnd={handleDragEnd}
       initial={initialPosition}
-      whileDrag={{
+      whileDrag={{ 
         cursor: "grabbing",
         scale: 1.0,
       }}
@@ -673,281 +901,281 @@ function FloatingControlPanel({
         y: initialPosition.y,
       }}
     >
-      {/* Hidden canvas for MediaMixer - will be set by parent */}
-      <canvas
-        ref={(canvas) => {
-          if (typeof renderCanvasRef === 'function') {
-            renderCanvasRef(canvas);
-          } else if (renderCanvasRef && 'current' in renderCanvasRef) {
-            // For RefObject, we need to cast it as mutable
-            (renderCanvasRef as React.MutableRefObject<HTMLCanvasElement | null>).current = canvas;
-          }
-        }}
-        width={1280}
-        height={2160}
-        style={{ display: 'none' }}
-      />
-
-      {/* Drag Handle & Header */}
-      <div
-        className={cn(
-          "cursor-grab active:cursor-grabbing flex items-center mb-1.5 md:mb-2",
-          isCollapsed ? "justify-center mb-1 md:mb-1.5" : "justify-between",
-        )}
-        onPointerDown={(e) => dragControls.start(e)}
-      >
-        {!isCollapsed && (
-          <div className="flex items-center gap-1.5 md:gap-2">
-            <img
-              src={isDarkMode ? '/logo_white.png' : '/logo.png'}
-              alt="teachr"
-              className="h-6 md:h-7 w-auto"
-            />
-          </div>
-        )}
-        <button
-          onClick={handleCollapse}
-          className="w-5 h-5 md:w-6 md:h-6 flex items-center justify-center border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] text-black dark:text-white hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-100"
-        >
-          {isCollapsed ? (
-            <ChevronDown className="w-3 h-3 md:w-3.5 md:h-3.5 font-black" />
-          ) : (
-            <ChevronUp className="w-3 h-3 md:w-3.5 md:h-3.5 font-black" />
+        <canvas
+          ref={(canvas) => {
+            if (typeof renderCanvasRef === 'function') {
+              renderCanvasRef(canvas);
+            } else if (renderCanvasRef && 'current' in renderCanvasRef) {
+              (renderCanvasRef as React.MutableRefObject<HTMLCanvasElement | null>).current = canvas;
+            }
+          }}
+          width={1280}
+          height={2160}
+          style={{ display: 'none' }}
+        />
+        
+        <div
+          className={cn(
+            "cursor-grab active:cursor-grabbing flex items-center mb-1.5 md:mb-2",
+            isCollapsed ? "justify-center mb-1 md:mb-1.5" : "justify-between",
           )}
-        </button>
-      </div>
-
-      {isCollapsed ? (
-        // COLLAPSED VIEW
-        <div className="flex flex-col items-center gap-1.5 md:gap-2">
+          onPointerDown={(e) => dragControls.start(e)}
+        >
+          {!isCollapsed && (
+            <div className="flex items-center gap-1.5 md:gap-2">
+              <img 
+                src={isDarkMode ? '/logo_white.png' : '/logo.png'} 
+                alt="teachr" 
+                className="h-6 md:h-7 w-auto"
+              />
+              {assessmentMode && (
+                <div className="px-2 py-0.5 bg-[#FF6B6B] border-[2px] border-black text-white text-[8px] md:text-[9px] font-black uppercase tracking-wide">
+                  Assessment
+                </div>
+              )}
+            </div>
+          )}
           <button
             onClick={handleCollapse}
-            className="w-8 h-8 md:w-9 md:h-9 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] flex items-center justify-center text-black dark:text-white transition-all hover:translate-x-0.5 hover:translate-y-0.5 duration-100 shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none"
-            title="Expand"
+            className="w-5 h-5 md:w-6 md:h-6 flex items-center justify-center border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] text-black dark:text-white hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-100"
           >
-            <Home className="w-4 h-4 font-bold" />
-          </button>
-
-          {/* Start/End Session Button */}
-          <button
-            onClick={handleConnect}
-            className={cn(
-              "w-9 h-9 md:w-10 md:h-10 border-[2px] border-black flex items-center justify-center transition-all transform active:translate-x-1 active:translate-y-1 relative group font-black",
-              connected
-                ? "bg-[#FF6B6B] hover:bg-[#FF6B6B] text-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)]"
-                : "bg-[#4ADE80] hover:bg-[#4ADE80] text-black shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)]",
-            )}
-            title={connected ? "End Session" : "Start Session"}
-          >
-            {connected ? (
-              <div className="w-3 h-3 bg-white border-2 border-black" />
+            {isCollapsed ? (
+              <ChevronDown className="w-3 h-3 md:w-3.5 md:h-3.5 font-black" />
             ) : (
-              <PlayCircle className="w-5 h-5" />
-            )}
-            {connected && (
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#FFD93D] border-2 border-black animate-pulse" />
+              <ChevronUp className="w-3 h-3 md:w-3.5 md:h-3.5 font-black" />
             )}
           </button>
+        </div>
 
-          <div className="w-7 h-[2px] bg-black dark:bg-white my-0.5" />
-
-          <button
-            onClick={handleMute}
-            className={cn(
-              "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
-              muted
-                ? "bg-[#FF6B6B] text-white"
-                : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
-            )}
-            title={muted ? "Unmute" : "Mute"}
-          >
-            {muted ? (
-              <MicOff className="w-3.5 h-3.5 font-bold" />
-            ) : (
-              <Mic className="w-3.5 h-3.5 font-bold" />
-            )}
-          </button>
-
-          {supportsVideo && (
+        {isCollapsed ? (
+          <div className="flex flex-col items-center gap-1.5 md:gap-2">
             <button
-              onClick={() => onToggleCamera(!cameraEnabled)}
-              className={cn(
-                "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
-                cameraEnabled
-                  ? "bg-[#C4B5FD] text-black"
-                  : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
-              )}
-              title="Toggle Camera"
+              onClick={handleCollapse}
+              className="w-8 h-8 md:w-9 md:h-9 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] flex items-center justify-center text-black dark:text-white transition-all hover:translate-x-0.5 hover:translate-y-0.5 duration-100 shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none"
+              title="Expand"
             >
-              {cameraEnabled ? (
-                <Video className="w-3.5 h-3.5 font-bold" />
+              <Home className="w-4 h-4 font-bold" />
+            </button>
+
+            <button
+              onClick={handleConnect}
+              className={cn(
+                "w-9 h-9 md:w-10 md:h-10 border-[2px] border-black flex items-center justify-center transition-all transform active:translate-x-1 active:translate-y-1 relative group font-black",
+                connected
+                  ? "bg-[#FF6B6B] hover:bg-[#FF6B6B] text-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)]"
+                  : "bg-[#4ADE80] hover:bg-[#4ADE80] text-black shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)]",
+              )}
+              title={connected ? "End Session" : "Start Session"}
+            >
+              {connected ? (
+                <div className="w-3 h-3 bg-white border-2 border-black" />
               ) : (
-                <VideoOff className="w-3.5 h-3.5 font-bold" />
+                <PlayCircle className="w-5 h-5" />
+              )}
+              {connected && (
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#FFD93D] border-2 border-black animate-pulse" />
               )}
             </button>
-          )}
 
-          {supportsVideo && cameraEnabled && onTogglePrivacy && (
+            <div className="w-7 h-[2px] bg-black dark:bg-white my-0.5" />
+
             <button
-              onClick={() => onTogglePrivacy(!privacyEnabled)}
+              onClick={handleMute}
               className={cn(
                 "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
-                privacyEnabled
+                muted
                   ? "bg-[#FF6B6B] text-white"
                   : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
               )}
-              title={privacyEnabled ? "Disable Privacy Mode" : "Enable Privacy Mode"}
+              title={muted ? "Unmute" : "Mute"}
             >
-              <VenetianMask className="w-3.5 h-3.5 font-bold" />
+              {muted ? (
+                <MicOff className="w-3.5 h-3.5 font-bold" />
+              ) : (
+                <Mic className="w-3.5 h-3.5 font-bold" />
+              )}
             </button>
-          )}
 
-          {supportsVideo && (
+            {supportsVideo && (
+              <button
+                onClick={() => onToggleCamera(!cameraEnabled)}
+                className={cn(
+                  "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
+                  cameraEnabled
+                    ? "bg-[#C4B5FD] text-black"
+                    : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
+                )}
+                title="Toggle Camera"
+              >
+                {cameraEnabled ? (
+                  <Video className="w-3.5 h-3.5 font-bold" />
+                ) : (
+                  <VideoOff className="w-3.5 h-3.5 font-bold" />
+                )}
+              </button>
+            )}
+
+            {supportsVideo && cameraEnabled && (
+              <button
+                onClick={() => onTogglePrivacy(!privacyMode)}
+                className={cn(
+                  "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black dark:border-white flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
+                  privacyMode
+                    ? "bg-[#C4B5FD] dark:bg-[#C4B5FD] text-black dark:text-black"
+                    : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#C4B5FD] dark:hover:bg-[#C4B5FD] dark:hover:text-black",
+                )}
+                title={privacyMode ? "Disable Privacy Mode" : "Enable Privacy Mode"}
+              >
+                {privacyMode ? (
+                  <ToggleRight className="w-3.5 h-3.5 font-bold" />
+                ) : (
+                  <ToggleLeft className="w-3.5 h-3.5 font-bold" />
+                )}
+              </button>
+            )}
+
+            {supportsVideo && (
+              <button
+                onClick={() => onToggleScreen(!screenEnabled)}
+                className={cn(
+                  "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
+                  screenEnabled
+                    ? "bg-[#FFD93D] text-black"
+                    : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
+                )}
+                title="Share Screen"
+              >
+                {screenEnabled ? (
+                  <Monitor className="w-3.5 h-3.5 font-bold" />
+                ) : (
+                  <MonitorOff className="w-3.5 h-3.5 font-bold" />
+                )}
+              </button>
+            )}
+
+            <div className="w-7 h-[2px] bg-black dark:bg-white my-0.5" />
+
+            {enableEditingSettings && (
+              <SettingsDialog
+                className="!h-auto !block"
+                trigger={
+                  <button className="w-8 h-8 md:w-9 md:h-9 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FF6B6B] flex items-center justify-center text-black dark:text-white hover:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100">
+                    <Settings className="w-3.5 h-3.5 font-bold" />
+                  </button>
+                }
+              />
+            )}
+
             <button
-              onClick={() => onToggleScreen(!screenEnabled)}
+              onClick={onPaintClick}
               className={cn(
                 "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
-                screenEnabled
+                isPaintActive
                   ? "bg-[#FFD93D] text-black"
                   : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
               )}
-              title="Share Screen"
+              title="Canvas"
             >
-              {screenEnabled ? (
-                <Monitor className="w-3.5 h-3.5 font-bold" />
-              ) : (
-                <MonitorOff className="w-3.5 h-3.5 font-bold" />
-              )}
+              <PenTool className="w-3.5 h-3.5 font-bold" />
             </button>
-          )}
 
-          <div className="w-7 h-[2px] bg-black dark:bg-white my-0.5" />
+            <button
+              onClick={toggleSharedMedia}
+              className={cn(
+                "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
+                sharedMediaOpen
+                  ? "bg-[#C4B5FD] text-black"
+                  : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#C4B5FD] border-black dark:border-white",
+              )}
+              title="View"
+            >
+              <Eye className="w-3.5 h-3.5 font-bold" />
+            </button>
 
-          {enableEditingSettings && (
-            <SettingsDialog
-              className="!h-auto !block"
-              trigger={
-                <button className="w-8 h-8 md:w-9 md:h-9 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FF6B6B] flex items-center justify-center text-black dark:text-white hover:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100">
-                  <Settings className="w-3.5 h-3.5 font-bold" />
-                </button>
-              }
-            />
-          )}
-
-          <button
-            onClick={onPaintClick}
-            className={cn(
-              "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
-              isPaintActive
-                ? "bg-[#FFD93D] text-black"
-                : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] border-black dark:border-white",
-            )}
-            title="Canvas"
-          >
-            <PenTool className="w-3.5 h-3.5 font-bold" />
-          </button>
-
-          <button
-            onClick={toggleSharedMedia}
-            className={cn(
-              "w-8 h-8 md:w-9 md:h-9 border-[2px] border-black flex items-center justify-center transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 duration-100",
-              sharedMediaOpen
-                ? "bg-[#C4B5FD] text-black"
-                : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#C4B5FD] border-black dark:border-white",
-            )}
-            title="View"
-          >
-            <Eye className="w-3.5 h-3.5 font-bold" />
-          </button>
-
-          <div
-            className={cn(
-              "w-10 h-8 flex items-center justify-center text-[9px] font-mono font-black mt-1 transition-colors border-[2px] border-black",
-              connected
-                ? "bg-[#FFD93D] text-black"
-                : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white border-black dark:border-white",
-            )}
-          >
-            {connected ? formatTime(sessionTime) : "--:--"}
+            <div
+              className={cn(
+                "w-10 h-8 flex items-center justify-center text-[9px] font-mono font-black mt-1 transition-colors border-[2px] border-black",
+                connected
+                  ? "bg-[#FFD93D] text-black"
+                  : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white border-black dark:border-white",
+              )}
+            >
+              {connected ? formatTime(sessionTime) : "--:--"}
+            </div>
           </div>
-        </div>
-      ) : (
-        // EXPANDED VIEW
-        <div className="flex flex-col gap-1.5 md:gap-2">
-          {/* Audio Control */}
-          <div
-            onClick={handleMute}
-            className={cn(
-              "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 group cursor-pointer shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
-              !muted
-                ? "bg-[#FFFDF5] dark:bg-[#000000]"
-                : "bg-[#FF6B6B]",
-            )}
-          >
-            <div className="flex items-center gap-1.5 md:gap-2 min-w-0 flex-1 pr-2 md:pr-3">
-              <div
+        ) : (
+          <div className="flex flex-col gap-1.5 md:gap-2">
+            <div
+              onClick={handleMute}
+              className={cn(
+                "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 group cursor-pointer shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
+                !muted
+                  ? "bg-[#FFFDF5] dark:bg-[#000000]"
+                  : "bg-[#FF6B6B]",
+              )}
+            >
+              <div className="flex items-center gap-1.5 md:gap-2 min-w-0 flex-1 pr-2 md:pr-3">
+                <div
+                  className={cn(
+                    "flex items-center justify-center w-6 h-6 md:w-7 md:h-7 border-[2px] border-black dark:border-white transition-colors flex-shrink-0",
+                    !muted
+                      ? "bg-[#C4B5FD] text-black"
+                      : "bg-white dark:bg-[#000000] text-black dark:text-white",
+                  )}
+                >
+                  {muted ? (
+                    <MicOff className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
+                  ) : (
+                    <Mic className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
+                  )}
+                </div>
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-[9px] md:text-[10px] font-black text-black dark:text-white uppercase tracking-wide">
+                    Microphone
+                  </span>
+                  <select
+                    className="bg-transparent border-none text-[9px] md:text-[10px] text-black dark:text-white outline-none cursor-pointer w-full max-w-[100px] md:max-w-[120px] truncate p-0 font-bold uppercase pr-4"
+                    value={selectedAudioDevice}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      setSelectedAudioDevice(e.target.value);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    disabled={connected}
+                  >
+                    {audioDevices.map((device) => (
+                      <option
+                        key={device.deviceId}
+                        value={device.deviceId}
+                        className="bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
+                      >
+                        {device.label || `Mic ${device.deviceId.slice(0, 4)}`}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleMute();
+                }}
                 className={cn(
-                  "flex items-center justify-center w-6 h-6 md:w-7 md:h-7 border-[2px] border-black dark:border-white transition-colors flex-shrink-0",
+                  "text-[9px] md:text-[10px] font-black px-2 md:px-3 py-1 md:py-1.5 transition-all border-[2px] border-black dark:border-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none uppercase flex-shrink-0",
                   !muted
                     ? "bg-[#C4B5FD] text-black"
-                    : "bg-white dark:bg-[#000000] text-black dark:text-white",
+                    : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white",
                 )}
               >
-                {muted ? (
-                  <MicOff className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
-                ) : (
-                  <Mic className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
-                )}
-              </div>
-              <div className="flex flex-col min-w-0 flex-1">
-                <span className="text-[9px] md:text-[10px] font-black text-black dark:text-white uppercase tracking-wide">
-                  Microphone
-                </span>
-                <select
-                  className="bg-transparent border-none text-[9px] md:text-[10px] text-black dark:text-white outline-none cursor-pointer w-full max-w-[100px] md:max-w-[120px] truncate p-0 font-bold uppercase pr-4"
-                  value={selectedAudioDevice}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    setSelectedAudioDevice(e.target.value);
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                  disabled={connected}
-                >
-                  {audioDevices.map((device) => (
-                    <option
-                      key={device.deviceId}
-                      value={device.deviceId}
-                      className="bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
-                    >
-                      {device.label || `Mic ${device.deviceId.slice(0, 4)}`}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                {muted ? "Unmute" : "Mute"}
+              </button>
             </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleMute();
-              }}
-              className={cn(
-                "text-[9px] md:text-[10px] font-black px-2 md:px-3 py-1 md:py-1.5 transition-all border-[2px] border-black dark:border-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none uppercase flex-shrink-0",
-                !muted
-                  ? "bg-[#C4B5FD] text-black"
-                  : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white",
-              )}
-            >
-              {muted ? "Unmute" : "Mute"}
-            </button>
-          </div>
 
-          {/* Camera Control */}
-          {supportsVideo && (
-            <>
+            {supportsVideo && (
               <div
                 onClick={() => onToggleCamera(!cameraEnabled)}
                 className={cn(
-                  "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 cursor-pointer shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] relative",
+                  "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 cursor-pointer shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
                   cameraEnabled
                     ? "bg-[#C4B5FD]"
                     : "bg-[#FFFDF5] dark:bg-[#000000]",
@@ -972,32 +1200,6 @@ function FloatingControlPanel({
                     Camera
                   </span>
                 </div>
-                {/* Embedded Privacy Toggle */}
-                {cameraEnabled && onTogglePrivacy && (
-                  <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onTogglePrivacy(!privacyEnabled);
-                    }}
-                    className={cn(
-                      "flex items-center border-[2px] border-black dark:border-white rounded-full p-0.5 cursor-pointer transition-colors shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:scale-105 z-10 mx-2",
-                      privacyEnabled ? "bg-[#4ADE80]" : "bg-[#FF6B6B]"
-                    )}
-                    title="Privacy Mode"
-                    style={{ width: '32px', height: '18px' }}
-                  >
-                    <motion.div
-                      className={cn("w-3 h-3 rounded-full shadow-sm border border-black",
-                        privacyEnabled ? "bg-white" : "bg-black dark:bg-white"
-                      )}
-                      animate={{
-                        x: privacyEnabled ? 14 : 0,
-                      }}
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                    />
-                  </div>
-                )}
-
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -1013,150 +1215,199 @@ function FloatingControlPanel({
                   {cameraEnabled ? "Off" : "On"}
                 </button>
               </div>
-            </>
-          )}
+            )}
 
-          {/* Screen Share Control */}
-          {supportsVideo && (
-            <div
-              onClick={() => onToggleScreen(!screenEnabled)}
-              className={cn(
-                "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 cursor-pointer shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
-                screenEnabled
-                  ? "bg-[#FFD93D]"
-                  : "bg-[#FFFDF5] dark:bg-[#000000]",
-              )}
-            >
-              <div className="flex items-center gap-1.5 md:gap-2">
-                <div
+            {supportsVideo && cameraEnabled && (
+              <div
+                onClick={() => onTogglePrivacy(!privacyMode)}
+                className={cn(
+                  "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 cursor-pointer shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
+                  privacyMode
+                    ? "bg-[#C4B5FD]"
+                    : "bg-[#FFFDF5] dark:bg-[#000000]",
+                )}
+              >
+                <div className="flex items-center gap-1.5 md:gap-2">
+                  <div
+                    className={cn(
+                      "flex items-center justify-center w-6 h-6 md:w-7 md:h-7 border-[2px] border-black dark:border-white transition-colors",
+                      privacyMode
+                        ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
+                        : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white",
+                    )}
+                  >
+                    {privacyMode ? (
+                      <ToggleRight className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
+                    ) : (
+                      <ToggleLeft className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
+                    )}
+                  </div>
+                  <span className="text-[9px] md:text-[10px] font-black text-black dark:text-white uppercase tracking-wide">
+                    Privacy
+                  </span>
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onTogglePrivacy(!privacyMode);
+                  }}
                   className={cn(
-                    "flex items-center justify-center w-6 h-6 md:w-7 md:h-7 border-[2px] border-black transition-colors",
-                    screenEnabled
-                      ? "bg-[#FFFDF5] text-black"
-                      : "bg-[#FFFDF5] text-black",
+                    "text-[9px] md:text-[10px] font-black px-2 md:px-3 py-1 md:py-1.5 transition-all border-[2px] border-black dark:border-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none uppercase",
+                    privacyMode
+                      ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
+                      : "bg-[#C4B5FD] text-black",
                   )}
                 >
-                  {screenEnabled ? (
-                    <Monitor className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
-                  ) : (
-                    <MonitorOff className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
-                  )}
-                </div>
-                <span className="text-[9px] md:text-[10px] font-black text-black dark:text-white uppercase tracking-wide">
-                  Screen Share
-                </span>
+                  {privacyMode ? "Off" : "On"}
+                </button>
               </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleScreen(!screenEnabled);
-                }}
+            )}
+
+            {supportsVideo && (
+              <div
+                onClick={() => onToggleScreen(!screenEnabled)}
                 className={cn(
-                  "text-[9px] md:text-[10px] font-black px-2 md:px-3 py-1 md:py-1.5 transition-all border-[2px] border-black dark:border-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none uppercase",
+                  "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 cursor-pointer shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
                   screenEnabled
-                    ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
-                    : "bg-[#FFD93D] text-black",
+                    ? "bg-[#FFD93D]"
+                    : "bg-[#FFFDF5] dark:bg-[#000000]",
                 )}
               >
-                {screenEnabled ? "Stop" : "Share"}
+                <div className="flex items-center gap-1.5 md:gap-2">
+                  <div
+                    className={cn(
+                      "flex items-center justify-center w-6 h-6 md:w-7 md:h-7 border-[2px] border-black transition-colors",
+                      screenEnabled
+                        ? "bg-[#FFFDF5] text-black"
+                        : "bg-[#FFFDF5] text-black",
+                    )}
+                  >
+                    {screenEnabled ? (
+                      <Monitor className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
+                    ) : (
+                      <MonitorOff className="w-3 h-3 md:w-3.5 md:h-3.5 font-bold" />
+                    )}
+                  </div>
+                  <span className="text-[9px] md:text-[10px] font-black text-black dark:text-white uppercase tracking-wide">
+                    Screen Share
+                  </span>
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleScreen(!screenEnabled);
+                  }}
+                  className={cn(
+                    "text-[9px] md:text-[10px] font-black px-2 md:px-3 py-1 md:py-1.5 transition-all border-[2px] border-black dark:border-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none uppercase",
+                    screenEnabled
+                      ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
+                      : "bg-[#FFD93D] text-black",
+                  )}
+                >
+                  {screenEnabled ? "Stop" : "Share"}
+                </button>
+              </div>
+            )}
+
+            <button
+              onClick={handleConnect}
+              disabled={!connected && checkingBalance}
+              className={cn(
+                "w-full py-2.5 md:py-3 font-black transition-all transform flex items-center justify-center gap-2 mt-1 border-[2px] md:border-[3px] border-black dark:border-white uppercase text-[10px] md:text-xs",
+                connected
+                  ? "bg-[#FF6B6B] hover:bg-[#FF6B6B] text-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
+                  : checkingBalance
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60 shadow-none"
+                    : "bg-[#4ADE80] hover:bg-[#4ADE80] text-black shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none cursor-pointer"
+              )}
+              title={connected ? "End Session" : "Start Session"}
+            >
+              {connected ? (
+                <>
+                  <div className="w-3 h-3 bg-white border-2 border-black" />
+                  End Session
+                </>
+              ) : checkingBalance ? (
+                <>
+                  <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                <>
+                  <PlayCircle className="w-4 h-4 md:w-5 md:h-5" />
+                  Start Session
+                </>
+              )}
+            </button>
+
+            {/* Bottom Actions */}
+            <div className="grid grid-cols-4 gap-1.5 md:gap-2 pt-2 md:pt-3 border-t-[2px] border-black dark:border-white">
+              {enableEditingSettings && (
+                <SettingsDialog
+                  className="w-full"
+                  trigger={
+                    <button className="flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FF6B6B] text-black dark:text-white hover:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group w-full">
+                      <div className="p-1 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#FF6B6B] transition-colors">
+                        <Settings className="w-3 h-3 md:w-4 md:h-4 font-bold" />
+                      </div>
+                      <span className="text-[7px] md:text-[8px] font-black uppercase">Settings</span>
+                    </button>
+                  }
+                />
+              )}
+              <button
+                onClick={onPaintClick}
+                className={cn(
+                  "flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group",
+                  isPaintActive
+                    ? "bg-[#FFD93D] text-black"
+                    : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D]",
+                )}
+              >
+                <div
+                  className={cn(
+                    "p-1 border-[2px] border-black dark:border-white transition-colors",
+                    isPaintActive
+                      ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
+                      : "bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#FFD93D]",
+                  )}
+                >
+                  <PenTool className="w-3 h-3 md:w-4 md:h-4 font-bold" />
+                </div>
+                <span className="text-[7px] md:text-[8px] font-black uppercase">Canvas</span>
+              </button>
+              <button
+                onClick={toggleSharedMedia}
+                className={cn(
+                  "flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group",
+                  sharedMediaOpen
+                    ? "bg-[#C4B5FD] text-black"
+                    : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#C4B5FD]",
+                )}
+              >
+                <div
+                  className={cn(
+                    "p-1 border-[2px] border-black dark:border-white transition-colors",
+                    sharedMediaOpen
+                      ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
+                      : "bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#C4B5FD]",
+                  )}
+                >
+                  <Eye className="w-3 h-3 md:w-4 md:h-4 font-bold" />
+                </div>
+                <span className="text-[7px] md:text-[8px] font-black uppercase">View</span>
+              </button>
+              <button className="flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#C4B5FD] text-black dark:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group">
+                <div className="p-1 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#C4B5FD] transition-colors">
+                  <MoreHorizontal className="w-3 h-3 md:w-4 md:h-4 font-bold" />
+                </div>
+                <span className="text-[7px] md:text-[8px] font-black uppercase">More</span>
               </button>
             </div>
-          )}
-
-          {/* Main Action Button */}
-          <button
-            onClick={handleConnect}
-            className={cn(
-              "w-full py-2.5 md:py-3 font-black text-black transition-all transform active:translate-x-1 active:translate-y-1 active:shadow-none flex items-center justify-center gap-2 mt-1 border-[2px] md:border-[3px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] uppercase text-[10px] md:text-xs",
-              connected
-                ? "bg-[#FF6B6B] hover:bg-[#FF6B6B]"
-                : "bg-[#4ADE80] hover:bg-[#4ADE80]",
-            )}
-          >
-            {connected ? (
-              <>
-                <div className="w-3 h-3 bg-white border-2 border-black" />
-                End Session
-              </>
-            ) : (
-              <>
-                <PlayCircle className="w-4 h-4 md:w-5 md:h-5" />
-                Start Session
-              </>
-            )}
-          </button>
-
-          {/* Bottom Actions */}
-          <div className="grid grid-cols-4 gap-1.5 md:gap-2 pt-2 md:pt-3 border-t-[2px] border-black dark:border-white">
-            {enableEditingSettings && (
-              <SettingsDialog
-                className="w-full"
-                trigger={
-                  <button className="flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FF6B6B] text-black dark:text-white hover:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group w-full">
-                    <div className="p-1 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#FF6B6B] transition-colors">
-                      <Settings className="w-3 h-3 md:w-4 md:h-4 font-bold" />
-                    </div>
-                    <span className="text-[7px] md:text-[8px] font-black uppercase">Settings</span>
-                  </button>
-                }
-              />
-            )}
-            <button
-              onClick={onPaintClick}
-              className={cn(
-                "flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group",
-                isPaintActive
-                  ? "bg-[#FFD93D] text-black"
-                  : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D]",
-              )}
-            >
-              <div
-                className={cn(
-                  "p-1 border-[2px] border-black dark:border-white transition-colors",
-                  isPaintActive
-                    ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
-                    : "bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#FFD93D]",
-                )}
-              >
-                <PenTool className="w-3 h-3 md:w-4 md:h-4 font-bold" />
-              </div>
-              <span className="text-[7px] md:text-[8px] font-black uppercase">Canvas</span>
-            </button>
-            <button
-              onClick={toggleSharedMedia}
-              className={cn(
-                "flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group",
-                sharedMediaOpen
-                  ? "bg-[#C4B5FD] text-black"
-                  : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#C4B5FD]",
-              )}
-            >
-              <div
-                className={cn(
-                  "p-1 border-[2px] border-black dark:border-white transition-colors",
-                  sharedMediaOpen
-                    ? "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white"
-                    : "bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#C4B5FD]",
-                )}
-              >
-                <Eye className="w-3 h-3 md:w-4 md:h-4 font-bold" />
-              </div>
-              <span className="text-[7px] md:text-[8px] font-black uppercase">View</span>
-            </button>
-            <button className="flex flex-col items-center gap-1 p-1.5 md:p-2 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#C4B5FD] text-black dark:text-white transition-all shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none group">
-              <div className="p-1 border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] group-hover:bg-[#C4B5FD] transition-colors">
-                <MoreHorizontal className="w-3 h-3 md:w-4 md:h-4 font-bold" />
-              </div>
-              <span className="text-[7px] md:text-[8px] font-black uppercase">More</span>
-            </button>
           </div>
-        </div>
-      )
-      }
+        )}
 
-      {/* Popover for Shared Media */}
-      {
-        sharedMediaOpen && (
+        {sharedMediaOpen && (
           <div
             className={cn(
               "absolute w-[320px] md:w-[360px] h-auto flex flex-col bg-white dark:bg-[#000000] border-[3px] md:border-[4px] border-black dark:border-white rounded-xl md:rounded-2xl shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] overflow-hidden z-[1001]",
@@ -1210,13 +1461,60 @@ function FloatingControlPanel({
                 isCameraEnabled={cameraEnabled}
                 isScreenShareEnabled={screenEnabled}
                 isCanvasEnabled={isPaintActive}
-                privacyMode={privacyEnabled}
+                privacyMode={privacyMode}
+                processedEdgesRef={processedEdgesRef}
               />
             </div>
           </div>
-        )
-      }
-    </motion.div >
+        )}
+
+        {/* No Minutes Alert Dialog */}
+        <AlertDialog open={showNoMinutesDialog} onOpenChange={setShowNoMinutesDialog}>
+          <AlertDialogContent className="border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)]">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-xl font-black text-black dark:text-white uppercase border-b-[3px] border-black dark:border-white pb-3">
+                Out of Free Minutes
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-base text-black dark:text-white pt-3 font-medium">
+                {nextResetInHours !== null && nextResetInMinutes !== null && (nextResetInHours > 0 || nextResetInMinutes > 0) ? (
+                  <>
+                    You've used your 15 free minutes today. Your free minutes reset in{' '}
+                    <span className="font-black">
+                      {nextResetInHours > 0 && `${nextResetInHours} hour${nextResetInHours !== 1 ? 's' : ''}`}
+                      {nextResetInHours > 0 && nextResetInMinutes > 0 && ' '}
+                      {nextResetInMinutes > 0 && `${nextResetInMinutes} minute${nextResetInMinutes !== 1 ? 's' : ''}`}
+                    </span>
+                    , or you can upgrade to continue learning right now.
+                  </>
+                ) : nextResetInHours === 0 && nextResetInMinutes === 0 ? (
+                  <>
+                    You've used your 15 free minutes. Your free minutes are available now!{' '}
+                    <span className="font-black">Please refresh the page to get your new minutes.</span>
+                  </>
+                ) : (
+                  <>
+                    You've used your 15 free minutes today. Your free minutes reset tomorrow, or you can upgrade to continue learning right now.
+                  </>
+                )}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="gap-2 sm:gap-3 mt-4">
+              <AlertDialogCancel className="border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] hover:text-black font-black uppercase shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none">
+                Maybe Later
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  window.location.href = '/app/pricing';
+                }}
+                className="border-[2px] border-black dark:border-white bg-[#4ADE80] text-black hover:bg-[#4ADE80] font-black uppercase shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none"
+              >
+                View Plans
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </motion.div>
   );
 }
+
 export default memo(FloatingControlPanel);

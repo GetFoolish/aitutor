@@ -40,7 +40,7 @@ def create_setup_token(google_user: Dict) -> str:
     Create a temporary token for completing user setup
     
     Args:
-        google_user: Google user information from OAuth
+        google_user: Google user information from OAuth (may include birthday and gender)
         
     Returns:
         Setup token string
@@ -50,6 +50,8 @@ def create_setup_token(google_user: Dict) -> str:
         "email": google_user.get("email", ""),
         "name": google_user.get("name", ""),
         "picture": google_user.get("picture", ""),
+        "birthday": google_user.get("birthday"),  # Include if available from People API
+        "gender": google_user.get("gender"),  # Include if available from People API
         "iat": datetime.utcnow(),
         "exp": datetime.utcnow() + timedelta(minutes=30)  # 30 min expiration for setup
     }

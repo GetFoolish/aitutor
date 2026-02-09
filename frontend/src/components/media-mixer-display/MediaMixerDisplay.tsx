@@ -38,7 +38,7 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
   // Mirror the MediaMixer canvas to the display canvas
   useEffect(() => {
     // Function to calculate optimal canvas size maintaining aspect ratio
-    // Uses "cover" behavior: fills entire container, maintains aspect ratio, may crop edges
+    // Uses "contain" behavior: fits entire canvas inside container without cropping
     const calculateCanvasSize = (
       sourceWidth: number,
       sourceHeight: number,
@@ -55,15 +55,15 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
       let displayWidth: number;
       let displayHeight: number;
 
-      // Fill entire container while maintaining aspect ratio (cover behavior - fills all space, may crop)
+      // Fit entire canvas inside container while maintaining aspect ratio (contain behavior - no cropping)
       if (sourceAspect > containerAspect) {
-        // Source is wider than container - fit to height (fills height, may crop left/right)
-        displayHeight = containerHeight;
-        displayWidth = containerHeight * sourceAspect;
-      } else {
-        // Source is taller than container - fit to width (fills width, may crop top/bottom)
+        // Source is wider than container - fit to width (full width, letterbox top/bottom)
         displayWidth = containerWidth;
         displayHeight = containerWidth / sourceAspect;
+      } else {
+        // Source is taller than container - fit to height (full height, pillarbox left/right)
+        displayHeight = containerHeight;
+        displayWidth = containerHeight * sourceAspect;
       }
 
       return { width: displayWidth, height: displayHeight };
@@ -221,29 +221,14 @@ const MediaMixerDisplay: React.FC<MediaMixerDisplayProps> = ({
         )}
 
         {/* Status indicators - Neo-Brutalist style */}
+        {/* NOTE: Camera/Screen/Canvas stickers are now drawn directly on the canvas
+            in useMediaMixer.ts, so these HTML overlays are no longer needed.
+            Only Privacy mode indicator remains as it's a UI-only feature. */}
         <div className="absolute bottom-2 left-2 flex gap-2 z-10">
           {privacyMode && (
             <div className="flex items-center gap-1 px-2 py-1 border-[2px] border-black dark:border-white bg-[#FF6B6B] text-white text-[10px] font-black uppercase shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]">
               <span className="w-1.5 h-1.5 bg-white animate-pulse" />
               Privacy
-            </div>
-          )}
-          {isCameraEnabled && (
-            <div className="flex items-center gap-1 px-2 py-1 border-[2px] border-black dark:border-white bg-[#C4B5FD] text-black dark:text-white text-[10px] font-black uppercase shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]">
-              <span className="w-1.5 h-1.5 bg-black dark:bg-white animate-pulse" />
-              Camera
-            </div>
-          )}
-          {isScreenShareEnabled && (
-            <div className="flex items-center gap-1 px-2 py-1 border-[2px] border-black dark:border-white bg-[#FFD93D] text-black text-[10px] font-black uppercase shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]">
-              <span className="w-1.5 h-1.5 bg-black dark:bg-white animate-pulse" />
-              Screen
-            </div>
-          )}
-          {isCanvasEnabled && (
-            <div className="flex items-center gap-1 px-2 py-1 border-[2px] border-black dark:border-white bg-[#FF6B6B] text-white text-[10px] font-black uppercase shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]">
-              <span className="w-1.5 h-1.5 bg-white animate-pulse" />
-              Canvas
             </div>
           )}
         </div>

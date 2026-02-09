@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from typing import Optional, Dict, Any, List
 import uuid
 
+from .core.config import TeachingAssistantConfig
 from shared.logging_config import get_logger
 
 logger = get_logger(__name__)
@@ -19,12 +20,10 @@ class SessionManager:
     Enables multi-user support and survives Cloud Run restarts.
     """
 
-    INACTIVITY_THRESHOLD_SECONDS = 60
-    GRACE_PERIOD_SECONDS = 60
-
-    def __init__(self, mongo_client):
+    def __init__(self, mongo_client, config: Optional[TeachingAssistantConfig] = None):
         self.db = mongo_client.db
         self.sessions = self.db.sessions
+        self.config = config or TeachingAssistantConfig()
         self._ensure_indexes()
 
     def _ensure_indexes(self):
@@ -33,8 +32,6 @@ class SessionManager:
             self.sessions.create_index("user_id")
             self.sessions.create_index("session_id", unique=True)
             self.sessions.create_index([("is_active", 1), ("user_id", 1)])
-            # TTL index for automatic cleanup (documents expire at expires_at time)
-            self.sessions.create_index("expires_at", expireAfterSeconds=0)
             logger.info("[SESSION_MANAGER] Indexes ensured on sessions collection")
         except Exception as e:
             logger.error(f"[SESSION_MANAGER] Failed to create indexes: {e}")
@@ -59,7 +56,6 @@ class SessionManager:
             "pending_instructions": [],
             "websocket_connected": False,
             "sse_connected": False,
-            "expires_at": now + timedelta(hours=24),
             "inactivity_prompt_sent": False,  # Track if we've sent an inactivity prompt
         }
         self.sessions.insert_one(session)
@@ -88,8 +84,7 @@ class SessionManager:
             {"session_id": session_id},
             {
                 "$set": {
-                    "last_activity": now,
-                    "expires_at": now + timedelta(hours=24)
+                    "last_activity": now
                 }
             }
         )
@@ -103,7 +98,6 @@ class SessionManager:
                 "$set": {
                     "last_conversation_turn": now,
                     "last_activity": now,
-                    "expires_at": now + timedelta(hours=24),
                     "inactivity_prompt_sent": False  # Reset on activity
                 }
             }
@@ -120,7 +114,6 @@ class SessionManager:
             "$set": {
                 "last_question_submission": now,
                 "last_activity": now,
-                "expires_at": now + timedelta(hours=24),
                 "inactivity_prompt_sent": False  # Reset on activity
             },
             "$inc": {
@@ -144,7 +137,10 @@ class SessionManager:
             {"session_id": session_id},
             {"$push": {"pending_instructions": instruction}}
         )
-        logger.info(f"[SESSION_MANAGER] Pushed instruction {instruction['instruction_id']} to session {session_id}")
+
+        # Log with colored tag - full instruction text
+        logger.info(f"[INSTRUCTION CREATED] {instruction['instruction_id']}: {instruction_text}")
+
         return instruction["instruction_id"]
 
     def get_pending_instructions(self, session_id: str) -> List[Dict[str, Any]]:
@@ -197,10 +193,39 @@ class SessionManager:
         """End a session and return summary"""
         session = self.sessions.find_one({"session_id": session_id})
         if not session:
+            logger.warning(f"[SESSION_MANAGER] Session {session_id} not found")
             return {}
 
         now = datetime.utcnow()
         duration_minutes = (now - session["started_at"]).total_seconds() / 60
+        
+        # Get the credits available at session start
+        credits_at_start = session.get("credits_at_start", 0)
+        user_id = session["user_id"]
+        
+        # MINUTE DEDUCTION LOGIC
+        import math
+        from services.PaymentService.free_minutes_handler import deduct_minutes
+        
+        # Deduct MINIMUM of: (actual duration) OR (credits available at start)
+        # This prevents negative balance if user overruns their credits
+        minutes_to_deduct = min(math.ceil(duration_minutes), credits_at_start)
+        
+        # Deduct the minutes
+        deduct_success = deduct_minutes(user_id, minutes_to_deduct)
+        
+        # Log if session exceeded available credits
+        if duration_minutes > credits_at_start:
+            logger.warning(
+                f"[SESSION_MANAGER] ⚠️ Session {session_id[:8]}... exceeded available credits! "
+                f"Duration: {duration_minutes:.2f} min, Credits: {credits_at_start} min, "
+                f"Deducted: {minutes_to_deduct} min"
+            )
+        else:
+            logger.info(
+                f"[SESSION_MANAGER] ✅ Session {session_id[:8]}... ended normally. "
+                f"Duration: {duration_minutes:.2f} min, Deducted: {minutes_to_deduct} min"
+            )
 
         self.sessions.update_one(
             {"session_id": session_id},
@@ -209,15 +234,19 @@ class SessionManager:
                     "is_active": False,
                     "ended_at": now,
                     "websocket_connected": False,
-                    "sse_connected": False
+                    "sse_connected": False,
+                    "duration_minutes": round(duration_minutes, 2),
+                    "minutes_deducted": minutes_to_deduct,
+                    "credits_exceeded": duration_minutes > credits_at_start,
+                    "deduct_success": deduct_success
                 }
             }
         )
 
-        logger.info(f"[SESSION_MANAGER] Ended session {session_id}, duration: {duration_minutes:.2f} min")
         return {
             "session_id": session_id,
             "duration_minutes": round(duration_minutes, 2),
+            "minutes_deducted": minutes_to_deduct,
             "questions_answered": session["questions_answered_this_session"],
             "questions_correct": session["questions_correct_this_session"]
         }
@@ -255,8 +284,8 @@ class SessionManager:
         now = datetime.utcnow()
         started_at = session["started_at"]
 
-        # Grace period: don't check inactivity for first 60 seconds
-        if (now - started_at).total_seconds() < self.GRACE_PERIOD_SECONDS:
+        # Grace period: don't check inactivity for first N seconds
+        if (now - started_at).total_seconds() < self.config.grace_period:
             return False
 
         # Get the most recent activity time
@@ -265,7 +294,7 @@ class SessionManager:
         last_activity = max(last_conversation, last_question)
 
         inactive_seconds = (now - last_activity).total_seconds()
-        is_inactive = inactive_seconds >= self.INACTIVITY_THRESHOLD_SECONDS
+        is_inactive = inactive_seconds >= self.config.inactivity_threshold
 
         if is_inactive:
             # Mark that we've sent a prompt to avoid spamming

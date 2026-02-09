@@ -1,0 +1,50 @@
+[
+  {
+    "id": "13461fc0-50d6-4f52-be54-0d84e67736f6",
+    "type": "personal",
+    "text": "Has five horses.",
+    "importance": 0.8,
+    "student_id": "user_de43ef867ee7",
+    "session_id": "sess_50eac038229f4a7a",
+    "timestamp": "2026-01-01T21:47:06.990019",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1767286026.990019,
+    "last_epoch": 1767286026.990019
+  },
+  {
+    "id": "83443ffd-45f2-4b13-9905-d4fe7edce9a4",
+    "type": "personal",
+    "text": "Has horses.",
+    "importance": 0.7,
+    "student_id": "user_de43ef867ee7",
+    "session_id": "sess_22ea4ba480724183",
+    "timestamp": "2026-01-01T22:10:20.249745",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1767287420.249745,
+    "last_epoch": 1767287420.249745
+  },
+  {
+    "id": "24bd7802-df17-44c3-b95e-02e2d7cd10c8",
+    "type": "personal",
+    "text": "Has multiple horses.",
+    "importance": 0.8,
+    "student_id": "user_de43ef867ee7",
+    "session_id": "sess_22ea4ba480724183",
+    "timestamp": "2026-01-01T22:10:20.249745",
+    "metadata": {
+      "emotion": "neutral",
+      "topic": "general"
+    },
+    "counter": 1,
+    "first_epoch": 1767287420.249745,
+    "last_epoch": 1767287420.249745
+  }
+]

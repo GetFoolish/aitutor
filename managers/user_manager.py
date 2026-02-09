@@ -170,9 +170,11 @@ class UserManager:
         at_grade_count = 0
         above_grade_count = 0
         
+        # Define current_grade_value before loop (in case all_skills is empty)
+        current_grade_value = current_grade.value
+        
         for skill_id, skill in all_skills.items():
             skill_grade_value = skill.grade_level.value
-            current_grade_value = current_grade.value
             
             if skill_grade_value < current_grade_value:
                 # Below current grade - assumed mastered
@@ -425,6 +427,7 @@ class UserManager:
         date_of_birth=None,
         gender: str = "Prefer not to say",
         preferred_language: str = "English",
+        location: str = None,
         subjects: List[str] = None,
         learning_goals: List[str] = None,
         interests: List[str] = None,
@@ -485,12 +488,17 @@ class UserManager:
             "date_of_birth": date_of_birth.isoformat() if date_of_birth else None,
             "gender": gender,
             "preferred_language": preferred_language,
+            "location": location,
             "subjects": subjects or [],
             "learning_goals": learning_goals or [],
             "interests": interests or [],
             "learning_style": learning_style,
             "last_login": current_time,
-            "is_active": True
+            "is_active": True,
+            "credits": {"balance": 0, "currency": "USD"},  # Paid minutes start at 0
+            "free_minutes": {"balance": 0, "last_reset_date": None},  # Will get 15 daily free minutes
+            "subscription_plan": None,  # No subscription plan until user purchases
+            "payment_history": []
         })
         
         # Save to MongoDB
@@ -515,6 +523,7 @@ class UserManager:
         date_of_birth,
         gender: str,
         preferred_language: str,
+        location: str = None,
         user_type: str = "student"
     ) -> UserProfile:
         """
@@ -580,10 +589,15 @@ class UserManager:
             "date_of_birth": date_of_birth.isoformat() if date_of_birth else None,
             "gender": gender,
             "preferred_language": preferred_language,
+            "location": location,
             "user_type": user_type,
             "email_verified": False,  # For future email verification
             "last_login": current_time,
-            "is_active": True
+            "is_active": True,
+            "credits": {"balance": 0, "currency": "USD"},  # Paid minutes start at 0
+            "free_minutes": {"balance": 0, "last_reset_date": None},  # Will get 15 daily free minutes
+            "subscription_plan": None,  # No subscription plan until user purchases
+            "payment_history": []
         })
 
         # Save to MongoDB

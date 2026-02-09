@@ -1,0 +1,89 @@
+{
+  "session_id": "sess_4edd8c93ff314ba0",
+  "user_id": "user_de43ef867ee7",
+  "start_time": "2026-01-05T14:49:04.934000",
+  "end_time": "2026-01-05T19:52:22.076514",
+  "turn_count": 31,
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "[SYSTEM PROMPT FOR ADAM] [MEMORY AND INJECTION HANDLING] During this session, you will receive 'System Updates' with retrieved memories. - If an update arrives while you are speaking or just finished: DO NOT hallucinate a new user turn. - If you have just finished a response, simply maintain consistency with that response. - Do not let internal system updates disrupt the natural flow of conversation. Hey there! Great job completing our last session, even though things felt a little confusing. I'm ready to help you work through those unresolved topics today! Last time we worked on: This session touched on general topics, leaving you feeling confused. It sounds like there were options discussed that you didn't fully resolve. Unfinished topics: options Personal context available.",
+      "timestamp": 1767606544.934
+    },
+    {
+      "speaker": "tutor",
+      "text": "**Responding to the Inquiry** I acknowledged the user's question, understanding it wasn't math-related. My focus shifted to gently redirecting them. To guide them back, I thought to prompt them with a math-focused question to jumpstart their problem-solving. This keeps me patient and supportive, fitting the tutor's role. It sounds",
+      "timestamp": 1767624549.406
+    },
+    {
+      "speaker": "user",
+      "text": "अपने यूनिवर्सिटी के",
+      "timestamp": 1767624551.044
+    },
+    {
+      "speaker": "tutor",
+      "text": "It sounds like you're interested in some new classes. Could you tell me a little more about what you're looking for?",
+      "timestamp": 1767624553.917
+    },
+    {
+      "speaker": "user",
+      "text": "ऐसे लिखेंगे।",
+      "timestamp": 1767624568.365
+    },
+    {
+      "speaker": "tutor",
+      "text": "That sounds like a great plan to get more organized. What kind of options",
+      "timestamp": 1767624570.548
+    },
+    {
+      "speaker": "user",
+      "text": ". İlk önce anahtar.",
+      "timestamp": 1767624576.12
+    },
+    {
+      "speaker": "tutor",
+      "text": "I hear you saying something about \"each part.\" Can you tell me more about what you mean by that part? We're",
+      "timestamp": 1767624583.01
+    },
+    {
+      "speaker": "user",
+      "text": "Hi Adam, how are you?",
+      "timestamp": 1767624583.086
+    },
+    {
+      "speaker": "tutor",
+      "text": "I'm doing well, thanks for asking! How can I help you with this math problem?",
+      "timestamp": 1767624583.681
+    },
+    {
+      "speaker": "user",
+      "text": "मि ल् ट तो डाल दी थी अगले",
+      "timestamp": 1767624584.806
+    },
+    {
+      "speaker": "tutor",
+      "text": "We can certainly work on this math problem together! What are you thinking about first?",
+      "timestamp": 1767624594.37
+    },
+    {
+      "speaker": "user",
+      "text": "Adam can you read this question",
+      "timestamp": 1767624605.899
+    },
+    {
+      "speaker": "tutor",
+      "text": "Certainly. The problem reads: \"Mia had 4 horses. She got 1 more horse. Now she has ___ horses.\" Below that are three choices: A) 5, B) 2, C) 7. What do you think the first step should be?",
+      "timestamp": 1767624614.733
+    },
+    {
+      "speaker": "user",
+      "text": "Okay so we should fir st ad d the pre vious ver se s and the new word s together right",
+      "timestamp": 1767624635.554
+    },
+    {
+      "speaker": "tutor",
+      "text": "That's a great way to start! So, what numbers do you think we need to add together to find the total number of horses?",
+      "timestamp": 1767624645.179
+    }
+  ]
+}

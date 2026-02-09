@@ -1,0 +1,39 @@
+{
+  "session_id": "sess_744050821dba4955",
+  "user_id": "user_de43ef867ee7",
+  "start_time": "2026-01-01T17:28:10.057000",
+  "end_time": "2026-01-01T22:30:44.453005",
+  "turn_count": 15,
+  "turns": [
+    {
+      "speaker": "adam",
+      "text": "[SYSTEM PROMPT FOR ADAM] [MEMORY AND INJECTION HANDLING] During this session, you will receive 'System Updates' with retrieved memories. - If an update arrives while you are speaking or just finished: DO NOT hallucinate a new user turn. - If you have just finished a response, simply maintain consistency with that response. - Do not let internal system updates disrupt the natural flow of conversation. Welcome back! Great job completing our session last time; ready to dive into some new topics today? Last time we worked on: This session covered general topics, and we ended in a neutral state. There were no key moments or unfinished topics to explore further. Personal context available.",
+      "timestamp": 1767270490.057
+    },
+    {
+      "speaker": "tutor",
+      "text": "Hi there! Yeah, I'm ready to jump in. What do you want to work on today?",
+      "timestamp": 1767288500.946
+    },
+    {
+      "speaker": "user",
+      "text": "Hi Adam, how are you?",
+      "timestamp": 1767288511.017
+    },
+    {
+      "speaker": "tutor",
+      "text": "I'm doing well, thanks for asking! Looks like you have a question about some horses there. What are your thoughts on this problem?",
+      "timestamp": 1767288514.654
+    },
+    {
+      "speaker": "user",
+      "text": "ਮੈ ਡਮ ਕ੍ਰਿ ਪਾ ਕਰ ਕੇ ਇਸ ਪ੍ਰ ਸ਼ਨ ਕੋ ਫੜ ਕੇ ਬਤਾਈਏ ਮੁਝੇ",
+      "timestamp": 1767288532.275
+    },
+    {
+      "speaker": "tutor",
+      "text": "**Understanding the Problem** I've successfully translated the problem into Hindi: \"Mia ke paas 4 ghode the. Use 1 aur ghoda mila. Ab uske paas ___ ghode hain.\" Now I am ready to formulate a Socratic question to guide the user toward the solution. **Framing the Question** I've crafted a Socratic question in Hindi to assist the user. It starts with the translated problem: \"Mia ke paas 4 ghode the. Use 1 aur ghoda mila. Ab uske paas ___ ghode hain.\" Then, I ask: \"Mia ke paas shuru mein kitne ghode the, aur use kitne aur mile?\" My goal is to elicit the correct answer through guided reasoning, prompting the user to perform the addition. ज़रूर, मैं पढ़ती हूँ। \"मिया के पास 4 घोड़े थे। उसे 1 और घोड़ा मिला। अब उसके पास से थे, और आपको 1 और घोड़ा मिल गया। तो, अब गिनकर देखिए कि आपके पास कुल कितने घोड़े हैं?",
+      "timestamp": 1767288597.096
+    }
+  ]
+}

@@ -39,11 +39,9 @@ import {
 interface HeaderProps {
     sidebarOpen: boolean;
     onToggleSidebar: () => void;
-    isDeveloperMode: boolean;
-    onToggleDeveloperMode: () => void;
 }
 
-export default function Header({ sidebarOpen, onToggleSidebar, isDeveloperMode, onToggleDeveloperMode }: HeaderProps) {
+export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
     const { theme, setTheme } = useTheme();
     const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -98,23 +96,6 @@ export default function Header({ sidebarOpen, onToggleSidebar, isDeveloperMode, 
                     <Sun className="h-[0.9rem] w-[0.9rem] md:h-[1rem] md:w-[1rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
                     <Moon className="absolute h-[0.9rem] w-[0.9rem] md:h-[1rem] md:w-[1rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                     <span className="sr-only">Toggle theme</span>
-                </Button>
-
-                <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className={cn(
-                        "w-7 h-7 md:w-8 md:h-8 lg:w-8 lg:h-8 border-[2px] border-black dark:border-white hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100",
-                        isDeveloperMode
-                            ? "bg-[#C4B5FD] dark:bg-[#C4B5FD] text-black dark:text-black"
-                            : "bg-[#FFFDF5] dark:bg-[#000000] text-black dark:text-white hover:bg-[#C4B5FD] dark:hover:bg-[#C4B5FD] dark:hover:text-black"
-                    )}
-                    onClick={onToggleDeveloperMode}
-                    title={isDeveloperMode ? "Disable Developer Mode" : "Enable Developer Mode"}
-                >
-                    <Terminal className="h-[0.9rem] w-[0.9rem] md:h-[1rem] md:w-[1rem]" />
-                    <span className="sr-only">Toggle developer mode</span>
                 </Button>
 
                 <DropdownMenu>
