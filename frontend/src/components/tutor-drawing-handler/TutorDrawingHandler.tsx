@@ -12,7 +12,7 @@
  *   "Sal Khan on a whiteboard" experience.
  */
 import { useEffect, useRef, useCallback, memo } from "react";
-import { useTutorContext } from "../../features/tutor";
+import { useOptionalTutorContext } from "../../features/tutor/TutorContext";
 import {
   FunctionDeclaration,
   LiveServerToolCall,
@@ -88,11 +88,16 @@ function rawStrokesToShapes(strokes: any[]): ShapeDef[] {
 // ──────────────────────────────────────────────────────────
 
 function TutorDrawingHandlerComponent() {
-  const { client, setConfig, config } = useTutorContext();
+  const tutorContext = useOptionalTutorContext();
   const registeredRef = useRef(false);
+
+  const client = tutorContext?.client;
+  const setConfig = tutorContext?.setConfig;
+  const config = tutorContext?.config;
 
   // Register the drawing tool with Gemini — only once
   useEffect(() => {
+    if (!config || !setConfig) return;
     if (registeredRef.current) return;
 
     const existingTools = config.tools || [];
@@ -124,6 +129,8 @@ function TutorDrawingHandlerComponent() {
 
   // Handle tool calls from Gemini
   useEffect(() => {
+    if (!client) return;
+
     const onToolCall = (toolCall: LiveServerToolCall) => {
       if (!toolCall.functionCalls) return;
 
