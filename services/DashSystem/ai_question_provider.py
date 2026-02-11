@@ -308,6 +308,16 @@ class AIQuestionProvider:
             {"$set": {"status": "served", "served_at": datetime.utcnow()}},
             sort=[("created_at", 1)],
         )
+        # Fallback: try untagged queue items if subject filter returned nothing
+        if not queue_item and subject:
+            untagged_query = {**query, "subject": {"$in": [None, ""]}}
+            del untagged_query["subject"]  # remove old subject key
+            untagged_query["$or"] = [{"subject": None}, {"subject": ""}, {"subject": {"$exists": False}}]
+            queue_item = self.queue.find_one_and_update(
+                untagged_query,
+                {"$set": {"status": "served", "served_at": datetime.utcnow()}},
+                sort=[("created_at", 1)],
+            )
         if not queue_item:
             return None
 
@@ -346,6 +356,11 @@ class AIQuestionProvider:
             query["question_id"] = {"$nin": list(exclude_ids)}
 
         doc = self.collection.find_one(query, sort=[("used_count", 1), ("created_at", -1)])
+        # Fallback: try untagged questions if subject filter returned nothing
+        if not doc and subject:
+            untagged_query = {k: v for k, v in query.items() if k != "subject"}
+            untagged_query["$or"] = [{"subject": None}, {"subject": ""}, {"subject": {"$exists": False}}]
+            doc = self.collection.find_one(untagged_query, sort=[("used_count", 1), ("created_at", -1)])
         if doc:
             self.collection.update_one(
                 {"_id": doc["_id"]}, {"$inc": {"used_count": 1}, "$set": {"last_served_at": datetime.utcnow()}}

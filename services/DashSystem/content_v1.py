@@ -910,6 +910,64 @@ class ContentV1Engine:
         except Exception:
             return False
 
+    # ---- Subject-content cross-validation --------------------------------
+    # Widget types that are only valid for STEM subjects (math, science, python)
+    _MATH_ONLY_WIDGETS = {"expression", "numeric-input"}
+    # Subjects where math-only widgets are acceptable
+    _STEM_SUBJECTS = {"math", "science", "python", "physics", "chemistry",
+                      "astronomy", "astrophysics", "statistics", "economics"}
+    # Content patterns that indicate off-topic phonics/counting in non-English subjects
+    _PHONICS_PATTERNS = re.compile(
+        r"how many (?:letters|syllables)|count the letters|spell the word|"
+        r"what letter does.*start with|clap.*syllables|rhymes with|"
+        r"what sound does.*make|what color is",
+        re.IGNORECASE,
+    )
+
+    def _validate_subject_content(self, item: Dict[str, Any], subject: str = "",
+                                   fmt: str = None) -> bool:
+        """Reject questions whose widget type or content doesn't match the subject.
+
+        Returns True if the question is acceptable, False if it should be rejected.
+        """
+        if not subject:
+            return True  # No subject info — can't validate
+
+        subj_lower = subject.lower().strip()
+        try:
+            widgets = item.get("question", {}).get("widgets", {})
+            content = item.get("question", {}).get("content", "")
+
+            # Rule 1: expression / numeric-input only allowed in STEM subjects
+            for _wname, wval in widgets.items():
+                if not isinstance(wval, dict):
+                    continue
+                wtype = wval.get("type", "")
+                if wtype in self._MATH_ONLY_WIDGETS and subj_lower not in self._STEM_SUBJECTS:
+                    logger.info(f"[SUBJECT_VALIDATE] Rejected: {wtype} widget in {subject}")
+                    return False
+
+            # Rule 2: phonics/letter-counting content only valid for English/Phonics
+            if subj_lower not in ("english", "phonics", "spelling"):
+                if self._PHONICS_PATTERNS.search(content):
+                    logger.info(f"[SUBJECT_VALIDATE] Rejected: phonics content in {subject}")
+                    return False
+
+            # Rule 3: pure arithmetic (e.g. "What is 5+3?") not valid for History/English/Art
+            non_math = {"history", "english", "art", "music theory", "philosophy",
+                        "cooking", "spanish", "greek", "korean", "russian",
+                        "thai", "hindi", "french", "german"}
+            if subj_lower in non_math:
+                import re as _re
+                # Detect pure arithmetic: "What is <number> <op> <number>"
+                if _re.search(r"what is \d+\s*[+\-×÷*/]\s*\d+", content, _re.IGNORECASE):
+                    logger.info(f"[SUBJECT_VALIDATE] Rejected: arithmetic in {subject}")
+                    return False
+
+            return True
+        except Exception:
+            return True  # Don't block on validation errors
+
     def _gemini_question(self, topic: str, age: int, fmt: str, difficulty: float, memory: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         if not self.client:
             return None
@@ -1471,6 +1529,12 @@ class ContentV1Engine:
                 parsed = self._repair_item(parsed, fmt=fmt)
                 if not self._validate_item(parsed, fmt=fmt):
                     logger.warning(f"[GENERATE] Attempt {attempt+1}: validation failed, retrying")
+                    continue
+
+                # Subject-content cross-validation
+                if not self._validate_subject_content(parsed, subject=subject, fmt=fmt):
+                    logger.warning(f"[GENERATE] Attempt {attempt+1}: subject mismatch for {subject}, retrying")
+                    verification_feedback += f"\n- Question content does not match the subject '{subject}'. Do NOT use math expressions or letter-counting for non-STEM subjects."
                     continue
 
                 # Deterministic verification (all subjects)

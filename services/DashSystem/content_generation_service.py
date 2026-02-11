@@ -391,6 +391,11 @@ class ContentGenerationService:
                 audit["rejected_reason"] = "validation_failed"
                 return None, audit
 
+            # Subject-content cross-validation: reject off-topic widgets/content
+            if not self.content_engine._validate_subject_content(parsed, subject=subject, fmt=fmt):
+                audit["rejected_reason"] = f"subject_mismatch:{subject}"
+                return None, audit
+
             audit["parsed_question"] = parsed
             return parsed, audit
 
@@ -566,6 +571,10 @@ class ContentGenerationService:
             parsed = self.content_engine._repair_item(parsed, fmt=fmt)
 
             if not self.content_engine._validate_item(parsed, fmt=fmt):
+                return None
+
+            # Subject-content cross-validation on retry path too
+            if not self.content_engine._validate_subject_content(parsed, subject=subject, fmt=fmt):
                 return None
 
             return parsed
@@ -828,6 +837,18 @@ class ContentGenerationService:
         if doc:
             return _serve(doc)
 
+        # Fallback: try untagged (subject=None) pool questions for this skill
+        if subject:
+            untagged_filter: dict = {"skill_id": skill_id, "subject": {"$in": [None, ""]}}
+            if exclude_ids:
+                untagged_filter["question_id"] = {"$nin": list(exclude_ids)}
+            doc = self.pool_col.find_one(
+                untagged_filter,
+                sort=[("quality_score", -1), ("attempt_count", 1)],
+            )
+            if doc:
+                return _serve(doc)
+
         # Last resort: check ai_generated_questions collection (legacy pool)
         legacy_filter: dict = {"skill_id": skill_id}
         if subject:
@@ -845,6 +866,21 @@ class ContentGenerationService:
             if isinstance(q, dict):
                 q.pop("_id", None)
             return q
+
+        # Last-last resort: untagged legacy questions
+        if subject:
+            legacy_untagged: dict = {"skill_id": skill_id, "subject": {"$in": [None, ""]}}
+            if exclude_ids:
+                legacy_untagged["question_id"] = {"$nin": list(exclude_ids)}
+            doc = self.questions_col.find_one(
+                legacy_untagged,
+                sort=[("created_at", -1)],
+            )
+            if doc:
+                q = doc.get("perseus_json") or doc.get("question_data") or doc.get("item")
+                if isinstance(q, dict):
+                    q.pop("_id", None)
+                return q
 
         return None  # Truly empty -- caller should trigger ensure_pool
 
