@@ -1,0 +1,780 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "other",
+    "last_updated": "2026-02-11",
+    "description": "CS fundamentals: data types, algorithms, Big O, sorting, binary/hex, boolean logic, variables, loops, conditionals, functions, debugging, internet basics, cybersecurity, databases"
+  },
+  "facts_by_topic": {
+    "algorithm_complexity": {
+      "keywords": [
+        "Big O",
+        "complexity",
+        "time complexity",
+        "space complexity",
+        "efficiency",
+        "algorithm",
+        "performance",
+        "scalability",
+        "constant",
+        "linear",
+        "logarithmic",
+        "quadratic"
+      ],
+      "facts": [
+        {
+          "statement": "Big O notation describes the worst-case performance of an algorithm as input size grows",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "O(1) means constant time: the operation takes the same amount of time regardless of input size",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "O(n) means linear time: the operation time grows proportionally with input size",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "O(n^2) means quadratic time: the operation time grows with the square of input size, common in nested loops",
+          "grade_min": 10,
+          "grade_max": 12
+        },
+        {
+          "statement": "O(log n) means logarithmic time: the operation time grows logarithmically, typical of binary search",
+          "grade_min": 10,
+          "grade_max": 12
+        },
+        {
+          "statement": "O(n log n) is the best possible time complexity for comparison-based sorting algorithms like merge sort and quicksort",
+          "grade_min": 10,
+          "grade_max": 12
+        },
+        {
+          "statement": "From fastest to slowest growth: O(1) < O(log n) < O(n) < O(n log n) < O(n^2) < O(2^n) < O(n!)",
+          "grade_min": 10,
+          "grade_max": 12
+        },
+        {
+          "statement": "Space complexity measures how much additional memory an algorithm uses relative to the input size",
+          "grade_min": 10,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "Big O measures exact running time in seconds",
+          "correct": "Big O describes how running time scales with input size, not the exact time. An O(n) algorithm could be faster or slower than O(n^2) for small inputs."
+        },
+        {
+          "wrong": "O(n) and O(2n) are different complexities",
+          "correct": "In Big O notation, constant factors are dropped. O(2n) simplifies to O(n) because they grow at the same rate."
+        },
+        {
+          "wrong": "the fastest algorithm is always the best choice",
+          "correct": "A faster algorithm may use more memory or be harder to implement. The best choice depends on the specific constraints and requirements."
+        }
+      ]
+    },
+    "sorting_algorithms": {
+      "keywords": [
+        "sort",
+        "bubble sort",
+        "selection sort",
+        "insertion sort",
+        "merge sort",
+        "quick sort",
+        "sorting",
+        "swap",
+        "compare",
+        "divide and conquer"
+      ],
+      "facts": [
+        {
+          "statement": "Bubble sort repeatedly steps through the list, comparing adjacent elements and swapping them if they are in the wrong order; O(n^2) average case",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Selection sort finds the minimum element and places it at the beginning, then repeats for the remaining elements; O(n^2) average case",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Merge sort divides the array in half, recursively sorts each half, then merges them; O(n log n) in all cases",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Quick sort picks a pivot element and partitions the array into elements less than and greater than the pivot; O(n log n) average case",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Insertion sort builds the sorted array one element at a time by inserting each element in its correct position; O(n^2) average but O(n) for nearly sorted data",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "A stable sort preserves the relative order of elements with equal keys; merge sort is stable, while quicksort is typically not",
+          "grade_min": 10,
+          "grade_max": 12
+        },
+        {
+          "statement": "Binary search finds an element in a sorted array by repeatedly dividing the search interval in half; it has O(log n) time complexity",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Linear search checks each element one by one from start to end; it has O(n) time complexity and works on both sorted and unsorted data",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "bubble sort is a good algorithm for large datasets",
+          "correct": "Bubble sort has O(n^2) complexity and is very slow for large datasets. Merge sort or quicksort are much faster alternatives."
+        },
+        {
+          "wrong": "quicksort is always O(n log n)",
+          "correct": "Quicksort's worst case is O(n^2), which occurs when the pivot is consistently the smallest or largest element. Average case is O(n log n)."
+        },
+        {
+          "wrong": "there is one best sorting algorithm for all situations",
+          "correct": "Different algorithms have different strengths. Insertion sort is fast for small or nearly sorted data; merge sort guarantees O(n log n); quicksort is often fastest in practice."
+        },
+        {
+          "wrong": "binary search works on unsorted arrays",
+          "correct": "Binary search requires the array to be sorted first. Using binary search on an unsorted array gives incorrect results."
+        }
+      ]
+    },
+    "number_systems": {
+      "keywords": [
+        "binary",
+        "decimal",
+        "hexadecimal",
+        "octal",
+        "base 2",
+        "base 10",
+        "base 16",
+        "bit",
+        "byte",
+        "convert"
+      ],
+      "facts": [
+        {
+          "statement": "Binary (base 2) uses only digits 0 and 1; it is the fundamental number system used by computers",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A bit is a single binary digit (0 or 1); a byte is 8 bits and can represent values from 0 to 255",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Hexadecimal (base 16) uses digits 0-9 and letters A-F (A=10, B=11, C=12, D=13, E=14, F=15)",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "To convert binary to decimal, multiply each bit by its place value (powers of 2) and add: 1011 = 8+0+2+1 = 11",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "One hexadecimal digit represents exactly 4 binary bits, making hex a compact way to write binary: FF = 11111111 = 255",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "1 kilobyte (KB) is approximately 1,000 bytes; 1 megabyte (MB) is approximately 1,000 KB; 1 gigabyte (GB) is approximately 1,000 MB",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "ASCII is a character encoding standard that represents each letter, number, and symbol as a number between 0 and 127",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Unicode is a universal character encoding standard that can represent characters from virtually all writing systems in the world, using up to 4 bytes per character",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "computers understand human language directly",
+          "correct": "Computers only understand binary (0s and 1s). All data, instructions, and programs are ultimately represented in binary."
+        },
+        {
+          "wrong": "binary 10 equals decimal 10",
+          "correct": "Binary 10 equals decimal 2 (1x2 + 0x1 = 2). The same digits represent different values in different number systems."
+        },
+        {
+          "wrong": "1 KB is exactly 1,000 bytes",
+          "correct": "In computing, 1 KiB (kibibyte) is exactly 1,024 bytes (2^10). The SI prefix kilo means 1,000, creating ambiguity that led to the kibibyte distinction."
+        }
+      ]
+    },
+    "boolean_logic": {
+      "keywords": [
+        "boolean",
+        "AND",
+        "OR",
+        "NOT",
+        "true",
+        "false",
+        "logic gate",
+        "truth table",
+        "XOR",
+        "NAND"
+      ],
+      "facts": [
+        {
+          "statement": "Boolean logic uses only two values: true (1) and false (0)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "AND returns true only when BOTH inputs are true; otherwise it returns false",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "OR returns true when AT LEAST ONE input is true; it returns false only when both inputs are false",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "NOT inverts the input: NOT true = false, NOT false = true",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "XOR (exclusive or) returns true when EXACTLY ONE input is true, but false when both are true or both are false",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Logic gates are physical implementations of boolean operations in computer hardware circuits",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "A truth table lists all possible input combinations and their corresponding outputs for a boolean expression",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "De Morgan's Laws state that NOT (A AND B) = (NOT A) OR (NOT B), and NOT (A OR B) = (NOT A) AND (NOT B)",
+          "grade_min": 10,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "OR means one or the other but not both",
+          "correct": "In boolean logic, OR (inclusive or) returns true when either or both inputs are true. XOR (exclusive or) returns true only when exactly one input is true."
+        },
+        {
+          "wrong": "AND and OR have the same priority",
+          "correct": "AND has higher precedence than OR in most programming languages and boolean algebra, similar to how multiplication has higher precedence than addition."
+        },
+        {
+          "wrong": "boolean logic is only used in programming",
+          "correct": "Boolean logic is used in computer hardware (logic gates), database queries, search engines, digital electronics, and mathematical proofs."
+        }
+      ]
+    },
+    "variables_and_data_types": {
+      "keywords": [
+        "variable",
+        "data type",
+        "integer",
+        "string",
+        "boolean",
+        "float",
+        "array",
+        "list",
+        "assign",
+        "declare",
+        "constant",
+        "char"
+      ],
+      "facts": [
+        {
+          "statement": "A variable is a named storage location in a computer's memory that holds a value which can change during program execution",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "An integer (int) is a data type that stores whole numbers without decimal points, such as -5, 0, or 42",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A string is a data type that stores a sequence of characters (text), usually enclosed in quotation marks",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A float (floating-point number) is a data type that stores numbers with decimal points, such as 3.14 or -0.5",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A boolean is a data type that can only have two values: true or false; it is used in conditions and logical operations",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "An array (or list) is a data structure that stores multiple values in a single variable, accessed by their position (index), usually starting at 0",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A constant is like a variable but its value cannot be changed after it is set; constants are used for values that should stay the same, like PI = 3.14159",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Type casting (or type conversion) is changing a value from one data type to another, such as converting the string '42' to the integer 42",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Variable names should be descriptive and follow naming conventions; most languages do not allow spaces or starting with a number in variable names",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "a variable's value can never change",
+          "correct": "Variables can be reassigned to new values during program execution. Only constants are values that cannot be changed once set."
+        },
+        {
+          "wrong": "the number 5 and the string '5' are the same in programming",
+          "correct": "The integer 5 and the string '5' are different data types. The integer can be used in math operations, while the string is text and cannot be directly used in calculations."
+        },
+        {
+          "wrong": "arrays always start counting at 1",
+          "correct": "In most programming languages (Python, Java, C, JavaScript), array indices start at 0. The first element is at index 0, the second at index 1, and so on."
+        },
+        {
+          "wrong": "you can name a variable anything you want",
+          "correct": "Variable names must follow rules: they cannot start with a number, cannot contain spaces, and cannot use reserved keywords (like 'if', 'while', 'class')."
+        }
+      ]
+    },
+    "loops_and_conditionals": {
+      "keywords": [
+        "loop",
+        "for loop",
+        "while loop",
+        "if",
+        "else",
+        "condition",
+        "iteration",
+        "repeat",
+        "break",
+        "continue",
+        "nested",
+        "infinite loop"
+      ],
+      "facts": [
+        {
+          "statement": "A conditional statement (if/else) executes different code depending on whether a condition is true or false",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A for loop repeats a block of code a specific number of times; it is useful when you know how many times to repeat",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A while loop repeats a block of code as long as a condition remains true; it is useful when you do not know in advance how many times to repeat",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "An infinite loop runs forever because its exit condition is never met; this is usually a bug that can crash a program",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Nested loops are loops placed inside other loops; the inner loop completes all its iterations for each single iteration of the outer loop",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A break statement exits a loop immediately, even if the loop condition is still true",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "An else-if (elif) statement allows checking multiple conditions in sequence; only the first true condition's code block is executed",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Iteration means repeating a process; each time through a loop is called one iteration",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A counter variable is often used in loops to keep track of how many times the loop has executed",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "a while loop and a for loop do completely different things",
+          "correct": "Both while and for loops repeat code. A for loop is typically used when the number of repetitions is known; a while loop when it depends on a condition. Either can often replace the other."
+        },
+        {
+          "wrong": "an if statement always needs an else",
+          "correct": "An if statement can exist without an else. The else block is optional and only needed when you want to execute alternative code if the condition is false."
+        },
+        {
+          "wrong": "infinite loops are always intentional",
+          "correct": "Most infinite loops are bugs caused by forgetting to update the loop variable or having a condition that can never become false. Intentional infinite loops do exist (e.g., game loops) but include a break condition."
+        },
+        {
+          "wrong": "nested loops always mean the code is wrong",
+          "correct": "Nested loops are a valid and common pattern, used for tasks like processing 2D arrays, generating combinations, or working with grids. They just need to be used carefully to avoid slow performance."
+        }
+      ]
+    },
+    "functions_and_debugging": {
+      "keywords": [
+        "function",
+        "method",
+        "parameter",
+        "argument",
+        "return",
+        "debug",
+        "bug",
+        "error",
+        "syntax error",
+        "runtime error",
+        "logic error",
+        "call",
+        "define"
+      ],
+      "facts": [
+        {
+          "statement": "A function is a reusable block of code that performs a specific task; it can accept inputs (parameters) and return an output",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A parameter is a variable listed in a function's definition; an argument is the actual value passed to the function when it is called",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The return statement sends a value back from a function to the code that called it",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A syntax error occurs when code violates the programming language's grammar rules; the program will not run at all",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A runtime error occurs while the program is running, such as dividing by zero or accessing a missing file",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A logic error produces incorrect results even though the program runs without crashing; the code does not do what the programmer intended",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Debugging is the process of finding and fixing errors (bugs) in a program; the term originated when Grace Hopper found an actual moth in a computer in 1947",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Functions help organize code by breaking a large program into smaller, manageable pieces that can be tested and reused independently",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A function call executes the code inside the function; the same function can be called many times from different places in a program",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Scope determines where a variable can be accessed; a variable defined inside a function (local variable) cannot be used outside that function",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "defining a function and calling a function are the same thing",
+          "correct": "Defining a function creates the code but does not run it. Calling (or invoking) a function actually executes the code inside it."
+        },
+        {
+          "wrong": "a function can only return one thing, so functions without return values are useless",
+          "correct": "Functions without return values (void functions) are useful for performing actions like printing output, modifying data, or triggering events."
+        },
+        {
+          "wrong": "logic errors will always cause the program to crash",
+          "correct": "Logic errors produce wrong results without crashing. For example, using + instead of - gives an incorrect answer but the program runs normally."
+        },
+        {
+          "wrong": "print statements and return statements do the same thing",
+          "correct": "A print statement displays output to the screen for the user. A return statement sends a value back to the calling code for further processing; it does not display anything."
+        }
+      ]
+    },
+    "internet_and_networking": {
+      "keywords": [
+        "internet",
+        "network",
+        "website",
+        "URL",
+        "browser",
+        "server",
+        "client",
+        "HTTP",
+        "IP address",
+        "DNS",
+        "WiFi",
+        "bandwidth",
+        "cloud"
+      ],
+      "facts": [
+        {
+          "statement": "The internet is a global network of interconnected computers that communicate using standardized protocols (rules)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A URL (Uniform Resource Locator) is the address of a webpage, like https://www.example.com",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "HTTP (HyperText Transfer Protocol) and HTTPS (HTTP Secure) are protocols that web browsers use to communicate with web servers",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "An IP address is a unique numerical label assigned to each device connected to a network, like a mailing address for computers",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "DNS (Domain Name System) translates human-readable domain names (like google.com) into IP addresses that computers use to find each other",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A web server is a computer that stores and delivers web pages to users; a client is the device (like your phone or laptop) that requests and displays pages",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Cloud computing provides computing services (storage, processing, software) over the internet instead of on a local computer",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The World Wide Web (WWW) was invented by Tim Berners-Lee in 1989; it is a system of interlinked pages accessed via the internet, but it is not the same as the internet itself",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Bandwidth measures how much data can be transmitted over a network connection per second, typically measured in Mbps (megabits per second)",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the internet and the World Wide Web are the same thing",
+          "correct": "The internet is the global network infrastructure (cables, routers, protocols). The World Wide Web is a service that runs on the internet, using browsers to access web pages."
+        },
+        {
+          "wrong": "WiFi is the internet",
+          "correct": "WiFi is a wireless technology that connects devices to a local network router. The router then connects to the internet. WiFi without an internet connection cannot access websites."
+        },
+        {
+          "wrong": "the cloud is an actual cloud in the sky",
+          "correct": "Cloud computing uses large data centers (buildings full of servers) located around the world. 'The cloud' is just a metaphor for accessing remote computers over the internet."
+        },
+        {
+          "wrong": "deleting something from your device permanently removes it from the internet",
+          "correct": "Content posted online may have been copied, cached, or archived by other servers. Deleting from your device only removes your local copy."
+        }
+      ]
+    },
+    "cybersecurity": {
+      "keywords": [
+        "password",
+        "security",
+        "hacker",
+        "malware",
+        "virus",
+        "phishing",
+        "encryption",
+        "firewall",
+        "privacy",
+        "authentication",
+        "cyber",
+        "data breach"
+      ],
+      "facts": [
+        {
+          "statement": "A strong password should be at least 12 characters long and include a mix of uppercase letters, lowercase letters, numbers, and symbols",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Phishing is a type of cyberattack where criminals pretend to be a trusted source (like a bank or friend) to trick people into revealing personal information",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Malware is malicious software designed to harm or exploit computers; types include viruses, worms, trojans, ransomware, and spyware",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Encryption converts data into a coded form that only authorized users can read; HTTPS uses encryption to protect data sent between your browser and websites",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Two-factor authentication (2FA) adds a second layer of security beyond a password, such as a code sent to your phone or a fingerprint",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A firewall monitors and controls incoming and outgoing network traffic based on security rules, acting as a barrier between a trusted network and untrusted networks",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Personal information that should be protected online includes full name, address, phone number, passwords, Social Security number, and financial information",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A computer virus is a type of malware that attaches itself to a program and spreads when that program is run, similar to how biological viruses spread",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Software updates often contain security patches that fix vulnerabilities; keeping software updated is an important cybersecurity practice",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "only big companies get hacked, not individuals",
+          "correct": "Anyone can be a target of cyberattacks. Individuals are frequently targeted through phishing emails, malware, and identity theft."
+        },
+        {
+          "wrong": "using the same password for everything is fine if it is a strong password",
+          "correct": "Using the same password everywhere means if one site is breached, all your accounts are compromised. Use unique passwords for each account."
+        },
+        {
+          "wrong": "a firewall protects against all types of cyberattacks",
+          "correct": "Firewalls primarily control network traffic. They do not protect against phishing, social engineering, insider threats, or malware downloaded by the user."
+        },
+        {
+          "wrong": "Macs and iPhones cannot get viruses",
+          "correct": "While less commonly targeted, Apple devices can and do get malware. No device is completely immune to security threats."
+        }
+      ]
+    },
+    "databases_basics": {
+      "keywords": [
+        "database",
+        "table",
+        "record",
+        "field",
+        "query",
+        "SQL",
+        "row",
+        "column",
+        "primary key",
+        "relational",
+        "data",
+        "spreadsheet"
+      ],
+      "facts": [
+        {
+          "statement": "A database is an organized collection of data stored electronically that can be easily accessed, managed, and updated",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A relational database organizes data into tables (like spreadsheets) with rows (records) and columns (fields)",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "SQL (Structured Query Language) is the standard language used to create, read, update, and delete data in relational databases",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "A primary key is a unique identifier for each record in a database table; no two records can have the same primary key",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "A query is a request for specific data from a database; for example, 'find all students with a grade above 90'",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Data can be sorted (arranged in order), filtered (showing only items that match criteria), and searched in a database",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Databases are used everywhere: libraries track books, schools store student records, stores manage inventory, and websites store user accounts",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A backup is a copy of data stored separately in case the original is lost or damaged; regular backups are essential for data protection",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "a database is just a spreadsheet",
+          "correct": "While both organize data in rows and columns, databases support multiple related tables, enforce data integrity rules, handle millions of records efficiently, and allow concurrent access by many users."
+        },
+        {
+          "wrong": "SQL stands for 'Sequel' with no meaning",
+          "correct": "SQL stands for Structured Query Language. It is sometimes pronounced 'sequel' but the letters stand for specific words describing its purpose."
+        },
+        {
+          "wrong": "deleting data from a database always means it is gone forever",
+          "correct": "If proper backups exist, deleted data can often be restored. Many database systems also have transaction logs that can recover recent changes."
+        }
+      ]
+    }
+  }
+}

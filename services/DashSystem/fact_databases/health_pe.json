@@ -1,0 +1,729 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "other",
+    "last_updated": "2026-02-11",
+    "description": "Health and PE facts: nutrition, food groups, exercise types, body systems, mental health, hygiene, first aid, substance abuse prevention, fitness components, sleep"
+  },
+  "facts_by_topic": {
+    "nutrition_basics": {
+      "keywords": [
+        "nutrition",
+        "nutrient",
+        "vitamin",
+        "mineral",
+        "protein",
+        "carbohydrate",
+        "fat",
+        "calorie",
+        "diet",
+        "food group",
+        "MyPlate"
+      ],
+      "facts": [
+        {
+          "statement": "The six essential nutrient categories are carbohydrates, proteins, fats, vitamins, minerals, and water",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Carbohydrates are the body's primary source of energy, found in bread, pasta, rice, fruits, and vegetables",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Proteins are needed for building and repairing tissues, found in meat, fish, eggs, beans, and nuts",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Healthy fats are essential for brain function, hormone production, and absorbing vitamins A, D, E, and K",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Water makes up about 60% of the human body and is essential for nearly every bodily function",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The USDA MyPlate recommends filling half your plate with fruits and vegetables, one quarter with grains, and one quarter with protein",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Vitamins and minerals are micronutrients needed in small amounts for growth, immunity, and bodily functions",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Calcium is essential for building strong bones and teeth; good sources include milk, yogurt, cheese, broccoli, and fortified foods",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Iron helps red blood cells carry oxygen throughout the body; good sources include red meat, spinach, beans, and fortified cereals",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Fiber is a type of carbohydrate the body cannot digest; it helps with digestion and is found in whole grains, fruits, vegetables, and beans",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Vitamin C supports the immune system and helps the body heal wounds; good sources include citrus fruits, strawberries, bell peppers, and tomatoes",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Vitamin D helps the body absorb calcium for strong bones; sources include sunlight, fortified milk, eggs, and fatty fish",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Reading food labels helps consumers understand the nutritional content of packaged foods, including serving size, calories, fats, sugars, and sodium",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "all fats are bad for you",
+          "correct": "Unsaturated fats (found in fish, nuts, avocados, olive oil) are healthy and necessary. Trans fats and excessive saturated fats are harmful."
+        },
+        {
+          "wrong": "carbohydrates should be completely avoided",
+          "correct": "Complex carbohydrates (whole grains, vegetables, legumes) provide essential energy and fiber. Only excessive simple sugars should be limited."
+        },
+        {
+          "wrong": "skipping meals helps you lose weight",
+          "correct": "Skipping meals can slow metabolism, cause overeating later, and deprive the body of needed nutrients. Regular, balanced meals are healthier."
+        },
+        {
+          "wrong": "you only need to drink water when you feel thirsty",
+          "correct": "By the time you feel thirsty, your body may already be mildly dehydrated. It is important to drink water regularly throughout the day."
+        },
+        {
+          "wrong": "all calories are the same regardless of their source",
+          "correct": "While a calorie is a unit of energy, the source matters. Calories from whole foods provide essential nutrients, while calories from processed sugar provide energy with few nutritional benefits."
+        }
+      ]
+    },
+    "exercise_fitness": {
+      "keywords": [
+        "exercise",
+        "aerobic",
+        "anaerobic",
+        "strength",
+        "flexibility",
+        "endurance",
+        "cardiovascular",
+        "fitness",
+        "stretching",
+        "warm up",
+        "cool down",
+        "heart rate"
+      ],
+      "facts": [
+        {
+          "statement": "Aerobic exercise (cardio) strengthens the heart and lungs through sustained activity like running, swimming, cycling, and dancing",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Anaerobic exercise involves short bursts of intense activity like sprinting, weight lifting, and jumping",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The American Heart Association recommends at least 60 minutes of moderate-to-vigorous physical activity daily for children and teens",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Flexibility exercises like stretching help maintain range of motion in joints and prevent injuries",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Warming up before exercise increases blood flow to muscles and reduces injury risk; cooling down helps the body return to its resting state",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Regular physical activity reduces the risk of heart disease, diabetes, obesity, depression, and anxiety",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Muscular strength is the maximum force a muscle can exert; muscular endurance is the ability to sustain repeated contractions over time",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Your target heart rate during exercise is typically 50-85% of your maximum heart rate; maximum heart rate is roughly estimated as 220 minus your age",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The five components of health-related fitness are cardiovascular endurance, muscular strength, muscular endurance, flexibility, and body composition",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The FITT principle stands for Frequency, Intensity, Time, and Type of exercise, and is used to create an effective workout plan",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Body composition refers to the proportion of fat, muscle, bone, and water in the body; a healthy body composition varies by age and gender",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "exercise is only about losing weight",
+          "correct": "Exercise provides many benefits beyond weight management: stronger heart, better mood, improved sleep, stronger bones, and reduced disease risk."
+        },
+        {
+          "wrong": "no pain, no gain is always true",
+          "correct": "Mild discomfort during exercise is normal, but sharp or persistent pain is a warning sign of injury. Exercise should be challenging but not painful."
+        },
+        {
+          "wrong": "stretching should be done before warming up",
+          "correct": "Dynamic stretching (moving stretches) should follow a light warm-up. Static stretching (holding stretches) is best done after exercise during cool-down."
+        },
+        {
+          "wrong": "you should exercise every single day with no rest",
+          "correct": "Rest days are important for muscle recovery and preventing overuse injuries. Most guidelines recommend at least 1-2 rest days per week."
+        }
+      ]
+    },
+    "mental_health": {
+      "keywords": [
+        "mental health",
+        "stress",
+        "anxiety",
+        "depression",
+        "emotion",
+        "coping",
+        "self-esteem",
+        "mindfulness",
+        "resilience",
+        "well-being",
+        "feelings"
+      ],
+      "facts": [
+        {
+          "statement": "Mental health is as important as physical health and affects how we think, feel, and act",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Stress is the body's response to demands or threats; some stress is normal, but chronic stress can harm physical and mental health",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Healthy coping strategies for stress include exercise, talking to a trusted person, deep breathing, adequate sleep, and creative activities",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Anxiety is a feeling of worry or unease; it is a normal emotion, but persistent anxiety that interferes with daily life may need professional support",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Self-esteem is how a person feels about their own worth and abilities; it is built through positive relationships, achievements, and self-acceptance",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Sleep is essential for mental health; children need 9-12 hours and teens need 8-10 hours per night",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "It is important to seek help from a trusted adult, counselor, or mental health professional when feeling overwhelmed, sad, or anxious for extended periods",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Mindfulness is the practice of paying attention to the present moment without judgment; it can reduce stress and improve emotional well-being",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Resilience is the ability to recover from difficulties and adapt to challenging situations; it can be developed through practice and support",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Bullying is repeated aggressive behavior intended to hurt another person; it can be physical, verbal, social, or electronic (cyberbullying)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Emotional intelligence is the ability to recognize, understand, and manage your own emotions and the emotions of others",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Gratitude is the practice of recognizing and appreciating positive things in life; studies show that practicing gratitude can improve mood, sleep, and overall well-being",
+          "grade_min": 3,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "mental health problems are a sign of weakness",
+          "correct": "Mental health conditions are medical issues, not character flaws. They can affect anyone regardless of strength, intelligence, or background."
+        },
+        {
+          "wrong": "children do not experience stress or mental health issues",
+          "correct": "Children and teens can and do experience stress, anxiety, and depression. Recognizing and addressing these issues early is important."
+        },
+        {
+          "wrong": "talking about feelings makes them worse",
+          "correct": "Expressing emotions in a safe environment generally helps people process and manage their feelings. Bottling up emotions can increase stress and anxiety."
+        },
+        {
+          "wrong": "stress is always bad for you",
+          "correct": "Short-term stress can be helpful, improving focus and motivation (like before a test). Only prolonged, unmanaged stress is harmful to health."
+        }
+      ]
+    },
+    "body_systems_health": {
+      "keywords": [
+        "immune system",
+        "hygiene",
+        "germ",
+        "bacteria",
+        "virus",
+        "vaccine",
+        "disease",
+        "prevention",
+        "hand washing",
+        "infection"
+      ],
+      "facts": [
+        {
+          "statement": "The immune system protects the body from pathogens (germs) including bacteria, viruses, fungi, and parasites",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Vaccines work by training the immune system to recognize and fight specific pathogens without causing the disease",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Hand washing with soap and water for at least 20 seconds is one of the most effective ways to prevent the spread of germs",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Bacteria are single-celled organisms; some are helpful (gut bacteria, yogurt cultures) while others cause illness",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Viruses are not living cells; they need a host cell to reproduce and cause diseases like the flu, colds, and COVID-19",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Antibiotics treat bacterial infections but do NOT work against viruses like the common cold or flu",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Good dental hygiene includes brushing teeth at least twice a day, flossing daily, and visiting the dentist regularly",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "Covering your mouth and nose when coughing or sneezing (into your elbow, not your hands) helps prevent the spread of respiratory infections",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "Skin is the body's largest organ and acts as the first line of defense against germs and infections",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "White blood cells are part of the immune system that find and destroy pathogens; different types target bacteria, viruses, and other invaders",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Fever is the body's natural defense mechanism that raises body temperature to help fight infections; a normal body temperature is about 98.6 degrees Fahrenheit (37 degrees Celsius)",
+          "grade_min": 3,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "antibiotics cure all infections",
+          "correct": "Antibiotics only work against bacterial infections. They are ineffective against viral infections like the common cold, flu, or COVID-19."
+        },
+        {
+          "wrong": "vaccines cause the diseases they prevent",
+          "correct": "Most vaccines use weakened, killed, or partial versions of pathogens, or mRNA instructions. They train immunity without causing the actual disease."
+        },
+        {
+          "wrong": "cold weather causes colds",
+          "correct": "Colds are caused by viruses, not cold temperatures. However, people may catch more colds in winter because they spend more time indoors in close contact."
+        },
+        {
+          "wrong": "hand sanitizer is always as good as washing hands with soap",
+          "correct": "Hand sanitizer is effective against many germs but does not remove all types of bacteria and viruses. Washing with soap and water is more effective, especially when hands are visibly dirty."
+        }
+      ]
+    },
+    "first_aid_safety": {
+      "keywords": [
+        "first aid",
+        "emergency",
+        "CPR",
+        "wound",
+        "burn",
+        "choking",
+        "safety",
+        "911",
+        "injury",
+        "bandage",
+        "bleeding",
+        "poison"
+      ],
+      "facts": [
+        {
+          "statement": "The first step in any emergency is to call 911 (or your local emergency number) or tell a trusted adult to call for help",
+          "grade_min": 0,
+          "grade_max": 12
+        },
+        {
+          "statement": "For minor cuts and scrapes, clean the wound with water, apply gentle pressure with a clean cloth to stop bleeding, and cover with a bandage",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "For a minor burn, immediately run cool (not ice cold) water over the area for at least 10 minutes; do not apply ice, butter, or toothpaste",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "If someone is choking and cannot cough, speak, or breathe, the Heimlich maneuver (abdominal thrusts) can help dislodge the object",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "CPR (cardiopulmonary resuscitation) combines chest compressions and rescue breathing to keep blood and oxygen flowing when a person's heart has stopped",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "If someone is having a severe allergic reaction (anaphylaxis), they may need an epinephrine auto-injector (EpiPen) and immediate medical attention",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "If you suspect someone has been poisoned, call Poison Control (1-800-222-1222 in the US) or 911 immediately; do not try to make the person vomit unless directed to do so",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A nosebleed should be treated by sitting up, leaning slightly forward, and pinching the soft part of the nose for 10-15 minutes",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "RICE (Rest, Ice, Compression, Elevation) is the standard first aid treatment for sprains, strains, and minor sports injuries",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "An AED (Automated External Defibrillator) is a portable device that can check a person's heart rhythm and deliver an electric shock to restore a normal heartbeat during cardiac arrest",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "If a bee stinger is left in the skin, scrape it away with a flat edge (like a credit card) rather than squeezing it, to avoid releasing more venom",
+          "grade_min": 3,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "put butter on a burn to help it heal",
+          "correct": "Butter traps heat in the skin and can cause infection. Burns should be cooled with running cool water for at least 10 minutes."
+        },
+        {
+          "wrong": "tilt your head back during a nosebleed",
+          "correct": "Tilting your head back can cause blood to flow down the throat, causing nausea. Lean slightly forward and pinch the soft part of the nose."
+        },
+        {
+          "wrong": "apply a tourniquet for any bleeding wound",
+          "correct": "Tourniquets are only for life-threatening limb bleeding as a last resort. For most wounds, applying direct pressure with a clean cloth is the correct first aid."
+        },
+        {
+          "wrong": "you should move someone who has had a serious fall or back injury",
+          "correct": "Moving someone with a possible spinal injury can cause further damage. Keep the person still and call for professional medical help immediately."
+        }
+      ]
+    },
+    "substance_abuse_prevention": {
+      "keywords": [
+        "drugs",
+        "alcohol",
+        "tobacco",
+        "smoking",
+        "vaping",
+        "addiction",
+        "substance",
+        "peer pressure",
+        "refusal",
+        "nicotine",
+        "caffeine"
+      ],
+      "facts": [
+        {
+          "statement": "Nicotine in cigarettes, e-cigarettes, and vaping products is highly addictive and harmful to developing brains in children and teens",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Alcohol affects the brain, liver, and other organs; the legal drinking age in the United States is 21",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Addiction is a chronic condition where a person continues to use a substance despite harmful consequences, because the brain's reward system has been changed",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Peer pressure is when friends or classmates influence you to do something; learning to say no assertively is an important life skill",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Secondhand smoke contains over 7,000 chemicals, including at least 70 that cause cancer; it harms nonsmokers who breathe it in",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Prescription medicines should only be taken by the person they are prescribed for, in the dose directed by the doctor",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Caffeine is a mild stimulant found in coffee, tea, soda, and energy drinks; excessive consumption can cause anxiety, insomnia, and rapid heartbeat",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Vaping products (e-cigarettes) are not safe; they contain nicotine, heavy metals, and chemicals that can damage the lungs",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Inhalants are household products (like aerosol sprays, paint, and glue) that can be misused by breathing in fumes; they can cause sudden death even on the first use",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Refusal skills are strategies to say no to peer pressure, including stating your position clearly, suggesting alternatives, and walking away from the situation",
+          "grade_min": 3,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "vaping is completely safe because it is just water vapor",
+          "correct": "Vaping aerosol is not water vapor. It contains nicotine, heavy metals like lead, volatile organic compounds, and ultrafine particles that damage the lungs."
+        },
+        {
+          "wrong": "only illegal drugs are dangerous",
+          "correct": "Legal substances including alcohol, tobacco, and misused prescription drugs cause more harm and death than illegal drugs combined. Any substance can be dangerous if misused."
+        },
+        {
+          "wrong": "addiction is a choice, not a disease",
+          "correct": "The initial decision to try a substance is a choice, but addiction changes brain chemistry and is recognized by medical organizations as a chronic brain disorder."
+        },
+        {
+          "wrong": "you can stop an addiction anytime you want to",
+          "correct": "Addiction changes the brain's reward circuitry, making it extremely difficult to stop without help. Professional treatment and support greatly improve recovery outcomes."
+        }
+      ]
+    },
+    "sleep_and_rest": {
+      "keywords": [
+        "sleep",
+        "rest",
+        "circadian",
+        "dream",
+        "insomnia",
+        "REM",
+        "nap",
+        "bedtime",
+        "melatonin",
+        "sleep hygiene"
+      ],
+      "facts": [
+        {
+          "statement": "School-age children (6-12) need 9-12 hours of sleep per night, and teenagers (13-18) need 8-10 hours per night",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Sleep occurs in cycles of about 90 minutes, alternating between non-REM (deep sleep) and REM (rapid eye movement, when most dreaming occurs)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The circadian rhythm is the body's internal 24-hour clock that regulates when you feel awake and sleepy, influenced by light exposure",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Sleep is essential for memory consolidation: the brain processes and stores information learned during the day while you sleep",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Screen time before bed can interfere with sleep because blue light from devices suppresses melatonin, the hormone that helps you feel sleepy",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Good sleep hygiene includes keeping a consistent bedtime, avoiding screens before bed, keeping the room dark and cool, and avoiding caffeine in the afternoon",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Lack of sufficient sleep can impair concentration, memory, mood, immune function, and increase the risk of obesity",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Growth hormone is primarily released during deep sleep, making adequate sleep especially important for growing children and teens",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Naps of 20-30 minutes can improve alertness and performance without causing grogginess; longer naps may interfere with nighttime sleep",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Sleep deprivation in teens is linked to poor academic performance, mood disorders, impaired driving, and weakened immune function",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "you can catch up on missed sleep by sleeping extra on weekends",
+          "correct": "While extra sleep can help short-term, chronically poor sleep causes cumulative effects that cannot be fully reversed by 'catching up.' Consistent sleep schedules are more effective."
+        },
+        {
+          "wrong": "watching TV or using phones in bed helps you fall asleep",
+          "correct": "Screens emit blue light that suppresses melatonin production, and engaging content stimulates the brain. Both make it harder to fall asleep."
+        },
+        {
+          "wrong": "if you are not tired, you do not need sleep",
+          "correct": "Your body needs sleep even when you do not feel tired. Sleep deprivation can reduce the feeling of tiredness while still impairing brain function and health."
+        }
+      ]
+    },
+    "personal_hygiene": {
+      "keywords": [
+        "hygiene",
+        "bathing",
+        "teeth",
+        "brush",
+        "shower",
+        "handwashing",
+        "grooming",
+        "puberty",
+        "deodorant",
+        "clean"
+      ],
+      "facts": [
+        {
+          "statement": "Good personal hygiene includes regular bathing, brushing teeth twice daily, wearing clean clothes, and washing hands frequently",
+          "grade_min": 0,
+          "grade_max": 12
+        },
+        {
+          "statement": "Brushing teeth for two minutes at least twice a day with fluoride toothpaste helps prevent cavities and gum disease",
+          "grade_min": 0,
+          "grade_max": 12
+        },
+        {
+          "statement": "During puberty, the body produces more sweat and oil, making regular bathing and the use of deodorant especially important",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Proper handwashing involves wetting hands, applying soap, scrubbing all surfaces for at least 20 seconds, rinsing, and drying with a clean towel",
+          "grade_min": 0,
+          "grade_max": 12
+        },
+        {
+          "statement": "Washing hands is especially important before eating, after using the bathroom, after sneezing or coughing, and after touching animals",
+          "grade_min": 0,
+          "grade_max": 12
+        },
+        {
+          "statement": "Sharing personal items like toothbrushes, razors, or drinking cups can spread germs and infections",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Sunscreen with SPF 30 or higher should be applied to exposed skin to protect against harmful ultraviolet (UV) rays from the sun",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Head lice are tiny insects that live on the scalp; they spread through direct head-to-head contact, not from poor hygiene",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Wearing clean underwear and socks daily helps prevent skin infections and unpleasant odors caused by bacteria buildup",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "Flossing between teeth removes plaque and food particles that a toothbrush cannot reach, helping to prevent cavities and gum disease",
+          "grade_min": 2,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "only dirty people get lice",
+          "correct": "Head lice are not related to cleanliness. They spread through direct head-to-head contact and can affect anyone regardless of hygiene habits."
+        },
+        {
+          "wrong": "you only need sunscreen on sunny days",
+          "correct": "UV rays can penetrate clouds and cause skin damage even on cloudy or overcast days. Sunscreen should be used whenever spending time outdoors."
+        },
+        {
+          "wrong": "hand sanitizer replaces the need for handwashing",
+          "correct": "Hand sanitizer is useful when soap and water are unavailable, but handwashing with soap is more effective at removing all types of germs and dirt."
+        },
+        {
+          "wrong": "brushing harder cleans teeth better",
+          "correct": "Brushing too hard can damage tooth enamel and irritate gums. Gentle circular motions with a soft-bristled brush for two minutes are most effective."
+        }
+      ]
+    }
+  }
+}

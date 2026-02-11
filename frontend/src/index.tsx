@@ -30,6 +30,7 @@ const LandingPageWrapper = lazy(() => import("./components/landing/LandingPageWr
 const AccountPage = lazy(() => import("./components/account/AccountPage"));
 const PricingPage = lazy(() => import("./components/pricing/PricingPage"));
 const AssessmentFlow = lazy(() => import("./components/assessment/AssessmentFlow"));
+const DevLogin = lazy(() => import("./components/auth/DevLogin"));
 const AdminVideoPanel = lazy(() => import("./components/admin/AdminVideoPanel"));
 const CostTrackingPage = lazy(() => import("./components/admin/CostTrackingPage"));
 
@@ -149,6 +150,7 @@ root.render(
           <ComingSoonGuard>
             <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
               <Switch>
+                <Route path="/app/dev-login" component={DevLogin} />
                 <Route path="/app/auth/setup" component={LoginPage} />
                 <Route path="/app/login" component={LoginPage} />
                 <Route path="/app/account" component={AccountPage} />

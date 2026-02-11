@@ -8,6 +8,8 @@ interface HintContextType {
   setCurrentHintIndex: (index: number) => void;
   totalHints: number;
   setTotalHints: (count: number) => void;
+  responsiveHint: string | null;
+  setResponsiveHint: (hint: string | null) => void;
 }
 
 const HintContext = createContext<HintContextType | undefined>(undefined);
@@ -28,6 +30,7 @@ export const HintProvider: React.FC<HintProviderProps> = ({ children }) => {
   const [showHints, setShowHints] = useState(false);
   const [currentHintIndex, setCurrentHintIndex] = useState(0);
   const [totalHints, setTotalHints] = useState(0);
+  const [responsiveHint, setResponsiveHint] = useState<string | null>(null);
 
   const toggleHints = () => {
     setShowHints(prev => !prev);
@@ -46,6 +49,8 @@ export const HintProvider: React.FC<HintProviderProps> = ({ children }) => {
         setCurrentHintIndex,
         totalHints,
         setTotalHints,
+        responsiveHint,
+        setResponsiveHint,
       }}
     >
       {children}

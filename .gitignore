@@ -48,3 +48,6 @@ questionbankscrapper/
 
 # Build output
 frontend/build/
+
+# Generated AI question images
+static/images/

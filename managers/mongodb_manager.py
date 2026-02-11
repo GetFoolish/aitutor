@@ -124,6 +124,21 @@ class MongoDBManager:
     def question_attempts(self):
         """Get question_attempts collection for future-proof performance tracking"""
         return self._db['question_attempts']
+
+    @property
+    def ai_generated_questions(self):
+        """Get ai_generated_questions collection for DASH + AI generation integration"""
+        return self._db['ai_generated_questions']
+
+    @property
+    def ai_question_queue(self):
+        """Get ai_question_queue collection for pre-generated question queue"""
+        return self._db['ai_question_queue']
+
+    @property
+    def generated_curricula(self):
+        """Get generated_curricula collection for curriculum generation registry/locking"""
+        return self._db['generated_curricula']
     
     # Questions database collections (questions_db) - Khan Academy data
     @property

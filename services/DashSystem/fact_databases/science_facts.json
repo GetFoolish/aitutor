@@ -1,0 +1,2575 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "science",
+    "last_updated": "2026-02-07"
+  },
+  "facts_by_topic": {
+    "solar_system": {
+      "keywords": [
+        "planet",
+        "solar system",
+        "sun",
+        "orbit",
+        "moon",
+        "mercury",
+        "venus",
+        "mars",
+        "jupiter",
+        "saturn",
+        "uranus",
+        "neptune"
+      ],
+      "facts": [
+        {
+          "statement": "There are 8 planets in our solar system",
+          "grade_min": 0,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Sun is a star at the center of our solar system",
+          "grade_min": 0,
+          "grade_max": 12
+        },
+        {
+          "statement": "Mercury is the closest planet to the Sun",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Venus is the hottest planet in our solar system",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Earth is the third planet from the Sun",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "Mars is known as the Red Planet",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Jupiter is the largest planet in our solar system",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Saturn is known for its prominent ring system",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Moon orbits the Earth approximately every 27.3 days",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Earth takes approximately 365.25 days to orbit the Sun",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The order of planets from the Sun is Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune",
+          "grade_min": 3,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "pluto is a planet",
+          "correct": "Pluto is classified as a dwarf planet since 2006"
+        },
+        {
+          "wrong": "the sun orbits the earth",
+          "correct": "The Earth orbits the Sun"
+        },
+        {
+          "wrong": "there are 9 planets",
+          "correct": "There are 8 planets (Pluto reclassified in 2006)"
+        },
+        {
+          "wrong": "mercury is the hottest planet",
+          "correct": "Venus is the hottest planet due to its greenhouse effect"
+        },
+        {
+          "wrong": "the sun is a planet",
+          "correct": "The Sun is a star"
+        }
+      ]
+    },
+    "states_of_matter": {
+      "keywords": [
+        "solid",
+        "liquid",
+        "gas",
+        "matter",
+        "state",
+        "phase",
+        "freeze",
+        "boil",
+        "melt",
+        "evaporate",
+        "condense"
+      ],
+      "facts": [
+        {
+          "statement": "Water freezes at 0 degrees Celsius (32 degrees Fahrenheit)",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Water boils at 100 degrees Celsius (212 degrees Fahrenheit) at sea level",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The three common states of matter are solid, liquid, and gas",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "Plasma is the fourth state of matter",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Melting is the change from solid to liquid",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Evaporation is the change from liquid to gas",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Condensation is the change from gas to liquid",
+          "grade_min": 3,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "ice is not water",
+          "correct": "Ice is water in its solid state"
+        },
+        {
+          "wrong": "steam is not water",
+          "correct": "Steam is water in its gaseous state"
+        }
+      ]
+    },
+    "human_body": {
+      "keywords": [
+        "body",
+        "organ",
+        "heart",
+        "lung",
+        "brain",
+        "bone",
+        "muscle",
+        "blood",
+        "skeleton",
+        "digest",
+        "nervous"
+      ],
+      "facts": [
+        {
+          "statement": "The human body has 206 bones in adults",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The heart pumps blood through the circulatory system",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Humans have 5 senses: sight, hearing, taste, smell, and touch",
+          "grade_min": 0,
+          "grade_max": 5
+        },
+        {
+          "statement": "The brain is the control center of the nervous system",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The lungs are responsible for breathing and gas exchange",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The stomach helps digest food using acids and enzymes",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Red blood cells carry oxygen throughout the body",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The human body has 11 major organ systems",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the heart is on the left side of the body",
+          "correct": "The heart is roughly in the center of the chest, slightly left of center"
+        },
+        {
+          "wrong": "we only use 10 percent of our brain",
+          "correct": "We use all parts of our brain; different areas are active at different times"
+        }
+      ]
+    },
+    "chemistry_basics": {
+      "keywords": [
+        "element",
+        "atom",
+        "molecule",
+        "compound",
+        "periodic table",
+        "reaction",
+        "chemical",
+        "hydrogen",
+        "oxygen",
+        "carbon",
+        "nitrogen"
+      ],
+      "facts": [
+        {
+          "statement": "Water is composed of hydrogen and oxygen (H2O)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The periodic table organizes elements by atomic number",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Oxygen has the chemical symbol O",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Hydrogen is the lightest and most abundant element in the universe",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Carbon is the basis of organic chemistry and all known life",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "An atom consists of protons, neutrons, and electrons",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The atomic number equals the number of protons in an atom",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Molecules are formed when atoms bond together",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "water's formula is ho2",
+          "correct": "Water's chemical formula is H2O (two hydrogen atoms and one oxygen atom)"
+        },
+        {
+          "wrong": "atoms are the smallest thing that exists",
+          "correct": "Atoms are made of even smaller subatomic particles: protons, neutrons, and electrons"
+        }
+      ]
+    },
+    "physics_basics": {
+      "keywords": [
+        "force",
+        "gravity",
+        "energy",
+        "motion",
+        "speed",
+        "acceleration",
+        "newton",
+        "friction",
+        "momentum",
+        "velocity",
+        "weight",
+        "mass"
+      ],
+      "facts": [
+        {
+          "statement": "Gravity pulls objects toward the center of the Earth",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "An object at rest stays at rest unless acted upon by a force (Newton's First Law)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Force equals mass times acceleration (Newton's Second Law, F=ma)",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "For every action there is an equal and opposite reaction (Newton's Third Law)",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The speed of light is approximately 300,000 km/s",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Energy cannot be created or destroyed, only transformed",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Friction is a force that opposes motion between surfaces in contact",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "heavier objects fall faster than lighter objects in a vacuum",
+          "correct": "All objects fall at the same rate in a vacuum (acceleration due to gravity is constant)"
+        },
+        {
+          "wrong": "weight and mass are the same thing",
+          "correct": "Mass is the amount of matter in an object; weight is the force of gravity on that mass"
+        }
+      ]
+    },
+    "ecosystems": {
+      "keywords": [
+        "ecosystem",
+        "food chain",
+        "habitat",
+        "predator",
+        "prey",
+        "producer",
+        "consumer",
+        "decomposer",
+        "photosynthesis",
+        "environment"
+      ],
+      "facts": [
+        {
+          "statement": "Plants are producers that make their own food through photosynthesis",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A food chain shows how energy flows from one organism to another",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Decomposers break down dead organisms and recycle nutrients",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Herbivores eat only plants",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Carnivores eat only other animals",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Omnivores eat both plants and animals",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Photosynthesis converts sunlight, water, and carbon dioxide into glucose and oxygen",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "plants don't need sunlight to grow",
+          "correct": "Most plants need sunlight for photosynthesis to produce food"
+        },
+        {
+          "wrong": "decomposers are not important to ecosystems",
+          "correct": "Decomposers are essential for recycling nutrients back into the soil"
+        }
+      ]
+    },
+    "weather_climate": {
+      "keywords": [
+        "weather",
+        "climate",
+        "temperature",
+        "rain",
+        "snow",
+        "cloud",
+        "wind",
+        "storm",
+        "hurricane",
+        "tornado",
+        "atmosphere"
+      ],
+      "facts": [
+        {
+          "statement": "Weather describes short-term atmospheric conditions; climate describes long-term patterns",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Clouds form when water vapor condenses around tiny particles in the atmosphere",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The water cycle includes evaporation, condensation, and precipitation",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Earth's atmosphere is made mostly of nitrogen (78%) and oxygen (21%)",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "weather and climate are the same thing",
+          "correct": "Weather is short-term; climate is the average weather over a long period"
+        },
+        {
+          "wrong": "lightning never strikes the same place twice",
+          "correct": "Lightning frequently strikes the same place, especially tall structures"
+        }
+      ]
+    },
+    "cells": {
+      "keywords": [
+        "cell",
+        "nucleus",
+        "membrane",
+        "mitochondria",
+        "organelle",
+        "dna",
+        "chromosome",
+        "mitosis",
+        "meiosis"
+      ],
+      "facts": [
+        {
+          "statement": "All living things are made of cells",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Plant cells have cell walls; animal cells do not",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The nucleus contains the cell's DNA",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Mitochondria are the powerhouses of the cell, producing energy (ATP)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The cell membrane controls what enters and leaves the cell",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Plant cells have chloroplasts for photosynthesis; animal cells do not",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "animal cells have cell walls",
+          "correct": "Animal cells have cell membranes but not cell walls; plant cells have both"
+        },
+        {
+          "wrong": "all cells have a nucleus",
+          "correct": "Prokaryotic cells (like bacteria) do not have a true nucleus"
+        }
+      ]
+    },
+    "genetics": {
+      "keywords": [
+        "dna",
+        "rna",
+        "gene",
+        "chromosome",
+        "heredity",
+        "punnett square",
+        "dominant",
+        "recessive",
+        "mutation",
+        "allele",
+        "genotype",
+        "phenotype",
+        "trait",
+        "inheritance"
+      ],
+      "facts": [
+        {
+          "statement": "DNA (deoxyribonucleic acid) carries the genetic instructions for all living organisms",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "RNA (ribonucleic acid) helps translate DNA instructions into proteins",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Humans have 23 pairs of chromosomes, for a total of 46",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A Punnett square is used to predict the probability of offspring inheriting particular traits",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Dominant alleles are expressed when at least one copy is present; recessive alleles are only expressed when two copies are present",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Mutations are changes in the DNA sequence that can be harmful, beneficial, or neutral",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Mitosis produces two genetically identical daughter cells for growth and repair",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Meiosis produces four genetically unique cells with half the chromosome number, used to form gametes (sex cells)",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "dominant traits are always more common in a population",
+          "correct": "Dominant refers to how an allele is expressed, not how frequently it appears in a population"
+        },
+        {
+          "wrong": "mutations are always harmful",
+          "correct": "Mutations can be harmful, beneficial, or neutral; some mutations drive evolution"
+        },
+        {
+          "wrong": "dna and rna are the same thing",
+          "correct": "DNA is double-stranded and stores genetic information; RNA is usually single-stranded and helps carry out DNA's instructions"
+        },
+        {
+          "wrong": "mitosis and meiosis produce the same result",
+          "correct": "Mitosis produces 2 identical diploid cells; meiosis produces 4 unique haploid cells"
+        }
+      ]
+    },
+    "evolution": {
+      "keywords": [
+        "natural selection",
+        "adaptation",
+        "fossil",
+        "speciation",
+        "darwin",
+        "evolution",
+        "common ancestor",
+        "extinction",
+        "survival",
+        "fitness",
+        "species",
+        "variation"
+      ],
+      "facts": [
+        {
+          "statement": "Natural selection is the process by which organisms with favorable traits are more likely to survive and reproduce",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Charles Darwin developed the theory of evolution by natural selection after studying finches on the Galapagos Islands",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Fossils provide evidence of organisms that lived in the past and show how species have changed over time",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Adaptations are traits that help an organism survive and reproduce in its environment",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Speciation occurs when populations of the same species become so different they can no longer interbreed",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "All living organisms share a common ancestor, supported by similarities in DNA and anatomy",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Over 99% of all species that ever lived on Earth are now extinct",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "evolution means humans came from monkeys",
+          "correct": "Humans and modern apes share a common ancestor; humans did not evolve from modern monkeys or apes"
+        },
+        {
+          "wrong": "organisms choose to evolve or adapt on purpose",
+          "correct": "Evolution occurs through random genetic variation and natural selection, not by conscious choice"
+        },
+        {
+          "wrong": "evolution is just a guess with no evidence",
+          "correct": "Evolution is supported by extensive evidence from fossils, DNA, comparative anatomy, and direct observation of natural selection"
+        }
+      ]
+    },
+    "electricity_magnetism": {
+      "keywords": [
+        "circuit",
+        "voltage",
+        "current",
+        "resistance",
+        "ohm",
+        "magnet",
+        "electromagnetic",
+        "static electricity",
+        "electric",
+        "battery",
+        "conductor",
+        "insulator",
+        "magnetic field"
+      ],
+      "facts": [
+        {
+          "statement": "Electric current is the flow of electric charge, measured in amperes (A)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Voltage is the electrical potential difference that pushes current through a circuit, measured in volts (V)",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Resistance opposes the flow of current and is measured in ohms (Ω)",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Ohm's law states that voltage equals current times resistance (V = IR)",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "A complete circuit is required for electric current to flow; a break in the circuit stops the flow",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Magnets have two poles (north and south); like poles repel and opposite poles attract",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Static electricity occurs when electric charges build up on the surface of an object",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Conductors (like metals) allow electricity to flow easily; insulators (like rubber) resist the flow of electricity",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "electricity travels at the speed of light through wires",
+          "correct": "The electric signal propagates near the speed of light, but the individual electrons move slowly (drift velocity is typically millimeters per second)"
+        },
+        {
+          "wrong": "batteries store electricity",
+          "correct": "Batteries store chemical energy and convert it to electrical energy through chemical reactions"
+        },
+        {
+          "wrong": "magnets only attract metals",
+          "correct": "Magnets attract ferromagnetic materials (iron, nickel, cobalt); most other metals like aluminum and copper are not attracted to permanent magnets"
+        }
+      ]
+    },
+    "waves_sound_light": {
+      "keywords": [
+        "wave",
+        "wavelength",
+        "frequency",
+        "amplitude",
+        "reflection",
+        "refraction",
+        "sound",
+        "light",
+        "electromagnetic spectrum",
+        "vibration",
+        "decibel",
+        "pitch",
+        "color"
+      ],
+      "facts": [
+        {
+          "statement": "Waves transfer energy without transferring matter",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Wavelength is the distance between two consecutive crests (or troughs) of a wave",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Frequency is the number of wave cycles per second, measured in hertz (Hz)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Amplitude is the height of a wave from rest position and determines the wave's energy or loudness",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The speed of sound in air at room temperature is approximately 343 meters per second",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Light travels at approximately 300,000 km/s in a vacuum, faster than any other form of energy transfer",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The electromagnetic spectrum includes radio waves, microwaves, infrared, visible light, ultraviolet, X-rays, and gamma rays",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Reflection occurs when a wave bounces off a surface; refraction occurs when a wave bends as it passes from one medium to another",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "sound can travel through space (a vacuum)",
+          "correct": "Sound requires a medium (solid, liquid, or gas) to travel; it cannot travel through a vacuum"
+        },
+        {
+          "wrong": "light always travels at the same speed",
+          "correct": "Light travels fastest in a vacuum; it slows down when passing through materials like water or glass"
+        },
+        {
+          "wrong": "all electromagnetic waves are visible",
+          "correct": "Visible light is only a small portion of the electromagnetic spectrum; most EM waves (radio, infrared, UV, X-rays, gamma rays) are invisible to the human eye"
+        }
+      ]
+    },
+    "earth_geology": {
+      "keywords": [
+        "rock",
+        "plate tectonics",
+        "earthquake",
+        "volcano",
+        "mineral",
+        "soil",
+        "erosion",
+        "sedimentary",
+        "igneous",
+        "metamorphic",
+        "crust",
+        "mantle",
+        "core",
+        "geology",
+        "rock cycle",
+        "fossil"
+      ],
+      "facts": [
+        {
+          "statement": "The three types of rocks are sedimentary, igneous, and metamorphic",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The rock cycle describes how rocks transform from one type to another through processes like melting, cooling, weathering, and pressure",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Earth has four main layers: inner core, outer core, mantle, and crust",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Plate tectonics explains that Earth's crust is divided into large plates that move slowly over the mantle",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Earthquakes occur when tectonic plates suddenly slip along a fault, releasing built-up energy",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Volcanoes form when molten rock (magma) from the mantle reaches the Earth's surface",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Erosion is the process by which wind, water, ice, or gravity wears away and transports rock and soil",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Minerals are naturally occurring, inorganic solids with a definite chemical composition and crystal structure",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the earth's core is hollow",
+          "correct": "Earth's core is made of extremely hot, dense metal — a solid inner core of iron and nickel and a liquid outer core"
+        },
+        {
+          "wrong": "continents have always been in the same position",
+          "correct": "Continents move slowly due to plate tectonics; they were once joined as the supercontinent Pangaea approximately 300 million years ago"
+        },
+        {
+          "wrong": "diamonds are made from compressed coal",
+          "correct": "Most natural diamonds formed deep in the mantle under extreme pressure and heat, from carbon deposits far older than the first land plants that became coal"
+        }
+      ]
+    },
+    "astronomy": {
+      "keywords": [
+        "star",
+        "galaxy",
+        "light year",
+        "big bang",
+        "constellation",
+        "nebula",
+        "black hole",
+        "milky way",
+        "universe",
+        "telescope",
+        "supernova",
+        "orbit"
+      ],
+      "facts": [
+        {
+          "statement": "A light year is the distance light travels in one year, approximately 9.46 trillion kilometers",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Milky Way is the galaxy that contains our solar system, with an estimated 100-400 billion stars",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Big Bang theory states that the universe began from an extremely hot, dense point approximately 13.8 billion years ago",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Stars produce energy through nuclear fusion, converting hydrogen into helium in their cores",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "A black hole is a region of space where gravity is so strong that nothing, not even light, can escape",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A nebula is a giant cloud of gas and dust in space, often where new stars are born",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Constellations are patterns of stars as seen from Earth, used historically for navigation and storytelling",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the sun is the biggest star",
+          "correct": "The Sun is a medium-sized star; many stars such as UY Scuti and Betelgeuse are far larger"
+        },
+        {
+          "wrong": "a light year is a measure of time",
+          "correct": "A light year is a measure of distance, equal to approximately 9.46 trillion kilometers"
+        },
+        {
+          "wrong": "stars are all the same color and temperature",
+          "correct": "Stars range in color from red (cooler, ~3,000 K) to blue (hotter, ~30,000+ K), indicating different surface temperatures"
+        }
+      ]
+    },
+    "chemistry_reactions": {
+      "keywords": [
+        "chemical reaction",
+        "chemical equation",
+        "balance",
+        "acid",
+        "base",
+        "ph",
+        "exothermic",
+        "endothermic",
+        "combustion",
+        "oxidation",
+        "reactant",
+        "product",
+        "catalyst"
+      ],
+      "facts": [
+        {
+          "statement": "In a chemical reaction, reactants are transformed into products, and matter is conserved",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A balanced chemical equation has the same number of each type of atom on both sides",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The pH scale ranges from 0 to 14, where 0-6 is acidic, 7 is neutral, and 8-14 is basic (alkaline)",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Exothermic reactions release energy (usually as heat); endothermic reactions absorb energy",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Combustion is a chemical reaction in which a substance reacts with oxygen, releasing energy as heat and light",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Oxidation is the loss of electrons; reduction is the gain of electrons (remembered by OIL RIG)",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "A catalyst speeds up a chemical reaction without being consumed in the process",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "acids are always dangerous",
+          "correct": "Many acids are safe and common, such as citric acid in lemons and acetic acid in vinegar; concentration and type determine danger"
+        },
+        {
+          "wrong": "a ph of 7 means something is an acid",
+          "correct": "A pH of 7 is neutral (like pure water); values below 7 are acidic and above 7 are basic"
+        },
+        {
+          "wrong": "all chemical reactions are irreversible",
+          "correct": "Many chemical reactions are reversible; equilibrium reactions proceed in both directions simultaneously"
+        }
+      ]
+    },
+    "chemistry_bonding": {
+      "keywords": [
+        "ionic bond",
+        "covalent bond",
+        "metallic bond",
+        "electronegativity",
+        "valence electron",
+        "bond",
+        "ion",
+        "sharing",
+        "electron",
+        "molecule",
+        "compound"
+      ],
+      "facts": [
+        {
+          "statement": "Ionic bonds form when one atom transfers electrons to another, creating oppositely charged ions that attract each other",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Covalent bonds form when two atoms share one or more pairs of electrons",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Metallic bonds occur when metal atoms share a pool of delocalized electrons, giving metals properties like conductivity and malleability",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Electronegativity is the tendency of an atom to attract shared electrons; fluorine is the most electronegative element",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Valence electrons are the electrons in the outermost energy level of an atom and determine how it bonds with other atoms",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The octet rule states that atoms tend to gain, lose, or share electrons to achieve eight electrons in their outer shell",
+          "grade_min": 9,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "ionic and covalent bonds are the same",
+          "correct": "Ionic bonds involve transferring electrons between atoms; covalent bonds involve sharing electrons between atoms"
+        },
+        {
+          "wrong": "all bonds are equally strong",
+          "correct": "Bond strengths vary widely; covalent bonds within molecules are generally stronger than intermolecular forces, and ionic compounds form strong crystal lattices"
+        },
+        {
+          "wrong": "only metals can form bonds",
+          "correct": "Nonmetals form covalent bonds with each other, and metals form ionic bonds with nonmetals; bonding is not limited to metals"
+        }
+      ]
+    },
+    "life_classification": {
+      "keywords": [
+        "kingdom",
+        "taxonomy",
+        "domain",
+        "phylum",
+        "class",
+        "order",
+        "family",
+        "genus",
+        "species",
+        "vertebrate",
+        "invertebrate",
+        "mammal",
+        "reptile",
+        "amphibian",
+        "fish",
+        "bird",
+        "classification"
+      ],
+      "facts": [
+        {
+          "statement": "The three domains of life are Bacteria, Archaea, and Eukarya",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The taxonomic hierarchy from broadest to most specific is: Domain, Kingdom, Phylum, Class, Order, Family, Genus, Species",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Vertebrates are animals with a backbone; invertebrates lack a backbone and make up about 97% of all animal species",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Mammals are warm-blooded vertebrates that have hair or fur and feed their young with milk",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Amphibians (such as frogs and salamanders) typically live part of their life in water and part on land, and undergo metamorphosis",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Reptiles are cold-blooded vertebrates with scales that lay eggs on land (e.g., snakes, lizards, turtles)",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Birds are warm-blooded vertebrates with feathers, beaks, and most can fly",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A scientific name consists of the genus and species (binomial nomenclature), such as Homo sapiens for humans",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "there are only two kingdoms of life: plants and animals",
+          "correct": "There are six commonly recognized kingdoms: Bacteria, Archaea, Protista, Fungi, Plantae, and Animalia"
+        },
+        {
+          "wrong": "all reptiles are dinosaurs",
+          "correct": "Dinosaurs were a specific group of reptiles that are mostly extinct; modern reptiles like lizards and turtles are not dinosaurs (though birds are considered living dinosaurs)"
+        },
+        {
+          "wrong": "spiders are insects",
+          "correct": "Spiders are arachnids (8 legs, 2 body segments); insects have 6 legs and 3 body segments"
+        }
+      ]
+    },
+    "reproduction": {
+      "keywords": [
+        "reproduction",
+        "sexual",
+        "asexual",
+        "mitosis",
+        "meiosis",
+        "fertilization",
+        "embryo",
+        "gamete",
+        "sperm",
+        "egg",
+        "offspring",
+        "cell division",
+        "zygote"
+      ],
+      "facts": [
+        {
+          "statement": "Sexual reproduction involves two parents and produces genetically unique offspring through the combination of gametes",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Asexual reproduction involves one parent and produces genetically identical offspring (clones)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Mitosis is cell division for growth and repair, producing two identical diploid cells",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Meiosis is cell division that produces gametes (sex cells) with half the chromosome number (haploid)",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Fertilization occurs when a sperm cell fuses with an egg cell, forming a zygote with the full set of chromosomes",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "After fertilization, the zygote divides repeatedly to form an embryo, which develops into a new organism",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "asexual reproduction only happens in simple organisms",
+          "correct": "Many complex organisms reproduce asexually, including starfish (regeneration), strawberry plants (runners), and some lizards (parthenogenesis)"
+        },
+        {
+          "wrong": "mitosis and meiosis are the same process",
+          "correct": "Mitosis produces 2 genetically identical diploid cells for growth; meiosis produces 4 genetically unique haploid gametes for reproduction"
+        },
+        {
+          "wrong": "only females contribute genetic material to offspring",
+          "correct": "Both parents contribute half of the offspring's genetic material: the egg from the mother and the sperm from the father each carry 23 chromosomes"
+        }
+      ]
+    },
+    "environmental_science": {
+      "keywords": [
+        "climate change",
+        "greenhouse effect",
+        "ozone",
+        "deforestation",
+        "pollution",
+        "renewable energy",
+        "nonrenewable",
+        "carbon cycle",
+        "biodiversity",
+        "conservation",
+        "fossil fuel",
+        "recycling",
+        "sustainability"
+      ],
+      "facts": [
+        {
+          "statement": "The greenhouse effect is the natural process by which certain gases in Earth's atmosphere trap heat, keeping the planet warm enough to sustain life",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Climate change refers to long-term shifts in global temperatures and weather patterns, significantly accelerated by human activities since the Industrial Revolution",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The ozone layer in the stratosphere protects life on Earth by absorbing most of the Sun's harmful ultraviolet (UV) radiation",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Renewable energy sources include solar, wind, hydroelectric, and geothermal power; nonrenewable sources include coal, oil, and natural gas",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The carbon cycle describes how carbon moves between the atmosphere, oceans, soil, and living organisms",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Biodiversity refers to the variety of life in an ecosystem; greater biodiversity generally leads to more resilient ecosystems",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Deforestation reduces biodiversity, increases carbon dioxide levels, and contributes to climate change",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the greenhouse effect is entirely bad",
+          "correct": "The natural greenhouse effect is essential for life on Earth; it keeps the planet about 33 degrees Celsius warmer than it would be otherwise. The problem is the enhanced greenhouse effect from excess human-produced emissions"
+        },
+        {
+          "wrong": "the ozone hole and climate change are the same problem",
+          "correct": "The ozone hole (caused mainly by CFCs) and climate change (caused mainly by greenhouse gases like CO2) are separate environmental issues, though they can interact"
+        },
+        {
+          "wrong": "recycling alone can solve pollution",
+          "correct": "Recycling is one important strategy, but addressing pollution also requires reducing consumption, reusing materials, improving manufacturing processes, and transitioning to clean energy"
+        }
+      ]
+    },
+    "energy_types": {
+      "keywords": [
+        "kinetic energy",
+        "potential energy",
+        "thermal energy",
+        "chemical energy",
+        "nuclear energy",
+        "mechanical energy",
+        "electrical energy",
+        "energy conservation",
+        "energy transformation",
+        "joule",
+        "work"
+      ],
+      "facts": [
+        {
+          "statement": "Kinetic energy is the energy of motion; it depends on an object's mass and velocity (KE = 0.5 * m * v^2)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Potential energy is stored energy due to an object's position or condition (gravitational PE = m * g * h)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Thermal energy is the total kinetic energy of particles in a substance, related to its temperature",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Chemical energy is stored in the bonds of molecules and released during chemical reactions (e.g., food, fuel, batteries)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Nuclear energy is released when atomic nuclei are split (fission) or combined (fusion)",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The law of conservation of energy states that energy cannot be created or destroyed, only transformed from one form to another",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Energy is measured in joules (J); one joule equals the work done by a force of one newton over a distance of one meter",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "energy can be used up or destroyed",
+          "correct": "Energy is never destroyed; it is transformed from one form to another (e.g., chemical to thermal), though some energy becomes less useful (entropy increases)"
+        },
+        {
+          "wrong": "potential energy and kinetic energy are unrelated",
+          "correct": "Potential and kinetic energy are constantly converting between each other — for example, a falling ball converts gravitational potential energy into kinetic energy"
+        },
+        {
+          "wrong": "nuclear energy and chemical energy work the same way",
+          "correct": "Chemical energy involves electron interactions in chemical bonds; nuclear energy involves changes to the atomic nucleus itself and releases millions of times more energy per atom"
+        }
+      ]
+    },
+    "photosynthesis_respiration": {
+      "keywords": [
+        "photosynthesis",
+        "cellular respiration",
+        "ATP",
+        "chloroplast",
+        "mitochondria",
+        "glucose",
+        "oxygen",
+        "carbon dioxide",
+        "light energy",
+        "chlorophyll",
+        "aerobic",
+        "anaerobic"
+      ],
+      "facts": [
+        {
+          "statement": "Photosynthesis converts light energy, water, and carbon dioxide into glucose and oxygen in chloroplasts",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The equation for photosynthesis is 6CO2 + 6H2O + light energy → C6H12O6 + 6O2",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Cellular respiration breaks down glucose using oxygen to produce ATP, carbon dioxide, and water in mitochondria",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The equation for cellular respiration is C6H12O6 + 6O2 → 6CO2 + 6H2O + ATP energy",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "ATP (adenosine triphosphate) is the primary energy currency of cells, used to power cellular processes",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Chlorophyll is the green pigment in chloroplasts that absorbs light energy for photosynthesis",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Anaerobic respiration (fermentation) occurs without oxygen and produces less ATP than aerobic respiration",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "plants only do photosynthesis, not cellular respiration",
+          "correct": "Plants perform BOTH photosynthesis (to make glucose) and cellular respiration (to use glucose for energy). They photosynthesize during daylight and respire continuously"
+        },
+        {
+          "wrong": "photosynthesis and respiration are the same process",
+          "correct": "They are opposite processes: photosynthesis uses CO2 and water to build glucose (stores energy), while respiration breaks glucose down (releases energy)"
+        },
+        {
+          "wrong": "oxygen comes from splitting CO2 during photosynthesis",
+          "correct": "The oxygen released during photosynthesis comes from splitting water molecules (H2O), not carbon dioxide"
+        }
+      ]
+    },
+    "macromolecules": {
+      "keywords": [
+        "protein",
+        "carbohydrate",
+        "lipid",
+        "nucleic acid",
+        "amino acid",
+        "enzyme",
+        "DNA",
+        "RNA",
+        "starch",
+        "cellulose",
+        "fatty acid",
+        "monomer",
+        "polymer"
+      ],
+      "facts": [
+        {
+          "statement": "The four major types of biological macromolecules are carbohydrates, lipids, proteins, and nucleic acids",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Proteins are polymers of amino acids, with 20 different amino acids that can combine in various sequences to form thousands of different proteins",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Enzymes are proteins that act as biological catalysts, speeding up chemical reactions without being consumed",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Carbohydrates include simple sugars (monosaccharides like glucose) and complex carbohydrates (polysaccharides like starch and cellulose)",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Lipids include fats, oils, and waxes; they store energy, form cell membranes, and serve as chemical messengers (hormones)",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Nucleic acids (DNA and RNA) store and transmit genetic information using sequences of nucleotide monomers",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "all fats are bad for you",
+          "correct": "Unsaturated fats (found in fish, nuts, olive oil) are essential for health. The body needs fats for cell membranes, hormone production, and vitamin absorption"
+        },
+        {
+          "wrong": "enzymes are used up in reactions",
+          "correct": "Enzymes are catalysts that are NOT consumed in reactions. A single enzyme can catalyze thousands of reactions as it is recycled"
+        },
+        {
+          "wrong": "DNA and proteins are the same thing",
+          "correct": "DNA is a nucleic acid that stores genetic instructions. Proteins are polymers of amino acids that carry out cellular functions. DNA provides the instructions for making proteins"
+        }
+      ]
+    },
+    "dna_replication": {
+      "keywords": [
+        "DNA",
+        "replication",
+        "transcription",
+        "translation",
+        "double helix",
+        "base pair",
+        "adenine",
+        "thymine",
+        "guanine",
+        "cytosine",
+        "RNA",
+        "codon",
+        "ribosome"
+      ],
+      "facts": [
+        {
+          "statement": "DNA has a double helix structure with two strands connected by complementary base pairs: adenine-thymine (A-T) and guanine-cytosine (G-C)",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "DNA replication is semi-conservative: each new DNA molecule contains one original strand and one newly synthesized strand",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Transcription copies DNA into messenger RNA (mRNA) in the nucleus; translation reads mRNA to build proteins at ribosomes",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "A codon is a sequence of three nucleotide bases in mRNA that codes for a specific amino acid or a stop signal",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "RNA differs from DNA: it is single-stranded, uses uracil instead of thymine, and contains ribose sugar instead of deoxyribose",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Mutations are changes in DNA sequence that can result from errors in replication, chemical damage, or radiation exposure",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "DNA and RNA are the same molecule",
+          "correct": "DNA is double-stranded with thymine and deoxyribose; RNA is single-stranded with uracil and ribose. DNA stores genetic information; RNA helps express it"
+        },
+        {
+          "wrong": "all mutations are harmful",
+          "correct": "Many mutations are neutral (no effect). Some are harmful, but others can be beneficial, providing variations that may be advantageous through natural selection"
+        },
+        {
+          "wrong": "DNA directly makes proteins",
+          "correct": "DNA is first transcribed into mRNA, which is then translated into protein at ribosomes. DNA itself never leaves the nucleus in eukaryotes"
+        }
+      ]
+    },
+    "stoichiometry": {
+      "keywords": [
+        "mole",
+        "Avogadro",
+        "molar mass",
+        "limiting reagent",
+        "yield",
+        "stoichiometry",
+        "balanced equation",
+        "molar ratio",
+        "theoretical yield",
+        "percent yield",
+        "molarity"
+      ],
+      "facts": [
+        {
+          "statement": "A mole is a unit representing 6.022 x 10^23 particles (Avogadro's number), whether atoms, molecules, or ions",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Molar mass is the mass of one mole of a substance in grams, numerically equal to its atomic or molecular weight",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Stoichiometry uses balanced chemical equations and molar ratios to calculate the amounts of reactants and products in a reaction",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "The limiting reagent is the reactant that runs out first in a chemical reaction, determining the maximum amount of product that can form",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Theoretical yield is the maximum amount of product predicted by stoichiometry; percent yield = (actual yield / theoretical yield) x 100%",
+          "grade_min": 10,
+          "grade_max": 12
+        },
+        {
+          "statement": "Molarity (M) is a measure of solution concentration defined as moles of solute per liter of solution",
+          "grade_min": 9,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "a mole is a unit of mass",
+          "correct": "A mole is a unit of amount (number of particles), not mass. One mole always contains 6.022 x 10^23 particles regardless of the substance"
+        },
+        {
+          "wrong": "the limiting reagent is the reactant present in the smallest amount by mass",
+          "correct": "The limiting reagent is determined by molar ratios from the balanced equation, not by mass. A smaller mass of one reactant may still be in excess if the equation requires less of it"
+        },
+        {
+          "wrong": "percent yield can be greater than 100%",
+          "correct": "In theory, percent yield cannot exceed 100%. If an experimental value appears above 100%, it indicates measurement error, impurities, or incomplete drying of the product"
+        }
+      ]
+    },
+    "forces_motion": {
+      "keywords": [
+        "Newton's laws",
+        "force",
+        "friction",
+        "momentum",
+        "impulse",
+        "inertia",
+        "free body diagram",
+        "net force",
+        "acceleration",
+        "gravity",
+        "normal force",
+        "tension",
+        "weight"
+      ],
+      "facts": [
+        {
+          "statement": "Newton's First Law (inertia): an object at rest stays at rest, and an object in motion stays in motion at constant velocity, unless acted upon by a net external force",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Newton's Second Law: the acceleration of an object equals the net force divided by its mass (F = ma)",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Newton's Third Law: for every action force, there is an equal and opposite reaction force",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Friction is a force that opposes the relative motion of two surfaces in contact; static friction prevents motion while kinetic friction opposes ongoing motion",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Momentum equals mass times velocity (p = mv); the law of conservation of momentum states total momentum is conserved in a closed system",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Weight is the gravitational force on an object (W = mg); it differs from mass, which measures the amount of matter",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A free body diagram shows all forces acting on an object as arrows, helping to analyze the net force and resulting motion",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "heavier objects fall faster than lighter objects",
+          "correct": "In the absence of air resistance, all objects fall at the same rate regardless of mass (g ≈ 9.8 m/s²). Galileo demonstrated this principle"
+        },
+        {
+          "wrong": "an object needs a constant force to keep moving",
+          "correct": "Newton's First Law says an object in motion stays in motion without any force. A constant force causes acceleration, not constant velocity. Objects slow down due to friction, not lack of force"
+        },
+        {
+          "wrong": "action and reaction forces cancel each other out",
+          "correct": "Action-reaction forces act on DIFFERENT objects, so they don't cancel. They would only cancel if they acted on the same object"
+        }
+      ]
+    },
+    "gas_laws": {
+      "keywords": [
+        "Boyle's law",
+        "Charles's law",
+        "ideal gas law",
+        "pressure",
+        "volume",
+        "temperature",
+        "gas",
+        "PV=nRT",
+        "Avogadro's law",
+        "Dalton's law",
+        "partial pressure",
+        "STP"
+      ],
+      "facts": [
+        {
+          "statement": "Boyle's law states that at constant temperature, the pressure and volume of a gas are inversely proportional (P1V1 = P2V2)",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Charles's law states that at constant pressure, the volume of a gas is directly proportional to its absolute temperature (V1/T1 = V2/T2)",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "The ideal gas law combines all gas laws into PV = nRT, where n is moles and R is the universal gas constant",
+          "grade_min": 10,
+          "grade_max": 12
+        },
+        {
+          "statement": "Avogadro's law states that equal volumes of gases at the same temperature and pressure contain equal numbers of particles",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Standard Temperature and Pressure (STP) is defined as 0°C (273.15 K) and 1 atmosphere of pressure",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Gas pressure results from gas molecules colliding with the walls of their container; more collisions or faster molecules mean higher pressure",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "gases have a fixed volume",
+          "correct": "Gases expand to fill their entire container and have no fixed volume. Only solids have a fixed shape and volume"
+        },
+        {
+          "wrong": "temperature in gas law calculations can be in Celsius",
+          "correct": "Gas law calculations require absolute temperature in Kelvin (K = °C + 273.15). Using Celsius gives incorrect results because the gas laws depend on proportional relationships from absolute zero"
+        },
+        {
+          "wrong": "the ideal gas law works perfectly for all gases",
+          "correct": "Real gases deviate from ideal behavior at high pressures and low temperatures. The ideal gas law assumes no intermolecular forces and negligible molecular volume, which are approximations"
+        }
+      ]
+    },
+    "thermodynamics": {
+      "keywords": [
+        "heat",
+        "entropy",
+        "enthalpy",
+        "thermodynamics",
+        "temperature",
+        "thermal equilibrium",
+        "specific heat",
+        "conduction",
+        "convection",
+        "radiation",
+        "endothermic",
+        "exothermic"
+      ],
+      "facts": [
+        {
+          "statement": "The first law of thermodynamics states that energy cannot be created or destroyed, only transferred or converted from one form to another",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The second law of thermodynamics states that in any energy transfer, the total entropy (disorder) of a system and its surroundings always increases",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Heat transfers from hot objects to cold objects through three mechanisms: conduction (direct contact), convection (fluid movement), and radiation (electromagnetic waves)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Specific heat capacity is the amount of heat energy required to raise the temperature of 1 gram of a substance by 1 degree Celsius",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Temperature measures the average kinetic energy of particles in a substance, while heat is the total thermal energy transferred between objects",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Thermal equilibrium occurs when two objects in contact reach the same temperature and net heat transfer between them stops",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "heat and temperature are the same thing",
+          "correct": "Temperature is the average kinetic energy of particles (an intensive property). Heat is energy transferred due to a temperature difference (depends on mass and material). A lake and a cup of water can be the same temperature but the lake holds far more heat energy"
+        },
+        {
+          "wrong": "cold is a form of energy that flows into warm objects",
+          "correct": "Cold is not a form of energy. Heat always flows FROM hot objects TO cold objects. When something feels cold, heat is flowing from your body into the cooler object"
+        },
+        {
+          "wrong": "metals are cold because they generate cold",
+          "correct": "Metals feel cold because they conduct heat away from your hand quickly (high thermal conductivity), not because they are inherently colder than their surroundings"
+        }
+      ]
+    },
+    "optics": {
+      "keywords": [
+        "lens",
+        "mirror",
+        "reflection",
+        "refraction",
+        "diffraction",
+        "prism",
+        "spectrum",
+        "focal point",
+        "convex",
+        "concave",
+        "image",
+        "magnification",
+        "fiber optics"
+      ],
+      "facts": [
+        {
+          "statement": "Reflection follows the law of reflection: the angle of incidence equals the angle of reflection, measured from the normal (perpendicular) to the surface",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Refraction is the bending of light as it passes from one medium to another due to a change in speed; described by Snell's law",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A convex lens converges light rays to a focal point and can form both real and virtual images; it is used in magnifying glasses and cameras",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A concave mirror converges light rays and can produce magnified images; used in telescopes and satellite dishes",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A prism separates white light into its component colors because different wavelengths refract by different amounts (dispersion)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Diffraction is the bending of waves around obstacles or through small openings, more noticeable when the opening is similar in size to the wavelength",
+          "grade_min": 9,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "mirrors reverse left and right",
+          "correct": "Mirrors actually reverse front and back (the depth axis), not left and right. The image appears flipped because the mirror reverses the axis perpendicular to its surface"
+        },
+        {
+          "wrong": "light always travels in straight lines",
+          "correct": "Light travels in straight lines in a uniform medium, but bends when passing between media of different densities (refraction) and around obstacles (diffraction)"
+        },
+        {
+          "wrong": "we see color because objects create their own colored light",
+          "correct": "Objects appear colored because they absorb certain wavelengths of white light and reflect others. A red apple absorbs most wavelengths but reflects red wavelengths"
+        }
+      ]
+    },
+    "nuclear_physics": {
+      "keywords": [
+        "radioactivity",
+        "half-life",
+        "fission",
+        "fusion",
+        "alpha particle",
+        "beta particle",
+        "gamma ray",
+        "isotope",
+        "nuclear decay",
+        "chain reaction",
+        "radiation",
+        "nuclear energy"
+      ],
+      "facts": [
+        {
+          "statement": "Radioactivity is the spontaneous emission of particles or energy from unstable atomic nuclei as they decay into more stable forms",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Alpha particles (helium nuclei) have low penetrating power (stopped by paper); beta particles (electrons) are stopped by aluminum; gamma rays require thick lead or concrete",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Half-life is the time for half of the radioactive atoms in a sample to decay; each isotope has a characteristic half-life",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Nuclear fission splits heavy nuclei (like uranium-235) into lighter nuclei, releasing large amounts of energy; used in nuclear power plants",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Nuclear fusion combines light nuclei (like hydrogen) into heavier nuclei, releasing enormous energy; this powers the Sun and stars",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Einstein's E = mc² shows that mass can be converted to energy, explaining the enormous energy released in nuclear reactions",
+          "grade_min": 9,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "all radiation is dangerous and man-made",
+          "correct": "Radiation is natural and exists everywhere as background radiation from soil, rocks, cosmic rays. Whether it is harmful depends on type, intensity, and duration of exposure"
+        },
+        {
+          "wrong": "after one half-life, all radioactive material is gone",
+          "correct": "After one half-life, HALF remains. After two half-lives, one quarter remains. The material asymptotically approaches zero but never fully disappears"
+        },
+        {
+          "wrong": "nuclear fission and fusion are the same process",
+          "correct": "Fission SPLITS heavy nuclei; fusion COMBINES light nuclei. Both release energy but are opposite processes. Fission is used in power plants; fusion powers the Sun"
+        }
+      ]
+    },
+    "fluid_mechanics": {
+      "keywords": [
+        "pressure",
+        "buoyancy",
+        "Archimedes",
+        "Bernoulli",
+        "viscosity",
+        "density",
+        "Pascal",
+        "hydraulics",
+        "surface tension",
+        "displacement",
+        "float",
+        "sink"
+      ],
+      "facts": [
+        {
+          "statement": "Archimedes' principle: an object submerged in fluid experiences an upward buoyant force equal to the weight of fluid displaced",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "An object floats when its average density is less than the fluid's density",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Fluid pressure increases with depth: P = ρgh (density × gravity × height)",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Pascal's principle: pressure applied to an enclosed fluid is transmitted equally to every part of the fluid; basis of hydraulic systems",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Bernoulli's principle: in a flowing fluid, increased speed corresponds to decreased pressure; helps explain airplane lift",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Viscosity is a fluid's resistance to flow; honey has high viscosity, water has low viscosity",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "heavy objects always sink and light objects always float",
+          "correct": "Whether an object sinks or floats depends on DENSITY, not weight. A massive steel ship floats because its overall density (including air inside) is less than water"
+        },
+        {
+          "wrong": "water pressure only pushes downward",
+          "correct": "Fluid pressure acts equally in all directions at a given depth — upward, downward, and sideways"
+        },
+        {
+          "wrong": "Bernoulli's principle alone explains how airplanes fly",
+          "correct": "Airplane lift involves multiple factors: Bernoulli's principle, Newton's third law (deflecting air downward), and the angle of attack of the wing"
+        }
+      ]
+    },
+    "earth_atmosphere": {
+      "keywords": [
+        "troposphere",
+        "stratosphere",
+        "ozone layer",
+        "atmospheric pressure",
+        "wind",
+        "humidity",
+        "Coriolis effect",
+        "jet stream",
+        "nitrogen",
+        "oxygen",
+        "atmosphere layers"
+      ],
+      "facts": [
+        {
+          "statement": "Earth's atmosphere has layers: troposphere (weather, 0-12km), stratosphere (ozone, 12-50km), mesosphere (50-80km), thermosphere (80-700km)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Earth's atmosphere is approximately 78% nitrogen, 21% oxygen, 0.9% argon, and 0.04% carbon dioxide",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Atmospheric pressure decreases with altitude because there is less air above pushing down",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Coriolis effect from Earth's rotation deflects moving air right in the Northern Hemisphere and left in the Southern Hemisphere",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The troposphere is where all weather occurs; temperature generally decreases with altitude in this layer",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Humidity is the amount of water vapor in air; relative humidity compares current vapor to the maximum the air can hold at that temperature",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "oxygen is the most abundant gas in the atmosphere",
+          "correct": "Nitrogen (N2) makes up about 78% of the atmosphere. Oxygen (O2) is second at about 21%"
+        },
+        {
+          "wrong": "it gets warmer the higher you go in the atmosphere",
+          "correct": "Temperature varies by layer: decreases in troposphere, increases in stratosphere (ozone absorbs UV), decreases in mesosphere, increases in thermosphere"
+        },
+        {
+          "wrong": "the ozone layer and greenhouse effect are the same",
+          "correct": "The ozone layer (stratosphere) protects against UV radiation. The greenhouse effect traps heat via greenhouse gases in the troposphere. They are separate phenomena"
+        }
+      ]
+    },
+    "ocean_science": {
+      "keywords": [
+        "tides",
+        "ocean current",
+        "salinity",
+        "coral reef",
+        "marine",
+        "phytoplankton",
+        "ocean zone",
+        "tsunami",
+        "continental shelf",
+        "ocean acidification",
+        "thermohaline"
+      ],
+      "facts": [
+        {
+          "statement": "Tides are caused primarily by the gravitational pull of the Moon and Sun on Earth's oceans",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Ocean currents are driven by wind, temperature differences, salinity differences, and the Coriolis effect",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Coral reefs are built by tiny animals (coral polyps) that secrete calcium carbonate; they support about 25% of all marine species",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Phytoplankton produce an estimated 50-80% of Earth's oxygen and form the base of most marine food webs",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Ocean acidification from excess CO2 absorption threatens shell-forming organisms and coral reefs",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The ocean is divided into depth zones: sunlit (0-200m), twilight (200-1000m), midnight (1000-4000m), abyssal (4000-6000m), hadal (6000m+)",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "tides are caused by the wind",
+          "correct": "Tides are caused by the gravitational pull of the Moon and Sun. Wind causes waves and surface currents, but not tides"
+        },
+        {
+          "wrong": "coral reefs are made of plants or rocks",
+          "correct": "Coral reefs are built by living animals — coral polyps — which secrete hard calcium carbonate skeletons"
+        },
+        {
+          "wrong": "the ocean is the same temperature throughout",
+          "correct": "Surface waters can be warm (25°C+ in tropics), but deep ocean water is consistently cold (1-4°C). A thermocline separates warm surface from cold deep water"
+        }
+      ]
+    },
+    "health_disease": {
+      "keywords": [
+        "immune system",
+        "vaccine",
+        "pathogen",
+        "antibody",
+        "bacteria",
+        "virus",
+        "white blood cell",
+        "inflammation",
+        "antigen",
+        "nutrition",
+        "infectious disease"
+      ],
+      "facts": [
+        {
+          "statement": "The immune system uses innate immunity (general, immediate) and adaptive immunity (specific, develops over time) to fight pathogens",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Vaccines expose the immune system to weakened or inactivated pathogens, building memory cells and antibodies without causing disease",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Antibodies are Y-shaped proteins produced by B cells that bind to specific antigens on pathogens, marking them for destruction",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Bacteria are single-celled organisms treatable with antibiotics; viruses require a host cell to replicate and are NOT affected by antibiotics",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "White blood cells (leukocytes) include neutrophils, macrophages, T cells, and B cells, each with specialized immune functions",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Good nutrition requires balanced macronutrients (carbohydrates, proteins, fats) and micronutrients (vitamins, minerals)",
+          "grade_min": 3,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "antibiotics can cure viral infections like the cold or flu",
+          "correct": "Antibiotics only work against bacteria, not viruses. Using antibiotics for viral infections is ineffective and contributes to antibiotic resistance"
+        },
+        {
+          "wrong": "vaccines cause the disease they prevent",
+          "correct": "Vaccines contain weakened or inactivated forms that cannot cause the full disease. Mild side effects are signs of immune response, not infection"
+        },
+        {
+          "wrong": "you can catch a cold from cold weather",
+          "correct": "Colds are caused by viruses (mainly rhinoviruses), not cold temperatures. Cold weather may increase transmission because people spend more time indoors in close contact"
+        }
+      ]
+    },
+    "biotechnology": {
+      "keywords": [
+        "genetic engineering",
+        "CRISPR",
+        "cloning",
+        "GMO",
+        "gene therapy",
+        "PCR",
+        "recombinant DNA",
+        "gel electrophoresis",
+        "plasmid",
+        "stem cells",
+        "bioethics"
+      ],
+      "facts": [
+        {
+          "statement": "Genetic engineering directly manipulates an organism's genes, allowing scientists to add, remove, or alter specific DNA sequences",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "CRISPR-Cas9 uses a guide RNA to direct an enzyme to cut DNA at a specific location, enabling precise gene editing",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "GMOs have DNA altered through genetic engineering; examples include pest-resistant and drought-tolerant crops",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "PCR (polymerase chain reaction) rapidly copies DNA segments, producing millions of copies from a tiny sample; essential in forensics and diagnostics",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Dolly the sheep (1996) was the first mammal cloned from an adult cell, demonstrating reproductive cloning",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Gene therapy aims to treat disease by introducing, altering, or replacing genes within a patient's cells",
+          "grade_min": 9,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "all GMOs are unsafe to eat",
+          "correct": "Major scientific organizations (WHO, National Academies) have concluded that approved GMO foods are safe. Each GMO is individually assessed for safety"
+        },
+        {
+          "wrong": "cloning and genetic engineering are the same",
+          "correct": "Cloning creates genetically identical copies without changing DNA. Genetic engineering modifies specific genes. They are distinct techniques"
+        },
+        {
+          "wrong": "CRISPR can edit genes perfectly without errors",
+          "correct": "While remarkably precise, CRISPR can have off-target effects (unintended edits). Improving accuracy is a major area of ongoing research"
+        }
+      ]
+    },
+    "solutions_mixtures": {
+      "keywords": [
+        "solute",
+        "solvent",
+        "solution",
+        "concentration",
+        "molarity",
+        "dilution",
+        "solubility",
+        "saturated",
+        "mixture",
+        "homogeneous",
+        "heterogeneous",
+        "suspension",
+        "colloid"
+      ],
+      "facts": [
+        {
+          "statement": "A solution is a homogeneous mixture where the solute is dissolved in the solvent; the solvent is usually the component present in greater amount",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Solubility is the maximum amount of solute that can dissolve in a given amount of solvent at a specific temperature",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A saturated solution contains the maximum amount of dissolved solute; adding more solute will not dissolve",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Molarity (M) = moles of solute divided by liters of solution; it is the most common unit of solution concentration in chemistry",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Mixtures can be homogeneous (uniform composition, like salt water) or heterogeneous (non-uniform, like sand and water)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Generally, solubility of solids in liquids increases with temperature, while solubility of gases in liquids decreases with temperature",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "all mixtures are solutions",
+          "correct": "Solutions are one type of mixture (homogeneous). Mixtures also include suspensions (particles settle out) and colloids (particles stay dispersed but scatter light)"
+        },
+        {
+          "wrong": "dissolving means the solute disappears",
+          "correct": "When a solute dissolves, its particles separate and disperse among solvent molecules. The solute is still present — it hasn't disappeared, it's just too small to see"
+        },
+        {
+          "wrong": "stirring increases solubility",
+          "correct": "Stirring increases the RATE of dissolving (how fast) but not the SOLUBILITY (how much). The maximum amount that can dissolve depends on temperature and the nature of the substances"
+        }
+      ]
+    },
+    "organic_chemistry": {
+      "keywords": [
+        "carbon",
+        "hydrocarbon",
+        "functional group",
+        "polymer",
+        "isomer",
+        "organic compound",
+        "methane",
+        "ethanol",
+        "alkane",
+        "alkene",
+        "amino acid",
+        "carboxylic acid"
+      ],
+      "facts": [
+        {
+          "statement": "Organic chemistry is the study of carbon-containing compounds; carbon can form four covalent bonds and create long chains, rings, and complex structures",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Hydrocarbons are organic molecules made of only carbon and hydrogen; alkanes have single bonds (CnH2n+2), alkenes have at least one double bond",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Functional groups are specific groups of atoms within molecules that determine the molecule's chemical properties and reactions",
+          "grade_min": 10,
+          "grade_max": 12
+        },
+        {
+          "statement": "Isomers are molecules with the same molecular formula but different structural arrangements, which can have different properties",
+          "grade_min": 10,
+          "grade_max": 12
+        },
+        {
+          "statement": "Polymers are large molecules made of repeating smaller units (monomers); examples include plastics, proteins, and DNA",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Methane (CH4) is the simplest organic molecule; ethanol (C2H5OH) is an organic alcohol commonly known as drinking alcohol",
+          "grade_min": 9,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "organic means natural or chemical-free",
+          "correct": "In chemistry, 'organic' means containing carbon. Organic compounds can be natural or synthetic. The food label 'organic' has a different meaning related to farming practices"
+        },
+        {
+          "wrong": "all carbon compounds are organic",
+          "correct": "Some carbon compounds like CO2, CO, carbonates, and cyanides are considered inorganic despite containing carbon"
+        },
+        {
+          "wrong": "all polymers are synthetic plastics",
+          "correct": "Many polymers are natural: proteins, DNA, cellulose, starch, and silk are all natural polymers. Synthetic polymers include nylon, polyester, and polyethylene"
+        }
+      ]
+    },
+    "cell_signaling": {
+      "keywords": [
+        "hormone",
+        "neurotransmitter",
+        "receptor",
+        "signal transduction",
+        "endocrine",
+        "nervous system",
+        "insulin",
+        "adrenaline",
+        "synapse",
+        "feedback loop",
+        "homeostasis"
+      ],
+      "facts": [
+        {
+          "statement": "Cell signaling involves cells communicating through chemical signals (ligands) that bind to specific receptors on target cells",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Hormones are chemical messengers produced by endocrine glands that travel through the bloodstream to target organs",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Neurotransmitters are chemicals released at synapses that transmit signals between nerve cells; examples include dopamine and serotonin",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Insulin is a hormone produced by the pancreas that helps regulate blood sugar levels by signaling cells to absorb glucose",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Negative feedback loops maintain homeostasis: when a variable deviates from normal, the body responds to bring it back (e.g., body temperature regulation)",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Signal transduction is the process by which an extracellular signal is converted into a cellular response through a cascade of molecular events",
+          "grade_min": 10,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "hormones and neurotransmitters are the same",
+          "correct": "Hormones travel through the bloodstream and act slowly over long distances. Neurotransmitters cross synapses and act rapidly over very short distances. They are different signaling systems"
+        },
+        {
+          "wrong": "insulin is only relevant to people with diabetes",
+          "correct": "Insulin is essential for everyone. It is produced by the pancreas after eating to help all cells absorb glucose from the blood for energy. Diabetes involves problems with insulin production or response"
+        },
+        {
+          "wrong": "the nervous system and endocrine system work independently",
+          "correct": "The nervous and endocrine systems are closely integrated. The hypothalamus connects them, and many responses involve both systems working together"
+        }
+      ]
+    }
+  },
+  "formulas": {
+    "speed": {
+      "formula": "speed = distance / time",
+      "variables": [
+        "speed",
+        "distance",
+        "time"
+      ],
+      "units": {
+        "speed": "m/s",
+        "distance": "m",
+        "time": "s"
+      }
+    },
+    "density": {
+      "formula": "density = mass / volume",
+      "variables": [
+        "density",
+        "mass",
+        "volume"
+      ],
+      "units": {
+        "density": "g/cm3",
+        "mass": "g",
+        "volume": "cm3"
+      }
+    },
+    "force": {
+      "formula": "force = mass * acceleration",
+      "variables": [
+        "force",
+        "mass",
+        "acceleration"
+      ],
+      "units": {
+        "force": "N",
+        "mass": "kg",
+        "acceleration": "m/s2"
+      }
+    },
+    "work": {
+      "formula": "work = force * distance",
+      "variables": [
+        "work",
+        "force",
+        "distance"
+      ],
+      "units": {
+        "work": "J",
+        "force": "N",
+        "distance": "m"
+      }
+    },
+    "pressure": {
+      "formula": "pressure = force / area",
+      "variables": [
+        "pressure",
+        "force",
+        "area"
+      ],
+      "units": {
+        "pressure": "Pa",
+        "force": "N",
+        "area": "m2"
+      }
+    },
+    "ohms_law": {
+      "formula": "voltage = current * resistance (V = IR)",
+      "variables": [
+        "voltage",
+        "current",
+        "resistance"
+      ],
+      "units": {
+        "voltage": "V",
+        "current": "A",
+        "resistance": "Ω"
+      }
+    },
+    "kinetic_energy": {
+      "formula": "kinetic energy = 0.5 * mass * velocity^2 (KE = 0.5mv²)",
+      "variables": [
+        "kinetic_energy",
+        "mass",
+        "velocity"
+      ],
+      "units": {
+        "kinetic_energy": "J",
+        "mass": "kg",
+        "velocity": "m/s"
+      }
+    },
+    "potential_energy": {
+      "formula": "potential energy = mass * gravity * height (PE = mgh)",
+      "variables": [
+        "potential_energy",
+        "mass",
+        "gravity",
+        "height"
+      ],
+      "units": {
+        "potential_energy": "J",
+        "mass": "kg",
+        "gravity": "m/s2",
+        "height": "m"
+      }
+    },
+    "wave_speed": {
+      "formula": "wave speed = frequency * wavelength (v = fλ)",
+      "variables": [
+        "wave_speed",
+        "frequency",
+        "wavelength"
+      ],
+      "units": {
+        "wave_speed": "m/s",
+        "frequency": "Hz",
+        "wavelength": "m"
+      }
+    },
+    "power": {
+      "formula": "power = work / time (P = W/t)",
+      "variables": [
+        "power",
+        "work",
+        "time"
+      ],
+      "units": {
+        "power": "W",
+        "work": "J",
+        "time": "s"
+      }
+    },
+    "acceleration": {
+      "formula": "acceleration = (final velocity - initial velocity) / time (a = (v_f - v_i) / t)",
+      "variables": [
+        "acceleration",
+        "final_velocity",
+        "initial_velocity",
+        "time"
+      ],
+      "units": {
+        "acceleration": "m/s2",
+        "final_velocity": "m/s",
+        "initial_velocity": "m/s",
+        "time": "s"
+      }
+    }
+  }
+}

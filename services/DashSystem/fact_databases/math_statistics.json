@@ -1,0 +1,240 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "math",
+    "last_updated": "2026-02-11",
+    "description": "Statistics and probability facts: mean, median, mode, probability, standard deviation, sampling, regression"
+  },
+  "facts_by_topic": {
+    "measures_of_center": {
+      "keywords": ["mean", "median", "mode", "average", "central tendency", "data", "set", "weighted average"],
+      "facts": [
+        {"statement": "The mean (average) is found by adding all values and dividing by the number of values", "grade_min": 4, "grade_max": 12},
+        {"statement": "The median is the middle value when data is arranged in order; for even-count data, it is the average of the two middle values", "grade_min": 4, "grade_max": 12},
+        {"statement": "The mode is the value that appears most frequently in a data set; a data set can have no mode, one mode, or multiple modes", "grade_min": 4, "grade_max": 12},
+        {"statement": "The range is the difference between the largest and smallest values in a data set", "grade_min": 4, "grade_max": 12},
+        {"statement": "An outlier is a data value that is much higher or lower than most of the data, and it can significantly affect the mean", "grade_min": 5, "grade_max": 12},
+        {"statement": "The median is resistant to outliers, making it a better measure of center for skewed data", "grade_min": 6, "grade_max": 12},
+        {"statement": "For the data set {2, 3, 5, 7, 8}: mean = 25/5 = 5, median = 5, mode = none (all unique)", "grade_min": 4, "grade_max": 8},
+        {"statement": "A weighted average multiplies each value by its weight, sums the products, and divides by the sum of weights", "grade_min": 7, "grade_max": 12},
+        {"statement": "The interquartile range (IQR) = Q3 - Q1, measuring the spread of the middle 50% of data", "grade_min": 6, "grade_max": 12},
+        {"statement": "Q1 (first quartile) is the median of the lower half; Q3 (third quartile) is the median of the upper half", "grade_min": 6, "grade_max": 12},
+        {"statement": "A common rule: outliers are values below Q1 - 1.5 x IQR or above Q3 + 1.5 x IQR", "grade_min": 9, "grade_max": 12},
+        {"statement": "In a symmetric distribution, mean = median = mode; in a skewed distribution, they differ", "grade_min": 8, "grade_max": 12},
+        {"statement": "To find the mean of a frequency table, multiply each value by its frequency, sum the products, and divide by the total frequency", "grade_min": 5, "grade_max": 12},
+        {"statement": "Removing an outlier from a data set affects the mean more than the median", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the mean, median, and mode are always the same number", "correct": "Mean, median, and mode can be very different, especially in skewed distributions."},
+        {"wrong": "the median is always one of the data values", "correct": "For a data set with an even number of values, the median is the average of the two middle values and may not appear in the data."},
+        {"wrong": "every data set has exactly one mode", "correct": "A data set can have no mode (all values unique), one mode, or multiple modes (bimodal, multimodal)."},
+        {"wrong": "the mean is always the best measure of center", "correct": "For skewed data or data with outliers, the median is often more representative than the mean."},
+        {"wrong": "range tells you how spread out all the data is", "correct": "Range only uses the two extreme values. IQR or standard deviation give better measures of spread."}
+      ]
+    },
+    "probability_basics": {
+      "keywords": ["probability", "chance", "likely", "unlikely", "certain", "impossible", "event", "outcome", "sample space", "independent", "dependent", "conditional"],
+      "facts": [
+        {"statement": "Probability ranges from 0 (impossible) to 1 (certain), and can also be expressed as a percentage from 0% to 100%", "grade_min": 4, "grade_max": 12},
+        {"statement": "The probability of an event = number of favorable outcomes / total number of possible outcomes", "grade_min": 5, "grade_max": 12},
+        {"statement": "The probability of flipping heads on a fair coin is 1/2 or 50%", "grade_min": 3, "grade_max": 12},
+        {"statement": "The probability of rolling any specific number on a fair six-sided die is 1/6", "grade_min": 4, "grade_max": 12},
+        {"statement": "The complement of an event has probability: P(not A) = 1 - P(A)", "grade_min": 6, "grade_max": 12},
+        {"statement": "For independent events, P(A and B) = P(A) x P(B)", "grade_min": 7, "grade_max": 12},
+        {"statement": "For mutually exclusive events, P(A or B) = P(A) + P(B)", "grade_min": 7, "grade_max": 12},
+        {"statement": "Independent events do not affect each other's probability; dependent events do", "grade_min": 6, "grade_max": 12},
+        {"statement": "The sample space is the set of all possible outcomes: for a coin, {H, T}; for a die, {1,2,3,4,5,6}", "grade_min": 5, "grade_max": 12},
+        {"statement": "Conditional probability: P(A|B) = P(A and B) / P(B), the probability of A given B occurred", "grade_min": 9, "grade_max": 12},
+        {"statement": "The general addition rule: P(A or B) = P(A) + P(B) - P(A and B)", "grade_min": 8, "grade_max": 12},
+        {"statement": "Expected value = sum of (each outcome x its probability). For a fair die: (1+2+3+4+5+6)/6 = 3.5", "grade_min": 8, "grade_max": 12},
+        {"statement": "Drawing cards without replacement creates dependent events: P(2nd ace | 1st was ace) = 3/51, not 4/52", "grade_min": 7, "grade_max": 12},
+        {"statement": "A standard deck has 52 cards: 4 suits x 13 ranks. P(drawing an ace) = 4/52 = 1/13", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "if you flip heads 5 times in a row, tails is more likely next", "correct": "Each coin flip is independent. The probability of heads is still 50% regardless of previous flips. This misconception is called the gambler's fallacy."},
+        {"wrong": "probability can be negative or greater than 1", "correct": "Probability is always between 0 and 1 (inclusive). Values outside this range are not valid probabilities."},
+        {"wrong": "50-50 chance means the event will happen half the time exactly", "correct": "50% probability means the event is expected to happen about half the time over many trials, but any individual trial is random."},
+        {"wrong": "P(A or B) = P(A) + P(B) always", "correct": "This only works for mutually exclusive events. Otherwise, P(A or B) = P(A) + P(B) - P(A and B)."},
+        {"wrong": "if P(rain) = 30%, it will rain 30% of the day", "correct": "30% probability means there is a 30% chance of rain occurring at all, not that 30% of the day will have rain."}
+      ]
+    },
+    "data_display": {
+      "keywords": ["bar graph", "line graph", "histogram", "pie chart", "scatter plot", "box plot", "stem and leaf", "frequency", "dot plot", "table"],
+      "facts": [
+        {"statement": "A bar graph uses bars to compare categories of data; a histogram shows the frequency of data within intervals", "grade_min": 3, "grade_max": 12},
+        {"statement": "A line graph shows how data changes over time by connecting data points with line segments", "grade_min": 3, "grade_max": 12},
+        {"statement": "A pie chart (circle graph) shows parts of a whole as sectors, where all sectors must add up to 100%", "grade_min": 3, "grade_max": 12},
+        {"statement": "A scatter plot uses dots on a coordinate plane to show the relationship between two variables", "grade_min": 5, "grade_max": 12},
+        {"statement": "A box plot (box-and-whisker plot) displays the minimum, first quartile, median, third quartile, and maximum of a data set", "grade_min": 6, "grade_max": 12},
+        {"statement": "A positive correlation means both variables increase together; a negative correlation means one increases as the other decreases", "grade_min": 6, "grade_max": 12},
+        {"statement": "A frequency table lists each value (or interval) and how many times it appears in the data", "grade_min": 3, "grade_max": 12},
+        {"statement": "A dot plot places one dot above a number line for each data value; it shows shape, center, and spread simply", "grade_min": 3, "grade_max": 8},
+        {"statement": "A stem-and-leaf plot uses leading digits as stems and trailing digits as leaves: 32, 35, 37 have stem 3 and leaves 2, 5, 7", "grade_min": 5, "grade_max": 9},
+        {"statement": "A two-way frequency table shows the frequency of data for two categorical variables simultaneously", "grade_min": 7, "grade_max": 12},
+        {"statement": "The line of best fit (trend line) on a scatter plot shows the general direction of the data", "grade_min": 7, "grade_max": 12},
+        {"statement": "A pictograph uses symbols or pictures to represent data, where each symbol stands for a certain number of items", "grade_min": 2, "grade_max": 5},
+        {"statement": "Double bar graphs and double line graphs compare two data sets side by side on the same axis", "grade_min": 4, "grade_max": 8},
+        {"statement": "A circle graph must have all sectors add up to 360 degrees because a full circle is 360 degrees", "grade_min": 4, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "a bar graph and a histogram are the same thing", "correct": "Bar graphs compare categories with gaps between bars. Histograms show frequency of continuous data in intervals with no gaps between bars."},
+        {"wrong": "correlation proves causation", "correct": "Correlation shows a relationship between two variables but does not prove one causes the other. There may be other factors involved."},
+        {"wrong": "pie chart sectors can add up to more than 100%", "correct": "All sectors of a pie chart must add up to exactly 100% since they represent parts of a whole."},
+        {"wrong": "you can read exact values from a box plot", "correct": "Box plots show the five-number summary and spread, but individual data values are not visible."}
+      ]
+    },
+    "standard_deviation": {
+      "keywords": ["standard deviation", "variance", "spread", "distribution", "normal", "bell curve", "z-score", "empirical rule"],
+      "facts": [
+        {"statement": "Standard deviation measures how spread out data values are from the mean", "grade_min": 9, "grade_max": 12},
+        {"statement": "A small standard deviation means data points are close to the mean; a large standard deviation means they are spread out", "grade_min": 9, "grade_max": 12},
+        {"statement": "Variance is the average of the squared differences from the mean; standard deviation is the square root of variance", "grade_min": 9, "grade_max": 12},
+        {"statement": "In a normal distribution (bell curve), about 68% of data falls within 1 standard deviation of the mean, 95% within 2, and 99.7% within 3", "grade_min": 10, "grade_max": 12},
+        {"statement": "The standard deviation can never be negative because it involves squared differences", "grade_min": 9, "grade_max": 12},
+        {"statement": "A z-score measures how many standard deviations a value is from the mean: z = (x - mean) / standard deviation", "grade_min": 10, "grade_max": 12},
+        {"statement": "A z-score of 0 means the value equals the mean; positive z-scores are above the mean, negative are below", "grade_min": 10, "grade_max": 12},
+        {"statement": "The sample standard deviation uses (n-1) in the denominator (Bessel's correction); the population standard deviation uses n", "grade_min": 10, "grade_max": 12},
+        {"statement": "Adding the same constant to every data value does not change the standard deviation; multiplying by a constant multiplies the standard deviation by that constant's absolute value", "grade_min": 10, "grade_max": 12},
+        {"statement": "A data set where all values are equal has a standard deviation of 0 because there is no spread", "grade_min": 9, "grade_max": 12},
+        {"statement": "About 95% of data in a normal distribution falls within 2 standard deviations of the mean; values beyond 3 standard deviations are very rare", "grade_min": 10, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "standard deviation can be negative", "correct": "Standard deviation is always non-negative because it is derived from squared differences."},
+        {"wrong": "standard deviation tells you the average value", "correct": "Standard deviation measures the spread of data, not the center. The mean tells you the average value."},
+        {"wrong": "all data follows a normal distribution", "correct": "Many distributions are skewed or uniform. The normal (bell-curve) distribution is common but not universal."},
+        {"wrong": "a z-score of 2 means the value is twice the mean", "correct": "A z-score of 2 means the value is 2 standard deviations above the mean, not twice the mean."},
+        {"wrong": "variance and standard deviation are the same thing", "correct": "Variance is the average of squared differences. Standard deviation is the square root of variance and has the same units as the data."}
+      ]
+    },
+    "combinations_permutations": {
+      "keywords": ["combination", "permutation", "factorial", "counting", "arrangements", "choose", "order", "probability counting"],
+      "facts": [
+        {"statement": "A permutation is an arrangement where order matters; a combination is a selection where order does not matter", "grade_min": 9, "grade_max": 12},
+        {"statement": "n factorial (n!) equals n x (n-1) x (n-2) x ... x 2 x 1; for example, 5! = 120", "grade_min": 8, "grade_max": 12},
+        {"statement": "0! = 1 by definition", "grade_min": 8, "grade_max": 12},
+        {"statement": "The number of permutations of n objects taken r at a time is P(n,r) = n! / (n-r)!", "grade_min": 9, "grade_max": 12},
+        {"statement": "The number of combinations of n objects taken r at a time is C(n,r) = n! / (r!(n-r)!)", "grade_min": 9, "grade_max": 12},
+        {"statement": "The Fundamental Counting Principle: if there are m ways to do one thing and n ways to do another, there are m x n ways to do both", "grade_min": 7, "grade_max": 12},
+        {"statement": "C(n,r) = C(n, n-r): choosing r items to include is the same as choosing n-r items to exclude", "grade_min": 9, "grade_max": 12},
+        {"statement": "The number of ways to arrange n distinct objects in a line is n!", "grade_min": 8, "grade_max": 12},
+        {"statement": "Permutations with repetition: the number of arrangements of n objects where there are n1 alike, n2 alike, etc. = n! / (n1! x n2! x ...)", "grade_min": 10, "grade_max": 12},
+        {"statement": "Pascal's triangle row n gives the values of C(n,0), C(n,1), ..., C(n,n)", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "combinations and permutations are the same thing", "correct": "In permutations, order matters (ABC is different from CBA). In combinations, order does not matter (ABC is the same as CBA)."},
+        {"wrong": "0! = 0", "correct": "By definition, 0! = 1. This is needed for formulas like C(n,0) and C(n,n) to work correctly."},
+        {"wrong": "the Fundamental Counting Principle says to add the possibilities", "correct": "The Fundamental Counting Principle multiplies possibilities. If you have 3 shirts and 4 pants, you have 3 x 4 = 12 outfits, not 7."},
+        {"wrong": "C(5,2) = 5! / 2! = 60", "correct": "C(5,2) = 5! / (2! x 3!) = 120 / (2 x 6) = 10. You must divide by both r! and (n-r)!."}
+      ]
+    },
+    "sampling_study_design": {
+      "keywords": ["sample", "population", "random", "bias", "survey", "experiment", "observational", "census", "sampling method"],
+      "facts": [
+        {"statement": "A population is the entire group being studied; a sample is a subset selected from the population", "grade_min": 6, "grade_max": 12},
+        {"statement": "A random sample gives every member of the population an equal chance of being selected", "grade_min": 6, "grade_max": 12},
+        {"statement": "Bias occurs when a sampling method systematically favors certain outcomes over others", "grade_min": 7, "grade_max": 12},
+        {"statement": "In an experiment, researchers apply treatments and measure results; in an observational study, they only observe without intervening", "grade_min": 8, "grade_max": 12},
+        {"statement": "A census collects data from every member of the population", "grade_min": 6, "grade_max": 12},
+        {"statement": "Stratified sampling divides the population into subgroups (strata) and samples from each", "grade_min": 9, "grade_max": 12},
+        {"statement": "Convenience sampling (using whoever is easiest to reach) is prone to bias", "grade_min": 7, "grade_max": 12},
+        {"statement": "A larger random sample generally provides more accurate estimates of population parameters", "grade_min": 7, "grade_max": 12},
+        {"statement": "Cluster sampling divides the population into clusters (often geographic), then randomly selects entire clusters to study", "grade_min": 9, "grade_max": 12},
+        {"statement": "Systematic sampling selects every kth member of the population (e.g., every 10th person) after a random starting point", "grade_min": 9, "grade_max": 12},
+        {"statement": "Response bias occurs when participants give inaccurate answers, often due to question wording or social desirability", "grade_min": 8, "grade_max": 12},
+        {"statement": "A control group in an experiment receives no treatment or a placebo, serving as a baseline for comparison", "grade_min": 7, "grade_max": 12},
+        {"statement": "Random assignment in experiments means participants are randomly placed into treatment or control groups, reducing confounding variables", "grade_min": 8, "grade_max": 12},
+        {"statement": "A double-blind study is one where neither the participants nor the researchers know who is in the treatment or control group", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "a larger sample always eliminates bias", "correct": "A large biased sample is still biased. The sampling method matters more than sample size for reducing bias."},
+        {"wrong": "an online poll is a random sample", "correct": "Online polls use voluntary response, which is not random. People who feel strongly are more likely to respond."},
+        {"wrong": "observational studies can prove causation", "correct": "Only controlled experiments can establish causation. Observational studies can show correlation but not cause."},
+        {"wrong": "a sample of 10 is just as reliable as a sample of 1000", "correct": "Larger random samples produce more precise estimates. A sample of 1000 has a much smaller margin of error than a sample of 10."},
+        {"wrong": "if the sample is random, it will perfectly match the population", "correct": "Random samples are subject to sampling variability. They approximate the population but will not match it exactly."}
+      ]
+    },
+    "probability_advanced": {
+      "keywords": ["tree diagram", "two-way table", "Venn diagram", "compound event", "theoretical", "experimental", "simulation", "law of large numbers", "geometric probability"],
+      "facts": [
+        {"statement": "A tree diagram shows all possible outcomes of a sequence of events and helps calculate probabilities of compound events", "grade_min": 6, "grade_max": 12},
+        {"statement": "Theoretical probability is based on reasoning about equally likely outcomes; experimental probability is based on actual data from trials", "grade_min": 6, "grade_max": 12},
+        {"statement": "The law of large numbers states that as the number of trials increases, experimental probability approaches theoretical probability", "grade_min": 7, "grade_max": 12},
+        {"statement": "For two independent events, the probability of both occurring equals the product of their individual probabilities: P(A and B) = P(A) x P(B)", "grade_min": 7, "grade_max": 12},
+        {"statement": "For dependent events, P(A and B) = P(A) x P(B|A), where P(B|A) is the probability of B given A occurred", "grade_min": 8, "grade_max": 12},
+        {"statement": "A Venn diagram can show overlapping events; the intersection represents outcomes in both events", "grade_min": 5, "grade_max": 12},
+        {"statement": "If P(A) = 0.3 and P(B) = 0.5 and they are independent, then P(A and B) = 0.15 and P(A or B) = 0.3 + 0.5 - 0.15 = 0.65", "grade_min": 8, "grade_max": 12},
+        {"statement": "Geometric probability uses lengths, areas, or volumes to find probability: probability = favorable area / total area", "grade_min": 8, "grade_max": 12},
+        {"statement": "A simulation uses random number generators or physical devices to model probability experiments when theoretical calculation is difficult", "grade_min": 7, "grade_max": 12},
+        {"statement": "In a two-way table, joint frequencies show how often two categories co-occur; marginal frequencies show totals for each category", "grade_min": 7, "grade_max": 12},
+        {"statement": "The probability of getting at least one head in n coin flips is 1 - (1/2)^n; for 3 flips, it is 1 - 1/8 = 7/8", "grade_min": 7, "grade_max": 12},
+        {"statement": "With replacement means the item goes back before the next draw (independent); without replacement means it stays out (dependent)", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "experimental probability always equals theoretical probability", "correct": "Experimental probability varies from trial to trial and only approximates theoretical probability as the number of trials increases."},
+        {"wrong": "a tree diagram shows only the most likely outcomes", "correct": "A tree diagram shows ALL possible outcomes of a sequence of events, not just the most likely ones."},
+        {"wrong": "P(A or B) always equals P(A) x P(B)", "correct": "P(A or B) = P(A) + P(B) - P(A and B). The multiplication rule is for P(A and B), not P(A or B)."},
+        {"wrong": "rolling two dice, the probability of getting a sum of 12 is the same as getting a sum of 7", "correct": "A sum of 12 can only occur one way (6+6), but a sum of 7 can occur six ways (1+6, 2+5, 3+4, 4+3, 5+2, 6+1). P(sum=7) = 6/36, P(sum=12) = 1/36."},
+        {"wrong": "if you pick 2 marbles from a bag of 5 red and 3 blue, with replacement and without replacement give the same probability", "correct": "With replacement: P(both red) = 5/8 x 5/8 = 25/64. Without replacement: P(both red) = 5/8 x 4/7 = 20/56 = 5/14. They differ."}
+      ]
+    },
+    "data_analysis": {
+      "keywords": ["mean absolute deviation", "MAD", "distribution shape", "skew", "symmetric", "uniform", "bimodal", "cluster", "gap", "outlier detection"],
+      "facts": [
+        {"statement": "Mean absolute deviation (MAD) is the average distance of each data point from the mean: find the mean, find each absolute deviation, then average them", "grade_min": 6, "grade_max": 12},
+        {"statement": "A symmetric distribution has roughly equal values on both sides of the center, like a bell curve", "grade_min": 6, "grade_max": 12},
+        {"statement": "A left-skewed (negatively skewed) distribution has a longer tail on the left side; the mean is typically less than the median", "grade_min": 8, "grade_max": 12},
+        {"statement": "A right-skewed (positively skewed) distribution has a longer tail on the right side; the mean is typically greater than the median", "grade_min": 8, "grade_max": 12},
+        {"statement": "A uniform distribution has all values occurring with approximately equal frequency", "grade_min": 6, "grade_max": 12},
+        {"statement": "A bimodal distribution has two peaks, suggesting two clusters or groups within the data", "grade_min": 7, "grade_max": 12},
+        {"statement": "A gap in a data set is a large space between consecutive values where no data exists", "grade_min": 4, "grade_max": 8},
+        {"statement": "A cluster is a group of data values that are close together, separated from other values by gaps", "grade_min": 4, "grade_max": 8},
+        {"statement": "For the data {2, 4, 6, 8, 10}: mean = 6, MAD = (4+2+0+2+4)/5 = 12/5 = 2.4", "grade_min": 6, "grade_max": 10},
+        {"statement": "The shape of a distribution (symmetric, skewed, bimodal) helps determine which measure of center is most appropriate", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "MAD and standard deviation are the same thing", "correct": "MAD uses absolute deviations; standard deviation uses squared deviations. They measure spread differently and give different values."},
+        {"wrong": "in a skewed distribution, the mean is always the best measure of center", "correct": "For skewed data, the median better represents the center because the mean is pulled toward the tail by extreme values."},
+        {"wrong": "a bimodal distribution must have exactly two data points", "correct": "Bimodal means two peaks or modes in the distribution, not two data points. The data set can have many values."},
+        {"wrong": "removing an outlier is always the right thing to do", "correct": "Outliers should only be removed if there is a clear reason (measurement error, data entry mistake). Some outliers are legitimate data points."}
+      ]
+    },
+    "regression_correlation": {
+      "keywords": ["correlation coefficient", "regression", "line of best fit", "r-value", "slope", "intercept", "prediction", "extrapolation", "interpolation", "residual"],
+      "facts": [
+        {"statement": "The correlation coefficient r measures the strength and direction of a linear relationship between two variables, ranging from -1 to 1", "grade_min": 9, "grade_max": 12},
+        {"statement": "An r value close to 1 indicates a strong positive linear relationship; close to -1 indicates a strong negative linear relationship; close to 0 indicates weak or no linear relationship", "grade_min": 9, "grade_max": 12},
+        {"statement": "The line of best fit (regression line) minimizes the sum of squared vertical distances (residuals) between the data points and the line", "grade_min": 9, "grade_max": 12},
+        {"statement": "The equation of a regression line is y = mx + b, where m is the slope and b is the y-intercept", "grade_min": 8, "grade_max": 12},
+        {"statement": "Interpolation is predicting within the range of observed data; extrapolation is predicting outside that range and is less reliable", "grade_min": 8, "grade_max": 12},
+        {"statement": "A residual is the difference between an observed value and the predicted value from the regression line: residual = observed - predicted", "grade_min": 9, "grade_max": 12},
+        {"statement": "r-squared (R^2) represents the proportion of variance in the dependent variable explained by the independent variable; r^2 = 0.81 means 81% of variance is explained", "grade_min": 10, "grade_max": 12},
+        {"statement": "A residual plot helps assess whether a linear model is appropriate; a random scatter of residuals suggests linearity; a pattern suggests nonlinearity", "grade_min": 10, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "an r value of 0.5 means the relationship is 50% strong", "correct": "r = 0.5 indicates a moderate positive correlation. The r-squared value (0.25) indicates 25% of variance is explained by the linear relationship."},
+        {"wrong": "the line of best fit must pass through every data point", "correct": "The line of best fit approximates the overall trend. Most points will be above or below the line; only rarely does it pass through actual data points."},
+        {"wrong": "a correlation of -0.9 is weaker than a correlation of 0.5", "correct": "Correlation strength is determined by the absolute value. |-0.9| = 0.9 > |0.5| = 0.5, so -0.9 is a stronger (negative) correlation."},
+        {"wrong": "extrapolation is just as reliable as interpolation", "correct": "Extrapolation predicts outside the observed data range and is much less reliable. The pattern may not continue beyond the data."}
+      ]
+    },
+    "statistical_measures_advanced": {
+      "keywords": ["percentile", "five number summary", "box plot construction", "margin of error", "confidence interval", "standard error"],
+      "facts": [
+        {"statement": "A percentile indicates the value below which a given percentage of observations fall: the 90th percentile means 90% of data falls below that value", "grade_min": 7, "grade_max": 12},
+        {"statement": "The five-number summary consists of minimum, Q1, median, Q3, and maximum", "grade_min": 6, "grade_max": 12},
+        {"statement": "To construct a box plot: draw a box from Q1 to Q3, a line at the median, and whiskers extending to the minimum and maximum (or to 1.5 x IQR from quartiles)", "grade_min": 6, "grade_max": 12},
+        {"statement": "The margin of error gives a range above and below a sample statistic: if a poll shows 52% with margin of error 3%, the true value is likely between 49% and 55%", "grade_min": 9, "grade_max": 12},
+        {"statement": "A confidence interval is a range of values that likely contains the true population parameter, such as a 95% confidence interval", "grade_min": 10, "grade_max": 12},
+        {"statement": "The 50th percentile is the same as the median", "grade_min": 7, "grade_max": 12},
+        {"statement": "When comparing two box plots, compare the medians for center, the IQR for spread, and look for overlap to assess differences", "grade_min": 7, "grade_max": 12},
+        {"statement": "Standard error measures how much a sample statistic (like the mean) is expected to vary from sample to sample; SE = standard deviation / sqrt(n)", "grade_min": 10, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the 90th percentile means 90% of the data is above that value", "correct": "The 90th percentile means 90% of the data falls AT OR BELOW that value, and 10% falls above."},
+        {"wrong": "a 95% confidence interval means there is a 95% chance the true value is in the interval", "correct": "It means that 95% of such intervals constructed from random samples would contain the true value. Any single interval either contains it or does not."},
+        {"wrong": "two box plots that overlap cannot have different medians", "correct": "Box plots can overlap substantially and still have different medians. The overlap relates to spread, not just center."},
+        {"wrong": "margin of error is always the same regardless of sample size", "correct": "Margin of error decreases as sample size increases. Larger samples give more precise estimates with smaller margins of error."}
+      ]
+    }
+  }
+}

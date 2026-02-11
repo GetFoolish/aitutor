@@ -1,0 +1,221 @@
+{
+  "meta": {"version": 2, "subject": "science", "last_updated": "2026-02-11", "description": "Biology facts: cells, photosynthesis, mitosis/meiosis, DNA/RNA, organ systems, taxonomy, evolution, ecology basics, microbiology, human body basics"},
+  "facts_by_topic": {
+    "cell_structure": {
+      "keywords": ["cell", "organelle", "nucleus", "mitochondria", "ribosome", "membrane", "cell wall", "chloroplast", "cytoplasm", "prokaryote", "eukaryote", "vacuole", "Golgi", "lysosome"],
+      "facts": [
+        {"statement": "All living things are made of cells, which are the basic units of life", "grade_min": 3, "grade_max": 12},
+        {"statement": "Prokaryotic cells (bacteria) lack a nucleus; eukaryotic cells (plants, animals, fungi) have a membrane-bound nucleus", "grade_min": 6, "grade_max": 12},
+        {"statement": "The nucleus contains DNA and controls cell activities", "grade_min": 5, "grade_max": 12},
+        {"statement": "Mitochondria are the powerhouses of the cell, producing ATP through cellular respiration", "grade_min": 6, "grade_max": 12},
+        {"statement": "Plant cells have cell walls, chloroplasts, and a large central vacuole that animal cells do not have", "grade_min": 5, "grade_max": 12},
+        {"statement": "Ribosomes are the sites of protein synthesis in the cell", "grade_min": 7, "grade_max": 12},
+        {"statement": "The cell membrane is a selectively permeable phospholipid bilayer that controls what enters and exits the cell", "grade_min": 7, "grade_max": 12},
+        {"statement": "The endoplasmic reticulum (ER) comes in two forms: rough ER (with ribosomes, makes proteins) and smooth ER (no ribosomes, makes lipids)", "grade_min": 8, "grade_max": 12},
+        {"statement": "The Golgi apparatus packages and modifies proteins for transport within or outside the cell", "grade_min": 8, "grade_max": 12},
+        {"statement": "Lysosomes contain digestive enzymes that break down waste materials and cellular debris", "grade_min": 8, "grade_max": 12},
+        {"statement": "The cytoplasm is the gel-like fluid inside the cell membrane that contains organelles", "grade_min": 5, "grade_max": 12},
+        {"statement": "Osmosis is the diffusion of water across a selectively permeable membrane from high to low water concentration", "grade_min": 6, "grade_max": 12},
+        {"statement": "Active transport requires energy (ATP) to move substances against the concentration gradient", "grade_min": 8, "grade_max": 12},
+        {"statement": "The cell theory states: all organisms are made of cells, the cell is the basic unit of life, and all cells come from pre-existing cells", "grade_min": 6, "grade_max": 12},
+        {"statement": "Vacuoles store water, nutrients, and waste; plant cells have one large central vacuole while animal cells have small or no vacuoles", "grade_min": 5, "grade_max": 12},
+        {"statement": "The cytoskeleton is a network of protein filaments that gives the cell its shape, supports organelles, and enables cell movement", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "animal cells have cell walls", "correct": "Animal cells have cell membranes but NOT cell walls. Only plant cells, fungi, and bacteria have cell walls."},
+        {"wrong": "mitochondria are only found in animal cells", "correct": "Both animal and plant cells have mitochondria. Plants also have chloroplasts for photosynthesis."},
+        {"wrong": "bacteria are eukaryotes", "correct": "Bacteria are prokaryotes. They lack a membrane-bound nucleus. Eukaryotes include animals, plants, fungi, and protists."},
+        {"wrong": "the cell membrane lets everything pass through", "correct": "The cell membrane is selectively permeable. It allows some substances through and blocks others."},
+        {"wrong": "osmosis is the movement of any substance across a membrane", "correct": "Osmosis specifically refers to the movement of water across a selectively permeable membrane. Movement of other substances is called diffusion."},
+        {"wrong": "cells are all the same size and shape", "correct": "Cells vary enormously. Red blood cells are 7 micrometers, nerve cells can be over 1 meter long, and egg cells are visible to the naked eye."}
+      ]
+    },
+    "photosynthesis_respiration": {
+      "keywords": ["photosynthesis", "respiration", "cellular respiration", "glucose", "oxygen", "carbon dioxide", "ATP", "chlorophyll", "energy", "aerobic", "anaerobic", "fermentation"],
+      "facts": [
+        {"statement": "Photosynthesis converts carbon dioxide and water into glucose and oxygen using sunlight: 6CO2 + 6H2O + light -> C6H12O6 + 6O2", "grade_min": 5, "grade_max": 12},
+        {"statement": "Cellular respiration converts glucose and oxygen into carbon dioxide, water, and ATP energy: C6H12O6 + 6O2 -> 6CO2 + 6H2O + ATP", "grade_min": 6, "grade_max": 12},
+        {"statement": "Photosynthesis occurs in chloroplasts; cellular respiration occurs in mitochondria", "grade_min": 6, "grade_max": 12},
+        {"statement": "Chlorophyll is the green pigment in chloroplasts that absorbs light energy for photosynthesis", "grade_min": 5, "grade_max": 12},
+        {"statement": "Plants perform BOTH photosynthesis and cellular respiration", "grade_min": 6, "grade_max": 12},
+        {"statement": "Photosynthesis and cellular respiration are essentially reverse processes of each other", "grade_min": 6, "grade_max": 12},
+        {"statement": "Aerobic respiration requires oxygen and produces about 36-38 ATP per glucose molecule", "grade_min": 8, "grade_max": 12},
+        {"statement": "Anaerobic respiration (fermentation) occurs without oxygen and produces only 2 ATP per glucose molecule", "grade_min": 8, "grade_max": 12},
+        {"statement": "Lactic acid fermentation occurs in muscles during intense exercise; alcoholic fermentation occurs in yeast", "grade_min": 8, "grade_max": 12},
+        {"statement": "The light reactions of photosynthesis occur in the thylakoid membranes; the Calvin cycle occurs in the stroma", "grade_min": 9, "grade_max": 12},
+        {"statement": "ATP (adenosine triphosphate) is the energy currency of cells", "grade_min": 7, "grade_max": 12},
+        {"statement": "Plants need sunlight, water, and carbon dioxide to make their own food through photosynthesis", "grade_min": 2, "grade_max": 6},
+        {"statement": "Leaves are green because chlorophyll absorbs red and blue light and reflects green light", "grade_min": 4, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "plants only do photosynthesis, not respiration", "correct": "Plants do both photosynthesis AND cellular respiration. They photosynthesize during the day and respire continuously."},
+        {"wrong": "photosynthesis produces oxygen as the main product", "correct": "The main product of photosynthesis is glucose (sugar) for energy. Oxygen is a byproduct released into the atmosphere."},
+        {"wrong": "cellular respiration is just breathing", "correct": "Cellular respiration is a chemical process in cells that breaks down glucose to produce ATP. Breathing is the physical act of inhaling and exhaling."},
+        {"wrong": "fermentation produces more energy than aerobic respiration", "correct": "Aerobic respiration produces ~36 ATP per glucose. Fermentation produces only 2 ATP. Aerobic is far more efficient."},
+        {"wrong": "plants get their food from the soil", "correct": "Plants make their own food (glucose) through photosynthesis using sunlight, CO2, and water. They get minerals and water from soil, but not food."}
+      ]
+    },
+    "cell_division": {
+      "keywords": ["mitosis", "meiosis", "cell division", "chromosome", "DNA replication", "prophase", "metaphase", "anaphase", "telophase", "gamete", "diploid", "haploid", "cytokinesis"],
+      "facts": [
+        {"statement": "Mitosis produces two genetically identical daughter cells for growth and repair", "grade_min": 7, "grade_max": 12},
+        {"statement": "Meiosis produces four genetically unique haploid cells (gametes) for sexual reproduction", "grade_min": 8, "grade_max": 12},
+        {"statement": "Human somatic cells have 46 chromosomes (diploid, 2n); human gametes have 23 chromosomes (haploid, n)", "grade_min": 8, "grade_max": 12},
+        {"statement": "The phases of mitosis are: prophase, metaphase, anaphase, telophase (PMAT)", "grade_min": 7, "grade_max": 12},
+        {"statement": "DNA replication occurs before cell division during the S phase of the cell cycle", "grade_min": 8, "grade_max": 12},
+        {"statement": "Meiosis includes two rounds of division (meiosis I and meiosis II) and involves crossing over for genetic diversity", "grade_min": 9, "grade_max": 12},
+        {"statement": "Cytokinesis is the division of the cytoplasm that occurs after nuclear division (mitosis or meiosis)", "grade_min": 7, "grade_max": 12},
+        {"statement": "In metaphase, chromosomes line up along the middle (metaphase plate) of the cell", "grade_min": 7, "grade_max": 12},
+        {"statement": "In anaphase, sister chromatids are pulled apart to opposite poles of the cell", "grade_min": 7, "grade_max": 12},
+        {"statement": "Cancer results from uncontrolled cell division caused by mutations in genes that regulate the cell cycle", "grade_min": 8, "grade_max": 12},
+        {"statement": "The cell cycle includes interphase (G1, S, G2) where the cell grows and copies DNA, followed by mitosis (M phase) where the cell divides", "grade_min": 8, "grade_max": 12},
+        {"statement": "Crossing over during meiosis I exchanges genetic material between homologous chromosomes, increasing genetic variation", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "mitosis produces 4 cells", "correct": "Mitosis produces 2 identical daughter cells. Meiosis produces 4 haploid cells."},
+        {"wrong": "meiosis produces identical cells", "correct": "Meiosis produces genetically unique cells due to crossing over and independent assortment."},
+        {"wrong": "humans have 48 chromosomes", "correct": "Humans have 46 chromosomes (23 pairs) in somatic cells."},
+        {"wrong": "mitosis and meiosis are the same process", "correct": "Mitosis produces 2 identical diploid cells (for growth). Meiosis produces 4 unique haploid cells (for reproduction)."},
+        {"wrong": "cancer is caused by a single mutation", "correct": "Cancer typically requires multiple mutations in genes controlling cell growth. A single mutation usually is not enough to cause cancer."}
+      ]
+    },
+    "dna_genetics": {
+      "keywords": ["DNA", "RNA", "gene", "chromosome", "allele", "dominant", "recessive", "genotype", "phenotype", "Punnett square", "heredity", "trait", "mutation", "protein synthesis", "transcription", "translation"],
+      "facts": [
+        {"statement": "DNA (deoxyribonucleic acid) is a double-helix molecule that carries genetic instructions", "grade_min": 6, "grade_max": 12},
+        {"statement": "DNA bases pair specifically: adenine (A) with thymine (T), and cytosine (C) with guanine (G)", "grade_min": 7, "grade_max": 12},
+        {"statement": "In RNA, uracil (U) replaces thymine (T) as the base that pairs with adenine", "grade_min": 8, "grade_max": 12},
+        {"statement": "A gene is a segment of DNA that codes for a specific protein or trait", "grade_min": 6, "grade_max": 12},
+        {"statement": "Alleles are different versions of a gene; dominant alleles are expressed over recessive alleles in heterozygous organisms", "grade_min": 7, "grade_max": 12},
+        {"statement": "Genotype is the genetic makeup (alleles); phenotype is the observable physical expression of those genes", "grade_min": 7, "grade_max": 12},
+        {"statement": "A Punnett square is used to predict the probability of offspring genotypes from a genetic cross", "grade_min": 7, "grade_max": 12},
+        {"statement": "Gregor Mendel is considered the father of genetics for his work on pea plant inheritance", "grade_min": 6, "grade_max": 12},
+        {"statement": "Transcription copies DNA into mRNA in the nucleus; translation reads mRNA to build proteins at ribosomes", "grade_min": 9, "grade_max": 12},
+        {"statement": "A codon is a sequence of three mRNA bases that codes for a specific amino acid", "grade_min": 9, "grade_max": 12},
+        {"statement": "Homozygous means having two identical alleles (AA or aa); heterozygous means having two different alleles (Aa)", "grade_min": 7, "grade_max": 12},
+        {"statement": "Incomplete dominance blends traits (red + white = pink); codominance shows both traits (red + white = red and white spots)", "grade_min": 8, "grade_max": 12},
+        {"statement": "Sex-linked traits are carried on the X chromosome; males (XY) are more likely to express X-linked recessive disorders like color blindness", "grade_min": 8, "grade_max": 12},
+        {"statement": "The human genome contains approximately 20,000-25,000 protein-coding genes spread across 23 pairs of chromosomes", "grade_min": 9, "grade_max": 12},
+        {"statement": "Children inherit traits from their parents; they get half their genes from each parent", "grade_min": 2, "grade_max": 6}
+      ],
+      "common_errors": [
+        {"wrong": "dominant traits are more common in a population", "correct": "Dominant refers to how alleles interact, not frequency. A dominant trait is not necessarily more common."},
+        {"wrong": "DNA and RNA are the same molecule", "correct": "DNA is double-stranded with deoxyribose sugar and thymine. RNA is single-stranded with ribose sugar and uracil instead of thymine."},
+        {"wrong": "mutations are always harmful", "correct": "Mutations can be harmful, neutral, or beneficial. Beneficial mutations drive evolution through natural selection."},
+        {"wrong": "children get 50% of genes from each parent, so siblings are 50% identical", "correct": "Siblings share about 50% of their DNA on average, but due to random assortment, they can share more or less."},
+        {"wrong": "if both parents have brown eyes, all children will have brown eyes", "correct": "Both parents could be heterozygous (Bb). There is a 25% chance of a blue-eyed child (bb) from this cross."},
+        {"wrong": "only genes determine traits", "correct": "Traits are influenced by both genes and environment. Height, for example, is affected by genetics AND nutrition."}
+      ]
+    },
+    "organ_systems": {
+      "keywords": ["organ system", "circulatory", "respiratory", "digestive", "nervous", "skeletal", "muscular", "immune", "endocrine", "excretory", "integumentary", "reproductive"],
+      "facts": [
+        {"statement": "The circulatory system (heart, blood, blood vessels) transports oxygen, nutrients, and waste throughout the body", "grade_min": 4, "grade_max": 12},
+        {"statement": "The respiratory system (lungs, trachea, diaphragm) exchanges oxygen and carbon dioxide with the environment", "grade_min": 4, "grade_max": 12},
+        {"statement": "The digestive system breaks down food into nutrients for absorption; key organs include the stomach, small intestine, and large intestine", "grade_min": 4, "grade_max": 12},
+        {"statement": "The nervous system (brain, spinal cord, nerves) controls body functions and processes information from the senses", "grade_min": 4, "grade_max": 12},
+        {"statement": "The skeletal system provides structure and support with 206 bones in the adult human body", "grade_min": 3, "grade_max": 12},
+        {"statement": "The immune system defends the body against pathogens using white blood cells, antibodies, and other defense mechanisms", "grade_min": 5, "grade_max": 12},
+        {"statement": "The endocrine system uses hormones to regulate growth, metabolism, and reproduction; key glands include the pituitary, thyroid, and adrenal", "grade_min": 7, "grade_max": 12},
+        {"statement": "The excretory system (kidneys, bladder, skin) removes waste products from the body", "grade_min": 5, "grade_max": 12},
+        {"statement": "The muscular system has three types: skeletal (voluntary), smooth (involuntary, organs), and cardiac (heart)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Red blood cells carry oxygen using hemoglobin; white blood cells fight infection; platelets help with clotting", "grade_min": 5, "grade_max": 12},
+        {"statement": "The small intestine is the primary site of nutrient absorption; villi increase its surface area", "grade_min": 6, "grade_max": 12},
+        {"statement": "The brain has three main parts: cerebrum (thinking), cerebellum (coordination), and brain stem (basic life functions)", "grade_min": 5, "grade_max": 12},
+        {"statement": "The integumentary system (skin, hair, nails) is the body's largest organ system and protects against pathogens, UV radiation, and water loss", "grade_min": 5, "grade_max": 12},
+        {"statement": "Neurons transmit electrical signals called nerve impulses; the gap between neurons is called a synapse, where chemical neurotransmitters carry the signal", "grade_min": 8, "grade_max": 12},
+        {"statement": "The human heart has four chambers: two atria (upper) receive blood and two ventricles (lower) pump blood out", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the heart is on the left side of the body", "correct": "The heart is located slightly left of center in the chest, but it is roughly in the middle, not far left."},
+        {"wrong": "we only use 10% of our brain", "correct": "Brain imaging shows that virtually all areas of the brain are active. Different regions are used for different tasks."},
+        {"wrong": "blood is blue when it lacks oxygen", "correct": "Blood is always red. Deoxygenated blood is a darker red, while oxygenated blood is bright red. Veins appear blue through the skin due to how light penetrates tissue."},
+        {"wrong": "the stomach does most of the digestion", "correct": "The small intestine does most of the chemical digestion and virtually all nutrient absorption. The stomach mainly churns food and begins protein digestion."},
+        {"wrong": "antibiotics kill viruses", "correct": "Antibiotics only kill bacteria. Viruses are treated with antiviral medications. Overusing antibiotics leads to antibiotic resistance."},
+        {"wrong": "bones are dead, dry structures", "correct": "Bones are living tissue with blood vessels and nerves. They constantly remodel, produce blood cells in marrow, and can heal when broken."}
+      ]
+    },
+    "taxonomy_classification": {
+      "keywords": ["taxonomy", "kingdom", "phylum", "class", "order", "family", "genus", "species", "classification", "binomial nomenclature", "evolution", "natural selection", "adaptation"],
+      "facts": [
+        {"statement": "The taxonomic hierarchy from broadest to most specific is: Domain, Kingdom, Phylum, Class, Order, Family, Genus, Species", "grade_min": 6, "grade_max": 12},
+        {"statement": "The three domains of life are Bacteria, Archaea, and Eukarya", "grade_min": 7, "grade_max": 12},
+        {"statement": "Binomial nomenclature uses two Latin names (Genus species) to identify organisms, such as Homo sapiens for humans", "grade_min": 7, "grade_max": 12},
+        {"statement": "The six kingdoms are Bacteria, Archaea, Protista, Fungi, Plantae, and Animalia", "grade_min": 6, "grade_max": 12},
+        {"statement": "Species is the most specific level of classification, grouping organisms that can interbreed and produce fertile offspring", "grade_min": 6, "grade_max": 12},
+        {"statement": "Charles Darwin proposed the theory of evolution by natural selection after studying finches in the Galapagos Islands", "grade_min": 6, "grade_max": 12},
+        {"statement": "Natural selection: organisms with traits better suited to their environment are more likely to survive and reproduce", "grade_min": 6, "grade_max": 12},
+        {"statement": "An adaptation is a trait that increases an organism's fitness (ability to survive and reproduce) in its environment", "grade_min": 5, "grade_max": 12},
+        {"statement": "Homologous structures (similar bone structure in different species) suggest common ancestry", "grade_min": 8, "grade_max": 12},
+        {"statement": "Vertebrates have backbones and include fish, amphibians, reptiles, birds, and mammals", "grade_min": 3, "grade_max": 12},
+        {"statement": "Invertebrates lack backbones and include insects, spiders, worms, jellyfish, and mollusks", "grade_min": 3, "grade_max": 12},
+        {"statement": "Fossils provide evidence of organisms that lived in the past and help scientists understand the history of life on Earth", "grade_min": 3, "grade_max": 12},
+        {"statement": "Analogous structures (wings of insects and birds) serve the same function but evolved independently, indicating convergent evolution", "grade_min": 9, "grade_max": 12},
+        {"statement": "Living things are grouped into categories based on shared characteristics such as body structure, DNA sequences, and evolutionary history", "grade_min": 3, "grade_max": 8}
+      ],
+      "common_errors": [
+        {"wrong": "mushrooms are plants", "correct": "Mushrooms belong to the kingdom Fungi, not Plantae. Fungi lack chlorophyll and obtain nutrients by decomposing organic matter."},
+        {"wrong": "all bacteria are harmful", "correct": "Most bacteria are harmless or beneficial. Many aid in digestion, decomposition, and nutrient cycling."},
+        {"wrong": "humans are not animals", "correct": "Humans are classified in the kingdom Animalia, phylum Chordata, class Mammalia, order Primates."},
+        {"wrong": "evolution says humans came from monkeys", "correct": "Evolution says humans and modern apes share a common ancestor. Humans did not descend from any living ape species."},
+        {"wrong": "survival of the fittest means the strongest survive", "correct": "Fittest means best adapted to the environment. A well-camouflaged insect is 'fit' even if it is not strong."}
+      ]
+    },
+    "microbiology_health": {
+      "keywords": ["bacteria", "virus", "pathogen", "immune", "vaccine", "infection", "disease", "antibiotic", "microbe", "germ", "hygiene", "parasite", "fungus"],
+      "facts": [
+        {"statement": "Bacteria are single-celled prokaryotes; some cause disease (pathogenic) but most are harmless or beneficial", "grade_min": 4, "grade_max": 12},
+        {"statement": "Viruses are not considered living organisms because they cannot reproduce on their own; they must infect a host cell to replicate", "grade_min": 6, "grade_max": 12},
+        {"statement": "Vaccines work by exposing the immune system to a weakened or inactive form of a pathogen, allowing it to build immunity without causing disease", "grade_min": 5, "grade_max": 12},
+        {"statement": "The immune system has two main divisions: innate immunity (general barriers like skin and fever) and adaptive immunity (specific antibodies and memory cells)", "grade_min": 8, "grade_max": 12},
+        {"statement": "Antibodies are proteins produced by B cells that recognize and bind to specific antigens on pathogens, marking them for destruction", "grade_min": 8, "grade_max": 12},
+        {"statement": "Washing hands with soap and water is one of the most effective ways to prevent the spread of infectious diseases", "grade_min": 1, "grade_max": 7},
+        {"statement": "Antibiotic resistance occurs when bacteria evolve to survive antibiotic treatment, often due to overuse or misuse of antibiotics", "grade_min": 7, "grade_max": 12},
+        {"statement": "The human body hosts trillions of beneficial bacteria (microbiome) that aid digestion, produce vitamins, and protect against harmful microbes", "grade_min": 6, "grade_max": 12},
+        {"statement": "Fever is an immune response that raises body temperature to help fight infection; most pathogens grow best at normal body temperature", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "viruses and bacteria are the same thing", "correct": "Bacteria are living single-celled organisms that can reproduce independently. Viruses are not cells and need a host to replicate. Antibiotics work on bacteria but not viruses."},
+        {"wrong": "vaccines cause the disease they are meant to prevent", "correct": "Vaccines contain weakened or inactivated pathogens (or parts of them) that cannot cause the full disease but train the immune system to fight it."},
+        {"wrong": "you can catch a cold from being cold", "correct": "Colds are caused by viruses, not cold temperatures. Being cold may weaken immune defenses slightly, but the virus is the actual cause."},
+        {"wrong": "antibiotics cure any illness", "correct": "Antibiotics only work against bacterial infections. They have no effect on viral infections like the common cold or flu."}
+      ]
+    },
+    "living_things_basics": {
+      "keywords": ["living", "nonliving", "organism", "characteristic", "life", "grow", "reproduce", "respond", "energy", "homeostasis", "habitat", "need"],
+      "facts": [
+        {"statement": "All living things share basic characteristics: they grow, reproduce, respond to stimuli, use energy, and are made of cells", "grade_min": 1, "grade_max": 6},
+        {"statement": "Living things need food, water, air, and shelter to survive", "grade_min": 0, "grade_max": 4},
+        {"statement": "Homeostasis is the ability of an organism to maintain stable internal conditions (like body temperature) despite changes in the environment", "grade_min": 6, "grade_max": 12},
+        {"statement": "Animals can be classified by what they eat: herbivores eat plants, carnivores eat meat, omnivores eat both", "grade_min": 1, "grade_max": 5},
+        {"statement": "Mammals are warm-blooded animals that have hair or fur and feed their young with milk", "grade_min": 1, "grade_max": 6},
+        {"statement": "Reptiles are cold-blooded vertebrates with scales that lay eggs on land; examples include snakes, lizards, turtles, and crocodiles", "grade_min": 2, "grade_max": 7},
+        {"statement": "Amphibians live part of their life in water and part on land; most undergo metamorphosis from tadpole to adult (frogs, salamanders)", "grade_min": 2, "grade_max": 7},
+        {"statement": "Insects are the most diverse group of animals with over 1 million known species; they have 3 body segments, 6 legs, and an exoskeleton", "grade_min": 2, "grade_max": 7},
+        {"statement": "Plants make their own food using sunlight, while animals must eat other organisms for energy", "grade_min": 1, "grade_max": 5},
+        {"statement": "The life cycle of a butterfly includes four stages: egg, larva (caterpillar), pupa (chrysalis), and adult (butterfly)", "grade_min": 1, "grade_max": 5},
+        {"statement": "Seeds contain a tiny plant embryo and stored food; when conditions are right (water, warmth, soil), the seed germinates and grows", "grade_min": 1, "grade_max": 5},
+        {"statement": "Plants have roots (absorb water and nutrients), stems (support and transport), and leaves (photosynthesis)", "grade_min": 1, "grade_max": 5},
+        {"statement": "Flowers are the reproductive parts of flowering plants; they produce seeds that can grow into new plants", "grade_min": 1, "grade_max": 5},
+        {"statement": "Pollination is the transfer of pollen from one flower to another, often by bees, butterflies, wind, or birds, enabling plants to reproduce", "grade_min": 3, "grade_max": 8},
+        {"statement": "A food chain shows the flow of energy from one organism to another: grass -> grasshopper -> frog -> snake -> hawk", "grade_min": 2, "grade_max": 6},
+        {"statement": "Hibernation is a state of deep sleep that some animals enter during winter to conserve energy when food is scarce", "grade_min": 1, "grade_max": 5},
+        {"statement": "Migration is the seasonal movement of animals from one region to another, often to find food or warmer climates (birds flying south for winter)", "grade_min": 1, "grade_max": 5},
+        {"statement": "The five senses are sight, hearing, smell, taste, and touch; they help organisms detect and respond to changes in their environment", "grade_min": 0, "grade_max": 4},
+        {"statement": "Humans have five main senses detected by specialized organs: eyes (sight), ears (hearing), nose (smell), tongue (taste), and skin (touch)", "grade_min": 0, "grade_max": 4},
+        {"statement": "A habitat is the natural environment where an organism lives; different habitats (forest, desert, ocean, pond) support different types of organisms", "grade_min": 1, "grade_max": 5},
+        {"statement": "Camouflage helps animals blend in with their environment to hide from predators or ambush prey", "grade_min": 1, "grade_max": 5},
+        {"statement": "Deciduous trees lose their leaves in autumn to conserve water during winter; evergreen trees keep their leaves (needles) all year", "grade_min": 2, "grade_max": 6},
+        {"statement": "Phototropism is the growth of a plant toward light; roots grow downward due to gravitropism (response to gravity)", "grade_min": 3, "grade_max": 8}
+      ],
+      "common_errors": [
+        {"wrong": "all animals that live in water are fish", "correct": "Whales, dolphins, and seals are mammals that live in water. Sea turtles are reptiles. Jellyfish are invertebrates. Not all aquatic animals are fish."},
+        {"wrong": "spiders are insects", "correct": "Spiders are arachnids, not insects. Insects have 6 legs and 3 body parts. Spiders have 8 legs and 2 body parts."},
+        {"wrong": "all plants have flowers", "correct": "Not all plants have flowers. Ferns reproduce with spores, conifers use cones, and mosses also lack flowers."},
+        {"wrong": "cold-blooded means their blood is cold", "correct": "Cold-blooded (ectothermic) means the organism's body temperature changes with its environment. A lizard in the sun can have warm blood."},
+        {"wrong": "a penguin is not a bird because it cannot fly", "correct": "Penguins are birds. Birds are defined by having feathers, beaks, and laying eggs, not by the ability to fly. Ostriches and emus are also flightless birds."},
+        {"wrong": "trees are not living things because they don't move", "correct": "Trees are living organisms. They grow, reproduce, respond to stimuli (growing toward light), and carry out cellular processes. Movement is not required to be alive."}
+      ]
+    }
+  }
+}

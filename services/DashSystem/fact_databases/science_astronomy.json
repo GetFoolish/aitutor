@@ -1,0 +1,264 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "science",
+    "last_updated": "2026-02-11",
+    "description": "Astronomy facts: solar system, star lifecycle, moon phases, seasons, galaxies, space exploration, telescopes, Earth in space"
+  },
+  "facts_by_topic": {
+    "solar_system_details": {
+      "keywords": [
+        "planet", "solar system", "inner planet", "outer planet", "terrestrial",
+        "gas giant", "ice giant", "asteroid belt", "dwarf planet", "Mercury",
+        "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune",
+        "Pluto", "orbit", "revolution", "rotation", "comet", "Kuiper belt"
+      ],
+      "facts": [
+        {"statement": "The four inner (terrestrial) planets are Mercury, Venus, Earth, and Mars; they are small, rocky, and closer to the Sun", "grade_min": 3, "grade_max": 12},
+        {"statement": "The four outer planets are Jupiter, Saturn, Uranus, and Neptune; Jupiter and Saturn are gas giants, Uranus and Neptune are ice giants", "grade_min": 3, "grade_max": 12},
+        {"statement": "The asteroid belt lies between Mars and Jupiter and contains millions of rocky objects", "grade_min": 4, "grade_max": 12},
+        {"statement": "Pluto was reclassified as a dwarf planet by the International Astronomical Union in 2006", "grade_min": 4, "grade_max": 12},
+        {"statement": "Jupiter is the largest planet with a mass more than twice that of all other planets combined", "grade_min": 4, "grade_max": 12},
+        {"statement": "Venus has the hottest surface temperature (about 465 degrees Celsius) due to its extreme greenhouse effect, despite being farther from the Sun than Mercury", "grade_min": 5, "grade_max": 12},
+        {"statement": "The planets in order from the Sun: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune", "grade_min": 2, "grade_max": 12},
+        {"statement": "Mercury is the smallest planet and closest to the Sun; it has no atmosphere and extreme temperature swings (-180 to 430 degrees C)", "grade_min": 4, "grade_max": 12},
+        {"statement": "Mars is called the Red Planet because of iron oxide (rust) on its surface; it has the largest volcano (Olympus Mons) and longest canyon (Valles Marineris) in the solar system", "grade_min": 4, "grade_max": 12},
+        {"statement": "Saturn has the most prominent ring system, made of ice and rock particles ranging from tiny grains to house-sized chunks", "grade_min": 3, "grade_max": 12},
+        {"statement": "Uranus rotates on its side with an axial tilt of about 98 degrees, making its seasons extreme (each pole gets 42 years of sunlight)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Neptune is the windiest planet in the solar system with wind speeds reaching 2,100 km/h", "grade_min": 5, "grade_max": 12},
+        {"statement": "Earth's revolution (orbit) around the Sun takes about 365.25 days (one year); its rotation on its axis takes about 24 hours (one day)", "grade_min": 3, "grade_max": 12},
+        {"statement": "Comets are icy bodies from the outer solar system that develop tails when near the Sun as ice vaporizes", "grade_min": 4, "grade_max": 12},
+        {"statement": "The Kuiper Belt is a region beyond Neptune containing dwarf planets (including Pluto) and icy bodies", "grade_min": 6, "grade_max": 12},
+        {"statement": "Jupiter's Great Red Spot is a massive storm that has been raging for at least 350 years and is larger than Earth", "grade_min": 4, "grade_max": 12},
+        {"statement": "Jupiter has at least 95 known moons, including the four Galilean moons: Io, Europa, Ganymede, and Callisto", "grade_min": 5, "grade_max": 12},
+        {"statement": "Europa (moon of Jupiter) and Enceladus (moon of Saturn) are considered candidates for extraterrestrial life because they have subsurface liquid water oceans", "grade_min": 6, "grade_max": 12},
+        {"statement": "The Sun contains 99.86% of the total mass of the solar system", "grade_min": 5, "grade_max": 12},
+        {"statement": "Titan, Saturn's largest moon, is the only moon in the solar system with a thick atmosphere and has lakes of liquid methane and ethane on its surface", "grade_min": 7, "grade_max": 12},
+        {"statement": "The Oort Cloud is a theoretical shell of icy objects surrounding the solar system, extending up to 2 light-years from the Sun; it is the source of long-period comets", "grade_min": 8, "grade_max": 12},
+        {"statement": "Dwarf planets include Pluto, Eris, Haumea, Makemake, and Ceres (in the asteroid belt); they orbit the Sun but have not cleared their orbital neighborhood", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the Sun is the biggest star in the universe", "correct": "The Sun is a medium-sized star (G-type main-sequence). Many stars, like Betelgeuse and UY Scuti, are hundreds of times larger."},
+        {"wrong": "Mercury is the hottest planet because it is closest to the Sun", "correct": "Venus is hotter than Mercury (465 degrees C vs 427 degrees C) because Venus has a thick atmosphere that traps heat through the greenhouse effect."},
+        {"wrong": "asteroids and comets are the same", "correct": "Asteroids are rocky objects mostly found in the asteroid belt. Comets are icy objects from the outer solar system that develop tails when near the Sun."},
+        {"wrong": "Pluto is still a planet", "correct": "Pluto was reclassified as a dwarf planet in 2006 because it has not cleared its orbital neighborhood of other debris."},
+        {"wrong": "Saturn is the only planet with rings", "correct": "Jupiter, Uranus, and Neptune also have ring systems, though they are much fainter than Saturn's spectacular rings."},
+        {"wrong": "the Sun is made of fire", "correct": "The Sun produces energy through nuclear fusion (converting hydrogen to helium), not combustion. Its surface temperature is about 5,500 degrees C."},
+        {"wrong": "the planets are close together like in diagrams", "correct": "The solar system is mostly empty space. If the Sun were a basketball, Earth would be a peppercorn 26 meters away, and Neptune would be nearly a kilometer away."},
+        {"wrong": "all planets rotate in the same direction", "correct": "Venus rotates backward (retrograde rotation) compared to most planets, and Uranus rotates on its side. Each planet has its own rotation characteristics."}
+      ]
+    },
+    "star_lifecycle": {
+      "keywords": [
+        "star", "nebula", "protostar", "main sequence", "red giant", "supernova",
+        "white dwarf", "neutron star", "black hole", "fusion", "luminosity",
+        "Hertzsprung-Russell", "HR diagram", "red dwarf", "blue giant", "supergiant",
+        "planetary nebula", "stellar nucleosynthesis"
+      ],
+      "facts": [
+        {"statement": "Stars form from clouds of gas and dust called nebulae, which collapse under gravity", "grade_min": 6, "grade_max": 12},
+        {"statement": "Stars produce energy through nuclear fusion, primarily converting hydrogen into helium in their cores", "grade_min": 7, "grade_max": 12},
+        {"statement": "A star spends most of its life in the main sequence phase, fusing hydrogen in its core", "grade_min": 7, "grade_max": 12},
+        {"statement": "When a massive star exhausts its fuel, it can explode in a supernova, potentially leaving behind a neutron star or black hole", "grade_min": 7, "grade_max": 12},
+        {"statement": "Low-to-medium mass stars (like our Sun) end their lives as white dwarfs after expanding into red giants", "grade_min": 7, "grade_max": 12},
+        {"statement": "A black hole is an object with gravity so strong that nothing, not even light, can escape from within its event horizon", "grade_min": 6, "grade_max": 12},
+        {"statement": "The Sun is approximately 4.6 billion years old and is about halfway through its main-sequence life", "grade_min": 6, "grade_max": 12},
+        {"statement": "The Hertzsprung-Russell (HR) diagram plots stars by luminosity (brightness) versus temperature (color), revealing stellar evolution patterns", "grade_min": 9, "grade_max": 12},
+        {"statement": "Star color indicates surface temperature: blue/white stars are hottest (over 10,000 K), yellow like the Sun are moderate (~5,800 K), red stars are coolest (~3,000 K)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Red dwarf stars are the most common type of star in the Milky Way, much smaller and cooler than the Sun, and can burn for trillions of years", "grade_min": 7, "grade_max": 12},
+        {"statement": "A neutron star is incredibly dense: a teaspoon of its material would weigh about a billion tons on Earth", "grade_min": 8, "grade_max": 12},
+        {"statement": "Elements heavier than iron are primarily created during supernovae; the atoms in our bodies were forged in ancient stars", "grade_min": 8, "grade_max": 12},
+        {"statement": "A planetary nebula is the glowing shell of gas ejected by a dying medium-mass star; it is unrelated to planets despite the name", "grade_min": 8, "grade_max": 12},
+        {"statement": "The more massive a star is, the shorter its lifespan. Massive blue giants may live only millions of years, while red dwarfs can last trillions", "grade_min": 7, "grade_max": 12},
+        {"statement": "The Sun fuses about 600 million tons of hydrogen into helium every second", "grade_min": 8, "grade_max": 12},
+        {"statement": "Stars are born in clusters because nebulae fragment as they collapse; open clusters contain hundreds to thousands of young stars", "grade_min": 8, "grade_max": 12},
+        {"statement": "A pulsar is a rapidly spinning neutron star that emits beams of radiation from its magnetic poles; it appears to pulse as it rotates", "grade_min": 9, "grade_max": 12},
+        {"statement": "Binary star systems (two stars orbiting each other) are very common; more than half of all star systems in the Milky Way are binary or multiple star systems", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the Sun will explode as a supernova", "correct": "The Sun is too small for a supernova. It will expand into a red giant, shed its outer layers, and end as a white dwarf."},
+        {"wrong": "black holes suck everything in like a vacuum", "correct": "Black holes only pull objects in that come close to their event horizon. From far away, their gravity acts like any other object of the same mass."},
+        {"wrong": "all stars are the same color", "correct": "Star color indicates surface temperature: blue stars are hottest (~30,000 K), white/yellow are moderate, and red stars are coolest (~3,000 K)."},
+        {"wrong": "bigger stars live longer because they have more fuel", "correct": "More massive stars burn their fuel much faster and live shorter lives. A star 10x the Sun's mass lives only about 1/1000th as long."},
+        {"wrong": "stars twinkle because they are blinking", "correct": "Stars twinkle because their light passes through Earth's atmosphere, which bends and distorts the light due to turbulence."},
+        {"wrong": "a supernova destroys everything and creates nothing", "correct": "Supernovae scatter heavy elements into space that become the building blocks for new stars, planets, and eventually life."},
+        {"wrong": "our Sun is a small star", "correct": "The Sun is actually larger than about 85% of stars in the Milky Way. Most stars are red dwarfs, which are much smaller and dimmer."}
+      ]
+    },
+    "moon_phases_seasons": {
+      "keywords": [
+        "moon", "phase", "new moon", "full moon", "crescent", "gibbous",
+        "quarter", "waxing", "waning", "eclipse", "season", "tilt",
+        "solstice", "equinox", "tidal", "tide", "lunar", "orbit"
+      ],
+      "facts": [
+        {"statement": "The Moon's phases cycle approximately every 29.5 days: new moon, waxing crescent, first quarter, waxing gibbous, full moon, waning gibbous, third quarter, waning crescent", "grade_min": 3, "grade_max": 12},
+        {"statement": "Moon phases are caused by the changing angle of sunlight reflecting off the Moon as it orbits Earth", "grade_min": 4, "grade_max": 12},
+        {"statement": "Earth's seasons are caused by its 23.5-degree axial tilt, not by distance from the Sun", "grade_min": 4, "grade_max": 12},
+        {"statement": "When the Northern Hemisphere is tilted toward the Sun (summer), the Southern Hemisphere is tilted away (winter), and vice versa", "grade_min": 4, "grade_max": 12},
+        {"statement": "A solar eclipse occurs when the Moon passes between the Sun and Earth; a lunar eclipse occurs when Earth passes between the Sun and Moon", "grade_min": 5, "grade_max": 12},
+        {"statement": "The summer solstice (around June 21) is the longest day in the Northern Hemisphere; the winter solstice (around December 21) is the shortest", "grade_min": 5, "grade_max": 12},
+        {"statement": "Equinoxes (around March 20 and September 22) have approximately equal day and night lengths", "grade_min": 5, "grade_max": 12},
+        {"statement": "Tides are caused primarily by the Moon's gravitational pull on Earth's oceans; the Sun also contributes", "grade_min": 5, "grade_max": 12},
+        {"statement": "Spring tides (highest and lowest tides) occur during full and new moons when the Sun, Moon, and Earth align", "grade_min": 7, "grade_max": 12},
+        {"statement": "Neap tides (least variation) occur during first and third quarter moons when the Sun and Moon pull at right angles", "grade_min": 7, "grade_max": 12},
+        {"statement": "The Moon is tidally locked to Earth, meaning the same side always faces us; it takes about 27.3 days to orbit Earth", "grade_min": 5, "grade_max": 12},
+        {"statement": "The Moon's diameter is about 3,474 km (about 1/4 of Earth's diameter), and it is about 384,400 km away on average", "grade_min": 5, "grade_max": 12},
+        {"statement": "During a total solar eclipse, the Moon appears to perfectly cover the Sun because the Sun is about 400 times larger but also about 400 times farther away", "grade_min": 6, "grade_max": 12},
+        {"statement": "The Moon has no atmosphere, so there is no wind, weather, or sound on its surface; footprints left by astronauts may last millions of years", "grade_min": 4, "grade_max": 12},
+        {"statement": "Waxing means the illuminated portion is increasing (right side in Northern Hemisphere); waning means it is decreasing", "grade_min": 4, "grade_max": 12},
+        {"statement": "The Moon is slowly moving away from Earth at a rate of about 3.8 cm per year due to tidal interactions", "grade_min": 7, "grade_max": 12},
+        {"statement": "Day and night are caused by Earth's rotation on its axis; the side facing the Sun experiences day while the opposite side experiences night", "grade_min": 1, "grade_max": 5}
+      ],
+      "common_errors": [
+        {"wrong": "seasons are caused by Earth being closer to or farther from the Sun", "correct": "Seasons are caused by Earth's 23.5-degree axial tilt. Earth is actually slightly closer to the Sun during Northern Hemisphere winter."},
+        {"wrong": "the Moon produces its own light", "correct": "The Moon reflects sunlight. It does not produce its own light. The different phases show how much of the lit side we can see."},
+        {"wrong": "there is a permanent dark side of the Moon", "correct": "All sides of the Moon receive sunlight. The far side is always facing away from Earth due to tidal locking, but it is not permanently dark."},
+        {"wrong": "the Moon controls the tides by magnetism", "correct": "Tides are caused by gravitational pull, not magnetism. The Moon's gravity pulls on Earth's oceans, creating tidal bulges."},
+        {"wrong": "eclipses happen every month", "correct": "The Moon's orbit is tilted about 5 degrees relative to Earth's orbit around the Sun, so eclipses only occur when the orbits align, a few times per year."},
+        {"wrong": "a lunar eclipse is dangerous to look at", "correct": "A lunar eclipse is safe to view with the naked eye. It is a SOLAR eclipse that is dangerous to look at directly because of the Sun's intense light."},
+        {"wrong": "the Moon is always the same distance from Earth", "correct": "The Moon's orbit is elliptical. At perigee it is about 356,500 km away; at apogee about 406,700 km. This causes supermoons and micromoons."}
+      ]
+    },
+    "galaxies_universe": {
+      "keywords": [
+        "galaxy", "Milky Way", "light-year", "universe", "Big Bang", "Andromeda",
+        "spiral", "elliptical", "irregular", "dark matter", "dark energy",
+        "cosmic microwave background", "expansion", "Hubble", "redshift"
+      ],
+      "facts": [
+        {"statement": "A light-year is the distance light travels in one year, approximately 9.46 trillion kilometers (5.88 trillion miles)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Our galaxy, the Milky Way, is a barred spiral galaxy containing an estimated 100 to 400 billion stars", "grade_min": 5, "grade_max": 12},
+        {"statement": "The three main types of galaxies are spiral, elliptical, and irregular", "grade_min": 6, "grade_max": 12},
+        {"statement": "The Andromeda galaxy is the nearest large galaxy to the Milky Way, about 2.5 million light-years away", "grade_min": 6, "grade_max": 12},
+        {"statement": "The Big Bang theory states that the universe began approximately 13.8 billion years ago from an extremely hot, dense state and has been expanding ever since", "grade_min": 7, "grade_max": 12},
+        {"statement": "The observable universe contains an estimated 2 trillion galaxies", "grade_min": 6, "grade_max": 12},
+        {"statement": "The Milky Way galaxy is about 100,000 light-years in diameter and our Sun is located about 26,000 light-years from the center", "grade_min": 6, "grade_max": 12},
+        {"statement": "Dark matter makes up about 27% of the universe and dark energy about 68%; ordinary matter we can see is only about 5%", "grade_min": 9, "grade_max": 12},
+        {"statement": "Edwin Hubble discovered that the universe is expanding: galaxies farther from us are moving away faster (Hubble's Law)", "grade_min": 8, "grade_max": 12},
+        {"statement": "Redshift occurs when light from distant galaxies is stretched to longer wavelengths as the universe expands, shifting toward the red end of the spectrum", "grade_min": 9, "grade_max": 12},
+        {"statement": "The cosmic microwave background (CMB) is faint radiation left over from the Big Bang, discovered in 1965, and provides evidence for the Big Bang theory", "grade_min": 9, "grade_max": 12},
+        {"statement": "The Milky Way and Andromeda galaxies are expected to collide and merge in about 4.5 billion years", "grade_min": 7, "grade_max": 12},
+        {"statement": "The nearest star to our Sun is Proxima Centauri, about 4.24 light-years away", "grade_min": 5, "grade_max": 12},
+        {"statement": "An astronomical unit (AU) is the average distance from Earth to the Sun, about 150 million km (93 million miles)", "grade_min": 5, "grade_max": 12},
+        {"statement": "A supermassive black hole lies at the center of most galaxies, including the Milky Way; ours is called Sagittarius A* and has a mass of about 4 million Suns", "grade_min": 8, "grade_max": 12},
+        {"statement": "Galaxies are organized into clusters and superclusters; the Milky Way is part of the Local Group, which contains about 80 galaxies", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "a light-year measures time, not distance", "correct": "A light-year is a unit of distance, not time. It is the distance light travels in one year."},
+        {"wrong": "the Big Bang was an explosion in space", "correct": "The Big Bang was not an explosion in existing space. It was the rapid expansion of space itself from an extremely hot, dense state."},
+        {"wrong": "the North Star (Polaris) is the brightest star in the sky", "correct": "Sirius is the brightest star visible from Earth. Polaris is relatively faint but important because it marks celestial north."},
+        {"wrong": "we can see the entire universe", "correct": "We can only see the observable universe (about 93 billion light-years across). Light from beyond has not had time to reach us since the Big Bang."},
+        {"wrong": "the universe is expanding into something", "correct": "The universe is not expanding into anything. Space itself is expanding. There is no edge or boundary that we know of."},
+        {"wrong": "stars in a constellation are close together in space", "correct": "Stars in a constellation appear close together from Earth but are usually at vastly different distances from us."},
+        {"wrong": "the Milky Way is the only galaxy", "correct": "There are an estimated 2 trillion galaxies in the observable universe. The Milky Way is just one among them."}
+      ]
+    },
+    "space_exploration": {
+      "keywords": [
+        "NASA", "space", "rocket", "satellite", "astronaut", "ISS",
+        "space station", "Apollo", "Mars rover", "telescope", "Hubble",
+        "James Webb", "orbit", "gravity", "launch", "spacecraft"
+      ],
+      "facts": [
+        {"statement": "The first artificial satellite, Sputnik 1, was launched by the Soviet Union on October 4, 1957", "grade_min": 4, "grade_max": 12},
+        {"statement": "Yuri Gagarin became the first human in space on April 12, 1961, orbiting Earth in Vostok 1", "grade_min": 4, "grade_max": 12},
+        {"statement": "Neil Armstrong became the first person to walk on the Moon on July 20, 1969, during the Apollo 11 mission", "grade_min": 3, "grade_max": 12},
+        {"statement": "The International Space Station (ISS) orbits Earth at about 408 km altitude and travels at roughly 28,000 km/h, completing an orbit every 90 minutes", "grade_min": 5, "grade_max": 12},
+        {"statement": "The Hubble Space Telescope, launched in 1990, orbits above Earth's atmosphere and has provided some of the most detailed images of distant galaxies", "grade_min": 5, "grade_max": 12},
+        {"statement": "The James Webb Space Telescope (JWST), launched in 2021, uses infrared to see farther into space and time than Hubble", "grade_min": 6, "grade_max": 12},
+        {"statement": "Mars rovers (Spirit, Opportunity, Curiosity, Perseverance) have explored Mars's surface, studying geology, climate, and searching for signs of past water and life", "grade_min": 4, "grade_max": 12},
+        {"statement": "Voyager 1 and 2, launched in 1977, are the farthest human-made objects from Earth; Voyager 1 entered interstellar space in 2012", "grade_min": 5, "grade_max": 12},
+        {"statement": "A satellite is any object that orbits another object; the Moon is a natural satellite of Earth, while the ISS is an artificial satellite", "grade_min": 3, "grade_max": 12},
+        {"statement": "Rockets work by Newton's Third Law: exhaust gases are pushed downward, and the rocket is pushed upward as an equal and opposite reaction", "grade_min": 5, "grade_max": 12},
+        {"statement": "Astronauts experience weightlessness (microgravity) in orbit because they are in continuous free fall around Earth, not because there is no gravity", "grade_min": 6, "grade_max": 12},
+        {"statement": "The speed needed to stay in orbit around Earth (orbital velocity) is about 28,000 km/h; escape velocity from Earth is about 40,270 km/h", "grade_min": 8, "grade_max": 12},
+        {"statement": "Reusable rockets developed by SpaceX have significantly reduced the cost of reaching orbit by landing and reflying first-stage boosters", "grade_min": 5, "grade_max": 12},
+        {"statement": "The Artemis program aims to return humans to the Moon and establish a sustainable presence there as a stepping stone toward Mars exploration", "grade_min": 5, "grade_max": 12},
+        {"statement": "Space telescopes observe from above Earth's atmosphere, which blocks or distorts many types of electromagnetic radiation including infrared, ultraviolet, and X-rays", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "there is no gravity in space", "correct": "Gravity exists everywhere in space. Astronauts on the ISS feel weightless because they are in free fall (constantly falling around Earth), not because gravity is absent."},
+        {"wrong": "the Space Shuttle is still in use", "correct": "NASA's Space Shuttle program ended in 2011. Currently, astronauts reach the ISS on SpaceX Crew Dragon and Russian Soyuz spacecraft."},
+        {"wrong": "we have sent humans to Mars", "correct": "As of 2026, no humans have traveled to Mars. Only robotic rovers and landers have explored Mars's surface."},
+        {"wrong": "satellites stay in space without any force acting on them", "correct": "Satellites are held in orbit by gravity. They are moving fast enough sideways that they continuously fall around Earth without hitting the surface."},
+        {"wrong": "the first person in space was American", "correct": "Soviet cosmonaut Yuri Gagarin was the first human in space (April 12, 1961). American Alan Shepard followed on May 5, 1961."},
+        {"wrong": "space is completely empty", "correct": "Space contains dust, gas, cosmic rays, radiation, dark matter, and dark energy. It is not completely empty, though it is far less dense than any environment on Earth."}
+      ]
+    },
+    "earth_in_space": {
+      "keywords": [
+        "Earth", "rotation", "revolution", "axis", "day", "night", "year",
+        "atmosphere", "magnetic field", "aurora", "meteor", "meteorite",
+        "gravity", "orbit", "geocentric", "heliocentric"
+      ],
+      "facts": [
+        {"statement": "Earth rotates on its axis once every 24 hours, causing day and night", "grade_min": 1, "grade_max": 8},
+        {"statement": "Earth revolves around the Sun once every 365.25 days; the extra quarter day is why we have a leap year every 4 years", "grade_min": 3, "grade_max": 12},
+        {"statement": "Earth's atmosphere is composed of about 78% nitrogen, 21% oxygen, and 1% other gases including argon and carbon dioxide", "grade_min": 5, "grade_max": 12},
+        {"statement": "Earth's magnetic field is generated by the movement of molten iron in its outer core; it protects us from harmful solar radiation and solar wind", "grade_min": 7, "grade_max": 12},
+        {"statement": "The aurora borealis (Northern Lights) and aurora australis (Southern Lights) are caused by charged particles from the Sun interacting with Earth's magnetic field and atmosphere", "grade_min": 5, "grade_max": 12},
+        {"statement": "A meteor is a streak of light caused by a small space rock burning up in Earth's atmosphere; if it reaches the ground, it is called a meteorite", "grade_min": 4, "grade_max": 12},
+        {"statement": "Earth is the only known planet to have liquid water on its surface, which is essential for life as we know it", "grade_min": 2, "grade_max": 12},
+        {"statement": "The heliocentric model (Sun-centered) replaced the geocentric model (Earth-centered); Copernicus proposed it and Galileo provided supporting evidence", "grade_min": 6, "grade_max": 12},
+        {"statement": "Earth is approximately 4.54 billion years old, as determined by radiometric dating of rocks and meteorites", "grade_min": 6, "grade_max": 12},
+        {"statement": "Earth's layers from outside to inside are: crust, mantle, outer core (liquid iron), and inner core (solid iron)", "grade_min": 4, "grade_max": 12},
+        {"statement": "The Sun appears to move across the sky from east to west because Earth rotates from west to east", "grade_min": 2, "grade_max": 7},
+        {"statement": "Earth's gravity keeps the Moon in orbit and holds our atmosphere in place; gravity decreases with distance from Earth's center", "grade_min": 4, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the Sun moves around the Earth", "correct": "Earth orbits the Sun, not the other way around. The Sun appears to move across the sky because Earth rotates on its axis."},
+        {"wrong": "we have seasons because Earth is closer to the Sun in summer", "correct": "Seasons are caused by Earth's 23.5-degree axial tilt, which changes how directly sunlight hits different parts of Earth throughout the year."},
+        {"wrong": "shooting stars are actual stars falling from the sky", "correct": "Shooting stars (meteors) are small pieces of space debris burning up in Earth's atmosphere. They are not stars at all."},
+        {"wrong": "Earth is a perfect sphere", "correct": "Earth is an oblate spheroid: it is slightly flattened at the poles and wider at the equator due to its rotation."},
+        {"wrong": "the North Star has always been the North Star", "correct": "Earth's axis slowly wobbles (precession) over a 26,000-year cycle. Different stars serve as the North Star at different times in this cycle."}
+      ]
+    },
+    "sun_properties": {
+      "keywords": [
+        "Sun", "solar", "star", "sunspot", "solar flare", "corona",
+        "photosphere", "chromosphere", "solar wind", "nuclear fusion",
+        "energy", "light", "heat", "hydrogen", "helium"
+      ],
+      "facts": [
+        {"statement": "The Sun is a medium-sized yellow dwarf star (G-type main-sequence) with a surface temperature of about 5,500 degrees Celsius", "grade_min": 4, "grade_max": 12},
+        {"statement": "The Sun's energy comes from nuclear fusion in its core, where hydrogen atoms fuse into helium at temperatures of about 15 million degrees Celsius", "grade_min": 6, "grade_max": 12},
+        {"statement": "The Sun is composed of approximately 73% hydrogen and 25% helium by mass, with the remaining 2% being heavier elements", "grade_min": 7, "grade_max": 12},
+        {"statement": "Sunspots are cooler, darker areas on the Sun's surface caused by intense magnetic activity; they follow an approximately 11-year cycle", "grade_min": 7, "grade_max": 12},
+        {"statement": "Solar flares are sudden eruptions of energy from the Sun's surface that can disrupt communications and power grids on Earth", "grade_min": 7, "grade_max": 12},
+        {"statement": "The solar wind is a continuous stream of charged particles flowing outward from the Sun at speeds of 400-800 km/s", "grade_min": 8, "grade_max": 12},
+        {"statement": "Light from the Sun takes about 8 minutes and 20 seconds to reach Earth, traveling at 300,000 km/s", "grade_min": 5, "grade_max": 12},
+        {"statement": "The Sun's corona (outer atmosphere) is visible during total solar eclipses and is paradoxically hotter (1-2 million degrees C) than the surface (5,500 degrees C)", "grade_min": 8, "grade_max": 12},
+        {"statement": "The Sun is about 109 times the diameter of Earth and could fit about 1.3 million Earths inside it", "grade_min": 4, "grade_max": 12},
+        {"statement": "The Sun provides virtually all the energy that drives weather, ocean currents, and life on Earth through light and heat", "grade_min": 3, "grade_max": 8}
+      ],
+      "common_errors": [
+        {"wrong": "the Sun is on fire", "correct": "The Sun is not burning like a fire. It produces energy through nuclear fusion, not combustion. There is no oxygen in the Sun to support burning."},
+        {"wrong": "the Sun will burn forever", "correct": "The Sun has a limited fuel supply. In about 5 billion years, it will exhaust its hydrogen fuel, expand into a red giant, and eventually become a white dwarf."},
+        {"wrong": "the Sun is yellow", "correct": "The Sun actually emits white light (all colors). It appears yellow from Earth because our atmosphere scatters shorter blue wavelengths, making the remaining light look yellow."},
+        {"wrong": "sunspots are holes in the Sun", "correct": "Sunspots are cooler regions on the Sun's surface caused by magnetic field concentrations. They are still extremely hot (about 3,500 degrees C), just cooler than the surrounding surface."},
+        {"wrong": "the Sun is the same temperature everywhere", "correct": "The Sun's temperature varies enormously: the core is about 15 million degrees C, the surface is about 5,500 degrees C, and the corona exceeds 1 million degrees C."}
+      ]
+    },
+    "observing_sky": {
+      "keywords": [
+        "constellation", "telescope", "observatory", "star map", "magnitude",
+        "celestial", "horizon", "zenith", "Polaris", "Sirius", "Orion",
+        "Big Dipper", "night sky", "planetarium"
+      ],
+      "facts": [
+        {"statement": "A constellation is a pattern of stars as seen from Earth; the International Astronomical Union recognizes 88 official constellations", "grade_min": 3, "grade_max": 12},
+        {"statement": "Polaris (the North Star) appears almost directly above Earth's North Pole, making it useful for navigation; it is part of the constellation Ursa Minor", "grade_min": 4, "grade_max": 12},
+        {"statement": "The Big Dipper is an asterism (recognizable star pattern) within the constellation Ursa Major; its pointer stars help locate Polaris", "grade_min": 3, "grade_max": 12},
+        {"statement": "Galileo Galilei was the first to use a telescope for astronomical observations (1609), discovering Jupiter's moons, the phases of Venus, and craters on the Moon", "grade_min": 5, "grade_max": 12},
+        {"statement": "Apparent magnitude measures how bright a star appears from Earth; absolute magnitude measures its true brightness. A lower number means brighter", "grade_min": 8, "grade_max": 12},
+        {"statement": "Stars visible in the night sky change with the seasons because Earth's orbit around the Sun shifts our nighttime view to different parts of the sky", "grade_min": 4, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "constellations are fixed groups of stars that are physically close together", "correct": "Constellations are patterns we see from Earth. The stars in a constellation are usually at very different distances from us and are not physically related."},
+        {"wrong": "telescopes make stars look bigger", "correct": "Stars are so far away they always appear as points of light, even through telescopes. Telescopes gather more light, making stars appear brighter and revealing fainter objects."},
+        {"wrong": "you can only see planets with a telescope", "correct": "Mercury, Venus, Mars, Jupiter, and Saturn are all visible to the naked eye. They appear as bright, non-twinkling points of light in the night sky."}
+      ]
+    }
+  }
+}

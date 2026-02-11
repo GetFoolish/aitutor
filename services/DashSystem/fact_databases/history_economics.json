@@ -1,0 +1,687 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "economics",
+    "last_updated": "2026-02-11",
+    "description": "Economics facts: supply and demand, GDP, inflation, economic systems, money and banking, trade, taxes, entrepreneurship, personal finance, labor markets"
+  },
+  "facts_by_topic": {
+    "basic_economic_concepts": {
+      "keywords": [
+        "scarcity", "opportunity cost", "trade-off", "wants", "needs",
+        "resources", "goods", "services", "economic system"
+      ],
+      "facts": [
+        {
+          "statement": "Scarcity is the fundamental economic problem: unlimited wants but limited resources",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Opportunity cost is the value of the next best alternative that is given up when making a choice",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The three basic economic questions are: What to produce? How to produce? For whom to produce?",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Goods are tangible products (books, cars); services are intangible activities performed for others (haircuts, teaching)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The four factors of production are land (natural resources), labor (workers), capital (tools/machinery), and entrepreneurship (innovation/risk-taking)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "In a market economy, prices are determined by supply and demand with limited government intervention",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "In a command economy, the government makes most economic decisions about production and distribution",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Most modern economies are mixed economies, combining elements of both market and command systems",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A traditional economy is based on customs, traditions, and beliefs; economic decisions are made the way they have always been made",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Incentives are rewards or penalties that motivate people to act in certain ways; they are a key concept in economics",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "opportunity cost is always measured in money",
+          "correct": "Opportunity cost can be anything of value: time, enjoyment, other goods. If you choose to study instead of playing, the opportunity cost is the enjoyment of playing."
+        },
+        {
+          "wrong": "scarcity only affects poor people",
+          "correct": "Scarcity affects everyone because even wealthy people have limited time and cannot have everything they want. It is a universal economic concept."
+        },
+        {
+          "wrong": "the US has a pure market economy",
+          "correct": "The US has a mixed economy. While mostly market-based, the government regulates many industries, provides public services, and collects taxes."
+        },
+        {
+          "wrong": "needs and wants are the same thing",
+          "correct": "Needs are essential for survival (food, shelter, clothing). Wants are things people desire but can live without (video games, designer clothes)."
+        }
+      ]
+    },
+    "supply_and_demand": {
+      "keywords": [
+        "supply", "demand", "price", "equilibrium", "shortage",
+        "surplus", "market", "consumer", "producer", "competition"
+      ],
+      "facts": [
+        {
+          "statement": "The law of demand states that as the price of a good increases, the quantity demanded decreases (and vice versa), all else being equal",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The law of supply states that as the price of a good increases, the quantity supplied increases (and vice versa), all else being equal",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Equilibrium price is the price at which the quantity supplied equals the quantity demanded in a market",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A shortage occurs when demand exceeds supply at a given price; a surplus occurs when supply exceeds demand",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Competition among sellers tends to lower prices and improve quality for consumers",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A monopoly exists when one company controls an entire market, which can lead to higher prices and less innovation",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Factors that shift demand include changes in income, tastes, prices of related goods, population, and expectations",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Factors that shift supply include changes in input costs, technology, number of producers, and government regulations",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Price controls like price ceilings (maximum prices) and price floors (minimum prices) can cause shortages or surpluses",
+          "grade_min": 9,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "higher prices always mean companies are greedy",
+          "correct": "Prices are determined by supply and demand. Higher prices can result from increased costs, scarcity, or higher demand, not just seller decisions."
+        },
+        {
+          "wrong": "supply and demand only apply to physical products",
+          "correct": "Supply and demand apply to services, labor, housing, currencies, and virtually all markets, not just physical goods."
+        },
+        {
+          "wrong": "a shortage means there is no supply at all",
+          "correct": "A shortage means demand exceeds supply at the current price. There is still some supply, just not enough to meet all demand at that price."
+        },
+        {
+          "wrong": "competition is bad for consumers",
+          "correct": "Competition among businesses generally benefits consumers by lowering prices, improving quality, and increasing choices."
+        }
+      ]
+    },
+    "personal_finance_basics": {
+      "keywords": [
+        "budget", "saving", "interest", "credit", "debt",
+        "income", "expense", "invest", "compound interest", "loan"
+      ],
+      "facts": [
+        {
+          "statement": "A budget is a plan for how to spend and save money, tracking income and expenses",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Simple interest is calculated as Principal x Rate x Time; compound interest earns interest on both the principal and previously accumulated interest",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Credit is the ability to borrow money with the promise to repay it, usually with interest",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A credit score is a numerical rating of a person's creditworthiness, based on their history of borrowing and repaying",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Rule of 72 estimates how long it takes money to double: divide 72 by the annual interest rate (e.g., 72/6 = 12 years at 6%)",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Income tax is a percentage of earnings paid to the government; the US uses a progressive tax system where higher incomes are taxed at higher rates",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Saving money means setting aside income for future use; investing means putting money into assets like stocks or bonds to earn a return over time",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The FDIC (Federal Deposit Insurance Corporation) insures bank deposits up to $250,000 per depositor, per bank",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "A checking account is used for everyday spending; a savings account earns interest and is used to store money for the future",
+          "grade_min": 3,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "saving money in a mattress is the same as saving in a bank",
+          "correct": "Money in a bank earns interest and is protected by FDIC insurance. Money at home earns nothing and can be lost to theft or disaster."
+        },
+        {
+          "wrong": "all debt is bad",
+          "correct": "Some debt can be productive (student loans, mortgages) if it leads to increased future earnings or asset building. Excessive high-interest debt is harmful."
+        },
+        {
+          "wrong": "compound interest only benefits savers",
+          "correct": "Compound interest works for savers (earning interest on interest) but also against borrowers (owing interest on interest)."
+        },
+        {
+          "wrong": "a credit card gives you free money",
+          "correct": "Credit card purchases must be repaid. Unpaid balances accrue interest, often at high rates (15-25%), making items cost much more over time."
+        }
+      ]
+    },
+    "international_trade": {
+      "keywords": [
+        "trade", "export", "import", "tariff", "quota",
+        "free trade", "comparative advantage", "globalization",
+        "trade deficit", "trade surplus"
+      ],
+      "facts": [
+        {
+          "statement": "Exports are goods and services sold to other countries; imports are goods and services bought from other countries",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A tariff is a tax on imported goods that makes them more expensive, protecting domestic producers",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Comparative advantage means a country can produce a good at a lower opportunity cost than another country, making trade beneficial for both",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "A trade deficit occurs when a country imports more than it exports; a trade surplus occurs when it exports more than it imports",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Globalization is the increasing interconnection of economies, cultures, and populations worldwide through trade, technology, and communication",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Free trade agreements (like USMCA, formerly NAFTA) reduce or eliminate tariffs and trade barriers between member countries",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Exchange rates determine how much one country's currency is worth in terms of another country's currency",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "An embargo is a government ban on trade with a specific country, often used as a political tool or punishment",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "trade only benefits the exporting country",
+          "correct": "Trade benefits both parties. The importing country gets goods it cannot produce as efficiently, and the exporting country earns revenue."
+        },
+        {
+          "wrong": "tariffs only affect foreign companies",
+          "correct": "Tariffs raise prices for domestic consumers, since the cost of the tariff is typically passed on in higher retail prices."
+        },
+        {
+          "wrong": "a trade deficit always means an economy is weak",
+          "correct": "A trade deficit can reflect strong consumer demand and investment inflows. The US has run trade deficits for decades during periods of economic growth."
+        },
+        {
+          "wrong": "globalization only benefits wealthy countries",
+          "correct": "Globalization has both benefits and costs for all countries. Many developing nations have experienced economic growth through trade, though distribution of benefits varies."
+        }
+      ]
+    },
+    "money_banking_and_inflation": {
+      "keywords": [
+        "money", "bank", "Federal Reserve", "inflation", "deflation",
+        "currency", "GDP", "recession", "interest rate", "monetary policy"
+      ],
+      "facts": [
+        {
+          "statement": "Money serves three functions: medium of exchange (used to buy things), store of value (holds purchasing power), and unit of account (measures value)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Federal Reserve (the Fed) is the central bank of the United States, responsible for monetary policy and regulating banks",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Inflation is a general increase in prices over time, which reduces the purchasing power of money",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "GDP (Gross Domestic Product) is the total value of all goods and services produced in a country in a year, and is the most common measure of economic output",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A recession is a significant decline in economic activity lasting at least several months, typically marked by falling GDP, rising unemployment, and declining business",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Federal Reserve can raise or lower interest rates to influence borrowing, spending, and inflation in the economy",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Banks make money by charging higher interest rates on loans than they pay on deposits, a difference called the spread",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Fiat money (like the US dollar) has value because the government declares it legal tender, not because it is backed by gold or silver",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Consumer Price Index (CPI) measures the average change in prices paid by consumers for a basket of goods and services over time",
+          "grade_min": 9,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the government prints money whenever it needs more",
+          "correct": "Printing too much money causes inflation. The Federal Reserve carefully controls the money supply to maintain price stability."
+        },
+        {
+          "wrong": "inflation means everything costs more and everyone is worse off",
+          "correct": "Moderate inflation (around 2%) is considered normal and healthy. Wages often rise with inflation. Hyperinflation is the dangerous extreme."
+        },
+        {
+          "wrong": "the US dollar is backed by gold",
+          "correct": "The US abandoned the gold standard in 1971. The dollar is now fiat money, backed by the full faith and credit of the US government."
+        },
+        {
+          "wrong": "banks lend out all the money deposited in them",
+          "correct": "Banks are required to keep a reserve (a fraction of deposits) and lend out the rest. This is called fractional reserve banking."
+        }
+      ]
+    },
+    "taxes_and_government_spending": {
+      "keywords": [
+        "tax", "income tax", "sales tax", "property tax", "progressive",
+        "regressive", "government spending", "budget", "national debt",
+        "fiscal policy"
+      ],
+      "facts": [
+        {
+          "statement": "The U.S. federal government is funded primarily through income taxes, payroll taxes, and corporate taxes",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A progressive tax takes a larger percentage from higher-income earners; the federal income tax is progressive",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A regressive tax takes a larger percentage from lower-income earners; sales taxes are considered regressive",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The national debt is the total amount of money the federal government owes; it grows when the government spends more than it collects in taxes (deficit spending)",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The largest categories of federal spending include Social Security, Medicare/Medicaid, and national defense",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "State and local governments rely heavily on sales taxes and property taxes for revenue",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Fiscal policy refers to government decisions about taxing and spending to influence the economy",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 16th Amendment (1913) gave Congress the power to collect a federal income tax",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "everyone pays the same tax rate",
+          "correct": "The US has a progressive income tax system where higher earners pay higher rates on income above certain thresholds."
+        },
+        {
+          "wrong": "all taxes go to the federal government",
+          "correct": "Taxes are collected by federal, state, and local governments. Sales tax goes to the state, property tax to local government, and income tax to federal and sometimes state."
+        },
+        {
+          "wrong": "the national debt and the deficit are the same thing",
+          "correct": "The deficit is the annual shortfall (spending minus revenue in one year). The national debt is the accumulated total of all past deficits."
+        }
+      ]
+    },
+    "entrepreneurship_and_business": {
+      "keywords": [
+        "entrepreneur", "business", "profit", "loss", "startup",
+        "risk", "innovation", "small business", "corporation",
+        "stock market", "investment"
+      ],
+      "facts": [
+        {
+          "statement": "An entrepreneur is someone who starts a business, taking on financial risk in the hope of making a profit",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Profit is the money a business earns after subtracting all costs; loss occurs when costs exceed revenue",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Small businesses account for nearly half of all private-sector employment in the United States",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The stock market allows people to buy and sell shares (ownership stakes) in publicly traded companies",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A corporation is a type of business that is legally separate from its owners, providing limited liability protection",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Innovation and new technology drive economic growth by creating new products, services, and more efficient ways of producing things",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A business plan is a written document that describes a business's goals, strategies, market analysis, and financial projections",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The three main types of business ownership are sole proprietorship (one owner), partnership (two or more owners), and corporation (shareholders)",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "all businesses make money right away",
+          "correct": "Most new businesses lose money in their first few years. Many startups fail within five years. Success usually requires sustained effort and adaptation."
+        },
+        {
+          "wrong": "the stock market always goes up",
+          "correct": "The stock market fluctuates and can lose value in the short term. While it has generally trended upward over long periods, there are no guarantees."
+        },
+        {
+          "wrong": "entrepreneurs don't take any risks",
+          "correct": "Entrepreneurship involves significant financial risk. Entrepreneurs invest their own money and time with no guarantee of success."
+        },
+        {
+          "wrong": "profit and revenue are the same thing",
+          "correct": "Revenue is total money earned from sales. Profit is revenue minus all costs (materials, labor, rent, taxes). A business can have high revenue but low or negative profit."
+        }
+      ]
+    },
+    "labor_and_employment": {
+      "keywords": [
+        "labor", "employment", "unemployment", "wage", "minimum wage",
+        "union", "workforce", "job", "career", "human capital"
+      ],
+      "facts": [
+        {
+          "statement": "The unemployment rate measures the percentage of the labor force that is actively looking for work but cannot find it",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The minimum wage is the lowest hourly pay that employers are legally required to pay workers; the federal minimum wage can be different from state minimums",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Human capital refers to the skills, education, and experience that make workers more productive and valuable",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Labor unions are organizations of workers that negotiate collectively with employers for better wages, benefits, and working conditions",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The labor force includes all people who are employed or actively seeking employment; it does not include retirees, students, or stay-at-home parents",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Wages are determined by the supply of and demand for labor; workers with rare, in-demand skills tend to earn higher wages",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Education and job training increase human capital, which generally leads to higher earning potential over a lifetime",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Fair Labor Standards Act (1938) established the minimum wage, overtime pay, and restrictions on child labor in the United States",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the unemployment rate counts everyone without a job",
+          "correct": "The unemployment rate only counts people who are actively seeking work. Retirees, students, and people who have stopped looking are not counted."
+        },
+        {
+          "wrong": "raising the minimum wage has no effects beyond higher pay",
+          "correct": "Minimum wage increases can raise income for low-wage workers but may also lead some employers to reduce hours or hiring, depending on the amount of the increase."
+        },
+        {
+          "wrong": "a college degree guarantees a high-paying job",
+          "correct": "While college graduates generally earn more on average, outcomes depend on the field of study, job market conditions, and individual skills."
+        }
+      ]
+    },
+    "economic_indicators_and_cycles": {
+      "keywords": [
+        "GDP", "recession", "depression", "boom", "bust",
+        "business cycle", "economic growth", "indicator", "expansion",
+        "contraction", "recovery"
+      ],
+      "facts": [
+        {
+          "statement": "The business cycle consists of four phases: expansion (growth), peak (highest point), contraction (decline), and trough (lowest point)",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "A depression is a severe and prolonged recession; the Great Depression (1929-1939) saw unemployment reach about 25% in the United States",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Leading economic indicators help predict future economic activity; examples include stock market performance, building permits, and consumer confidence",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Standard of living refers to the level of material comfort measured by goods, services, and luxuries available to a person or community",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Per capita GDP divides a country's total GDP by its population, providing a rough measure of average economic output per person",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Economic growth occurs when a country produces more goods and services over time, usually measured by increases in real GDP",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Great Recession of 2007-2009 was triggered by the collapse of the US housing market and led to a global financial crisis",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Productivity measures the amount of output produced per unit of input; higher productivity leads to economic growth and potentially higher wages",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "a recession means the economy has completely stopped",
+          "correct": "A recession is a significant decline in activity, but the economy still functions. People still work, buy goods, and businesses still operate -- just at reduced levels."
+        },
+        {
+          "wrong": "GDP measures how happy people are",
+          "correct": "GDP measures economic output, not well-being. A country can have high GDP but still have inequality, pollution, or low quality of life."
+        },
+        {
+          "wrong": "recessions can be completely prevented",
+          "correct": "While government policies can moderate economic cycles, recessions are a natural part of the business cycle. Preventing all downturns is not realistic."
+        },
+        {
+          "wrong": "economic growth always benefits everyone equally",
+          "correct": "Economic growth can increase overall wealth while still leaving some groups behind. The distribution of benefits depends on policies, institutions, and market conditions."
+        }
+      ]
+    },
+    "consumers_and_producers": {
+      "keywords": [
+        "consumer", "producer", "market", "choice", "advertisement",
+        "spending", "buying", "selling", "retail", "manufacturing"
+      ],
+      "facts": [
+        {
+          "statement": "Consumers are people who buy and use goods and services; producers are people or businesses that make and sell goods and services",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Consumers make choices based on price, quality, brand, needs, and preferences; these choices drive what producers make",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Advertising tries to influence consumer choices by creating awareness of products and persuading people to buy them",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Consumer protection laws prevent businesses from selling unsafe products, using misleading advertising, or engaging in unfair practices",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The circular flow model shows how money, goods, and services flow between households (consumers) and businesses (producers) in an economy",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Consumer spending accounts for roughly two-thirds of total US economic activity, making it the largest component of GDP",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Specialization means focusing on producing a limited range of goods or services, which increases efficiency and allows for trade",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Natural resources, human resources, and capital resources are the three types of productive resources used to make goods and services",
+          "grade_min": 3,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "advertising always tells the truth about products",
+          "correct": "While laws prohibit false advertising, ads are designed to persuade and may emphasize benefits while downplaying drawbacks. Consumers should evaluate claims critically."
+        },
+        {
+          "wrong": "the most expensive product is always the best",
+          "correct": "Price does not always reflect quality. Higher prices can result from branding, marketing, or inefficiency rather than superior quality."
+        },
+        {
+          "wrong": "consumers have no power in the economy",
+          "correct": "Consumer choices collectively determine what products succeed or fail. When consumers stop buying a product, businesses must adapt or close."
+        }
+      ]
+    }
+  }
+}

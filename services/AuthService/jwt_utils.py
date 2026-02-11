@@ -6,6 +6,9 @@ import os
 import sys
 from datetime import datetime, timedelta
 from typing import Dict, Optional
+from dotenv import load_dotenv
+
+load_dotenv()
 
 JWT_SECRET = os.getenv("JWT_SECRET", "change-me-in-production")
 JWT_ALGORITHM = "HS256"

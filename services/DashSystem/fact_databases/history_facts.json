@@ -1,0 +1,669 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "history",
+    "last_updated": "2026-02-11",
+    "description": "General world history facts: timelines, key events, important figures, cause-and-effect relationships, historical documents, historical thinking skills"
+  },
+  "facts_by_topic": {
+    "timelines_and_chronology": {
+      "keywords": [
+        "timeline", "chronology", "era", "period", "century",
+        "decade", "BCE", "CE", "AD", "BC", "order", "sequence"
+      ],
+      "facts": [
+        {
+          "statement": "BCE (Before Common Era) and BC (Before Christ) count backwards from year 1; CE (Common Era) and AD (Anno Domini) count forward from year 1",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A decade is 10 years, a century is 100 years, and a millennium is 1,000 years",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Stone Age, Bronze Age, and Iron Age describe periods of human history based on the primary materials used for tools",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Agricultural Revolution (around 10,000 BCE) was when humans first began farming, leading to permanent settlements and the rise of civilizations",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Major historical eras include Ancient (before 500 CE), Medieval (500-1500 CE), Early Modern (1500-1800), and Modern (1800-present)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 21st century began on January 1, 2001; centuries are numbered one ahead of the hundreds digit (the 1900s are the 20th century)",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Primary sources are firsthand accounts from the time period (diaries, letters, photos); secondary sources analyze events after the fact (textbooks, documentaries)",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "History is typically divided into prehistory (before written records) and history (after the invention of writing around 3500 BCE)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Humans (Homo sapiens) have existed for approximately 300,000 years, but written history covers only the last 5,500 years",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the year 2000 was in the 20th century",
+          "correct": "The year 2000 was the last year of the 20th century. The 21st century began on January 1, 2001."
+        },
+        {
+          "wrong": "BCE dates get bigger as you move forward in time",
+          "correct": "BCE dates count backwards: 500 BCE is later than 1000 BCE. As BCE numbers get smaller, you are moving forward in time toward year 1."
+        },
+        {
+          "wrong": "history only includes written records",
+          "correct": "Historians also use archaeology, oral traditions, artifacts, and scientific methods like carbon dating to understand the past before written records."
+        },
+        {
+          "wrong": "AD stands for 'After Death' (of Jesus)",
+          "correct": "AD stands for Anno Domini, Latin for 'In the Year of Our Lord.' It counts from the estimated birth year of Jesus, not his death."
+        }
+      ]
+    },
+    "cause_and_effect": {
+      "keywords": [
+        "cause", "effect", "consequence", "result", "led to",
+        "because", "therefore", "impact", "outcome", "revolution"
+      ],
+      "facts": [
+        {
+          "statement": "The invention of the printing press (c. 1440) led to increased literacy, the spread of new ideas, and contributed to both the Renaissance and the Reformation",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The harsh terms of the Treaty of Versailles (1919) contributed to economic hardship and resentment in Germany, helping fuel the rise of Adolf Hitler and World War II",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Industrial Revolution caused mass urbanization, changed family structures, created new social classes, and led to both economic growth and labor exploitation",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The assassination of Archduke Franz Ferdinand of Austria-Hungary in 1914 was the immediate trigger for World War I, though underlying causes included alliances, imperialism, and nationalism",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Black Death (1347-1351) killed roughly one-third of Europe's population, leading to labor shortages, higher wages for workers, and weakened feudalism",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "European colonization of the Americas caused the Columbian Exchange: new crops spread between continents, but European diseases devastated Indigenous populations",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Enlightenment's emphasis on reason, natural rights, and social contracts inspired both the American Revolution (1776) and the French Revolution (1789)",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The development of agriculture around 10,000 BCE led to permanent settlements, surplus food, population growth, specialized labor, and eventually cities and civilizations",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The fall of the Western Roman Empire (476 CE) led to political fragmentation in Europe, the rise of feudalism, and the beginning of the Middle Ages",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The atomic bombings of Hiroshima and Nagasaki in 1945 led to Japan's surrender, the end of WWII, and the beginning of the nuclear age and Cold War arms race",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "historical events have only one cause",
+          "correct": "Most major historical events have multiple causes. For example, WWI was caused by alliances, imperialism, nationalism, and militarism -- not just one assassination."
+        },
+        {
+          "wrong": "historical events only have immediate effects",
+          "correct": "Events have both short-term and long-term effects. The fall of Rome had immediate political effects but also shaped European culture for centuries."
+        },
+        {
+          "wrong": "correlation means causation in history",
+          "correct": "Just because two events happened at the same time does not mean one caused the other. Historians carefully analyze evidence to establish causal relationships."
+        },
+        {
+          "wrong": "history always repeats itself exactly",
+          "correct": "While historical patterns can recur, circumstances are always different. It is more accurate to say that history can rhyme or echo, not repeat exactly."
+        }
+      ]
+    },
+    "important_historical_figures": {
+      "keywords": [
+        "leader", "figure", "ruler", "inventor", "explorer",
+        "reformer", "activist", "philosopher", "scientist", "hero"
+      ],
+      "facts": [
+        {
+          "statement": "Cleopatra VII was the last active ruler of Ptolemaic Egypt; she was of Greek Macedonian descent, not ethnically Egyptian",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Mahatma Gandhi led India's independence movement using nonviolent civil disobedience, inspiring civil rights movements worldwide",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Confucius was a Chinese philosopher (551-479 BCE) whose teachings on ethics, family, and government shaped East Asian culture for over 2,000 years",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Marie Curie was the first woman to win a Nobel Prize and the only person to win Nobel Prizes in two different sciences (physics and chemistry)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Harriet Tubman escaped slavery and helped approximately 70 other enslaved people reach freedom through the Underground Railroad",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Simon Bolivar led independence movements across South America, freeing Venezuela, Colombia, Ecuador, Peru, and Bolivia from Spanish rule",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Queen Elizabeth I of England (1533-1603) led England through a golden age of exploration and culture, including the defeat of the Spanish Armada",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Frederick Douglass escaped slavery and became one of the most powerful voices for abolition and civil rights in 19th-century America",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Eleanor Roosevelt championed human rights and helped draft the Universal Declaration of Human Rights (1948) as chair of the UN Human Rights Commission",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Nelson Mandela fought apartheid in South Africa, spent 27 years in prison, and became the country's first democratically elected Black president in 1994",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "Cleopatra was Egyptian",
+          "correct": "Cleopatra was ethnically Greek, a member of the Macedonian Ptolemaic dynasty that ruled Egypt after Alexander the Great's conquest."
+        },
+        {
+          "wrong": "Gandhi was the first president of India",
+          "correct": "Gandhi never held political office. Jawaharlal Nehru was the first Prime Minister of India, and Rajendra Prasad was the first President."
+        },
+        {
+          "wrong": "Einstein failed math in school",
+          "correct": "Einstein excelled at mathematics. This myth may have started from a misunderstanding of Swiss grading scales."
+        },
+        {
+          "wrong": "Columbus was the first person to reach the Americas",
+          "correct": "Indigenous peoples lived in the Americas for thousands of years. Norse explorer Leif Erikson reached North America around 1000 CE, nearly 500 years before Columbus."
+        },
+        {
+          "wrong": "historical figures acted alone without help",
+          "correct": "Most famous historical achievements involved collaboration, support from communities, and contributions from many unnamed people. History often highlights individuals while overlooking groups."
+        }
+      ]
+    },
+    "historical_documents_and_ideas": {
+      "keywords": [
+        "document", "constitution", "declaration", "treaty",
+        "charter", "law", "Magna Carta", "rights", "philosophy",
+        "Enlightenment", "social contract"
+      ],
+      "facts": [
+        {
+          "statement": "The Magna Carta (1215) limited the power of England's king and established that the ruler must obey the law, influencing later democratic documents",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Declaration of Independence (1776) declared American independence and stated that all men are created equal with unalienable rights to life, liberty, and the pursuit of happiness",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The U.S. Constitution (1787) is the oldest written national constitution still in use, establishing the framework of American government",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Universal Declaration of Human Rights (1948) was the first global document to list fundamental rights that all people are entitled to",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Code of Hammurabi (c. 1754 BCE) from Babylon is one of the oldest known written legal codes, establishing laws and punishments",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Enlightenment was an 18th-century intellectual movement emphasizing reason, individual rights, and the social contract between governments and the governed",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Declaration of the Rights of Man and of the Citizen (1789) was a key document of the French Revolution declaring that men are born free and equal in rights",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Emancipation Proclamation (1863) declared enslaved people in Confederate states to be free, transforming the Civil War into a fight to end slavery",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Geneva Conventions (1949) established international legal standards for humanitarian treatment during war, protecting civilians and prisoners of war",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "John Locke's ideas about natural rights (life, liberty, property) and government by consent directly influenced Thomas Jefferson's writing of the Declaration of Independence",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the Declaration of Independence and the Constitution are the same document",
+          "correct": "The Declaration (1776) announced independence from Britain. The Constitution (1787) established the framework of the US government. They are separate documents with different purposes."
+        },
+        {
+          "wrong": "the Magna Carta created democracy",
+          "correct": "The Magna Carta limited the king's power and established rule of law, but it did not create democracy. It primarily benefited nobles, not common people."
+        },
+        {
+          "wrong": "human rights have always been universally recognized",
+          "correct": "The concept of universal human rights developed over centuries. Slavery, serfdom, and denial of rights to women and minorities were considered normal for most of history."
+        },
+        {
+          "wrong": "ancient laws were always unjust",
+          "correct": "While ancient legal codes had harsh punishments and reflected their societies' values, they also represented important steps toward organized justice and rule of law."
+        }
+      ]
+    },
+    "historical_thinking_skills": {
+      "keywords": [
+        "source", "evidence", "bias", "perspective", "primary source",
+        "secondary source", "analyze", "interpret", "context",
+        "point of view", "reliability"
+      ],
+      "facts": [
+        {
+          "statement": "Primary sources are original materials from the time being studied: letters, diaries, photographs, artifacts, government records, and speeches",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Secondary sources interpret and analyze primary sources: textbooks, biographies, documentaries, and scholarly articles written after the events",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Historical bias means that all sources reflect the perspective, beliefs, and limitations of the person who created them",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Context means understanding the time period, culture, and circumstances in which an event occurred, which helps explain why people acted as they did",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Historians use multiple sources and cross-reference evidence to build a more complete and accurate picture of the past",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Archaeology is the study of human history through physical remains like buildings, tools, pottery, and bones",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Continuity and change is a key concept in history: some things stay the same over time while others transform dramatically",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Historical empathy means trying to understand how people in the past thought and felt based on their circumstances, not judging them solely by modern standards",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Carbon-14 dating is a scientific method that helps determine the age of organic materials up to about 50,000 years old",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Oral history is the collection of memories and personal reflections through recorded interviews, valuable for understanding experiences not captured in written records",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "primary sources are always more accurate than secondary sources",
+          "correct": "Primary sources can contain bias, errors, or incomplete information. A diary entry may be emotionally biased. Secondary sources can provide broader analysis and context."
+        },
+        {
+          "wrong": "history is just a list of facts and dates to memorize",
+          "correct": "History involves analyzing evidence, understanding multiple perspectives, evaluating causes and effects, and constructing arguments supported by evidence."
+        },
+        {
+          "wrong": "there is only one correct interpretation of history",
+          "correct": "Historians often disagree on interpretations because they may emphasize different evidence, perspectives, or analytical frameworks. New evidence can change understanding."
+        },
+        {
+          "wrong": "older civilizations were less intelligent than modern people",
+          "correct": "People throughout history have been equally capable. Ancient peoples built pyramids, developed mathematics, created complex governments, and solved problems with the tools available to them."
+        }
+      ]
+    },
+    "revolutions_and_social_movements": {
+      "keywords": [
+        "revolution", "movement", "reform", "protest", "change",
+        "rights", "freedom", "equality", "suffrage", "abolition",
+        "independence"
+      ],
+      "facts": [
+        {
+          "statement": "The American Revolution (1775-1783) established the United States as an independent nation based on principles of self-governance and natural rights",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The French Revolution (1789-1799) overthrew the monarchy and established ideals of liberty, equality, and fraternity that influenced democratic movements worldwide",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Haitian Revolution (1791-1804) was the only successful large-scale slave revolt in history, establishing Haiti as the first free Black republic",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The women's suffrage movement fought for decades to win women the right to vote; New Zealand was the first country to grant it in 1893, and the US followed in 1920",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The abolitionist movement fought to end slavery; it succeeded in Britain's colonies in 1833 and in the United States with the 13th Amendment in 1865",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Industrial Revolution (beginning around 1760 in Britain) transformed economies from agricultural to manufacturing, changing how people lived and worked",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Latin American independence movements in the early 1800s, led by figures like Simon Bolivar and Jose de San Martin, freed most of South America from Spanish rule",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Chinese Communist Revolution (1949) established the People's Republic of China under Mao Zedong, transforming the most populous country in the world",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The anti-apartheid movement in South Africa fought against racial segregation and discrimination, ultimately leading to free elections in 1994",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Scientific Revolution (16th-17th centuries) transformed understanding of the natural world through observation and experimentation, led by figures like Galileo, Newton, and Copernicus",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "revolutions always lead to immediate improvement",
+          "correct": "Revolutions often lead to periods of instability, violence, and uncertainty before positive change is achieved. The French Revolution led to the Reign of Terror before stability returned."
+        },
+        {
+          "wrong": "social change happens suddenly",
+          "correct": "Most social movements build over decades of organizing, protest, and advocacy before achieving major change. The women's suffrage movement took over 70 years."
+        },
+        {
+          "wrong": "only violent revolutions create change",
+          "correct": "Many successful movements used nonviolent methods. Gandhi's independence movement, the US Civil Rights Movement, and the anti-apartheid movement all achieved change through nonviolent resistance."
+        },
+        {
+          "wrong": "revolutions are led by a single person",
+          "correct": "While history often highlights individual leaders, revolutions involve mass participation by thousands of ordinary people whose contributions are often unrecorded."
+        }
+      ]
+    },
+    "trade_and_cultural_exchange": {
+      "keywords": [
+        "trade", "Silk Road", "exchange", "spread", "diffusion",
+        "culture", "religion", "technology", "merchants", "goods",
+        "spice", "caravan"
+      ],
+      "facts": [
+        {
+          "statement": "The Silk Road was a network of trade routes connecting China, Central Asia, the Middle East, and Europe from about 130 BCE to 1453 CE",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Trade along the Silk Road spread not only goods (silk, spices, gold) but also ideas, religions (Buddhism, Islam, Christianity), and technologies (paper, gunpowder, compass)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Columbian Exchange (after 1492) transferred crops, animals, and diseases between the Old World and the New World, permanently changing diets and populations on both sides",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The transatlantic slave trade (16th-19th centuries) forcibly transported an estimated 12.5 million Africans to the Americas, profoundly shaping the economies and cultures of both continents",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Indian Ocean trade network connected East Africa, the Middle East, India, and Southeast Asia for over 2,000 years, exchanging spices, textiles, and precious metals",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The spread of major world religions (Buddhism, Christianity, Islam) followed trade routes, carried by merchants, missionaries, and travelers",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Paper was invented in China around 105 CE, spread to the Islamic world by the 8th century, and reached Europe by the 12th century, revolutionizing record-keeping",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Crops like potatoes, tomatoes, and corn (maize) originated in the Americas and became staple foods in Europe, Africa, and Asia after the Columbian Exchange",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the Silk Road was a single road",
+          "correct": "The Silk Road was a vast network of many interconnected trade routes spanning thousands of miles across land and sea."
+        },
+        {
+          "wrong": "trade only involved luxury goods",
+          "correct": "While luxury items like silk and spices were traded, everyday goods, agricultural products, and raw materials were also exchanged, along with ideas, religions, and technologies."
+        },
+        {
+          "wrong": "cultural exchange only happened through trade",
+          "correct": "Culture also spread through conquest, migration, diplomacy, religious missions, and intermarriage. Trade was one important mechanism among many."
+        },
+        {
+          "wrong": "tomatoes and potatoes have always been eaten in Europe",
+          "correct": "Tomatoes and potatoes are native to the Americas. They reached Europe only after Columbus's voyages in 1492 and took decades to be widely accepted as food."
+        }
+      ]
+    },
+    "world_religions_in_history": {
+      "keywords": [
+        "religion", "Christianity", "Islam", "Judaism", "Buddhism",
+        "Hinduism", "monotheism", "polytheism", "worship", "faith",
+        "temple", "church", "mosque"
+      ],
+      "facts": [
+        {
+          "statement": "Judaism, Christianity, and Islam are the three major Abrahamic religions, all tracing their origins to the patriarch Abraham and originating in the Middle East",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Hinduism is one of the world's oldest religions, originating in the Indian subcontinent over 4,000 years ago, with no single founder",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Buddhism was founded by Siddhartha Gautama (the Buddha) in India around the 5th century BCE and spread throughout Asia along trade routes",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Islam was founded by the Prophet Muhammad in the 7th century CE in Arabia and spread rapidly across the Middle East, North Africa, and beyond",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Christianity originated in the 1st century CE in the Roman province of Judea and grew from a small sect to the official religion of the Roman Empire by 380 CE",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Monotheism is the belief in one God (Judaism, Christianity, Islam); polytheism is the belief in many gods (ancient Greek, Roman, Hindu traditions)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Crusades (1096-1291) were a series of religious wars between European Christians and Muslims for control of the Holy Land",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Religious tolerance has varied throughout history; some periods and empires (Persian, Mughal under Akbar) practiced tolerance, while others persecuted religious minorities",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "all religions worship the same way",
+          "correct": "Religions have vastly different practices, beliefs, sacred texts, and forms of worship. Even within a single religion, denominations can differ significantly."
+        },
+        {
+          "wrong": "religion and science have always been in conflict",
+          "correct": "Many scientists throughout history have been deeply religious. Islamic scholars preserved and advanced Greek science, and medieval monasteries were centers of learning."
+        },
+        {
+          "wrong": "Hinduism has only one god",
+          "correct": "Hinduism is complex -- some traditions are polytheistic (many gods), some are monotheistic (one supreme being with many forms), and some are philosophical rather than theistic."
+        },
+        {
+          "wrong": "the Crusades were purely about religion",
+          "correct": "The Crusades also involved political power, territorial ambition, economic motives (trade routes), and social factors alongside religious motivations."
+        }
+      ]
+    },
+    "science_and_technology_in_history": {
+      "keywords": [
+        "invention", "technology", "science", "discovery", "innovation",
+        "printing press", "compass", "gunpowder", "telescope",
+        "electricity", "computer", "internet"
+      ],
+      "facts": [
+        {
+          "statement": "The invention of writing (c. 3500 BCE in Mesopotamia) is one of the most important developments in human history, enabling record-keeping, laws, and the transmission of knowledge",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Gunpowder, invented in China around the 9th century CE, transformed warfare when it spread to Europe and the Middle East",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The magnetic compass, invented in China during the Han Dynasty, revolutionized navigation and made long-distance sea travel possible",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The printing press (c. 1440) by Gutenberg made books affordable and widespread, dramatically increasing literacy and the spread of ideas",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The telegraph, patented by Samuel Morse in 1837, was the first technology to allow near-instant communication over long distances",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The discovery of penicillin by Alexander Fleming in 1928 revolutionized medicine and saved millions of lives by treating bacterial infections",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The development of the internet in the late 20th century transformed communication, commerce, and access to information worldwide",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Green Revolution of the mid-20th century introduced high-yield crop varieties and modern farming techniques, dramatically increasing food production worldwide",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "ancient people had no technology",
+          "correct": "Ancient civilizations developed sophisticated technologies including irrigation systems, bronze and iron working, road networks, aqueducts, and architectural techniques like the arch and dome."
+        },
+        {
+          "wrong": "all important inventions came from Europe",
+          "correct": "Many key inventions originated in China (paper, gunpowder, compass, printing), the Islamic world (algebra, optics), India (decimal system, zero), and other regions."
+        },
+        {
+          "wrong": "technology always improves people's lives",
+          "correct": "While technology has many benefits, it can also have negative effects like environmental damage, job displacement, warfare, and privacy concerns."
+        },
+        {
+          "wrong": "inventions are always created by a single genius",
+          "correct": "Most inventions build on the work of many people over time. The light bulb, telephone, and computer all had multiple contributors before becoming practical."
+        }
+      ]
+    }
+  }
+}

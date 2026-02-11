@@ -1,0 +1,249 @@
+{
+  "meta": {"version": 1, "subject": "geography", "last_updated": "2026-02-07"},
+  "facts_by_topic": {
+    "continents_oceans": {
+      "keywords": ["continent", "ocean", "Africa", "Antarctica", "Asia", "Australia", "Europe", "North America", "South America", "Pacific", "Atlantic", "Indian", "Southern", "Arctic"],
+      "facts": [
+        {"statement": "There are 7 continents: Africa, Antarctica, Asia, Australia, Europe, North America, and South America", "grade_min": 2, "grade_max": 12},
+        {"statement": "Asia is the largest continent by both area and population", "grade_min": 2, "grade_max": 12},
+        {"statement": "Australia is the smallest continent", "grade_min": 2, "grade_max": 12},
+        {"statement": "There are 5 oceans: Pacific, Atlantic, Indian, Southern, and Arctic", "grade_min": 2, "grade_max": 12},
+        {"statement": "The Pacific Ocean is the largest and deepest ocean, covering more area than all the land on Earth combined", "grade_min": 3, "grade_max": 12},
+        {"statement": "The Arctic Ocean is the smallest and shallowest ocean", "grade_min": 3, "grade_max": 12},
+        {"statement": "Antarctica is the coldest, driest, and windiest continent", "grade_min": 3, "grade_max": 12},
+        {"statement": "Africa is the second-largest continent and contains 54 recognized countries", "grade_min": 3, "grade_max": 12},
+        {"statement": "South America is the fourth-largest continent and contains 12 countries; Brazil is the largest by both area and population", "grade_min": 3, "grade_max": 12},
+        {"statement": "Europe is the second-smallest continent by area but the third most populous, with about 44 countries", "grade_min": 4, "grade_max": 12},
+        {"statement": "North America includes 23 countries and is the third-largest continent by area", "grade_min": 3, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Africa is a country", "correct": "Africa is a continent made up of 54 recognized countries"},
+        {"wrong": "There are 4 oceans", "correct": "There are 5 oceans; the Southern Ocean was officially recognized by the International Hydrographic Organization"},
+        {"wrong": "Europe and Asia are separate landmasses", "correct": "Europe and Asia share a continuous landmass called Eurasia but are considered separate continents culturally and historically"},
+        {"wrong": "Australia is just a country, not a continent", "correct": "Australia is both a country and the world's smallest continent"}
+      ]
+    },
+    "us_geography": {
+      "keywords": ["United States", "state", "capital", "Washington DC", "Mississippi", "Missouri", "Colorado", "Ohio", "Rockies", "Appalachians", "Sierra Nevada", "Great Lakes", "Huron", "Ontario", "Michigan", "Erie", "Superior", "Northeast", "Southeast", "Midwest", "Southwest", "West"],
+      "facts": [
+        {"statement": "The United States has 50 states", "grade_min": 2, "grade_max": 12},
+        {"statement": "Washington, D.C. is the capital of the United States and is not part of any state", "grade_min": 2, "grade_max": 12},
+        {"statement": "The Mississippi River is the second-longest river in North America and flows from Minnesota to the Gulf of Mexico", "grade_min": 3, "grade_max": 12},
+        {"statement": "The Missouri River is the longest river in North America at approximately 2,341 miles", "grade_min": 5, "grade_max": 12},
+        {"statement": "The five Great Lakes are Huron, Ontario, Michigan, Erie, and Superior, remembered by the acronym HOMES", "grade_min": 3, "grade_max": 12},
+        {"statement": "Lake Superior is the largest of the Great Lakes by surface area and the largest freshwater lake by surface area in the world", "grade_min": 3, "grade_max": 12},
+        {"statement": "The Rocky Mountains extend from Canada through the western United States to New Mexico", "grade_min": 3, "grade_max": 12},
+        {"statement": "The Appalachian Mountains run along the eastern United States and are among the oldest mountains in the world", "grade_min": 3, "grade_max": 12},
+        {"statement": "The Grand Canyon, carved by the Colorado River, is located in Arizona and is about 277 miles long and over a mile deep", "grade_min": 3, "grade_max": 12},
+        {"statement": "The US is commonly divided into regions: Northeast, Southeast, Midwest, Southwest, and West", "grade_min": 3, "grade_max": 8}
+      ],
+      "common_errors": [
+        {"wrong": "Washington state is the capital of the United States", "correct": "Washington, D.C. (District of Columbia) is the U.S. capital; Washington state is in the Pacific Northwest"},
+        {"wrong": "The Mississippi is the longest river in North America", "correct": "The Missouri River is slightly longer than the Mississippi; however, the Mississippi-Missouri river system combined is the longest in North America"},
+        {"wrong": "There are 52 states in the United States", "correct": "There are 50 states in the United States; Washington, D.C. and Puerto Rico are not states"},
+        {"wrong": "Alaska is a small state because it looks small on many maps", "correct": "Alaska is the largest U.S. state by area; it appears smaller on many map projections due to distortion"}
+      ]
+    },
+    "world_countries_capitals": {
+      "keywords": ["country", "capital", "population", "China", "India", "Russia", "Canada", "Brazil", "Indonesia", "Pakistan", "largest", "populous"],
+      "facts": [
+        {"statement": "China and India are the two most populous countries in the world, each with over 1.4 billion people", "grade_min": 3, "grade_max": 12},
+        {"statement": "Russia is the largest country in the world by area, spanning across Europe and Asia", "grade_min": 3, "grade_max": 12},
+        {"statement": "Canada is the second-largest country by area, and its capital is Ottawa", "grade_min": 3, "grade_max": 12},
+        {"statement": "The top five most populous countries are India, China, the United States, Indonesia, and Pakistan", "grade_min": 5, "grade_max": 12},
+        {"statement": "The five largest countries by area are Russia, Canada, the United States, China, and Brazil", "grade_min": 5, "grade_max": 12},
+        {"statement": "Beijing is the capital of China, and New Delhi is the capital of India", "grade_min": 3, "grade_max": 12},
+        {"statement": "Brasilia is the capital of Brazil, not Rio de Janeiro or Sao Paulo", "grade_min": 5, "grade_max": 12},
+        {"statement": "Tokyo, the capital of Japan, is one of the most populous metropolitan areas in the world", "grade_min": 4, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Sydney is the capital of Australia", "correct": "Canberra is the capital of Australia; Sydney is the largest city"},
+        {"wrong": "Rio de Janeiro is the capital of Brazil", "correct": "Brasilia has been the capital of Brazil since 1960; Rio de Janeiro is a major city but not the capital"},
+        {"wrong": "Istanbul is the capital of Turkey", "correct": "Ankara is the capital of Turkey; Istanbul is the largest city and former capital"},
+        {"wrong": "Holland and the Netherlands are different countries", "correct": "Holland refers to two provinces (North Holland and South Holland) within the Netherlands; they are not separate countries"}
+      ]
+    },
+    "physical_features": {
+      "keywords": ["mountain", "river", "desert", "island", "peninsula", "Everest", "K2", "Kilimanjaro", "Nile", "Amazon", "Yangtze", "Sahara", "peak", "elevation"],
+      "facts": [
+        {"statement": "Mount Everest is the tallest mountain above sea level at 29,032 feet (8,849 meters), located in the Himalayas on the border of Nepal and Tibet", "grade_min": 3, "grade_max": 12},
+        {"statement": "K2 is the second-tallest mountain above sea level at 28,251 feet (8,611 meters), located on the China-Pakistan border", "grade_min": 6, "grade_max": 12},
+        {"statement": "Mount Kilimanjaro is the tallest mountain in Africa at 19,341 feet (5,895 meters) and is a dormant volcano in Tanzania", "grade_min": 5, "grade_max": 12},
+        {"statement": "The Nile River is the longest river in the world at approximately 4,130 miles (6,650 km), flowing through northeastern Africa", "grade_min": 3, "grade_max": 12},
+        {"statement": "The Amazon River carries more water than any other river in the world and flows through South America", "grade_min": 3, "grade_max": 12},
+        {"statement": "The Sahara Desert is the largest hot desert in the world, covering much of northern Africa", "grade_min": 3, "grade_max": 12},
+        {"statement": "The Yangtze River is the longest river in Asia and the third-longest in the world at approximately 3,917 miles (6,300 km)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Greenland is the largest island in the world (Australia is classified as a continent rather than an island)", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Mount Everest is the tallest mountain measured from base to peak", "correct": "Mauna Kea in Hawaii is taller from base to peak at about 33,500 feet (10,210 meters), but most of it is underwater; Everest has the highest elevation above sea level"},
+        {"wrong": "The Sahara is the largest desert in the world", "correct": "The Antarctic Desert is the largest desert overall at about 5.5 million square miles; the Sahara is the largest hot desert at about 3.6 million square miles"},
+        {"wrong": "The Amazon is the longest river in the world", "correct": "The Nile is generally considered the longest river at approximately 4,130 miles; the Amazon is the largest by water volume"},
+        {"wrong": "Mount Kilimanjaro is in South America", "correct": "Mount Kilimanjaro is in Tanzania, East Africa; it is the tallest mountain on the African continent"}
+      ]
+    },
+    "climate_zones": {
+      "keywords": ["climate", "tropical", "arid", "temperate", "continental", "polar", "equator", "tropic", "Cancer", "Capricorn", "Arctic Circle", "Antarctic Circle", "rain shadow"],
+      "facts": [
+        {"statement": "The five major climate zones are tropical, dry (arid), temperate, continental, and polar", "grade_min": 5, "grade_max": 12},
+        {"statement": "The equator is an imaginary line at 0 degrees latitude that divides the Earth into the Northern and Southern Hemispheres", "grade_min": 3, "grade_max": 12},
+        {"statement": "The Tropic of Cancer is at approximately 23.5 degrees north latitude, and the Tropic of Capricorn is at approximately 23.5 degrees south latitude", "grade_min": 5, "grade_max": 12},
+        {"statement": "The Arctic Circle is at approximately 66.5 degrees north latitude, and the Antarctic Circle is at approximately 66.5 degrees south latitude", "grade_min": 5, "grade_max": 12},
+        {"statement": "Tropical climates are found near the equator and are warm year-round with significant rainfall", "grade_min": 3, "grade_max": 12},
+        {"statement": "The rain shadow effect occurs when mountains block moist air, causing the leeward side to be dry", "grade_min": 6, "grade_max": 12},
+        {"statement": "Polar climates are found near the North and South Poles and experience extremely cold temperatures year-round", "grade_min": 3, "grade_max": 12},
+        {"statement": "Temperate climates have moderate temperatures with distinct seasons and are found in the mid-latitudes between the tropics and polar regions", "grade_min": 4, "grade_max": 12},
+        {"statement": "Continental climates have large temperature ranges between summer and winter and are typically found in the interior of large landmasses", "grade_min": 5, "grade_max": 12},
+        {"statement": "Ocean currents affect climate: the Gulf Stream carries warm water from the Gulf of Mexico to western Europe, keeping it warmer than other regions at the same latitude", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "The equator passes through the United States", "correct": "The equator does not pass through the United States; it runs through countries like Ecuador, Colombia, Brazil, Kenya, and Indonesia"},
+        {"wrong": "Deserts are always hot", "correct": "Deserts are defined by low precipitation, not temperature; Antarctica is a cold desert and the largest desert in the world"},
+        {"wrong": "Tropical climates only exist in Africa", "correct": "Tropical climates are found near the equator on every inhabited continent, including parts of South America, Central America, Southeast Asia, and Oceania"},
+        {"wrong": "Seasons are caused by the distance between Earth and the Sun", "correct": "Seasons are caused by the tilt of Earth's axis (23.5 degrees), not by distance from the Sun. When the Northern Hemisphere tilts toward the Sun, it is summer there"}
+      ]
+    },
+    "map_skills": {
+      "keywords": ["latitude", "longitude", "equator", "Prime Meridian", "hemisphere", "Northern", "Southern", "Eastern", "Western", "compass", "scale", "legend", "key", "map", "coordinates"],
+      "facts": [
+        {"statement": "Latitude lines run east-west and measure distance north or south of the equator (0 degrees latitude)", "grade_min": 3, "grade_max": 12},
+        {"statement": "Longitude lines run north-south and measure distance east or west of the Prime Meridian (0 degrees longitude)", "grade_min": 3, "grade_max": 12},
+        {"statement": "The equator is at 0 degrees latitude and divides the Earth into the Northern and Southern Hemispheres", "grade_min": 3, "grade_max": 12},
+        {"statement": "The Prime Meridian is at 0 degrees longitude and passes through Greenwich, England, dividing the Earth into the Eastern and Western Hemispheres", "grade_min": 3, "grade_max": 12},
+        {"statement": "A compass rose shows the cardinal directions: north, south, east, and west", "grade_min": 2, "grade_max": 12},
+        {"statement": "A map scale shows the relationship between distances on the map and actual distances on Earth", "grade_min": 3, "grade_max": 12},
+        {"statement": "A map legend (or key) explains the symbols, colors, and lines used on a map", "grade_min": 2, "grade_max": 12},
+        {"statement": "The four hemispheres are Northern, Southern, Eastern, and Western", "grade_min": 3, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Latitude lines run north-south", "correct": "Latitude lines run east-west (horizontally) and measure how far north or south a location is from the equator"},
+        {"wrong": "Longitude lines run east-west", "correct": "Longitude lines run north-south (vertically) and measure how far east or west a location is from the Prime Meridian"},
+        {"wrong": "The Prime Meridian divides the Northern and Southern Hemispheres", "correct": "The equator divides the Northern and Southern Hemispheres; the Prime Meridian divides the Eastern and Western Hemispheres"},
+        {"wrong": "North is always at the top of every map", "correct": "While most modern maps place north at the top by convention, maps can be oriented in any direction and historically have been"}
+      ]
+    },
+    "landforms": {
+      "keywords": ["volcano", "peninsula", "isthmus", "archipelago", "plateau", "valley", "mesa", "canyon", "delta", "fjord", "strait", "landform", "terrain"],
+      "facts": [
+        {"statement": "A volcano is an opening in Earth's crust through which lava, ash, and gases erupt", "grade_min": 2, "grade_max": 12},
+        {"statement": "A peninsula is a piece of land surrounded by water on three sides, such as Florida or the Italian Peninsula", "grade_min": 3, "grade_max": 12},
+        {"statement": "An isthmus is a narrow strip of land connecting two larger land areas, such as the Isthmus of Panama connecting North and South America", "grade_min": 5, "grade_max": 12},
+        {"statement": "An archipelago is a chain or group of islands, such as the Hawaiian Islands, the Philippines, or Indonesia", "grade_min": 5, "grade_max": 12},
+        {"statement": "A plateau is a flat, elevated area of land, sometimes called a tableland; the Tibetan Plateau is the highest and largest in the world", "grade_min": 4, "grade_max": 12},
+        {"statement": "A canyon is a deep, narrow valley with steep sides carved by a river, such as the Grand Canyon", "grade_min": 3, "grade_max": 12},
+        {"statement": "A delta is a landform created by sediment deposited at the mouth of a river, such as the Nile Delta or Mississippi Delta", "grade_min": 5, "grade_max": 12},
+        {"statement": "A fjord is a long, narrow inlet with steep cliffs created by glacial erosion, commonly found in Norway", "grade_min": 6, "grade_max": 12},
+        {"statement": "A mesa is a flat-topped hill with steep sides, common in the American Southwest; it is smaller than a plateau", "grade_min": 4, "grade_max": 12},
+        {"statement": "A butte is a smaller, narrower version of a mesa with steep sides and a flat top", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "All mountains are volcanoes", "correct": "Mountains can form through tectonic plate collisions, faulting, and folding; only some mountains are volcanoes"},
+        {"wrong": "A strait and an isthmus are the same thing", "correct": "A strait is a narrow body of water between two landmasses; an isthmus is a narrow strip of land between two bodies of water -- they are opposites"},
+        {"wrong": "Valleys are only formed by rivers", "correct": "Valleys can also be formed by glaciers (U-shaped valleys), tectonic activity, and erosion"}
+      ]
+    },
+    "population_culture": {
+      "keywords": ["population", "city", "urbanization", "migration", "demographics", "billion", "metropolitan", "urban", "rural", "density", "culture"],
+      "facts": [
+        {"statement": "The world population is approximately 8 billion people", "grade_min": 3, "grade_max": 12},
+        {"statement": "Tokyo, Japan is one of the most populous metropolitan areas in the world with over 37 million people in its greater metro area", "grade_min": 5, "grade_max": 12},
+        {"statement": "Urbanization is the process of people moving from rural areas to cities, and more than half of the world's population now lives in urban areas", "grade_min": 5, "grade_max": 12},
+        {"statement": "Migration is the movement of people from one place to another, which can be voluntary or forced", "grade_min": 4, "grade_max": 12},
+        {"statement": "Population density measures how many people live in a given area, usually expressed as people per square mile or square kilometer", "grade_min": 5, "grade_max": 12},
+        {"statement": "Asia is the most populous continent, home to about 60 percent of the world's population", "grade_min": 4, "grade_max": 12},
+        {"statement": "Other highly populous cities include Delhi, Shanghai, Sao Paulo, Mexico City, Cairo, and Mumbai", "grade_min": 5, "grade_max": 12},
+        {"statement": "A megalopolis is a chain of closely linked metropolitan areas, such as the US Northeast corridor from Boston to Washington, D.C.", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "The Great Wall of China is visible from space with the naked eye", "correct": "The Great Wall of China is not visible from space with the naked eye; it is too narrow despite being very long"},
+        {"wrong": "Most of the world's population lives in rural areas", "correct": "Since around 2007, more than half of the world's population lives in urban areas, and that share continues to grow"},
+        {"wrong": "China is the most populous country in the world", "correct": "India surpassed China as the most populous country around 2023, with both countries having populations over 1.4 billion"}
+      ]
+    },
+    "us_states_capitals": {
+      "keywords": ["state capital", "US states", "Alabama", "Alaska", "Arizona", "California", "Colorado", "Florida", "Georgia", "Hawaii", "Illinois", "Massachusetts", "Michigan", "New York", "Ohio", "Pennsylvania", "Texas", "Virginia"],
+      "facts": [
+        {"statement": "The capital of California is Sacramento, not Los Angeles or San Francisco", "grade_min": 3, "grade_max": 12},
+        {"statement": "The capital of New York is Albany, not New York City", "grade_min": 3, "grade_max": 12},
+        {"statement": "The capital of Texas is Austin, not Houston or Dallas", "grade_min": 3, "grade_max": 12},
+        {"statement": "The capital of Florida is Tallahassee, not Miami or Orlando", "grade_min": 3, "grade_max": 12},
+        {"statement": "The capital of Illinois is Springfield, not Chicago", "grade_min": 3, "grade_max": 12},
+        {"statement": "The capital of Pennsylvania is Harrisburg, not Philadelphia or Pittsburgh", "grade_min": 3, "grade_max": 12},
+        {"statement": "The capital of Georgia is Atlanta", "grade_min": 3, "grade_max": 12},
+        {"statement": "The capital of Ohio is Columbus", "grade_min": 3, "grade_max": 12},
+        {"statement": "The capital of Michigan is Lansing, not Detroit", "grade_min": 3, "grade_max": 12},
+        {"statement": "The capital of Massachusetts is Boston", "grade_min": 3, "grade_max": 12},
+        {"statement": "Alaska is the largest US state by area but one of the least populated", "grade_min": 3, "grade_max": 12},
+        {"statement": "Rhode Island is the smallest US state by area", "grade_min": 3, "grade_max": 12},
+        {"statement": "Hawaii is the only US state that is entirely made up of islands and is located in the Pacific Ocean", "grade_min": 3, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "New York City is the capital of New York", "correct": "Albany is the capital of New York state; New York City is the largest city but not the capital"},
+        {"wrong": "Los Angeles is the capital of California", "correct": "Sacramento is the capital of California; Los Angeles is the most populous city in the state"},
+        {"wrong": "Chicago is the capital of Illinois", "correct": "Springfield is the capital of Illinois; Chicago is the largest city and is in the northeastern part of the state"},
+        {"wrong": "Miami is the capital of Florida", "correct": "Tallahassee is the capital of Florida; Miami is a major city in southeastern Florida"},
+        {"wrong": "Detroit is the capital of Michigan", "correct": "Lansing is the capital of Michigan; Detroit is the largest city"}
+      ]
+    },
+    "world_capitals_expanded": {
+      "keywords": ["world capital", "European capital", "Asian capital", "African capital", "South American capital", "London", "Paris", "Berlin", "Moscow", "Cairo", "Nairobi"],
+      "facts": [
+        {"statement": "London is the capital of the United Kingdom and England", "grade_min": 3, "grade_max": 12},
+        {"statement": "Paris is the capital of France and is known as the City of Light", "grade_min": 3, "grade_max": 12},
+        {"statement": "Berlin is the capital of Germany", "grade_min": 3, "grade_max": 12},
+        {"statement": "Moscow is the capital of Russia and is the largest city in Europe by population", "grade_min": 4, "grade_max": 12},
+        {"statement": "Cairo is the capital of Egypt and is the largest city in Africa", "grade_min": 4, "grade_max": 12},
+        {"statement": "Nairobi is the capital of Kenya", "grade_min": 4, "grade_max": 12},
+        {"statement": "Buenos Aires is the capital of Argentina", "grade_min": 4, "grade_max": 12},
+        {"statement": "Seoul is the capital of South Korea", "grade_min": 4, "grade_max": 12},
+        {"statement": "Bangkok is the capital of Thailand", "grade_min": 4, "grade_max": 12},
+        {"statement": "Rome is the capital of Italy and was the center of the ancient Roman Empire", "grade_min": 3, "grade_max": 12},
+        {"statement": "Madrid is the capital of Spain", "grade_min": 4, "grade_max": 12},
+        {"statement": "Mexico City is the capital of Mexico and one of the most populous cities in the world", "grade_min": 3, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Mumbai is the capital of India", "correct": "New Delhi is the capital of India; Mumbai is the largest city by population"},
+        {"wrong": "Toronto is the capital of Canada", "correct": "Ottawa is the capital of Canada; Toronto is the largest city"},
+        {"wrong": "Shanghai is the capital of China", "correct": "Beijing is the capital of China; Shanghai is the largest city by population"},
+        {"wrong": "Lagos is the capital of Nigeria", "correct": "Abuja has been the capital of Nigeria since 1991; Lagos is the largest city"}
+      ]
+    },
+    "natural_resources_biomes": {
+      "keywords": ["biome", "rainforest", "tundra", "grassland", "savanna", "taiga", "natural resource", "renewable", "nonrenewable", "deforestation", "ecosystem"],
+      "facts": [
+        {"statement": "The major land biomes include tropical rainforest, temperate forest, desert, grassland, tundra, and taiga (boreal forest)", "grade_min": 4, "grade_max": 12},
+        {"statement": "Tropical rainforests are found near the equator and contain more species of plants and animals than any other biome", "grade_min": 4, "grade_max": 12},
+        {"statement": "The tundra biome is found in Arctic regions and is characterized by permafrost, very cold temperatures, and low-growing vegetation", "grade_min": 5, "grade_max": 12},
+        {"statement": "The taiga (boreal forest) is the largest land biome, stretching across Canada, Russia, and Scandinavia, dominated by coniferous trees", "grade_min": 5, "grade_max": 12},
+        {"statement": "Renewable resources can be replenished naturally, such as solar energy, wind, and timber; nonrenewable resources like coal, oil, and natural gas cannot", "grade_min": 4, "grade_max": 12},
+        {"statement": "The Amazon Rainforest is the largest tropical rainforest in the world, covering much of the Amazon River basin in South America", "grade_min": 3, "grade_max": 12},
+        {"statement": "Savannas are tropical grasslands with scattered trees, found in Africa, South America, and Australia", "grade_min": 4, "grade_max": 12},
+        {"statement": "Deforestation is the clearing of forests for agriculture, logging, or development, and it contributes to habitat loss and climate change", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the tundra has many tall trees", "correct": "The tundra has no trees because of permafrost and extreme cold; vegetation is limited to mosses, lichens, and small shrubs"},
+        {"wrong": "all deserts are hot and sandy", "correct": "Deserts are defined by low precipitation; they can be hot (Sahara) or cold (Antarctica, Gobi). Many deserts have rocky terrain, not sand"},
+        {"wrong": "the rainforest is shrinking but it does not affect the rest of the world", "correct": "Rainforests absorb carbon dioxide and produce oxygen; their destruction affects global climate, biodiversity, and weather patterns worldwide"}
+      ]
+    },
+    "bodies_of_water": {
+      "keywords": ["ocean", "sea", "lake", "river", "bay", "gulf", "strait", "waterfall", "Mediterranean", "Caribbean", "Caspian"],
+      "facts": [
+        {"statement": "The Mediterranean Sea is bordered by Europe, Africa, and Asia, and is connected to the Atlantic Ocean through the Strait of Gibraltar", "grade_min": 5, "grade_max": 12},
+        {"statement": "The Caspian Sea is the largest enclosed body of water on Earth, bordered by Russia, Kazakhstan, Turkmenistan, Iran, and Azerbaijan", "grade_min": 6, "grade_max": 12},
+        {"statement": "The Dead Sea, between Israel and Jordan, is one of the saltiest bodies of water on Earth and the lowest point on land at about 1,412 feet below sea level", "grade_min": 5, "grade_max": 12},
+        {"statement": "The Gulf of Mexico is a large body of water bordered by the United States, Mexico, and Cuba", "grade_min": 4, "grade_max": 12},
+        {"statement": "The Caribbean Sea is located between Central America, South America, and the Caribbean islands", "grade_min": 4, "grade_max": 12},
+        {"statement": "Lake Baikal in Russia is the deepest and oldest freshwater lake in the world, holding about 20% of the world's unfrozen surface freshwater", "grade_min": 6, "grade_max": 12},
+        {"statement": "The Danube River is the second-longest river in Europe, flowing through 10 countries from Germany to the Black Sea", "grade_min": 6, "grade_max": 12},
+        {"statement": "Niagara Falls is located on the border between the United States (New York) and Canada (Ontario)", "grade_min": 3, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the Caspian Sea is an ocean", "correct": "Despite its name and large size, the Caspian Sea is an enclosed lake — the world's largest — not an ocean or true sea"},
+        {"wrong": "the Dead Sea is a freshwater lake", "correct": "The Dead Sea is extremely salty (about 10 times saltier than the ocean), making it nearly impossible for most organisms to survive in it"},
+        {"wrong": "all large bodies of water are called oceans", "correct": "Large bodies of water include oceans, seas, gulfs, bays, and lakes — each has different characteristics based on size, salinity, and connection to other waters"},
+        {"wrong": "the Great Lakes contain salt water", "correct": "The Great Lakes are freshwater lakes. They contain approximately 21% of the world's surface freshwater"}
+      ]
+    }
+  }
+}

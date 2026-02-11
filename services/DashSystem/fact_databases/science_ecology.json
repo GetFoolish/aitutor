@@ -1,0 +1,252 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "science",
+    "last_updated": "2026-02-11",
+    "description": "Ecology facts: food chains, biomes, carbon cycle, nitrogen cycle, ecosystems, conservation, human impact, water cycle, population dynamics"
+  },
+  "facts_by_topic": {
+    "food_chains_webs": {
+      "keywords": [
+        "food chain", "food web", "producer", "consumer", "decomposer",
+        "herbivore", "carnivore", "omnivore", "predator", "prey",
+        "trophic level", "energy pyramid", "autotroph", "heterotroph",
+        "primary consumer", "secondary consumer", "tertiary consumer", "apex predator"
+      ],
+      "facts": [
+        {"statement": "A food chain shows the linear path of energy from producers to consumers to decomposers", "grade_min": 3, "grade_max": 12},
+        {"statement": "Producers (autotrophs) make their own food through photosynthesis, forming the base of food chains", "grade_min": 3, "grade_max": 12},
+        {"statement": "Primary consumers (herbivores) eat producers; secondary consumers eat primary consumers; tertiary consumers eat secondary consumers", "grade_min": 4, "grade_max": 12},
+        {"statement": "Decomposers (fungi and bacteria) break down dead organisms and recycle nutrients back into the ecosystem", "grade_min": 3, "grade_max": 12},
+        {"statement": "A food web is more realistic than a food chain because it shows the interconnected feeding relationships in an ecosystem", "grade_min": 4, "grade_max": 12},
+        {"statement": "Only about 10% of energy is transferred from one trophic level to the next; the rest is lost as heat", "grade_min": 6, "grade_max": 12},
+        {"statement": "Because energy is lost at each level, there are typically fewer organisms at higher trophic levels (energy pyramid)", "grade_min": 6, "grade_max": 12},
+        {"statement": "An apex predator is at the top of a food chain with no natural predators (e.g., wolves, eagles, sharks)", "grade_min": 4, "grade_max": 12},
+        {"statement": "Omnivores eat both plants and animals (e.g., bears, humans, pigs) and can occupy multiple trophic levels", "grade_min": 3, "grade_max": 12},
+        {"statement": "Detritivores (earthworms, millipedes) physically break down dead matter, while decomposers (bacteria, fungi) chemically break it down", "grade_min": 6, "grade_max": 12},
+        {"statement": "Biomass decreases at higher trophic levels: there is more total mass of producers than primary consumers, and so on up the chain", "grade_min": 7, "grade_max": 12},
+        {"statement": "Photosynthesis converts solar energy into chemical energy (glucose): 6CO2 + 6H2O + light -> C6H12O6 + 6O2", "grade_min": 6, "grade_max": 12},
+        {"statement": "In deep ocean ecosystems, chemosynthetic bacteria are the producers, using chemical energy from hydrothermal vents instead of sunlight", "grade_min": 8, "grade_max": 12},
+        {"statement": "Scavengers (vultures, hyenas) feed on dead animals but do not kill them, filling an important ecological niche", "grade_min": 4, "grade_max": 12},
+        {"statement": "All living things need energy to survive; animals get energy by eating food, while plants get energy from sunlight", "grade_min": 0, "grade_max": 3},
+        {"statement": "A trophic cascade occurs when changes at the top of a food chain cause dramatic effects at lower levels; reintroducing wolves to Yellowstone restored river ecosystems", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "removing one species from a food web only affects that species", "correct": "Removing a species can have cascading effects throughout the food web, affecting populations at multiple trophic levels."},
+        {"wrong": "the sun is not part of a food chain", "correct": "The Sun is the ultimate energy source for most food chains, providing the light energy that producers use in photosynthesis."},
+        {"wrong": "decomposers are not important to ecosystems", "correct": "Decomposers are essential. Without them, dead matter would accumulate and nutrients would not be recycled back into the soil for producers."},
+        {"wrong": "the 10% rule means 10% of organisms survive to the next level", "correct": "The 10% rule means only about 10% of energy is transferred from one trophic level to the next. The rest is used for life processes and lost as heat."},
+        {"wrong": "food chains always start with an animal", "correct": "Food chains almost always start with a producer (plant, algae, or photosynthetic bacteria) that converts solar energy to chemical energy."},
+        {"wrong": "bigger animals are always at the top of the food chain", "correct": "Trophic level depends on what an organism eats, not its size. An elephant (herbivore) is at a lower trophic level than a tiny weasel (carnivore)."},
+        {"wrong": "herbivores are weak because they only eat plants", "correct": "Many herbivores are large and powerful (elephants, rhinos, bison). Diet does not determine physical strength."}
+      ]
+    },
+    "biomes": {
+      "keywords": [
+        "biome", "desert", "rainforest", "tundra", "grassland", "taiga",
+        "savanna", "deciduous forest", "coral reef", "wetland", "chaparral",
+        "freshwater", "marine", "estuary", "temperate", "tropical", "arctic",
+        "alpine", "permafrost", "biodiversity"
+      ],
+      "facts": [
+        {"statement": "A biome is a large region characterized by its climate, plants, and animals", "grade_min": 4, "grade_max": 12},
+        {"statement": "Tropical rainforests have the greatest biodiversity of any terrestrial biome and receive over 200 cm of rain per year", "grade_min": 4, "grade_max": 12},
+        {"statement": "Deserts receive less than 25 cm of precipitation per year; they can be hot (Sahara) or cold (Antarctica)", "grade_min": 4, "grade_max": 12},
+        {"statement": "The tundra is the coldest biome, with permafrost (permanently frozen ground), found in the Arctic and on mountaintops", "grade_min": 5, "grade_max": 12},
+        {"statement": "The taiga (boreal forest) is the world's largest terrestrial biome, dominated by coniferous trees like spruce and pine", "grade_min": 5, "grade_max": 12},
+        {"statement": "Grasslands (prairies, savannas) are dominated by grasses rather than trees and can support large herds of grazing animals", "grade_min": 4, "grade_max": 12},
+        {"statement": "Coral reefs are underwater structures built by colonies of coral polyps and support about 25% of all marine species despite covering less than 1% of the ocean floor", "grade_min": 5, "grade_max": 12},
+        {"statement": "Temperate deciduous forests have four distinct seasons; trees shed leaves in fall to conserve water during winter", "grade_min": 4, "grade_max": 12},
+        {"statement": "Estuaries are areas where freshwater rivers meet saltwater oceans, creating highly productive ecosystems that serve as nurseries for many fish species", "grade_min": 6, "grade_max": 12},
+        {"statement": "Wetlands (marshes, swamps, bogs) act as natural water filters, flood buffers, and carbon sinks, and support high biodiversity", "grade_min": 5, "grade_max": 12},
+        {"statement": "The chaparral (Mediterranean) biome has hot, dry summers and mild, wet winters; plants are adapted to fire and drought", "grade_min": 7, "grade_max": 12},
+        {"statement": "The open ocean (pelagic zone) is the largest biome by area but has relatively low productivity per unit area due to limited nutrients", "grade_min": 7, "grade_max": 12},
+        {"statement": "Alpine biomes occur above the tree line on mountains and share many characteristics with tundra, including cold temperatures and short growing seasons", "grade_min": 6, "grade_max": 12},
+        {"statement": "Savannas are tropical grasslands with scattered trees, found in Africa, South America, and Australia; they have distinct wet and dry seasons", "grade_min": 5, "grade_max": 12},
+        {"statement": "The deep ocean (abyssal zone) is pitch dark, near-freezing, and under extreme pressure, yet supports unique life forms around hydrothermal vents", "grade_min": 7, "grade_max": 12},
+        {"statement": "Mangrove forests grow in coastal saltwater and protect shorelines from erosion, storm surges, and serve as nurseries for fish and crustaceans", "grade_min": 6, "grade_max": 12},
+        {"statement": "Freshwater biomes include lakes, ponds, rivers, and streams; they contain less than 1% of Earth's water but support a high diversity of species", "grade_min": 4, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "deserts are always hot", "correct": "Deserts are defined by low precipitation, not temperature. Antarctica is technically the largest desert in the world."},
+        {"wrong": "the tropical rainforest has the most animals of any ecosystem", "correct": "While tropical rainforests have the greatest terrestrial biodiversity, the ocean as a whole contains more total species."},
+        {"wrong": "all forests are the same biome", "correct": "Forest biomes include tropical rainforest, temperate deciduous forest, and taiga/boreal forest, each with very different climates and species."},
+        {"wrong": "nothing can live in the deep ocean", "correct": "Deep ocean life includes tube worms, giant squid, anglerfish, and bacteria around hydrothermal vents, thriving without sunlight."},
+        {"wrong": "tundra is just a frozen wasteland with no life", "correct": "The tundra supports lichens, mosses, small shrubs, insects, caribou, Arctic foxes, polar bears, and migratory birds during summer."},
+        {"wrong": "coral reefs are made of rocks", "correct": "Coral reefs are built by living organisms (coral polyps). The hard structure is calcium carbonate secreted by the polyps over hundreds to thousands of years."}
+      ]
+    },
+    "biogeochemical_cycles": {
+      "keywords": [
+        "carbon cycle", "nitrogen cycle", "oxygen cycle", "water cycle",
+        "phosphorus", "nutrient", "cycle", "carbon dioxide", "nitrogen fixation",
+        "denitrification", "nitrification", "ammonification", "fossil fuel",
+        "photosynthesis", "respiration", "decomposition", "greenhouse gas"
+      ],
+      "facts": [
+        {"statement": "The carbon cycle moves carbon through the atmosphere, organisms, oceans, and rocks via photosynthesis, respiration, decomposition, and combustion", "grade_min": 6, "grade_max": 12},
+        {"statement": "Burning fossil fuels releases stored carbon as carbon dioxide, increasing atmospheric CO2 and contributing to climate change", "grade_min": 6, "grade_max": 12},
+        {"statement": "The nitrogen cycle converts atmospheric nitrogen (N2) into usable forms through nitrogen fixation by bacteria, then returns it through denitrification", "grade_min": 7, "grade_max": 12},
+        {"statement": "Most organisms cannot use atmospheric nitrogen (N2) directly; nitrogen-fixing bacteria in soil and root nodules convert it to ammonia (NH3)", "grade_min": 7, "grade_max": 12},
+        {"statement": "The phosphorus cycle does not involve the atmosphere; phosphorus moves through rocks, water, soil, and organisms", "grade_min": 8, "grade_max": 12},
+        {"statement": "Carbon sinks include oceans, forests, and soil, which absorb more carbon than they release", "grade_min": 7, "grade_max": 12},
+        {"statement": "Nitrogen makes up about 78% of Earth's atmosphere, but in its N2 form it is unusable by most organisms", "grade_min": 6, "grade_max": 12},
+        {"statement": "Nitrification is the process by which bacteria convert ammonia (NH3) to nitrite (NO2-) and then to nitrate (NO3-), which plants can absorb", "grade_min": 8, "grade_max": 12},
+        {"statement": "Denitrification is the process by which bacteria convert nitrate back to atmospheric nitrogen (N2), completing the nitrogen cycle", "grade_min": 8, "grade_max": 12},
+        {"statement": "The oxygen cycle is tightly linked to the carbon cycle: photosynthesis produces O2, while respiration and combustion consume O2", "grade_min": 6, "grade_max": 12},
+        {"statement": "Oceans absorb about 25-30% of the CO2 humans produce, causing ocean acidification which threatens coral reefs and shellfish", "grade_min": 7, "grade_max": 12},
+        {"statement": "Legumes (beans, peas, clover) have symbiotic nitrogen-fixing bacteria in root nodules, making them natural soil fertilizers", "grade_min": 6, "grade_max": 12},
+        {"statement": "The global carbon cycle involves fast cycling (photosynthesis/respiration over days to years) and slow cycling (rock formation/volcanism over millions of years)", "grade_min": 8, "grade_max": 12},
+        {"statement": "Excess nitrogen and phosphorus from fertilizers cause eutrophication: algal blooms that deplete oxygen and create dead zones in water", "grade_min": 7, "grade_max": 12},
+        {"statement": "The water cycle includes evaporation, condensation, precipitation, and runoff; it is driven by solar energy and gravity", "grade_min": 3, "grade_max": 12},
+        {"statement": "Transpiration is the release of water vapor from plant leaves through stomata; it is a major component of the water cycle", "grade_min": 6, "grade_max": 12},
+        {"statement": "Groundwater is water stored underground in aquifers; it supplies wells and springs and can take thousands of years to replenish", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "plants only absorb carbon dioxide", "correct": "Plants absorb CO2 for photosynthesis but also release CO2 through cellular respiration. They are net absorbers of CO2."},
+        {"wrong": "the nitrogen cycle only involves air and soil", "correct": "The nitrogen cycle involves the atmosphere, soil, water, plants, animals, and bacteria. Lightning can also fix atmospheric nitrogen."},
+        {"wrong": "carbon dioxide is the only greenhouse gas", "correct": "Greenhouse gases include CO2, methane (CH4), nitrous oxide (N2O), and water vapor. Methane is far more potent per molecule than CO2."},
+        {"wrong": "adding more fertilizer always helps plants grow better", "correct": "Excess fertilizer causes water pollution, algal blooms, and dead zones. It can also damage soil microorganisms and change soil pH."},
+        {"wrong": "the carbon cycle and climate change are unrelated", "correct": "Climate change is directly caused by disrupting the carbon cycle: burning fossil fuels adds carbon to the atmosphere faster than natural sinks can absorb it."},
+        {"wrong": "decomposition only releases carbon dioxide", "correct": "Decomposition releases multiple nutrients including carbon (as CO2), nitrogen (as ammonia), phosphorus, and other minerals back into the soil."},
+        {"wrong": "rain comes from the ocean only", "correct": "Water evaporates from oceans, lakes, rivers, soil, and plants (transpiration). All of these contribute moisture to the atmosphere for precipitation."}
+      ]
+    },
+    "ecosystem_interactions": {
+      "keywords": [
+        "ecosystem", "symbiosis", "mutualism", "commensalism", "parasitism",
+        "competition", "niche", "habitat", "population", "community",
+        "biodiversity", "keystone species", "invasive species", "succession",
+        "carrying capacity", "limiting factor", "predation", "adaptation"
+      ],
+      "facts": [
+        {"statement": "An ecosystem includes all living organisms (biotic factors) and nonliving components (abiotic factors) in an area, interacting as a system", "grade_min": 4, "grade_max": 12},
+        {"statement": "Mutualism is a symbiotic relationship where both species benefit (e.g., bees and flowers)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Parasitism is a relationship where one organism (parasite) benefits at the expense of another (host)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Commensalism is a relationship where one organism benefits and the other is neither helped nor harmed", "grade_min": 6, "grade_max": 12},
+        {"statement": "A niche is an organism's role in its ecosystem, including what it eats, where it lives, and how it interacts with other species", "grade_min": 5, "grade_max": 12},
+        {"statement": "Biodiversity refers to the variety of life in an area; higher biodiversity generally makes ecosystems more resilient", "grade_min": 5, "grade_max": 12},
+        {"statement": "Keystone species have a disproportionately large impact on their ecosystem relative to their population size", "grade_min": 7, "grade_max": 12},
+        {"statement": "Invasive species are non-native organisms that spread rapidly and harm native ecosystems by outcompeting native species", "grade_min": 5, "grade_max": 12},
+        {"statement": "Ecological succession is the gradual change in species composition in an area over time: primary succession starts on bare rock, secondary succession follows a disturbance", "grade_min": 7, "grade_max": 12},
+        {"statement": "Carrying capacity is the maximum population size an environment can sustain indefinitely with available resources", "grade_min": 6, "grade_max": 12},
+        {"statement": "Limiting factors (food, water, space, disease) control population size; when resources are scarce, populations decline", "grade_min": 5, "grade_max": 12},
+        {"statement": "The competitive exclusion principle states that two species cannot occupy the exact same niche in the same habitat indefinitely", "grade_min": 8, "grade_max": 12},
+        {"statement": "Abiotic factors include temperature, sunlight, water, soil, wind, and minerals; biotic factors include all living organisms", "grade_min": 4, "grade_max": 12},
+        {"statement": "Pioneer species (lichens, mosses) are the first to colonize bare environments during primary succession, breaking down rock into soil", "grade_min": 7, "grade_max": 12},
+        {"statement": "A climax community is the relatively stable final stage of ecological succession in a given area", "grade_min": 8, "grade_max": 12},
+        {"statement": "Predator-prey relationships help regulate population sizes: as prey increases, predators increase; as predators increase, prey decreases", "grade_min": 5, "grade_max": 12},
+        {"statement": "Mimicry is an adaptation where one species evolves to resemble another: Batesian mimicry (harmless species mimics a dangerous one) and Mullerian mimicry (two harmful species resemble each other)", "grade_min": 8, "grade_max": 12},
+        {"statement": "Camouflage is an adaptation that helps organisms blend into their environment to avoid predators or sneak up on prey", "grade_min": 3, "grade_max": 9}
+      ],
+      "common_errors": [
+        {"wrong": "ecosystems and habitats are the same thing", "correct": "A habitat is the physical environment where an organism lives. An ecosystem includes the habitat plus all organisms and their interactions."},
+        {"wrong": "competition only occurs between different species", "correct": "Competition occurs both within species (intraspecific) and between species (interspecific)."},
+        {"wrong": "humans are not part of ecosystems", "correct": "Humans are part of ecosystems and have significant impacts on biodiversity, nutrient cycles, and habitats."},
+        {"wrong": "invasive species are always animals", "correct": "Invasive species include plants (kudzu, water hyacinth), animals (cane toads, zebra mussels), fungi, and microorganisms."},
+        {"wrong": "an ecosystem can function fine without decomposers", "correct": "Without decomposers, dead matter would pile up and nutrients would be locked away, eventually collapsing the ecosystem."},
+        {"wrong": "all symbiotic relationships benefit both organisms", "correct": "Symbiosis means living together closely. It includes mutualism (both benefit), commensalism (one benefits), and parasitism (one is harmed)."},
+        {"wrong": "animals choose to adapt to their environment", "correct": "Adaptations arise through natural selection over many generations. Individual organisms do not choose to develop new traits."}
+      ]
+    },
+    "conservation_human_impact": {
+      "keywords": [
+        "conservation", "endangered", "extinct", "pollution", "deforestation",
+        "habitat loss", "climate change", "greenhouse effect", "ozone",
+        "sustainability", "recycle", "reduce", "reuse", "biodiversity loss",
+        "acid rain", "oil spill", "overfishing", "poaching"
+      ],
+      "facts": [
+        {"statement": "Habitat destruction is the leading cause of species extinction, followed by invasive species, pollution, and overexploitation", "grade_min": 5, "grade_max": 12},
+        {"statement": "Deforestation removes about 10 million hectares of forest per year, releasing stored carbon and destroying habitats", "grade_min": 6, "grade_max": 12},
+        {"statement": "Endangered species are at risk of extinction; the IUCN Red List classifies species from Least Concern to Critically Endangered to Extinct", "grade_min": 5, "grade_max": 12},
+        {"statement": "Acid rain forms when sulfur dioxide and nitrogen oxides from burning fossil fuels react with water in the atmosphere", "grade_min": 6, "grade_max": 12},
+        {"statement": "Overfishing has depleted many fish populations to levels where they cannot reproduce fast enough to recover", "grade_min": 6, "grade_max": 12},
+        {"statement": "Plastic pollution persists in the environment for hundreds of years; microplastics have been found in oceans, soil, and even in living organisms", "grade_min": 5, "grade_max": 12},
+        {"statement": "Protected areas (national parks, wildlife reserves, marine sanctuaries) help conserve biodiversity by limiting human activity", "grade_min": 4, "grade_max": 12},
+        {"statement": "The current rate of species extinction is estimated to be 100 to 1,000 times higher than the natural background rate", "grade_min": 7, "grade_max": 12},
+        {"statement": "Bioaccumulation is the buildup of toxins in an organism over its lifetime; biomagnification is the increase in toxin concentration at higher trophic levels", "grade_min": 7, "grade_max": 12},
+        {"statement": "Coral bleaching occurs when stressed corals expel their symbiotic algae due to warmer water temperatures, turning white and potentially dying", "grade_min": 6, "grade_max": 12},
+        {"statement": "Sustainable practices aim to meet current needs without compromising the ability of future generations to meet their needs", "grade_min": 5, "grade_max": 12},
+        {"statement": "Reintroduction programs have helped recover populations of species like the bald eagle, California condor, and gray wolf", "grade_min": 5, "grade_max": 12},
+        {"statement": "The greenhouse effect is a natural process where certain gases in the atmosphere trap heat; human activity has intensified it by adding excess CO2 and methane", "grade_min": 5, "grade_max": 12},
+        {"statement": "The ozone layer in the stratosphere protects life on Earth from harmful ultraviolet radiation; it was damaged by CFCs but is recovering due to the Montreal Protocol (1987)", "grade_min": 7, "grade_max": 12},
+        {"statement": "Renewable energy sources (solar, wind, hydroelectric, geothermal) produce electricity without burning fossil fuels, reducing greenhouse gas emissions", "grade_min": 4, "grade_max": 12},
+        {"statement": "We should reduce, reuse, and recycle to decrease waste; reducing consumption is the most effective of the three", "grade_min": 2, "grade_max": 8}
+      ],
+      "common_errors": [
+        {"wrong": "extinction is a natural process so we don't need to worry about it", "correct": "While extinction is natural, the current rate is 100-1000x the natural rate due to human activity. This rapid loss threatens entire ecosystems."},
+        {"wrong": "pollution only affects the area where it is produced", "correct": "Pollution can travel globally through air and water currents. Mercury released in one country can contaminate fish oceans away."},
+        {"wrong": "animals can just move to new habitats if theirs is destroyed", "correct": "Many species have specific habitat requirements and cannot survive elsewhere. Habitat fragmentation also creates barriers to movement."},
+        {"wrong": "recycling completely solves the waste problem", "correct": "Many materials cannot be infinitely recycled, and recycling itself requires energy. Reducing consumption is more effective than recycling alone."},
+        {"wrong": "one person's actions cannot help the environment", "correct": "Individual actions add up: reducing waste, conserving energy, and making sustainable choices collectively have significant impact when practiced by many people."},
+        {"wrong": "the greenhouse effect is entirely bad", "correct": "The natural greenhouse effect is essential for life: without it Earth's average temperature would be about -18 degrees C instead of 15 degrees C. The problem is the enhanced greenhouse effect from human emissions."},
+        {"wrong": "the ozone hole and climate change are the same problem", "correct": "The ozone hole (caused by CFCs destroying stratospheric ozone) and climate change (caused by greenhouse gases trapping heat) are separate environmental issues with different causes."}
+      ]
+    },
+    "population_dynamics": {
+      "keywords": [
+        "population", "growth", "exponential", "logistic", "birth rate",
+        "death rate", "immigration", "emigration", "density", "distribution",
+        "age structure", "survivorship", "r-selected", "K-selected"
+      ],
+      "facts": [
+        {"statement": "A population is a group of individuals of the same species living in the same area at the same time", "grade_min": 5, "grade_max": 12},
+        {"statement": "Population growth rate depends on births, deaths, immigration (moving in), and emigration (moving out)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Exponential growth occurs when a population grows at an ever-increasing rate with unlimited resources, producing a J-shaped curve", "grade_min": 8, "grade_max": 12},
+        {"statement": "Logistic growth occurs when population growth slows as it approaches the carrying capacity, producing an S-shaped curve", "grade_min": 8, "grade_max": 12},
+        {"statement": "Density-dependent limiting factors (disease, competition, predation) have greater effects when populations are crowded", "grade_min": 8, "grade_max": 12},
+        {"statement": "Density-independent limiting factors (natural disasters, weather extremes, pollution) affect populations regardless of their size", "grade_min": 8, "grade_max": 12},
+        {"statement": "r-selected species (bacteria, insects, mice) reproduce rapidly with many offspring and little parental care; K-selected species (elephants, whales, humans) have fewer offspring with more parental investment", "grade_min": 9, "grade_max": 12},
+        {"statement": "The human population has grown from about 1 billion in 1800 to over 8 billion today, largely due to advances in agriculture, medicine, and sanitation", "grade_min": 6, "grade_max": 12},
+        {"statement": "An age structure diagram (population pyramid) shows the distribution of ages in a population and can predict future growth trends", "grade_min": 8, "grade_max": 12},
+        {"statement": "Population density is the number of individuals per unit area; organisms can have clumped, uniform, or random distribution patterns", "grade_min": 7, "grade_max": 12},
+        {"statement": "When a population exceeds its carrying capacity, resources become scarce and the population typically declines until it stabilizes", "grade_min": 7, "grade_max": 12},
+        {"statement": "Endangered species have populations so small that they are at risk of extinction; critically endangered species have fewer than 250 mature individuals", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "populations always grow continuously", "correct": "Populations cannot grow forever. They are limited by resources, disease, predation, and other factors. Growth slows as carrying capacity is reached."},
+        {"wrong": "carrying capacity never changes", "correct": "Carrying capacity can change if environmental conditions change: drought, habitat destruction, or new food sources can raise or lower it."},
+        {"wrong": "if we remove predators, prey populations will be healthier", "correct": "Without predators, prey populations often overshoot carrying capacity, overgraze their food supply, and then crash due to starvation and disease."},
+        {"wrong": "extinction only affects the species that goes extinct", "correct": "When a species goes extinct, it affects all the organisms that depended on it for food, pollination, seed dispersal, or other ecological roles."},
+        {"wrong": "human population growth has always been rapid", "correct": "For most of human history, population grew very slowly. Rapid growth began only in the last 200 years with industrialization, modern agriculture, and medicine."}
+      ]
+    },
+    "natural_resources_energy": {
+      "keywords": [
+        "natural resource", "renewable", "nonrenewable", "fossil fuel",
+        "solar energy", "wind energy", "hydroelectric", "geothermal",
+        "biomass", "soil", "water", "mineral", "conservation", "sustainable"
+      ],
+      "facts": [
+        {"statement": "Natural resources are materials from Earth that living things use; they include air, water, soil, minerals, fossil fuels, plants, and animals", "grade_min": 2, "grade_max": 8},
+        {"statement": "Renewable resources can be replenished naturally over short periods: solar energy, wind, water, and trees (if replanted)", "grade_min": 3, "grade_max": 12},
+        {"statement": "Nonrenewable resources exist in limited supply and take millions of years to form: fossil fuels (coal, oil, natural gas) and minerals", "grade_min": 3, "grade_max": 12},
+        {"statement": "Fossil fuels formed from the remains of ancient organisms buried and compressed over millions of years; burning them releases stored carbon as CO2", "grade_min": 5, "grade_max": 12},
+        {"statement": "Solar panels convert sunlight directly into electricity using photovoltaic cells; the Sun provides more energy in one hour than all of humanity uses in a year", "grade_min": 4, "grade_max": 12},
+        {"statement": "Wind turbines convert the kinetic energy of moving air into electricity; wind is caused by uneven heating of Earth's surface by the Sun", "grade_min": 4, "grade_max": 12},
+        {"statement": "Hydroelectric power generates electricity from flowing water, typically by using dams; it is the most widely used renewable energy source globally", "grade_min": 5, "grade_max": 12},
+        {"statement": "Soil is a natural resource that takes hundreds of years to form just a few centimeters; it supports plant growth and stores water and carbon", "grade_min": 3, "grade_max": 10},
+        {"statement": "Fresh water makes up only about 3% of all water on Earth, and most of that is frozen in ice caps and glaciers; less than 1% is readily available for human use", "grade_min": 4, "grade_max": 12},
+        {"statement": "Geothermal energy uses heat from inside the Earth (from radioactive decay and residual heat) to generate electricity or heat buildings", "grade_min": 5, "grade_max": 12},
+        {"statement": "Composting turns food and yard waste into nutrient-rich soil, reducing the amount of waste sent to landfills", "grade_min": 2, "grade_max": 8},
+        {"statement": "Trees are a renewable resource when managed sustainably through replanting; they provide oxygen, absorb CO2, prevent erosion, and support biodiversity", "grade_min": 3, "grade_max": 10},
+        {"statement": "Nuclear energy is a nonrenewable energy source that produces electricity through nuclear fission without direct CO2 emissions, but creates radioactive waste", "grade_min": 7, "grade_max": 12},
+        {"statement": "Biomass energy comes from burning plant material or converting it to biofuels; it is renewable but still releases CO2 when burned", "grade_min": 6, "grade_max": 12},
+        {"statement": "Clean drinking water is one of the most critical natural resources; over 2 billion people worldwide lack access to safely managed drinking water", "grade_min": 4, "grade_max": 10},
+        {"statement": "Topsoil erosion from deforestation, overgrazing, and poor farming practices is a serious environmental problem because soil takes centuries to form", "grade_min": 5, "grade_max": 12},
+        {"statement": "Turning off lights, using energy-efficient appliances, and reducing car trips are simple ways individuals can conserve energy and reduce pollution", "grade_min": 2, "grade_max": 7},
+        {"statement": "Many minerals used in electronics (lithium, cobalt, rare earth elements) are nonrenewable and their mining can cause significant environmental damage", "grade_min": 7, "grade_max": 12},
+        {"statement": "Crop rotation and cover cropping are sustainable farming practices that maintain soil health and reduce the need for synthetic fertilizers", "grade_min": 5, "grade_max": 12},
+        {"statement": "An ecological footprint measures the total area of land and water required to produce the resources a person consumes and absorb the waste they generate", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "natural resources will never run out", "correct": "Nonrenewable resources like fossil fuels and minerals exist in finite quantities and can be depleted. Even renewable resources can be exhausted if overused (like overfishing)."},
+        {"wrong": "renewable energy has no environmental impact", "correct": "While cleaner than fossil fuels, renewable energy can still impact the environment: dams alter river ecosystems, wind turbines can affect birds, and solar farms use large areas of land."},
+        {"wrong": "we have plenty of fresh water since Earth is covered in water", "correct": "97% of Earth's water is saltwater. Of the 3% that is freshwater, most is locked in ice. Less than 1% is available for drinking, agriculture, and industry."},
+        {"wrong": "soil is just dirt and not important", "correct": "Soil is a complex living ecosystem containing minerals, organic matter, water, air, and billions of organisms. It is essential for growing food and filtering water."},
+        {"wrong": "fossil fuels are made from dinosaur bones", "correct": "Fossil fuels formed primarily from ancient marine organisms (plankton, algae) and plants that were buried and compressed over millions of years, not from dinosaur remains."}
+      ]
+    }
+  }
+}

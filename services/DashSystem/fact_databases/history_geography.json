@@ -1,0 +1,671 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "geography",
+    "last_updated": "2026-02-11",
+    "description": "Geography facts: continents, oceans, latitude/longitude, climate zones, landforms, natural resources, map skills, human geography, US geography, physical geography"
+  },
+  "facts_by_topic": {
+    "map_skills_advanced": {
+      "keywords": [
+        "map", "latitude", "longitude", "equator", "prime meridian",
+        "hemisphere", "projection", "scale", "legend", "compass rose",
+        "coordinate"
+      ],
+      "facts": [
+        {
+          "statement": "Latitude lines run east-west and measure distance north or south of the equator (0 to 90 degrees)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Longitude lines run north-south and measure distance east or west of the Prime Meridian (0 to 180 degrees)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The equator (0 degrees latitude) divides the Earth into the Northern and Southern Hemispheres",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Prime Meridian (0 degrees longitude) passes through Greenwich, England, and divides the Earth into Eastern and Western Hemispheres",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A map scale shows the relationship between distance on the map and distance in the real world",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "All flat maps distort the true shape, size, or distance of Earth's surface because they represent a sphere on a flat surface",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Mercator projection preserves direction and shape but greatly distorts the size of areas near the poles, making Greenland appear as large as Africa",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A compass rose on a map shows the cardinal directions: north, south, east, and west",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "GPS (Global Positioning System) uses satellites to determine exact locations on Earth using latitude and longitude coordinates",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Time zones are based on longitude; the Earth is divided into 24 time zones, each roughly 15 degrees of longitude wide",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "latitude lines run north-south",
+          "correct": "Latitude lines run east-west (horizontally) and measure position north or south. Longitude lines run north-south (vertically)."
+        },
+        {
+          "wrong": "Africa and Greenland are about the same size",
+          "correct": "Africa is about 14 times larger than Greenland. The Mercator projection distorts size at high latitudes, making Greenland look much larger than it is."
+        },
+        {
+          "wrong": "north is always at the top of a map",
+          "correct": "North is at the top by convention in most maps, but historical and specialized maps may orient differently. Always check the compass rose."
+        },
+        {
+          "wrong": "the equator passes through the United States",
+          "correct": "The equator does not pass through the United States. It crosses South America, Africa, and Southeast Asia. The US is entirely in the Northern Hemisphere."
+        }
+      ]
+    },
+    "continents_and_oceans": {
+      "keywords": [
+        "continent", "ocean", "Africa", "Asia", "Europe",
+        "North America", "South America", "Antarctica", "Australia",
+        "Pacific", "Atlantic", "Indian", "Arctic"
+      ],
+      "facts": [
+        {
+          "statement": "There are seven continents: Africa, Antarctica, Asia, Australia (Oceania), Europe, North America, and South America",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "Asia is the largest continent by both area and population, home to over 4.7 billion people",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "There are five oceans: Pacific (largest), Atlantic, Indian, Southern (Antarctic), and Arctic (smallest)",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Pacific Ocean is the largest and deepest ocean, covering more area than all the land on Earth combined",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Antarctica is the coldest, driest, and windiest continent; it has no permanent human residents and is covered by an ice sheet",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Africa is the second largest continent and has the most countries (54 recognized sovereign states)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Europe and Asia are sometimes referred to together as Eurasia because they share a connected landmass",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Oceans cover approximately 71% of the Earth's surface and contain about 97% of all water on Earth",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Australia is both a continent and a country; it is the smallest continent and the only one occupied by a single nation",
+          "grade_min": 2,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "there are only four oceans",
+          "correct": "There are five oceans. The Southern (Antarctic) Ocean was officially recognized as the fifth ocean by the International Hydrographic Organization."
+        },
+        {
+          "wrong": "Europe and Asia are separate landmasses",
+          "correct": "Europe and Asia are on the same continuous landmass (Eurasia). The division is based on cultural and historical convention, not a physical separation."
+        },
+        {
+          "wrong": "Africa is a country",
+          "correct": "Africa is a continent containing 54 countries, each with its own government, languages, and cultures."
+        },
+        {
+          "wrong": "Antarctica belongs to a specific country",
+          "correct": "No country owns Antarctica. The Antarctic Treaty (1959) designates it for peaceful scientific research and prohibits military activity and mineral mining."
+        }
+      ]
+    },
+    "world_regions": {
+      "keywords": [
+        "region", "Middle East", "Southeast Asia", "Latin America",
+        "Sub-Saharan Africa", "European Union", "ASEAN",
+        "developing", "developed"
+      ],
+      "facts": [
+        {
+          "statement": "The Middle East is a transcontinental region centered on Western Asia and Egypt in North Africa, known for oil resources and as the birthplace of Judaism, Christianity, and Islam",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Southeast Asia includes 11 countries such as Thailand, Vietnam, Indonesia, and the Philippines, known for cultural diversity and tropical climates",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Latin America refers to the countries in Central America, South America, and the Caribbean where Romance languages (Spanish, Portuguese, French) are primarily spoken",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Sub-Saharan Africa is the region of Africa south of the Sahara Desert, comprising 46 countries with great linguistic, cultural, and geographic diversity",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The European Union (EU) is a political and economic union of 27 member states, using the euro as a common currency in the eurozone",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Amazon Basin in South America contains the world's largest tropical rainforest, spanning nine countries and producing about 20% of the world's oxygen",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Central America is the narrow strip of land connecting North and South America, including countries like Guatemala, Costa Rica, and Panama",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Caribbean is a region of islands in the Caribbean Sea, including Cuba, Jamaica, Haiti, the Dominican Republic, and many smaller island nations",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "all countries in Europe use the euro",
+          "correct": "Not all EU countries use the euro (Sweden, Denmark do not), and some non-EU countries do (Montenegro, Kosovo)."
+        },
+        {
+          "wrong": "the Middle East is a continent",
+          "correct": "The Middle East is a geopolitical region, not a continent. It spans parts of Asia and Africa."
+        },
+        {
+          "wrong": "all of Africa is desert",
+          "correct": "Africa has diverse biomes including rainforests, savannas, mountains, and coastlines. The Sahara covers only about 25% of the continent."
+        },
+        {
+          "wrong": "Latin America only includes South America",
+          "correct": "Latin America includes Mexico, Central America, the Caribbean, and South America -- all areas where Romance languages are predominantly spoken."
+        }
+      ]
+    },
+    "human_geography": {
+      "keywords": [
+        "population", "urbanization", "migration", "culture",
+        "language", "religion", "demographic", "density", "growth rate"
+      ],
+      "facts": [
+        {
+          "statement": "The world population reached approximately 8 billion people in 2022",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Urbanization is the trend of people moving from rural areas to cities; over half the world's population now lives in urban areas",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Push factors cause people to leave a place (war, poverty, persecution); pull factors attract people to a new place (jobs, safety, freedom)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The most spoken languages in the world by total speakers are English, Mandarin Chinese, Hindi, Spanish, and French",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Population density is the number of people per unit of area, varying greatly between countries and regions",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Renewable resources (solar, wind, water) can be replenished naturally; nonrenewable resources (oil, coal, natural gas) exist in limited supply",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Culture includes the beliefs, customs, arts, food, language, and social practices of a group of people",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The world's three most widely practiced religions are Christianity, Islam, and Hinduism",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The demographic transition model describes how countries move from high birth and death rates to low birth and death rates as they develop economically",
+          "grade_min": 9,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the most populated country is always the largest by area",
+          "correct": "India (most populated) is much smaller in area than Russia (largest by area). Population and area are independent measures."
+        },
+        {
+          "wrong": "all immigration is permanent",
+          "correct": "Migration can be temporary (seasonal work), circular (back and forth), or permanent. Not all migrants intend to stay permanently."
+        },
+        {
+          "wrong": "population growth is the same everywhere",
+          "correct": "Population growth rates vary widely. Some countries have declining populations while others are growing rapidly."
+        },
+        {
+          "wrong": "everyone in a country speaks the same language",
+          "correct": "Many countries are multilingual. India has 22 official languages. Papua New Guinea has over 800 languages. Even the US has no official federal language."
+        }
+      ]
+    },
+    "physical_geography_and_landforms": {
+      "keywords": [
+        "mountain", "river", "desert", "volcano", "earthquake",
+        "plate tectonics", "erosion", "landform", "valley",
+        "peninsula", "island", "plateau"
+      ],
+      "facts": [
+        {
+          "statement": "Mount Everest in the Himalayas is the tallest mountain above sea level at approximately 29,032 feet (8,849 meters)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Nile River in Africa and the Amazon River in South America are two of the longest rivers in the world",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Sahara Desert in North Africa is the largest hot desert in the world, roughly the size of the United States",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Plate tectonics is the theory that Earth's outer shell is divided into large plates that move, causing earthquakes, volcanic eruptions, and mountain formation",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Ring of Fire is a horseshoe-shaped zone around the Pacific Ocean where about 75% of the world's volcanoes are found and 90% of earthquakes occur",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Erosion is the process by which water, wind, ice, and gravity wear away and transport rock and soil, shaping landforms over time",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Grand Canyon was carved by the Colorado River over millions of years and is up to 1 mile (1.6 km) deep",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "An island is a body of land completely surrounded by water; a peninsula is land surrounded by water on three sides",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Mariana Trench in the Pacific Ocean is the deepest point on Earth at approximately 36,000 feet (11,000 meters) below sea level",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A delta forms where a river deposits sediment as it flows into a larger body of water, creating a fan-shaped landform",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "mountains are only formed by volcanic eruptions",
+          "correct": "Mountains form in multiple ways: tectonic plate collisions (Himalayas), volcanic activity (Mount Fuji), and faulting (Sierra Nevada)."
+        },
+        {
+          "wrong": "deserts are always hot",
+          "correct": "Deserts are defined by low precipitation, not temperature. Antarctica is technically the largest desert in the world because it receives very little precipitation."
+        },
+        {
+          "wrong": "the Nile is definitely the longest river in the world",
+          "correct": "The Nile and Amazon are very close in length, and depending on how they are measured, either could be considered the longest. Recent surveys suggest the Amazon may be longer."
+        },
+        {
+          "wrong": "earthquakes only happen along fault lines",
+          "correct": "While most earthquakes occur near plate boundaries, intraplate earthquakes can happen in the middle of tectonic plates, such as the New Madrid zone in the central US."
+        }
+      ]
+    },
+    "climate_and_weather": {
+      "keywords": [
+        "climate", "weather", "tropical", "temperate", "polar",
+        "climate zone", "precipitation", "temperature", "season",
+        "climate change", "greenhouse effect"
+      ],
+      "facts": [
+        {
+          "statement": "Weather is the short-term condition of the atmosphere (today's rain); climate is the long-term pattern of weather in a region over many years",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The three main climate zones are tropical (near the equator), temperate (middle latitudes), and polar (near the poles)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Earth's tilt on its axis (23.5 degrees) causes the seasons by changing how directly sunlight hits different parts of the Earth throughout the year",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The greenhouse effect is a natural process where gases in the atmosphere trap heat from the Sun, keeping Earth warm enough to support life",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Climate change refers to long-term shifts in global temperatures and weather patterns, accelerated by human activities like burning fossil fuels",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Tropical rainforests receive the most rainfall of any biome, often over 80 inches (200 cm) per year, and are found near the equator",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Ocean currents affect coastal climates; for example, the Gulf Stream brings warm water from the tropics to Western Europe, giving it a milder climate than expected for its latitude",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Elevation affects climate: temperature decreases about 3.5 degrees Fahrenheit for every 1,000 feet of elevation gain",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "El Nino is a climate pattern that occurs when surface water temperatures in the Pacific Ocean become warmer than normal, causing changes in weather worldwide",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A monsoon is a seasonal change in wind direction that brings heavy rainfall, most notably affecting South and Southeast Asia",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "weather and climate are the same thing",
+          "correct": "Weather is the day-to-day condition (today is sunny). Climate is the average weather pattern over decades (this region is generally dry)."
+        },
+        {
+          "wrong": "seasons are caused by Earth's distance from the Sun",
+          "correct": "Seasons are caused by Earth's axial tilt (23.5 degrees). When the Northern Hemisphere tilts toward the Sun, it experiences summer; when tilting away, winter."
+        },
+        {
+          "wrong": "the greenhouse effect is entirely bad",
+          "correct": "The natural greenhouse effect is essential for life -- without it, Earth would be about 60 degrees Fahrenheit colder. The concern is the enhanced greenhouse effect from excess emissions."
+        },
+        {
+          "wrong": "climate change only means temperatures going up",
+          "correct": "Climate change involves rising average temperatures but also changing precipitation patterns, more extreme weather events, sea level rise, and shifts in ecosystems."
+        }
+      ]
+    },
+    "us_geography": {
+      "keywords": [
+        "United States", "state", "capital", "region", "Great Plains",
+        "Rocky Mountains", "Mississippi", "Appalachian", "Great Lakes",
+        "Washington DC", "territory"
+      ],
+      "facts": [
+        {
+          "statement": "The United States has 50 states and the capital is Washington, D.C., which is not part of any state",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Mississippi River is the longest river in the United States and flows from Minnesota to the Gulf of Mexico",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Great Lakes (Superior, Michigan, Huron, Erie, Ontario) form the largest group of freshwater lakes in the world and border both the US and Canada",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Rocky Mountains stretch from Canada through the western United States into New Mexico, forming the Continental Divide",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Alaska is the largest state by area and Hawaii is the only state located entirely in the tropics",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Great Plains are a vast flat region in the central United States, known for farming, grasslands, and extreme weather including tornadoes",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Appalachian Mountains run along the eastern United States from Maine to Alabama and are among the oldest mountains in the world",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The US has several territories including Puerto Rico, Guam, US Virgin Islands, and American Samoa that are not states but are part of the United States",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Continental Divide runs along the Rocky Mountains and separates rivers that flow toward the Pacific Ocean from those that flow toward the Atlantic Ocean and Gulf of Mexico",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Death Valley in California holds the record for the highest reliably recorded air temperature on Earth at 134 degrees Fahrenheit (56.7 degrees Celsius) in 1913",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "Washington, D.C. is in Washington state",
+          "correct": "Washington, D.C. (the nation's capital) is on the East Coast between Maryland and Virginia. Washington state is on the West Coast."
+        },
+        {
+          "wrong": "Alaska is an island",
+          "correct": "Alaska is connected to North America and borders Canada. It is a peninsula, not an island, though it includes many islands (like the Aleutian chain)."
+        },
+        {
+          "wrong": "the US only borders Canada and Mexico",
+          "correct": "In addition to Canada and Mexico, the US has a maritime border with Russia (between Alaska and Russia across the Bering Strait) and borders with Cuba and the Bahamas by sea."
+        },
+        {
+          "wrong": "every part of the US has the same climate",
+          "correct": "The US has diverse climates: tropical in Hawaii, arctic in Alaska, desert in Arizona, humid subtropical in Florida, and temperate in the Midwest."
+        }
+      ]
+    },
+    "natural_resources_and_environment": {
+      "keywords": [
+        "natural resource", "renewable", "nonrenewable", "fossil fuel",
+        "conservation", "deforestation", "pollution", "sustainability",
+        "water", "energy", "mineral"
+      ],
+      "facts": [
+        {
+          "statement": "Natural resources are materials found in nature that people use, including water, minerals, soil, forests, and fossil fuels",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Fossil fuels (coal, oil, natural gas) are nonrenewable resources formed from ancient organisms over millions of years; burning them releases carbon dioxide",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Deforestation is the clearing of forests for agriculture, logging, or development, which can lead to loss of biodiversity, soil erosion, and increased carbon dioxide",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Fresh water makes up only about 3% of Earth's water, and most of that is frozen in ice caps and glaciers, making clean drinking water a scarce resource",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Sustainability means using resources in a way that meets current needs without compromising the ability of future generations to meet their needs",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Amazon rainforest is the largest tropical rainforest and is often called the 'lungs of the Earth' because of the oxygen it produces",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Soil is a vital natural resource; it takes hundreds to thousands of years to form just one inch of topsoil",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Countries with abundant natural resources (like oil-rich nations in the Middle East) can have significant economic and political power",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Recycling reduces the need for raw materials, conserves energy, and decreases the amount of waste sent to landfills",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Solar, wind, hydroelectric, and geothermal energy are renewable resources that can be replenished naturally and produce less pollution than fossil fuels",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "natural resources will never run out",
+          "correct": "Nonrenewable resources like oil, coal, and minerals exist in finite quantities. Even renewable resources can be depleted if used faster than they regenerate."
+        },
+        {
+          "wrong": "renewable energy can replace all fossil fuels immediately",
+          "correct": "While renewable energy is growing rapidly, transitioning away from fossil fuels takes time due to infrastructure needs, costs, and intermittency challenges."
+        },
+        {
+          "wrong": "pollution only affects the area where it is produced",
+          "correct": "Pollution can travel through air and water, affecting regions far from its source. Air pollution crosses borders, and ocean pollution affects distant coastlines."
+        },
+        {
+          "wrong": "only developing countries have environmental problems",
+          "correct": "Environmental challenges affect all countries. Developed nations often produce more pollution and waste per capita while also having more resources for environmental protection."
+        }
+      ]
+    },
+    "bodies_of_water_and_waterways": {
+      "keywords": [
+        "river", "lake", "ocean", "sea", "waterway", "canal",
+        "strait", "bay", "gulf", "tributary", "watershed"
+      ],
+      "facts": [
+        {
+          "statement": "Rivers have been essential to civilization; most major ancient civilizations developed along rivers like the Nile, Tigris, Euphrates, Indus, and Yellow rivers",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Panama Canal, completed in 1914, connects the Atlantic and Pacific Oceans and is one of the most important waterways for global trade",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Suez Canal in Egypt connects the Mediterranean Sea to the Red Sea, significantly shortening shipping routes between Europe and Asia",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Great Barrier Reef off the coast of Australia is the world's largest coral reef system and can be seen from space",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A watershed is an area of land where all precipitation drains into a common body of water, such as a river or lake",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Lake Baikal in Russia is the world's deepest and oldest freshwater lake, containing about 20% of the world's unfrozen fresh surface water",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Mediterranean Sea has been a crucial waterway for trade and cultural exchange among civilizations in Europe, Africa, and Asia for thousands of years",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A strait is a narrow waterway connecting two larger bodies of water; the Strait of Gibraltar connects the Atlantic Ocean to the Mediterranean Sea",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "all large bodies of water are oceans",
+          "correct": "Large bodies of water include seas (smaller than oceans, often partly enclosed by land), lakes (surrounded by land), and gulfs/bays (indentations in coastlines)."
+        },
+        {
+          "wrong": "rivers always flow south",
+          "correct": "Rivers flow downhill following gravity, regardless of compass direction. The Nile flows north, the Amazon flows east, and the Columbia flows west."
+        },
+        {
+          "wrong": "canals are natural waterways",
+          "correct": "Canals are human-made waterways built for navigation, irrigation, or water supply. The Panama and Suez Canals were major engineering projects."
+        },
+        {
+          "wrong": "all lakes contain fresh water",
+          "correct": "While most lakes are freshwater, some are saltwater. The Great Salt Lake in Utah and the Dead Sea (technically a lake) are well-known saltwater lakes."
+        }
+      ]
+    }
+  }
+}

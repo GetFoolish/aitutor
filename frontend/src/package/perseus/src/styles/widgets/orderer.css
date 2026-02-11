@@ -15,9 +15,8 @@
     box-sizing: border-box;
     width: 100%;
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     overflow-x: auto;
-    white-space: nowrap;
     /* End Fix */
 }
 .orderer .card {
@@ -30,6 +29,9 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 .orderer.height-normal.layout-horizontal .card {
     height: 65px;
@@ -51,9 +53,8 @@
     box-sizing: border-box;
     width: 100%;
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     overflow-x: auto;
-    white-space: nowrap;
     /* End Fix */
 }
 .orderer div.paragraph {
@@ -71,6 +72,8 @@
     flex-shrink: 0;
     display: inline-block;
     margin: 4px; /* Uniform spacing around each card */
+    max-width: 100%;
+    white-space: normal;
 }
 .orderer.layout-vertical .card-wrap {
     float: none;

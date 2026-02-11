@@ -1,0 +1,820 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "math",
+    "last_updated": "2026-02-11",
+    "description": "Arithmetic facts: operations, order of operations, properties, place value, integers, divisibility, estimation, mental math"
+  },
+  "facts_by_topic": {
+    "basic_operations": {
+      "keywords": [
+        "add",
+        "subtract",
+        "multiply",
+        "divide",
+        "addition",
+        "subtraction",
+        "multiplication",
+        "division",
+        "sum",
+        "difference",
+        "product",
+        "quotient",
+        "remainder",
+        "long division",
+        "carrying",
+        "borrowing",
+        "regrouping"
+      ],
+      "facts": [
+        {
+          "statement": "Addition combines numbers to find their total, called the sum",
+          "grade_min": 0,
+          "grade_max": 12
+        },
+        {
+          "statement": "Subtraction finds the difference between two numbers",
+          "grade_min": 0,
+          "grade_max": 12
+        },
+        {
+          "statement": "Multiplication is repeated addition; 4 times 3 means 4+4+4=12",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Division splits a number into equal groups; 12 divided by 3 = 4",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Any number multiplied by 0 equals 0",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Any number multiplied by 1 equals itself (multiplicative identity)",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Division by zero is undefined; you cannot divide any number by 0",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Any number added to 0 equals itself (additive identity)",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "When you subtract a number from itself, the result is always 0",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "The result of multiplication is called the product, and the numbers being multiplied are called factors",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "In division, the number being divided is the dividend, the number you divide by is the divisor, and the answer is the quotient",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A remainder is the amount left over when division does not come out evenly: 13 / 4 = 3 remainder 1",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Regrouping (carrying) in addition moves groups of 10 to the next place value column",
+          "grade_min": 1,
+          "grade_max": 5
+        },
+        {
+          "statement": "Regrouping (borrowing) in subtraction takes 10 from the next higher place value when a digit is too small to subtract",
+          "grade_min": 1,
+          "grade_max": 5
+        },
+        {
+          "statement": "Multiplication by 10 adds a zero to the end of a whole number: 7 x 10 = 70",
+          "grade_min": 2,
+          "grade_max": 6
+        },
+        {
+          "statement": "Multiplication by 100 adds two zeros: 7 x 100 = 700",
+          "grade_min": 2,
+          "grade_max": 6
+        },
+        {
+          "statement": "Doubling a number is the same as multiplying by 2: double 15 = 30",
+          "grade_min": 1,
+          "grade_max": 5
+        },
+        {
+          "statement": "Halving a number is the same as dividing by 2: half of 30 = 15",
+          "grade_min": 1,
+          "grade_max": 5
+        },
+        {
+          "statement": "The standard algorithm for multi-digit multiplication involves multiplying by each digit then adding partial products",
+          "grade_min": 4,
+          "grade_max": 7
+        },
+        {
+          "statement": "Long division follows a cycle: divide, multiply, subtract, bring down",
+          "grade_min": 4,
+          "grade_max": 7
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "dividing by zero gives zero",
+          "correct": "Division by zero is undefined. It does not equal zero, one, or any other number."
+        },
+        {
+          "wrong": "subtraction is commutative (5-3 equals 3-5)",
+          "correct": "Subtraction is NOT commutative. 5-3=2 but 3-5=-2. Only addition and multiplication are commutative."
+        },
+        {
+          "wrong": "multiplication always makes numbers bigger",
+          "correct": "Multiplying by a number between 0 and 1 makes the result smaller (e.g., 10 x 0.5 = 5)."
+        },
+        {
+          "wrong": "division always makes numbers smaller",
+          "correct": "Dividing by a number between 0 and 1 makes the result larger (e.g., 10 / 0.5 = 20)."
+        },
+        {
+          "wrong": "13 / 4 = 3 because the remainder is ignored",
+          "correct": "13 / 4 = 3 remainder 1, or 3.25 as a decimal. The remainder must be reported or converted."
+        },
+        {
+          "wrong": "when carrying in addition, you carry the ones digit",
+          "correct": "When carrying, you write the ones digit below and carry the tens digit to the next column."
+        },
+        {
+          "wrong": "7 x 0 = 7",
+          "correct": "Any number times 0 equals 0, not the number itself. 7 x 0 = 0."
+        },
+        {
+          "wrong": "0 / 5 = 5",
+          "correct": "0 divided by any nonzero number equals 0. There is nothing to divide."
+        }
+      ]
+    },
+    "order_of_operations": {
+      "keywords": [
+        "order of operations",
+        "PEMDAS",
+        "BODMAS",
+        "parentheses",
+        "exponents",
+        "brackets",
+        "evaluate",
+        "expression",
+        "simplify"
+      ],
+      "facts": [
+        {
+          "statement": "The order of operations is Parentheses, Exponents, Multiplication and Division (left to right), Addition and Subtraction (left to right), remembered by PEMDAS",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Multiplication and division have equal precedence and are evaluated from left to right",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Addition and subtraction have equal precedence and are evaluated from left to right",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Parentheses are always evaluated first, overriding normal order of operations",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "In the expression 3 + 4 x 2, you multiply first: 4 x 2 = 8, then add: 3 + 8 = 11",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Nested parentheses are evaluated from the innermost set outward",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Exponents are evaluated after parentheses but before multiplication and division",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A fraction bar acts as a grouping symbol: (3+5)/2 means compute 3+5 first, then divide by 2",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "In 2 + 3^2, compute the exponent first: 3^2 = 9, then add: 2 + 9 = 11",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Brackets [ ] and braces { } function the same as parentheses in order of operations",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "multiplication always comes before division in PEMDAS",
+          "correct": "Multiplication and division have equal precedence. Evaluate them from left to right."
+        },
+        {
+          "wrong": "addition always comes before subtraction in PEMDAS",
+          "correct": "Addition and subtraction have equal precedence. Evaluate them from left to right."
+        },
+        {
+          "wrong": "3 + 4 x 2 equals 14",
+          "correct": "Following order of operations, multiply first: 4 x 2 = 8, then add: 3 + 8 = 11."
+        },
+        {
+          "wrong": "in 2 + 3^2, you add first: (2+3)^2 = 25",
+          "correct": "Exponents come before addition. 3^2 = 9, then 2 + 9 = 11, not 25."
+        },
+        {
+          "wrong": "8 / 2(2+2) = 1 because you multiply 2(4) first",
+          "correct": "After the parentheses, multiplication and division have equal precedence left to right: 8/2 = 4, then 4 x 4 = 16."
+        }
+      ]
+    },
+    "properties_of_operations": {
+      "keywords": [
+        "commutative",
+        "associative",
+        "distributive",
+        "identity",
+        "property",
+        "inverse",
+        "closure",
+        "zero property"
+      ],
+      "facts": [
+        {
+          "statement": "The commutative property states that a + b = b + a and a x b = b x a",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The associative property states that (a + b) + c = a + (b + c) and (a x b) x c = a x (b x c)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The distributive property states that a x (b + c) = (a x b) + (a x c)",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The additive identity is 0 because adding 0 to any number gives that same number",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The multiplicative identity is 1 because multiplying any number by 1 gives that same number",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The additive inverse of n is -n because n + (-n) = 0",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The multiplicative inverse (reciprocal) of n is 1/n because n x (1/n) = 1",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Subtraction and division are NOT commutative and NOT associative",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The zero property of multiplication states that any number multiplied by 0 equals 0",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The distributive property also works with subtraction: a x (b - c) = (a x b) - (a x c)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The closure property means the result of an operation on two members of a set is also in that set; integers are closed under addition, subtraction, and multiplication",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the commutative property works for subtraction",
+          "correct": "Subtraction is NOT commutative. 5-3=2 but 3-5=-2."
+        },
+        {
+          "wrong": "the associative property works for division",
+          "correct": "Division is NOT associative. (12/6)/2=1, but 12/(6/2)=4."
+        },
+        {
+          "wrong": "the distributive property only works with multiplication over addition",
+          "correct": "The distributive property works with multiplication over both addition and subtraction: a(b-c) = ab - ac."
+        },
+        {
+          "wrong": "integers are closed under division",
+          "correct": "Integers are NOT closed under division. 7 / 2 = 3.5, which is not an integer."
+        }
+      ]
+    },
+    "place_value": {
+      "keywords": [
+        "place value",
+        "ones",
+        "tens",
+        "hundreds",
+        "thousands",
+        "digit",
+        "rounding",
+        "estimation",
+        "expanded form",
+        "standard form",
+        "word form",
+        "millions",
+        "billions"
+      ],
+      "facts": [
+        {
+          "statement": "In our base-10 number system, each place value is 10 times the value of the place to its right",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "When rounding, if the digit to the right is 5 or greater, round up; if 4 or less, round down",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Expanded form breaks a number into the sum of each digit times its place value: 345 = 300 + 40 + 5",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Zero is a placeholder that shows there is nothing in a particular place value position",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Place values from right to left: ones, tens, hundreds, thousands, ten-thousands, hundred-thousands, millions",
+          "grade_min": 1,
+          "grade_max": 6
+        },
+        {
+          "statement": "Standard form is the normal way to write a number using digits: 3,456",
+          "grade_min": 1,
+          "grade_max": 5
+        },
+        {
+          "statement": "Word form writes a number in words: 3,456 is three thousand four hundred fifty-six",
+          "grade_min": 1,
+          "grade_max": 5
+        },
+        {
+          "statement": "Rounding 456 to the nearest hundred gives 500 because the tens digit (5) is 5 or greater",
+          "grade_min": 3,
+          "grade_max": 6
+        },
+        {
+          "statement": "Rounding 432 to the nearest hundred gives 400 because the tens digit (3) is less than 5",
+          "grade_min": 3,
+          "grade_max": 6
+        },
+        {
+          "statement": "One million = 1,000,000 (six zeros); one billion = 1,000,000,000 (nine zeros)",
+          "grade_min": 4,
+          "grade_max": 8
+        },
+        {
+          "statement": "Comparing whole numbers: start from the leftmost digit and compare place by place",
+          "grade_min": 1,
+          "grade_max": 5
+        },
+        {
+          "statement": "Estimation uses rounding to get an approximate answer quickly: 48 + 53 is approximately 50 + 50 = 100",
+          "grade_min": 3,
+          "grade_max": 7
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the digit 5 always means five",
+          "correct": "The value of a digit depends on its place. The 5 in 500 means five hundred."
+        },
+        {
+          "wrong": "removing a zero from any number does not change it",
+          "correct": "Zeros matter as placeholders. Removing the zero from 305 would change it to 35."
+        },
+        {
+          "wrong": "a number with more digits is always larger",
+          "correct": "For whole numbers this is true, but not for decimals: 0.9 > 0.125 even though 0.125 has more digits."
+        },
+        {
+          "wrong": "rounding 450 to the nearest hundred gives 400",
+          "correct": "When the digit is exactly 5, the convention is to round up: 450 rounds to 500."
+        },
+        {
+          "wrong": "you round each digit separately when rounding to the nearest hundred",
+          "correct": "When rounding to the nearest hundred, only look at the tens digit to decide whether to round up or down."
+        }
+      ]
+    },
+    "integers_negative_numbers": {
+      "keywords": [
+        "integer",
+        "negative",
+        "positive",
+        "absolute value",
+        "number line",
+        "opposite",
+        "sign",
+        "signed numbers"
+      ],
+      "facts": [
+        {
+          "statement": "Integers are whole numbers that can be positive, negative, or zero",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The absolute value of a number is its distance from zero on the number line, always non-negative",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Multiplying two negative numbers gives a positive result: (-3) x (-4) = 12",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Multiplying a positive and a negative number gives a negative result: 3 x (-4) = -12",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Subtracting a negative is the same as adding its positive: 5 - (-3) = 5 + 3 = 8",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "On a number line, numbers increase from left to right, so -5 is less than -2",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Zero is neither positive nor negative",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Adding two negative numbers gives a negative result: (-3) + (-5) = -8",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Adding a positive and a negative number: subtract the absolute values and keep the sign of the larger absolute value",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The opposite of a number is the same distance from zero but on the other side: the opposite of 7 is -7",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Dividing two negative numbers gives a positive result: (-12) / (-3) = 4",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Dividing a positive by a negative (or vice versa) gives a negative result: 12 / (-3) = -4",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The absolute value of 0 is 0: |0| = 0",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Integers do NOT include fractions or decimals; -3, 0, and 7 are integers, but 1.5 and 2/3 are not",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "-5 is greater than -2 because 5 is greater than 2",
+          "correct": "-5 is less than -2. A larger negative number means a smaller value."
+        },
+        {
+          "wrong": "a negative times a negative is negative",
+          "correct": "A negative times a negative gives a positive result: (-3) x (-4) = 12."
+        },
+        {
+          "wrong": "the absolute value of -7 is -7",
+          "correct": "The absolute value of -7 is 7. Absolute value is always non-negative."
+        },
+        {
+          "wrong": "(-3) + (-5) = -2",
+          "correct": "Adding two negatives: add the absolute values and keep the negative sign. (-3) + (-5) = -8."
+        },
+        {
+          "wrong": "subtracting a negative makes the result more negative",
+          "correct": "Subtracting a negative is the same as adding: 5 - (-3) = 5 + 3 = 8, which is larger."
+        },
+        {
+          "wrong": "0 is a positive number",
+          "correct": "Zero is neither positive nor negative. It is the boundary between positive and negative numbers."
+        }
+      ]
+    },
+    "divisibility_rules": {
+      "keywords": [
+        "divisible",
+        "divisibility",
+        "factor",
+        "multiple",
+        "even",
+        "odd",
+        "prime",
+        "composite",
+        "GCF",
+        "LCM",
+        "greatest common factor",
+        "least common multiple"
+      ],
+      "facts": [
+        {
+          "statement": "A number is divisible by 2 if its last digit is even (0, 2, 4, 6, or 8)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A number is divisible by 3 if the sum of its digits is divisible by 3: 123 -> 1+2+3=6, and 6 is divisible by 3",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A number is divisible by 4 if its last two digits form a number divisible by 4: 316 -> 16/4=4, so yes",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A number is divisible by 5 if its last digit is 0 or 5",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A number is divisible by 6 if it is divisible by both 2 and 3",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A number is divisible by 9 if the sum of its digits is divisible by 9: 729 -> 7+2+9=18, 18/9=2",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A number is divisible by 10 if its last digit is 0",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A prime number has exactly two factors: 1 and itself. The first primes are 2, 3, 5, 7, 11, 13, 17, 19, 23, 29",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "2 is the only even prime number; all other even numbers are divisible by 2 and thus composite",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "1 is neither prime nor composite",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A composite number has more than two factors: 12 has factors 1, 2, 3, 4, 6, and 12",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The GCF (greatest common factor) of two numbers is the largest number that divides both evenly: GCF(12,18)=6",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The LCM (least common multiple) of two numbers is the smallest number that both divide into evenly: LCM(4,6)=12",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Every whole number greater than 1 can be expressed as a unique product of prime factors (Fundamental Theorem of Arithmetic): 12 = 2 x 2 x 3",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Even numbers end in 0, 2, 4, 6, or 8; odd numbers end in 1, 3, 5, 7, or 9",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "Even + even = even; odd + odd = even; even + odd = odd",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Even x any integer = even; odd x odd = odd",
+          "grade_min": 3,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "1 is a prime number",
+          "correct": "1 is neither prime nor composite. Prime numbers must have exactly two distinct factors."
+        },
+        {
+          "wrong": "all odd numbers are prime",
+          "correct": "Many odd numbers are composite: 9 (3x3), 15 (3x5), 21 (3x7), 25 (5x5), 27 (3x9)."
+        },
+        {
+          "wrong": "2 is not prime because it is even",
+          "correct": "2 IS prime because its only factors are 1 and itself. It is the only even prime."
+        },
+        {
+          "wrong": "GCF of 12 and 18 is 36",
+          "correct": "36 is the LCM, not the GCF. The GCF (greatest common factor) of 12 and 18 is 6."
+        },
+        {
+          "wrong": "the LCM is always the product of the two numbers",
+          "correct": "The LCM is the product divided by the GCF: LCM(4,6) = (4x6)/2 = 12, not 24."
+        },
+        {
+          "wrong": "a number divisible by 3 must have a 3 in it",
+          "correct": "Divisibility by 3 depends on the digit sum, not individual digits. 42 is divisible by 3 (4+2=6)."
+        }
+      ]
+    },
+    "mental_math_estimation": {
+      "keywords": [
+        "mental math",
+        "estimation",
+        "compatible numbers",
+        "benchmark",
+        "approximate",
+        "front-end estimation",
+        "rounding strategy"
+      ],
+      "facts": [
+        {
+          "statement": "Compatible numbers are numbers that are easy to compute mentally: to estimate 248 / 5, use 250 / 5 = 50",
+          "grade_min": 3,
+          "grade_max": 7
+        },
+        {
+          "statement": "Front-end estimation uses only the leading digits: 376 + 421 is approximately 300 + 400 = 700",
+          "grade_min": 3,
+          "grade_max": 6
+        },
+        {
+          "statement": "To multiply by 5 mentally, multiply by 10 and divide by 2: 36 x 5 = 360/2 = 180",
+          "grade_min": 3,
+          "grade_max": 7
+        },
+        {
+          "statement": "To multiply by 9 mentally, multiply by 10 and subtract the original number: 7 x 9 = 70 - 7 = 63",
+          "grade_min": 3,
+          "grade_max": 7
+        },
+        {
+          "statement": "Breaking apart numbers helps with addition: 67 + 28 = 67 + 30 - 2 = 95",
+          "grade_min": 2,
+          "grade_max": 6
+        },
+        {
+          "statement": "Benchmark numbers like 10, 25, 50, 100 help with estimation: 47 is close to 50",
+          "grade_min": 2,
+          "grade_max": 6
+        },
+        {
+          "statement": "Compensation: adjust one number to make calculation easier, then compensate: 99 x 7 = 100 x 7 - 7 = 693",
+          "grade_min": 3,
+          "grade_max": 7
+        },
+        {
+          "statement": "Clustering estimation: when numbers cluster around a value, multiply that value by the count: 48+51+49+52 is about 4 x 50 = 200",
+          "grade_min": 4,
+          "grade_max": 7
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "estimation always gives the exact answer",
+          "correct": "Estimation gives an approximate answer. Its purpose is to check reasonableness, not find the exact result."
+        },
+        {
+          "wrong": "rounding both numbers up gives a good estimate for addition",
+          "correct": "Rounding both numbers up overestimates. For a better estimate, round one up and one down when possible."
+        },
+        {
+          "wrong": "48 x 5 is about 50 x 5 = 250 exactly",
+          "correct": "50 x 5 = 250 is an estimate. The exact answer is 48 x 5 = 240."
+        }
+      ]
+    },
+    "number_types": {
+      "keywords": [
+        "natural number",
+        "whole number",
+        "rational",
+        "irrational",
+        "real number",
+        "counting number",
+        "number set",
+        "number system"
+      ],
+      "facts": [
+        {
+          "statement": "Natural numbers (counting numbers) are 1, 2, 3, 4, 5, ...",
+          "grade_min": 0,
+          "grade_max": 12
+        },
+        {
+          "statement": "Whole numbers include 0 along with all natural numbers: 0, 1, 2, 3, ...",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "Integers include all whole numbers and their negatives: ..., -3, -2, -1, 0, 1, 2, 3, ...",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Rational numbers can be written as a fraction p/q where p and q are integers and q is not 0",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Irrational numbers cannot be written as a fraction; examples include pi, sqrt(2), and e",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Real numbers include all rational and irrational numbers",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Every integer is a rational number because it can be written with denominator 1: 5 = 5/1",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The square root of 2 (approximately 1.41421) is irrational and cannot be expressed as a fraction",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "all decimals are irrational",
+          "correct": "Terminating and repeating decimals are rational (they can be written as fractions). Only non-repeating, non-terminating decimals are irrational."
+        },
+        {
+          "wrong": "pi equals 22/7 exactly",
+          "correct": "22/7 is an approximation of pi (3.14159...). Pi is irrational and cannot be expressed as any fraction."
+        },
+        {
+          "wrong": "negative numbers are not rational",
+          "correct": "Negative numbers can be rational. -3/4 is rational because it is a ratio of integers."
+        },
+        {
+          "wrong": "0 is not a real number",
+          "correct": "0 is a real number, a rational number, an integer, and a whole number."
+        }
+      ]
+    }
+  }
+}

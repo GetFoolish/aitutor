@@ -1,0 +1,298 @@
+{
+  "meta": {"version": 2, "subject": "computer_science", "last_updated": "2026-02-07"},
+  "facts_by_topic": {
+    "programming_basics": {
+      "keywords": ["variable", "data type", "int", "float", "string", "boolean", "assignment", "input", "output", "print", "programming", "code", "value"],
+      "facts": [
+        {"statement": "A variable is a named container that stores a value in a computer's memory", "grade_min": 5, "grade_max": 12},
+        {"statement": "Common data types include integers (whole numbers), floats (decimal numbers), strings (text), and booleans (true/false)", "grade_min": 6, "grade_max": 12},
+        {"statement": "An integer (int) is a whole number without a decimal point, such as 5, -3, or 0", "grade_min": 5, "grade_max": 12},
+        {"statement": "A float is a number that contains a decimal point, such as 3.14 or -0.5", "grade_min": 6, "grade_max": 12},
+        {"statement": "A string is a sequence of characters enclosed in quotation marks, such as \"hello\" or \"42\"", "grade_min": 6, "grade_max": 12},
+        {"statement": "A boolean is a data type that can only hold one of two values: true or false", "grade_min": 6, "grade_max": 12},
+        {"statement": "Assignment uses the equals sign (=) to store a value in a variable, for example x = 10", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the equals sign in programming means the same as in math", "correct": "In programming, = is the assignment operator (assigns a value). The equality comparison operator is == (checks if two values are equal)"},
+        {"wrong": "the string \"42\" is the same as the integer 42", "correct": "The string \"42\" is text made of the characters 4 and 2, while the integer 42 is a number you can do math with. They are different data types"},
+        {"wrong": "variables can only store numbers", "correct": "Variables can store many data types including numbers, strings, booleans, lists, and more"}
+      ]
+    },
+    "control_flow": {
+      "keywords": ["if", "else", "elif", "loop", "for", "while", "condition", "boolean", "logic", "and", "or", "not", "comparison", "branch", "iteration"],
+      "facts": [
+        {"statement": "An if statement executes a block of code only when its condition evaluates to true", "grade_min": 6, "grade_max": 12},
+        {"statement": "An else clause provides an alternative block of code that runs when the if condition is false", "grade_min": 6, "grade_max": 12},
+        {"statement": "A for loop repeats a block of code a specific number of times or for each item in a collection", "grade_min": 6, "grade_max": 12},
+        {"statement": "A while loop repeats a block of code as long as its condition remains true", "grade_min": 7, "grade_max": 12},
+        {"statement": "Boolean operators AND, OR, and NOT are used to combine or modify conditions in control flow", "grade_min": 7, "grade_max": 12},
+        {"statement": "AND returns true only when both conditions are true; OR returns true when at least one condition is true", "grade_min": 7, "grade_max": 12},
+        {"statement": "An infinite loop occurs when a loop's condition never becomes false, causing the program to run forever unless interrupted", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "a for loop and a while loop do exactly the same thing", "correct": "A for loop is best when you know how many times to repeat, while a while loop is best when you repeat until a condition changes"},
+        {"wrong": "AND means either one can be true", "correct": "AND requires BOTH conditions to be true. OR requires at least one condition to be true"},
+        {"wrong": "an if statement always needs an else", "correct": "An if statement can stand alone without an else clause. The else is optional and only needed when you want alternative behavior"}
+      ]
+    },
+    "functions": {
+      "keywords": ["function", "parameter", "argument", "return", "scope", "call", "define", "def", "reusable", "method", "procedure", "subroutine"],
+      "facts": [
+        {"statement": "A function is a reusable block of code that performs a specific task and can be called by name", "grade_min": 6, "grade_max": 12},
+        {"statement": "Parameters are variables listed in a function's definition that act as placeholders for the values passed in", "grade_min": 7, "grade_max": 12},
+        {"statement": "Arguments are the actual values passed to a function when it is called", "grade_min": 7, "grade_max": 12},
+        {"statement": "A return statement sends a value back from a function to the code that called it", "grade_min": 7, "grade_max": 12},
+        {"statement": "Scope determines where a variable can be accessed; local variables exist only inside the function where they are defined", "grade_min": 8, "grade_max": 12},
+        {"statement": "Functions promote code reusability, meaning you write the logic once and call it many times instead of repeating code", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "defining a function runs it immediately", "correct": "Defining a function only creates it. You must call the function by name (with parentheses) to execute it"},
+        {"wrong": "parameters and arguments are the same thing", "correct": "Parameters are the variable names in the function definition; arguments are the actual values you pass when calling the function"},
+        {"wrong": "a function always returns a value", "correct": "A function without a return statement returns None (in Python) or undefined (in JavaScript). Not all functions need to return a value"}
+      ]
+    },
+    "data_structures": {
+      "keywords": ["array", "list", "dictionary", "map", "stack", "queue", "linked list", "tree", "index", "key", "value", "collection", "data structure"],
+      "facts": [
+        {"statement": "An array or list is an ordered collection of elements that can be accessed by their index position, starting at 0 in most languages", "grade_min": 7, "grade_max": 12},
+        {"statement": "A dictionary (also called a map or hash map) stores data as key-value pairs, allowing fast lookups by key", "grade_min": 8, "grade_max": 12},
+        {"statement": "A stack is a Last-In-First-Out (LIFO) data structure where the last element added is the first one removed", "grade_min": 8, "grade_max": 12},
+        {"statement": "A queue is a First-In-First-Out (FIFO) data structure where the first element added is the first one removed, like a line of people", "grade_min": 8, "grade_max": 12},
+        {"statement": "A linked list is a sequence of nodes where each node contains data and a reference (pointer) to the next node", "grade_min": 9, "grade_max": 12},
+        {"statement": "A tree is a hierarchical data structure with a root node at the top and child nodes branching downward, with no cycles", "grade_min": 9, "grade_max": 12},
+        {"statement": "Choosing the right data structure affects program efficiency; for example, dictionaries provide faster lookups than lists for large datasets", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "array indices start at 1", "correct": "In most programming languages (Python, Java, JavaScript, C), array indices start at 0. The first element is at index 0"},
+        {"wrong": "arrays and linked lists are the same thing", "correct": "Arrays store elements in contiguous memory with fast index access, while linked lists store elements in nodes scattered in memory connected by pointers"},
+        {"wrong": "a stack and a queue work the same way", "correct": "A stack is LIFO (last in, first out) like a stack of plates, while a queue is FIFO (first in, first out) like a line at a store"}
+      ]
+    },
+    "algorithms": {
+      "keywords": ["algorithm", "sort", "search", "bubble sort", "selection sort", "merge sort", "quicksort", "linear search", "binary search", "big o", "recursion", "efficiency", "complexity"],
+      "facts": [
+        {"statement": "An algorithm is a step-by-step set of instructions for solving a problem or completing a task", "grade_min": 5, "grade_max": 12},
+        {"statement": "Bubble sort repeatedly compares adjacent elements and swaps them if they are in the wrong order, with a time complexity of O(n^2)", "grade_min": 8, "grade_max": 12},
+        {"statement": "Merge sort divides the list in half repeatedly, sorts each half, and merges them back together, achieving O(n log n) time complexity", "grade_min": 9, "grade_max": 12},
+        {"statement": "Linear search checks each element one by one and has a time complexity of O(n), where n is the number of elements", "grade_min": 7, "grade_max": 12},
+        {"statement": "Binary search works only on sorted data and repeatedly divides the search space in half, achieving O(log n) time complexity", "grade_min": 8, "grade_max": 12},
+        {"statement": "Big O notation describes the worst-case time or space complexity of an algorithm as the input size grows", "grade_min": 9, "grade_max": 12},
+        {"statement": "Recursion is when a function calls itself to break a problem into smaller sub-problems, and it requires a base case to stop", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "binary search works on unsorted data", "correct": "Binary search requires the data to be sorted first. For unsorted data, you must use linear search or sort the data before using binary search"},
+        {"wrong": "bubble sort is the most efficient sorting algorithm", "correct": "Bubble sort is one of the least efficient sorting algorithms at O(n^2). Merge sort and quicksort are much faster at O(n log n) on average"},
+        {"wrong": "recursion and loops are completely different", "correct": "Recursion and loops can often solve the same problems. Any recursive solution can be rewritten with loops (iteration), though one may be more elegant than the other"}
+      ]
+    },
+    "binary_logic": {
+      "keywords": ["binary", "bit", "byte", "base 2", "hexadecimal", "ASCII", "boolean algebra", "decimal", "kilobyte", "megabyte", "gigabyte", "digital"],
+      "facts": [
+        {"statement": "Binary is a base-2 number system that uses only two digits: 0 and 1, which represent the on/off states of electronic switches", "grade_min": 6, "grade_max": 12},
+        {"statement": "A bit is the smallest unit of data in computing, representing a single 0 or 1", "grade_min": 6, "grade_max": 12},
+        {"statement": "A byte consists of 8 bits and can represent 256 different values (2^8 = 256), from 0 to 255", "grade_min": 6, "grade_max": 12},
+        {"statement": "1 kilobyte (KB) equals 1024 bytes, 1 megabyte (MB) equals 1024 KB, and 1 gigabyte (GB) equals 1024 MB", "grade_min": 6, "grade_max": 12},
+        {"statement": "Hexadecimal is a base-16 number system using digits 0-9 and letters A-F, often used to represent binary data more compactly", "grade_min": 8, "grade_max": 12},
+        {"statement": "ASCII is a character encoding standard that assigns a number (0-127) to each character; for example, the letter A is 65", "grade_min": 8, "grade_max": 12},
+        {"statement": "The binary number 1010 equals the decimal number 10 (calculated as 1x8 + 0x4 + 1x2 + 0x1)", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "1 kilobyte is 1000 bytes", "correct": "In computing, 1 kilobyte is traditionally 1024 bytes (2^10), though the SI definition of 1000 bytes (kB) is also used. The IEC standard uses kibibyte (KiB) for 1024 bytes"},
+        {"wrong": "computers understand letters and words directly", "correct": "Computers only understand binary (0s and 1s). Letters, numbers, and all other data must be encoded as binary numbers using standards like ASCII or Unicode"},
+        {"wrong": "a byte and a bit are the same thing", "correct": "A bit is a single 0 or 1, while a byte is a group of 8 bits. A byte can represent 256 values, whereas a bit can only represent 2 values"}
+      ]
+    },
+    "internet_web": {
+      "keywords": ["internet", "IP address", "HTTP", "HTTPS", "DNS", "URL", "client", "server", "HTML", "CSS", "JavaScript", "web", "browser", "network", "encryption", "protocol"],
+      "facts": [
+        {"statement": "The internet is a global network of interconnected computer networks that communicate using standardized protocols", "grade_min": 5, "grade_max": 12},
+        {"statement": "An IP address is a unique numerical label assigned to each device on a network, used to identify and locate devices for communication", "grade_min": 7, "grade_max": 12},
+        {"statement": "HTTP (HyperText Transfer Protocol) is the protocol used for transmitting web pages; HTTPS adds encryption for secure communication", "grade_min": 7, "grade_max": 12},
+        {"statement": "DNS (Domain Name System) translates human-readable domain names like google.com into IP addresses that computers use", "grade_min": 8, "grade_max": 12},
+        {"statement": "A URL (Uniform Resource Locator) is the address used to access a resource on the web, including the protocol, domain name, and path", "grade_min": 6, "grade_max": 12},
+        {"statement": "In the client-server model, the client (such as a web browser) sends requests to a server, which processes them and sends back responses", "grade_min": 7, "grade_max": 12},
+        {"statement": "HTML defines the structure of a web page, CSS controls its visual appearance and layout, and JavaScript adds interactivity and dynamic behavior", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the internet and the World Wide Web are the same thing", "correct": "The internet is the global network infrastructure, while the World Wide Web (WWW) is a service that runs on top of the internet using HTTP to deliver web pages"},
+        {"wrong": "HTTP and HTTPS are the same", "correct": "HTTPS encrypts data between the browser and server using TLS/SSL, making it secure. HTTP transmits data in plain text, which can be intercepted"},
+        {"wrong": "a website is stored on one computer", "correct": "Modern websites are often distributed across multiple servers, content delivery networks (CDNs), and data centers around the world for speed and reliability"}
+      ]
+    },
+    "cybersecurity": {
+      "keywords": ["password", "phishing", "malware", "encryption", "authentication", "firewall", "two-factor", "2FA", "security", "hack", "virus", "cyber", "privacy", "threat"],
+      "facts": [
+        {"statement": "A strong password should be at least 12 characters long and include a mix of uppercase and lowercase letters, numbers, and special characters", "grade_min": 5, "grade_max": 12},
+        {"statement": "Phishing is a type of social engineering attack where attackers send deceptive messages to trick people into revealing sensitive information", "grade_min": 6, "grade_max": 12},
+        {"statement": "Malware is malicious software designed to damage, disrupt, or gain unauthorized access to a computer system, including viruses, worms, and ransomware", "grade_min": 7, "grade_max": 12},
+        {"statement": "Encryption converts readable data (plaintext) into an unreadable format (ciphertext) using an algorithm and a key, so only authorized parties can read it", "grade_min": 8, "grade_max": 12},
+        {"statement": "Authentication is the process of verifying a user's identity, commonly through something you know (password), something you have (phone), or something you are (fingerprint)", "grade_min": 7, "grade_max": 12},
+        {"statement": "A firewall is a network security device or software that monitors and filters incoming and outgoing network traffic based on defined security rules", "grade_min": 8, "grade_max": 12},
+        {"statement": "Two-factor authentication (2FA) requires two different forms of verification to access an account, making it significantly harder for attackers to break in", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "a short simple password is fine if nobody knows it", "correct": "Short and simple passwords can be easily cracked by brute-force or dictionary attacks regardless of secrecy. Password strength depends on length, complexity, and uniqueness"},
+        {"wrong": "only downloading files can give you a virus", "correct": "Malware can spread through email attachments, malicious websites, USB drives, phishing links, and even legitimate software supply chain compromises"},
+        {"wrong": "antivirus software makes you completely safe online", "correct": "Antivirus software is one layer of protection but cannot catch all threats. Safe browsing habits, software updates, strong passwords, and 2FA are all essential parts of cybersecurity"}
+      ]
+    },
+    "html_css": {
+      "keywords": ["HTML", "CSS", "tag", "element", "attribute", "selector", "property", "class", "id", "semantic", "box model", "responsive", "margin", "padding", "flexbox"],
+      "facts": [
+        {"statement": "HTML (HyperText Markup Language) uses tags enclosed in angle brackets to define the structure and content of a web page, such as <h1> for headings and <p> for paragraphs", "grade_min": 6, "grade_max": 12},
+        {"statement": "CSS (Cascading Style Sheets) controls the visual presentation of HTML elements, including colors, fonts, spacing, and layout", "grade_min": 6, "grade_max": 12},
+        {"statement": "Semantic HTML elements like <header>, <nav>, <main>, <article>, and <footer> describe the meaning and role of content, improving accessibility and SEO", "grade_min": 7, "grade_max": 12},
+        {"statement": "The CSS box model describes every HTML element as a rectangular box consisting of content, padding (space inside the border), border, and margin (space outside the border)", "grade_min": 8, "grade_max": 12},
+        {"statement": "CSS selectors target HTML elements for styling: element selectors (p), class selectors (.classname), ID selectors (#idname), and combinators (div > p)", "grade_min": 7, "grade_max": 12},
+        {"statement": "Responsive web design uses CSS media queries, flexible grids, and flexible images to make web pages adapt to different screen sizes and devices", "grade_min": 8, "grade_max": 12},
+        {"statement": "CSS Flexbox is a layout model that arranges elements in a row or column, making it easier to distribute space and align items within a container", "grade_min": 9, "grade_max": 12},
+        {"statement": "HTML attributes provide additional information about elements, such as href for links (<a href=\"url\">), src for images (<img src=\"file\">), and alt for alternative text", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "HTML and CSS are programming languages", "correct": "HTML is a markup language (it structures content) and CSS is a style sheet language (it styles content). Neither has logic, variables, or control flow like programming languages such as JavaScript or Python"},
+        {"wrong": "you can use any tag name you want in HTML and it will work", "correct": "HTML has a defined set of standard tags like <div>, <p>, <span>, <h1>. Using non-standard tags may not be recognized by browsers or assistive technologies. Custom elements require JavaScript and a hyphenated name"},
+        {"wrong": "padding and margin are the same thing", "correct": "Padding is the space between an element's content and its border (inside the border). Margin is the space between an element's border and surrounding elements (outside the border)"},
+        {"wrong": "inline CSS is the best way to style a website", "correct": "Inline CSS (style attribute on each element) is hard to maintain and override. External or internal stylesheets allow reusable styles across multiple elements and pages, following the principle of separation of concerns"},
+        {"wrong": "a <div> and a <span> are the same thing", "correct": "A <div> is a block-level element that starts on a new line and takes full width, while a <span> is an inline element that flows within text. They serve different structural purposes"}
+      ]
+    },
+    "javascript": {
+      "keywords": ["JavaScript", "variable", "function", "event", "DOM", "array", "object", "let", "const", "var", "callback", "addEventListener", "JSON", "method"],
+      "facts": [
+        {"statement": "JavaScript is a programming language that runs in web browsers and enables interactive and dynamic behavior on web pages, such as responding to clicks, updating content, and validating forms", "grade_min": 7, "grade_max": 12},
+        {"statement": "Variables in JavaScript are declared using let (reassignable), const (not reassignable), or var (older syntax with function scope); let and const are preferred in modern JavaScript", "grade_min": 8, "grade_max": 12},
+        {"statement": "JavaScript data types include numbers, strings, booleans, null, undefined, objects, and arrays; JavaScript is dynamically typed, so a variable can hold any type", "grade_min": 8, "grade_max": 12},
+        {"statement": "The Document Object Model (DOM) is a tree-like representation of an HTML page that JavaScript can access and modify to dynamically change the content, structure, and style of a page", "grade_min": 8, "grade_max": 12},
+        {"statement": "An event in JavaScript is an action that occurs in the browser (such as a click, keypress, or page load) that can trigger a JavaScript function called an event handler", "grade_min": 7, "grade_max": 12},
+        {"statement": "JavaScript arrays are ordered lists of values accessed by numeric index (starting at 0), with built-in methods like push(), pop(), map(), and filter() for manipulation", "grade_min": 8, "grade_max": 12},
+        {"statement": "JavaScript objects store data as key-value pairs (properties), and can also contain functions (methods), making them useful for modeling real-world entities", "grade_min": 8, "grade_max": 12},
+        {"statement": "JSON (JavaScript Object Notation) is a lightweight text format for storing and exchanging data, widely used in APIs and web applications", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Java and JavaScript are the same language", "correct": "Java and JavaScript are completely different languages with different syntax, design, and use cases. JavaScript was named to capitalize on Java's popularity in the 1990s, but they share very little in common"},
+        {"wrong": "== and === are the same in JavaScript", "correct": "The == operator performs type coercion (converts types before comparing), so '5' == 5 is true. The === operator checks both value and type without coercion, so '5' === 5 is false. Always prefer === for predictable comparisons"},
+        {"wrong": "JavaScript can only run in a web browser", "correct": "While JavaScript was originally designed for browsers, Node.js allows JavaScript to run on servers and outside of browsers, enabling full-stack development in one language"},
+        {"wrong": "changing a const variable is always impossible", "correct": "A const declaration prevents reassignment of the variable itself, but if the value is an object or array, its internal properties or elements can still be modified. const arr = [1,2]; arr.push(3) is valid"}
+      ]
+    },
+    "python_fundamentals": {
+      "keywords": ["Python", "indentation", "list", "dictionary", "tuple", "string", "method", "slice", "range", "import", "module", "pip", "comprehension", "f-string"],
+      "facts": [
+        {"statement": "Python uses indentation (whitespace at the beginning of lines) instead of curly braces to define code blocks, making consistent indentation mandatory rather than optional", "grade_min": 6, "grade_max": 12},
+        {"statement": "A Python list is a mutable, ordered collection created with square brackets (e.g., [1, 2, 3]) that can hold items of different types and be modified after creation", "grade_min": 7, "grade_max": 12},
+        {"statement": "A Python dictionary stores data as key-value pairs in curly braces (e.g., {'name': 'Alice', 'age': 14}), allowing fast lookup of values by their unique keys", "grade_min": 7, "grade_max": 12},
+        {"statement": "A tuple is an immutable ordered sequence in Python created with parentheses (e.g., (1, 2, 3)); once created, its elements cannot be changed, added, or removed", "grade_min": 8, "grade_max": 12},
+        {"statement": "Python string methods like .upper(), .lower(), .strip(), .split(), and .replace() return new strings because strings in Python are immutable (cannot be changed in place)", "grade_min": 7, "grade_max": 12},
+        {"statement": "List slicing in Python uses the syntax list[start:stop:step] to extract a portion of a list; the stop index is exclusive, meaning the element at that index is not included", "grade_min": 8, "grade_max": 12},
+        {"statement": "The range() function generates a sequence of numbers commonly used in for loops; range(5) produces 0, 1, 2, 3, 4 (five numbers starting from 0)", "grade_min": 7, "grade_max": 12},
+        {"statement": "Python modules are files containing reusable code that can be imported into other programs using the import statement, and pip is the package manager for installing third-party modules", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "indentation in Python is just for readability like in other languages", "correct": "In Python, indentation is syntactically required and defines code blocks. Incorrect indentation causes IndentationError and can change program logic. Most Python code uses 4 spaces per indent level"},
+        {"wrong": "lists and tuples are the same thing in Python", "correct": "Lists are mutable (can be changed after creation) and use square brackets []. Tuples are immutable (cannot be changed) and use parentheses (). Tuples are used when data should not be modified"},
+        {"wrong": "string methods modify the original string", "correct": "Python strings are immutable. Methods like .upper() and .replace() return a new string; the original string is unchanged. You must assign the result to a variable to keep the new value"},
+        {"wrong": "range(1, 5) includes the number 5", "correct": "range(1, 5) generates 1, 2, 3, 4. The stop value is exclusive in Python ranges. To include 5, you would use range(1, 6)"},
+        {"wrong": "you can use a list as a dictionary key", "correct": "Dictionary keys must be immutable (hashable). Lists are mutable, so they cannot be keys. Use tuples instead if you need a sequence as a dictionary key"}
+      ]
+    },
+    "sql_databases": {
+      "keywords": ["SQL", "database", "table", "query", "SELECT", "WHERE", "JOIN", "GROUP BY", "INSERT", "UPDATE", "DELETE", "CREATE TABLE", "PRIMARY KEY", "normalization", "relational"],
+      "facts": [
+        {"statement": "SQL (Structured Query Language) is the standard language for managing and querying relational databases, which store data in tables with rows and columns", "grade_min": 8, "grade_max": 12},
+        {"statement": "The SELECT statement retrieves data from a database table; SELECT * returns all columns, while SELECT column1, column2 returns specific columns", "grade_min": 8, "grade_max": 12},
+        {"statement": "The WHERE clause filters rows based on a condition, such as SELECT name FROM students WHERE grade > 90, returning only rows that match the criteria", "grade_min": 8, "grade_max": 12},
+        {"statement": "A JOIN combines rows from two or more tables based on a related column; an INNER JOIN returns only rows that have matching values in both tables", "grade_min": 9, "grade_max": 12},
+        {"statement": "GROUP BY groups rows that share a value in a specified column, often used with aggregate functions like COUNT(), SUM(), AVG(), MIN(), and MAX()", "grade_min": 9, "grade_max": 12},
+        {"statement": "INSERT INTO adds new rows to a table, UPDATE modifies existing rows, and DELETE removes rows; these are called Data Manipulation Language (DML) commands", "grade_min": 8, "grade_max": 12},
+        {"statement": "CREATE TABLE defines a new table's structure including column names, data types, and constraints like PRIMARY KEY (unique identifier for each row) and NOT NULL", "grade_min": 9, "grade_max": 12},
+        {"statement": "Database normalization is the process of organizing tables to reduce data redundancy and improve data integrity, typically following rules called normal forms (1NF, 2NF, 3NF)", "grade_min": 10, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "SQL is a programming language like Python or Java", "correct": "SQL is a declarative query language designed specifically for managing relational databases. You describe what data you want, not step-by-step instructions for how to get it"},
+        {"wrong": "DELETE and DROP are the same thing", "correct": "DELETE removes rows from a table (the table still exists). DROP removes the entire table or database structure permanently. DELETE can be filtered with WHERE; DROP cannot"},
+        {"wrong": "a JOIN always doubles the number of rows", "correct": "The number of rows from a JOIN depends on how many matches exist. An INNER JOIN may return fewer rows than either table. A LEFT JOIN returns all rows from the left table even without matches"},
+        {"wrong": "you don't need a PRIMARY KEY in a table", "correct": "While technically possible to create a table without a primary key, it is strongly recommended. A primary key uniquely identifies each row, prevents duplicate records, and is essential for joins and data integrity"},
+        {"wrong": "NULL means zero or an empty string", "correct": "NULL represents the absence of any value, meaning unknown or missing data. NULL is not equal to 0 or an empty string. Comparisons with NULL require IS NULL or IS NOT NULL, not = or !="}
+      ]
+    },
+    "cryptography": {
+      "keywords": ["cryptography", "cipher", "encryption", "decryption", "key", "plaintext", "ciphertext", "Caesar cipher", "RSA", "public key", "private key", "hash", "symmetric", "asymmetric", "Diffie-Hellman"],
+      "facts": [
+        {"statement": "Cryptography is the science of encoding and decoding messages to protect information from unauthorized access, used throughout history from ancient Rome to modern digital communications", "grade_min": 7, "grade_max": 12},
+        {"statement": "The Caesar cipher is one of the simplest encryption techniques, shifting each letter in the plaintext by a fixed number of positions in the alphabet (e.g., shift of 3 turns A into D)", "grade_min": 7, "grade_max": 12},
+        {"statement": "Symmetric encryption uses the same key for both encryption and decryption; examples include AES (Advanced Encryption Standard), which is used to protect most encrypted data today", "grade_min": 9, "grade_max": 12},
+        {"statement": "Asymmetric (public-key) encryption uses a pair of mathematically related keys: a public key anyone can use to encrypt, and a private key only the owner uses to decrypt", "grade_min": 9, "grade_max": 12},
+        {"statement": "RSA is a widely used asymmetric encryption algorithm whose security relies on the mathematical difficulty of factoring very large numbers into their prime factors", "grade_min": 10, "grade_max": 12},
+        {"statement": "The Diffie-Hellman key exchange protocol allows two parties to securely establish a shared secret key over an insecure channel without ever transmitting the key itself", "grade_min": 10, "grade_max": 12},
+        {"statement": "A cryptographic hash function converts data of any size into a fixed-size output (hash) that is practically impossible to reverse; even a tiny change in input produces a completely different hash", "grade_min": 9, "grade_max": 12},
+        {"statement": "Digital signatures use asymmetric cryptography to verify the authenticity and integrity of a message: the sender signs with their private key, and anyone can verify with the sender's public key", "grade_min": 10, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "encryption and hashing are the same thing", "correct": "Encryption is reversible (you can decrypt ciphertext back to plaintext with the key). Hashing is a one-way function; you cannot recover the original data from a hash. They serve different purposes"},
+        {"wrong": "the Caesar cipher is secure for modern use", "correct": "The Caesar cipher has only 25 possible shifts and can be broken trivially by trying all shifts (brute force) or by frequency analysis. Modern encryption like AES uses keys with billions of possible combinations"},
+        {"wrong": "a longer password automatically means stronger encryption", "correct": "Encryption strength depends on the algorithm and key length, not the password length alone. A long password with a weak algorithm is less secure than a shorter key with a strong algorithm like AES-256"},
+        {"wrong": "if you have someone's public key, you can figure out their private key", "correct": "Public and private keys are mathematically related, but deriving the private key from the public key is computationally infeasible with current technology for properly sized keys (e.g., RSA 2048-bit)"},
+        {"wrong": "HTTPS means a website is safe and trustworthy", "correct": "HTTPS means the connection is encrypted (data cannot be intercepted in transit), but it does not guarantee the website itself is legitimate or safe. Phishing sites can also use HTTPS"}
+      ]
+    },
+    "information_theory": {
+      "keywords": ["binary representation", "compression", "entropy", "error correction", "ASCII", "Unicode", "encoding", "bit depth", "lossless", "lossy", "pixel", "sampling", "redundancy"],
+      "facts": [
+        {"statement": "All digital information (text, images, audio, video) is ultimately represented as sequences of binary digits (bits), with different encoding schemes mapping bits to meaningful data", "grade_min": 6, "grade_max": 12},
+        {"statement": "ASCII encodes 128 characters using 7 bits per character, while Unicode can represent over 149,000 characters from virtually every writing system using variable-length encoding (UTF-8 uses 1-4 bytes)", "grade_min": 8, "grade_max": 12},
+        {"statement": "Data compression reduces the size of data for storage or transmission; lossless compression (like ZIP) preserves all original data, while lossy compression (like JPEG) discards some data to achieve smaller sizes", "grade_min": 8, "grade_max": 12},
+        {"statement": "In information theory, entropy measures the average amount of information or uncertainty in a message; a message with high entropy carries more information and is harder to compress", "grade_min": 10, "grade_max": 12},
+        {"statement": "Digital images are composed of pixels, each storing color values; a 24-bit color image uses 8 bits each for red, green, and blue, allowing approximately 16.7 million possible colors", "grade_min": 7, "grade_max": 12},
+        {"statement": "Error detection codes like parity bits and checksums can detect when data has been corrupted during transmission, while error correction codes like Hamming codes can both detect and fix errors", "grade_min": 9, "grade_max": 12},
+        {"statement": "Digital audio is created by sampling a continuous sound wave at regular intervals; CD-quality audio samples 44,100 times per second (44.1 kHz) with 16 bits per sample", "grade_min": 8, "grade_max": 12},
+        {"statement": "Run-length encoding (RLE) is a simple lossless compression technique that replaces sequences of repeated values with a single value and a count, such as AAAABBB becoming 4A3B", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "digital copies are always perfect and never lose quality", "correct": "Lossless digital copies are perfect, but lossy formats like JPEG and MP3 discard data each time they are re-encoded. Repeatedly saving a JPEG causes progressive quality loss called generation loss"},
+        {"wrong": "ASCII and Unicode are the same thing", "correct": "ASCII encodes only 128 characters (English letters, digits, basic symbols). Unicode is a much larger standard that includes ASCII as a subset but also covers characters from all major world languages, emojis, and symbols"},
+        {"wrong": "compression always makes files smaller without any tradeoffs", "correct": "Lossless compression has limits (you cannot infinitely compress data, especially random data). Lossy compression achieves smaller sizes by permanently removing information, which can degrade quality"},
+        {"wrong": "higher resolution always means a better image", "correct": "Resolution is just one factor in image quality. Bit depth, compression artifacts, lens quality, lighting, and color accuracy all matter. A high-resolution image with heavy lossy compression can look worse than a lower-resolution lossless image"}
+      ]
+    },
+    "networks_protocols": {
+      "keywords": ["TCP", "IP", "HTTP", "HTTPS", "DNS", "packet", "router", "switch", "bandwidth", "latency", "client-server", "port", "firewall", "LAN", "WAN"],
+      "facts": [
+        {"statement": "The TCP/IP model is a layered framework for internet communication with four layers: Application (HTTP, DNS), Transport (TCP, UDP), Internet (IP), and Network Access (Ethernet, Wi-Fi)", "grade_min": 9, "grade_max": 12},
+        {"statement": "Data sent over the internet is broken into small units called packets, each containing source and destination addresses, sequence numbers, and a portion of the data", "grade_min": 7, "grade_max": 12},
+        {"statement": "TCP (Transmission Control Protocol) provides reliable, ordered delivery of data by establishing a connection, numbering packets, and requesting retransmission of lost packets", "grade_min": 9, "grade_max": 12},
+        {"statement": "IP (Internet Protocol) addresses are unique numerical labels for devices on a network; IPv4 uses 32-bit addresses (e.g., 192.168.1.1) while IPv6 uses 128-bit addresses to accommodate more devices", "grade_min": 8, "grade_max": 12},
+        {"statement": "Routers forward data packets between different networks by examining destination IP addresses and determining the best path, while switches connect devices within the same local network", "grade_min": 8, "grade_max": 12},
+        {"statement": "DNS (Domain Name System) works like a phonebook for the internet, translating human-readable domain names (www.example.com) into IP addresses through a hierarchical system of DNS servers", "grade_min": 8, "grade_max": 12},
+        {"statement": "HTTP uses a request-response model where the client sends a request (GET, POST, PUT, DELETE) and the server returns a response with a status code (200 OK, 404 Not Found, 500 Server Error)", "grade_min": 9, "grade_max": 12},
+        {"statement": "Bandwidth is the maximum rate of data transfer across a network (measured in Mbps or Gbps), while latency is the time delay for data to travel from source to destination", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "data travels through the internet as one continuous stream", "correct": "Data is broken into small packets that may take different routes through the network and are reassembled at the destination. This packet-switching approach makes the internet more robust and efficient"},
+        {"wrong": "a router and a switch do the same thing", "correct": "A switch connects devices within the same local network (LAN) using MAC addresses. A router connects different networks together and directs traffic between them using IP addresses"},
+        {"wrong": "TCP and UDP are the same protocol", "correct": "TCP is reliable and ordered but slower (used for web pages, email, file transfers). UDP is faster but does not guarantee delivery or order (used for video streaming, online gaming, voice calls)"},
+        {"wrong": "every device on the internet has a unique public IP address at all times", "correct": "Many devices share a single public IP address through Network Address Translation (NAT), using private IP addresses (like 192.168.x.x) on the local network. This is partly why IPv4 addresses have not run out entirely"},
+        {"wrong": "faster bandwidth always means a faster internet experience", "correct": "High bandwidth helps with large data transfers, but latency (delay) matters more for real-time activities like video calls and gaming. A high-bandwidth connection with high latency can still feel slow"}
+      ]
+    },
+    "ap_csp_concepts": {
+      "keywords": ["abstraction", "algorithm", "pseudocode", "data analysis", "simulation", "computing impact", "digital divide", "open source", "crowdsourcing", "citizen science", "bias", "creative commons", "collaboration"],
+      "facts": [
+        {"statement": "Abstraction is the process of reducing complexity by focusing on essential features while hiding unnecessary details; for example, a function abstracts away its implementation so users only need to know its inputs and outputs", "grade_min": 7, "grade_max": 12},
+        {"statement": "Pseudocode is an informal, human-readable description of an algorithm that uses structured English-like statements instead of a specific programming language's syntax", "grade_min": 7, "grade_max": 12},
+        {"statement": "An algorithm must be precise, unambiguous, and produce a correct result in a finite number of steps; algorithms can be expressed as natural language, pseudocode, or flowcharts", "grade_min": 7, "grade_max": 12},
+        {"statement": "Data analysis involves collecting, cleaning, transforming, and interpreting data to discover patterns, make predictions, and support decision-making, often using computational tools", "grade_min": 8, "grade_max": 12},
+        {"statement": "A simulation is a computational model that represents a real-world process or system, allowing experimentation without the cost, danger, or time constraints of the real thing", "grade_min": 8, "grade_max": 12},
+        {"statement": "The digital divide refers to the gap between those who have access to modern information technology (internet, computers, digital literacy) and those who do not, often along economic, geographic, or demographic lines", "grade_min": 7, "grade_max": 12},
+        {"statement": "Computing innovations can have both beneficial and harmful effects on society; for example, social media connects people globally but also enables misinformation, cyberbullying, and privacy concerns", "grade_min": 7, "grade_max": 12},
+        {"statement": "Open-source software provides its source code freely for anyone to use, modify, and distribute, enabling collaboration and transparency, with examples including Linux, Python, and Firefox", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "abstraction means making things abstract and confusing", "correct": "Abstraction actually reduces complexity by hiding unnecessary details and presenting a simplified interface. A car's steering wheel is an abstraction that hides the complex mechanics underneath"},
+        {"wrong": "pseudocode must follow exact programming syntax", "correct": "Pseudocode is intentionally informal and language-independent. Its purpose is to communicate the logic of an algorithm clearly to humans, not to be executed by a computer"},
+        {"wrong": "simulations always produce perfectly accurate results", "correct": "Simulations are simplified models of reality that involve assumptions and approximations. Their accuracy depends on the quality of the model, input data, and what factors are included or excluded"},
+        {"wrong": "algorithms always produce the same result regardless of input", "correct": "An algorithm produces a specific output for a specific input, but different inputs typically produce different outputs. The algorithm itself is consistent, but the result depends on what data it receives"},
+        {"wrong": "computing innovations are either entirely good or entirely bad", "correct": "Most computing innovations have both positive and negative impacts. Evaluating technology requires considering multiple perspectives, unintended consequences, and the tradeoffs between benefits and harms"}
+      ]
+    }
+  }
+}

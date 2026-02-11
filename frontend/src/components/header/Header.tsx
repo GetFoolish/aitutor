@@ -17,9 +17,10 @@
 import { RiSidebarFoldLine, RiSidebarUnfoldLine } from "react-icons/ri";
 import { Button } from "@/components/ui/button";
 import cn from "classnames";
-import { Moon, Sun, User, Settings, LogOut, Terminal, BookOpen } from "lucide-react";
+import { Moon, Sun, User, Settings, LogOut, Terminal, BookOpen, Repeat } from "lucide-react";
 import { useTheme } from "../theme/theme-provier";
 import { useEffect, useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 import { Link } from "react-router-dom";
 import {
     DropdownMenu,
@@ -39,10 +40,12 @@ import {
 interface HeaderProps {
     sidebarOpen: boolean;
     onToggleSidebar: () => void;
+    assessmentMode?: boolean;
 }
 
-export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
+export default function Header({ sidebarOpen, onToggleSidebar, assessmentMode }: HeaderProps) {
     const { theme, setTheme } = useTheme();
+    const { user } = useAuth();
     const [isDarkMode, setIsDarkMode] = useState(false);
 
     useEffect(() => {
@@ -103,16 +106,16 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
                         <Button variant="ghost" className="relative h-7 w-7 md:h-8 md:w-8 lg:h-8 lg:w-8 p-0 border-[2px] border-black dark:border-white bg-[#FF6B6B] hover:bg-[#FF6B6B] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100">
                             <Avatar className="h-full w-full border-none">
                                 <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                                <AvatarFallback className="bg-transparent text-white font-black text-xs">CN</AvatarFallback>
+                                <AvatarFallback className="bg-transparent text-white font-black text-xs">{(user?.name || 'S').charAt(0).toUpperCase()}</AvatarFallback>
                             </Avatar>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-48 md:w-56" align="end" forceMount>
                         <DropdownMenuLabel className="font-normal">
                             <div className="flex flex-col space-y-1">
-                                <p className="text-sm font-medium leading-none">User</p>
+                                <p className="text-sm font-medium leading-none">{user?.name || 'Student'}</p>
                                 <p className="text-xs leading-none text-muted-foreground">
-                                    user@example.com
+                                    {user?.email || ''}
                                 </p>
                             </div>
                         </DropdownMenuLabel>
@@ -128,30 +131,45 @@ export default function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
                                 <Settings className="mr-2 h-4 w-4" />
                                 <span>Settings</span>
                             </DropdownMenuItem>
+                            {!assessmentMode && (
+                                <DropdownMenuItem onClick={() => {
+                                    sessionStorage.removeItem('selected_subject');
+                                    window.location.reload();
+                                }}>
+                                    <Repeat className="mr-2 h-4 w-4" />
+                                    <span>Switch Subject</span>
+                                </DropdownMenuItem>
+                            )}
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-[#FF6B6B] focus:text-[#FF6B6B]">
+                        <DropdownMenuItem onClick={() => {
+                            localStorage.removeItem('jwt_token');
+                            sessionStorage.clear();
+                            window.location.href = '/app/login';
+                        }} className="text-[#FF6B6B] focus:text-[#FF6B6B]">
                             <LogOut className="mr-2 h-4 w-4" />
                             <span>Log out</span>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="w-7 h-7 md:w-8 md:h-8 lg:w-8 lg:h-8 border-[2px] border-black dark:border-white bg-[#FFD93D] hover:bg-[#FFD93D] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 text-black"
-                    onClick={onToggleSidebar}
-                >
-                    {import.meta.env.DEV ? (
-                        /* Developer Mode: Terminal Icon */
-                        <Terminal className={cn("w-5 h-5 md:w-5 md:h-5 transition-transform", sidebarOpen ? "rotate-180" : "")} />
-                    ) : (
-                        /* Student Mode: Book/Learning Assets Icon */
-                        <BookOpen className={cn("w-5 h-5 md:w-5 md:h-5 transition-transform", sidebarOpen ? "rotate-0" : "")} />
-                    )}
-                </Button>
+                {!assessmentMode && (
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="w-7 h-7 md:w-8 md:h-8 lg:w-8 lg:h-8 border-[2px] border-black dark:border-white bg-[#FFD93D] hover:bg-[#FFD93D] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 text-black"
+                        onClick={onToggleSidebar}
+                    >
+                        {import.meta.env.DEV ? (
+                            /* Developer Mode: Terminal Icon */
+                            <Terminal className={cn("w-5 h-5 md:w-5 md:h-5 transition-transform", sidebarOpen ? "rotate-180" : "")} />
+                        ) : (
+                            /* Student Mode: Book/Learning Assets Icon */
+                            <BookOpen className={cn("w-5 h-5 md:w-5 md:h-5 transition-transform", sidebarOpen ? "rotate-0" : "")} />
+                        )}
+                    </Button>
+                )}
             </div>
         </header>
     );

@@ -56,3 +56,27 @@ export const apiUtils = {
   },
 };
 
+const DASH_API_URL = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_DASH_API_URL) || 'http://localhost:8000';
+
+/**
+ * Fire-and-forget analytics reporting for question attempts.
+ * Does not block the UI -- failures are silently ignored.
+ */
+export function reportQuestionAnalytics(data: {
+  question_id: string;
+  correct: boolean;
+  hints_used: number;
+  time_seconds: number;
+  skipped: boolean;
+  skill_id?: string;
+}) {
+  const token = jwtUtils.getToken();
+  fetch(`${DASH_API_URL}/api/question-analytics`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify(data),
+  }).catch(() => {}); // Silent fail -- analytics should never block UX
+}

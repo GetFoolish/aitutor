@@ -1,0 +1,514 @@
+{
+  "meta": {"version": 2, "subject": "art_history", "last_updated": "2026-02-07"},
+  "facts_by_topic": {
+    "ancient_art": {
+      "keywords": ["ancient", "egypt", "greek", "roman", "mesopotamia", "cave painting", "sculpture", "pyramid", "fresco", "pottery", "pharaoh"],
+      "facts": [
+        {"statement": "The oldest known cave paintings, found in Lascaux, France, and Altamira, Spain, date back approximately 17,000 to 36,000 years", "grade_min": 5, "grade_max": 12},
+        {"statement": "Ancient Egyptian art followed strict conventions: figures were shown with heads and legs in profile but torsos facing forward, a style known as composite view", "grade_min": 6, "grade_max": 12},
+        {"statement": "Greek sculpture evolved from rigid, stylized forms (Archaic period) to idealized, naturalistic human figures (Classical period, 5th-4th century BCE)", "grade_min": 7, "grade_max": 12},
+        {"statement": "The ancient Greeks introduced contrapposto, a pose where a figure's weight rests on one leg, creating a more natural and dynamic stance", "grade_min": 8, "grade_max": 12},
+        {"statement": "Roman art was heavily influenced by Greek art but placed greater emphasis on realistic portraiture and historical narrative in relief sculptures", "grade_min": 7, "grade_max": 12},
+        {"statement": "Ancient Mesopotamian art includes the Standard of Ur and massive stone lamassu (winged bulls) that guarded palace entrances", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "ancient Egyptian art was primitive because they couldn't draw realistically", "correct": "Egyptian artists deliberately used composite view as a symbolic convention to show each body part from its most recognizable angle, not because of inability"},
+        {"wrong": "all ancient art was just cave paintings", "correct": "Ancient civilizations produced sophisticated sculpture, architecture, pottery, metalwork, mosaics, and frescoes across Egypt, Greece, Rome, Mesopotamia, and beyond"},
+        {"wrong": "Greek statues were always plain white marble", "correct": "Greek and Roman statues were originally painted in vivid colors (polychromy), but the paint wore off over the centuries, leaving the bare marble we see today"}
+      ]
+    },
+    "medieval_art": {
+      "keywords": ["medieval", "middle ages", "gothic", "byzantine", "romanesque", "illuminated manuscript", "cathedral", "icon", "stained glass", "mosaic", "fresco"],
+      "facts": [
+        {"statement": "Medieval art (approximately 500-1400 CE) was primarily religious in subject matter and created for churches, monasteries, and cathedrals", "grade_min": 6, "grade_max": 12},
+        {"statement": "Illuminated manuscripts were hand-decorated books featuring elaborate borders, miniature paintings, and gold leaf, created by monks in scriptoria", "grade_min": 7, "grade_max": 12},
+        {"statement": "Byzantine art is characterized by gold backgrounds, flat figures, and frontal poses, designed to convey spiritual transcendence rather than physical realism", "grade_min": 8, "grade_max": 12},
+        {"statement": "Gothic cathedrals like Notre-Dame de Paris and Chartres Cathedral featured pointed arches, flying buttresses, and large stained glass windows", "grade_min": 6, "grade_max": 12},
+        {"statement": "Romanesque art (1000-1200 CE) featured thick walls, round arches, and sturdy pillars, with carved stone reliefs decorating church doorways (tympana)", "grade_min": 8, "grade_max": 12},
+        {"statement": "Medieval artists often used hierarchical scale, making religious figures like Christ or the Virgin Mary larger than other figures to show their importance", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "medieval art looks unrealistic because artists lacked skill", "correct": "Medieval artists prioritized spiritual meaning and symbolism over physical realism. The flat, stylized figures were intentional artistic choices to emphasize the divine"},
+        {"wrong": "the Dark Ages produced no art or culture", "correct": "The term 'Dark Ages' is misleading. The medieval period produced extraordinary illuminated manuscripts, Gothic cathedrals, mosaics, and metalwork of remarkable sophistication"},
+        {"wrong": "stained glass windows were just decoration", "correct": "Stained glass windows served as visual narratives to teach Bible stories to a largely illiterate population, functioning as 'sermons in glass'"}
+      ]
+    },
+    "renaissance": {
+      "keywords": ["renaissance", "rebirth", "perspective", "humanism", "oil painting", "fresco", "Leonardo", "Michelangelo", "Raphael", "Florence", "Italy", "patron"],
+      "facts": [
+        {"statement": "The Renaissance (approximately 1400-1600) began in Florence, Italy, and marked a revival of interest in classical Greek and Roman art, literature, and philosophy", "grade_min": 6, "grade_max": 12},
+        {"statement": "Linear perspective, a mathematical system for creating the illusion of depth on a flat surface, was formalized by Filippo Brunelleschi around 1415", "grade_min": 7, "grade_max": 12},
+        {"statement": "Leonardo da Vinci's Mona Lisa (c. 1503-1519) is famous for its sfumato technique, a method of softly blending colors and tones to create hazy, atmospheric effects", "grade_min": 7, "grade_max": 12},
+        {"statement": "Michelangelo painted the ceiling of the Sistine Chapel (1508-1512), covering over 5,000 square feet with scenes from the Book of Genesis", "grade_min": 5, "grade_max": 12},
+        {"statement": "Renaissance humanism emphasized the value and potential of the individual, influencing artists to create more realistic and emotionally expressive human figures", "grade_min": 8, "grade_max": 12},
+        {"statement": "The Medici family of Florence were powerful patrons of the arts who financially supported artists including Botticelli, Leonardo, and Michelangelo", "grade_min": 8, "grade_max": 12},
+        {"statement": "Raphael's School of Athens (1509-1511) depicts ancient Greek philosophers and is considered a masterpiece of High Renaissance composition and perspective", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the Renaissance happened suddenly", "correct": "The Renaissance was a gradual cultural shift spanning roughly 200 years, evolving from Early Renaissance through High Renaissance with regional variations across Europe"},
+        {"wrong": "Leonardo da Vinci only painted the Mona Lisa", "correct": "Leonardo da Vinci was a polymath who also painted The Last Supper, designed flying machines, studied anatomy, and produced thousands of pages of scientific notebooks"},
+        {"wrong": "Michelangelo painted the Sistine Chapel ceiling lying on his back", "correct": "Michelangelo painted standing up on scaffolding with his arms raised overhead, which he described as extremely painful and physically exhausting"}
+      ]
+    },
+    "baroque": {
+      "keywords": ["baroque", "dramatic", "chiaroscuro", "Rembrandt", "Caravaggio", "Bernini", "Vermeer", "ornate", "grandeur", "contrast", "emotion"],
+      "facts": [
+        {"statement": "Baroque art (approximately 1600-1750) is characterized by dramatic lighting, rich colors, intense emotion, and a sense of grandeur and movement", "grade_min": 7, "grade_max": 12},
+        {"statement": "Chiaroscuro is the strong contrast between light and dark used by Baroque artists like Caravaggio and Rembrandt to create dramatic, three-dimensional effects", "grade_min": 8, "grade_max": 12},
+        {"statement": "Caravaggio revolutionized painting by using ordinary people as models for religious figures and employing extreme, theatrical lighting called tenebrism", "grade_min": 9, "grade_max": 12},
+        {"statement": "Rembrandt van Rijn is celebrated for his masterful self-portraits (over 90 throughout his career) and his ability to capture psychological depth", "grade_min": 7, "grade_max": 12},
+        {"statement": "The Baroque period was partly fueled by the Catholic Counter-Reformation, which used dramatic art to inspire faith and convey religious messages", "grade_min": 9, "grade_max": 12},
+        {"statement": "Gian Lorenzo Bernini was the leading Baroque sculptor, known for works like The Ecstasy of Saint Teresa that appear to capture figures in motion", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "baroque just means overly decorated", "correct": "While Baroque art can be ornate, the style is defined by its dramatic use of light and shadow, emotional intensity, dynamic composition, and sense of movement"},
+        {"wrong": "Rembrandt was Italian", "correct": "Rembrandt van Rijn (1606-1669) was Dutch, one of the greatest masters of the Dutch Golden Age of painting"},
+        {"wrong": "Baroque art was only religious", "correct": "While religion was a major subject, Baroque artists also painted portraits, landscapes, still lifes, and genre scenes depicting everyday life, especially in the Dutch Republic"}
+      ]
+    },
+    "impressionism": {
+      "keywords": ["impressionism", "Monet", "Renoir", "Degas", "light", "brushstroke", "plein air", "color", "impression", "landscape", "Paris", "Manet"],
+      "facts": [
+        {"statement": "Impressionism emerged in Paris in the 1860s-1870s as artists broke from academic tradition to capture the fleeting effects of light and atmosphere", "grade_min": 6, "grade_max": 12},
+        {"statement": "The name 'Impressionism' came from Claude Monet's painting Impression, Sunrise (1872), which a critic used mockingly to describe the new style", "grade_min": 7, "grade_max": 12},
+        {"statement": "Impressionist painters often worked en plein air (outdoors) to directly observe and capture the changing qualities of natural light", "grade_min": 7, "grade_max": 12},
+        {"statement": "Impressionists used visible, loose brushstrokes and pure unmixed colors placed side by side, which blend optically when viewed from a distance", "grade_min": 7, "grade_max": 12},
+        {"statement": "Claude Monet painted his Water Lilies series (approximately 250 paintings) at his garden in Giverny, France, over the last 30 years of his life", "grade_min": 6, "grade_max": 12},
+        {"statement": "Edgar Degas is famous for his paintings and pastels of ballet dancers, capturing movement and behind-the-scenes moments at the Paris Opera", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "impressionists painted things blurry because they couldn't paint details", "correct": "Impressionists deliberately used loose brushwork and optical color mixing to capture the sensation of light and movement, not because they lacked technical skill"},
+        {"wrong": "impressionism was immediately popular and accepted", "correct": "Impressionism was initially rejected by the official Paris Salon and harshly criticized. The artists organized their own independent exhibitions starting in 1874"},
+        {"wrong": "Monet and Manet are the same person", "correct": "Claude Monet (1840-1926) and Edouard Manet (1832-1883) were different artists. While both were important to the movement, Monet was a core Impressionist while Manet is often considered a precursor"}
+      ]
+    },
+    "modern_art": {
+      "keywords": ["modern", "abstract", "cubism", "surrealism", "expressionism", "pop art", "Picasso", "Dali", "Warhol", "Kandinsky", "Pollock", "avant-garde", "abstract expressionism"],
+      "facts": [
+        {"statement": "Modern art (approximately 1860s-1970s) encompasses many movements that deliberately broke from traditional techniques and subjects, including Cubism, Surrealism, and Abstract Expressionism", "grade_min": 7, "grade_max": 12},
+        {"statement": "Pablo Picasso and Georges Braque developed Cubism around 1907-1914, representing subjects from multiple viewpoints simultaneously using fragmented geometric forms", "grade_min": 8, "grade_max": 12},
+        {"statement": "Surrealism, led by artists like Salvador Dali and Rene Magritte, explored the unconscious mind and dreams, creating bizarre and illogical scenes", "grade_min": 7, "grade_max": 12},
+        {"statement": "Abstract Expressionism emerged in New York in the 1940s-1950s, with artists like Jackson Pollock using gestural, spontaneous techniques like drip painting", "grade_min": 9, "grade_max": 12},
+        {"statement": "Pop Art, pioneered by Andy Warhol and Roy Lichtenstein in the 1960s, drew imagery from mass media, advertising, and consumer culture", "grade_min": 7, "grade_max": 12},
+        {"statement": "Pablo Picasso's Guernica (1937) depicts the horrors of the bombing of the Spanish town during the Spanish Civil War and is one of the most powerful anti-war paintings", "grade_min": 8, "grade_max": 12},
+        {"statement": "Wassily Kandinsky is widely regarded as one of the first artists to create purely abstract paintings around 1910-1913, removing all recognizable subjects", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "modern art is easy because anyone could do it", "correct": "Modern art movements required deep understanding of art history, theory, and technique. Artists like Picasso mastered traditional skills before deliberately choosing to break conventions"},
+        {"wrong": "abstract art has no meaning", "correct": "Abstract art communicates through color, form, line, and composition rather than recognizable subjects. It often expresses emotions, ideas, or experiences in non-representational ways"},
+        {"wrong": "Picasso could only paint in a cubist style", "correct": "Picasso worked in many styles throughout his career including realistic Blue and Rose periods, Cubism, Neoclassicism, and Surrealist-influenced work"}
+      ]
+    },
+    "contemporary_art": {
+      "keywords": ["contemporary", "installation", "performance", "conceptual", "digital art", "street art", "multimedia", "Banksy", "Ai Weiwei", "Yayoi Kusama", "mixed media"],
+      "facts": [
+        {"statement": "Contemporary art generally refers to art made from the 1970s to the present, characterized by diversity of materials, methods, concepts, and subjects", "grade_min": 7, "grade_max": 12},
+        {"statement": "Installation art creates immersive, three-dimensional environments that viewers can walk through or interact with, transforming entire spaces into artworks", "grade_min": 8, "grade_max": 12},
+        {"statement": "Performance art uses the artist's body and actions as the medium, blurring the line between art and life, with artists like Marina Abramovic as key figures", "grade_min": 9, "grade_max": 12},
+        {"statement": "Conceptual art, which emerged in the 1960s, prioritizes the idea or concept behind the work over its visual or material form", "grade_min": 9, "grade_max": 12},
+        {"statement": "Street art and graffiti art, with artists like Banksy and Jean-Michel Basquiat, brought art out of galleries and into public spaces", "grade_min": 7, "grade_max": 12},
+        {"statement": "Digital art uses technology as a tool or medium, including computer-generated imagery, video art, virtual reality, and AI-generated art", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "contemporary art and modern art mean the same thing", "correct": "Modern art refers to art from roughly the 1860s-1970s, while contemporary art refers to art made from the 1970s to the present. They are distinct historical categories"},
+        {"wrong": "contemporary art is not real art because it doesn't require skill", "correct": "Contemporary artists often possess extensive training and skill, but they expand the definition of art to include new media, concepts, and forms of expression beyond traditional painting and sculpture"},
+        {"wrong": "street art is just vandalism", "correct": "While unauthorized street art can be controversial, many street artists create sophisticated works that comment on social and political issues, and their work is exhibited in major museums worldwide"}
+      ]
+    },
+    "art_elements": {
+      "keywords": ["line", "shape", "color", "value", "texture", "space", "form", "element", "hue", "saturation", "composition", "positive", "negative"],
+      "facts": [
+        {"statement": "The seven elements of art are line, shape, color, value, texture, space, and form; they are the fundamental building blocks used to create works of art", "grade_min": 5, "grade_max": 12},
+        {"statement": "Line is a continuous mark made on a surface that can vary in width, direction, length, and character (straight, curved, zigzag, implied)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Color has three properties: hue (the name of the color), value (how light or dark it is), and saturation/intensity (how bright or dull it is)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Value refers to the lightness or darkness of a color or tone, and artists use value contrast to create the illusion of depth and volume", "grade_min": 6, "grade_max": 12},
+        {"statement": "Texture refers to how a surface feels (actual texture) or how it appears to feel (implied or visual texture) in a work of art", "grade_min": 5, "grade_max": 12},
+        {"statement": "Positive space is the area occupied by the subject of the artwork, while negative space is the empty area around and between the subjects", "grade_min": 6, "grade_max": 12},
+        {"statement": "Form is a three-dimensional shape (such as a sphere, cube, or cylinder) that has height, width, and depth", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "shape and form are the same thing", "correct": "A shape is two-dimensional (flat) with height and width, while a form is three-dimensional with height, width, and depth. A circle is a shape; a sphere is a form"},
+        {"wrong": "the primary colors are red, yellow, and blue in all color systems", "correct": "Red, yellow, and blue are primary colors in traditional paint mixing (subtractive). In light (additive), the primaries are red, green, and blue (RGB). In printing, they are cyan, magenta, yellow, and black (CMYK)"},
+        {"wrong": "black and white are colors", "correct": "Technically, white is the combination of all colors of light, and black is the absence of light. In art, they are often considered values rather than hues, though they are commonly used as colors in practice"}
+      ]
+    },
+    "art_principles": {
+      "keywords": ["balance", "contrast", "emphasis", "movement", "pattern", "rhythm", "unity", "proportion", "harmony", "variety", "principle", "design", "composition"],
+      "facts": [
+        {"statement": "The principles of art (balance, contrast, emphasis, movement, pattern, rhythm, and unity) are guidelines for how the elements of art are organized in a composition", "grade_min": 5, "grade_max": 12},
+        {"statement": "Balance refers to the visual distribution of weight in an artwork and can be symmetrical (formal), asymmetrical (informal), or radial", "grade_min": 6, "grade_max": 12},
+        {"statement": "Contrast is the juxtaposition of different elements (light/dark, large/small, rough/smooth) to create visual interest and direct the viewer's attention", "grade_min": 6, "grade_max": 12},
+        {"statement": "Emphasis creates a focal point in an artwork, drawing the viewer's eye to the most important area through contrast, placement, or isolation", "grade_min": 6, "grade_max": 12},
+        {"statement": "Movement guides the viewer's eye through an artwork using lines, shapes, colors, or the arrangement of elements to create a visual path", "grade_min": 7, "grade_max": 12},
+        {"statement": "Rhythm in art is created by repeating elements at regular or varied intervals, creating a visual tempo similar to rhythm in music", "grade_min": 7, "grade_max": 12},
+        {"statement": "Unity is achieved when all parts of an artwork work together to create a sense of completeness and visual coherence", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "balance means everything must be symmetrical", "correct": "Balance can be symmetrical (mirror image), asymmetrical (different but visually equal), or radial (elements radiating from a center point). Asymmetrical balance is common in art"},
+        {"wrong": "the principles of art are strict rules that must always be followed", "correct": "The principles of art are guidelines, not rules. Many great artists deliberately break these principles to create tension, surprise, or emotional impact"},
+        {"wrong": "emphasis means making something the biggest in the painting", "correct": "Emphasis can be created through size, but also through color contrast, isolation, detail, placement, or converging lines. A small bright red object among muted colors can be the focal point"}
+      ]
+    },
+    "photography_film": {
+      "keywords": ["photography", "camera", "film", "exposure", "composition", "aperture", "shutter speed", "ISO", "darkroom", "digital", "documentary", "portrait", "landscape"],
+      "facts": [
+        {"statement": "Photography was invented in the 1820s-1830s, with Joseph Nicephore Niepce creating the earliest surviving photograph (View from the Window at Le Gras) around 1826-1827", "grade_min": 7, "grade_max": 12},
+        {"statement": "The exposure triangle consists of aperture (size of the lens opening), shutter speed (how long the sensor is exposed), and ISO (sensor sensitivity to light)", "grade_min": 8, "grade_max": 12},
+        {"statement": "The rule of thirds divides the frame into a 3x3 grid, and placing subjects along the lines or at intersections often creates a more visually engaging composition", "grade_min": 6, "grade_max": 12},
+        {"statement": "Ansel Adams was a pioneering American photographer known for his dramatic black-and-white landscape photographs of the American West and the Zone System for exposure control", "grade_min": 7, "grade_max": 12},
+        {"statement": "Documentary photography aims to record events, conditions, or social issues truthfully, with photographers like Dorothea Lange capturing images during the Great Depression", "grade_min": 8, "grade_max": 12},
+        {"statement": "The transition from film to digital photography in the late 1990s and 2000s fundamentally changed how photographs are captured, stored, edited, and shared", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "photography is not a real art form", "correct": "Photography has been recognized as a fine art since the 19th century. Photographers make artistic choices about composition, lighting, timing, and subject that require skill and creative vision"},
+        {"wrong": "digital editing means a photo is fake or not authentic", "correct": "Photo editing has existed since the earliest days of photography through darkroom techniques. Digital editing is a continuation of artistic post-processing, though ethical concerns exist in photojournalism"},
+        {"wrong": "a more expensive camera automatically takes better photos", "correct": "The quality of a photograph depends primarily on the photographer's understanding of light, composition, and timing. A skilled photographer can create compelling images with basic equipment"}
+      ]
+    },
+    "global_prehistory": {
+      "keywords": ["Lascaux", "Venus of Willendorf", "Stonehenge", "megalith", "cave painting", "Paleolithic", "Neolithic", "Altamira", "petroglyph", "fertility figure", "dolmen", "menhir", "handprint"],
+      "facts": [
+        {"statement": "The Lascaux cave in France (c. 15,000 BCE) contains over 600 paintings of animals including horses, stags, bison, and bulls, created using mineral pigments blown through hollow bones or applied with brushes", "grade_min": 6, "grade_max": 12},
+        {"statement": "The Venus of Willendorf (c. 25,000 BCE) is a small limestone figurine with exaggerated breasts, belly, and hips, believed to represent fertility or a mother goddess figure", "grade_min": 7, "grade_max": 12},
+        {"statement": "Stonehenge in England (c. 3000-2000 BCE) is a megalithic stone circle whose massive sarsen stones, some weighing 25 tons, were transported from quarries up to 25 miles away", "grade_min": 6, "grade_max": 12},
+        {"statement": "Megalithic structures (meaning 'large stone') such as dolmens, menhirs, and stone circles are found across Europe, Africa, and Asia, built during the Neolithic period for ceremonial or astronomical purposes", "grade_min": 8, "grade_max": 12},
+        {"statement": "Prehistoric handprints found in caves worldwide (including Cueva de las Manos in Argentina, c. 7300 BCE) were created by blowing pigment around a hand placed against the wall, a technique called stenciling", "grade_min": 6, "grade_max": 12},
+        {"statement": "The Paleolithic period (Old Stone Age) produced the earliest known art, while the Neolithic period (New Stone Age, beginning c. 10,000 BCE) saw the development of pottery, weaving, and monumental architecture", "grade_min": 7, "grade_max": 12},
+        {"statement": "Gobekli Tepe in Turkey (c. 9500 BCE) contains massive carved stone pillars arranged in circles, making it one of the oldest known monumental structures, predating Stonehenge by about 6,000 years", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "prehistoric people were too primitive to create art", "correct": "Prehistoric art shows remarkable sophistication in technique, composition, and symbolic thinking. Cave paintings demonstrate understanding of perspective, movement, and pigment chemistry"},
+        {"wrong": "we know exactly what prehistoric art meant to its creators", "correct": "The meaning and purpose of prehistoric art is debated among scholars. Theories include hunting magic, religious ritual, storytelling, and marking territory, but we cannot be certain without written records"},
+        {"wrong": "Stonehenge was built by one group of people at one time", "correct": "Stonehenge was constructed in several phases over approximately 1,500 years by different groups of people, with the earliest earthwork dating to about 3000 BCE and the famous stone circle erected around 2500 BCE"},
+        {"wrong": "cave paintings are only found in Europe", "correct": "Cave paintings and rock art have been found on every inhabited continent, including Indonesia (Sulawesi, c. 45,500 years old), Australia, Africa, and the Americas"}
+      ]
+    },
+    "ancient_near_east": {
+      "keywords": ["Sumerian", "Akkadian", "Babylonian", "Assyrian", "ziggurat", "cuneiform", "lamassu", "cylinder seal", "Mesopotamia", "stele", "Ishtar Gate", "relief", "gilgamesh"],
+      "facts": [
+        {"statement": "Mesopotamia (modern-day Iraq) is called the 'cradle of civilization' and produced some of the earliest known writing (cuneiform), cities, and monumental art beginning around 3500 BCE", "grade_min": 6, "grade_max": 12},
+        {"statement": "Ziggurats were massive stepped pyramid temples built by the Sumerians, Babylonians, and Assyrians as platforms to bring worshippers closer to the gods; the most famous is the Great Ziggurat of Ur (c. 2100 BCE)", "grade_min": 7, "grade_max": 12},
+        {"statement": "Cuneiform, one of the earliest writing systems, was created by pressing a wedge-shaped reed stylus into soft clay tablets; it was used for over 3,000 years across multiple civilizations", "grade_min": 7, "grade_max": 12},
+        {"statement": "Lamassu are massive stone sculptures of winged bulls or lions with human heads that guarded the entrances to Assyrian palaces, symbolizing protective power; they feature five legs so they appear to stride forward when viewed from the side", "grade_min": 8, "grade_max": 12},
+        {"statement": "The Stele of Hammurabi (c. 1792-1750 BCE) is a carved stone monument displaying one of the earliest written law codes, topped by a relief showing King Hammurabi receiving authority from the sun god Shamash", "grade_min": 8, "grade_max": 12},
+        {"statement": "The Ishtar Gate of Babylon (c. 575 BCE), built by King Nebuchadnezzar II, was covered in glazed blue bricks decorated with rows of golden bulls and dragons, and is now reconstructed in the Pergamon Museum in Berlin", "grade_min": 8, "grade_max": 12},
+        {"statement": "Assyrian palace reliefs (c. 900-600 BCE) depicted detailed narrative scenes of royal lion hunts, military campaigns, and siege warfare, carved in low relief on large stone slabs lining palace walls", "grade_min": 9, "grade_max": 12},
+        {"statement": "Cylinder seals were small carved stone cylinders rolled across wet clay to create an impression, used as personal signatures and to seal documents and containers throughout Mesopotamia", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Mesopotamian art is less important than Greek or Roman art", "correct": "Mesopotamian civilizations developed foundational artistic traditions including monumental architecture, narrative relief sculpture, and glassmaking that directly influenced later Greek and Roman art"},
+        {"wrong": "all Mesopotamian civilizations were the same", "correct": "Mesopotamia encompassed distinct civilizations spanning 3,000 years, including Sumerians, Akkadians, Babylonians, and Assyrians, each with unique artistic styles, achievements, and cultural practices"},
+        {"wrong": "ziggurats were tombs like Egyptian pyramids", "correct": "Ziggurats were temple platforms for worship, not burial structures. A temple to the patron deity sat at the top. Egyptian pyramids, by contrast, were primarily royal tombs"},
+        {"wrong": "cuneiform was an alphabet", "correct": "Cuneiform was not an alphabet but a writing system that used hundreds of symbols representing syllables, words, and concepts. True alphabets with individual letter-sound correspondence developed later"}
+      ]
+    },
+    "ancient_egypt": {
+      "keywords": ["pyramid", "sphinx", "hieroglyphics", "pharaoh", "Book of the Dead", "tomb painting", "mummification", "Nile", "sarcophagus", "ankh", "Tutankhamun", "canopic jar", "obelisk"],
+      "facts": [
+        {"statement": "The Great Pyramid of Giza (c. 2560 BCE), built for Pharaoh Khufu, is the largest of the three Giza pyramids and the only surviving wonder of the ancient world, originally standing 481 feet tall", "grade_min": 5, "grade_max": 12},
+        {"statement": "The Great Sphinx of Giza (c. 2500 BCE) is a limestone sculpture with a lion's body and a human head, measuring 240 feet long and 66 feet high, likely representing Pharaoh Khafre", "grade_min": 6, "grade_max": 12},
+        {"statement": "Hieroglyphics were the formal writing system of ancient Egypt, using over 700 pictorial symbols that could represent sounds, words, or concepts, and were deciphered in 1822 using the Rosetta Stone", "grade_min": 7, "grade_max": 12},
+        {"statement": "The Book of the Dead was a collection of illustrated papyrus scrolls placed in tombs containing spells and instructions to guide the deceased through the afterlife and the judgment of Osiris", "grade_min": 8, "grade_max": 12},
+        {"statement": "Egyptian tomb paintings followed strict artistic conventions including composite view (profile head and legs, frontal torso), hierarchical scale, and symbolic use of color (gold for divinity, green for rebirth)", "grade_min": 7, "grade_max": 12},
+        {"statement": "The golden death mask of Tutankhamun (c. 1323 BCE), discovered by Howard Carter in 1922, is made of 24 pounds of solid gold inlaid with lapis lazuli and colored glass, and is one of the most recognized artifacts in the world", "grade_min": 6, "grade_max": 12},
+        {"statement": "Canopic jars were used during mummification to store the deceased's internal organs (lungs, liver, stomach, intestines), each jar protected by one of the four sons of Horus", "grade_min": 7, "grade_max": 12},
+        {"statement": "Egyptian obelisks were tall, four-sided, tapering stone pillars topped with a pyramidal point (pyramidion), originally covered in gold or electrum to catch and reflect sunlight as a symbol of the sun god Ra", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the pyramids were built by slaves", "correct": "Archaeological evidence shows the pyramids were built by skilled laborers and seasonal workers who were well-fed, received medical care, and were buried with honor near the pyramids, not by enslaved people"},
+        {"wrong": "hieroglyphics are just simple pictures", "correct": "Hieroglyphics are a complex writing system where symbols can represent individual sounds (phonograms), whole words (logograms), or clarifying signs (determinatives), requiring years of scribal training to master"},
+        {"wrong": "all Egyptian art looks the same across 3,000 years", "correct": "While Egyptian art maintained consistent conventions, styles evolved significantly across periods. The Amarna period under Akhenaten (c. 1353 BCE) introduced dramatically different, more naturalistic representations"},
+        {"wrong": "mummification was performed on everyone in ancient Egypt", "correct": "Full mummification was expensive and primarily reserved for royalty and the wealthy elite. Most ordinary Egyptians were buried in simple desert graves where the hot, dry sand naturally preserved bodies"}
+      ]
+    },
+    "ancient_greece": {
+      "keywords": ["Doric", "Ionic", "Corinthian", "Parthenon", "contrapposto", "amphora", "pottery", "red-figure", "black-figure", "Acropolis", "kouros", "caryatid", "frieze"],
+      "facts": [
+        {"statement": "The three classical orders of Greek architecture are Doric (simple, sturdy columns with no base), Ionic (slender columns with scroll-shaped volutes), and Corinthian (elaborate columns with acanthus leaf capitals)", "grade_min": 7, "grade_max": 12},
+        {"statement": "The Parthenon (447-432 BCE) on the Athenian Acropolis is a Doric temple dedicated to Athena, considered the finest example of Classical Greek architecture, with subtle optical refinements like slightly curved columns", "grade_min": 7, "grade_max": 12},
+        {"statement": "Greek pottery evolved from the Geometric style (900-700 BCE) through black-figure technique (figures painted in black slip on red clay) to red-figure technique (background painted black, leaving figures in red clay)", "grade_min": 8, "grade_max": 12},
+        {"statement": "Contrapposto, meaning 'counterpose,' is a sculptural pose where the figure's weight rests on one leg while the other is relaxed, creating an S-curve through the body that conveys naturalistic movement", "grade_min": 8, "grade_max": 12},
+        {"statement": "Archaic Greek sculptures called kouroi (singular: kouros) were standing male youth figures with a rigid frontal stance, a fixed 'Archaic smile,' and one foot slightly forward, influenced by Egyptian sculpture", "grade_min": 9, "grade_max": 12},
+        {"statement": "The Elgin Marbles (Parthenon Marbles) are a collection of Classical Greek marble sculptures originally part of the Parthenon's frieze, metopes, and pediments, now controversially housed in the British Museum", "grade_min": 9, "grade_max": 12},
+        {"statement": "Caryatids are sculpted female figures serving as architectural columns, the most famous example being the Porch of the Caryatids on the Erechtheion temple on the Athenian Acropolis (421-406 BCE)", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Greek temples were always plain white", "correct": "Greek temples and sculptures were brightly painted with red, blue, green, and gold pigments (polychromy). The paint has worn away over time, leaving the white marble surface we see today"},
+        {"wrong": "the three Greek column orders are just decorative differences", "correct": "The Doric, Ionic, and Corinthian orders differ in proportions, structural elements, and cultural associations. Doric was associated with strength and masculinity, Ionic with elegance, and Corinthian with luxury"},
+        {"wrong": "Greek art was always idealized and never realistic", "correct": "While Classical Greek art idealized human forms, Hellenistic Greek art (323-31 BCE) depicted extreme emotion, old age, pain, and everyday people with startling realism, as in the Laocoon Group and the Old Market Woman"},
+        {"wrong": "all Greek pottery was the same", "correct": "Greek pottery varied by region, period, and function. Styles evolved from Geometric to Orientalizing to black-figure to red-figure. Shapes were specific to function: amphorae for storage, kraters for mixing wine, kylix for drinking"}
+      ]
+    },
+    "ancient_rome": {
+      "keywords": ["Colosseum", "Pantheon", "aqueduct", "mosaic", "portrait bust", "arch", "concrete", "fresco", "Pompeii", "forum", "triumphal arch", "dome", "engineering"],
+      "facts": [
+        {"statement": "The Colosseum (70-80 CE) is an amphitheater in Rome that could seat approximately 50,000 spectators and featured a complex system of underground tunnels, trapdoors, and a retractable canvas sunshade (velarium)", "grade_min": 6, "grade_max": 12},
+        {"statement": "The Pantheon (c. 125 CE) features the world's largest unreinforced concrete dome at 142 feet in diameter, with a central oculus (open hole) at the top that is the building's only source of natural light", "grade_min": 7, "grade_max": 12},
+        {"statement": "Roman aqueducts were engineering marvels that transported water over long distances using gravity; the Pont du Gard in France stands 160 feet tall with three tiers of arches", "grade_min": 7, "grade_max": 12},
+        {"statement": "Roman portrait busts are famous for their verism (unflinching realism), depicting wrinkles, warts, and aging features, reflecting Roman values of wisdom, experience, and ancestral honor", "grade_min": 8, "grade_max": 12},
+        {"statement": "The Romans invented concrete (opus caementicium), which allowed them to construct massive domes, vaults, and arches that would have been impossible with stone alone, revolutionizing architecture", "grade_min": 8, "grade_max": 12},
+        {"statement": "The eruption of Mount Vesuvius in 79 CE preserved the cities of Pompeii and Herculaneum, including vivid wall frescoes that reveal Roman painting techniques, daily life, and decorative styles", "grade_min": 7, "grade_max": 12},
+        {"statement": "Triumphal arches, such as the Arch of Titus (81 CE) and the Arch of Constantine (315 CE), were freestanding monumental gateways built to commemorate military victories and imperial achievements", "grade_min": 8, "grade_max": 12},
+        {"statement": "Roman floor mosaics were created by arranging thousands of tiny colored stone or glass pieces (tesserae) into intricate patterns and figurative scenes, found throughout homes, baths, and public buildings", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Roman art was just copied from Greek art", "correct": "While Romans admired and adapted Greek art, they made significant original contributions including realistic portraiture, concrete architecture, monumental engineering, wall painting, and narrative historical reliefs"},
+        {"wrong": "the Colosseum was only used for gladiator fights", "correct": "The Colosseum hosted diverse spectacles including gladiatorial combat, animal hunts (venationes), public executions, mock naval battles (naumachiae), and dramatic re-enactments of myths"},
+        {"wrong": "Roman buildings were always made of marble", "correct": "Most Roman buildings used concrete, brick, and volcanic tufa as structural materials, with marble used mainly as a thin decorative veneer on the exterior. Augustus famously said he found Rome a city of brick and left it a city of marble"},
+        {"wrong": "all Roman art glorified Rome and its rulers", "correct": "While much public art served propaganda purposes, private Roman art included humorous scenes, erotic imagery, still lifes, landscapes, and genre scenes showing everyday life, as preserved at Pompeii"}
+      ]
+    },
+    "byzantine_islamic": {
+      "keywords": ["Hagia Sophia", "mosaic", "icon", "iconoclasm", "calligraphy", "arabesque", "Alhambra", "mosque", "minaret", "mihrab", "geometric pattern", "gold", "tile"],
+      "facts": [
+        {"statement": "The Hagia Sophia in Istanbul (537 CE), built by Emperor Justinian, features a massive dome 105 feet in diameter that appears to float on a ring of windows, serving as a church, mosque, and now a museum/mosque", "grade_min": 7, "grade_max": 12},
+        {"statement": "Byzantine mosaics used thousands of gold-backed glass tesserae (small cubes) to create shimmering religious images on church walls and ceilings, with figures shown in flat, frontal, hieratic poses against gold backgrounds", "grade_min": 8, "grade_max": 12},
+        {"statement": "Icons are devotional religious paintings on wooden panels, central to Byzantine Orthodox worship; the Iconoclasm controversy (726-843 CE) involved the destruction of icons by those who considered them idolatrous", "grade_min": 9, "grade_max": 12},
+        {"statement": "Islamic art avoids figural representation in religious contexts, instead developing extraordinary mastery of calligraphy, geometric patterns, and arabesques (flowing vegetal designs) as primary decorative forms", "grade_min": 7, "grade_max": 12},
+        {"statement": "Arabic calligraphy is considered the highest art form in Islamic culture, with Quranic verses written in styles such as Kufic (angular) and Naskh (curved) adorning mosques, textiles, ceramics, and metalwork", "grade_min": 8, "grade_max": 12},
+        {"statement": "The Alhambra palace in Granada, Spain (13th-14th century) is a masterpiece of Islamic architecture featuring intricate muqarnas (honeycomb vaulting), tile mosaics, carved stucco, and water gardens", "grade_min": 8, "grade_max": 12},
+        {"statement": "Islamic mosques share key architectural features including a mihrab (niche indicating the direction of Mecca), minaret (tower for the call to prayer), and a courtyard with a fountain for ritual washing", "grade_min": 7, "grade_max": 12},
+        {"statement": "Islamic geometric patterns use mathematical principles including tessellations, symmetry, and infinite repetition to create complex designs that symbolize the infinite nature of God's creation", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Islamic art has no images at all", "correct": "While Islamic religious art avoids human depictions, Islamic secular art (manuscripts, palaces, ceramics) often includes human and animal figures. Persian miniature painting, for example, is rich with figural imagery"},
+        {"wrong": "Byzantine art never changed over its 1,000-year history", "correct": "Byzantine art evolved significantly from Early Byzantine (mosaic-dominated, Justinian era) through the Iconoclasm period to Middle and Late Byzantine periods, with increasing expressiveness and sophistication"},
+        {"wrong": "the Hagia Sophia was always a mosque", "correct": "The Hagia Sophia was built as a Christian cathedral in 537 CE, served as the center of Eastern Orthodox Christianity for nearly 1,000 years, was converted to a mosque in 1453, became a museum in 1934, and was reconverted to a mosque in 2020"},
+        {"wrong": "Islamic geometric patterns are just simple repeated shapes", "correct": "Islamic geometric patterns involve highly sophisticated mathematics including complex tessellations, quasi-crystalline patterns (discovered 500 years before Western math), and designs requiring deep understanding of symmetry and proportion"}
+      ]
+    },
+    "gothic": {
+      "keywords": ["pointed arch", "flying buttress", "rose window", "Notre-Dame", "stained glass", "Chartres", "ribbed vault", "gargoyle", "tracery", "nave", "cathedral", "spire", "sculpture"],
+      "facts": [
+        {"statement": "Gothic architecture (c. 1140-1500) originated in the Ile-de-France region with the Abbey Church of Saint-Denis, characterized by pointed arches, ribbed vaults, and flying buttresses that allowed walls to be thinner and windows larger", "grade_min": 7, "grade_max": 12},
+        {"statement": "Flying buttresses are external support structures that transfer the weight and thrust of the roof away from the walls, allowing Gothic cathedrals to have enormous stained glass windows instead of thick load-bearing walls", "grade_min": 8, "grade_max": 12},
+        {"statement": "Rose windows are large circular stained glass windows featuring radiating tracery patterns, with the north rose window of Notre-Dame de Paris (c. 1260) measuring 42 feet in diameter", "grade_min": 7, "grade_max": 12},
+        {"statement": "Chartres Cathedral (c. 1194-1220) in France preserves most of its original medieval stained glass (over 150 windows), including the famous deep blue color known as 'Chartres blue'", "grade_min": 8, "grade_max": 12},
+        {"statement": "Gothic stained glass windows used pieces of colored glass held together by lead strips (cames) to create narrative scenes from the Bible and lives of saints, with light itself symbolizing divine presence", "grade_min": 7, "grade_max": 12},
+        {"statement": "Gothic sculpture became increasingly naturalistic, with figures on cathedral portals showing individualized faces, flowing drapery, and emotional expressions, moving away from the rigid formality of Romanesque sculpture", "grade_min": 8, "grade_max": 12},
+        {"statement": "Gargoyles are carved stone water spouts projecting from Gothic buildings to direct rainwater away from walls, while grotesques are purely decorative carved figures that do not function as water spouts", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Gothic means dark, scary, and gloomy", "correct": "The term 'Gothic' was originally a derogatory name coined during the Renaissance, but Gothic cathedrals are actually filled with light through enormous stained glass windows. The style represents an engineering triumph of lightness and height"},
+        {"wrong": "Gothic cathedrals were built quickly", "correct": "Most Gothic cathedrals took decades or even centuries to build. Notre-Dame de Paris was constructed over approximately 200 years (1163-1345), and Cologne Cathedral took over 600 years to complete (1248-1880)"},
+        {"wrong": "gargoyles are just decorations", "correct": "True gargoyles are functional water spouts designed to direct rainwater away from the building's walls and foundations. Decorative carved figures without a drainage function are properly called grotesques or chimeras"},
+        {"wrong": "pointed arches were invented by Gothic builders", "correct": "Pointed arches were used in Islamic architecture centuries before Gothic builders adopted them. What was distinctive about Gothic architecture was combining pointed arches with ribbed vaults and flying buttresses as an integrated structural system"}
+      ]
+    },
+    "indigenous_americas": {
+      "keywords": ["Olmec", "Maya", "Aztec", "Inca", "totem pole", "Pueblo", "pottery", "Machu Picchu", "calendar stone", "temple", "codex", "turquoise", "textile"],
+      "facts": [
+        {"statement": "The Olmec civilization (c. 1500-400 BCE) of Mesoamerica created colossal basalt stone heads, some standing up to 11 feet tall and weighing 50 tons, believed to represent rulers and transported from quarries up to 60 miles away", "grade_min": 7, "grade_max": 12},
+        {"statement": "Maya temples such as the Temple of Kukulcan at Chichen Itza (c. 1000 CE) were precisely aligned with astronomical events; during the spring and fall equinoxes, shadows create the illusion of a serpent descending the pyramid's staircase", "grade_min": 8, "grade_max": 12},
+        {"statement": "The Aztec Sun Stone (Calendar Stone, c. 1502-1520) is a massive carved basalt disk over 12 feet in diameter depicting the Aztec understanding of cosmic cycles, the five suns (world ages), and the god Tonatiuh at the center", "grade_min": 8, "grade_max": 12},
+        {"statement": "Machu Picchu (c. 1450 CE) is an Inca citadel built at nearly 8,000 feet elevation in the Andes Mountains of Peru, featuring precisely fitted dry-stone walls constructed without mortar, so tight that a knife blade cannot fit between stones", "grade_min": 7, "grade_max": 12},
+        {"statement": "Totem poles are monumental cedar wood carvings created by Indigenous peoples of the Pacific Northwest Coast (Haida, Tlingit, Kwakwaka'wakw), telling clan histories, commemorating events, or marking territorial boundaries", "grade_min": 7, "grade_max": 12},
+        {"statement": "Ancestral Pueblo peoples (also called Anasazi) created distinctive black-on-white pottery and built elaborate cliff dwellings like Mesa Verde (c. 1190-1300 CE) in what is now the American Southwest", "grade_min": 7, "grade_max": 12},
+        {"statement": "Maya art includes elaborately painted ceramics, carved jade ornaments, limestone relief sculptures, and codices (folding bark-paper books) containing astronomical data, rituals, and historical records", "grade_min": 8, "grade_max": 12},
+        {"statement": "Inca textiles were considered more valuable than gold, using techniques like tapestry weaving with alpaca and vicuna fibers to create intricate geometric patterns called tocapu that may have conveyed information like quipu knot records", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "all Native American art is the same", "correct": "The Americas contained hundreds of distinct civilizations spanning thousands of years and thousands of miles, each with unique artistic traditions, materials, styles, and cultural meanings, from Arctic Inuit carving to Amazonian featherwork"},
+        {"wrong": "the Aztec Calendar Stone is a calendar", "correct": "While called a 'Calendar Stone,' this monumental sculpture is more accurately a cosmological representation of the Aztec understanding of the universe's creation and destruction through five world ages, not a functional calendar"},
+        {"wrong": "totem poles are objects of worship", "correct": "Totem poles are not religious idols. They are visual records of clan histories, family lineages, notable events, and cultural stories. They function as heraldic crests and narrative monuments"},
+        {"wrong": "indigenous American civilizations had no writing systems", "correct": "Several civilizations developed writing systems, including Maya hieroglyphics (a fully developed writing system), Aztec pictographic writing, and the Inca quipu (a recording system using knotted strings)"},
+        {"wrong": "Machu Picchu was a lost city discovered by Hiram Bingham", "correct": "Local Quechua families were living near and farming at Machu Picchu when Bingham arrived in 1911. He did not discover it but brought it to international academic attention. The site was never truly lost to local people"}
+      ]
+    },
+    "african_art": {
+      "keywords": ["Benin", "bronze", "Ife", "Nok", "mask", "kente", "Great Zimbabwe", "terracotta", "scarification", "ancestor", "textile", "wood carving", "beadwork"],
+      "facts": [
+        {"statement": "The Benin Bronzes (13th-19th century) from the Kingdom of Benin (modern-day Nigeria) are intricately cast brass and bronze plaques and sculptures depicting royal figures, warriors, and court life, created using the lost-wax casting technique", "grade_min": 8, "grade_max": 12},
+        {"statement": "Ife bronze and terracotta heads (12th-15th century, modern-day Nigeria) display striking naturalistic portraiture that challenged European assumptions about African art, with idealized yet individualized facial features", "grade_min": 9, "grade_max": 12},
+        {"statement": "Nok sculpture (500 BCE - 200 CE) from central Nigeria represents the oldest known figurative sculpture tradition in sub-Saharan Africa, featuring distinctive triangular-shaped eyes, elaborate hairstyles, and tubular bodies", "grade_min": 9, "grade_max": 12},
+        {"statement": "African masks are typically created for specific ceremonial purposes including initiation rites, funerals, harvest celebrations, and communication with ancestral spirits, and are activated through dance, music, and costume", "grade_min": 7, "grade_max": 12},
+        {"statement": "Kente cloth, originally from the Asante people of Ghana, is a hand-woven silk and cotton textile with bright geometric patterns, where specific colors and patterns convey proverbs, historical events, and social status", "grade_min": 7, "grade_max": 12},
+        {"statement": "Great Zimbabwe (11th-15th century) is a massive stone city in southeastern Africa built without mortar, featuring walls up to 36 feet high, demonstrating sophisticated engineering and the wealth of a major trading empire", "grade_min": 8, "grade_max": 12},
+        {"statement": "African art profoundly influenced European modern art; Picasso, Matisse, and other artists collected African masks and sculptures, and African stylistic principles of abstraction and geometric form directly inspired Cubism", "grade_min": 8, "grade_max": 12},
+        {"statement": "African art traditions emphasize the conceptual rather than the optical, meaning artists create what they know to be true about a subject (its spiritual or social essence) rather than reproducing its visual appearance", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "African art is primitive or simple", "correct": "African art encompasses sophisticated traditions including lost-wax bronze casting, naturalistic portraiture (Ife heads), monumental stone architecture (Great Zimbabwe), and complex textile traditions requiring high technical skill"},
+        {"wrong": "Africa has one unified art tradition", "correct": "Africa is a vast continent with over 50 countries and thousands of distinct ethnic groups, each with unique artistic traditions, materials, styles, and cultural meanings spanning tens of thousands of years"},
+        {"wrong": "African masks are just decorative objects", "correct": "Masks in African cultures are sacred ceremonial objects that embody spiritual forces. They are meant to be seen in motion during rituals with dance, music, and costume, not as static objects in a museum display"},
+        {"wrong": "the Benin Bronzes are actually made of bronze", "correct": "Despite the traditional name, most 'Benin Bronzes' are actually made of brass (copper and zinc alloy) rather than true bronze (copper and tin alloy). The misnomer has persisted since the colonial era"},
+        {"wrong": "Great Zimbabwe must have been built by non-Africans", "correct": "This racist colonial myth has been thoroughly debunked. Archaeological evidence clearly shows Great Zimbabwe was built by ancestors of the Shona people, representing a sophisticated African civilization and major trading empire"}
+      ]
+    },
+    "asian_art": {
+      "keywords": ["Chinese scroll", "ukiyo-e", "Hindu temple", "Buddhist", "Angkor Wat", "terracotta warriors", "calligraphy", "porcelain", "woodblock print", "mandala", "pagoda", "silk"],
+      "facts": [
+        {"statement": "Chinese scroll painting developed over 2,000 years in two main formats: hanging scrolls displayed on walls, and handscrolls unrolled horizontally to reveal a narrative journey through landscape, read from right to left", "grade_min": 8, "grade_max": 12},
+        {"statement": "Japanese ukiyo-e ('pictures of the floating world') are woodblock prints depicting kabuki actors, beautiful women, landscapes, and folklore; Hokusai's The Great Wave off Kanagawa (c. 1831) is one of the most recognized artworks globally", "grade_min": 7, "grade_max": 12},
+        {"statement": "Hindu temples like the Kandariya Mahadeva Temple at Khajuraho (c. 1030 CE) feature towering shikharas (spires) covered in intricate sculptural programs depicting gods, celestial beings, and scenes from daily life", "grade_min": 9, "grade_max": 12},
+        {"statement": "Buddhist art spread across Asia along trade routes, adapting to local styles: serene Gandharan Buddhas show Greco-Roman influence, Chinese Buddhas reflect Tang Dynasty aesthetics, and Japanese Buddhas incorporate Shinto elements", "grade_min": 9, "grade_max": 12},
+        {"statement": "Angkor Wat in Cambodia (early 12th century) is the world's largest religious monument, originally a Hindu temple dedicated to Vishnu, featuring over 1,800 carved apsara (celestial dancer) figures and extensive bas-relief narratives", "grade_min": 8, "grade_max": 12},
+        {"statement": "The Terracotta Army (c. 210 BCE) guarding the tomb of China's first emperor Qin Shi Huang consists of approximately 8,000 life-sized clay soldiers, each with individualized facial features, along with horses and chariots", "grade_min": 6, "grade_max": 12},
+        {"statement": "Chinese calligraphy is considered the highest art form in Chinese culture, with masterful brushwork conveying not just meaning but the artist's character, emotion, and qi (vital energy) through each stroke", "grade_min": 8, "grade_max": 12},
+        {"statement": "Chinese blue-and-white porcelain, perfected during the Yuan and Ming dynasties (14th-17th century), became one of the most traded luxury goods in history, influencing ceramic traditions from Delft in the Netherlands to Iznik in Turkey", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Asian art is all the same across the continent", "correct": "Asia spans dozens of countries with radically different artistic traditions. Chinese landscape painting, Japanese woodblock prints, Indian temple sculpture, Persian miniatures, and Khmer architecture are vastly different in style, medium, and meaning"},
+        {"wrong": "the Terracotta Warriors are mass-produced copies", "correct": "While assembled from standardized modular parts, each terracotta warrior has individualized facial features, hairstyles, and expressions. Scholars believe they may represent actual soldiers in Qin Shi Huang's army"},
+        {"wrong": "ukiyo-e prints were considered fine art in Japan", "correct": "Ukiyo-e prints were originally considered low-brow popular art in Japan, mass-produced for the middle class. They were so cheap that some were used as packing material for exports. Europeans, especially the Impressionists, elevated their status"},
+        {"wrong": "Buddhist art always shows the Buddha the same way", "correct": "Buddhist art varies enormously across cultures. The Buddha's appearance, hand gestures (mudras), clothing, and surrounding imagery differ significantly between Gandharan, Chinese, Thai, Japanese, and Tibetan traditions"},
+        {"wrong": "Angkor Wat has always been a Buddhist temple", "correct": "Angkor Wat was originally built as a Hindu temple dedicated to Vishnu in the early 12th century. It was gradually converted to a Buddhist temple by the late 12th to 13th century, and retains both Hindu and Buddhist imagery"}
+      ]
+    }
+  },
+  "artists": [
+    {
+      "name": "Leonardo da Vinci",
+      "period": "Renaissance",
+      "notable_works": ["Mona Lisa", "The Last Supper", "Vitruvian Man", "Lady with an Ermine"],
+      "born": 1452,
+      "died": 1519,
+      "nationality": "Italian"
+    },
+    {
+      "name": "Michelangelo Buonarroti",
+      "period": "Renaissance",
+      "notable_works": ["Sistine Chapel Ceiling", "David", "Pieta", "The Creation of Adam"],
+      "born": 1475,
+      "died": 1564,
+      "nationality": "Italian"
+    },
+    {
+      "name": "Raphael Sanzio",
+      "period": "Renaissance",
+      "notable_works": ["The School of Athens", "Sistine Madonna", "The Transfiguration", "The Marriage of the Virgin"],
+      "born": 1483,
+      "died": 1520,
+      "nationality": "Italian"
+    },
+    {
+      "name": "Rembrandt van Rijn",
+      "period": "Baroque",
+      "notable_works": ["The Night Watch", "Self-Portrait with Two Circles", "The Anatomy Lesson of Dr. Nicolaes Tulp", "The Return of the Prodigal Son"],
+      "born": 1606,
+      "died": 1669,
+      "nationality": "Dutch"
+    },
+    {
+      "name": "Claude Monet",
+      "period": "Impressionism",
+      "notable_works": ["Impression, Sunrise", "Water Lilies series", "Haystacks series", "Rouen Cathedral series"],
+      "born": 1840,
+      "died": 1926,
+      "nationality": "French"
+    },
+    {
+      "name": "Vincent van Gogh",
+      "period": "Post-Impressionism",
+      "notable_works": ["The Starry Night", "Sunflowers", "Bedroom in Arles", "Self-Portrait with Bandaged Ear"],
+      "born": 1853,
+      "died": 1890,
+      "nationality": "Dutch"
+    },
+    {
+      "name": "Pablo Picasso",
+      "period": "Cubism / Modern Art",
+      "notable_works": ["Guernica", "Les Demoiselles d'Avignon", "The Weeping Woman", "Girl Before a Mirror"],
+      "born": 1881,
+      "died": 1973,
+      "nationality": "Spanish"
+    },
+    {
+      "name": "Frida Kahlo",
+      "period": "Surrealism / Modern Art",
+      "notable_works": ["The Two Fridas", "Self-Portrait with Thorn Necklace and Hummingbird", "The Broken Column", "Henry Ford Hospital"],
+      "born": 1907,
+      "died": 1954,
+      "nationality": "Mexican"
+    },
+    {
+      "name": "Georgia O'Keeffe",
+      "period": "American Modernism",
+      "notable_works": ["Black Iris", "Jimson Weed/White Flower No. 1", "Sky Above Clouds IV", "Ram's Head White Hollyhock and Little Hills"],
+      "born": 1887,
+      "died": 1986,
+      "nationality": "American"
+    },
+    {
+      "name": "Andy Warhol",
+      "period": "Pop Art",
+      "notable_works": ["Campbell's Soup Cans", "Marilyn Diptych", "Shot Sage Blue Marilyn", "Brillo Boxes"],
+      "born": 1928,
+      "died": 1987,
+      "nationality": "American"
+    },
+    {
+      "name": "Salvador Dali",
+      "period": "Surrealism",
+      "notable_works": ["The Persistence of Memory", "Swans Reflecting Elephants", "The Elephants", "Christ of Saint John of the Cross"],
+      "born": 1904,
+      "died": 1989,
+      "nationality": "Spanish"
+    }
+  ],
+  "art_periods": [
+    {
+      "name": "Ancient Art",
+      "start_year": -3000,
+      "end_year": 400,
+      "characteristics": ["religious and ceremonial function", "symbolic representation", "hierarchical scale", "composite view in Egyptian art", "naturalism in Greek sculpture", "architectural integration"],
+      "key_artists": ["Phidias", "Praxiteles", "Exekias"]
+    },
+    {
+      "name": "Medieval Art",
+      "start_year": 500,
+      "end_year": 1400,
+      "characteristics": ["religious subject matter", "flat and stylized figures", "gold backgrounds", "hierarchical scale", "illuminated manuscripts", "Gothic architecture and stained glass"],
+      "key_artists": ["Giotto di Bondone", "Cimabue", "Duccio di Buoninsegna"]
+    },
+    {
+      "name": "Renaissance",
+      "start_year": 1400,
+      "end_year": 1600,
+      "characteristics": ["linear perspective", "naturalistic human anatomy", "classical Greek and Roman influence", "humanism", "oil painting techniques", "sfumato and chiaroscuro"],
+      "key_artists": ["Leonardo da Vinci", "Michelangelo", "Raphael", "Sandro Botticelli", "Titian", "Jan van Eyck"]
+    },
+    {
+      "name": "Baroque",
+      "start_year": 1600,
+      "end_year": 1750,
+      "characteristics": ["dramatic lighting and contrast", "emotional intensity", "rich colors", "grandeur and movement", "tenebrism", "ornate detail"],
+      "key_artists": ["Caravaggio", "Rembrandt van Rijn", "Peter Paul Rubens", "Johannes Vermeer", "Gian Lorenzo Bernini"]
+    },
+    {
+      "name": "Romanticism",
+      "start_year": 1780,
+      "end_year": 1850,
+      "characteristics": ["emphasis on emotion and individualism", "sublime natural landscapes", "dramatic and exotic subjects", "rejection of Enlightenment rationalism", "interest in the medieval past", "expressive use of color"],
+      "key_artists": ["Eugene Delacroix", "Caspar David Friedrich", "J.M.W. Turner", "Francisco Goya", "John Constable"]
+    },
+    {
+      "name": "Impressionism",
+      "start_year": 1860,
+      "end_year": 1900,
+      "characteristics": ["visible brushstrokes", "emphasis on light and its changing qualities", "en plein air painting", "ordinary subject matter", "pure unmixed colors", "capturing fleeting moments"],
+      "key_artists": ["Claude Monet", "Pierre-Auguste Renoir", "Edgar Degas", "Camille Pissarro", "Berthe Morisot"]
+    },
+    {
+      "name": "Post-Impressionism",
+      "start_year": 1886,
+      "end_year": 1910,
+      "characteristics": ["expressive use of color and form", "departure from naturalism", "symbolic and emotional content", "structured composition", "individual artistic vision over optical accuracy"],
+      "key_artists": ["Vincent van Gogh", "Paul Cezanne", "Paul Gauguin", "Georges Seurat", "Henri de Toulouse-Lautrec"]
+    },
+    {
+      "name": "Modernism",
+      "start_year": 1900,
+      "end_year": 1970,
+      "characteristics": ["rejection of tradition", "experimentation with form and technique", "abstraction", "multiple avant-garde movements", "emphasis on originality and innovation", "exploration of subjective experience"],
+      "key_artists": ["Pablo Picasso", "Wassily Kandinsky", "Henri Matisse", "Marcel Duchamp", "Jackson Pollock", "Salvador Dali", "Frida Kahlo", "Andy Warhol"]
+    },
+    {
+      "name": "Contemporary Art",
+      "start_year": 1970,
+      "end_year": 2026,
+      "characteristics": ["diversity of media and approaches", "conceptual and idea-driven work", "installation and performance art", "engagement with social and political issues", "blurring of boundaries between art forms", "use of digital technology"],
+      "key_artists": ["Banksy", "Ai Weiwei", "Yayoi Kusama", "Jeff Koons", "Marina Abramovic", "Jean-Michel Basquiat", "Damien Hirst"]
+    }
+  ]
+}

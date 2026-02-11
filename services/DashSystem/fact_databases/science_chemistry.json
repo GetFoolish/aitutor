@@ -1,0 +1,221 @@
+{
+  "meta": {"version": 2, "subject": "science", "last_updated": "2026-02-11", "description": "Chemistry facts: periodic table, bonding, states of matter, pH, reactions, molar mass, solutions, organic chemistry, electrochemistry"},
+  "facts_by_topic": {
+    "periodic_table": {
+      "keywords": ["periodic table", "element", "atomic number", "atomic mass", "proton", "neutron", "electron", "metal", "nonmetal", "metalloid", "group", "period", "isotope", "ion"],
+      "facts": [
+        {"statement": "The periodic table organizes elements by increasing atomic number (number of protons)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Elements in the same group (column) have similar chemical properties because they have the same number of valence electrons", "grade_min": 7, "grade_max": 12},
+        {"statement": "Elements in the same period (row) have the same number of electron shells", "grade_min": 7, "grade_max": 12},
+        {"statement": "Metals are typically shiny, good conductors, malleable, and ductile; nonmetals are typically dull, poor conductors, and brittle as solids", "grade_min": 5, "grade_max": 12},
+        {"statement": "The atomic number equals the number of protons, which defines what element it is", "grade_min": 6, "grade_max": 12},
+        {"statement": "Hydrogen (H) is the lightest element with atomic number 1; helium (He) has atomic number 2", "grade_min": 5, "grade_max": 12},
+        {"statement": "Group 18 elements (noble gases: He, Ne, Ar, Kr, Xe, Rn) have full outer electron shells and are very unreactive", "grade_min": 7, "grade_max": 12},
+        {"statement": "Group 1 elements (alkali metals: Li, Na, K, etc.) are highly reactive metals with one valence electron", "grade_min": 7, "grade_max": 12},
+        {"statement": "Isotopes are atoms of the same element with different numbers of neutrons: Carbon-12 and Carbon-14 are isotopes", "grade_min": 7, "grade_max": 12},
+        {"statement": "An ion is an atom that has gained or lost electrons: cations are positive (lost e-), anions are negative (gained e-)", "grade_min": 7, "grade_max": 12},
+        {"statement": "Group 17 (halogens: F, Cl, Br, I) have 7 valence electrons and are very reactive nonmetals", "grade_min": 7, "grade_max": 12},
+        {"statement": "Atomic mass is the weighted average mass of all isotopes of an element, measured in atomic mass units (amu)", "grade_min": 7, "grade_max": 12},
+        {"statement": "There are 118 confirmed elements on the periodic table as of 2024", "grade_min": 6, "grade_max": 12},
+        {"statement": "The first 20 elements in order: H, He, Li, Be, B, C, N, O, F, Ne, Na, Mg, Al, Si, P, S, Cl, Ar, K, Ca", "grade_min": 7, "grade_max": 12},
+        {"statement": "Metalloids (B, Si, Ge, As, Sb, Te) have properties intermediate between metals and nonmetals; silicon is a semiconductor used in computer chips", "grade_min": 7, "grade_max": 12},
+        {"statement": "Transition metals (groups 3-12) often have multiple oxidation states and form colorful compounds; examples include iron, copper, and gold", "grade_min": 8, "grade_max": 12},
+        {"statement": "Electron configuration describes how electrons are arranged in shells and subshells; the first shell holds up to 2 electrons, the second holds up to 8", "grade_min": 8, "grade_max": 12},
+        {"statement": "Atomic radius generally decreases across a period (left to right) because more protons pull electrons closer, and increases down a group because new shells are added", "grade_min": 9, "grade_max": 12},
+        {"statement": "Oxygen is the most abundant element in Earth's crust (about 46% by mass) and the third most abundant element in the universe", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the atomic number equals the number of electrons", "correct": "The atomic number equals the number of protons. In a neutral atom, electrons equal protons, but ions have different electron counts."},
+        {"wrong": "all metals are magnetic", "correct": "Only iron, nickel, and cobalt (and their alloys) are strongly magnetic. Most metals are not magnetic."},
+        {"wrong": "noble gases never form compounds", "correct": "Noble gases are very unreactive but some (especially xenon) can form compounds under extreme conditions."},
+        {"wrong": "isotopes of an element have different chemical properties", "correct": "Isotopes have the same chemical properties (same electrons). They differ in mass and nuclear stability."},
+        {"wrong": "the mass number equals the atomic number", "correct": "Atomic number = protons only. Mass number = protons + neutrons. They are different for most elements."},
+        {"wrong": "atoms are the smallest things that exist", "correct": "Atoms are made of smaller particles: protons, neutrons, and electrons. Protons and neutrons are made of even smaller quarks."},
+        {"wrong": "electrons orbit the nucleus like planets orbit the Sun", "correct": "Electrons exist in probability clouds (orbitals) around the nucleus. They do not follow fixed planetary-style paths."}
+      ]
+    },
+    "chemical_bonding": {
+      "keywords": ["bond", "ionic", "covalent", "metallic", "valence", "electron", "ion", "molecule", "compound", "electronegativity", "Lewis dot", "octet rule", "polar"],
+      "facts": [
+        {"statement": "Ionic bonds form when one atom transfers electrons to another, creating oppositely charged ions that attract each other", "grade_min": 7, "grade_max": 12},
+        {"statement": "Covalent bonds form when atoms share electrons to achieve a stable electron configuration", "grade_min": 7, "grade_max": 12},
+        {"statement": "Metallic bonds involve a sea of shared electrons among metal atoms, giving metals their conductivity and malleability", "grade_min": 8, "grade_max": 12},
+        {"statement": "Ionic compounds typically form between metals and nonmetals; covalent compounds typically form between nonmetals", "grade_min": 7, "grade_max": 12},
+        {"statement": "Valence electrons are the outermost electrons of an atom and determine its chemical bonding behavior", "grade_min": 7, "grade_max": 12},
+        {"statement": "The octet rule states that atoms tend to gain, lose, or share electrons to have 8 electrons in their outer shell", "grade_min": 8, "grade_max": 12},
+        {"statement": "A polar covalent bond has unequal sharing of electrons, creating partial charges; water (H2O) has polar bonds", "grade_min": 8, "grade_max": 12},
+        {"statement": "A nonpolar covalent bond has equal sharing of electrons, as in O2 or N2", "grade_min": 8, "grade_max": 12},
+        {"statement": "Lewis dot structures show valence electrons as dots around an element's symbol", "grade_min": 7, "grade_max": 12},
+        {"statement": "Electronegativity measures an atom's ability to attract shared electrons; fluorine is the most electronegative element", "grade_min": 9, "grade_max": 12},
+        {"statement": "Water is a polar molecule, making it an excellent solvent for ionic and polar substances", "grade_min": 7, "grade_max": 12},
+        {"statement": "Hydrogen bonds are weak intermolecular forces between a hydrogen bonded to N, O, or F and a nearby N, O, or F", "grade_min": 9, "grade_max": 12},
+        {"statement": "Van der Waals forces (London dispersion forces) are the weakest intermolecular forces, present in all molecules, caused by temporary fluctuations in electron distribution", "grade_min": 10, "grade_max": 12},
+        {"statement": "Ionic compounds typically have high melting and boiling points because the electrostatic attractions in the crystal lattice are strong", "grade_min": 8, "grade_max": 12},
+        {"statement": "A double bond shares two pairs of electrons between atoms; a triple bond shares three pairs. Multiple bonds are shorter and stronger than single bonds", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "ionic bonds are stronger than covalent bonds in every case", "correct": "Both bond types can be very strong. Ionic compounds have high melting points due to the lattice structure, not individual bond strength."},
+        {"wrong": "covalent bonds involve transferring electrons", "correct": "Covalent bonds involve sharing electrons between atoms. Ionic bonds involve transferring electrons."},
+        {"wrong": "all compounds are molecules", "correct": "Ionic compounds (like NaCl) form crystal lattices, not discrete molecules. Only covalently bonded substances form molecules."},
+        {"wrong": "hydrogen bonds are as strong as covalent bonds", "correct": "Hydrogen bonds are much weaker than covalent bonds. They are intermolecular forces, not chemical bonds."},
+        {"wrong": "atoms always follow the octet rule", "correct": "Hydrogen only needs 2 electrons (duet rule). Boron can be stable with 6. Elements in period 3+ can have expanded octets (more than 8 electrons)."}
+      ]
+    },
+    "states_of_matter": {
+      "keywords": ["solid", "liquid", "gas", "plasma", "phase change", "melting", "boiling", "freezing", "condensation", "sublimation", "evaporation", "matter"],
+      "facts": [
+        {"statement": "The three common states of matter are solid (fixed shape and volume), liquid (fixed volume, takes shape of container), and gas (no fixed shape or volume)", "grade_min": 2, "grade_max": 12},
+        {"statement": "Melting is the change from solid to liquid; freezing is liquid to solid", "grade_min": 3, "grade_max": 12},
+        {"statement": "Evaporation/boiling is the change from liquid to gas; condensation is gas to liquid", "grade_min": 3, "grade_max": 12},
+        {"statement": "Sublimation is the change directly from solid to gas, skipping the liquid phase (e.g., dry ice)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Water freezes at 0 degrees Celsius (32 degrees F) and boils at 100 degrees Celsius (212 degrees F) at standard pressure", "grade_min": 3, "grade_max": 12},
+        {"statement": "In solids, particles vibrate in fixed positions; in liquids, they slide past each other; in gases, they move freely and rapidly", "grade_min": 4, "grade_max": 12},
+        {"statement": "Temperature measures the average kinetic energy of particles in a substance", "grade_min": 6, "grade_max": 12},
+        {"statement": "During a phase change, temperature remains constant even though energy is being added or removed", "grade_min": 7, "grade_max": 12},
+        {"statement": "Plasma is a fourth state of matter consisting of ionized gas, found in stars and lightning", "grade_min": 7, "grade_max": 12},
+        {"statement": "Gases can be compressed because their particles are far apart; solids and liquids are nearly incompressible", "grade_min": 4, "grade_max": 12},
+        {"statement": "Deposition is the phase change from gas directly to solid (the reverse of sublimation); frost forming on windows is an example", "grade_min": 6, "grade_max": 12},
+        {"statement": "The kinetic molecular theory states that all matter is made of constantly moving particles; temperature is a measure of their average kinetic energy", "grade_min": 7, "grade_max": 12},
+        {"statement": "Boyle's Law: at constant temperature, the pressure and volume of a gas are inversely proportional (P1V1 = P2V2)", "grade_min": 8, "grade_max": 12},
+        {"statement": "Charles's Law: at constant pressure, the volume of a gas is directly proportional to its absolute temperature (V1/T1 = V2/T2)", "grade_min": 8, "grade_max": 12},
+        {"statement": "The ideal gas law combines Boyle's and Charles's laws: PV = nRT, where n is moles and R is the gas constant", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "ice is colder than water at the freezing point", "correct": "Ice and water can exist at exactly 0 degrees C. During melting, both are at the same temperature."},
+        {"wrong": "steam and water vapor are the same thing", "correct": "Water vapor is invisible gas. The white cloud you see is steam (tiny water droplets), which forms when vapor condenses in cooler air."},
+        {"wrong": "matter cannot change states", "correct": "All matter can change states with sufficient temperature or pressure changes. Even metals become gases at high enough temperatures."},
+        {"wrong": "gases have no mass", "correct": "Gases have mass. Air at sea level has a density of about 1.2 kg/m^3. A room full of air weighs dozens of kilograms."},
+        {"wrong": "evaporation and boiling are the same process", "correct": "Evaporation occurs only at the surface at any temperature. Boiling occurs throughout the liquid at the boiling point, with bubbles of vapor forming inside."}
+      ]
+    },
+    "acids_bases_ph": {
+      "keywords": ["acid", "base", "pH", "neutral", "acidic", "alkaline", "litmus", "indicator", "hydrogen ion", "hydroxide", "buffer", "neutralization"],
+      "facts": [
+        {"statement": "The pH scale ranges from 0 to 14: acids below 7, neutral at 7, bases above 7", "grade_min": 5, "grade_max": 12},
+        {"statement": "Acids produce hydrogen ions (H+) in solution; bases produce hydroxide ions (OH-) in solution", "grade_min": 7, "grade_max": 12},
+        {"statement": "Pure water has a pH of 7, which is neutral", "grade_min": 5, "grade_max": 12},
+        {"statement": "Each whole number change in pH represents a tenfold change in acidity or basicity", "grade_min": 8, "grade_max": 12},
+        {"statement": "Common acids include hydrochloric acid (HCl, pH ~1), vinegar (acetic acid, pH ~3), and lemon juice (citric acid, pH ~2)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Common bases include bleach (pH ~13), baking soda (pH ~8.5), and ammonia (pH ~11)", "grade_min": 6, "grade_max": 12},
+        {"statement": "An acid-base neutralization reaction produces water and a salt: HCl + NaOH -> NaCl + H2O", "grade_min": 7, "grade_max": 12},
+        {"statement": "Litmus paper turns red in acids and blue in bases; phenolphthalein is colorless in acids and pink in bases", "grade_min": 6, "grade_max": 12},
+        {"statement": "A buffer is a solution that resists changes in pH when small amounts of acid or base are added", "grade_min": 9, "grade_max": 12},
+        {"statement": "Human blood has a pH of about 7.4 (slightly basic) and is buffered to maintain this level", "grade_min": 7, "grade_max": 12},
+        {"statement": "Stomach acid (hydrochloric acid) has a pH of about 1.5-3.5, which is needed to digest proteins and kill bacteria", "grade_min": 6, "grade_max": 12},
+        {"statement": "An Arrhenius acid donates H+ ions in solution; a Bronsted-Lowry acid donates protons to another substance", "grade_min": 10, "grade_max": 12},
+        {"statement": "Antacids work by neutralizing excess stomach acid; they typically contain bases like calcium carbonate or magnesium hydroxide", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "all acids are dangerous and can burn you", "correct": "Many acids are mild and safe, like citric acid in oranges and acetic acid in vinegar."},
+        {"wrong": "a pH of 0 means there is no acid", "correct": "A pH of 0 is extremely acidic (like battery acid). pH 7 is neutral. Lower pH = more acidic, not less."},
+        {"wrong": "bases are not dangerous because they are not acids", "correct": "Strong bases (like concentrated lye/NaOH) can cause severe chemical burns, just like strong acids."},
+        {"wrong": "pH 3 is only slightly more acidic than pH 6", "correct": "Each pH unit is a 10x change. pH 3 is 1,000 times more acidic than pH 6 (10^3 = 1000)."},
+        {"wrong": "all acids taste sour and all bases taste bitter", "correct": "While many acids are sour and many bases are bitter, you should NEVER taste chemicals to identify them. Many are toxic."},
+        {"wrong": "neutral pH means the solution has no ions", "correct": "At pH 7, water still has equal concentrations of H+ and OH- ions (10^-7 M each). Neutral means the concentrations are balanced, not absent."}
+      ]
+    },
+    "chemical_reactions": {
+      "keywords": ["reaction", "reactant", "product", "balanced equation", "synthesis", "decomposition", "combustion", "exothermic", "endothermic", "catalyst", "conservation of mass", "mole", "stoichiometry"],
+      "facts": [
+        {"statement": "In a chemical reaction, reactants are transformed into products; atoms are rearranged but not created or destroyed (conservation of mass)", "grade_min": 6, "grade_max": 12},
+        {"statement": "A balanced chemical equation has the same number of each type of atom on both sides", "grade_min": 7, "grade_max": 12},
+        {"statement": "Exothermic reactions release heat energy to the surroundings; endothermic reactions absorb heat energy", "grade_min": 7, "grade_max": 12},
+        {"statement": "A catalyst speeds up a chemical reaction without being consumed in the reaction", "grade_min": 7, "grade_max": 12},
+        {"statement": "Combustion reactions involve a substance reacting with oxygen, often producing carbon dioxide and water", "grade_min": 7, "grade_max": 12},
+        {"statement": "Signs of a chemical reaction include: color change, gas production (bubbles), temperature change, precipitate formation, or light emission", "grade_min": 5, "grade_max": 12},
+        {"statement": "A synthesis reaction combines simpler substances into a more complex one: A + B -> AB", "grade_min": 7, "grade_max": 12},
+        {"statement": "A decomposition reaction breaks a compound into simpler substances: AB -> A + B", "grade_min": 7, "grade_max": 12},
+        {"statement": "A single replacement reaction: A + BC -> AC + B (one element replaces another in a compound)", "grade_min": 7, "grade_max": 12},
+        {"statement": "A double replacement reaction: AB + CD -> AD + CB (ions from two compounds exchange partners)", "grade_min": 8, "grade_max": 12},
+        {"statement": "The mole is a unit of measurement: 1 mole = 6.022 x 10^23 particles (Avogadro's number)", "grade_min": 9, "grade_max": 12},
+        {"statement": "Reaction rate increases with higher temperature, higher concentration, greater surface area, or addition of a catalyst", "grade_min": 7, "grade_max": 12},
+        {"statement": "Enzymes are biological catalysts (usually proteins) that speed up chemical reactions in living organisms without being used up", "grade_min": 7, "grade_max": 12},
+        {"statement": "Oxidation is the loss of electrons; reduction is the gain of electrons. They always occur together in redox reactions (OIL RIG: Oxidation Is Loss, Reduction Is Gain)", "grade_min": 9, "grade_max": 12},
+        {"statement": "Activation energy is the minimum energy required for a chemical reaction to begin; catalysts lower the activation energy", "grade_min": 8, "grade_max": 12},
+        {"statement": "Le Chatelier's principle: if a system at equilibrium is disturbed, it will shift to partially counteract the change", "grade_min": 10, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "matter is created or destroyed in chemical reactions", "correct": "The law of conservation of mass states that matter cannot be created or destroyed in a chemical reaction."},
+        {"wrong": "a catalyst is used up in the reaction", "correct": "A catalyst speeds up a reaction but is not consumed. It is recovered unchanged after the reaction."},
+        {"wrong": "dissolving sugar in water is a chemical reaction", "correct": "Dissolving is a physical change. The sugar molecules remain intact; they are just dispersed among water molecules."},
+        {"wrong": "rusting and burning are unrelated processes", "correct": "Both rusting and burning are oxidation reactions. Rusting is slow oxidation of iron; burning is rapid oxidation."},
+        {"wrong": "chemical reactions always happen instantly", "correct": "Reactions occur at different rates. Some are nearly instantaneous (explosions), while others take years (rusting) or millions of years (fossil formation)."},
+        {"wrong": "a chemical equation is balanced if it has the same number of molecules on each side", "correct": "A balanced equation has the same number of each type of ATOM on both sides, not necessarily the same number of molecules."}
+      ]
+    },
+    "solutions_mixtures": {
+      "keywords": ["solution", "solute", "solvent", "mixture", "homogeneous", "heterogeneous", "concentration", "solubility", "saturated", "dilute", "colloid", "suspension", "dissolve"],
+      "facts": [
+        {"statement": "A solution is a homogeneous mixture where a solute (smaller amount) is dissolved in a solvent (larger amount)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Water is called the universal solvent because it dissolves more substances than any other common liquid", "grade_min": 5, "grade_max": 12},
+        {"statement": "A saturated solution contains the maximum amount of solute that can dissolve at a given temperature", "grade_min": 7, "grade_max": 12},
+        {"statement": "Solubility generally increases with temperature for solids in liquids, but decreases with temperature for gases in liquids", "grade_min": 8, "grade_max": 12},
+        {"statement": "A homogeneous mixture has a uniform composition throughout (like saltwater); a heterogeneous mixture has visibly different parts (like trail mix)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Concentration measures how much solute is dissolved in a given amount of solution; molarity (M) = moles of solute per liter of solution", "grade_min": 8, "grade_max": 12},
+        {"statement": "A colloid is a mixture where particles are small enough to stay suspended but large enough to scatter light (e.g., milk, fog, gelatin)", "grade_min": 7, "grade_max": 12},
+        {"statement": "A suspension has larger particles that will settle out over time if not stirred (e.g., muddy water, salad dressing)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Like dissolves like: polar solvents (water) dissolve polar and ionic solutes; nonpolar solvents (oil) dissolve nonpolar solutes", "grade_min": 8, "grade_max": 12},
+        {"statement": "Mixtures can be separated by physical methods: filtration, evaporation, distillation, chromatography, or magnetism", "grade_min": 5, "grade_max": 12},
+        {"statement": "An alloy is a solid solution of two or more metals; bronze (copper + tin) and steel (iron + carbon) are common alloys", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "solutions are always liquids", "correct": "Solutions can be any state of matter. Air is a gas solution. Steel is a solid solution. Soda water is a liquid solution with dissolved gas."},
+        {"wrong": "all mixtures are solutions", "correct": "A solution is only one type of mixture (homogeneous). Suspensions and colloids are mixtures that are not solutions."},
+        {"wrong": "mixing always creates a chemical reaction", "correct": "Mixing substances often creates a mixture (physical change), not a chemical reaction. Dissolving salt in water is mixing, not reacting."},
+        {"wrong": "oil and water don't mix because water is heavy", "correct": "Oil and water don't mix because water is polar and oil is nonpolar. Polar and nonpolar substances do not dissolve in each other."}
+      ]
+    },
+    "organic_chemistry_basics": {
+      "keywords": ["organic", "carbon", "hydrocarbon", "polymer", "monomer", "carbohydrate", "protein", "lipid", "nucleic acid", "amino acid", "plastic", "fossil fuel"],
+      "facts": [
+        {"statement": "Organic chemistry is the study of carbon-containing compounds; carbon can form up to four covalent bonds, allowing an enormous variety of molecules", "grade_min": 8, "grade_max": 12},
+        {"statement": "Hydrocarbons are molecules made of only carbon and hydrogen; methane (CH4) is the simplest hydrocarbon", "grade_min": 8, "grade_max": 12},
+        {"statement": "Fossil fuels (coal, oil, natural gas) are hydrocarbons formed from ancient organisms over millions of years", "grade_min": 5, "grade_max": 12},
+        {"statement": "Polymers are large molecules made of repeating units called monomers; plastics, proteins, and DNA are all polymers", "grade_min": 7, "grade_max": 12},
+        {"statement": "The four major types of biological macromolecules are carbohydrates, proteins, lipids, and nucleic acids", "grade_min": 7, "grade_max": 12},
+        {"statement": "Carbohydrates (sugars and starches) are made of carbon, hydrogen, and oxygen; they are the body's primary energy source", "grade_min": 6, "grade_max": 12},
+        {"statement": "Proteins are polymers of amino acids; there are 20 different amino acids that combine to make all human proteins", "grade_min": 8, "grade_max": 12},
+        {"statement": "Lipids (fats and oils) are not soluble in water; they store energy, insulate the body, and make up cell membranes", "grade_min": 7, "grade_max": 12},
+        {"statement": "Plastics are synthetic polymers; most are not biodegradable and persist in the environment for hundreds of years", "grade_min": 5, "grade_max": 12},
+        {"statement": "Ethanol (C2H5OH) is the alcohol in alcoholic beverages; it is produced by yeast fermentation of sugars", "grade_min": 8, "grade_max": 12},
+        {"statement": "Carbon can form long chains, branched structures, and rings, which is why there are millions of different organic compounds", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "organic means the food has no chemicals", "correct": "In chemistry, organic refers to carbon-containing compounds. All food contains chemicals. The term 'organic food' refers to farming practices, not chemistry."},
+        {"wrong": "all carbon compounds are organic", "correct": "Some carbon compounds (CO2, carbonates, cyanides, diamond, graphite) are traditionally classified as inorganic."},
+        {"wrong": "plastics are natural materials", "correct": "Most plastics are synthetic (man-made) polymers derived from petroleum. A few bioplastics are made from plant materials."},
+        {"wrong": "fats are always bad for you", "correct": "Fats (lipids) are essential for health. They store energy, protect organs, and form cell membranes. Unsaturated fats are generally healthier than saturated fats."}
+      ]
+    },
+    "matter_properties": {
+      "keywords": ["matter", "physical property", "chemical property", "density", "mass", "volume", "element", "compound", "mixture", "pure substance", "atom", "molecule"],
+      "facts": [
+        {"statement": "Matter is anything that has mass and takes up space; it exists in different states and forms", "grade_min": 1, "grade_max": 6},
+        {"statement": "A physical property can be observed without changing the substance (color, hardness, density, melting point); a chemical property describes how a substance reacts with other substances", "grade_min": 5, "grade_max": 12},
+        {"statement": "A physical change alters appearance but not chemical composition (cutting, melting, dissolving); a chemical change creates new substances (burning, rusting, cooking an egg)", "grade_min": 5, "grade_max": 12},
+        {"statement": "An element is a pure substance made of one type of atom; a compound is made of two or more elements chemically bonded in fixed ratios", "grade_min": 5, "grade_max": 12},
+        {"statement": "Density = mass / volume; objects with density less than water (1 g/cm^3) float in water", "grade_min": 5, "grade_max": 12},
+        {"statement": "The chemical formula for water is H2O, meaning each molecule has 2 hydrogen atoms and 1 oxygen atom", "grade_min": 4, "grade_max": 12},
+        {"statement": "The chemical formula for table salt is NaCl (sodium chloride), made of sodium and chlorine in a 1:1 ratio", "grade_min": 5, "grade_max": 12},
+        {"statement": "The chemical formula for carbon dioxide is CO2, meaning each molecule has 1 carbon atom and 2 oxygen atoms", "grade_min": 4, "grade_max": 12},
+        {"statement": "A pure substance has a constant composition (elements and compounds); a mixture contains two or more substances not chemically bonded", "grade_min": 5, "grade_max": 12},
+        {"statement": "Conservation of matter: in a closed system, matter is neither created nor destroyed, only rearranged; the total mass before and after a reaction stays the same", "grade_min": 5, "grade_max": 12},
+        {"statement": "An atom is the smallest unit of an element that retains the properties of that element; a molecule is two or more atoms bonded together", "grade_min": 5, "grade_max": 12},
+        {"statement": "Intensive properties (density, boiling point, color) do not depend on the amount of substance; extensive properties (mass, volume) do depend on amount", "grade_min": 8, "grade_max": 12},
+        {"statement": "The three subatomic particles are protons (positive charge, in nucleus), neutrons (no charge, in nucleus), and electrons (negative charge, orbiting nucleus)", "grade_min": 5, "grade_max": 12},
+        {"statement": "An element cannot be broken down into simpler substances by chemical means; there are 118 known elements", "grade_min": 5, "grade_max": 12},
+        {"statement": "The law of definite proportions states that a compound always contains the same elements in the same ratio by mass", "grade_min": 8, "grade_max": 12},
+        {"statement": "Malleability means a material can be hammered into thin sheets; ductility means it can be drawn into wires. Metals typically have both properties", "grade_min": 6, "grade_max": 12},
+        {"statement": "Flammability, reactivity with acid, and tendency to rust are examples of chemical properties because they describe how a substance changes into a different substance", "grade_min": 5, "grade_max": 12},
+        {"statement": "Objects that have the same volume but different masses have different densities; a block of lead is denser than a block of wood of the same size", "grade_min": 4, "grade_max": 8}
+      ],
+      "common_errors": [
+        {"wrong": "dissolving salt in water is a chemical change", "correct": "Dissolving is a physical change. The salt breaks into ions but the NaCl can be recovered by evaporating the water. No new substance is formed."},
+        {"wrong": "a compound is the same as a mixture", "correct": "A compound has elements chemically bonded in a fixed ratio (water is always H2O). A mixture has substances combined but not chemically bonded, in variable proportions."},
+        {"wrong": "atoms can be seen with a regular microscope", "correct": "Atoms are far too small to see with optical microscopes. They can only be imaged using electron microscopes or scanning tunneling microscopes."},
+        {"wrong": "ice is a different substance from water", "correct": "Ice, liquid water, and steam are all the same substance (H2O) in different states of matter. Changing state is a physical change, not a chemical one."},
+        {"wrong": "all matter is made of the same atoms", "correct": "There are 118 different types of atoms (elements), each with a different number of protons. Iron atoms are different from oxygen atoms."}
+      ]
+    }
+  }
+}

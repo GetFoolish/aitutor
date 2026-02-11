@@ -696,6 +696,64 @@ async def detect_location(request: Request):
         return {"country": None, "error": str(e)}
 
 
+class DevLoginRequest(BaseModel):
+    age: int
+    name: str = "Test Student"
+
+
+@app.post("/auth/dev-login")
+async def dev_login(request: DevLoginRequest):
+    """DEV ONLY: Create a test user with a specific age and return a JWT instantly.
+    Skips password, email, and onboarding. For testing different age/grade combos."""
+    import uuid
+    from managers.mongodb_manager import mongo_db
+
+    age = max(5, min(18, request.age))
+    current_grade = calculate_grade_from_age(age)
+    user_id = f"dev_{uuid.uuid4().hex[:12]}"
+
+    # Create minimal user doc directly
+    user_doc = {
+        "user_id": user_id,
+        "name": request.name,
+        "email": f"{user_id}@dev.local",
+        "age": age,
+        "current_grade": current_grade,
+        "created_at": __import__("time").time(),
+        "last_updated": __import__("time").time(),
+        "skill_states": {},
+        "question_history": [],
+        "student_notes": {},
+        "auth_provider": "dev",
+        "gender": "Prefer not to say",
+        "preferred_language": "English",
+        "location": "United States",
+        "date_of_birth": f"{2026 - age}-06-01",
+        "user_type": "student",
+    }
+    mongo_db.users.insert_one(user_doc)
+
+    jwt_token = create_jwt_token({
+        "user_id": user_id,
+        "email": user_doc["email"],
+        "name": request.name,
+    })
+
+    logger.info(f"[DEV] Created test user {user_id}, age={age}, grade={current_grade}")
+
+    return {
+        "token": jwt_token,
+        "user": {
+            "user_id": user_id,
+            "name": request.name,
+            "email": user_doc["email"],
+            "age": age,
+            "current_grade": current_grade,
+        },
+        "is_new_user": True,
+    }
+
+
 @app.post("/auth/logout")
 async def logout():
     """Logout endpoint (frontend clears token)"""

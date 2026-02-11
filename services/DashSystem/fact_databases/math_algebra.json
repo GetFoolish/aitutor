@@ -1,0 +1,779 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "math",
+    "last_updated": "2026-02-11",
+    "description": "Algebra facts: equations, slope, quadratic formula, factoring, exponents, functions, inequalities, systems, radicals, polynomials"
+  },
+  "facts_by_topic": {
+    "equations_solving": {
+      "keywords": [
+        "equation",
+        "solve",
+        "variable",
+        "unknown",
+        "balance",
+        "isolate",
+        "linear",
+        "solution",
+        "expression",
+        "coefficient",
+        "constant",
+        "term"
+      ],
+      "facts": [
+        {
+          "statement": "An equation is a mathematical statement that two expressions are equal, using the = sign",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "To solve an equation, isolate the variable by performing the same operation on both sides",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A linear equation in one variable has the form ax + b = c, where a, b, and c are constants and x is the variable",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The solution to an equation is the value of the variable that makes the equation true",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Inverse operations undo each other: addition undoes subtraction, multiplication undoes division",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "When solving, whatever you do to one side of the equation you must do to the other side to keep it balanced",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A coefficient is the number multiplied by a variable: in 5x, the coefficient is 5",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A constant term has no variable: in 3x + 7, the constant is 7",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Like terms have the same variable raised to the same power: 3x and 5x are like terms; 3x and 3x^2 are not",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "To solve 2x + 5 = 13: subtract 5 from both sides (2x = 8), then divide both sides by 2 (x = 4)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "An equation with no solution is called a contradiction: 2x + 3 = 2x + 7 has no solution",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "An identity is true for all values of the variable: 2(x+3) = 2x+6 is always true",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "you can add to one side without adding to the other",
+          "correct": "Both sides must remain equal. Any operation must be performed on both sides."
+        },
+        {
+          "wrong": "5x means 5 + x",
+          "correct": "5x means 5 multiplied by x, not 5 plus x. In algebra, a number next to a variable indicates multiplication."
+        },
+        {
+          "wrong": "3x + 5x = 8x^2",
+          "correct": "When combining like terms, add the coefficients: 3x + 5x = 8x, not 8x^2."
+        },
+        {
+          "wrong": "to solve 2x = 10, subtract 2 from both sides",
+          "correct": "Since x is multiplied by 2, use the inverse: divide both sides by 2 to get x = 5."
+        }
+      ]
+    },
+    "inequalities": {
+      "keywords": [
+        "inequality",
+        "greater than",
+        "less than",
+        "at least",
+        "at most",
+        "number line",
+        "interval",
+        "compound inequality"
+      ],
+      "facts": [
+        {
+          "statement": "An inequality uses <, >, <=, or >= to compare expressions: x > 5 means x is greater than 5",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "When multiplying or dividing both sides of an inequality by a negative number, the inequality sign must be reversed",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The solution to an inequality is a range of values, not a single value: x > 3 includes 4, 5, 3.5, 100, etc.",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "On a number line, an open circle means the endpoint is NOT included (< or >); a closed circle means it IS included (<= or >=)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A compound inequality uses AND or OR: 2 < x < 5 means x is between 2 and 5",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Absolute value inequality |x| < a means -a < x < a; |x| > a means x < -a or x > a",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Interval notation: (2, 5) means 2 < x < 5; [2, 5] means 2 <= x <= 5",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "when you multiply an inequality by a negative, the sign stays the same",
+          "correct": "You MUST flip the inequality sign when multiplying or dividing by a negative: -2x > 6 becomes x < -3."
+        },
+        {
+          "wrong": "|x| < -3 has solutions",
+          "correct": "Absolute value is always non-negative, so |x| < -3 has no solution. No number's absolute value is negative."
+        },
+        {
+          "wrong": "x > 3 AND x < 1 includes many numbers",
+          "correct": "There is no number that is both greater than 3 AND less than 1. This compound inequality has no solution."
+        }
+      ]
+    },
+    "slope_intercept": {
+      "keywords": [
+        "slope",
+        "intercept",
+        "y-intercept",
+        "x-intercept",
+        "linear",
+        "line",
+        "rate of change",
+        "rise over run",
+        "graph",
+        "coordinate",
+        "point-slope",
+        "standard form"
+      ],
+      "facts": [
+        {
+          "statement": "Slope-intercept form is y = mx + b, where m is the slope and b is the y-intercept",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Slope measures the steepness of a line, calculated as rise over run: m = (y2 - y1) / (x2 - x1)",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A positive slope means the line goes up from left to right; a negative slope means it goes down",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A slope of zero means a horizontal line; an undefined slope means a vertical line",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The y-intercept is the point where the line crosses the y-axis, occurring when x = 0",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Parallel lines have the same slope but different y-intercepts",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Perpendicular lines have slopes that are negative reciprocals of each other: m1 x m2 = -1",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Point-slope form is y - y1 = m(x - x1), useful when you know a point and the slope",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Standard form of a linear equation is Ax + By = C, where A, B, and C are integers",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The x-intercept is the point where the line crosses the x-axis, occurring when y = 0",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The slope between (1, 2) and (4, 8) is (8-2)/(4-1) = 6/3 = 2",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A line with equation y = 3 is horizontal with slope 0; a line with equation x = 3 is vertical with undefined slope",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "slope is run over rise",
+          "correct": "Slope is rise over run: vertical change divided by horizontal change (y2-y1)/(x2-x1)."
+        },
+        {
+          "wrong": "a vertical line has a slope of zero",
+          "correct": "A vertical line has an undefined slope. A horizontal line has a slope of zero."
+        },
+        {
+          "wrong": "parallel lines have different slopes",
+          "correct": "Parallel lines have the same slope. If they had different slopes, they would eventually intersect."
+        },
+        {
+          "wrong": "perpendicular lines have opposite slopes",
+          "correct": "Perpendicular lines have slopes that are negative reciprocals: if one has slope 2, the other has slope -1/2."
+        },
+        {
+          "wrong": "the y-intercept is always positive",
+          "correct": "The y-intercept can be positive, negative, or zero. It is simply where the line crosses the y-axis."
+        }
+      ]
+    },
+    "systems_of_equations": {
+      "keywords": [
+        "system",
+        "simultaneous",
+        "substitution",
+        "elimination",
+        "intersection",
+        "consistent",
+        "inconsistent",
+        "dependent"
+      ],
+      "facts": [
+        {
+          "statement": "A system of linear equations is two or more equations with the same variables",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The solution of a system is the point (x, y) that satisfies all equations simultaneously",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Substitution method: solve one equation for a variable, then substitute into the other equation",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Elimination method: add or subtract equations to eliminate one variable",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Graphically, the solution of a system is where the lines intersect",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "A consistent system has at least one solution; an inconsistent system (parallel lines) has no solution",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "A dependent system has infinitely many solutions (the equations describe the same line)",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Two lines with different slopes always intersect at exactly one point",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "every system of two equations has exactly one solution",
+          "correct": "A system can have one solution (intersecting lines), no solution (parallel lines), or infinitely many (same line)."
+        },
+        {
+          "wrong": "you only need to solve for one variable in a system",
+          "correct": "You must find values for ALL variables. The solution is an ordered pair (x, y)."
+        },
+        {
+          "wrong": "parallel lines eventually meet",
+          "correct": "Parallel lines have the same slope and never intersect. The system has no solution."
+        }
+      ]
+    },
+    "quadratic_equations": {
+      "keywords": [
+        "quadratic",
+        "parabola",
+        "factoring",
+        "quadratic formula",
+        "discriminant",
+        "vertex",
+        "roots",
+        "zeros",
+        "completing the square",
+        "axis of symmetry"
+      ],
+      "facts": [
+        {
+          "statement": "A quadratic equation has the standard form ax^2 + bx + c = 0, where a is not 0",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The quadratic formula is x = (-b +/- sqrt(b^2 - 4ac)) / (2a)",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "The discriminant b^2 - 4ac determines the number of real solutions: positive = 2, zero = 1, negative = 0 real solutions",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "The graph of a quadratic equation is a parabola that opens upward if a > 0 and downward if a < 0",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The vertex of a parabola y = ax^2 + bx + c is at x = -b/(2a)",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "The roots (or zeros) of a quadratic are the x-values where the parabola crosses the x-axis",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Vertex form of a quadratic is y = a(x - h)^2 + k, where (h, k) is the vertex",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "The axis of symmetry of a parabola is the vertical line x = -b/(2a), passing through the vertex",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Completing the square: x^2 + 6x + ? = (x+3)^2, so add 9. The number to add is (b/2)^2",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Zero Product Property: if ab = 0, then a = 0 or b = 0. Used to solve factored quadratics",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "every quadratic equation has two real solutions",
+          "correct": "A quadratic can have 0, 1, or 2 real solutions depending on the discriminant."
+        },
+        {
+          "wrong": "the vertex is always at x = 0",
+          "correct": "The vertex is at x = -b/(2a). It is at x=0 only when b=0."
+        },
+        {
+          "wrong": "a parabola always opens upward",
+          "correct": "If the coefficient a is negative, the parabola opens downward."
+        },
+        {
+          "wrong": "completing the square means dividing the equation by 2",
+          "correct": "Completing the square means adding (b/2)^2 to create a perfect square trinomial."
+        },
+        {
+          "wrong": "if x^2 = 9, then x = 3",
+          "correct": "If x^2 = 9, then x = 3 or x = -3. Square roots produce both positive and negative solutions."
+        }
+      ]
+    },
+    "exponent_rules": {
+      "keywords": [
+        "exponent",
+        "power",
+        "base",
+        "squared",
+        "cubed",
+        "exponent rules",
+        "scientific notation",
+        "exponential",
+        "radical",
+        "square root",
+        "cube root"
+      ],
+      "facts": [
+        {
+          "statement": "An exponent tells how many times to multiply a base by itself: 2^3 = 2 x 2 x 2 = 8",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Any nonzero number raised to the power of 0 equals 1: a^0 = 1",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Product rule: a^m x a^n = a^(m+n) -- when multiplying same bases, add exponents",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Quotient rule: a^m / a^n = a^(m-n) -- when dividing same bases, subtract exponents",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Power rule: (a^m)^n = a^(m*n) -- when raising a power to a power, multiply exponents",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A negative exponent means the reciprocal: a^(-n) = 1/(a^n)",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Scientific notation writes numbers as a x 10^n where 1 <= a < 10: 3,200 = 3.2 x 10^3",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A fractional exponent means a root: a^(1/2) = sqrt(a), a^(1/3) = cube root of a",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Power of a product: (ab)^n = a^n x b^n",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Power of a quotient: (a/b)^n = a^n / b^n",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The square root of a product: sqrt(ab) = sqrt(a) x sqrt(b)",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Perfect squares: 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Perfect cubes: 1, 8, 27, 64, 125, 216, 343, 512, 729, 1000",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Exponential growth: y = a(1+r)^t, where r is the growth rate and t is time",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Exponential decay: y = a(1-r)^t, where r is the decay rate and t is time",
+          "grade_min": 9,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "2^3 means 2 x 3 = 6",
+          "correct": "2^3 means 2 multiplied by itself 3 times: 2 x 2 x 2 = 8."
+        },
+        {
+          "wrong": "0^0 = 0",
+          "correct": "0^0 is commonly defined as 1 in most mathematical contexts, though it is technically indeterminate."
+        },
+        {
+          "wrong": "when multiplying exponents with the same base, multiply the exponents",
+          "correct": "When multiplying same bases, ADD the exponents: a^m x a^n = a^(m+n). You multiply exponents when raising a power to a power."
+        },
+        {
+          "wrong": "a negative exponent makes the number negative",
+          "correct": "A negative exponent means the reciprocal: 2^(-3) = 1/8, not -8."
+        },
+        {
+          "wrong": "sqrt(a + b) = sqrt(a) + sqrt(b)",
+          "correct": "Square roots do NOT distribute over addition. sqrt(9+16) = sqrt(25) = 5, but sqrt(9)+sqrt(16) = 3+4 = 7."
+        },
+        {
+          "wrong": "(-3)^2 = -9",
+          "correct": "(-3)^2 = (-3)x(-3) = 9, not -9. Note: -3^2 = -(3^2) = -9 is different from (-3)^2 = 9."
+        }
+      ]
+    },
+    "factoring": {
+      "keywords": [
+        "factor",
+        "factoring",
+        "GCF",
+        "greatest common factor",
+        "difference of squares",
+        "trinomial",
+        "FOIL",
+        "sum of cubes",
+        "difference of cubes",
+        "grouping"
+      ],
+      "facts": [
+        {
+          "statement": "Factoring is the process of breaking an expression into a product of simpler expressions",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "To factor out the GCF, find the largest factor common to all terms and divide each term by it",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The difference of squares pattern: a^2 - b^2 = (a + b)(a - b)",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "FOIL (First, Outer, Inner, Last) is a method for multiplying two binomials: (a+b)(c+d) = ac + ad + bc + bd",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "A perfect square trinomial: a^2 + 2ab + b^2 = (a + b)^2",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "To factor x^2 + bx + c, find two numbers that multiply to c and add to b",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Sum of cubes: a^3 + b^3 = (a + b)(a^2 - ab + b^2)",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Difference of cubes: a^3 - b^3 = (a - b)(a^2 + ab + b^2)",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Factoring by grouping: group terms in pairs, factor out common factors from each pair, then factor the common binomial",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "A polynomial is fully factored when no factor can be factored further over the integers",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "a^2 + b^2 can be factored as (a+b)(a+b)",
+          "correct": "The SUM of two squares a^2 + b^2 cannot be factored over the real numbers. Only the DIFFERENCE of squares factors: a^2 - b^2 = (a+b)(a-b)."
+        },
+        {
+          "wrong": "(a+b)^2 = a^2 + b^2",
+          "correct": "(a+b)^2 = a^2 + 2ab + b^2. The middle term 2ab must not be forgotten."
+        },
+        {
+          "wrong": "x^2 + 5x + 6 = (x+1)(x+6)",
+          "correct": "Find two numbers that multiply to 6 AND add to 5: 2 and 3. So x^2 + 5x + 6 = (x+2)(x+3)."
+        },
+        {
+          "wrong": "(a-b)^2 = a^2 - b^2",
+          "correct": "(a-b)^2 = a^2 - 2ab + b^2, not a^2 - b^2. The difference of squares a^2 - b^2 = (a+b)(a-b)."
+        }
+      ]
+    },
+    "functions": {
+      "keywords": [
+        "function",
+        "domain",
+        "range",
+        "input",
+        "output",
+        "f(x)",
+        "mapping",
+        "vertical line test",
+        "composition",
+        "inverse function"
+      ],
+      "facts": [
+        {
+          "statement": "A function assigns exactly one output to each input: f(x) = 2x + 3 means for input x, output is 2x + 3",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The domain is the set of all possible input values (x-values); the range is the set of all possible output values (y-values)",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The vertical line test: if any vertical line crosses a graph more than once, it is NOT a function",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "f(3) means 'evaluate the function at x = 3' by substituting 3 for x",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A linear function has the form f(x) = mx + b and its graph is a straight line",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Composition of functions: (f o g)(x) = f(g(x)) means apply g first, then apply f to the result",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "An inverse function f^(-1) undoes f: if f(2) = 5, then f^(-1)(5) = 2",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "A function is one-to-one if each output comes from exactly one input (passes the horizontal line test)",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Common function types: linear, quadratic, absolute value, exponential, logarithmic, polynomial",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The graph of f(x) + k shifts the graph up k units; f(x) - k shifts it down k units",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "f(x) means f times x",
+          "correct": "f(x) is function notation meaning 'the output of function f when the input is x.' It is NOT multiplication."
+        },
+        {
+          "wrong": "a circle is a function",
+          "correct": "A circle fails the vertical line test: for most x-values, there are two y-values. It is NOT a function."
+        },
+        {
+          "wrong": "every function has an inverse function",
+          "correct": "Only one-to-one functions (passing the horizontal line test) have inverse functions."
+        },
+        {
+          "wrong": "f(a+b) = f(a) + f(b) for any function",
+          "correct": "This is only true for linear functions of the form f(x) = kx. In general, f(a+b) does not equal f(a)+f(b)."
+        }
+      ]
+    },
+    "polynomials": {
+      "keywords": [
+        "polynomial",
+        "degree",
+        "monomial",
+        "binomial",
+        "trinomial",
+        "leading coefficient",
+        "end behavior",
+        "synthetic division"
+      ],
+      "facts": [
+        {
+          "statement": "A polynomial is a sum of terms where each term has a variable raised to a non-negative integer power",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The degree of a polynomial is the highest power of the variable: 3x^4 + 2x^2 - 1 has degree 4",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Monomial = 1 term, binomial = 2 terms, trinomial = 3 terms",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The leading coefficient is the coefficient of the highest-degree term",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "A polynomial of degree n has at most n real roots (zeros)",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Remainder Theorem: when polynomial p(x) is divided by (x-a), the remainder is p(a)",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Factor Theorem: (x-a) is a factor of p(x) if and only if p(a) = 0",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "End behavior: odd-degree polynomials go in opposite directions at each end; even-degree go in the same direction",
+          "grade_min": 10,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the degree of 5x^2 + 3x^3 is 2 because that term comes first",
+          "correct": "The degree is determined by the highest power, not the order written. Degree is 3 from the 3x^3 term."
+        },
+        {
+          "wrong": "a polynomial of degree 3 always has 3 real roots",
+          "correct": "A degree-3 polynomial has AT MOST 3 real roots. It always has at least 1 real root, but the others may be complex."
+        },
+        {
+          "wrong": "you can have a variable in the denominator in a polynomial",
+          "correct": "Polynomials only have non-negative integer exponents. 3/x = 3x^(-1) is NOT a polynomial term."
+        }
+      ]
+    }
+  }
+}

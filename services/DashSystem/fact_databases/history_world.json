@@ -1,0 +1,712 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "history",
+    "last_updated": "2026-02-11",
+    "description": "World history facts: ancient civilizations, Renaissance, Age of Exploration, French Revolution, World Wars, Cold War, colonialism, major empires, medieval period, modern globalization"
+  },
+  "facts_by_topic": {
+    "ancient_civilizations": {
+      "keywords": [
+        "ancient", "civilization", "Mesopotamia", "Egypt", "Indus",
+        "China", "Greece", "Rome", "Sumer", "pharaoh", "dynasty"
+      ],
+      "facts": [
+        {
+          "statement": "Mesopotamia (modern Iraq) is often called the Cradle of Civilization, where Sumerians developed writing (cuneiform) around 3500 BCE",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Ancient Egypt developed along the Nile River, with pyramids, hieroglyphics, and pharaohs ruling for over 3,000 years",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Ancient Greece is the birthplace of democracy, philosophy (Socrates, Plato, Aristotle), and the Olympic Games",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Roman Republic became the Roman Empire in 27 BCE under Augustus; at its peak it controlled much of Europe, North Africa, and the Middle East",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Silk Road was an ancient trade network connecting China to the Mediterranean, facilitating the exchange of goods, ideas, and culture",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Code of Hammurabi (c. 1754 BCE) from Babylon is one of the oldest written sets of laws",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Indus Valley Civilization (c. 2600-1900 BCE) in modern Pakistan/India had advanced urban planning with grid-pattern streets and sewage systems",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Ancient China's Shang Dynasty (c. 1600-1046 BCE) developed bronze casting, a writing system using oracle bones, and an organized government",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Persian Empire under Cyrus the Great (c. 550-330 BCE) was one of the largest empires in history and was known for religious tolerance",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Alexander the Great created one of the largest empires of the ancient world by age 30, spreading Greek culture from Egypt to India",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "democracy was invented in Rome",
+          "correct": "Democracy originated in ancient Athens, Greece, around the 5th century BCE. Rome had a republic, not a direct democracy."
+        },
+        {
+          "wrong": "the pyramids were built by slaves",
+          "correct": "Modern archaeological evidence suggests the pyramids were built by paid laborers and seasonal workers, not slaves."
+        },
+        {
+          "wrong": "ancient civilizations only existed in Europe and the Middle East",
+          "correct": "Major ancient civilizations also flourished in China, India, Africa (Kush, Axum), and the Americas (Olmec, Maya)."
+        },
+        {
+          "wrong": "the Roman Empire fell all at once in 476 CE",
+          "correct": "Only the Western Roman Empire fell in 476 CE. The Eastern Roman Empire (Byzantine Empire) continued for nearly 1,000 more years until 1453."
+        }
+      ]
+    },
+    "world_wars": {
+      "keywords": [
+        "World War I", "World War II", "WWI", "WWII", "trench",
+        "Holocaust", "D-Day", "atomic bomb", "Treaty of Versailles",
+        "Allied", "Axis"
+      ],
+      "facts": [
+        {
+          "statement": "World War I (1914-1918) was triggered by the assassination of Archduke Franz Ferdinand and involved trench warfare on the Western Front",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Treaty of Versailles (1919) ended WWI and imposed heavy reparations on Germany, contributing to conditions that led to WWII",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "World War II (1939-1945) was fought between the Allies (US, UK, USSR, France, China) and the Axis Powers (Germany, Italy, Japan)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Holocaust was the systematic murder of approximately 6 million Jews and millions of others by Nazi Germany during WWII",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "D-Day (June 6, 1944) was the Allied invasion of Normandy, France, the largest seaborne invasion in history",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The United States dropped atomic bombs on Hiroshima (August 6, 1945) and Nagasaki (August 9, 1945), leading to Japan's surrender",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "World War II resulted in an estimated 70-85 million deaths, making it the deadliest conflict in human history",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The United Nations was founded in 1945 after WWII to promote international cooperation and prevent future world wars",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Nuremberg Trials (1945-1946) prosecuted major Nazi leaders for war crimes and crimes against humanity",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Winston Churchill, Franklin D. Roosevelt, and Joseph Stalin were the key Allied leaders during World War II",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the US entered WWII from the beginning in 1939",
+          "correct": "The US entered WWII after Japan attacked Pearl Harbor on December 7, 1941, more than two years after the war began in Europe."
+        },
+        {
+          "wrong": "WWI was called World War I from the start",
+          "correct": "It was originally known as 'The Great War' or 'The War to End All Wars.' It was only called World War I after World War II began."
+        },
+        {
+          "wrong": "Germany started World War I",
+          "correct": "WWI had complex causes including alliance systems, imperialism, nationalism, and militarism. Austria-Hungary declared war on Serbia after the assassination of Archduke Franz Ferdinand."
+        },
+        {
+          "wrong": "the atomic bombs were the only reason Japan surrendered",
+          "correct": "Japan's surrender was influenced by multiple factors including the atomic bombs, the Soviet declaration of war on Japan, naval blockade, and conventional bombing."
+        }
+      ]
+    },
+    "cold_war": {
+      "keywords": [
+        "Cold War", "USSR", "Soviet Union", "communism", "capitalism",
+        "iron curtain", "nuclear", "space race", "Berlin Wall",
+        "Cuban missile crisis"
+      ],
+      "facts": [
+        {
+          "statement": "The Cold War (approximately 1947-1991) was a period of political and military tension between the US-led Western bloc and the Soviet-led Eastern bloc",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Cold War never escalated into direct military conflict between the US and USSR, hence the name 'cold'",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Berlin Wall (built 1961, fell 1989) divided communist East Berlin from democratic West Berlin and symbolized the Cold War division of Europe",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Cuban Missile Crisis (October 1962) was the closest the Cold War came to nuclear war, resolved through diplomacy between Kennedy and Khrushchev",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Space Race culminated in the US landing astronauts on the Moon in 1969; the USSR had earlier sent the first human (Yuri Gagarin) to space in 1961",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Soviet Union dissolved on December 26, 1991, marking the end of the Cold War",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "NATO (North Atlantic Treaty Organization) was formed in 1949 as a Western military alliance; the Soviet bloc responded with the Warsaw Pact in 1955",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Korean War (1950-1953) was one of the first major proxy wars of the Cold War, ending with Korea divided along the 38th parallel",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Marshall Plan (1948-1952) provided over $13 billion in US economic aid to rebuild Western European economies after WWII",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the Cold War involved direct battles between US and Soviet troops",
+          "correct": "The US and USSR never fought each other directly. They fought proxy wars in Korea, Vietnam, Afghanistan, and elsewhere."
+        },
+        {
+          "wrong": "the Berlin Wall separated East and West Germany",
+          "correct": "The Berlin Wall divided East Berlin from West Berlin. The Inner German Border separated East and West Germany as a whole."
+        },
+        {
+          "wrong": "the US won the Space Race from the beginning",
+          "correct": "The USSR achieved many early firsts: first satellite (Sputnik, 1957), first human in space (Gagarin, 1961). The US achieved the first Moon landing in 1969."
+        },
+        {
+          "wrong": "the Cold War ended because the US defeated the Soviet Union militarily",
+          "correct": "The Cold War ended through a combination of internal Soviet economic problems, political reforms under Gorbachev, and the collapse of communist governments in Eastern Europe."
+        }
+      ]
+    },
+    "decolonization": {
+      "keywords": [
+        "decolonization", "independence", "colony", "colonialism",
+        "imperialism", "Gandhi", "Mandela", "Africa", "Asia",
+        "self-determination"
+      ],
+      "facts": [
+        {
+          "statement": "Decolonization was the process by which colonies gained independence from European powers, primarily occurring between the 1940s and 1970s",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "India gained independence from Britain in 1947 through a largely nonviolent movement led by Mahatma Gandhi",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Most African nations gained independence between 1956 and 1968, with 17 African countries becoming independent in 1960 alone (known as the Year of Africa)",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Nelson Mandela spent 27 years in prison for fighting apartheid in South Africa and became the country's first Black president in 1994",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The partition of India in 1947 created two independent nations (India and Pakistan), resulting in mass migration and violence",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The United Nations, founded in 1945, promoted self-determination and supported decolonization efforts worldwide",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Algerian War of Independence (1954-1962) against France was one of the most violent decolonization conflicts",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Kwame Nkrumah led Ghana to independence in 1957, making it the first sub-Saharan African country to gain independence from a colonial power",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "colonialism only affected Africa",
+          "correct": "European colonialism affected Asia, Africa, the Americas, Australia, and the Pacific Islands over several centuries."
+        },
+        {
+          "wrong": "all decolonization was peaceful",
+          "correct": "While some nations gained independence peacefully, others fought violent wars of liberation, such as Algeria, Vietnam, and Kenya."
+        },
+        {
+          "wrong": "colonialism ended completely after decolonization",
+          "correct": "While formal political colonialism largely ended, critics argue that economic and cultural forms of neocolonialism continue to this day."
+        }
+      ]
+    },
+    "renaissance_and_reformation": {
+      "keywords": [
+        "Renaissance", "reformation", "Martin Luther", "Leonardo",
+        "Michelangelo", "Gutenberg", "printing press", "humanism",
+        "Protestant", "Catholic", "art", "rebirth"
+      ],
+      "facts": [
+        {
+          "statement": "The Renaissance (roughly 1400-1600) was a cultural rebirth that began in Italy, emphasizing art, science, literature, and humanism",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Leonardo da Vinci was a Renaissance genius who painted the Mona Lisa and The Last Supper and made scientific drawings of flying machines and human anatomy",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Johannes Gutenberg invented the printing press with movable type around 1440, revolutionizing the spread of knowledge in Europe",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Martin Luther posted his 95 Theses in 1517, criticizing church practices and sparking the Protestant Reformation",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Michelangelo painted the ceiling of the Sistine Chapel and sculpted the statue of David, both masterpieces of Renaissance art",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Humanism was a Renaissance intellectual movement that emphasized human potential, reason, and classical Greek and Roman learning",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Protestant Reformation led to the founding of new Christian denominations including Lutheran, Calvinist, and Anglican churches",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Catholic Counter-Reformation was the Catholic Church's response to Protestantism, including the Council of Trent (1545-1563) and the founding of the Jesuit order",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "William Shakespeare (1564-1616) wrote during the English Renaissance, producing plays like Hamlet, Romeo and Juliet, and Macbeth",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Nicolaus Copernicus proposed in 1543 that the Earth revolves around the Sun, challenging the geocentric view that had dominated for centuries",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the Renaissance happened everywhere in Europe at the same time",
+          "correct": "The Renaissance began in Italian city-states like Florence in the 1400s and spread to Northern Europe gradually over the next century."
+        },
+        {
+          "wrong": "Martin Luther wanted to start a new religion",
+          "correct": "Luther initially wanted to reform the Catholic Church, not break away from it. The split into separate Protestant denominations was an unintended consequence."
+        },
+        {
+          "wrong": "the Renaissance was only about art",
+          "correct": "The Renaissance also included major advances in science, philosophy, literature, politics, and exploration."
+        },
+        {
+          "wrong": "Galileo invented the telescope",
+          "correct": "The telescope was invented by Dutch lens makers (Hans Lippershey is often credited). Galileo improved it and was the first to use it systematically for astronomical observations."
+        }
+      ]
+    },
+    "age_of_exploration": {
+      "keywords": [
+        "exploration", "Columbus", "Magellan", "Vasco da Gama",
+        "colonization", "new world", "spice trade", "navigation",
+        "Columbian Exchange", "conquistador"
+      ],
+      "facts": [
+        {
+          "statement": "Christopher Columbus, sailing for Spain, reached the Americas in 1492 while seeking a western route to Asia",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Ferdinand Magellan's expedition (1519-1522) was the first to circumnavigate (sail around) the entire Earth, though Magellan himself died in the Philippines",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Vasco da Gama of Portugal was the first European to reach India by sea in 1498, sailing around Africa",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Columbian Exchange was the transfer of plants, animals, diseases, and ideas between the Americas and Europe/Africa/Asia after 1492",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "European diseases like smallpox devastated Indigenous populations in the Americas, killing an estimated 90% of some Native communities",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Spanish conquistadors Hernan Cortes and Francisco Pizarro conquered the Aztec and Inca Empires in the early 1500s",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Portugal and Spain were the first European nations to explore and colonize extensively, dividing the non-Christian world between them in the Treaty of Tordesillas (1494)",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The transatlantic slave trade forcibly transported an estimated 12.5 million Africans to the Americas between the 16th and 19th centuries",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "Columbus discovered America",
+          "correct": "Indigenous peoples had lived in the Americas for thousands of years. Columbus's voyages initiated sustained European contact and colonization."
+        },
+        {
+          "wrong": "Columbus proved the Earth was round",
+          "correct": "Educated Europeans already knew the Earth was round. Columbus underestimated its circumference and believed he could reach Asia by sailing west."
+        },
+        {
+          "wrong": "Europeans explored purely out of curiosity and adventure",
+          "correct": "The main motivations were economic (trade routes, gold, spices), religious (spreading Christianity), and political (expanding empires and national power)."
+        },
+        {
+          "wrong": "the Columbian Exchange only brought good things to the Americas",
+          "correct": "While new crops were introduced both ways, the Exchange also brought devastating diseases to the Americas and resulted in the destruction of Indigenous cultures."
+        }
+      ]
+    },
+    "french_revolution_and_napoleon": {
+      "keywords": [
+        "French Revolution", "Napoleon", "Bastille", "guillotine",
+        "liberty", "equality", "fraternity", "monarchy", "republic",
+        "Reign of Terror", "Enlightenment"
+      ],
+      "facts": [
+        {
+          "statement": "The French Revolution began in 1789, overthrowing the monarchy and establishing principles of liberty, equality, and fraternity",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The storming of the Bastille on July 14, 1789 is celebrated as France's national day and symbolized the start of the revolution",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Declaration of the Rights of Man and of the Citizen (1789) established that men are born free and equal in rights",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Reign of Terror (1793-1794) was a period of extreme violence during the revolution, led by Robespierre, when thousands were executed by guillotine",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "Napoleon Bonaparte rose to power after the revolution and crowned himself Emperor of France in 1804",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Napoleon's armies conquered much of Europe but were ultimately defeated at the Battle of Waterloo in 1815",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Enlightenment ideas of philosophers like Voltaire, Rousseau, and Montesquieu heavily influenced the French Revolution",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The French Revolution inspired other revolutions and independence movements around the world, including in Haiti and Latin America",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "Marie Antoinette said 'Let them eat cake'",
+          "correct": "There is no reliable evidence she said this. The phrase appeared in Rousseau's writing years before she became queen."
+        },
+        {
+          "wrong": "Napoleon was very short",
+          "correct": "Napoleon was about 5 feet 7 inches (170 cm), average height for his era. The myth came from British propaganda and differences between French and English measurement systems."
+        },
+        {
+          "wrong": "the French Revolution immediately created a stable democracy",
+          "correct": "France went through years of instability, terror, and multiple governments before Napoleon seized power. Stable democracy took decades to achieve."
+        }
+      ]
+    },
+    "medieval_period": {
+      "keywords": [
+        "medieval", "Middle Ages", "feudalism", "knight", "castle",
+        "crusade", "plague", "Black Death", "monastery", "lord",
+        "serf", "Magna Carta"
+      ],
+      "facts": [
+        {
+          "statement": "The Middle Ages (roughly 500-1500 CE) was the period in European history between the fall of the Western Roman Empire and the Renaissance",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Feudalism was a social system in medieval Europe where lords granted land (fiefs) to vassals in exchange for military service and loyalty",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Black Death (1347-1351) killed approximately one-third of Europe's population, devastating economies and societies",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Crusades (1096-1291) were a series of religious wars in which European Christians fought to control the Holy Land",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Magna Carta, signed in 1215, limited the power of England's king and established the principle that everyone, including the king, is subject to the law",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Monasteries were centers of learning in the Middle Ages, where monks preserved ancient texts, developed agriculture, and educated the young",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Charlemagne was crowned Holy Roman Emperor in 800 CE and united much of Western Europe under one rule for the first time since the Roman Empire",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Norman Conquest of 1066, when William the Conqueror invaded England, transformed English language, culture, and government",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Islamic Golden Age (c. 750-1258) saw major advances in mathematics, astronomy, medicine, and philosophy in the Muslim world",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the Middle Ages were a period of no progress (the Dark Ages)",
+          "correct": "The medieval period saw significant advances in agriculture, architecture (Gothic cathedrals), legal systems, and universities. The Islamic world and other civilizations thrived."
+        },
+        {
+          "wrong": "medieval people believed the Earth was flat",
+          "correct": "Most educated people in the Middle Ages knew the Earth was round. Ancient Greek scholars like Eratosthenes had calculated its circumference."
+        },
+        {
+          "wrong": "Vikings wore horned helmets",
+          "correct": "There is no evidence Vikings wore horned helmets in battle. This myth was popularized by 19th-century artists and costume designers."
+        },
+        {
+          "wrong": "everyone in the Middle Ages was a knight or a peasant",
+          "correct": "Medieval society included merchants, artisans, clergy, scholars, and many other roles. Towns and cities grew substantially during this period."
+        }
+      ]
+    },
+    "major_empires": {
+      "keywords": [
+        "empire", "Ottoman", "Mongol", "Byzantine", "Mughal",
+        "British Empire", "Genghis Khan", "sultan", "dynasty",
+        "conquest", "expansion"
+      ],
+      "facts": [
+        {
+          "statement": "The Mongol Empire under Genghis Khan (1206-1368) was the largest contiguous land empire in history, stretching from Korea to Eastern Europe",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Ottoman Empire (c. 1299-1922) controlled much of Southeast Europe, Western Asia, and North Africa, and captured Constantinople in 1453",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Byzantine Empire (Eastern Roman Empire) lasted from 330 to 1453 CE, preserving Roman law, Greek culture, and Christianity",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Mughal Empire (1526-1857) ruled much of India; Emperor Akbar was known for religious tolerance, and the Taj Mahal was built during this period",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The British Empire was the largest empire in history by land area, at its peak controlling about 25% of the world's land surface",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Mali Empire in West Africa (c. 1235-1600) was wealthy from gold and salt trade; Mansa Musa is considered one of the richest people in history",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Inca Empire (c. 1438-1533) was the largest empire in pre-Columbian America, connected by an extensive road system through the Andes mountains",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Aztec Empire (c. 1325-1521) built the great city of Tenochtitlan on a lake, with a population larger than most European cities of the time",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Han Dynasty (206 BCE-220 CE) in China established the Silk Road, invented paper, and created a civil service system based on merit examinations",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the Mongol Empire was only destructive",
+          "correct": "While Mongol conquests were devastating, the Pax Mongolica enabled unprecedented trade, cultural exchange, and communication across Eurasia via the Silk Road."
+        },
+        {
+          "wrong": "Africa had no great civilizations before European contact",
+          "correct": "Africa had many advanced civilizations including the empires of Ghana, Mali, Songhai, Aksum, Great Zimbabwe, and the ancient kingdom of Kush."
+        },
+        {
+          "wrong": "the Aztecs practiced human sacrifice because they were barbaric",
+          "correct": "Human sacrifice was a deeply held religious practice tied to Aztec cosmology. The Aztecs also had advanced agriculture, engineering, and governance."
+        },
+        {
+          "wrong": "the British Empire spread only civilization and progress",
+          "correct": "While some infrastructure was built, British colonialism also involved exploitation, suppression of local cultures, forced labor, and economic extraction."
+        }
+      ]
+    },
+    "industrial_revolution": {
+      "keywords": [
+        "Industrial Revolution", "factory", "steam engine", "coal",
+        "urbanization", "labor", "textile", "railway", "mass production",
+        "working class"
+      ],
+      "facts": [
+        {
+          "statement": "The Industrial Revolution began in Britain around 1760 and spread to other countries, transforming economies from agricultural to manufacturing",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "James Watt's improvements to the steam engine in the 1760s-1770s powered factories, trains, and ships, driving the Industrial Revolution forward",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The textile industry was among the first to be mechanized, with inventions like the spinning jenny, water frame, and power loom greatly increasing cloth production",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Industrialization led to rapid urbanization as millions of people moved from farms to cities to work in factories",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Working conditions in early factories were often dangerous, with long hours, low pay, and child labor common before reform movements improved conditions",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The railroad network expanded rapidly in the 1800s, revolutionizing transportation of goods and people and spurring further economic growth",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Second Industrial Revolution (late 1800s) introduced electricity, steel production, petroleum, and chemical manufacturing",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Karl Marx and Friedrich Engels wrote The Communist Manifesto (1848) in response to the exploitation of workers during industrialization, influencing political movements worldwide",
+          "grade_min": 9,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the Industrial Revolution happened overnight",
+          "correct": "The Industrial Revolution was a gradual process spanning over a century, with different industries and countries industrializing at different rates."
+        },
+        {
+          "wrong": "industrialization only happened in Britain",
+          "correct": "While it began in Britain, industrialization spread to Belgium, France, Germany, the United States, Japan, and eventually much of the world."
+        },
+        {
+          "wrong": "the Industrial Revolution was entirely negative",
+          "correct": "While it caused pollution, exploitation, and social upheaval, industrialization also raised living standards, increased life expectancy, and created new opportunities over time."
+        }
+      ]
+    }
+  }
+}

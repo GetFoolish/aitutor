@@ -1,0 +1,701 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "english",
+    "last_updated": "2026-02-11",
+    "description": "Literature facts: literary devices, genres, famous works, literary movements, figurative language, point of view, characterization, plot elements"
+  },
+  "facts_by_topic": {
+    "literary_devices": {
+      "keywords": [
+        "metaphor", "simile", "personification", "alliteration", "hyperbole",
+        "onomatopoeia", "imagery", "symbolism", "irony", "foreshadowing",
+        "oxymoron", "paradox", "repetition", "rhetorical question"
+      ],
+      "facts": [
+        {
+          "statement": "A simile compares two unlike things using 'like' or 'as': 'Her smile was like sunshine'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A metaphor compares two unlike things without using 'like' or 'as': 'Time is money'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Personification gives human qualities to nonhuman things: 'The wind whispered through the trees'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Alliteration is the repetition of the same beginning consonant sound in nearby words: 'Peter Piper picked a peck'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Hyperbole is extreme exaggeration for emphasis: 'I've told you a million times'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Onomatopoeia is a word that imitates the sound it represents: buzz, hiss, splash, pop, bang",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Irony is a contrast between what is expected and what actually happens; it has three main types: verbal, situational, and dramatic",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Foreshadowing provides hints or clues about events that will happen later in the story",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Symbolism uses an object, person, or event to represent a deeper meaning or idea beyond its literal sense",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Imagery is language that appeals to the senses (sight, sound, touch, taste, smell) to create vivid mental pictures",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "An oxymoron combines two contradictory words: 'jumbo shrimp,' 'bittersweet,' 'deafening silence'",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A paradox is a statement that seems contradictory but reveals a deeper truth: 'Less is more'",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Repetition is deliberately using a word or phrase more than once to create emphasis or rhythm",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A rhetorical question is asked for effect, not to get an answer: 'Isn't it a beautiful day?'",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Verbal irony is saying the opposite of what you mean, such as calling a stormy day 'lovely weather'",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "metaphors use 'like' or 'as'",
+          "correct": "Metaphors do NOT use 'like' or 'as.' That is a simile. A metaphor states the comparison directly: 'Life is a journey.'"
+        },
+        {
+          "wrong": "irony is the same as coincidence",
+          "correct": "Irony involves a contrast between expectation and reality. A fire station burning down is ironic; rain on a random day is just coincidence."
+        },
+        {
+          "wrong": "alliteration requires all words to start with the same letter",
+          "correct": "Alliteration requires the same beginning SOUND, not letter. 'Phone photo' has alliteration (same 'f' sound) even though the letters differ."
+        },
+        {
+          "wrong": "an oxymoron and a paradox are the same device",
+          "correct": "An oxymoron is a two-word phrase with contradictory terms ('living dead'). A paradox is a full statement that seems contradictory but reveals truth."
+        }
+      ]
+    },
+    "literary_genres": {
+      "keywords": [
+        "fiction", "nonfiction", "poetry", "drama", "genre", "novel",
+        "short story", "memoir", "fantasy", "science fiction", "mystery",
+        "historical fiction", "realistic fiction", "fable", "myth", "legend"
+      ],
+      "facts": [
+        {
+          "statement": "Fiction is literature created from the imagination; nonfiction is based on real events and facts",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Poetry uses rhythmic and often figurative language, organized into lines and stanzas rather than paragraphs",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Drama is literature written to be performed, consisting of dialogue and stage directions",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Fantasy involves magical or supernatural elements that do not exist in the real world",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Historical fiction is set in a real historical period and blends fictional characters or events with real history",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A biography tells the story of a person's life written by someone else; an autobiography is written by the person themselves",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A memoir focuses on specific memories or periods of the author's life, unlike an autobiography which covers their whole life",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A fable is a short story that teaches a moral lesson and often features talking animals, such as Aesop's fables",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "A myth is a traditional story that explains natural phenomena or a culture's beliefs, often involving gods and heroes",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A legend is a traditional story about a historical figure that may be partly true but has been exaggerated over time, such as King Arthur",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Science fiction imagines future technology, space travel, or scientific advances and explores their consequences",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Realistic fiction portrays characters and events that could happen in real life but are made up by the author",
+          "grade_min": 3,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "all stories that seem real are nonfiction",
+          "correct": "Realistic fiction features believable characters and settings but is still made up. Only nonfiction is based on actual facts and events."
+        },
+        {
+          "wrong": "biography and autobiography are the same",
+          "correct": "A biography is written by someone else about a person. An autobiography is written by the person about themselves."
+        },
+        {
+          "wrong": "poetry must rhyme",
+          "correct": "Many forms of poetry do not rhyme, including free verse, haiku, and blank verse. Rhyme is one tool poets use but not a requirement."
+        },
+        {
+          "wrong": "myths and legends are the same thing",
+          "correct": "Myths explain natural phenomena and feature gods or supernatural beings. Legends are based on real historical figures whose stories have been exaggerated."
+        },
+        {
+          "wrong": "fables and fairy tales are the same",
+          "correct": "Fables are short stories with a clear moral lesson, often with animal characters. Fairy tales involve magic and fantasy but don't always teach a moral."
+        }
+      ]
+    },
+    "narrative_elements": {
+      "keywords": [
+        "plot", "character", "setting", "theme", "conflict", "climax",
+        "resolution", "point of view", "narrator", "protagonist", "antagonist",
+        "rising action", "falling action", "exposition", "denouement"
+      ],
+      "facts": [
+        {
+          "statement": "Plot is the sequence of events in a story: exposition, rising action, climax, falling action, resolution",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The climax is the turning point or most intense moment of the story",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Setting is the time and place in which a story takes place",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Theme is the central message or underlying meaning of a story, not just what happens but what it means",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Conflict is the struggle between opposing forces; it can be internal (within a character) or external (with another character, nature, or society)",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The protagonist is the main character; the antagonist is the character or force that opposes the protagonist",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "First-person point of view uses 'I' and shows one character's thoughts; third-person can be limited (one character's perspective) or omniscient (all characters)",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The exposition introduces the characters, setting, and basic situation at the beginning of a story",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Rising action includes the events that build tension and lead up to the climax",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Falling action includes events that happen after the climax as the story moves toward resolution",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The resolution (denouement) is the final part of the story where loose ends are tied up and the conflict is resolved",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "theme and topic are the same thing",
+          "correct": "A topic is what a story is about (e.g., 'friendship'). A theme is the message about that topic (e.g., 'true friends support each other through hard times')."
+        },
+        {
+          "wrong": "the protagonist is always the hero and the antagonist is always the villain",
+          "correct": "The protagonist is simply the main character, and the antagonist is the opposing force. Neither needs to be morally good or evil."
+        },
+        {
+          "wrong": "the climax is the end of the story",
+          "correct": "The climax is the turning point, not the ending. After the climax comes the falling action and resolution."
+        },
+        {
+          "wrong": "all stories must have a happy resolution",
+          "correct": "Stories can end in many ways: happy, sad, ambiguous, or open-ended. A resolution simply means the conflict is addressed, not that everything works out."
+        }
+      ]
+    },
+    "point_of_view": {
+      "keywords": [
+        "point of view", "narrator", "first person", "second person",
+        "third person", "omniscient", "limited", "unreliable narrator",
+        "perspective", "POV"
+      ],
+      "facts": [
+        {
+          "statement": "First-person point of view uses pronouns 'I,' 'me,' and 'my' and tells the story from one character's perspective",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Second-person point of view uses the pronoun 'you' and addresses the reader directly, as in choose-your-own-adventure books",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Third-person limited tells the story from outside using 'he,' 'she,' or 'they,' but only shows one character's thoughts and feelings",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Third-person omniscient tells the story from outside and knows the thoughts and feelings of all characters",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "An unreliable narrator is a character whose telling of the story cannot be fully trusted because of bias, limited knowledge, or dishonesty",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The point of view an author chooses affects how much the reader knows about the characters and events",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "In first-person narration, the reader can only know what the narrator sees, thinks, and experiences",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Third-person objective point of view reports only what can be seen and heard, without revealing any character's thoughts",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "first person and third person limited give the same information",
+          "correct": "First person is told BY a character using 'I.' Third person limited is told by an outside narrator about one character using 'he/she.' The narrator voice differs."
+        },
+        {
+          "wrong": "omniscient means the narrator is a character in the story",
+          "correct": "An omniscient narrator is an all-knowing voice OUTSIDE the story who can see into every character's mind. They are not a character."
+        },
+        {
+          "wrong": "second-person point of view is very common in novels",
+          "correct": "Second-person POV is rare in novels. It is more common in choose-your-own-adventure books, instructions, and some experimental fiction."
+        }
+      ]
+    },
+    "characterization": {
+      "keywords": [
+        "character", "characterization", "direct characterization",
+        "indirect characterization", "flat character", "round character",
+        "static character", "dynamic character", "character trait",
+        "motivation", "dialogue"
+      ],
+      "facts": [
+        {
+          "statement": "Direct characterization is when the author explicitly tells the reader about a character's traits: 'She was brave and kind'",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Indirect characterization reveals a character through their actions, speech, thoughts, appearance, and what others say about them",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A round character is complex with many traits, like a real person; a flat character has only one or two traits",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A dynamic character changes and grows throughout the story; a static character remains the same",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Character motivation is the reason or driving force behind a character's actions and decisions",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Dialogue reveals character personality, relationships, and emotions through what characters say and how they say it",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A foil is a character who contrasts with the main character to highlight particular qualities of each",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "An archetype is a typical character type that recurs across many stories, such as the hero, mentor, trickster, or villain",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Character traits are qualities that describe how a character thinks, feels, and behaves, such as honest, shy, or courageous",
+          "grade_min": 2,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "a dynamic character is the same as an interesting character",
+          "correct": "A dynamic character is one who CHANGES during the story. A character can be interesting and entertaining but still be static (unchanged)."
+        },
+        {
+          "wrong": "flat characters are always bad writing",
+          "correct": "Flat characters serve a purpose in stories, especially minor characters. Not every character needs to be fully developed."
+        },
+        {
+          "wrong": "the antagonist is always a person",
+          "correct": "The antagonist can be a person, a force of nature, society, technology, or even the main character's own inner conflict."
+        }
+      ]
+    },
+    "figurative_language": {
+      "keywords": [
+        "figurative language", "idiom", "pun", "analogy", "allegory",
+        "allusion", "euphemism", "understatement", "tone", "mood"
+      ],
+      "facts": [
+        {
+          "statement": "Figurative language uses words in a non-literal way to create vivid images, comparisons, or effects",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "An idiom is a phrase whose meaning cannot be understood from the individual words: 'It's raining cats and dogs' means raining heavily",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A pun is a play on words that uses multiple meanings or similar sounds for humorous effect: 'Time flies like an arrow; fruit flies like a banana'",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "An analogy compares two different things to explain an idea: 'The heart is like a pump for blood'",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "An allegory is a story where characters and events represent deeper moral or political meanings, like George Orwell's 'Animal Farm'",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "An allusion is a brief reference to a well-known person, event, place, or work of art: 'He has the Midas touch'",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A euphemism is a mild or gentle word or phrase used in place of something harsh or unpleasant: 'passed away' instead of 'died'",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Understatement deliberately makes something seem less important or serious than it is, often for ironic or humorous effect",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Tone is the author's attitude toward the subject, revealed through word choice, and can be serious, humorous, sarcastic, or formal",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Mood is the emotional feeling a piece of writing creates in the reader, such as suspenseful, joyful, or gloomy",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "tone and mood are the same thing",
+          "correct": "Tone is the author's attitude (how the writer feels). Mood is the feeling the reader gets. A sarcastic tone might create an uneasy mood."
+        },
+        {
+          "wrong": "idioms mean exactly what the words say",
+          "correct": "Idioms have figurative meanings that differ from literal words. 'Break a leg' means 'good luck,' not to literally break a leg."
+        },
+        {
+          "wrong": "an allusion and an illusion are the same",
+          "correct": "An allusion is a literary reference to something well-known. An illusion is something that deceives the senses or mind."
+        },
+        {
+          "wrong": "all figurative language is the same as metaphor",
+          "correct": "Metaphor is one type of figurative language. The category also includes simile, personification, hyperbole, idiom, allusion, and many others."
+        }
+      ]
+    },
+    "literary_movements": {
+      "keywords": [
+        "literary movement", "romanticism", "realism", "modernism",
+        "Harlem Renaissance", "transcendentalism", "naturalism",
+        "Gothic", "Renaissance"
+      ],
+      "facts": [
+        {
+          "statement": "Romanticism (late 1700s-mid 1800s) emphasized emotion, imagination, nature, and individualism over reason and order",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Realism (mid-late 1800s) portrayed everyday life and ordinary people accurately, without romantic idealization",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Modernism (early 1900s) experimented with new forms, stream of consciousness, and reflected the disillusionment after World War I",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Harlem Renaissance (1920s-1930s) was a cultural movement celebrating African American art, music, and literature, featuring writers like Langston Hughes and Zora Neale Hurston",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Transcendentalism (1830s-1850s) emphasized self-reliance, intuition, and a spiritual connection with nature, led by Ralph Waldo Emerson and Henry David Thoreau",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Gothic literature features dark, mysterious settings, supernatural elements, and themes of fear and death, as in Poe's works",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Renaissance (1300s-1600s) was a cultural rebirth in Europe that revived classical learning and produced writers like Shakespeare and Dante",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Naturalism (late 1800s) depicted characters controlled by forces of nature, environment, and heredity, showing life without moral judgment",
+          "grade_min": 9,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "Romanticism is about romantic love stories",
+          "correct": "Literary Romanticism is about emotion, nature, imagination, and individuality — not specifically about love stories."
+        },
+        {
+          "wrong": "the Harlem Renaissance was only about music",
+          "correct": "The Harlem Renaissance included literature, poetry, visual art, theater, and music. Writers like Langston Hughes were central to the movement."
+        },
+        {
+          "wrong": "realism and naturalism are identical literary movements",
+          "correct": "Realism depicts everyday life accurately. Naturalism goes further, showing characters as products of heredity and environment, often with a deterministic worldview."
+        }
+      ]
+    },
+    "famous_works": {
+      "keywords": [
+        "Shakespeare", "To Kill a Mockingbird", "Romeo and Juliet",
+        "Charlotte's Web", "The Great Gatsby", "classic literature",
+        "children's literature", "novel", "play"
+      ],
+      "facts": [
+        {
+          "statement": "William Shakespeare wrote approximately 37 plays and 154 sonnets in the late 1500s and early 1600s",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Romeo and Juliet' by Shakespeare is a tragedy about two young lovers from feuding families in Verona, Italy",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Charlotte's Web' by E.B. White tells the story of a pig named Wilbur and a spider named Charlotte, exploring themes of friendship and life cycles",
+          "grade_min": 2,
+          "grade_max": 8
+        },
+        {
+          "statement": "'To Kill a Mockingbird' by Harper Lee explores racial injustice in the American South through the eyes of Scout Finch",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "'The Great Gatsby' by F. Scott Fitzgerald depicts the American Dream and its corruption during the Jazz Age of the 1920s",
+          "grade_min": 9,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Where the Wild Things Are' by Maurice Sendak is a picture book about a boy named Max who sails to an island of wild creatures",
+          "grade_min": 0,
+          "grade_max": 4
+        },
+        {
+          "statement": "'The Diary of a Young Girl' by Anne Frank is a nonfiction diary of a Jewish girl hiding from the Nazis during World War II",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "'A Wrinkle in Time' by Madeleine L'Engle is a science fantasy novel about a girl who travels through space and time to rescue her father",
+          "grade_min": 4,
+          "grade_max": 9
+        },
+        {
+          "statement": "Dr. Seuss (Theodor Geisel) wrote 'The Cat in the Hat' and 'Green Eggs and Ham,' using simple vocabulary and rhyme to encourage early reading",
+          "grade_min": 0,
+          "grade_max": 4
+        },
+        {
+          "statement": "'The Odyssey' by Homer is an ancient Greek epic poem about Odysseus's ten-year journey home after the Trojan War",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "Shakespeare wrote novels",
+          "correct": "Shakespeare wrote plays (dramas) and sonnets (poems). He did not write novels. The novel form became popular later."
+        },
+        {
+          "wrong": "'To Kill a Mockingbird' is a true story",
+          "correct": "'To Kill a Mockingbird' is a novel (fiction). While inspired by Harper Lee's childhood in Alabama, the characters and events are fictional."
+        },
+        {
+          "wrong": "Anne Frank's diary is fiction",
+          "correct": "'The Diary of a Young Girl' is a real diary written by Anne Frank during her time in hiding. It is nonfiction."
+        }
+      ]
+    },
+    "poetry_forms": {
+      "keywords": [
+        "poem", "stanza", "rhyme", "meter", "sonnet", "haiku",
+        "free verse", "limerick", "ballad", "verse", "couplet",
+        "rhythm", "rhyme scheme"
+      ],
+      "facts": [
+        {
+          "statement": "A stanza is a group of lines in a poem, similar to a paragraph in prose",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A haiku is a three-line Japanese poem with 5 syllables, 7 syllables, and 5 syllables, traditionally about nature",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Free verse is poetry without a regular rhyme scheme or meter, allowing the poet freedom of expression",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A sonnet is a 14-line poem, often in iambic pentameter; Shakespearean sonnets have three quatrains and a couplet",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A limerick is a humorous five-line poem with an AABBA rhyme scheme",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "A couplet is two consecutive lines of poetry that rhyme: 'Roses are red, violets are blue'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Rhyme scheme is the pattern of rhyming words at the end of each line, labeled with letters (ABAB, ABBA, AABB)",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Meter is the rhythmic pattern of stressed and unstressed syllables in poetry; iambic pentameter has five pairs of unstressed/stressed syllables per line",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A ballad is a narrative poem that tells a story, often meant to be sung, with a regular rhyme and rhythm",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "a haiku must be about nature",
+          "correct": "Traditional Japanese haiku focus on nature, but modern English-language haiku can be about any topic. The 5-7-5 syllable structure is the defining feature."
+        },
+        {
+          "wrong": "all sonnets follow the same rhyme scheme",
+          "correct": "Shakespearean (English) sonnets use ABABCDCDEFEFGG. Petrarchan (Italian) sonnets use ABBAABBA for the octave plus varied sestet patterns."
+        },
+        {
+          "wrong": "free verse means the poem has no structure at all",
+          "correct": "Free verse lacks regular rhyme or meter but still uses line breaks, imagery, rhythm, and other literary devices deliberately."
+        },
+        {
+          "wrong": "stanza and paragraph mean the same thing",
+          "correct": "A stanza is a grouping of lines in poetry. A paragraph is a grouping of sentences in prose. While similar in purpose, they belong to different forms."
+        }
+      ]
+    }
+  }
+}

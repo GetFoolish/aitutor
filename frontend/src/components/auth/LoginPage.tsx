@@ -17,12 +17,13 @@ const LoginPage: React.FC = () => {
   const [showSignupForm, setShowSignupForm] = useState(false);
   const [setupToken, setSetupToken] = useState<string>('');
 
-  // If already authenticated, redirect to home
+  // If already authenticated, show option to continue or switch to dev mode
+  const [showAuthRedirect, setShowAuthRedirect] = useState(false);
   React.useEffect(() => {
     if (isAuthenticated) {
-      history.replace('/app');
+      setShowAuthRedirect(true);
     }
-  }, [isAuthenticated, history]);
+  }, [isAuthenticated]);
 
   // Check if we're returning from OAuth callback
   useEffect(() => {
@@ -84,6 +85,79 @@ const LoginPage: React.FC = () => {
           history.replace('/app/login');
         }}
       />
+    );
+  }
+
+  if (showAuthRedirect) {
+    return (
+      <div className="auth-container">
+        <BackgroundShapes />
+        <div className="auth-card">
+          <h1>You're signed in</h1>
+          <p style={{ marginBottom: '24px' }}>Where do you want to go?</p>
+
+          <button
+            onClick={() => history.replace('/app')}
+            style={{
+              width: '100%',
+              padding: '14px 20px',
+              border: '3px solid #000',
+              background: '#FFD93D',
+              fontWeight: 900,
+              fontSize: '14px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              cursor: 'pointer',
+              boxShadow: '3px 3px 0 #000',
+              marginBottom: '12px',
+            }}
+          >
+            Continue Learning
+          </button>
+
+          <button
+            onClick={() => history.push('/app/dev-login')}
+            style={{
+              width: '100%',
+              padding: '14px 20px',
+              border: '3px solid #000',
+              background: '#FF6B6B',
+              color: '#fff',
+              fontWeight: 900,
+              fontSize: '14px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              cursor: 'pointer',
+              boxShadow: '3px 3px 0 #000',
+              marginBottom: '12px',
+            }}
+          >
+            Dev Mode — Test Any Subject + Age
+          </button>
+
+          <button
+            onClick={() => {
+              localStorage.removeItem('jwt_token');
+              sessionStorage.clear();
+              window.location.reload();
+            }}
+            style={{
+              width: '100%',
+              padding: '10px 20px',
+              border: '3px solid #000',
+              background: '#fff',
+              fontWeight: 700,
+              fontSize: '12px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              cursor: 'pointer',
+              boxShadow: '2px 2px 0 #000',
+            }}
+          >
+            Sign Out
+          </button>
+        </div>
+      </div>
     );
   }
 
@@ -165,6 +239,27 @@ const LoginPage: React.FC = () => {
 
         {/* Email/Password Form */}
         <EmailPasswordForm onAuthSuccess={handleAuthSuccess} />
+
+        {/* Dev Quick-Test Link */}
+        <button
+          onClick={() => history.push('/app/dev-login')}
+          style={{
+            marginTop: '24px',
+            padding: '10px 20px',
+            border: '3px solid #000',
+            background: '#FF6B6B',
+            color: '#fff',
+            fontWeight: 900,
+            fontSize: '12px',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            cursor: 'pointer',
+            boxShadow: '3px 3px 0 #000',
+            width: '100%',
+          }}
+        >
+          Dev Mode — Test Any Subject + Age
+        </button>
       </div>
     </div>
   );

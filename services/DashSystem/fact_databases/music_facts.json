@@ -1,0 +1,197 @@
+{
+  "meta": {"version": 1, "subject": "music", "last_updated": "2026-02-07"},
+  "facts_by_topic": {
+    "rhythm_notation": {
+      "keywords": ["rhythm", "note value", "whole note", "half note", "quarter note", "eighth note", "sixteenth note", "rest", "dotted note", "tie", "time signature", "measure", "bar line", "beat", "tempo"],
+      "facts": [
+        {"statement": "A whole note lasts 4 beats in 4/4 time, a half note lasts 2 beats, a quarter note lasts 1 beat, an eighth note lasts half a beat, and a sixteenth note lasts a quarter of a beat", "grade_min": 3, "grade_max": 12},
+        {"statement": "A dot placed after a note increases its duration by half of its original value; for example, a dotted half note lasts 3 beats (2 + 1) in 4/4 time", "grade_min": 4, "grade_max": 12},
+        {"statement": "A tie is a curved line connecting two notes of the same pitch, combining their durations into a single sustained sound without re-attacking the note", "grade_min": 4, "grade_max": 12},
+        {"statement": "Rests indicate silence in music and correspond to note values: a whole rest (4 beats), half rest (2 beats), quarter rest (1 beat), eighth rest (half beat), and sixteenth rest (quarter beat)", "grade_min": 3, "grade_max": 12},
+        {"statement": "A time signature consists of two numbers: the top number indicates how many beats are in each measure, and the bottom number indicates which note value receives one beat", "grade_min": 4, "grade_max": 12},
+        {"statement": "In 4/4 time (also called common time), there are 4 beats per measure and the quarter note gets one beat; it is the most frequently used time signature in Western music", "grade_min": 3, "grade_max": 12},
+        {"statement": "In 6/8 time, there are 6 eighth-note beats per measure, typically grouped into two sets of three, creating a compound duple feel with two main pulses", "grade_min": 6, "grade_max": 12},
+        {"statement": "An upbeat (also called anacrusis or pickup) is one or more notes that occur before the first full measure of a piece, leading into the downbeat", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "a dotted note is held for double its original value", "correct": "A dot adds half the original value, not double. A dotted half note equals 3 beats (2 + 1), not 4 beats"},
+        {"wrong": "a tie and a slur are the same thing", "correct": "A tie connects two notes of the same pitch to combine their durations, while a slur connects notes of different pitches to indicate they should be played smoothly (legato)"},
+        {"wrong": "the bottom number in a time signature tells you the tempo", "correct": "The bottom number indicates which note value gets one beat (e.g., 4 means the quarter note). Tempo (speed) is indicated separately by a tempo marking or metronome number"},
+        {"wrong": "6/8 time is the same as 3/4 time because both have the same total number of eighth notes per measure", "correct": "Although both 6/8 and 3/4 contain six eighth notes per measure, they have different groupings: 6/8 groups into two groups of three (compound duple), while 3/4 groups into three groups of two (simple triple)"},
+        {"wrong": "a whole rest always means rest for an entire whole note duration", "correct": "While a whole rest equals 4 beats in 4/4 time, it is also used by convention to indicate a full measure of rest in any time signature, even 3/4 or 5/4"}
+      ]
+    },
+    "pitch_scales": {
+      "keywords": ["treble clef", "bass clef", "staff", "sharp", "flat", "natural", "major scale", "minor scale", "chromatic scale", "key signature", "interval", "half step", "whole step", "pitch", "ledger line"],
+      "facts": [
+        {"statement": "The musical staff consists of five lines and four spaces, each representing a different pitch; the treble clef (G clef) and bass clef (F clef) assign specific note names to these lines and spaces", "grade_min": 3, "grade_max": 12},
+        {"statement": "A sharp raises a note by one half step, a flat lowers it by one half step, and a natural sign cancels a previous sharp or flat, returning the note to its unaltered pitch", "grade_min": 4, "grade_max": 12},
+        {"statement": "A major scale follows the pattern of whole and half steps: W-W-H-W-W-W-H (where W = whole step and H = half step), producing the familiar do-re-mi-fa-sol-la-ti-do sound", "grade_min": 4, "grade_max": 12},
+        {"statement": "The natural minor scale follows the pattern W-H-W-W-H-W-W, and every major key has a relative minor key that shares the same key signature but starts on the 6th degree of the major scale", "grade_min": 6, "grade_max": 12},
+        {"statement": "The chromatic scale includes all twelve pitches within an octave, each separated by a half step, and is the foundation from which all other Western scales are derived", "grade_min": 5, "grade_max": 12},
+        {"statement": "Key signatures appear at the beginning of each staff line and indicate which notes are consistently sharped or flatted throughout a piece, defining its key", "grade_min": 4, "grade_max": 12},
+        {"statement": "An interval is the distance between two pitches; common intervals include unison (same note), 2nd, 3rd, 4th, 5th, 6th, 7th, and octave (8th), each with a characteristic sound quality", "grade_min": 5, "grade_max": 12},
+        {"statement": "An octave is the interval between one pitch and the next pitch with the same letter name, where the higher note vibrates at exactly twice the frequency of the lower note", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "sharps and flats are different notes on a piano", "correct": "Sharps and flats can refer to the same pitch (enharmonic equivalents); for example, F-sharp and G-flat are the same key on the piano but are named differently depending on the musical context"},
+        {"wrong": "a major scale and a minor scale use completely different notes", "correct": "A major scale and its relative minor scale use the exact same set of notes but start on different pitches; for example, C major and A minor both use only the white keys on a piano"},
+        {"wrong": "the treble clef is for the right hand and bass clef is for the left hand", "correct": "While pianists often read treble clef with the right hand and bass clef with the left, the clefs are actually defined by pitch range. High-pitched instruments like flute use treble clef; low-pitched instruments like tuba use bass clef"},
+        {"wrong": "a half step is half of a step on the scale", "correct": "A half step is the smallest interval in Western music, the distance between two adjacent keys on a piano (e.g., E to F, or C to C-sharp). A whole step equals two half steps"},
+        {"wrong": "there are only two types of scales: major and minor", "correct": "While major and minor are the most common, there are many other scale types including pentatonic, blues, whole-tone, modes (Dorian, Mixolydian, etc.), and scales from other musical traditions"}
+      ]
+    },
+    "string_instruments": {
+      "keywords": ["violin", "viola", "cello", "double bass", "contrabass", "bow", "strings", "pizzicato", "vibrato", "bowing", "plucking", "bridge", "fingerboard", "tuning", "rosin"],
+      "facts": [
+        {"statement": "The four main orchestral string instruments, from highest to lowest pitch, are the violin, viola, cello, and double bass (contrabass)", "grade_min": 3, "grade_max": 12},
+        {"statement": "String instruments produce sound when the player draws a bow across the strings (arco) or plucks them with the fingers (pizzicato), causing the strings to vibrate", "grade_min": 3, "grade_max": 12},
+        {"statement": "The violin is the smallest and highest-pitched member of the string family, with four strings tuned to G3, D4, A4, and E5 from lowest to highest", "grade_min": 5, "grade_max": 12},
+        {"statement": "The viola is slightly larger than the violin and tuned a fifth lower (C3, G3, D4, A4), giving it a warmer, darker tone; it uses the alto clef for its music", "grade_min": 6, "grade_max": 12},
+        {"statement": "The cello is held between the player's knees with an endpin resting on the floor, and its four strings are tuned to C2, G2, D3, and A3, an octave below the viola", "grade_min": 5, "grade_max": 12},
+        {"statement": "The double bass is the largest and lowest-pitched bowed string instrument in the orchestra, typically tuned to E1, A1, D2, and G2, and it can be played standing or seated on a tall stool", "grade_min": 5, "grade_max": 12},
+        {"statement": "Vibrato is a technique in which string players rapidly oscillate the pitch of a note by rocking their left-hand finger back and forth on the string, adding warmth and expressiveness to the tone", "grade_min": 6, "grade_max": 12},
+        {"statement": "The string section is the largest section of a full symphony orchestra, typically comprising about 60 of the roughly 100 total musicians", "grade_min": 4, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the viola and violin are the same instrument", "correct": "The viola is larger than the violin, tuned a perfect fifth lower (C-G-D-A instead of G-D-A-E), uses the alto clef, and has a distinctly darker, mellower tone quality"},
+        {"wrong": "the cello is just a big violin", "correct": "While the cello belongs to the same family, it is held upright between the knees (not under the chin), has a much lower range, uses bass and tenor clefs, and has a rich, deep tone quality unlike the violin"},
+        {"wrong": "pizzicato means playing very softly", "correct": "Pizzicato is a technique of plucking the strings with the fingers instead of using the bow. Playing softly is indicated by the dynamic marking 'piano' (p)"},
+        {"wrong": "all string instruments have four strings", "correct": "While violin, viola, and cello each have four strings, the double bass can have four or five strings (a five-string bass adds a low C or B string), and other string instruments like guitars have six strings"}
+      ]
+    },
+    "woodwind_instruments": {
+      "keywords": ["flute", "clarinet", "oboe", "bassoon", "saxophone", "reed", "single reed", "double reed", "mouthpiece", "woodwind", "embouchure", "piccolo", "English horn", "contrabassoon"],
+      "facts": [
+        {"statement": "Woodwind instruments produce sound by splitting a stream of air, either across an edge (flute), against a single reed (clarinet, saxophone), or by vibrating two reeds together (oboe, bassoon)", "grade_min": 4, "grade_max": 12},
+        {"statement": "The flute is a woodwind instrument even though modern flutes are made of metal, because classification is based on how sound is produced (air blown across an edge), not the material", "grade_min": 4, "grade_max": 12},
+        {"statement": "The clarinet uses a single reed attached to a mouthpiece and has one of the widest pitch ranges of any orchestral woodwind, spanning nearly four octaves", "grade_min": 5, "grade_max": 12},
+        {"statement": "The oboe is a double-reed instrument with a penetrating, nasal tone; the principal oboist traditionally gives the tuning note A (440 Hz) to the orchestra before a performance", "grade_min": 5, "grade_max": 12},
+        {"statement": "The bassoon is the bass voice of the double-reed family, known for its distinctive rich tone, and its tube is approximately 8 feet long, doubled over on itself to make it manageable", "grade_min": 5, "grade_max": 12},
+        {"statement": "The piccolo is the highest-pitched instrument in the standard orchestra, sounding one octave higher than the flute, and can be heard above the full orchestra despite its small size", "grade_min": 5, "grade_max": 12},
+        {"statement": "The saxophone, invented by Adolphe Sax around 1840, uses a single reed like the clarinet but has a conical brass body; it is common in jazz and concert bands but rarely used in symphony orchestras", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the flute is not a woodwind because it is made of metal", "correct": "Instrument classification is based on how sound is produced, not material. The flute is a woodwind because its sound is produced by blowing air across an edge (the embouchure hole), and early flutes were indeed made of wood"},
+        {"wrong": "the saxophone is a brass instrument because it is made of brass", "correct": "The saxophone is classified as a woodwind because it uses a single reed to produce sound. Instrument families are defined by sound production method, not construction material"},
+        {"wrong": "all woodwind instruments use reeds", "correct": "The flute and piccolo are woodwind instruments that do not use reeds. They produce sound by directing a stream of air across a sharp edge (the embouchure hole)"},
+        {"wrong": "the oboe and clarinet use the same kind of reed", "correct": "The clarinet uses a single reed attached to a mouthpiece, while the oboe uses a double reed (two thin pieces of cane bound together) that the player blows directly between"},
+        {"wrong": "the English horn is a type of horn (brass instrument)", "correct": "Despite its name, the English horn is a double-reed woodwind instrument in the oboe family, pitched a fifth below the oboe. It is neither English in origin nor a horn"}
+      ]
+    },
+    "brass_instruments": {
+      "keywords": ["trumpet", "trombone", "French horn", "tuba", "brass", "valve", "slide", "mouthpiece", "embouchure", "bell", "buzz", "mute", "bugle", "cornet"],
+      "facts": [
+        {"statement": "Brass instruments produce sound when the player buzzes their lips into a cup-shaped mouthpiece, creating vibrations that are amplified by the instrument's tubing and bell", "grade_min": 3, "grade_max": 12},
+        {"statement": "The trumpet is the highest-pitched standard brass instrument in the orchestra, and players change notes by adjusting their lip tension (embouchure) and pressing three valves that redirect air through extra tubing", "grade_min": 4, "grade_max": 12},
+        {"statement": "The trombone is unique among brass instruments because it uses a slide instead of valves to change pitch; extending the slide lengthens the air column, lowering the pitch", "grade_min": 4, "grade_max": 12},
+        {"statement": "The French horn has approximately 12 to 13 feet of coiled tubing and is considered one of the most difficult orchestral instruments to play due to its small mouthpiece and close harmonic spacing", "grade_min": 5, "grade_max": 12},
+        {"statement": "The tuba is the largest and lowest-pitched brass instrument in the orchestra, providing the bass foundation for the brass section with tubing that can exceed 16 feet in length", "grade_min": 4, "grade_max": 12},
+        {"statement": "Valves on brass instruments were invented in the early 19th century; before valves, brass instruments like the natural horn and natural trumpet could only play notes from the harmonic series", "grade_min": 7, "grade_max": 12},
+        {"statement": "Brass players use mutes, which are inserted into or placed over the bell, to change the instrument's tone color, creating effects from soft and muffled to bright and buzzy", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "brass instruments change pitch only by pressing valves", "correct": "Brass players primarily change pitch through adjustments in lip tension (embouchure) and air speed. Valves or slides extend the available notes, but most pitch control comes from the player's lips, which select different notes in the harmonic series"},
+        {"wrong": "the trombone has valves like other brass instruments", "correct": "The trombone uses a slide mechanism to change pitch by lengthening or shortening its tubing. Some trombones have a valve attachment for extended low range, but the primary pitch-changing mechanism is the slide"},
+        {"wrong": "the French horn is called 'French' because it was invented in France", "correct": "The modern orchestral horn evolved primarily in Germany. The term 'French horn' is mainly used in English-speaking countries; in most other languages, it is simply called 'horn' (Waldhorn in German, meaning 'forest horn')"},
+        {"wrong": "bigger brass instruments are always louder", "correct": "While the tuba is the largest brass instrument, the trumpet can produce greater volume and penetrating power relative to its size. Loudness depends on the player, technique, and acoustic context, not simply instrument size"}
+      ]
+    },
+    "percussion_instruments": {
+      "keywords": ["timpani", "snare drum", "bass drum", "cymbals", "xylophone", "marimba", "triangle", "percussion", "pitched", "unpitched", "mallet", "drum", "tambourine", "glockenspiel"],
+      "facts": [
+        {"statement": "Percussion instruments are divided into two categories: pitched (definite pitch, like timpani, xylophone, and marimba) and unpitched (indefinite pitch, like snare drum, bass drum, and cymbals)", "grade_min": 3, "grade_max": 12},
+        {"statement": "Timpani (kettledrums) are large copper bowls with a drumhead stretched across the top, and they can be tuned to specific pitches using a foot pedal or hand-turned screws", "grade_min": 4, "grade_max": 12},
+        {"statement": "The snare drum gets its characteristic bright, rattling sound from a set of metal wires (snares) stretched across the bottom drumhead that vibrate against it when the top head is struck", "grade_min": 4, "grade_max": 12},
+        {"statement": "The xylophone has wooden bars arranged like a piano keyboard and produces a bright, sharp tone when struck with hard mallets, while the marimba has a warmer, more resonant sound with metal resonator tubes beneath each bar", "grade_min": 4, "grade_max": 12},
+        {"statement": "The glockenspiel (German for 'play of bells') has metal bars instead of wooden ones, producing a bright, bell-like tone that can cut through the full orchestra", "grade_min": 5, "grade_max": 12},
+        {"statement": "A typical symphony orchestra has one principal timpanist who plays a set of four or five timpani, plus two or more additional percussionists who share the remaining percussion instruments", "grade_min": 5, "grade_max": 12},
+        {"statement": "The triangle, despite being one of the simplest instruments, can be clearly heard over the entire orchestra due to its high overtone content and piercing metallic tone", "grade_min": 4, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "all drums are unpitched", "correct": "Timpani (kettledrums) are tuned to definite pitches and can play melodies. Steel drums (pans) also produce specific pitches. Only some drums, like snare drums and bass drums, are considered unpitched"},
+        {"wrong": "the xylophone and marimba are the same instrument", "correct": "Though both have tuned bars struck with mallets, the xylophone has wooden bars that produce a bright, penetrating sound, while the marimba has wider bars with resonator tubes for a warmer, more mellow tone, and it has a lower range"},
+        {"wrong": "percussion is just about keeping the beat", "correct": "Orchestral percussionists contribute melody (xylophone, marimba, timpani), color and texture (cymbals, triangle, tam-tam), dramatic effects, and rhythmic support. Percussion parts are often among the most musically complex"},
+        {"wrong": "the glockenspiel and xylophone are the same instrument", "correct": "The glockenspiel has metal bars and produces a bright, bell-like tone in a higher register, while the xylophone has wooden bars and produces a sharper, drier tone in a lower register"}
+      ]
+    },
+    "orchestra_structure": {
+      "keywords": ["orchestra", "symphony", "conductor", "concertmaster", "section", "seating", "ensemble", "score", "baton", "podium", "philharmonic", "chamber orchestra", "full orchestra"],
+      "facts": [
+        {"statement": "A full symphony orchestra typically has four main sections: strings, woodwinds, brass, and percussion, with approximately 70 to 100 musicians in total", "grade_min": 3, "grade_max": 12},
+        {"statement": "The conductor leads the orchestra by setting the tempo, cueing entrances, shaping dynamics and phrasing, and interpreting the composer's musical intentions using gestures and a baton", "grade_min": 3, "grade_max": 12},
+        {"statement": "The concertmaster is the lead first violinist who sits in the first chair to the conductor's left, tunes the orchestra, and serves as a liaison between the conductor and musicians", "grade_min": 5, "grade_max": 12},
+        {"statement": "In standard orchestral seating, the strings are placed closest to the audience in a semicircle, with woodwinds behind them, then brass, and percussion at the back", "grade_min": 4, "grade_max": 12},
+        {"statement": "A symphony is a large-scale composition for orchestra, typically in four movements, while an orchestra is the ensemble of musicians that performs it", "grade_min": 5, "grade_max": 12},
+        {"statement": "A chamber orchestra is a smaller ensemble of roughly 25 to 50 musicians, often performing works from the Baroque and Classical periods that were written for smaller forces", "grade_min": 6, "grade_max": 12},
+        {"statement": "The terms philharmonic and symphony orchestra refer to the same type of ensemble; the different names are used for branding, especially when a city has more than one orchestra", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the conductor just waves their arms to keep time", "correct": "The conductor's role includes setting and adjusting tempo, cueing musicians' entrances, shaping dynamics and expression, balancing the sound of different sections, and interpreting the overall musical vision of the work"},
+        {"wrong": "a symphony and an orchestra are the same thing", "correct": "An orchestra is the group of musicians (the ensemble), while a symphony is a type of musical composition (usually in four movements) that an orchestra performs. The term 'symphony orchestra' combines both concepts"},
+        {"wrong": "the orchestra always has the same number of players", "correct": "Orchestra size varies widely depending on the era and piece being performed. A Baroque work might need 25-30 players, a Classical symphony 40-60, and a large Romantic symphony 100 or more"},
+        {"wrong": "all orchestras are seated the same way", "correct": "While there is a standard modern arrangement, seating varies. Some conductors place second violins on the right (German seating) rather than behind the firsts (American seating), and other sections may shift depending on the repertoire"}
+      ]
+    },
+    "music_history_periods": {
+      "keywords": ["Medieval", "Renaissance", "Baroque", "Classical", "Romantic", "Modern", "Contemporary", "period", "era", "music history", "composer", "style", "evolution", "century"],
+      "facts": [
+        {"statement": "The Medieval period (approximately 500-1400) saw the development of musical notation and Gregorian chant, which was monophonic (a single unaccompanied melody line) sacred music of the Catholic Church", "grade_min": 6, "grade_max": 12},
+        {"statement": "The Renaissance period (approximately 1400-1600) is characterized by polyphonic choral music, where multiple independent vocal lines weave together, with composers like Josquin des Prez and Palestrina", "grade_min": 7, "grade_max": 12},
+        {"statement": "The Baroque period (approximately 1600-1750) introduced opera, the concerto, and the fugue, with key composers including Johann Sebastian Bach, George Frideric Handel, and Antonio Vivaldi", "grade_min": 5, "grade_max": 12},
+        {"statement": "The Classical period (approximately 1750-1820) emphasized clarity, balance, and formal structure, with the development of the symphony and string quartet by composers like Haydn, Mozart, and early Beethoven", "grade_min": 5, "grade_max": 12},
+        {"statement": "The Romantic period (approximately 1820-1900) valued emotional expression, expanded orchestras, virtuoso performers, and nationalist themes, with composers including Chopin, Brahms, Tchaikovsky, and Wagner", "grade_min": 5, "grade_max": 12},
+        {"statement": "The Modern period (approximately 1900-present) includes diverse movements such as Impressionism (Debussy, Ravel), Expressionism (Schoenberg), Neoclassicism (Stravinsky), Minimalism (Philip Glass, Steve Reich), and electronic music", "grade_min": 7, "grade_max": 12},
+        {"statement": "Johann Sebastian Bach (1685-1750) is widely regarded as one of the greatest composers in Western music history, mastering counterpoint and composing over 1,000 works including the Brandenburg Concertos and The Well-Tempered Clavier", "grade_min": 5, "grade_max": 12},
+        {"statement": "Wolfgang Amadeus Mozart (1756-1791) was a child prodigy who began composing at age five and produced over 600 works in his short life, including symphonies, operas, concertos, and chamber music", "grade_min": 4, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Classical music means all orchestral music from any era", "correct": "In musicology, the Classical period refers specifically to the era from approximately 1750 to 1820 (Haydn, Mozart, Beethoven). The broader term 'classical music' (lowercase) is an informal label for the entire Western art music tradition"},
+        {"wrong": "Bach and Mozart were contemporaries who lived at the same time", "correct": "Bach (1685-1750) was a Baroque composer, while Mozart (1756-1791) was a Classical period composer. Bach died six years before Mozart was born, and they represent different musical eras and styles"},
+        {"wrong": "music always progressed and improved from one period to the next", "correct": "Music changed stylistically across periods, but each era had its own sophistication. Medieval and Renaissance music featured complex rhythms and polyphony that were later simplified in other ways during the Classical period"},
+        {"wrong": "the Romantic period was about love songs", "correct": "While love was one theme, the Romantic period (1820-1900) was defined by heightened emotional expression of all kinds, nationalism, individualism, nature, mythology, and a focus on the subjective experience of the artist"},
+        {"wrong": "modern classical music is not real classical music", "correct": "Composers like Stravinsky, Bartok, Shostakovich, Copland, and Philip Glass are part of the continuing tradition of Western art music, using orchestras and classical forms while expanding harmonic, rhythmic, and timbral possibilities"}
+      ]
+    },
+    "famous_compositions": {
+      "keywords": ["Beethoven", "Symphony No. 5", "Vivaldi", "Four Seasons", "Mozart", "Handel", "Messiah", "Tchaikovsky", "Nutcracker", "Dvorak", "New World", "Stravinsky", "Gershwin", "Rimsky-Korsakov", "Copland"],
+      "facts": [
+        {"statement": "Beethoven's Symphony No. 5 in C minor (1808) opens with one of the most famous four-note motifs in all of music (short-short-short-long), which unifies the entire first movement through development and transformation", "grade_min": 4, "grade_max": 12},
+        {"statement": "Vivaldi's The Four Seasons (1725) is a set of four violin concertos, each depicting a season of the year and accompanied by illustrative sonnets, making it one of the earliest examples of program music", "grade_min": 5, "grade_max": 12},
+        {"statement": "Handel's Messiah (1741), including the famous Hallelujah chorus, is an English-language oratorio based on the life of Jesus Christ and is traditionally performed during the Christmas season and at Easter", "grade_min": 5, "grade_max": 12},
+        {"statement": "Tchaikovsky's ballet The Nutcracker (1892) has become one of the most widely performed ballets in the world, with its Suite featuring iconic pieces like the Dance of the Sugar Plum Fairy and the Waltz of the Flowers", "grade_min": 3, "grade_max": 12},
+        {"statement": "Dvorak's Symphony No. 9 'From the New World' (1893) was composed during his time in the United States and incorporates melodies inspired by African American spirituals and Native American music alongside Czech folk elements", "grade_min": 6, "grade_max": 12},
+        {"statement": "Stravinsky's The Rite of Spring (1913) caused a near-riot at its Paris premiere due to its dissonant harmonies, pounding irregular rhythms, and Nijinsky's controversial choreography, but it became a landmark of modern music", "grade_min": 7, "grade_max": 12},
+        {"statement": "Gershwin's Rhapsody in Blue (1924) blends elements of classical music and jazz, featuring a famous opening clarinet glissando, and helped bridge the gap between popular and concert music in America", "grade_min": 6, "grade_max": 12},
+        {"statement": "Rimsky-Korsakov's Scheherazade (1888) is an orchestral suite based on One Thousand and One Nights, featuring a recurring solo violin theme representing the storyteller Scheherazade", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Beethoven was deaf his entire life and never heard his own music", "correct": "Beethoven's hearing loss was gradual. He had full hearing during his early career and composed many masterworks before becoming profoundly deaf around 1814. His early and middle-period works were composed while he still had some hearing"},
+        {"wrong": "Fur Elise was Beethoven's most important composition", "correct": "While Fur Elise is popular, Beethoven's most significant works include his nine symphonies, five piano concertos, 32 piano sonatas, string quartets, and his opera Fidelio, which profoundly shaped Western music"},
+        {"wrong": "The Rite of Spring is about the beginning of spring", "correct": "The Rite of Spring depicts a pagan ritual in prehistoric Russia in which a young girl is chosen to dance herself to death as a sacrifice to ensure the return of spring. It is a dramatic and violent narrative, not a pastoral celebration"},
+        {"wrong": "Vivaldi's Four Seasons is a symphony", "correct": "The Four Seasons is a set of four violin concertos (solo instrument with orchestra), not a symphony. Each concerto features a solo violin and is in three movements (fast-slow-fast), which is the standard concerto form"},
+        {"wrong": "Gershwin's Rhapsody in Blue is a jazz piece, not classical", "correct": "Rhapsody in Blue is a deliberate fusion of jazz and classical elements, written for solo piano and jazz band (later orchestrated for symphony orchestra). It occupies a unique position between genres and is performed in both jazz and classical contexts"}
+      ]
+    },
+    "music_theory_basics": {
+      "keywords": ["chord", "harmony", "melody", "dynamics", "tempo", "forte", "piano", "allegro", "adagio", "crescendo", "decrescendo", "form", "sonata", "rondo", "ABA", "key"],
+      "facts": [
+        {"statement": "A melody is a sequence of single notes perceived as a coherent musical line, while harmony refers to the simultaneous sounding of two or more notes, creating chords that support and enrich the melody", "grade_min": 3, "grade_max": 12},
+        {"statement": "A chord is formed by playing three or more notes simultaneously; the most basic chords are triads, which consist of three notes built by stacking intervals of a third (e.g., C-E-G forms a C major triad)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Dynamic markings indicate loudness levels in music: pianissimo (pp) means very soft, piano (p) means soft, mezzo-forte (mf) means moderately loud, forte (f) means loud, and fortissimo (ff) means very loud", "grade_min": 4, "grade_max": 12},
+        {"statement": "A crescendo is a gradual increase in loudness, while a decrescendo (or diminuendo) is a gradual decrease; both are essential tools for creating musical expression and drama", "grade_min": 4, "grade_max": 12},
+        {"statement": "Common tempo markings from slow to fast include: largo (very slow), adagio (slow), andante (walking pace), moderato (moderate), allegro (fast), vivace (lively), and presto (very fast)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Sonata form, used in many first movements of symphonies and sonatas, has three main sections: exposition (themes presented), development (themes transformed and explored), and recapitulation (themes return)", "grade_min": 7, "grade_max": 12},
+        {"statement": "Rondo form follows an ABACA pattern (or similar) where the main theme (A) alternates with contrasting episodes (B, C), creating a satisfying sense of return and variety", "grade_min": 7, "grade_max": 12},
+        {"statement": "Ternary form (ABA) is one of the most common musical structures, consisting of an opening section, a contrasting middle section, and a return of the opening material, providing both contrast and unity", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "piano (the dynamic marking) refers to the instrument", "correct": "In music, 'piano' (p) is an Italian word meaning 'soft' and is used as a dynamic marking. The piano instrument got its full name 'pianoforte' because it could play both soft (piano) and loud (forte), unlike the earlier harpsichord"},
+        {"wrong": "a chord is any two notes played together", "correct": "Two notes played together form an interval (or dyad). A chord requires a minimum of three notes sounded simultaneously, with the most common type being a triad (three notes stacked in thirds)"},
+        {"wrong": "tempo and rhythm are the same thing", "correct": "Tempo is the overall speed of the music (how fast or slow the beats occur), while rhythm refers to the pattern of long and short note durations within the beats. A piece can have complex rhythms at any tempo"},
+        {"wrong": "allegro means happy and adagio means sad", "correct": "Allegro means fast (literally 'cheerful' in Italian) and adagio means slow (literally 'at ease'). While tempo can affect mood, slow music is not necessarily sad and fast music is not necessarily happy"},
+        {"wrong": "all music follows the same form or structure", "correct": "Music uses many different forms including binary (AB), ternary (ABA), rondo (ABACA), sonata form, theme and variations, strophic form, and through-composed, each serving different expressive purposes"}
+      ]
+    }
+  }
+}

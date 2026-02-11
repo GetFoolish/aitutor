@@ -1,0 +1,684 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "english",
+    "last_updated": "2026-02-11",
+    "description": "Vocabulary facts: context clues, word relationships, synonyms/antonyms, homophones, homographs, idioms, roots/prefixes/suffixes, academic vocabulary, figurative language"
+  },
+  "facts_by_topic": {
+    "prefixes": {
+      "keywords": [
+        "prefix", "un-", "re-", "pre-", "dis-", "mis-", "non-",
+        "over-", "under-", "anti-", "inter-", "sub-", "super-"
+      ],
+      "facts": [
+        {
+          "statement": "A prefix is a word part added to the beginning of a base word that changes its meaning",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The prefix 'un-' means 'not' or 'opposite of': unhappy, unkind, unfair",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The prefix 're-' means 'again' or 'back': rewrite, return, replay",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The prefix 'pre-' means 'before': preview, prepay, preschool",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The prefix 'dis-' means 'not' or 'opposite': disagree, disappear, dislike",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The prefix 'mis-' means 'wrongly' or 'badly': mistake, misspell, misunderstand",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The prefix 'anti-' means 'against': antibacterial, antisocial, antithesis",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The prefix 'inter-' means 'between' or 'among': international, interact, interstate",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The prefix 'sub-' means 'under' or 'below': submarine, subway, submerge, subtitle",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The prefix 'super-' means 'above' or 'beyond': superhero, supernatural, supermarket",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The prefix 'over-' means 'too much' or 'above': overflow, overreact, overlook, overcome",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "The prefix 'non-' means 'not': nonfiction, nonsense, nonstop, nonprofit",
+          "grade_min": 3,
+          "grade_max": 10
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "adding a prefix changes the spelling of the base word",
+          "correct": "Generally, adding a prefix does not change the spelling of the base word: un + happy = unhappy, mis + spell = misspell (double s is correct)."
+        },
+        {
+          "wrong": "all words starting with 'un' have the prefix un-",
+          "correct": "Some words starting with 'un' are base words, not prefixed: 'uncle', 'under', 'union' do not have the prefix 'un-.'"
+        },
+        {
+          "wrong": "'dis-' and 'un-' always mean exactly the same thing",
+          "correct": "While both can mean 'not,' they attach to different words and are not always interchangeable. We say 'unhappy' not 'dishappy,' and 'disagree' not 'unagree.'"
+        }
+      ]
+    },
+    "suffixes": {
+      "keywords": [
+        "suffix", "-tion", "-ness", "-ful", "-less", "-able",
+        "-ment", "-ly", "-er", "-est", "-ing", "-ed", "-ous", "-ive"
+      ],
+      "facts": [
+        {
+          "statement": "A suffix is a word part added to the end of a base word that changes its meaning or part of speech",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The suffix '-ful' means 'full of': hopeful, beautiful, grateful",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The suffix '-less' means 'without': hopeless, careless, fearless",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The suffix '-tion' or '-sion' turns verbs into nouns: create/creation, decide/decision",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The suffix '-ness' turns adjectives into nouns: happy/happiness, kind/kindness, dark/darkness",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The suffix '-ly' usually turns adjectives into adverbs: quick/quickly, slow/slowly, happy/happily",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The suffixes '-er' and '-est' are used for comparison: tall/taller/tallest, fast/faster/fastest",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The suffix '-able' or '-ible' means 'capable of' or 'can be done': washable, readable, flexible, visible",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The suffix '-ment' turns verbs into nouns meaning 'the act or result of': enjoy/enjoyment, govern/government, amaze/amazement",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The suffix '-ous' or '-ious' means 'full of' or 'having': famous, dangerous, curious, mysterious",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "-ful always means the same as the word 'full'",
+          "correct": "While '-ful' means 'full of,' the suffix is spelled with one 'l,' not two: hopeful, not hopefull."
+        },
+        {
+          "wrong": "you always add -er or -est to compare adjectives",
+          "correct": "For longer adjectives (3+ syllables), use 'more' and 'most' instead: more beautiful, most interesting. Some adjectives are irregular: good/better/best."
+        },
+        {
+          "wrong": "adding -ly always makes a word an adverb",
+          "correct": "Some -ly words are adjectives: friendly, lovely, lonely. Context determines the part of speech."
+        },
+        {
+          "wrong": "-able and -ible follow the same spelling rule",
+          "correct": "Generally, '-able' is used with complete base words (washable, readable) and '-ible' with Latin roots (visible, flexible). There is no simple rule; many must be memorized."
+        }
+      ]
+    },
+    "greek_latin_roots": {
+      "keywords": [
+        "root", "Greek", "Latin", "origin", "etymology", "bio-",
+        "geo-", "graph", "phone", "scope", "auto-", "chron-",
+        "aud-", "dict-", "port-", "struct-"
+      ],
+      "facts": [
+        {
+          "statement": "About 60% of English words have Greek or Latin roots",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The root 'bio' means 'life': biology, biography, biome",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The root 'geo' means 'earth': geography, geology, geometry",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The root 'graph' or 'gram' means 'write' or 'record': autograph, photograph, telegram",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The root 'phon' or 'phone' means 'sound': telephone, phonics, microphone",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The root 'scope' means 'to look at' or 'to see': telescope, microscope, periscope",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The root 'auto' means 'self': autobiography, automatic, automobile",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The root 'chron' means 'time': chronological, chronic, chronicle",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Latin root 'aud' means 'hear': audience, auditorium, audio, audible",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Latin root 'dict' means 'say' or 'speak': dictionary, dictate, predict, verdict",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Latin root 'port' means 'carry': transport, portable, import, export, report",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Latin root 'struct' means 'build': structure, construct, instruct, destroy (de + struct)",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "knowing the root always tells you the exact meaning of a word",
+          "correct": "Roots give clues about meaning but words can evolve. Knowing roots helps with educated guesses, not exact definitions."
+        },
+        {
+          "wrong": "all English words come from Latin",
+          "correct": "English has roots from many languages including Latin, Greek, Old English (Germanic), French, Norse, and others."
+        },
+        {
+          "wrong": "Greek and Latin roots are only found in science words",
+          "correct": "Greek and Latin roots appear across all subjects and everyday language: 'telephone' (phone=sound), 'transport' (port=carry), 'biography' (bio=life)."
+        }
+      ]
+    },
+    "homophones_confused_words": {
+      "keywords": [
+        "homophone", "there", "their", "they're", "your", "you're",
+        "to", "too", "two", "affect", "effect", "than", "then",
+        "accept", "except", "its", "it's"
+      ],
+      "facts": [
+        {
+          "statement": "Homophones are words that sound the same but have different meanings and spellings",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "'There' indicates a place, 'their' shows possession, and 'they're' is a contraction of 'they are'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Your' shows possession, and 'you're' is a contraction of 'you are'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "'To' is a preposition or infinitive marker, 'too' means 'also' or 'excessively,' and 'two' is the number 2",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Affect' is usually a verb meaning 'to influence'; 'effect' is usually a noun meaning 'a result'",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Than' is used for comparisons; 'then' refers to time or sequence",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Accept' means 'to receive'; 'except' means 'excluding' or 'other than'",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Principal' means 'main' or 'head of school'; 'principle' means 'a fundamental rule or belief'",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Its' shows possession (the dog wagged its tail); 'it's' is a contraction of 'it is' or 'it has'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Weather' refers to climate conditions; 'whether' introduces a choice or alternative",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "'Hear' means to listen; 'here' means this place. A memory tip: 'hear' contains the word 'ear'",
+          "grade_min": 2,
+          "grade_max": 8
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "their, there, and they're are interchangeable",
+          "correct": "Each has a distinct use: 'their' (possessive), 'there' (place/existence), 'they're' (they are). Example: They're going to their house over there."
+        },
+        {
+          "wrong": "affect and effect mean the same thing",
+          "correct": "Usually, 'affect' is a verb (The rain affected the game) and 'effect' is a noun (The rain had no effect on attendance)."
+        },
+        {
+          "wrong": "it's okay to write 'could of' instead of 'could have'",
+          "correct": "'Could of' is always wrong. The correct phrase is 'could have' (contracted as 'could've'), which sounds like 'could of' when spoken."
+        },
+        {
+          "wrong": "'its' needs an apostrophe to show possession",
+          "correct": "'Its' (no apostrophe) is the possessive form. 'It's' (with apostrophe) is a contraction of 'it is.' This is the opposite of the usual apostrophe rule."
+        }
+      ]
+    },
+    "context_clues": {
+      "keywords": [
+        "context clue", "definition clue", "synonym clue", "antonym clue",
+        "example clue", "inference", "unknown word", "word meaning",
+        "surrounding words"
+      ],
+      "facts": [
+        {
+          "statement": "Context clues are hints found in the surrounding text that help readers figure out the meaning of unknown words",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "A definition clue directly states the meaning of a word in the same sentence: 'Nocturnal, meaning active at night, animals hunt in the dark'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A synonym clue uses a word with a similar meaning nearby: 'The jubilant, or joyful, crowd cheered'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "An antonym clue uses a word with the opposite meaning: 'Unlike her timid sister, she was bold and confident'",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "An example clue provides examples that illustrate the unknown word: 'Citrus fruits, such as oranges, lemons, and grapefruits, are rich in vitamin C'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "An inference clue requires the reader to use logic and background knowledge along with text clues to determine word meaning",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Signal words like 'such as,' 'for example,' 'in other words,' 'meaning,' and 'or' often introduce context clues",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "Punctuation marks like commas, dashes, and parentheses can set off context clues within a sentence",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Using context clues is a strategy readers apply before looking up a word in the dictionary",
+          "grade_min": 2,
+          "grade_max": 8
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "context clues always give the exact dictionary definition",
+          "correct": "Context clues provide approximate meaning to help with comprehension. For the precise definition, a dictionary is needed."
+        },
+        {
+          "wrong": "the context clue is always in the same sentence as the unknown word",
+          "correct": "Context clues can appear in the same sentence, the sentence before, or the sentence after the unknown word."
+        },
+        {
+          "wrong": "if you can't find a context clue, the word has no meaning you can figure out",
+          "correct": "You can also use word parts (prefixes, roots, suffixes), background knowledge, or a dictionary when context clues are insufficient."
+        }
+      ]
+    },
+    "word_relationships": {
+      "keywords": [
+        "synonym", "antonym", "homograph", "homonym", "analogy",
+        "connotation", "denotation", "word relationship", "multiple meaning"
+      ],
+      "facts": [
+        {
+          "statement": "Synonyms are words with similar meanings: happy/joyful, big/large, fast/quick, sad/unhappy",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Antonyms are words with opposite meanings: hot/cold, happy/sad, big/small, light/dark",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Homographs are words that are spelled the same but have different meanings and sometimes different pronunciations: 'lead' (to guide) vs. 'lead' (a metal)",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Homonyms are words that sound the same AND are spelled the same but have different meanings: 'bat' (an animal) vs. 'bat' (a baseball tool)",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Denotation is the dictionary definition of a word; connotation is the feeling or association a word carries beyond its literal meaning",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Cheap' and 'affordable' have similar denotations (low cost) but different connotations: 'cheap' often sounds negative, 'affordable' sounds positive",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "An analogy shows a relationship between two pairs of words: hot is to cold as tall is to short (opposites relationship)",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Multiple-meaning words have more than one definition: 'bank' can mean a financial institution or the side of a river",
+          "grade_min": 2,
+          "grade_max": 10
+        },
+        {
+          "statement": "Synonyms are rarely exact; most have slight differences in shade of meaning: 'happy,' 'glad,' 'ecstatic,' and 'content' all mean pleased but differ in intensity",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "synonyms mean exactly the same thing and can always replace each other",
+          "correct": "Synonyms have similar but rarely identical meanings. 'Walk' and 'stroll' are synonyms but 'stroll' implies a leisurely pace that 'walk' does not."
+        },
+        {
+          "wrong": "homophone and homograph are the same thing",
+          "correct": "Homophones sound the same but are spelled differently (there/their). Homographs are spelled the same but may sound different (lead/lead)."
+        },
+        {
+          "wrong": "connotation is just another word for definition",
+          "correct": "Denotation is the literal definition. Connotation is the emotional association. 'Home' and 'house' denote a dwelling, but 'home' connotes warmth and belonging."
+        },
+        {
+          "wrong": "every word has exactly one antonym",
+          "correct": "Some words have multiple antonyms (light: dark, heavy), some have none (the), and some antonyms depend on context (light as 'not dark' vs. 'not heavy')."
+        }
+      ]
+    },
+    "idioms": {
+      "keywords": [
+        "idiom", "figurative", "expression", "saying", "proverb",
+        "figure of speech", "literal", "nonliteral"
+      ],
+      "facts": [
+        {
+          "statement": "An idiom is a phrase whose meaning is different from the literal meaning of its individual words: 'break a leg' means 'good luck'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Let the cat out of the bag' means to reveal a secret, not to actually release a cat",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "'Hit the nail on the head' means to be exactly right about something",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "'Piece of cake' means something is very easy to do",
+          "grade_min": 2,
+          "grade_max": 8
+        },
+        {
+          "statement": "'Under the weather' means feeling sick or unwell",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "'Once in a blue moon' means very rarely or almost never",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "A proverb is a short, well-known saying that expresses a general truth or piece of advice: 'Practice makes perfect'",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "Idioms are specific to languages and cultures; they often do not translate directly into other languages",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Bite off more than you can chew' means to take on a task that is too big or difficult for you",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "'Cost an arm and a leg' means something is extremely expensive",
+          "grade_min": 3,
+          "grade_max": 10
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "idioms should be understood literally",
+          "correct": "Idioms are figurative expressions. 'It's raining cats and dogs' means heavy rain, not animals falling from the sky."
+        },
+        {
+          "wrong": "idioms and proverbs are the same thing",
+          "correct": "An idiom is a figurative expression (kick the bucket = die). A proverb is a wise saying that gives advice (the early bird catches the worm)."
+        },
+        {
+          "wrong": "idioms are grammatically incorrect",
+          "correct": "Idioms follow normal grammar rules; their special feature is that their meaning cannot be determined from the individual words."
+        }
+      ]
+    },
+    "academic_vocabulary": {
+      "keywords": [
+        "academic vocabulary", "tier 2 words", "content vocabulary",
+        "domain-specific", "analyze", "evaluate", "compare", "contrast",
+        "evidence", "summarize", "infer"
+      ],
+      "facts": [
+        {
+          "statement": "Academic vocabulary includes words used frequently across school subjects, such as 'analyze,' 'compare,' 'evidence,' 'summarize,' and 'evaluate'",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Tier 1 words are basic, everyday words most children know (dog, happy, run); Tier 2 words are high-utility academic words (analyze, compare, formulate); Tier 3 words are domain-specific (photosynthesis, legislature)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Compare' means to examine similarities between things; 'contrast' means to examine differences between things",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Summarize' means to restate the main points briefly in your own words, leaving out minor details",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Infer' means to use clues and evidence to figure out something that is not directly stated",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Evidence' refers to facts, examples, quotes, or data that support a claim or answer",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Analyze' means to break something down into parts to understand how it works or what it means",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Evaluate' means to judge the quality, value, or importance of something based on criteria or evidence",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Cite' means to refer to a source or piece of evidence to support a point; 'text evidence' is information taken directly from a reading passage",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Synthesize' means to combine information from multiple sources to form a new understanding or conclusion",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "summarize and retell are the same thing",
+          "correct": "A retell includes all events in order. A summary includes only the main points and key details, leaving out less important information."
+        },
+        {
+          "wrong": "infer and guess are the same",
+          "correct": "A guess is random. An inference is based on evidence and reasoning — it is a logical conclusion supported by clues."
+        },
+        {
+          "wrong": "compare means the same as contrast",
+          "correct": "Compare examines how things are alike. Contrast examines how things are different. 'Compare and contrast' means to examine both similarities and differences."
+        },
+        {
+          "wrong": "academic vocabulary is only needed for tests",
+          "correct": "Academic vocabulary appears in textbooks, instructions, news articles, and professional communication. Understanding these words is essential for all reading comprehension."
+        }
+      ]
+    },
+    "figurative_expressions": {
+      "keywords": [
+        "figurative language", "simile", "metaphor", "personification",
+        "hyperbole", "onomatopoeia", "literal", "nonliteral",
+        "figure of speech"
+      ],
+      "facts": [
+        {
+          "statement": "Figurative language means words or phrases that go beyond their literal (dictionary) meaning to create a special effect or image",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A simile compares two unlike things using 'like' or 'as': 'She runs like the wind' or 'He is as tall as a tree'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A metaphor compares two unlike things by saying one thing IS another: 'The classroom was a zoo' means it was chaotic",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Personification gives human traits to nonhuman things: 'The flowers danced in the breeze'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Hyperbole is a huge exaggeration used for emphasis or humor: 'I'm so hungry I could eat a horse'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Onomatopoeia is a word that sounds like what it describes: crash, buzz, sizzle, meow, whoosh",
+          "grade_min": 2,
+          "grade_max": 10
+        },
+        {
+          "statement": "Understanding the difference between literal and figurative meaning is essential: 'He has a heart of gold' does not mean his heart is made of gold",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "Alliteration repeats the same beginning sound in nearby words: 'Sally sells seashells by the seashore'",
+          "grade_min": 2,
+          "grade_max": 10
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "similes and metaphors are the same thing",
+          "correct": "A simile uses 'like' or 'as' to compare (fast as a cheetah). A metaphor states the comparison directly without 'like' or 'as' (he IS a cheetah on the field)."
+        },
+        {
+          "wrong": "personification means a person is in the sentence",
+          "correct": "Personification gives human qualities to NONhuman things. 'The sun smiled down' gives a human action (smiling) to the sun."
+        },
+        {
+          "wrong": "figurative language is wrong because it is not literally true",
+          "correct": "Figurative language is intentionally non-literal. It makes writing more vivid, creative, and expressive. It is a deliberate writing choice, not an error."
+        }
+      ]
+    }
+  }
+}

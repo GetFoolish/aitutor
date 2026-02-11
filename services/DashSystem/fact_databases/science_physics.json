@@ -1,0 +1,222 @@
+{
+  "meta": {"version": 2, "subject": "science", "last_updated": "2026-02-11", "description": "Physics facts: Newton's laws, motion, energy, waves, circuits, thermodynamics, gravity, magnetism, optics, fluid mechanics, nuclear physics"},
+  "facts_by_topic": {
+    "newtons_laws": {
+      "keywords": ["Newton", "law", "force", "motion", "inertia", "acceleration", "action", "reaction", "mass", "velocity", "friction", "gravity", "weight"],
+      "facts": [
+        {"statement": "Newton's First Law (Law of Inertia): An object at rest stays at rest, and an object in motion stays in motion at constant velocity, unless acted upon by an unbalanced force", "grade_min": 5, "grade_max": 12},
+        {"statement": "Newton's Second Law: Force equals mass times acceleration (F = ma)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Newton's Third Law: For every action, there is an equal and opposite reaction", "grade_min": 5, "grade_max": 12},
+        {"statement": "Inertia is the tendency of an object to resist changes in its state of motion; objects with more mass have more inertia", "grade_min": 5, "grade_max": 12},
+        {"statement": "The unit of force in the SI system is the Newton (N), which equals 1 kg x m/s^2", "grade_min": 7, "grade_max": 12},
+        {"statement": "Net force is the sum of all forces acting on an object; if net force is zero, the object is in equilibrium", "grade_min": 6, "grade_max": 12},
+        {"statement": "Friction is a force that opposes motion between surfaces in contact; it converts kinetic energy to thermal energy", "grade_min": 4, "grade_max": 12},
+        {"statement": "Weight = mass x gravitational acceleration. On Earth, g = 9.8 m/s^2, so a 10 kg object weighs about 98 N", "grade_min": 6, "grade_max": 12},
+        {"statement": "Mass measures the amount of matter in an object (kg); weight measures the gravitational force on it (N)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Acceleration is the rate of change of velocity: a = (v_final - v_initial) / time", "grade_min": 7, "grade_max": 12},
+        {"statement": "Velocity includes both speed and direction; speed is the magnitude of velocity", "grade_min": 6, "grade_max": 12},
+        {"statement": "Momentum = mass x velocity (p = mv). It is conserved in collisions", "grade_min": 8, "grade_max": 12},
+        {"statement": "Gravity pulls all objects toward the center of Earth (or any massive body) with force F = G(m1)(m2)/r^2", "grade_min": 7, "grade_max": 12},
+        {"statement": "In free fall (ignoring air resistance), all objects accelerate at the same rate: 9.8 m/s^2 on Earth", "grade_min": 6, "grade_max": 12},
+        {"statement": "Static friction prevents an object from starting to move; kinetic friction acts on an object that is already moving. Static friction is generally greater than kinetic friction", "grade_min": 7, "grade_max": 12},
+        {"statement": "The impulse-momentum theorem states that the change in momentum of an object equals the impulse applied: F x t = m x delta_v", "grade_min": 9, "grade_max": 12},
+        {"statement": "A push or a pull on an object is called a force; forces can cause objects to start moving, stop moving, or change direction", "grade_min": 0, "grade_max": 5},
+        {"statement": "Gravity is a force that pulls objects toward the ground; it is why things fall when you drop them", "grade_min": 0, "grade_max": 5},
+        {"statement": "Centripetal force is the inward force needed to keep an object moving in a circular path; it is directed toward the center of the circle", "grade_min": 8, "grade_max": 12},
+        {"statement": "Angular momentum is conserved in a closed system; this is why an ice skater spins faster when pulling in their arms", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "heavier objects fall faster than lighter objects", "correct": "In the absence of air resistance, all objects fall at the same rate regardless of mass (about 9.8 m/s^2 on Earth)."},
+        {"wrong": "if something is not moving, no forces are acting on it", "correct": "An object at rest can have multiple forces acting on it that are balanced (net force = 0)."},
+        {"wrong": "the action and reaction forces in Newton's Third Law cancel out", "correct": "Action and reaction forces act on DIFFERENT objects, so they do not cancel out."},
+        {"wrong": "mass and weight are the same thing", "correct": "Mass is the amount of matter (kg), which stays the same everywhere. Weight is gravitational force (N), which changes with location."},
+        {"wrong": "an object moving at constant velocity must have a force pushing it", "correct": "An object at constant velocity has zero net force. Once moving, it continues without a push (Newton's First Law). Forces like friction slow it."},
+        {"wrong": "heavier objects have more gravity", "correct": "All objects with mass have gravity. More massive objects have stronger gravitational pull, but the acceleration due to gravity is the same for all falling objects."},
+        {"wrong": "centrifugal force is a real outward force", "correct": "Centrifugal force is a fictitious force felt in a rotating reference frame. The real force is centripetal force, directed inward toward the center of the circle."},
+        {"wrong": "friction always slows things down", "correct": "Friction can also cause motion. For example, friction between your shoes and the ground is what allows you to walk forward."}
+      ]
+    },
+    "energy_types": {
+      "keywords": ["energy", "kinetic", "potential", "mechanical", "thermal", "chemical", "electrical", "nuclear", "conservation of energy", "work", "power", "simple machine", "efficiency"],
+      "facts": [
+        {"statement": "Kinetic energy is the energy of motion, calculated as KE = (1/2)mv^2", "grade_min": 6, "grade_max": 12},
+        {"statement": "Potential energy is stored energy due to position or condition; gravitational PE = mgh (mass x gravity x height)", "grade_min": 6, "grade_max": 12},
+        {"statement": "The law of conservation of energy states that energy cannot be created or destroyed, only transformed from one form to another", "grade_min": 5, "grade_max": 12},
+        {"statement": "Work is done when a force moves an object: W = F x d (force times distance in the direction of the force)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Power is the rate at which work is done: P = W/t (work divided by time), measured in watts (W)", "grade_min": 7, "grade_max": 12},
+        {"statement": "Chemical energy is stored in the bonds of molecules and released during chemical reactions like combustion", "grade_min": 5, "grade_max": 12},
+        {"statement": "Thermal energy is the total kinetic energy of particles in a substance and is related to temperature", "grade_min": 6, "grade_max": 12},
+        {"statement": "Simple machines (lever, pulley, wheel and axle, inclined plane, wedge, screw) make work easier by changing force direction or magnitude", "grade_min": 4, "grade_max": 12},
+        {"statement": "Mechanical advantage = output force / input force. A lever with MA of 3 multiplies your force by 3", "grade_min": 6, "grade_max": 12},
+        {"statement": "Elastic potential energy is stored in stretched or compressed objects like springs: PE = (1/2)kx^2", "grade_min": 8, "grade_max": 12},
+        {"statement": "Nuclear energy comes from splitting atoms (fission) or combining them (fusion); the Sun produces energy by fusion", "grade_min": 7, "grade_max": 12},
+        {"statement": "Efficiency = (useful energy output / total energy input) x 100%. No machine is 100% efficient due to friction", "grade_min": 7, "grade_max": 12},
+        {"statement": "Heat transfers in three ways: conduction (direct contact), convection (fluid movement), and radiation (electromagnetic waves)", "grade_min": 5, "grade_max": 12},
+        {"statement": "A roller coaster at the top of a hill has maximum potential energy and minimum kinetic energy; at the bottom, it has maximum kinetic energy and minimum potential energy", "grade_min": 4, "grade_max": 9},
+        {"statement": "One joule is the energy required to move an object with a force of 1 Newton through a distance of 1 meter", "grade_min": 7, "grade_max": 12},
+        {"statement": "Gravitational potential energy depends on height: the higher an object is above the ground, the more potential energy it has", "grade_min": 3, "grade_max": 8},
+        {"statement": "Energy can change forms: a falling ball converts potential energy to kinetic energy; a lamp converts electrical energy to light and heat", "grade_min": 3, "grade_max": 7}
+      ],
+      "common_errors": [
+        {"wrong": "energy can be created from nothing", "correct": "Energy cannot be created or destroyed. It can only be converted from one form to another."},
+        {"wrong": "heat and temperature are the same thing", "correct": "Temperature measures average kinetic energy of particles. Heat is the transfer of thermal energy between objects at different temperatures."},
+        {"wrong": "if you hold a heavy box still, you are doing work on it", "correct": "Scientifically, work requires movement in the direction of the force. Holding a box still involves no displacement, so no work is done on the box."},
+        {"wrong": "simple machines reduce the amount of work done", "correct": "Simple machines make work easier but do NOT reduce the total work. They change the force or direction needed."},
+        {"wrong": "cold is a form of energy", "correct": "Cold is the absence of thermal energy, not a form of energy itself. Heat flows from warmer to cooler objects."},
+        {"wrong": "a ball rolling on the ground will keep going forever", "correct": "Friction and air resistance gradually convert kinetic energy to heat, causing the ball to slow down and stop."},
+        {"wrong": "nuclear energy and atomic bombs are the same thing", "correct": "Nuclear energy can be harnessed in controlled fission reactions in power plants to generate electricity. Atomic bombs are uncontrolled chain reactions."}
+      ]
+    },
+    "waves_properties": {
+      "keywords": ["wave", "frequency", "wavelength", "amplitude", "transverse", "longitudinal", "sound", "light", "electromagnetic", "speed", "reflection", "refraction", "diffraction"],
+      "facts": [
+        {"statement": "A wave transfers energy without transferring matter", "grade_min": 5, "grade_max": 12},
+        {"statement": "Wavelength is the distance between two consecutive crests or troughs; frequency is the number of complete waves per second (measured in Hertz, Hz)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Wave speed = frequency x wavelength (v = f x lambda)", "grade_min": 7, "grade_max": 12},
+        {"statement": "Transverse waves vibrate perpendicular to the direction of travel (like light); longitudinal waves vibrate parallel (like sound)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Sound travels fastest in solids, slower in liquids, and slowest in gases because particles are closer together in solids", "grade_min": 5, "grade_max": 12},
+        {"statement": "The speed of light in a vacuum is approximately 300,000 km/s (3 x 10^8 m/s)", "grade_min": 6, "grade_max": 12},
+        {"statement": "The electromagnetic spectrum includes (from longest to shortest wavelength): radio, microwave, infrared, visible light, ultraviolet, X-ray, gamma ray", "grade_min": 6, "grade_max": 12},
+        {"statement": "Amplitude determines the energy of a wave: higher amplitude = more energy. For sound, higher amplitude = louder", "grade_min": 5, "grade_max": 12},
+        {"statement": "Reflection occurs when a wave bounces off a surface; the angle of incidence equals the angle of reflection", "grade_min": 5, "grade_max": 12},
+        {"statement": "Refraction is the bending of a wave as it passes from one medium to another due to a change in speed", "grade_min": 6, "grade_max": 12},
+        {"statement": "The Doppler effect: a wave source moving toward you has higher frequency (pitch); moving away has lower frequency", "grade_min": 7, "grade_max": 12},
+        {"statement": "Visible light spectrum (ROYGBIV): red has the longest wavelength, violet has the shortest", "grade_min": 4, "grade_max": 12},
+        {"statement": "White light contains all colors of the visible spectrum; a prism separates white light into its component colors", "grade_min": 4, "grade_max": 12},
+        {"statement": "Diffraction is the bending of waves around obstacles or through openings; it is more pronounced when the opening is similar in size to the wavelength", "grade_min": 8, "grade_max": 12},
+        {"statement": "The speed of sound in air at room temperature is approximately 343 m/s (about 767 mph)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Ultraviolet (UV) light from the Sun can cause sunburn and skin damage; the ozone layer blocks most UV radiation", "grade_min": 5, "grade_max": 12},
+        {"statement": "Sound waves are produced by vibrating objects; the human ear can hear frequencies between about 20 Hz and 20,000 Hz", "grade_min": 4, "grade_max": 12},
+        {"statement": "Interference occurs when two waves meet: constructive interference increases amplitude, destructive interference decreases it", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "sound can travel through space (a vacuum)", "correct": "Sound requires a medium (solid, liquid, or gas) to travel. It cannot travel through the vacuum of space."},
+        {"wrong": "louder sounds travel faster", "correct": "The speed of sound depends on the medium, not the volume. Loudness (amplitude) does not affect speed."},
+        {"wrong": "light always travels at the same speed", "correct": "Light travels at its maximum speed in a vacuum. It slows down when passing through media like water or glass."},
+        {"wrong": "radio waves and sound waves are the same type of wave", "correct": "Radio waves are electromagnetic waves that travel through vacuum. Sound waves are mechanical waves that need a medium."},
+        {"wrong": "microwaves are only used for cooking", "correct": "Microwaves are also used for cell phones, WiFi, radar, and satellite communications."},
+        {"wrong": "X-rays and gamma rays are the same thing", "correct": "X-rays and gamma rays are both high-energy electromagnetic radiation but differ in origin: X-rays come from electron transitions, gamma rays from nuclear processes."},
+        {"wrong": "infrared light is dangerous", "correct": "Infrared radiation is generally harmless at normal levels. It is the heat you feel from the Sun or a campfire. Only intense concentrations can cause burns."}
+      ]
+    },
+    "electricity_circuits": {
+      "keywords": ["circuit", "current", "voltage", "resistance", "Ohm", "series", "parallel", "conductor", "insulator", "battery", "electric", "static", "charge", "magnet"],
+      "facts": [
+        {"statement": "Ohm's Law states that voltage = current x resistance (V = IR)", "grade_min": 7, "grade_max": 12},
+        {"statement": "Electric current is the flow of electric charge, measured in amperes (A)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Voltage (potential difference) is the energy per unit charge that drives current, measured in volts (V)", "grade_min": 7, "grade_max": 12},
+        {"statement": "Resistance opposes the flow of current, measured in ohms", "grade_min": 7, "grade_max": 12},
+        {"statement": "In a series circuit, components are connected end-to-end and the same current flows through each; if one breaks, the circuit is open", "grade_min": 5, "grade_max": 12},
+        {"statement": "In a parallel circuit, components are connected in separate branches; each branch has the same voltage", "grade_min": 5, "grade_max": 12},
+        {"statement": "Conductors (metals) allow electric current to flow easily; insulators (rubber, plastic, glass) resist the flow of current", "grade_min": 4, "grade_max": 12},
+        {"statement": "Electric power = voltage x current (P = VI), measured in watts", "grade_min": 8, "grade_max": 12},
+        {"statement": "Static electricity results from the buildup of electric charge on a surface, often through friction", "grade_min": 3, "grade_max": 12},
+        {"statement": "Like charges repel each other; opposite charges attract each other", "grade_min": 4, "grade_max": 12},
+        {"statement": "A complete circuit requires a source of energy, a load, and a continuous conducting path", "grade_min": 4, "grade_max": 12},
+        {"statement": "Total resistance in series: R_total = R1 + R2 + R3. In parallel: 1/R_total = 1/R1 + 1/R2 + 1/R3", "grade_min": 8, "grade_max": 12},
+        {"statement": "An electromagnet is created by wrapping wire around an iron core and running current through it", "grade_min": 5, "grade_max": 12},
+        {"statement": "Every magnet has a north and south pole; you cannot isolate a single magnetic pole", "grade_min": 4, "grade_max": 12},
+        {"statement": "A semiconductor (like silicon) has conductivity between a conductor and an insulator; semiconductors are the basis of modern electronics and computer chips", "grade_min": 8, "grade_max": 12},
+        {"statement": "Lightning is a massive electrostatic discharge caused by charge buildup in clouds; a single bolt can carry over 1 billion volts", "grade_min": 4, "grade_max": 12},
+        {"statement": "Electric energy is calculated as E = P x t (power times time), measured in kilowatt-hours (kWh) for household billing", "grade_min": 8, "grade_max": 12},
+        {"statement": "A fuse or circuit breaker protects a circuit by breaking the connection if too much current flows, preventing fires", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "current is used up as it flows through a circuit", "correct": "Current is not consumed. The same amount of current flows through a series circuit. Energy is transferred, but charge is conserved."},
+        {"wrong": "batteries store electricity", "correct": "Batteries store chemical energy that is converted to electrical energy through chemical reactions."},
+        {"wrong": "electrons flow from positive to negative", "correct": "Electrons flow from the negative terminal to the positive terminal. Conventional current flows positive to negative by historical convention."},
+        {"wrong": "cutting a magnet in half gives you a north piece and a south piece", "correct": "Cutting a magnet in half gives you two complete magnets, each with its own north and south pole."},
+        {"wrong": "rubber is a perfect insulator", "correct": "No material is a perfect insulator. Rubber is a very good insulator but can conduct at extremely high voltages."},
+        {"wrong": "voltage and current are the same thing", "correct": "Voltage is the pressure that pushes charges through a circuit. Current is the rate of flow of charges. They are related by Ohm's Law (V = IR) but are different quantities."},
+        {"wrong": "touching a battery's terminals will always shock you", "correct": "Household batteries (1.5V or 9V) have too low a voltage to push enough current through skin to cause a shock. High-voltage sources are dangerous."}
+      ]
+    },
+    "thermodynamics": {
+      "keywords": ["thermodynamics", "heat", "temperature", "entropy", "conduction", "convection", "radiation", "thermal equilibrium", "specific heat", "absolute zero", "Kelvin", "Celsius", "Fahrenheit"],
+      "facts": [
+        {"statement": "The zeroth law of thermodynamics: if two systems are each in thermal equilibrium with a third system, they are in thermal equilibrium with each other", "grade_min": 9, "grade_max": 12},
+        {"statement": "The first law of thermodynamics is the conservation of energy: the total energy of an isolated system is constant", "grade_min": 8, "grade_max": 12},
+        {"statement": "The second law of thermodynamics states that entropy (disorder) of an isolated system always increases over time; heat flows spontaneously from hot to cold, never the reverse", "grade_min": 9, "grade_max": 12},
+        {"statement": "The third law of thermodynamics states that as temperature approaches absolute zero, the entropy of a perfect crystal approaches zero", "grade_min": 10, "grade_max": 12},
+        {"statement": "Absolute zero is 0 Kelvin (-273.15 degrees Celsius), the lowest possible temperature where particle motion is minimal", "grade_min": 7, "grade_max": 12},
+        {"statement": "Specific heat capacity is the amount of energy needed to raise 1 kg of a substance by 1 degree Celsius; water has a high specific heat (4,186 J/kg-C)", "grade_min": 8, "grade_max": 12},
+        {"statement": "Conduction transfers heat through direct contact between particles; metals are good conductors of heat", "grade_min": 4, "grade_max": 12},
+        {"statement": "Convection transfers heat through the movement of fluids (liquids and gases); warm fluid rises and cool fluid sinks, creating convection currents", "grade_min": 5, "grade_max": 12},
+        {"statement": "Radiation transfers heat through electromagnetic waves and does not require a medium; this is how the Sun's energy reaches Earth", "grade_min": 5, "grade_max": 12},
+        {"statement": "An insulator like a thermos reduces heat transfer by minimizing conduction, convection, and radiation", "grade_min": 4, "grade_max": 12},
+        {"statement": "Water's high specific heat capacity helps moderate coastal climates, making temperatures less extreme near oceans", "grade_min": 6, "grade_max": 12},
+        {"statement": "The Kelvin scale starts at absolute zero; to convert Celsius to Kelvin, add 273.15", "grade_min": 7, "grade_max": 12},
+        {"statement": "A heat engine converts thermal energy into mechanical work; no heat engine can be 100% efficient (Carnot's theorem)", "grade_min": 10, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "cold flows into warm objects", "correct": "Cold does not flow. Heat always flows from warmer objects to cooler objects. The warm object loses thermal energy."},
+        {"wrong": "metal objects are colder than wooden objects at room temperature", "correct": "Both are at the same temperature. Metal feels colder because it conducts heat away from your hand faster than wood."},
+        {"wrong": "space is cold because there is cold air in space", "correct": "Space is nearly a vacuum with almost no particles. Objects in space lose heat through radiation, not conduction or convection."},
+        {"wrong": "you can reach absolute zero", "correct": "The third law of thermodynamics implies that absolute zero can be approached but never actually reached."},
+        {"wrong": "adding heat to a substance always raises its temperature", "correct": "During a phase change (melting or boiling), added heat goes into breaking molecular bonds rather than raising temperature."}
+      ]
+    },
+    "optics_light": {
+      "keywords": ["optics", "lens", "mirror", "concave", "convex", "focal point", "image", "real image", "virtual image", "absorption", "transmission", "color", "pigment"],
+      "facts": [
+        {"statement": "A concave (converging) lens is thinner in the middle and spreads light rays apart; it is used to correct nearsightedness", "grade_min": 7, "grade_max": 12},
+        {"statement": "A convex (converging) lens is thicker in the middle and brings light rays together to a focal point; it is used in magnifying glasses and cameras", "grade_min": 7, "grade_max": 12},
+        {"statement": "A concave mirror curves inward and can focus light to a point; it is used in telescopes and satellite dishes", "grade_min": 6, "grade_max": 12},
+        {"statement": "A convex mirror curves outward and produces smaller, wider-view images; it is used in car side mirrors and store security mirrors", "grade_min": 6, "grade_max": 12},
+        {"statement": "Objects appear to have color because they absorb certain wavelengths of light and reflect others; a red apple reflects red light and absorbs other colors", "grade_min": 4, "grade_max": 12},
+        {"statement": "Opaque objects block light, translucent objects let some light through (frosted glass), and transparent objects let most light through (clear glass)", "grade_min": 2, "grade_max": 7},
+        {"statement": "Shadows form when an opaque object blocks light; the shadow is on the side opposite the light source", "grade_min": 0, "grade_max": 5},
+        {"statement": "Light travels in straight lines called rays; this is why shadows have sharp edges when the light source is small", "grade_min": 3, "grade_max": 8},
+        {"statement": "The law of reflection states that the angle of incidence equals the angle of reflection, measured from the normal (perpendicular) to the surface", "grade_min": 6, "grade_max": 12},
+        {"statement": "Total internal reflection occurs when light hits a boundary at a steep angle and reflects entirely back into the denser medium; this is how fiber optic cables work", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "we see objects because our eyes send out light", "correct": "We see objects because light reflects off them and enters our eyes. Our eyes detect light; they do not emit it."},
+        {"wrong": "a magnifying glass makes things bigger", "correct": "A magnifying glass does not change the size of the object. It bends light rays to create a larger virtual image that your eye perceives."},
+        {"wrong": "black is a color of light", "correct": "Black is the absence of visible light. An object appears black when it absorbs all wavelengths of visible light and reflects none."},
+        {"wrong": "mirrors reverse left and right", "correct": "Mirrors reverse front and back, not left and right. The image appears reversed because you are facing the opposite direction from your reflection."}
+      ]
+    },
+    "fluid_mechanics": {
+      "keywords": ["fluid", "pressure", "buoyancy", "density", "Archimedes", "Pascal", "Bernoulli", "hydraulic", "atmosphere", "float", "sink"],
+      "facts": [
+        {"statement": "Pressure equals force divided by area (P = F/A); a smaller area with the same force creates higher pressure, which is why needles are sharp", "grade_min": 6, "grade_max": 12},
+        {"statement": "Atmospheric pressure at sea level is approximately 101,325 Pascals (1 atmosphere), which equals the weight of air above that point", "grade_min": 7, "grade_max": 12},
+        {"statement": "Archimedes' principle: an object immersed in a fluid is buoyed up by a force equal to the weight of the fluid it displaces", "grade_min": 7, "grade_max": 12},
+        {"statement": "An object floats if its density is less than the density of the fluid; it sinks if its density is greater", "grade_min": 4, "grade_max": 12},
+        {"statement": "Density = mass / volume. Water has a density of 1 g/cm^3 (1,000 kg/m^3)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Pascal's principle states that pressure applied to a confined fluid is transmitted equally in all directions; this is the basis of hydraulic systems", "grade_min": 8, "grade_max": 12},
+        {"statement": "Bernoulli's principle states that as the speed of a fluid increases, its pressure decreases; this helps explain how airplane wings generate lift", "grade_min": 8, "grade_max": 12},
+        {"statement": "Ice floats because water expands when it freezes, making ice less dense (0.92 g/cm^3) than liquid water (1.0 g/cm^3)", "grade_min": 3, "grade_max": 12},
+        {"statement": "Air pressure decreases with altitude because there is less air above pushing down; this is why your ears pop on an airplane", "grade_min": 4, "grade_max": 12},
+        {"statement": "A barometer measures atmospheric pressure; a manometer measures the pressure of enclosed gases", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "heavy objects always sink in water", "correct": "Whether an object floats depends on its density, not just its weight. A heavy steel ship floats because its overall density (including air inside) is less than water."},
+        {"wrong": "suction pulls things in", "correct": "There is no such thing as suction as a force. When you use a straw, you reduce air pressure inside it, and atmospheric pressure pushes the liquid up."},
+        {"wrong": "airplanes fly because the engines push them up", "correct": "Airplane engines provide forward thrust. Lift is generated by the wing shape, which creates lower pressure above the wing and higher pressure below (Bernoulli's principle plus angle of attack)."},
+        {"wrong": "water always boils at 100 degrees Celsius", "correct": "Water boils at 100 degrees C only at standard atmospheric pressure (sea level). At higher altitudes with lower pressure, water boils at a lower temperature."}
+      ]
+    },
+    "nuclear_physics": {
+      "keywords": ["nuclear", "fission", "fusion", "radioactive", "decay", "half-life", "isotope", "radiation", "alpha", "beta", "gamma", "chain reaction", "nuclear energy"],
+      "facts": [
+        {"statement": "Nuclear fission splits a heavy nucleus (like uranium-235) into smaller nuclei, releasing a large amount of energy; this powers nuclear reactors", "grade_min": 8, "grade_max": 12},
+        {"statement": "Nuclear fusion combines light nuclei (like hydrogen) into heavier ones (like helium), releasing even more energy than fission; this powers the Sun and stars", "grade_min": 8, "grade_max": 12},
+        {"statement": "Radioactive decay is the spontaneous emission of particles or energy from an unstable nucleus; the three main types are alpha, beta, and gamma radiation", "grade_min": 8, "grade_max": 12},
+        {"statement": "Alpha particles are helium nuclei (2 protons, 2 neutrons), stopped by paper; beta particles are electrons or positrons, stopped by aluminum; gamma rays are high-energy photons, reduced by lead or thick concrete", "grade_min": 9, "grade_max": 12},
+        {"statement": "Half-life is the time required for half of the radioactive atoms in a sample to decay; Carbon-14 has a half-life of about 5,730 years", "grade_min": 8, "grade_max": 12},
+        {"statement": "E = mc^2 (Einstein's equation) shows that mass and energy are interchangeable; a small amount of mass converts to enormous energy in nuclear reactions", "grade_min": 8, "grade_max": 12},
+        {"statement": "A chain reaction occurs when the products of one nuclear reaction trigger additional reactions; in a nuclear reactor, control rods absorb neutrons to regulate the chain reaction", "grade_min": 9, "grade_max": 12},
+        {"statement": "Radioactive dating uses the known half-life of isotopes to determine the age of rocks, fossils, and artifacts", "grade_min": 7, "grade_max": 12},
+        {"statement": "Nuclear power plants produce no direct carbon dioxide emissions during operation, but they create radioactive waste that must be safely stored for thousands of years", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "all radiation is dangerous and man-made", "correct": "Radiation exists naturally everywhere (cosmic rays, radon gas, bananas contain potassium-40). Low levels of natural background radiation are normal and not harmful."},
+        {"wrong": "nuclear power plants can explode like nuclear bombs", "correct": "Nuclear reactors cannot produce a nuclear explosion. The fuel is not enriched enough. Reactor accidents involve meltdowns and radiation leaks, not nuclear detonations."},
+        {"wrong": "after one half-life, all the radioactive material is gone", "correct": "After one half-life, half remains. After two half-lives, one quarter remains. Radioactive material never fully disappears; it decreases exponentially."},
+        {"wrong": "fusion and fission are the same process", "correct": "Fission splits heavy atoms apart; fusion joins light atoms together. Both release energy, but through opposite mechanisms."}
+      ]
+    }
+  }
+}

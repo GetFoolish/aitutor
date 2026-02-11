@@ -61,18 +61,23 @@ class KhanSubSkill:
     difficulty: float = 0.5  # derived from exercises
 
 
-def derive_grade_from_course(course_title: str, course_slug: str, order_in_region: int = 0) -> GradeLevel:
+def derive_grade_from_course(course_title: str, course_slug: str, order_in_region: int = 0, min_grade: int = None) -> GradeLevel:
     """
     Derive grade level from Khan Academy course title and slug.
-    
+
     Args:
         course_title: Course title (e.g., "2nd grade math")
         course_slug: Course slug (e.g., "cc-2nd-grade-math")
         order_in_region: Course order in region (fallback)
-    
+        min_grade: Explicit min grade from AI-generated courses (0=K, 1-12=grades)
+
     Returns:
         GradeLevel enum value
     """
+    # Fast path: AI-generated courses store explicit grade
+    if min_grade is not None:
+        clamped = max(0, min(12, min_grade))
+        return list(GradeLevel)[clamped]
     title_lower = course_title.lower()
     slug_lower = course_slug.lower()
     
@@ -137,16 +142,24 @@ def derive_grade_from_course(course_title: str, course_slug: str, order_in_regio
     return GradeLevel.GRADE_8
 
 
-def extract_subject(course_title: str) -> str:
+def extract_subject(course_title: str, course_doc: dict = None) -> str:
     """
     Extract subject from Khan Academy course title.
-    
+
+    If *course_doc* is provided and has an explicit ``subject`` field
+    (AI-generated courses do), use it directly — no heuristic needed.
+
     Args:
         course_title: Course title
-    
+        course_doc: Optional full course document from MongoDB
+
     Returns:
         Subject name (Math, Science, History, etc.)
     """
+    # Fast path: AI-generated courses store subject explicitly
+    if course_doc and course_doc.get("subject"):
+        return course_doc["subject"]
+
     title_lower = course_title.lower()
     
     if any(word in title_lower for word in ['math', 'algebra', 'geometry', 'calculus', 

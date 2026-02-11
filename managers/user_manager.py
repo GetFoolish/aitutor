@@ -330,13 +330,25 @@ class UserManager:
             if all_skill_ids:
                 missing_skills = set(all_skill_ids) - set(user_profile.skill_states.keys())
                 if missing_skills:
-                    for skill_id in missing_skills:
-                        user_profile.skill_states[skill_id] = SkillState(
-                            memory_strength=0.0,
-                            last_practice_time=None,
-                            practice_count=0,
-                            correct_count=0
+                    # If ALL skills are missing, this is a user created by auth service
+                    # without DASH initialization — use grade-based cold-start
+                    if len(missing_skills) == len(all_skill_ids) and all_skills:
+                        logger.info(
+                            f"[COLD_START] User {user_id} has 0 skill states — "
+                            f"initializing for grade {user_profile.current_grade} (age {user_profile.age})"
                         )
+                        user_profile.skill_states = self.initialize_skills_for_grade(
+                            user_profile.current_grade, all_skills
+                        )
+                    else:
+                        # Partial update — only a few new skills added to curriculum
+                        for skill_id in missing_skills:
+                            user_profile.skill_states[skill_id] = SkillState(
+                                memory_strength=0.0,
+                                last_practice_time=None,
+                                practice_count=0,
+                                correct_count=0
+                            )
                     logger.info(f"[ADDED] Added {len(missing_skills)} new skills to user {user_id}")
                     self.save_user(user_profile)
         

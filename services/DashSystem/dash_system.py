@@ -4,7 +4,8 @@ import json
 import os
 import sys
 import logging
-from typing import Dict, List, Tuple, Optional
+from datetime import datetime
+from typing import Any, Dict, List, Tuple, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -49,6 +50,116 @@ class GradeLevel(Enum):
     GRADE_11 = 11
     GRADE_12 = 12
 
+def parse_grade_level(grade_value, default=None):
+    """Parse various grade formats into a GradeLevel enum.
+
+    Handles: "GRADE_8", "K", "Grade 8", "grade 8", 3, "3", None
+    Returns default (GradeLevel.K) if parsing fails.
+    """
+    if default is None:
+        default = GradeLevel.K
+    if grade_value is None:
+        return default
+    # Integer
+    if isinstance(grade_value, int):
+        try:
+            return GradeLevel(grade_value)
+        except ValueError:
+            return default
+    # String
+    s = str(grade_value).strip()
+    # Try direct enum key: "GRADE_8", "K"
+    try:
+        return GradeLevel[s]
+    except KeyError:
+        pass
+    # Try "Grade 8" / "grade 8" format
+    import re
+    m = re.match(r'(?i)grade\s+(\d+)', s)
+    if m:
+        try:
+            return GradeLevel(int(m.group(1)))
+        except ValueError:
+            return default
+    # Try bare number string: "8"
+    if s.isdigit():
+        try:
+            return GradeLevel(int(s))
+        except ValueError:
+            return default
+    # "k" or "K"
+    if s.upper() == 'K':
+        return GradeLevel.K
+    return default
+
+class MasteryLevel(Enum):
+    """Five-tier mastery system matching Khan Academy's proficiency model."""
+    ATTEMPTED = 1      # 0.0 - 0.3: Student has tried but struggles
+    FAMILIAR = 2       # 0.3 - 0.5: Recognizes concepts, inconsistent success
+    PROFICIENT = 3     # 0.5 - 0.7: Getting most right, still needs practice
+    MASTERED = 4       # 0.7 - 0.85: Solid understanding, occasional errors
+    EXPERT = 5         # 0.85 - 1.0: Consistent accuracy, ready to advance
+
+MASTERY_THRESHOLDS = [
+    (0.0, 0.3, MasteryLevel.ATTEMPTED),
+    (0.3, 0.5, MasteryLevel.FAMILIAR),
+    (0.5, 0.7, MasteryLevel.PROFICIENT),
+    (0.7, 0.85, MasteryLevel.MASTERED),
+    (0.85, 1.01, MasteryLevel.EXPERT),  # 1.01 to handle floating point
+]
+
+def mastery_level_from_probability(probability: float) -> MasteryLevel:
+    """Pure function: map probability 0-1 to MasteryLevel."""
+    for lo, hi, level in MASTERY_THRESHOLDS:
+        if lo <= probability < hi:
+            return level
+    return MasteryLevel.EXPERT  # Fallback for probability >= 1.0
+
+# ---------------------------------------------------------------------------
+# Concept-type forgetting rates (higher = faster decay)
+# Based on cognitive science: procedural memory decays differently than
+# declarative (vocabulary) or automaticity (math facts).
+# ---------------------------------------------------------------------------
+CONCEPT_FORGETTING_RATES = {
+    "math_fact": 0.15,        # Arithmetic, times tables — fast recall, fast decay
+    "vocabulary": 0.13,       # Definitions, terms — moderate decay
+    "procedural": 0.10,       # Algorithms, procedures — standard (default)
+    "conceptual": 0.07,       # Deep understanding, proofs — slow decay
+    "problem_solving": 0.06,  # Multi-step reasoning — slowest decay
+}
+
+_CONCEPT_TYPE_KEYWORDS = {
+    "math_fact": [
+        "addition", "subtraction", "multiplication", "division", "arithmetic",
+        "times table", "counting", "place value", "basic fact", "number fact",
+    ],
+    "vocabulary": [
+        "vocabulary", "definition", "term", "word meaning", "spelling",
+        "grammar", "phonics", "parts of speech", "literary term", "prefix",
+        "suffix", "synonym", "antonym",
+    ],
+    "problem_solving": [
+        "problem solving", "word problem", "proof", "derive", "design",
+        "analyze", "synthesis", "critical thinking", "application",
+        "multi-step", "real-world",
+    ],
+    "conceptual": [
+        "concept", "theory", "principle", "law", "theorem", "understanding",
+        "explain", "relationship", "why", "reasoning",
+    ],
+}
+
+def detect_forgetting_rate(skill_name: str) -> float:
+    """Detect appropriate forgetting rate based on skill name keywords.
+
+    Returns a concept-type-specific decay rate. Falls back to 'procedural' (0.10).
+    """
+    lower = skill_name.lower()
+    for concept_type, keywords in _CONCEPT_TYPE_KEYWORDS.items():
+        if any(kw in lower for kw in keywords):
+            return CONCEPT_FORGETTING_RATES[concept_type]
+    return CONCEPT_FORGETTING_RATES["procedural"]
+
 @dataclass
 class Skill:
     skill_id: str
@@ -73,11 +184,13 @@ class Question:
     content: str
     difficulty: float = 0.0
     expected_time_seconds: float = 60.0  # Default expected time for answering
+    perseus_data: Optional[Dict[str, Any]] = None  # Pre-loaded Perseus JSON (from content pool)
 
 class DASHSystem:
-    def __init__(self, skills_file: Optional[str] = None, curriculum_file: Optional[str] = None, use_mongodb: bool = True, 
-                 use_khan_hierarchy: bool = True, region: str = "US", subject: str = "Math"):
-        
+    def __init__(self, skills_file: Optional[str] = None, curriculum_file: Optional[str] = None, use_mongodb: bool = True,
+                 use_khan_hierarchy: bool = True, region: str = "US", subject: str = "Math",
+                 use_ai_questions: Optional[bool] = None, content_engine=None):
+
         # Default file paths relative to the project root
         self.skills_file_path = skills_file if skills_file else "QuestionsBank/skills.json"
         self.curriculum_file_path = curriculum_file if curriculum_file else "QuestionsBank/curriculum.json"
@@ -85,6 +198,12 @@ class DASHSystem:
         self.use_khan_hierarchy = use_khan_hierarchy
         self.region = region
         self.subject = subject
+
+        # AI question generation flag (env var or constructor arg)
+        if use_ai_questions is not None:
+            self.use_ai_questions = use_ai_questions
+        else:
+            self.use_ai_questions = os.getenv("USE_AI_QUESTIONS", "false").lower() in ("true", "1", "yes")
 
         self.skills: Dict[str, Skill] = {}
         self.khan_skills: Dict[str, KhanSkill] = {}  # New: Khan Academy units as skills
@@ -102,7 +221,14 @@ class DASHSystem:
         self.questions: Dict[str, Question] = {}  # Deprecated: use _get_or_create_question() instead
         self.curriculum: Dict = {}
         self.user_manager = UserManager(users_folder="Users")
-        
+
+        # AI Question Provider (initialized after MongoDB)
+        self.ai_provider = None
+
+        # ContentGenerationService for pool-based question serving
+        self.content_service = None
+        self._pool_check_counter = 0  # For proactive pool refill (check every 5th pop)
+
         # Initialize MongoDB manager if using MongoDB
         self.mongo = None
         if use_mongodb:
@@ -113,7 +239,7 @@ class DASHSystem:
             except Exception as e:
                 log_print(f"[ERROR] Could not initialize MongoDB: {e}")
                 raise RuntimeError(f"MongoDB initialization failed: {e}. Please configure MONGODB_URI in .env file.")
-        
+
         # Load skills and questions from MongoDB
         if self.use_mongodb and self.mongo:
             if self.use_khan_hierarchy:
@@ -124,7 +250,57 @@ class DASHSystem:
                 self._load_from_mongodb()
         else:
             raise RuntimeError("MongoDB is required. Please configure MONGODB_URI in .env file.")
+
+        # Initialize AI Question Provider after skills are loaded
+        if self.use_ai_questions and self.mongo:
+            try:
+                from services.DashSystem.ai_question_provider import AIQuestionProvider
+                if content_engine is None:
+                    from services.DashSystem.content_v1 import ContentV1Engine
+                    content_engine = ContentV1Engine()
+                self.ai_provider = AIQuestionProvider(content_engine, self.mongo)
+                log_print(f"[AI_QUESTIONS] AI question provider initialized (skills: {len(self.skills)})")
+            except Exception as e:
+                log_print(f"[AI_QUESTIONS] Failed to initialize AI provider: {e}. Falling back to Khan question bank.")
+                self.use_ai_questions = False
+
+        # Ensure adaptive difficulty history collection has proper indexes
+        if self.use_mongodb and self.mongo:
+            self._ensure_difficulty_history_index()
     
+    def reload_curriculum(self):
+        """Reload skills from MongoDB after new curriculum is generated.
+
+        Call this after CurriculumGenerator finishes so DASH picks up
+        the newly created courses/units/lessons without a server restart.
+        """
+        self.skills.clear()
+        self.khan_skills.clear()
+        self.khan_sub_skills.clear()
+        self.question_index.clear()
+        self.skill_question_index.clear()
+        self.question_cache.clear()
+        self._load_from_khan_hierarchy()
+        log_print(f"[RELOAD] Curriculum reloaded: {len(self.skills)} skills")
+
+    def set_content_service(self, service):
+        """Set the ContentGenerationService for pool-based question serving."""
+        self.content_service = service
+        log_print(f"[CONTENT_SERVICE] ContentGenerationService {'attached' if service else 'detached'}")
+
+    def _fire_and_forget_sync(self, fn, *args, **kwargs):
+        """Run a synchronous function in a background daemon thread.
+
+        Used for non-blocking pool warm-up (ensure_pool, on_skill_unlock).
+        """
+        import threading
+        def _run():
+            try:
+                fn(*args, **kwargs)
+            except Exception as e:
+                log_print(f"[CONTENT_SERVICE] Background task failed: {e}")
+        threading.Thread(target=_run, daemon=True).start()
+
     def _load_from_khan_hierarchy(self):
         """
         Load skills from Khan Academy hierarchy (questions_db).
@@ -134,21 +310,27 @@ class DASHSystem:
         try:
             log_print(f"[KHAN] Loading courses for region={self.region}, subject={self.subject}")
 
-            # Get all courses for the specified region
-            courses = list(self.mongo.courses.find({"region": self.region}).sort("order_in_region", 1))
-            log_print(f"[KHAN] Found {len(courses)} courses in region {self.region}")
+            # First, check for AI-generated curriculum (works on fresh DB)
+            relevant_courses = list(self.mongo.courses.find({
+                "region": self.region,
+                "source": "ai_generated",
+                "subject": self.subject,
+            }).sort("order_in_region", 1))
 
-            # Filter courses by subject
-            relevant_courses = []
-            for course in courses:
-                course_subject = extract_subject(course['title'])
-                if course_subject == self.subject:
-                    relevant_courses.append(course)
-
-            log_print(f"[KHAN] Found {len(relevant_courses)} {self.subject} courses in {self.region}")
+            if relevant_courses:
+                log_print(f"[KHAN] Found {len(relevant_courses)} AI-generated {self.subject} courses in {self.region}")
+            else:
+                # Fall back to Khan data (title heuristic)
+                all_courses = list(self.mongo.courses.find({"region": self.region}).sort("order_in_region", 1))
+                log_print(f"[KHAN] No AI-generated courses; checking {len(all_courses)} Khan courses in {self.region}")
+                for course in all_courses:
+                    course_subject = extract_subject(course['title'])
+                    if course_subject == self.subject:
+                        relevant_courses.append(course)
+                log_print(f"[KHAN] Found {len(relevant_courses)} {self.subject} courses in {self.region}")
 
             if not relevant_courses:
-                log_print(f"[WARNING] No {self.subject} courses found for region {self.region}")
+                log_print(f"[WARNING] No {self.subject} courses found for region {self.region} (OK on fresh DB)")
                 return
 
             # OPTIMIZATION: Batch load all units for all relevant courses at once
@@ -198,21 +380,39 @@ class DASHSystem:
             for course in relevant_courses:
                 course_id = course['course_id']
                 course_title = course['title']
-                grade_level = derive_grade_from_course(
+                base_grade_level = derive_grade_from_course(
                     course_title,
                     course['slug'],
-                    course.get('order_in_region', 0)
+                    course.get('order_in_region', 0),
+                    min_grade=course.get('min_grade'),
                 )
 
                 # Get units for this course from pre-loaded data
                 units = units_by_course.get(course_id, [])
+                units_sorted = sorted(units, key=lambda u: u.get('order_in_course', 0))
 
-                for unit in units:
+                # For banded AI courses (e.g. grades 6-8), distribute units
+                # evenly across the band so each grade gets skills
+                min_g = course.get('min_grade')
+                max_g = course.get('max_grade')
+                grade_span = 1
+                if min_g is not None and max_g is not None and max_g > min_g:
+                    grade_span = max_g - min_g + 1
+
+                for idx, unit in enumerate(units_sorted):
                     unit_id = unit['unit_id']
+
+                    # Compute per-unit grade: spread across band
+                    if grade_span > 1 and len(units_sorted) > 0:
+                        offset = (idx * grade_span) // len(units_sorted)
+                        g_val = min(min_g + offset, 12)
+                        grade_level = list(GradeLevel)[g_val]
+                    else:
+                        grade_level = base_grade_level
 
                     # Get prerequisites (all previous units in the same course)
                     prerequisites = [
-                        u['unit_id'] for u in units
+                        u['unit_id'] for u in units_sorted
                         if u.get('order_in_course', 0) < unit.get('order_in_course', 0)
                     ]
 
@@ -221,6 +421,7 @@ class DASHSystem:
                     sub_skill_ids = [lesson['lesson_id'] for lesson in lessons]
 
                     # Create KhanSkill (Unit → Skill mapping)
+                    skill_forgetting_rate = detect_forgetting_rate(unit['title'])
                     khan_skill = KhanSkill(
                         skill_id=unit_id,
                         name=unit['title'],
@@ -232,7 +433,7 @@ class DASHSystem:
                         prerequisites=prerequisites,
                         sub_skills=sub_skill_ids,
                         difficulty=0.5,
-                        forgetting_rate=0.1
+                        forgetting_rate=skill_forgetting_rate
                     )
                     self.khan_skills[unit_id] = khan_skill
 
@@ -242,7 +443,7 @@ class DASHSystem:
                         name=unit['title'],
                         grade_level=grade_level,
                         prerequisites=prerequisites,
-                        forgetting_rate=0.1,
+                        forgetting_rate=skill_forgetting_rate,
                         difficulty=0.5,
                         order=unit.get('order_in_course', 0)
                     )
@@ -275,7 +476,7 @@ class DASHSystem:
             log_print(f"[KHAN] Loaded {total_units} units (skills) with {total_lessons} lessons (sub-skills)")
             log_print(f"[KHAN] Total exercises available: {total_exercises}")
 
-            # Now build question index from questions_db
+            # Always build Khan question index as fallback (even when AI questions enabled)
             self._build_khan_question_index()
 
         except Exception as e:
@@ -620,43 +821,53 @@ class DASHSystem:
         return self.student_states[student_id][skill_id]
     
     def calculate_memory_strength(self, student_id: str, skill_id: str, current_time: float) -> float:
-        """Calculate current memory strength with decay.
-        Mastered skills (probability >= 0.7) do not decay to preserve their score.
+        """Calculate current memory strength with tiered decay.
+        Expert skills (>= 0.85) decay at 5% of normal rate (20x slower).
+        Mastered skills (>= 0.7) decay at 10% of normal rate (10x slower).
+        All other skills decay at full rate.
         """
         state = self.get_student_state(student_id, skill_id)
-        skill = self.skills[skill_id]
-        
+        skill = self.skills.get(skill_id)
+        if not skill:
+            return state.memory_strength
+
         if state.last_practice_time is None:
             return state.memory_strength
-        
-        # Check if skill is mastered using stored strength (not decayed) to determine mastery
-        # This prevents circular dependency: we need to check mastery before applying decay
+
         stored_strength = state.memory_strength
         logit = stored_strength - skill.difficulty
         probability = 1 / (1 + math.exp(-logit))
-        
-        # If skill is mastered (probability >= 0.7), return stored strength without decay
-        # This preserves the score when moving to the next skill
-        if probability >= 0.7:
-            return stored_strength
-        
-        # Apply decay for non-mastered skills
+
+        # Tiered decay: mastered/expert skills decay much more slowly
+        if probability >= 0.85:
+            effective_rate = skill.forgetting_rate * 0.05   # Expert: 20x slower
+        elif probability >= 0.7:
+            effective_rate = skill.forgetting_rate * 0.1    # Mastered: 10x slower
+        else:
+            effective_rate = skill.forgetting_rate           # Full rate
+
         time_elapsed = current_time - state.last_practice_time
-        decay_factor = math.exp(-skill.forgetting_rate * time_elapsed)
-        
+        decay_factor = math.exp(-effective_rate * time_elapsed)
+
         return stored_strength * decay_factor
     
-    def get_all_prerequisites(self, skill_id: str) -> List[str]:
-        """Get all prerequisite skills recursively"""
+    def get_all_prerequisites(self, skill_id: str, _visited: set = None) -> List[str]:
+        """Get all prerequisite skills recursively (with cycle protection)"""
+        if _visited is None:
+            _visited = set()
+        if skill_id in _visited:
+            return []
+        _visited.add(skill_id)
+
         prerequisites = []
         skill = self.skills.get(skill_id)
         if not skill:
             return prerequisites
-        
+
         for prereq_id in skill.prerequisites:
-            prerequisites.append(prereq_id)
-            # Recursively get prerequisites of prerequisites
-            prerequisites.extend(self.get_all_prerequisites(prereq_id))
+            if prereq_id not in _visited:
+                prerequisites.append(prereq_id)
+                prerequisites.extend(self.get_all_prerequisites(prereq_id, _visited))
         
         # Remove duplicates while preserving order
         seen = set()
@@ -677,12 +888,32 @@ class DASHSystem:
     def predict_correctness(self, student_id: str, skill_id: str, current_time: float) -> float:
         """Predict probability of correct answer using sigmoid function"""
         memory_strength = self.calculate_memory_strength(student_id, skill_id, current_time)
-        skill = self.skills[skill_id]
-        
+        skill = self.skills.get(skill_id)
+        if not skill:
+            return 0.5  # Unknown skill — assume neutral probability
+
         # Sigmoid function: P(correct) = 1 / (1 + exp(-(memory_strength - difficulty)))
         logit = memory_strength - skill.difficulty
         return 1 / (1 + math.exp(-logit))
     
+    def get_mastery_level(self, student_id: str, skill_id: str, current_time: float) -> Dict:
+        """Calculate mastery level for a student on a specific skill."""
+        probability = self.predict_correctness(student_id, skill_id, current_time)
+        level = mastery_level_from_probability(probability)
+        # Find next level threshold
+        next_threshold = None
+        for lo, hi, lvl in MASTERY_THRESHOLDS:
+            if lvl.value == level.value + 1:
+                next_threshold = lo
+                break
+        return {
+            "level_name": level.name,
+            "level_number": level.value,
+            "probability": round(probability, 3),
+            "is_prerequisite_met": level.value >= MasteryLevel.MASTERED.value,
+            "next_level_threshold": next_threshold,
+        }
+
     def update_student_state(self, student_id: str, skill_id: str, is_correct: bool, current_time: float, response_time_seconds: float = 0.0):
         """Update student state after practice"""
         state = self.get_student_state(student_id, skill_id)
@@ -748,11 +979,12 @@ class DASHSystem:
                 prerequisites = self.get_all_prerequisites(skill_id)
                 for prereq_id in prerequisites:
                     # Apply penalty to prerequisite (but don't count as practice attempt)
+                    # Use stored strength (not decayed) to avoid double-decay
                     state = self.get_student_state(student_id, prereq_id)
-                    current_strength = self.calculate_memory_strength(student_id, prereq_id, current_time)
-                    
+                    stored_strength = state.memory_strength
+
                     # Apply smaller penalty to prerequisites
-                    state.memory_strength = max(-2.0, current_strength - 0.1)
+                    state.memory_strength = max(-2.0, stored_strength - 0.1)
                     state.last_practice_time = current_time
                     
                     all_affected_skills.append(prereq_id)
@@ -766,7 +998,39 @@ class DASHSystem:
                 unique_affected_skills.append(skill_id)
         
         return unique_affected_skills
-    
+
+    def check_prerequisites(
+        self, student_id: str, skill_id: str, current_time: float, threshold: float = 0.5
+    ) -> Dict:
+        """
+        Hard prerequisite check. Threshold 0.5 (PROFICIENT) is more lenient than
+        mastery (0.7) to avoid over-blocking while still ensuring basic readiness.
+        Returns {met, missing, redirect_to}.
+        """
+        skill = self.skills.get(skill_id)
+        if not skill:
+            return {"met": True, "missing": [], "redirect_to": None}
+
+        missing = []
+        for prereq_id in skill.prerequisites:
+            prereq_skill = self.skills.get(prereq_id)
+            if not prereq_skill:
+                continue
+            prereq_prob = self.predict_correctness(student_id, prereq_id, current_time)
+            if prereq_prob < threshold:
+                level = mastery_level_from_probability(prereq_prob)
+                missing.append({
+                    "skill_id": prereq_id,
+                    "skill_name": prereq_skill.name,
+                    "current_probability": round(prereq_prob, 3),
+                    "required_probability": threshold,
+                    "mastery_level": level.name,
+                })
+
+        missing.sort(key=lambda x: x["current_probability"])
+        redirect_to = missing[0]["skill_id"] if missing else None
+        return {"met": len(missing) == 0, "missing": missing, "redirect_to": redirect_to}
+
     def _initialize_unattempted_prerequisites(self, user_profile: UserProfile):
         """
         Initialize unattempted previous-grade skills to meet 0.7 threshold.
@@ -774,7 +1038,7 @@ class DASHSystem:
         This ensures students can access grade-appropriate content without being blocked by empty skill history.
         """
         try:
-            current_grade = GradeLevel[user_profile.current_grade]
+            current_grade = parse_grade_level(user_profile.current_grade)
         except KeyError:
             return  # Invalid grade, skip initialization
         
@@ -891,16 +1155,144 @@ class DASHSystem:
             user_profile, question_id, skill_ids, is_correct, 
             response_time_seconds, time_penalty_applied
         )
-        
+
+        # Record attempt for per-skill adaptive difficulty tracking
+        for sid in skill_ids:
+            self.record_attempt_for_difficulty(user_profile.user_id, sid, is_correct)
+
+        # Notify ContentGenerationService on mastery progression
+        if self.content_service:
+            current_time_now = time.time()
+            for sid in skill_ids:
+                skill = self.skills.get(sid)
+                if not skill:
+                    continue
+                probability = self.predict_correctness(
+                    user_profile.user_id, sid, current_time_now
+                )
+                new_level = mastery_level_from_probability(probability)
+                # Fire-and-forget pool warm-up when student progresses
+                if new_level.value >= MasteryLevel.FAMILIAR.value:
+                    self._fire_and_forget_sync(
+                        self.content_service.on_skill_unlock,
+                        student_id=user_profile.user_id,
+                        skill_id=sid,
+                        skill_name=skill.name,
+                        grade=skill.grade_level.name,
+                        subject=self.subject,
+                    )
+
         return affected_skills
-    
+
+    # ------------------------------------------------------------------ #
+    #  Cross-mode question exclusion                                      #
+    # ------------------------------------------------------------------ #
+    def _get_recent_assessment_question_ids(self, user_id: str) -> set:
+        """Return question IDs used in recent assessment sessions for this user.
+        Prevents the learning path from serving the same questions the student
+        just saw during assessment."""
+        try:
+            sessions = self.mongo.db["assessment_sessions"].find(
+                {"user_id": user_id},
+                {"used_question_ids": 1},
+            ).sort("created_at", -1).limit(5)  # Last 5 sessions
+            ids: set = set()
+            for s in sessions:
+                ids.update(s.get("used_question_ids", []))
+            return ids
+        except Exception:
+            return set()
+
+    # ------------------------------------------------------------------ #
+    #  AI-subject grading panel  (uses self.skills, not questions_db)     #
+    # ------------------------------------------------------------------ #
+    def _get_ai_grading_panel(self, user_id: str) -> Dict[str, Any]:
+        """Build grading panel from DASH skill graph for AI-generated subjects."""
+        current_time = time.time()
+        subject_name = self.subject or "General"
+
+        grading_data: Dict[str, Any] = {
+            "subjects": {},
+            "overall_grade": "N/A",
+            "overall_mastery": 0,
+        }
+
+        total_mastery = 0.0
+        practiced_count = 0
+
+        for skill_id, skill in self.skills.items():
+            grade_name = skill.grade_level.name if skill.grade_level else "Unknown"
+            # Normalise grade label for display
+            grade_label = "K" if grade_name == "K" else grade_name.replace("GRADE_", "")
+
+            # Ensure subject → grade structure
+            subj_dict = grading_data["subjects"].setdefault(
+                subject_name, {"grade_levels": {}}
+            )
+            grade_dict = subj_dict["grade_levels"].setdefault(
+                grade_label, {"units": []}
+            )
+
+            # Pull student state
+            state = self.get_student_state(user_id, skill_id)
+            attempts = state.practice_count if state else 0
+            correct = state.correct_count if state else 0
+            mastery_pct = (correct / attempts * 100) if attempts > 0 else 0
+
+            if attempts > 0:
+                total_mastery += mastery_pct
+                practiced_count += 1
+
+            mastery_lvl = mastery_level_from_probability(mastery_pct / 100.0)
+
+            grade_dict["units"].append({
+                "id": skill_id,
+                "name": skill.name,
+                "mastery": round(mastery_pct, 1),
+                "mastery_level_name": mastery_lvl.name,
+                "mastery_level_number": mastery_lvl.value,
+                "questions_answered": attempts,
+                "questions_correct": correct,
+                "sub_skills": [],
+            })
+
+        # Overall grade
+        if practiced_count > 0:
+            avg = total_mastery / practiced_count
+            grading_data["overall_mastery"] = round(avg, 1)
+            grading_data["overall_grade"] = (
+                "A" if avg >= 90 else "B" if avg >= 80 else
+                "C" if avg >= 70 else "D" if avg >= 60 else "F"
+            )
+
+        log_print(f"[GRADING_PANEL_AI] {subject_name}: {len(self.skills)} skills, {practiced_count} practiced")
+        return grading_data
+
     def get_grading_panel_data(self, user_id: str) -> Dict[str, any]:
         """
-        Get grading panel data from Khan Academy hierarchy.
-        Skills = Units, Sub-skills = Lessons, dynamically from questions_db.
-        This follows the DASH Integration Plan exactly.
+        Get grading panel data. For AI-generated subjects, build from
+        self.skills (the DASH skill graph). For Khan (Math), fall back
+        to the questions_db hierarchy.
         """
         try:
+            # ---------- AI-subject fast-path ----------
+            if self.use_ai_questions and self.skills:
+                return self._get_ai_grading_panel(user_id)
+
+            # ---------- Khan hierarchy (original) ----------
+            # 0. Load user profile to get grade range for filtering
+            user_profile = self.user_manager.load_user(user_id)
+            student_grade_value = 0  # Default to K
+            if user_profile and user_profile.current_grade:
+                try:
+                    student_grade_value = parse_grade_level(user_profile.current_grade).value
+                except KeyError:
+                    student_grade_value = 0
+            grade_range = 2  # Show skills within ±2 grades of student
+            grade_min = max(0, student_grade_value - grade_range)
+            grade_max = min(12, student_grade_value + grade_range)
+            log_print(f"[GRADING_PANEL] Student grade: {student_grade_value}, showing grades {grade_min}-{grade_max}")
+
             # 1. Get current Khan Academy hierarchy from questions_db
             units = list(self.mongo.units.find({}))
 
@@ -1004,13 +1396,27 @@ class DASHSystem:
             # Sort by grade level (ascending order: K=0, Grade1=1, ..., Grade12=12)
             units_with_grade.sort(key=lambda x: x[3])
 
+            # Filter units by student's grade range (±2 grades)
+            # Always include units that have attempts (so practiced skills always show)
+            units_with_attempts_ids = set(unit_performance.keys())
+            units_with_grade = [
+                (unit, course, grade_level_enum, gv)
+                for unit, course, grade_level_enum, gv in units_with_grade
+                if (grade_min <= gv <= grade_max) or unit.get("unit_id") in units_with_attempts_ids
+            ]
+            log_print(f"[GRADING_PANEL] Filtered to {len(units_with_grade)} units (grade range {grade_min}-{grade_max} + units with attempts)")
+
             for unit, course, grade_level_enum, grade_value in units_with_grade:
                 unit_id = unit.get("unit_id")
                 course_id = unit.get("course_id")
 
                 # Extract subject and grade level from course (already computed above)
                 subject = extract_subject(course.get("title", ""))
-                grade_level = grade_level_enum.name if grade_level_enum else "Unknown"
+                # Format grade level for display (K, 1, 2, ... 12)
+                if grade_level_enum:
+                    grade_level = "K" if grade_level_enum == KhanGradeLevel.K else str(grade_level_enum.value)
+                else:
+                    grade_level = "Unknown"
                 
                 # Initialize subject in grading data
                 if subject not in grading_data["subjects"]:
@@ -1044,11 +1450,16 @@ class DASHSystem:
                         "questions_correct": lesson_perf["correct"]
                     })
                 
+                # Determine mastery level from percentage
+                mastery_lvl = mastery_level_from_probability(mastery / 100.0)
+
                 # Add unit to grading data
                 grading_data["subjects"][subject]["grade_levels"][grade_level]["units"].append({
                     "id": unit_id,
                     "name": unit.get("title"),
                     "mastery": round(mastery, 1),
+                    "mastery_level_name": mastery_lvl.name,
+                    "mastery_level_number": mastery_lvl.value,
                     "questions_answered": perf["total"],
                     "questions_correct": perf["correct"],
                     "sub_skills": sub_skills
@@ -1081,10 +1492,84 @@ class DASHSystem:
             traceback.print_exc()
             raise
     
+    def get_skills_due_for_review(
+        self,
+        student_id: str,
+        current_time: float,
+        decay_threshold: float = 0.6,
+    ) -> List[str]:
+        """
+        Find previously mastered skills that have decayed below the review threshold.
+        Returns skill IDs sorted by most decayed first.
+        """
+        review_skills = []
+        for skill_id, skill in self.skills.items():
+            state = self.get_student_state(student_id, skill_id)
+            # Only consider skills that were practiced and reached mastery
+            if state.last_practice_time is None or state.practice_count < 3:
+                continue
+            # Check stored strength (pre-decay) was high enough to have been mastered
+            stored_logit = state.memory_strength - skill.difficulty
+            stored_prob = 1 / (1 + math.exp(-stored_logit))
+            if stored_prob < 0.7:
+                continue  # Was never mastered
+            # Check current (decayed) probability is below review threshold
+            current_prob = self.predict_correctness(student_id, skill_id, current_time)
+            if current_prob < decay_threshold:
+                review_skills.append((skill_id, current_prob))
+
+        # Sort by most decayed first
+        review_skills.sort(key=lambda x: x[1])
+        return [sid for sid, _ in review_skills]
+
+    PREREQ_REVIEW_THRESHOLD = 0.6  # Below this, review the prerequisite
+
+    def get_prerequisite_review_skills(
+        self,
+        student_id: str,
+        current_skill_ids: List[str],
+        current_time: float,
+    ) -> List[str]:
+        """Find prerequisites of currently-active skills that need review.
+
+        Returns skill IDs of prerequisites whose probability has decayed
+        below PREREQ_REVIEW_THRESHOLD, sorted by most decayed first.
+        This prevents students from forgetting foundational skills while
+        working on advanced ones.
+        """
+        review_candidates = []
+        seen: set = set()
+
+        for skill_id in current_skill_ids:
+            skill = self.skills.get(skill_id)
+            if not skill:
+                continue
+            for prereq_id in skill.prerequisites:
+                if prereq_id in seen:
+                    continue
+                seen.add(prereq_id)
+                prereq_skill = self.skills.get(prereq_id)
+                if not prereq_skill:
+                    continue
+                state = self.get_student_state(student_id, prereq_id)
+                if state.practice_count < 3:
+                    continue  # Not enough history to warrant review
+                prob = self.predict_correctness(student_id, prereq_id, current_time)
+                if prob < self.PREREQ_REVIEW_THRESHOLD:
+                    review_candidates.append((prereq_id, prob))
+
+        review_candidates.sort(key=lambda x: x[1])
+        if review_candidates:
+            log_print(
+                f"[PREREQ_REVIEW] Found {len(review_candidates)} prerequisite(s) needing review: "
+                + ", ".join(f"{sid}({p:.2f})" for sid, p in review_candidates[:5])
+            )
+        return [sid for sid, _ in review_candidates]
+
     def get_recommended_skills(
-        self, 
-        student_id: str, 
-        current_time: float, 
+        self,
+        student_id: str,
+        current_time: float,
         threshold: float = 0.7,
         cold_start_grade_filter: Optional[str] = None,
         grade_range: int = 1
@@ -1153,11 +1638,12 @@ class DASHSystem:
         if skipped_prerequisites:
             log_print(f"[SKILL_RECOMMEND] Skipped {len(skipped_prerequisites)} skills with unmet prerequisites")
         
-        # Sort by learning journey: grade level (ascending) -> order (ascending) -> probability (ascending)
-        # This ensures students follow a structured learning path
+        # Sort by learning journey: grade → order → mastery priority → probability
+        # Prioritize FAMILIAR/PROFICIENT (0.3-0.7) over ATTEMPTED (<0.3) since they're closer to mastery
         recommendations.sort(key=lambda x: (
             x[1].grade_level.value,  # Grade level (K=0, Grade 1=1, etc.)
             x[1].order,                # Order within grade
+            0 if 0.3 <= x[2] < 0.7 else 1,  # FAMILIAR/PROFICIENT before ATTEMPTED
             x[2]                       # Probability (lower = needs more practice)
         ))
         
@@ -1170,8 +1656,165 @@ class DASHSystem:
             log_print(f"[SKILL_RECOMMEND] No skills found needing practice (all above threshold {threshold} or prerequisites unmet)")
         
         result = [skill_id for skill_id, _, _ in recommendations]
+
+        # Interleave review skills (previously mastered, now decayed) every 3rd position
+        # Also include prerequisite reviews for currently-active skills
+        review_ids = self.get_skills_due_for_review(student_id, current_time)
+        active_skill_ids = [sid for sid, _, _ in recommendations[:5]]
+        prereq_review_ids = self.get_prerequisite_review_skills(
+            student_id, active_skill_ids, current_time
+        )
+        # Merge: prereq reviews take priority over general reviews
+        prereq_set = set(prereq_review_ids)
+        combined_review_ids = prereq_review_ids + [
+            sid for sid in review_ids if sid not in prereq_set
+        ]
+        review_ids = combined_review_ids
+        if review_ids:
+            # Remove any review skills already in the result to avoid duplicates
+            review_ids = [sid for sid in review_ids if sid not in set(result)]
+            if review_ids:
+                log_print(f"[REVIEW] Interleaving {len(review_ids)} review skill(s) into recommendations")
+                merged = []
+                ri = 0
+                for i, sid in enumerate(result):
+                    # Insert a review skill every 3rd position
+                    if (i + 1) % 3 == 0 and ri < len(review_ids):
+                        merged.append(review_ids[ri])
+                        ri += 1
+                    merged.append(sid)
+                # Append any remaining review skills
+                merged.extend(review_ids[ri:])
+                result = merged
+
         return result
     
+    def _ensure_difficulty_history_index(self):
+        """Create compound index on student_difficulty_history for fast lookups.
+        
+        Schema: one document per (student_id, skill_id) with a capped
+        ``attempts`` array holding the last 10 results.
+        """
+        try:
+            coll = self.mongo.db['student_difficulty_history']
+            coll.create_index(
+                [("student_id", 1), ("skill_id", 1)],
+                name="student_skill_idx",
+                unique=True,
+                background=True,
+            )
+            log_print("[ADAPTIVE_DIFFICULTY] Ensured index on student_difficulty_history")
+        except Exception as e:
+            log_print(f"[ADAPTIVE_DIFFICULTY] Index creation warning (non-fatal): {e}")
+
+    def get_adaptive_difficulty(self, student_id: str, skill_id: str) -> float:
+        """
+        Calculate adaptive difficulty based on recent per-skill performance.
+
+        Uses last 5 attempts on this skill to adjust the base difficulty from
+        the mastery level system.  The adjustment is an offset applied on top
+        of the existing base difficulty (skill.difficulty), keeping the mastery
+        logic untouched.
+
+        Adjustment rules (based on correct rate over last 5 attempts):
+            rate >= 0.8  -> base + 0.12  (student excelling, push harder)
+            rate >= 0.6  -> base + 0.05  (slight increase)
+            rate >= 0.4  -> base + 0.00  (optimal challenge zone)
+            rate >= 0.2  -> base - 0.10  (struggling, ease off)
+            rate <  0.2  -> base - 0.20  (really struggling, significant ease)
+
+        Returns:
+            float clamped to [0.1, 1.0]
+        """
+        # 1. Base difficulty from skill definition
+        skill = self.skills.get(skill_id)
+        base_difficulty = skill.difficulty if skill else 0.5
+
+        # 2. Fetch the attempts array for this student + skill from MongoDB
+        if not self.mongo:
+            return max(0.1, min(1.0, base_difficulty))
+
+        try:
+            coll = self.mongo.db['student_difficulty_history']
+            doc = coll.find_one(
+                {"student_id": student_id, "skill_id": skill_id},
+                {"attempts": 1, "_id": 0},
+            )
+        except Exception as e:
+            log_print(f"[ADAPTIVE_DIFFICULTY] DB read failed for {student_id}/{skill_id}: {e}")
+            return max(0.1, min(1.0, base_difficulty))
+
+        # 3. Extract last 5 attempts from the capped array
+        if not doc or not doc.get("attempts"):
+            return max(0.1, min(1.0, base_difficulty))
+
+        recent = doc["attempts"][-5:]  # Last 5 (array is already capped at 10)
+
+        # If fewer than 2 attempts, not enough data — return base
+        if len(recent) < 2:
+            return max(0.1, min(1.0, base_difficulty))
+
+        # 4. Calculate recent correct rate
+        correct_count = sum(1 for a in recent if a.get("correct", False))
+        rate = correct_count / len(recent)
+
+        # 5. Determine adjustment offset
+        if rate >= 0.8:
+            adjustment = 0.12
+        elif rate >= 0.6:
+            adjustment = 0.05
+        elif rate >= 0.4:
+            adjustment = 0.0
+        elif rate >= 0.2:
+            adjustment = -0.10
+        else:
+            adjustment = -0.20
+
+        adjusted = base_difficulty + adjustment
+
+        log_print(
+            f"[ADAPTIVE_DIFFICULTY] student={student_id} skill={skill_id} "
+            f"rate={rate:.2f} ({correct_count}/{len(recent)}) "
+            f"base={base_difficulty:.2f} adj={adjustment:+.2f} final={max(0.1, min(1.0, adjusted)):.2f}"
+        )
+
+        # 6. Clamp to [0.1, 1.0] — allows synthesis tier (0.92-1.0) for experts
+        return max(0.1, min(1.0, adjusted))
+
+    def record_attempt_for_difficulty(self, student_id: str, skill_id: str, correct: bool):
+        """
+        Record an attempt result for per-skill adaptive difficulty tracking.
+
+        Stores in MongoDB collection ``ai_tutor.student_difficulty_history``.
+        Each document: {student_id, skill_id, correct, timestamp}.
+        Uses $push with $slice: -10 to keep only the last 10 per student+skill,
+        preventing unbounded growth.
+        """
+        if not self.mongo:
+            return
+
+        try:
+            coll = self.mongo.db['student_difficulty_history']
+
+            # Upsert a document per (student_id, skill_id) with a capped array
+            # of recent attempts. This avoids creating thousands of tiny docs.
+            coll.update_one(
+                {"student_id": student_id, "skill_id": skill_id},
+                {
+                    "$push": {
+                        "attempts": {
+                            "$each": [{"correct": correct, "ts": datetime.utcnow()}],
+                            "$slice": -10,
+                        }
+                    },
+                    "$set": {"updated_at": datetime.utcnow()},
+                    "$setOnInsert": {"created_at": datetime.utcnow()},
+                },
+                upsert=True,
+            )
+        except Exception as e:
+            log_print(f"[ADAPTIVE_DIFFICULTY] Failed to record attempt for {student_id}/{skill_id}: {e}")
+
     def analyze_recent_performance(self, user_profile: UserProfile, lookback_count: int = 5) -> Dict[str, float]:
         """
         Analyze recent performance to determine difficulty adjustment.
@@ -1255,7 +1898,7 @@ class DASHSystem:
             'avg_time_ratio': avg_time_ratio
         }
 
-    def get_next_question_flexible(self, student_id: str, current_time: float, exclude_question_ids: Optional[List[str]] = None, force_grade_range: bool = False, user_profile: Optional['UserProfile'] = None, exclude_skill_ids: Optional[List[str]] = None) -> Optional[Question]:
+    def get_next_question_flexible(self, student_id: str, current_time: float, exclude_question_ids: Optional[List[str]] = None, force_grade_range: bool = False, user_profile: Optional['UserProfile'] = None, exclude_skill_ids: Optional[List[str]] = None, fast_mode: bool = False) -> Optional[Question]:
         """
         Flexible question selection that expands search when primary skills exhausted.
         Maintains full DASH intelligence (adaptive difficulty, learning journey).
@@ -1279,108 +1922,212 @@ class DASHSystem:
 
         # First try normal DASH selection (recommended skills only)
         if not force_grade_range:
-            question = self.get_next_question(student_id, current_time, is_retry=False, exclude_question_ids=exclude_question_ids, user_profile=user_profile)
+            question = self.get_next_question(student_id, current_time, is_retry=False, exclude_question_ids=exclude_question_ids, user_profile=user_profile, fast_mode=fast_mode)
             if question:
                 return question
         
         # Get grade range (same as cold-start filtering)
-        student_grade = GradeLevel[user_profile.current_grade]
+        student_grade = parse_grade_level(user_profile.current_grade)
         grade_min = max(0, student_grade.value - 1)
         grade_max = student_grade.value + 1
-        
+
         # Get all skills in grade range, but exclude mastered skills (above threshold)
-        # This ensures we don't fall back to skills that are already mastered
+        # Cache predictions to avoid computing twice per skill (filter + sort)
         current_time_for_check = time.time()
         threshold = 0.7  # Same threshold as get_recommended_skills
+        _prob_cache: Dict[str, float] = {}
         grade_appropriate_skills = []
         for skill in self.skills.values():
             if grade_min <= skill.grade_level.value <= grade_max:
-                # Check if skill is mastered (probability >= threshold)
                 probability = self.predict_correctness(student_id, skill.skill_id, current_time_for_check)
+                _prob_cache[skill.skill_id] = probability
                 if probability < threshold:  # Only include skills that need practice
                     grade_appropriate_skills.append(skill)
-                else:
+                elif not fast_mode:
                     log_print(f"[FLEXIBLE_SELECT] Skipping mastered skill: {skill.name} (prob: {probability:.3f} >= {threshold})")
-        
+
         if not grade_appropriate_skills:
             log_print(f"[FLEXIBLE_SELECT] No grade-appropriate skills need practice (all mastered)")
             return None
-        
+
         # Sort by learning journey (grade -> order -> current probability)
+        # Reuse cached predictions instead of calling predict_correctness again
         skill_probabilities = []
         for skill in grade_appropriate_skills:
-            prob = self.predict_correctness(student_id, skill.skill_id, current_time)
+            prob = _prob_cache.get(skill.skill_id, self.predict_correctness(student_id, skill.skill_id, current_time))
             skill_probabilities.append((skill.skill_id, skill, prob))
         
         # Sort by grade level, order, then probability (lower prob = needs more practice)
         skill_probabilities.sort(key=lambda x: (x[1].grade_level.value, x[1].order, x[2]))
         
-        # Get answered questions to exclude
+        # Get answered questions to exclude (learning path + assessments)
         answered_question_ids = {attempt.question_id for attempt in user_profile.question_history}
         if exclude_question_ids:
             answered_question_ids.update(exclude_question_ids)
-        
-        # Analyze performance for adaptive difficulty
+        # Also exclude questions used in recent assessment sessions
+        answered_question_ids.update(self._get_recent_assessment_question_ids(student_id))
+
+        # Analyze performance for global fallback adjustment
         performance_analysis = self.analyze_recent_performance(user_profile)
-        difficulty_adjustment = performance_analysis['difficulty_adjustment']
-        
+        global_difficulty_adjustment = performance_analysis['difficulty_adjustment']
+
         # Try each skill in learning journey order with adaptive difficulty
         for skill_id, skill, probability in skill_probabilities:
             # Skip excluded skills (for diversifying assessment questions)
             if exclude_skill_ids and skill_id in exclude_skill_ids:
                 continue
 
-            # Calculate target difficulty (same as normal DASH)
-            base_difficulty = skill.difficulty
-            target_difficulty = base_difficulty + difficulty_adjustment
+            # Hard prerequisite check — skip skills whose prerequisites aren't met
+            prereq_status = self.check_prerequisites(student_id, skill_id, current_time)
+            if not prereq_status["met"]:
+                if not fast_mode:
+                    log_print(f"[FLEXIBLE_SELECT] Skipping {skill.name}: "
+                              f"{len(prereq_status['missing'])} prerequisite(s) not met")
+                continue
+
+            # Use per-skill adaptive difficulty + global cross-skill momentum
+            adaptive_base = self.get_adaptive_difficulty(student_id, skill_id)
+            target_difficulty = max(0.1, min(1.0, adaptive_base + global_difficulty_adjustment))
+
+            # --- Pool-based question serving (fast-path) ---
+            if self.content_service:
+                try:
+                    if fast_mode:
+                        pool_question = self.content_service.pop_assessment_question(
+                            skill_id, target_difficulty, exclude_ids=answered_question_ids,
+                            subject=self.subject or "")
+                    else:
+                        pool_question = self.content_service.pop_question(
+                            skill_id, target_difficulty, exclude_ids=answered_question_ids,
+                            subject=self.subject or "")
+                    if pool_question:
+                        q_id = pool_question.get("question_id", pool_question.get("dash_metadata", {}).get("dash_question_id", f"pool_{skill_id}"))
+                        log_print(f"[QUESTION_SELECTED] Q:{q_id} | Skill:{skill.name} | "
+                                  f"Difficulty:{target_difficulty:.2f} (FLEXIBLE_POOL, adaptive_base:{adaptive_base:.2f}, global_adj:{global_difficulty_adjustment:+.2f})")
+                        # Attach dash_metadata to pool question for direct serving
+                        if "dash_metadata" not in pool_question:
+                            pool_question["dash_metadata"] = {
+                                "dash_question_id": q_id,
+                                "skill_ids": [skill_id],
+                                "difficulty": pool_question.get("difficulty", target_difficulty),
+                                "skill_names": [skill.name],
+                                "unit_name": skill.name,
+                                "lesson_name": "Practice",
+                                "ai_generated": True,
+                            }
+                        # Proactive pool refill: check every 5th pop
+                        self._pool_check_counter += 1
+                        if self._pool_check_counter % 5 == 0 and not fast_mode:
+                            try:
+                                stats = self.content_service.get_pool_stats(skill_id)
+                                low_threshold = max(3, int(int(os.getenv("POOL_MIN_PER_BUCKET", "10")) * 0.3))
+                                if any(stats.get(b, 0) < low_threshold for b in ["easy", "medium", "hard", "synthesis"]):
+                                    self._fire_and_forget_sync(
+                                        self.content_service.ensure_pool,
+                                        skill_id,
+                                        skill_name=skill.name,
+                                        grade=skill.grade_level.name,
+                                        subject=self.subject,
+                                    )
+                            except Exception:
+                                pass  # Non-critical
+                        return Question(
+                            question_id=q_id,
+                            skill_ids=[skill_id],
+                            content="",
+                            difficulty=pool_question.get("difficulty", target_difficulty),
+                            expected_time_seconds=60.0,
+                            perseus_data=pool_question,
+                        )
+                    elif not fast_mode:
+                        # Pool empty for this skill -- trigger background fill
+                        # Skip in fast_mode to avoid Gemini rate limit contention
+                        self._fire_and_forget_sync(
+                            self.content_service.ensure_pool,
+                            skill_id,
+                            skill_name=skill.name,
+                            grade=skill.grade_level.name,
+                            subject=self.subject,
+                        )
+                except Exception as e:
+                    log_print(f"[CONTENT_SERVICE] Flexible pool pop failed for {skill_id}: {e}")
+                # Fall through to existing AI/Khan logic on pool miss or error
+
+            # --- AI-generated question path ---
+            if self.use_ai_questions and self.ai_provider:
+                ai_result = self.ai_provider.get_question_for_skill(
+                    skill_id=skill_id,
+                    skill_name=skill.name,
+                    target_difficulty=target_difficulty,
+                    grade_level=skill.grade_level.name,
+                    age=user_profile.age if user_profile else 7,
+                    exclude_question_ids=answered_question_ids,
+                    user_id=student_id,
+                    fast_mode=fast_mode,
+                    subject=self.subject or "",
+                )
+                if ai_result:
+                    q_id = ai_result["dash_metadata"]["dash_question_id"]
+                    log_print(f"[QUESTION_SELECTED] Q:{q_id} | Skill:{skill.name} | "
+                              f"Difficulty:{target_difficulty:.2f} (FLEXIBLE_AI, adaptive_base:{adaptive_base:.2f}, global_adj:{global_difficulty_adjustment:+.2f})")
+                    return Question(
+                        question_id=q_id,
+                        skill_ids=[skill_id],
+                        content="",
+                        difficulty=ai_result["dash_metadata"]["difficulty"],
+                        expected_time_seconds=60.0,
+                    )
+                continue  # Try next skill if AI provider returned nothing
+
+            # --- Khan question bank path (original) ---
             min_difficulty = max(0.0, target_difficulty - 0.2)
             max_difficulty = target_difficulty + 0.2
-            
+
             # Get question IDs for this skill from index (fast lookup)
             skill_question_ids = self.skill_question_index.get(skill_id, [])
             if not skill_question_ids:
                 continue
-            
+
             # Filter out answered questions
             candidate_ids = [qid for qid in skill_question_ids if qid not in answered_question_ids]
             if not candidate_ids:
                 continue
-            
+
             # Create Question objects on-demand from index
             all_candidates = []
             for qid in candidate_ids:
                 question = self._get_or_create_question(qid)
                 if question:
                     all_candidates.append(question)
-            
+
             if not all_candidates:
                 continue
-            
+
             # Filter by difficulty range (adaptive selection)
             filtered_candidates = [
                 q for q in all_candidates
                 if min_difficulty <= q.difficulty <= max_difficulty
             ]
-            
+
             # Select best match
             if filtered_candidates:
                 filtered_candidates.sort(key=lambda q: abs(q.difficulty - target_difficulty))
                 selected = filtered_candidates[0]
                 log_print(f"[QUESTION_SELECTED] Q:{selected.question_id} | Skill:{skill.name} | "
-                          f"Difficulty:{selected.difficulty:.2f} (FLEXIBLE, target:{target_difficulty:.2f}, adj:{difficulty_adjustment:+.2f})")
+                          f"Difficulty:{selected.difficulty:.2f} (FLEXIBLE, target:{target_difficulty:.2f}, adaptive_base:{adaptive_base:.2f}, global_adj:{global_difficulty_adjustment:+.2f})")
                 return selected
-            
+
             # Use closest match if no exact difficulty match
             all_candidates.sort(key=lambda q: abs(q.difficulty - target_difficulty))
             selected = all_candidates[0]
             log_print(f"[QUESTION_SELECTED] Q:{selected.question_id} | Skill:{skill.name} | "
                       f"Difficulty:{selected.difficulty:.2f} (FLEXIBLE_FALLBACK, target:{target_difficulty:.2f})")
             return selected
-        
+
         # Truly no questions available in grade range
         return None
     
-    def get_next_question(self, student_id: str, current_time: float, is_retry: bool = False, exclude_question_ids: Optional[List[str]] = None, user_profile: Optional['UserProfile'] = None) -> Optional[Question]:
+    def get_next_question(self, student_id: str, current_time: float, is_retry: bool = False, exclude_question_ids: Optional[List[str]] = None, user_profile: Optional['UserProfile'] = None, fast_mode: bool = False) -> Optional[Question]:
         """
         Get the next best question for the student, avoiding repeats.
         Intelligently selects question difficulty based on recent performance.
@@ -1416,66 +2163,165 @@ class DASHSystem:
         log_print(f"[GET_NEXT_QUESTION] Found {len(recommended_skills)} recommended skills for student {student_id}")
         
         answered_question_ids = {attempt.question_id for attempt in user_profile.question_history}
-        
+
         # Also exclude questions that are already selected in the current batch
         if exclude_question_ids:
             answered_question_ids.update(exclude_question_ids)
-        
-        # Analyze recent performance to determine difficulty adjustment
+        # Also exclude questions used in recent assessment sessions
+        answered_question_ids.update(self._get_recent_assessment_question_ids(student_id))
+
+        # Analyze recent performance for global fallback adjustment
         performance_analysis = self.analyze_recent_performance(user_profile)
-        difficulty_adjustment = performance_analysis['difficulty_adjustment']
+        global_difficulty_adjustment = performance_analysis['difficulty_adjustment']
         
         # Try to find an unanswered question from the recommended skills with adaptive difficulty
         for skill_idx, skill_id in enumerate(recommended_skills, 1):
             skill = self.skills.get(skill_id)
             if not skill:
                 continue
-            
-            # Calculate target difficulty range based on skill difficulty and performance
-            base_difficulty = skill.difficulty
-            target_difficulty = base_difficulty + difficulty_adjustment
-            
+
+            # Hard prerequisite check — skip skills whose prerequisites aren't met
+            prereq_status = self.check_prerequisites(student_id, skill_id, current_time)
+            if not prereq_status["met"]:
+                log_print(f"[GET_NEXT_QUESTION] Skipping {skill.name}: "
+                          f"{len(prereq_status['missing'])} prerequisite(s) not met")
+                continue
+
+            # Use per-skill adaptive difficulty (falls back to base if < 2 attempts)
+            # Then layer the global performance adjustment on top for combined signal
+            adaptive_base = self.get_adaptive_difficulty(student_id, skill_id)
+            # Global adjustment provides cross-skill momentum (hot streak / cold streak)
+            target_difficulty = max(0.1, min(1.0, adaptive_base + global_difficulty_adjustment))
+
+            # --- Pool-based question serving (fast-path) ---
+            if self.content_service:
+                try:
+                    if fast_mode:
+                        pool_question = self.content_service.pop_assessment_question(
+                            skill_id, target_difficulty, exclude_ids=answered_question_ids,
+                            subject=self.subject or "")
+                    else:
+                        pool_question = self.content_service.pop_question(
+                            skill_id, target_difficulty, exclude_ids=answered_question_ids,
+                            subject=self.subject or "")
+                    if pool_question:
+                        q_id = pool_question.get("question_id", pool_question.get("dash_metadata", {}).get("dash_question_id", f"pool_{skill_id}"))
+                        log_print(f"[QUESTION_SELECTED] Q:{q_id} | Skill:{skill.name} | "
+                                  f"Difficulty:{target_difficulty:.2f} (POOL, adaptive_base:{adaptive_base:.2f}, global_adj:{global_difficulty_adjustment:+.2f})")
+                        if "dash_metadata" not in pool_question:
+                            pool_question["dash_metadata"] = {
+                                "dash_question_id": q_id,
+                                "skill_ids": [skill_id],
+                                "difficulty": pool_question.get("difficulty", target_difficulty),
+                                "skill_names": [skill.name],
+                                "unit_name": skill.name,
+                                "lesson_name": "Practice",
+                                "ai_generated": True,
+                            }
+                        # Proactive pool refill: check every 5th pop
+                        self._pool_check_counter += 1
+                        if self._pool_check_counter % 5 == 0 and not fast_mode:
+                            try:
+                                stats = self.content_service.get_pool_stats(skill_id)
+                                low_threshold = max(3, int(int(os.getenv("POOL_MIN_PER_BUCKET", "10")) * 0.3))
+                                if any(stats.get(b, 0) < low_threshold for b in ["easy", "medium", "hard", "synthesis"]):
+                                    self._fire_and_forget_sync(
+                                        self.content_service.ensure_pool,
+                                        skill_id,
+                                        skill_name=skill.name,
+                                        grade=skill.grade_level.name,
+                                        subject=self.subject,
+                                    )
+                            except Exception:
+                                pass  # Non-critical
+                        return Question(
+                            question_id=q_id,
+                            skill_ids=[skill_id],
+                            content="",
+                            difficulty=pool_question.get("difficulty", target_difficulty),
+                            expected_time_seconds=60.0,
+                            perseus_data=pool_question,
+                        )
+                    elif not fast_mode:
+                        # Pool empty for this skill -- trigger background fill
+                        # Skip in fast_mode to avoid Gemini rate limit contention
+                        self._fire_and_forget_sync(
+                            self.content_service.ensure_pool,
+                            skill_id,
+                            skill_name=skill.name,
+                            grade=skill.grade_level.name,
+                            subject=self.subject,
+                        )
+                except Exception as e:
+                    log_print(f"[CONTENT_SERVICE] Pool pop failed for {skill_id}: {e}")
+                # Fall through to existing AI/Khan logic on pool miss or error
+
+            # --- AI-generated question path ---
+            if self.use_ai_questions and self.ai_provider:
+                ai_result = self.ai_provider.get_question_for_skill(
+                    skill_id=skill_id,
+                    skill_name=skill.name,
+                    target_difficulty=target_difficulty,
+                    grade_level=skill.grade_level.name,
+                    age=user_profile.age if user_profile else 7,
+                    exclude_question_ids=answered_question_ids,
+                    user_id=student_id,
+                    fast_mode=fast_mode,
+                    subject=self.subject or "",
+                )
+                if ai_result:
+                    q_id = ai_result["dash_metadata"]["dash_question_id"]
+                    log_print(f"[QUESTION_SELECTED] Q:{q_id} | Skill:{skill.name} | "
+                              f"Difficulty:{target_difficulty:.2f} (AI_GENERATED, adaptive_base:{adaptive_base:.2f}, global_adj:{global_difficulty_adjustment:+.2f})")
+                    return Question(
+                        question_id=q_id,
+                        skill_ids=[skill_id],
+                        content="",
+                        difficulty=ai_result["dash_metadata"]["difficulty"],
+                        expected_time_seconds=60.0,
+                    )
+                continue  # Try next skill if AI provider returned nothing
+
+            # --- Khan question bank path (original) ---
             # Allow some flexibility: ±0.2 around target difficulty
             min_difficulty = max(0.0, target_difficulty - 0.2)
             max_difficulty = target_difficulty + 0.2
-            
-            # Reduced verbosity - only log when selecting a question
-            
+
             # Get question IDs for this skill from index (fast lookup)
             skill_question_ids = self.skill_question_index.get(skill_id, [])
             if not skill_question_ids:
                 continue  # Skip silently if no questions for this skill
-            
+
             # Filter out answered questions
             candidate_ids = [qid for qid in skill_question_ids if qid not in answered_question_ids]
             if not candidate_ids:
                 continue  # Skip silently if all questions already answered
-            
+
             # Create Question objects on-demand from index
             all_candidates = []
             for qid in candidate_ids:
                 question = self._get_or_create_question(qid)
                 if question:
                     all_candidates.append(question)
-            
+
             if not all_candidates:
                 continue  # Skip silently
-            
+
             # Filter by difficulty range (adaptive selection)
             filtered_candidates = [
                 q for q in all_candidates
                 if min_difficulty <= q.difficulty <= max_difficulty
             ]
-            
+
             # If we have questions in the target difficulty range, use them
             if filtered_candidates:
                 # Sort by how close they are to target difficulty, then return the best match
                 filtered_candidates.sort(key=lambda q: abs(q.difficulty - target_difficulty))
                 selected = filtered_candidates[0]
                 log_print(f"[QUESTION_SELECTED] Q:{selected.question_id} | Skill:{skill.name} | "
-                      f"Difficulty:{selected.difficulty:.2f} (target:{target_difficulty:.2f}, adj:{difficulty_adjustment:+.2f})")
+                      f"Difficulty:{selected.difficulty:.2f} (target:{target_difficulty:.2f}, adaptive_base:{adaptive_base:.2f}, global_adj:{global_difficulty_adjustment:+.2f})")
                 return selected
-            
+
             # If no questions in target range, use closest match from all candidates
             # This ensures we always return a question if available
             all_candidates.sort(key=lambda q: abs(q.difficulty - target_difficulty))
@@ -1487,7 +2333,7 @@ class DASHSystem:
         # No unanswered questions found
         return None
     
-    def get_dynamic_student_performance(self, user_id: str) -> Dict[str, any]:
+    def get_dynamic_student_performance(self, user_id: str) -> Dict[str, Any]:
         """
         Get student performance mapped to CURRENT skill structure.
         Maps historical question attempts to current Khan Academy hierarchy.
@@ -1496,7 +2342,7 @@ class DASHSystem:
         from datetime import datetime
         
         # 1. Get all historical question attempts for this student
-        attempts = list(self.mongo_db.question_attempts.find({
+        attempts = list(self.mongo.question_attempts.find({
             "user_id": user_id
         }).sort("timestamp", -1))
         
@@ -1517,7 +2363,7 @@ class DASHSystem:
             question_id = attempt.get("question_id")
             
             # Find which current skill this question belongs to
-            question_doc = self.mongo_db.questions.find_one({"question_id": question_id})
+            question_doc = self.mongo.questions.find_one({"question_id": question_id})
             
             if not question_doc:
                 continue  # Question no longer exists in current DB
@@ -1527,7 +2373,7 @@ class DASHSystem:
             if not lesson_id:
                 continue
                 
-            lesson = self.mongo_db.lessons.find_one({"lesson_id": lesson_id})
+            lesson = self.mongo.lessons.find_one({"lesson_id": lesson_id})
             if not lesson:
                 continue
                 

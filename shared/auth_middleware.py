@@ -10,39 +10,57 @@ from shared.jwt_config import JWT_SECRET, JWT_ALGORITHM
 def get_current_user(request: Request) -> str:
     """
     Extract and validate JWT token from request, return user_id
-    
+
     Args:
         request: FastAPI request object
-        
+
     Returns:
         user_id string
-        
+
     Raises:
         HTTPException: If token is missing or invalid
     """
     auth_header = request.headers.get("Authorization")
-    
+
     if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(
             status_code=401,
             detail="Missing or invalid authorization header"
         )
-    
+
     token = auth_header.split(" ")[1]
-    
+
     try:
         payload = jwt.decode(
-            token, 
-            JWT_SECRET, 
+            token,
+            JWT_SECRET,
             algorithms=[JWT_ALGORITHM]
         )
         user_id = payload.get("sub")
-        
+
         if not user_id:
             raise HTTPException(status_code=401, detail="Invalid token: missing user_id")
-        
+
         return user_id
-        
+
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError as e:
+        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+
+
+def get_jwt_payload(request: Request) -> Dict:
+    """
+    Extract full JWT payload from request. Returns dict with all claims.
+    Raises HTTPException if token is missing/invalid.
+    """
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
+
+    token = auth_header.split(" ")[1]
+    try:
+        return jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
     except jwt.InvalidTokenError as e:

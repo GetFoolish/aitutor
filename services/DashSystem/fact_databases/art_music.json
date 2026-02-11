@@ -1,0 +1,747 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "other",
+    "last_updated": "2026-02-11",
+    "description": "Art and music facts: color theory, art elements, art history periods, music theory, instrument families, famous artists/composers, dance, photography"
+  },
+  "facts_by_topic": {
+    "color_theory": {
+      "keywords": [
+        "color",
+        "primary",
+        "secondary",
+        "tertiary",
+        "complementary",
+        "warm",
+        "cool",
+        "hue",
+        "value",
+        "saturation",
+        "color wheel",
+        "tint",
+        "shade",
+        "analogous",
+        "monochromatic"
+      ],
+      "facts": [
+        {
+          "statement": "The three primary colors in traditional (subtractive) color mixing are red, yellow, and blue; they cannot be made by mixing other colors",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "Secondary colors are made by mixing two primary colors: red+yellow=orange, red+blue=purple, yellow+blue=green",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "Tertiary colors are made by mixing a primary and an adjacent secondary color, such as red-orange or blue-green",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Complementary colors are opposite each other on the color wheel (red/green, blue/orange, yellow/purple) and create high contrast",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Warm colors (red, orange, yellow) tend to advance visually; cool colors (blue, green, purple) tend to recede",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A tint is made by adding white to a color (making it lighter); a shade is made by adding black (making it darker)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "In additive color mixing (light/screens), the primary colors are red, green, and blue (RGB), and mixing all three creates white",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Analogous colors are groups of three colors next to each other on the color wheel, such as red, red-orange, and orange",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A monochromatic color scheme uses variations of a single hue by adjusting its tints, shades, and tones",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Hue is the pure color name (red, blue, etc.), saturation is the intensity or purity of the color, and value is its lightness or darkness",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The color wheel was invented by Sir Isaac Newton in 1666 when he mapped the color spectrum into a circle",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A tone is created by adding gray (both black and white) to a pure hue, producing a more muted, subtle version of the color",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "black and white are colors",
+          "correct": "In physics, white is the combination of all visible light wavelengths, and black is the absence of visible light. In art, they are considered neutrals or shades."
+        },
+        {
+          "wrong": "mixing all primary paint colors makes white",
+          "correct": "Mixing all primary paint colors (subtractive mixing) tends toward black/brown. Mixing all primary LIGHT colors (additive mixing) creates white."
+        },
+        {
+          "wrong": "red and green make yellow when mixed",
+          "correct": "Red and green paint mix to create a brownish color. Red and green LIGHT (additive mixing) do create yellow on screens."
+        },
+        {
+          "wrong": "analogous colors are the same as complementary colors",
+          "correct": "Analogous colors sit next to each other on the color wheel (e.g., blue, blue-green, green). Complementary colors are opposite each other (e.g., blue and orange)."
+        }
+      ]
+    },
+    "elements_of_art": {
+      "keywords": [
+        "line",
+        "shape",
+        "form",
+        "texture",
+        "space",
+        "value",
+        "color",
+        "element of art",
+        "composition",
+        "design",
+        "balance",
+        "emphasis",
+        "contrast"
+      ],
+      "facts": [
+        {
+          "statement": "The seven elements of art are: line, shape, form, space, value, texture, and color",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Line is a mark with length and direction; it can be straight, curved, thick, thin, or implied",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Shape is a two-dimensional area (flat) with length and width; form is three-dimensional with length, width, and depth",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Value refers to the lightness or darkness of a color, creating contrast and the illusion of depth",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Texture is the surface quality of an object (rough, smooth, soft, hard); it can be actual or implied in artwork",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Space in art refers to the area around, between, and within objects; negative space is the area around the subject",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The principles of design include balance, emphasis, movement, pattern, repetition, proportion, rhythm, variety, and unity",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Symmetrical balance means both sides of a composition are the same or very similar; asymmetrical balance uses different elements that still feel balanced",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Emphasis in art is the focal point that draws the viewer's eye, created through contrast, color, size, or placement",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Proportion in art refers to the size relationship between parts of a whole; artists sometimes distort proportion for expressive effect",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "shape and form are the same thing",
+          "correct": "Shapes are 2D (circle, square, triangle). Forms are 3D (sphere, cube, pyramid). Form adds depth to shape."
+        },
+        {
+          "wrong": "texture in art must be real/physical",
+          "correct": "Texture can be actual (felt by touch) or implied (created visually through technique to look like a certain texture)."
+        },
+        {
+          "wrong": "negative space is wasted space",
+          "correct": "Negative space is a deliberate design choice that provides visual rest, creates shapes, and emphasizes the subject. It is essential to composition."
+        },
+        {
+          "wrong": "the elements and principles of art are the same thing",
+          "correct": "Elements of art are the building blocks (line, shape, color, etc.). Principles of design are how those elements are organized (balance, emphasis, unity, etc.)."
+        }
+      ]
+    },
+    "famous_composers": {
+      "keywords": [
+        "composer",
+        "Bach",
+        "Mozart",
+        "Beethoven",
+        "classical",
+        "symphony",
+        "concerto",
+        "opera",
+        "sonata",
+        "Tchaikovsky",
+        "Chopin",
+        "Vivaldi",
+        "Handel"
+      ],
+      "facts": [
+        {
+          "statement": "Johann Sebastian Bach (1685-1750) was a German Baroque composer known for complex counterpoint and works like the Brandenburg Concertos and Mass in B Minor",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Wolfgang Amadeus Mozart (1756-1791) was an Austrian Classical composer who wrote over 600 works including symphonies, operas (The Magic Flute, Don Giovanni), and the Requiem",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Ludwig van Beethoven (1770-1827) bridged the Classical and Romantic periods; he continued composing masterpieces like Symphony No. 9 after becoming deaf",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Pyotr Ilyich Tchaikovsky (1840-1893) was a Russian Romantic composer known for The Nutcracker, Swan Lake, and the 1812 Overture",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Frederic Chopin (1810-1849) was a Polish Romantic composer and virtuoso pianist known primarily for solo piano works including nocturnes, etudes, and polonaises",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The four main periods of Western classical music are Baroque (1600-1750), Classical (1750-1820), Romantic (1820-1900), and Modern/Contemporary (1900-present)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Antonio Vivaldi (1678-1741) was an Italian Baroque composer and violinist best known for The Four Seasons, a set of four violin concertos",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "George Frideric Handel (1685-1759) was a German-British Baroque composer famous for the oratorio Messiah, which includes the Hallelujah chorus",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A symphony is a large-scale musical composition for orchestra, typically in four movements; Beethoven wrote nine symphonies",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "An opera is a dramatic work combining singing, acting, orchestral music, and sometimes dance; Mozart, Verdi, and Wagner are famous opera composers",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "Beethoven was deaf his entire life",
+          "correct": "Beethoven gradually lost his hearing beginning around age 26. He composed many of his greatest works while partially or completely deaf, but he was not born deaf."
+        },
+        {
+          "wrong": "Mozart wrote only classical music, not opera",
+          "correct": "Mozart composed many famous operas including The Marriage of Figaro, Don Giovanni, and The Magic Flute, in addition to symphonies and concertos."
+        },
+        {
+          "wrong": "all classical music sounds the same",
+          "correct": "Classical music spans over 400 years and many distinct styles. Baroque music (Bach) sounds very different from Romantic music (Chopin) or Modern music (Stravinsky)."
+        },
+        {
+          "wrong": "Vivaldi and Bach were from the same country",
+          "correct": "Vivaldi was Italian (from Venice) and Bach was German (from Eisenach). They were contemporaries in the Baroque period but from different countries."
+        }
+      ]
+    },
+    "music_theory": {
+      "keywords": [
+        "note",
+        "scale",
+        "rhythm",
+        "tempo",
+        "beat",
+        "measure",
+        "treble clef",
+        "bass clef",
+        "staff",
+        "key signature",
+        "time signature",
+        "melody",
+        "harmony",
+        "chord",
+        "octave"
+      ],
+      "facts": [
+        {
+          "statement": "The musical alphabet uses seven letters: A, B, C, D, E, F, G, which repeat in cycles called octaves",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "A staff (or stave) consists of five horizontal lines and four spaces on which musical notes are written",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The treble clef (G clef) is used for higher-pitched instruments and voices; the bass clef (F clef) is used for lower-pitched instruments and voices",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A whole note lasts 4 beats, a half note lasts 2 beats, a quarter note lasts 1 beat, and an eighth note lasts half a beat (in 4/4 time)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Tempo is the speed of a piece of music, measured in beats per minute (BPM); common tempo markings include allegro (fast), andante (walking pace), and adagio (slow)",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A major scale follows the pattern of whole and half steps: W-W-H-W-W-W-H (where W=whole step and H=half step)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A chord is three or more notes played at the same time; a major chord sounds happy and a minor chord sounds sad",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Melody is a sequence of single notes that form a recognizable tune; harmony is the combination of different notes or chords played together",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A time signature tells how many beats are in each measure and which note value gets one beat; 4/4 time means four quarter-note beats per measure",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Sharps raise a note by a half step and flats lower a note by a half step; the key signature at the beginning of a piece tells which notes are sharp or flat throughout",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Dynamics in music indicate volume: pianissimo (pp) is very soft, piano (p) is soft, forte (f) is loud, and fortissimo (ff) is very loud",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "An octave is the interval between one note and the next note with the same name, spanning eight notes in a major or minor scale",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A rest in music is a silence of a specific duration; like notes, rests come in different lengths including whole rest, half rest, quarter rest, and eighth rest",
+          "grade_min": 3,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "a sharp and a flat are the same thing",
+          "correct": "A sharp (#) raises a note by a half step, while a flat (b) lowers a note by a half step. They move in opposite directions."
+        },
+        {
+          "wrong": "rhythm and tempo are the same thing",
+          "correct": "Tempo is the speed or pace of the music. Rhythm is the pattern of long and short sounds and silences within that tempo."
+        },
+        {
+          "wrong": "the treble clef and bass clef show the same notes",
+          "correct": "The treble clef and bass clef represent different pitch ranges. Middle C appears just below the treble clef staff and just above the bass clef staff."
+        },
+        {
+          "wrong": "a chord is just two notes played together",
+          "correct": "A chord requires at least three notes played simultaneously. Two notes played together form an interval, not a chord."
+        },
+        {
+          "wrong": "all music is written in 4/4 time",
+          "correct": "Music can be written in many time signatures: 3/4 (waltz), 6/8 (compound meter), 2/4 (march), 5/4, 7/8, and many others."
+        }
+      ]
+    },
+    "instrument_families": {
+      "keywords": [
+        "instrument",
+        "string",
+        "woodwind",
+        "brass",
+        "percussion",
+        "keyboard",
+        "orchestra",
+        "band",
+        "violin",
+        "flute",
+        "trumpet",
+        "drum",
+        "piano",
+        "guitar"
+      ],
+      "facts": [
+        {
+          "statement": "The four main families of orchestral instruments are strings, woodwinds, brass, and percussion",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "String instruments produce sound through vibrating strings; the orchestral string family includes violin, viola, cello, and double bass",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Woodwind instruments produce sound when air vibrates inside a tube; examples include flute, clarinet, oboe, and bassoon",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Brass instruments produce sound when the player buzzes their lips into a cup-shaped mouthpiece; examples include trumpet, trombone, French horn, and tuba",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Percussion instruments produce sound when struck, shaken, or scraped; examples include drums, cymbals, xylophone, and tambourine",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The piano is a keyboard instrument that produces sound when hammers strike strings inside the body; it has 88 keys (52 white and 36 black)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The guitar is a string instrument with typically six strings that can be plucked, strummed, or picked; acoustic guitars have hollow bodies, electric guitars use pickups and amplifiers",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The violin is the highest-pitched and smallest member of the orchestral string family; the double bass (or contrabass) is the largest and lowest-pitched",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A standard symphony orchestra typically contains 70-100 musicians divided among the four instrument families",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The human voice is considered a musical instrument and is classified by range: soprano (highest female), alto (lower female), tenor (higher male), and bass (lowest male)",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The recorder is a woodwind instrument often used in elementary music education because of its simple fingering system; it dates back to the Medieval period",
+          "grade_min": 2,
+          "grade_max": 8
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the flute is a brass instrument because it is made of metal",
+          "correct": "The flute is classified as a woodwind instrument because of how it produces sound (blowing air across an opening), not what material it is made from."
+        },
+        {
+          "wrong": "drums are not real musical instruments",
+          "correct": "Drums and other percussion instruments are a fundamental part of music and orchestras. Percussion can play melodies (xylophone, marimba) and rhythms."
+        },
+        {
+          "wrong": "the piano is a string instrument",
+          "correct": "While the piano has strings inside, it is classified as a keyboard instrument (or sometimes as a percussion instrument) because hammers strike the strings when keys are pressed."
+        },
+        {
+          "wrong": "all brass instruments are the same size",
+          "correct": "Brass instruments vary greatly in size: the trumpet is small and high-pitched, while the tuba is very large and produces the lowest notes in the brass family."
+        }
+      ]
+    },
+    "art_history_periods": {
+      "keywords": [
+        "Renaissance",
+        "Impressionism",
+        "Baroque",
+        "Cubism",
+        "Surrealism",
+        "Abstract",
+        "Pop Art",
+        "art movement",
+        "modern art",
+        "Romanticism",
+        "Realism",
+        "art period"
+      ],
+      "facts": [
+        {
+          "statement": "The Renaissance (roughly 1400-1600) was a cultural rebirth in Europe emphasizing humanism, science, and realistic art; key artists include Leonardo da Vinci, Michelangelo, and Raphael",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Leonardo da Vinci (1452-1519) painted the Mona Lisa and The Last Supper and was also an inventor, scientist, and engineer",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Michelangelo (1475-1564) painted the ceiling of the Sistine Chapel and sculpted the statue of David, both considered masterpieces of Renaissance art",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Impressionism (1860s-1880s) was a French art movement that captured light and color with visible brushstrokes; key artists include Claude Monet, Pierre-Auguste Renoir, and Edgar Degas",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Vincent van Gogh (1853-1890) was a Post-Impressionist Dutch painter known for The Starry Night, Sunflowers, and expressive use of bold colors and thick brushstrokes",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Pablo Picasso (1881-1973) co-founded Cubism and is one of the most influential artists of the 20th century; his works include Guernica and Les Demoiselles d'Avignon",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Cubism (early 1900s) broke objects into geometric shapes and showed multiple viewpoints simultaneously; it was pioneered by Picasso and Georges Braque",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Surrealism (1920s-1940s) explored dreams and the unconscious mind; Salvador Dali's The Persistence of Memory with melting clocks is an iconic example",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Pop Art (1950s-1960s) drew from popular culture, advertising, and mass media; Andy Warhol's Campbell's Soup Cans and Marilyn Monroe prints are famous examples",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Abstract art does not attempt to represent visual reality; instead it uses shapes, colors, forms, and gestural marks to achieve its effect",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Frida Kahlo (1907-1954) was a Mexican painter known for vivid self-portraits that explored identity, pain, and Mexican folk art traditions",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the Mona Lisa was painted by Michelangelo",
+          "correct": "The Mona Lisa was painted by Leonardo da Vinci, around 1503-1519. Michelangelo is known for the Sistine Chapel ceiling and the sculpture of David."
+        },
+        {
+          "wrong": "Impressionism got its name because the artists made a good impression on critics",
+          "correct": "The name 'Impressionism' came from a critic who meant it as an insult, referring to Monet's painting 'Impression, Sunrise' as merely an impression, not a finished work."
+        },
+        {
+          "wrong": "abstract art requires no skill because it does not look realistic",
+          "correct": "Abstract art requires deep understanding of color, composition, form, and visual language. Artists like Kandinsky and Mondrian trained extensively in traditional techniques first."
+        },
+        {
+          "wrong": "all famous artists became successful during their lifetimes",
+          "correct": "Many famous artists were not recognized during their lifetimes. Van Gogh sold very few paintings while alive, and Emily Dickinson's poetry was largely unpublished until after her death."
+        }
+      ]
+    },
+    "famous_artists": {
+      "keywords": [
+        "artist",
+        "painter",
+        "sculptor",
+        "Leonardo",
+        "Monet",
+        "van Gogh",
+        "Picasso",
+        "Warhol",
+        "Kahlo",
+        "O'Keeffe",
+        "Rembrandt",
+        "masterpiece"
+      ],
+      "facts": [
+        {
+          "statement": "Georgia O'Keeffe (1887-1986) was an American modernist painter known for large-scale flower paintings, New York cityscapes, and New Mexico landscapes",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Rembrandt van Rijn (1606-1669) was a Dutch Golden Age painter renowned for portraits, self-portraits, and masterful use of light and shadow (chiaroscuro)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Claude Monet (1840-1926) was a founder of French Impressionism who painted outdoor scenes; his Water Lilies series includes over 250 oil paintings",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Andy Warhol (1928-1987) was a leading figure in Pop Art known for his silkscreen prints of Campbell's Soup Cans and celebrities like Marilyn Monroe",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Mary Cassatt (1844-1926) was an American Impressionist painter who lived in France and is known for her depictions of mothers and children",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A sculpture is a three-dimensional artwork created by carving, modeling, casting, or assembling materials such as stone, metal, clay, or wood",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "A self-portrait is an artwork that the artist creates of themselves; Frida Kahlo painted 55 self-portraits and Rembrandt painted about 80",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A mural is a large-scale painting or artwork applied directly to a wall, ceiling, or other large surface; Diego Rivera was famous for his murals depicting Mexican history",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A medium in art refers to the material or technique used by the artist, such as oil paint, watercolor, charcoal, pastel, or digital tools",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A portrait is an artwork that depicts a specific person or group of people; portraits can be paintings, drawings, photographs, or sculptures",
+          "grade_min": 2,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "only men were famous artists in history",
+          "correct": "Many women made significant contributions to art history, including Mary Cassatt, Frida Kahlo, Georgia O'Keeffe, Artemisia Gentileschi, and Berthe Morisot."
+        },
+        {
+          "wrong": "van Gogh cut off his entire ear",
+          "correct": "Van Gogh cut off part of his left ear (the lower portion of the earlobe), not his entire ear. The exact circumstances remain debated by historians."
+        },
+        {
+          "wrong": "sculptures can only be made from stone or marble",
+          "correct": "Sculptures can be made from many materials including metal, clay, wood, glass, ice, found objects, fabric, and even digital media."
+        },
+        {
+          "wrong": "photography is not a real art form",
+          "correct": "Photography is widely recognized as a visual art form. Photographers make artistic choices about composition, lighting, perspective, and subject matter."
+        }
+      ]
+    },
+    "dance_and_theater": {
+      "keywords": [
+        "dance",
+        "ballet",
+        "theater",
+        "drama",
+        "musical",
+        "choreography",
+        "stage",
+        "performance",
+        "act",
+        "scene",
+        "audience",
+        "costume"
+      ],
+      "facts": [
+        {
+          "statement": "Ballet originated in the Italian Renaissance courts in the 15th century and was further developed in France under King Louis XIV",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The five basic ballet positions of the feet were codified by Pierre Beauchamp in the late 1600s and are still used today",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Choreography is the art of designing and arranging the movements, steps, and patterns of a dance performance",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Theater combines acting, dialogue, music, dance, and visual art to tell stories; it originated in ancient Greece around 500 BCE",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A musical theater production combines spoken dialogue, songs, and dance to tell a story; famous musicals include The Wizard of Oz, The Sound of Music, and Hamilton",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The three main types of drama are comedy (humorous, happy ending), tragedy (serious, often ending in loss), and musical (combining spoken word and song)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Folk dances are traditional dances that reflect the culture, customs, and history of a specific region or ethnic group",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Modern dance emerged in the early 20th century as a rebellion against strict ballet rules; pioneers include Martha Graham and Isadora Duncan",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "William Shakespeare (1564-1616) wrote at least 37 plays including Romeo and Juliet, Hamlet, and A Midsummer Night's Dream; he is considered one of the greatest playwrights in history",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Hip-hop dance originated in the 1970s in New York City communities and includes styles like breaking, popping, and locking",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "ballet is only for girls",
+          "correct": "Ballet has always included male dancers who perform important roles. Famous male ballet dancers include Mikhail Baryshnikov, Rudolf Nureyev, and Misty Copeland's partner."
+        },
+        {
+          "wrong": "theater and drama started in England with Shakespeare",
+          "correct": "Theater originated in ancient Greece around 500 BCE, over 2,000 years before Shakespeare. Greek playwrights like Sophocles and Euripides wrote foundational works."
+        },
+        {
+          "wrong": "dance is not a form of art",
+          "correct": "Dance is one of the oldest and most universal art forms, combining physical movement, music, expression, and storytelling. It is recognized as a performing art worldwide."
+        },
+        {
+          "wrong": "Shakespeare invented the English language",
+          "correct": "Shakespeare did not invent English, but he contributed many words and phrases still used today (like 'eyeball,' 'lonely,' and 'break the ice'). He wrote in Early Modern English."
+        }
+      ]
+    }
+  }
+}

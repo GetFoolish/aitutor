@@ -1,0 +1,673 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "civics",
+    "last_updated": "2026-02-11",
+    "description": "Civics facts: branches of government, Bill of Rights, election process, federalism, Supreme Court, citizenship, local government, political parties, civic participation"
+  },
+  "facts_by_topic": {
+    "branches_of_government": {
+      "keywords": [
+        "branch", "legislative", "executive", "judicial", "Congress",
+        "President", "Supreme Court", "checks and balances",
+        "separation of powers"
+      ],
+      "facts": [
+        {
+          "statement": "The U.S. government has three branches: legislative (Congress), executive (President), and judicial (Supreme Court and federal courts)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The legislative branch (Congress) makes laws; it consists of the Senate (100 members, 2 per state) and House of Representatives (435 members, based on population)",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The executive branch enforces laws; it is led by the President, who serves as head of state, commander in chief, and chief executive",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The judicial branch interprets laws and the Constitution; the Supreme Court is the highest court in the nation",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Checks and balances prevent any one branch from becoming too powerful; each branch can limit the powers of the others",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The President can veto (reject) bills passed by Congress; Congress can override a veto with a two-thirds vote in both chambers",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Supreme Court can declare laws unconstitutional through judicial review, checking both Congress and the President",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Vice President serves as President of the Senate and casts tie-breaking votes",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The President's Cabinet consists of the heads of executive departments (like State, Defense, Treasury) who advise the President",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Congress has the power to impeach the President; the House votes to impeach and the Senate holds the trial",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A bill must pass both the House of Representatives and the Senate in identical form before it can be sent to the President to sign into law",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Speaker of the House is the presiding officer of the House of Representatives and is second in the presidential line of succession after the Vice President",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the President makes laws",
+          "correct": "The President can propose legislation and sign bills into law but cannot make laws alone. Congress writes and passes laws."
+        },
+        {
+          "wrong": "the Supreme Court can create new laws",
+          "correct": "The Supreme Court interprets the Constitution and can strike down laws as unconstitutional, but it cannot write new laws."
+        },
+        {
+          "wrong": "Senators and Representatives serve the same length terms",
+          "correct": "Senators serve 6-year terms; Representatives serve 2-year terms. There is no limit on how many terms they can serve."
+        },
+        {
+          "wrong": "impeachment means the President is removed from office",
+          "correct": "Impeachment is the process of bringing charges against the President. Removal requires a conviction by two-thirds of the Senate after an impeachment trial."
+        }
+      ]
+    },
+    "election_process": {
+      "keywords": [
+        "election", "vote", "Electoral College", "primary", "caucus",
+        "campaign", "ballot", "candidate", "democracy", "republic"
+      ],
+      "facts": [
+        {
+          "statement": "The United States is a constitutional republic where citizens elect representatives to make decisions on their behalf",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Presidential elections occur every 4 years; the President is elected through the Electoral College, not by direct popular vote",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Electoral College has 538 electors; a candidate needs at least 270 electoral votes to win the presidency",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Each state's number of electors equals its number of Senators (2) plus its number of Representatives (varies by population)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Primary elections and caucuses are held within each party to choose the presidential nominee before the general election",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "U.S. citizens must be at least 18 years old to vote, as guaranteed by the 26th Amendment",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Congressional elections are held every 2 years; all 435 House seats and about one-third of Senate seats are up for election each time",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "To be eligible for president, a person must be a natural-born citizen, at least 35 years old, and have been a resident of the US for at least 14 years",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "General elections in the United States are held on the first Tuesday after the first Monday in November",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 15th Amendment (1870) prohibited denying the right to vote based on race, the 19th Amendment (1920) gave women the right to vote, and the 26th Amendment (1971) lowered the voting age to 18",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Gerrymandering is the practice of drawing electoral district boundaries to give one political party an unfair advantage over another",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the president is elected by popular vote",
+          "correct": "The president is elected by the Electoral College. A candidate can win the presidency while losing the popular vote (this happened in 2000 and 2016)."
+        },
+        {
+          "wrong": "everyone who lives in the US can vote",
+          "correct": "Only U.S. citizens aged 18 or older who are registered to vote can participate in elections."
+        },
+        {
+          "wrong": "the Electoral College always reflects the popular vote",
+          "correct": "Because most states use a winner-take-all system, the Electoral College result can differ from the national popular vote."
+        },
+        {
+          "wrong": "you have to belong to a political party to vote",
+          "correct": "Independent and unaffiliated voters can vote in general elections. Some states also allow them to vote in primary elections."
+        }
+      ]
+    },
+    "federalism": {
+      "keywords": [
+        "federalism", "federal", "state", "local", "power",
+        "enumerated", "reserved", "concurrent", "amendment",
+        "supremacy clause"
+      ],
+      "facts": [
+        {
+          "statement": "Federalism is a system of government where power is divided between a central (federal) government and state governments",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Enumerated (delegated) powers belong to the federal government: declaring war, coining money, regulating interstate commerce, conducting foreign policy",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Reserved powers belong to the states under the 10th Amendment: education, driver's licenses, marriage laws, intrastate commerce",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Concurrent powers are shared by both federal and state governments: taxation, building roads, creating courts, enforcing laws",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Supremacy Clause (Article VI) establishes that federal law takes precedence over state law when they conflict",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Local governments (cities, counties) derive their powers from state governments, not directly from the Constitution",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The elastic clause (Necessary and Proper Clause) in Article I gives Congress the power to make laws needed to carry out its enumerated powers",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Each state has its own constitution, governor, legislature, and court system",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The federal system allows states to serve as 'laboratories of democracy,' experimenting with different policies before they are adopted nationally",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Commerce Clause in Article I gives Congress the power to regulate trade between states, which has been used to expand federal authority over many areas of American life",
+          "grade_min": 9,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the federal government controls all laws in the US",
+          "correct": "Under federalism, many laws (education, criminal law, property) are primarily controlled by state governments, not the federal government."
+        },
+        {
+          "wrong": "states can override federal law whenever they want",
+          "correct": "Under the Supremacy Clause, valid federal law overrides conflicting state law. States cannot nullify federal laws on their own."
+        },
+        {
+          "wrong": "the Constitution lists all the powers of state governments",
+          "correct": "The 10th Amendment reserves all powers not specifically given to the federal government to the states and the people, without listing them all."
+        },
+        {
+          "wrong": "local governments get their power directly from the Constitution",
+          "correct": "Local governments (cities, counties) derive their power from state governments. The Constitution does not mention local governments; states create and regulate them."
+        }
+      ]
+    },
+    "citizenship_and_rights": {
+      "keywords": [
+        "citizen", "citizenship", "rights", "responsibilities", "duty",
+        "naturalization", "immigrant", "due process", "equal protection",
+        "civic duty"
+      ],
+      "facts": [
+        {
+          "statement": "A person born in the United States is automatically a citizen, as guaranteed by the 14th Amendment",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Naturalization is the legal process by which an immigrant becomes a U.S. citizen, requiring a civics and English test, residency requirements, and an oath of allegiance",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Citizens have both rights (voting, free speech, fair trial) and responsibilities (jury duty, paying taxes, obeying laws)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 14th Amendment guarantees equal protection under the law, meaning the government must treat all people fairly",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Due process means the government must follow fair procedures before taking away a person's life, liberty, or property",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Jury duty is a civic responsibility; the right to trial by jury is guaranteed by the 6th and 7th Amendments",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Universal Declaration of Human Rights (1948) was adopted by the United Nations and outlines fundamental rights for all people worldwide",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Pledge of Allegiance was written in 1892 and has been recited in schools since then as an expression of patriotism",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Civil Rights Act of 1964 outlawed discrimination based on race, color, religion, sex, or national origin and is a landmark piece of civil rights legislation",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "only citizens have rights in the United States",
+          "correct": "The Constitution protects many rights for all people in the US, not just citizens. For example, due process and equal protection apply to everyone."
+        },
+        {
+          "wrong": "becoming a citizen is automatic for anyone who lives in the US long enough",
+          "correct": "Naturalization requires meeting specific legal requirements including continuous residency, passing tests, and taking an oath. It is not automatic."
+        },
+        {
+          "wrong": "the right to vote has always been available to all citizens",
+          "correct": "Voting rights expanded over time through amendments: the 15th (race), 19th (women), 24th (no poll taxes), and 26th (age 18)."
+        },
+        {
+          "wrong": "citizens only have rights but no responsibilities",
+          "correct": "Citizens have responsibilities including paying taxes, serving on juries, obeying laws, and registering for Selective Service (for males)."
+        }
+      ]
+    },
+    "local_and_state_government": {
+      "keywords": [
+        "local government", "state government", "governor", "mayor",
+        "city council", "county", "school board", "zoning",
+        "state legislature", "municipality"
+      ],
+      "facts": [
+        {
+          "statement": "State governments are led by a governor, who serves as the chief executive of the state",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Every state except Nebraska has a bicameral (two-chamber) legislature; Nebraska has a unicameral (single-chamber) legislature",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Local governments include cities, counties, towns, and special districts that provide services like schools, police, fire protection, and roads",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Mayors are typically the chief executives of cities, while county governments are often led by a board of commissioners or supervisors",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "School boards are elected or appointed local bodies that oversee public schools, set policies, and approve budgets",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "State governments are responsible for education policy, highway systems, licensing professions, and managing state parks",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Property taxes are the main source of revenue for most local governments, funding schools, police, and other services",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Zoning laws are local regulations that control how land can be used (residential, commercial, industrial) in a community",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the federal government runs public schools",
+          "correct": "Public schools are primarily controlled by state and local governments. The federal Department of Education provides funding and sets some standards but does not run schools."
+        },
+        {
+          "wrong": "the governor can overrule the President",
+          "correct": "Governors lead state governments but cannot overrule the President on federal matters. Federal law takes precedence under the Supremacy Clause."
+        },
+        {
+          "wrong": "local government decisions do not affect daily life",
+          "correct": "Local governments make decisions that directly affect daily life, including road maintenance, water quality, police services, school quality, and building codes."
+        }
+      ]
+    },
+    "political_parties_and_participation": {
+      "keywords": [
+        "political party", "Democrat", "Republican", "independent",
+        "two-party system", "third party", "platform", "lobby",
+        "interest group", "civic participation", "protest"
+      ],
+      "facts": [
+        {
+          "statement": "The United States has a two-party system dominated by the Democratic Party and the Republican Party",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Political parties develop platforms that outline their positions on issues like the economy, healthcare, education, and foreign policy",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Third parties (like the Libertarian and Green parties) have historically influenced American politics by raising new issues even if they rarely win major elections",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Interest groups and lobbyists try to influence government policy by advocating for specific causes or industries",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Civic participation includes voting, volunteering, attending town meetings, contacting elected officials, and peaceful protest",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 1st Amendment protects the right to peacefully assemble and petition the government for change",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Freedom of the press ensures that newspapers, media, and journalists can report on government actions without censorship",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The two major political parties have evolved significantly over time; their positions on many issues have shifted throughout American history",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the Constitution created the two-party system",
+          "correct": "The Constitution does not mention political parties. The two-party system evolved naturally from early political disagreements between Federalists and Anti-Federalists."
+        },
+        {
+          "wrong": "voters must belong to a political party",
+          "correct": "Voters can register as independents or unaffiliated. They can still vote in general elections regardless of party membership."
+        },
+        {
+          "wrong": "the Democratic and Republican parties have always stood for the same things",
+          "correct": "Both parties have changed their platforms significantly over time. For example, the parties' positions on civil rights shifted dramatically in the mid-20th century."
+        },
+        {
+          "wrong": "protesting is illegal in the United States",
+          "correct": "Peaceful protest is protected by the 1st Amendment. However, protests that become violent or block critical infrastructure may face legal restrictions."
+        }
+      ]
+    },
+    "constitution_and_founding": {
+      "keywords": [
+        "Constitution", "Founding Fathers", "preamble", "articles",
+        "ratification", "Federalist", "Anti-Federalist", "convention",
+        "compromise", "republic"
+      ],
+      "facts": [
+        {
+          "statement": "The U.S. Constitution, written in 1787, is the supreme law of the land and the oldest written national constitution still in use",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Preamble begins with 'We the People' and states the purposes of the Constitution: to form a more perfect union, establish justice, and secure liberty",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Great Compromise created a bicameral Congress with the Senate (equal representation) and the House (proportional representation)",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Three-Fifths Compromise counted enslaved people as three-fifths of a person for representation and taxation purposes, a provision later eliminated by the 14th Amendment",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Federalist Papers, written by Hamilton, Madison, and Jay, argued for ratification of the Constitution",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Anti-Federalists opposed the Constitution because it lacked a Bill of Rights; the Bill of Rights was added to address their concerns",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Constitution can be amended through a process requiring approval by two-thirds of Congress and three-fourths of state legislatures",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Constitution establishes a system of popular sovereignty, meaning the government's power comes from the consent of the governed",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Constitutional Convention was held in Philadelphia in 1787, with delegates from 12 of the 13 states (Rhode Island did not attend)",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the Constitution has never been changed",
+          "correct": "The Constitution has been amended 27 times. The amendment process allows it to evolve while maintaining its core principles."
+        },
+        {
+          "wrong": "the Constitution was unanimously approved by all states",
+          "correct": "Ratification was contentious. Anti-Federalists strongly opposed it, and the Bill of Rights had to be promised before several states would ratify."
+        },
+        {
+          "wrong": "the Founding Fathers all agreed on everything",
+          "correct": "The Founders had intense disagreements about representation, slavery, federal power, and other issues, leading to numerous compromises."
+        },
+        {
+          "wrong": "the Declaration of Independence and the Constitution are the same document",
+          "correct": "The Declaration (1776) declared independence from Britain. The Constitution (1787) established the framework of the US government. They are separate documents."
+        }
+      ]
+    },
+    "democracy_and_government_types": {
+      "keywords": [
+        "democracy", "republic", "monarchy", "dictatorship", "oligarchy",
+        "authoritarian", "totalitarian", "theocracy", "government type",
+        "self-governance", "representative"
+      ],
+      "facts": [
+        {
+          "statement": "Democracy is a system of government in which power is held by the people, either directly or through elected representatives",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A republic is a form of government where citizens elect representatives to make decisions on their behalf, rather than voting on every issue directly",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A monarchy is a government led by a king or queen; in a constitutional monarchy (like the United Kingdom), the monarch's power is limited by law",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A dictatorship is a government controlled by one person or a small group with absolute power and no free elections",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "An oligarchy is a government controlled by a small group of wealthy or powerful people",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A theocracy is a government in which religious leaders hold political power and religious law is the law of the land",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Direct democracy, where all citizens vote on every issue, was practiced in ancient Athens but is impractical for large modern nations",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Totalitarian governments seek to control nearly every aspect of public and private life, including speech, media, and even thought",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The rule of law means that all people and institutions, including the government itself, are accountable to laws that are publicly known and equally enforced",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Free and fair elections, protection of individual rights, and an independent judiciary are key characteristics of a functioning democracy",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "democracy and republic are opposites",
+          "correct": "A republic is a type of democracy. The US is both a democracy (people choose leaders) and a republic (elected representatives govern). They are not mutually exclusive."
+        },
+        {
+          "wrong": "all monarchies are dictatorships",
+          "correct": "Constitutional monarchies like the UK, Japan, and Sweden have democratic governments where the monarch has limited or ceremonial power."
+        },
+        {
+          "wrong": "democracy guarantees good outcomes",
+          "correct": "Democracy is a process for making collective decisions, not a guarantee of good results. Democratic nations still face challenges like inequality, corruption, and poor policy choices."
+        },
+        {
+          "wrong": "communism and socialism are the same thing",
+          "correct": "Communism aims for a classless society with no private property and state control of all production. Socialism advocates for collective or government ownership of key industries but can coexist with democracy."
+        }
+      ]
+    },
+    "justice_and_law": {
+      "keywords": [
+        "law", "justice", "court", "trial", "jury", "rights",
+        "criminal", "civil", "due process", "innocent until proven guilty",
+        "attorney", "defendant", "plaintiff"
+      ],
+      "facts": [
+        {
+          "statement": "The US legal system is based on English common law, where court decisions (precedents) help interpret and shape the law over time",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Criminal law deals with offenses against society (theft, assault); civil law deals with disputes between individuals or organizations (contracts, property)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "In the US, a person accused of a crime is presumed innocent until proven guilty beyond a reasonable doubt",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The right to a fair and speedy trial by jury is guaranteed by the 6th Amendment for criminal cases",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The court system has three main levels: trial courts (where cases begin), appellate courts (where decisions are reviewed), and the Supreme Court (highest authority)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Juvenile courts handle cases involving minors and typically focus on rehabilitation rather than punishment",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Miranda warning ('You have the right to remain silent...') must be given to suspects before police questioning, as established by Miranda v. Arizona (1966)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Laws can be created by legislatures (statutory law), by courts through rulings (case law), or by constitutions (constitutional law)",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "being arrested means you are guilty",
+          "correct": "An arrest means there is probable cause to suspect a crime. Guilt is determined only after a trial or plea. Everyone is presumed innocent until proven guilty."
+        },
+        {
+          "wrong": "you only get a lawyer if you can afford one",
+          "correct": "The Supreme Court ruled in Gideon v. Wainwright (1963) that the government must provide a lawyer for defendants who cannot afford one in criminal cases."
+        },
+        {
+          "wrong": "the Supreme Court always has the final say on everything",
+          "correct": "The Supreme Court has final say on constitutional questions. However, Congress can change laws, and constitutional amendments can override Court decisions."
+        },
+        {
+          "wrong": "all laws are the same in every state",
+          "correct": "States have their own laws on many matters including criminal penalties, marriage, education, and taxes. What is legal in one state may be illegal in another."
+        }
+      ]
+    }
+  }
+}

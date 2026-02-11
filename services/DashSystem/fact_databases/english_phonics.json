@@ -1,0 +1,669 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "english",
+    "last_updated": "2026-02-11",
+    "description": "Phonics facts: vowel sounds, consonant blends, digraphs, syllable types, silent letters, spelling, r-controlled vowels, diphthongs, word families, sight words, morphology"
+  },
+  "facts_by_topic": {
+    "vowel_sounds": {
+      "keywords": [
+        "vowel", "short vowel", "long vowel", "diphthong", "schwa",
+        "silent e", "vowel team", "vowel pair"
+      ],
+      "facts": [
+        {
+          "statement": "The five vowels in English are A, E, I, O, U; the letter Y sometimes acts as a vowel",
+          "grade_min": 0,
+          "grade_max": 12
+        },
+        {
+          "statement": "Short vowels make the sounds in: cat (a), bed (e), sit (i), hot (o), cup (u)",
+          "grade_min": 0,
+          "grade_max": 12
+        },
+        {
+          "statement": "Long vowels say their own name: cake (a), feet (e), kite (i), rope (o), cube (u)",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "The silent e at the end of a word often makes the preceding vowel long: hat/hate, bit/bite, hop/hope",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "Vowel teams are two vowels together that make one sound: 'ea' in read, 'oa' in boat, 'ai' in rain",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "The schwa is the most common vowel sound in English, a lazy 'uh' sound heard in unstressed syllables: 'a' in about, 'e' in taken",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A diphthong is a vowel sound that glides from one sound to another: 'oi' in coin, 'ou' in house",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The vowel team 'oo' can make two different sounds: a long sound as in 'moon' and a short sound as in 'book'",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "When Y appears at the end of a one-syllable word, it usually makes the long 'i' sound: fly, try, sky, dry",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "When Y appears at the end of a multi-syllable word, it usually makes the long 'e' sound: happy, funny, baby, candy",
+          "grade_min": 1,
+          "grade_max": 8
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "every word with a silent e has a long vowel",
+          "correct": "Some words with silent e do not follow the pattern: have, give, love, some, come."
+        },
+        {
+          "wrong": "y is always a consonant",
+          "correct": "Y acts as a vowel in words like 'gym,' 'fly,' 'happy,' and 'myth.' It is a consonant at the beginning of words like 'yes' and 'yellow.'"
+        },
+        {
+          "wrong": "the rule 'when two vowels go walking, the first one does the talking' always works",
+          "correct": "This rule has many exceptions: 'bread,' 'said,' 'chief.' It works about 45% of the time."
+        },
+        {
+          "wrong": "all vowel teams make a long vowel sound",
+          "correct": "Some vowel teams make other sounds: 'oo' in 'book' is not a long vowel, 'ow' in 'cow' is a diphthong, and 'ea' in 'bread' is short e."
+        }
+      ]
+    },
+    "consonant_patterns": {
+      "keywords": [
+        "consonant", "blend", "digraph", "cluster", "ch", "sh", "th",
+        "wh", "ph", "ck", "ng", "wr", "kn"
+      ],
+      "facts": [
+        {
+          "statement": "A consonant blend is two or three consonants together where each sound can be heard: bl, cr, str, spl",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "A consonant digraph is two consonants together that make one new sound: ch, sh, th, wh, ph, ck, ng",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Ch' makes the sound in 'chair,' 'sh' makes the sound in 'ship,' 'th' makes the sound in 'think' or 'the'",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "'Ph' makes the 'f' sound as in 'phone' and 'photo'",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 'th' digraph has two sounds: voiced (as in 'the,' 'this,' 'that') and unvoiced (as in 'think,' 'thin,' 'three')",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Common beginning blends include: bl, br, cl, cr, dr, fl, fr, gl, gr, pl, pr, sc, sk, sl, sm, sn, sp, st, sw, tr",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "Common ending blends include: -nd (hand), -nk (think), -nt (went), -mp (jump), -ft (left), -lt (belt), -lk (milk)",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "Three-letter blends appear at the beginning of words: str (street), spl (splash), spr (spring), scr (scratch), squ (square)",
+          "grade_min": 2,
+          "grade_max": 8
+        },
+        {
+          "statement": "The digraph 'ck' appears at the end of a short word after a short vowel: back, neck, kick, lock, duck",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "The digraph 'ng' makes a nasal sound at the end of words: ring, song, lung, hang, king",
+          "grade_min": 1,
+          "grade_max": 8
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "blends and digraphs are the same thing",
+          "correct": "In a blend, you hear each consonant sound (bl = b + l). In a digraph, two letters make one new sound (sh is one sound, not s + h)."
+        },
+        {
+          "wrong": "'qu' is a digraph",
+          "correct": "'Qu' is technically a consonant team, not a digraph. The 'u' typically represents the /w/ sound: queen = kw-een."
+        },
+        {
+          "wrong": "the letter 'c' always makes the same sound",
+          "correct": "'C' makes a hard sound (like 'k') before a, o, u (cat, cot, cup) and a soft sound (like 's') before e, i, y (cent, city, cycle)."
+        },
+        {
+          "wrong": "the letter 'g' always makes the same sound",
+          "correct": "'G' makes a hard sound before a, o, u (game, go, gum) and often a soft sound (like 'j') before e, i, y (gem, giant, gym), though there are exceptions like 'get' and 'give.'"
+        }
+      ]
+    },
+    "syllable_types": {
+      "keywords": [
+        "syllable", "open syllable", "closed syllable", "vowel team",
+        "r-controlled", "consonant-le", "syllable division", "VCCV", "VCV"
+      ],
+      "facts": [
+        {
+          "statement": "Every syllable must contain at least one vowel sound",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "A closed syllable ends in a consonant and the vowel is usually short: cat, nap, pen, sit",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "An open syllable ends in a vowel and the vowel is usually long: me, go, hi, she, no",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "An r-controlled syllable has a vowel followed by 'r,' changing the vowel sound: car, bird, her, for, fur",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "A consonant-le syllable appears at the end of a word: ta-ble, sim-ple, puz-zle, can-dle",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "To count syllables, count the number of vowel sounds (not vowel letters) in a word",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "There are six syllable types in English: closed, open, vowel-consonant-e, vowel team, r-controlled, and consonant-le",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "In a VCCV pattern (vowel-consonant-consonant-vowel), usually divide between the two consonants: nap-kin, rab-bit, pic-nic",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "In a VCV pattern (vowel-consonant-vowel), first try dividing before the consonant for an open syllable: mo-tor, pa-per, pi-lot",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "A vowel-consonant-e syllable has a long vowel followed by a consonant and a silent e: make, theme, pine, home, cute",
+          "grade_min": 2,
+          "grade_max": 10
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the number of vowel letters equals the number of syllables",
+          "correct": "Count vowel sounds, not letters. 'Cake' has two vowel letters but one syllable. 'Area' has three vowel letters and three syllables."
+        },
+        {
+          "wrong": "all two-letter words are one syllable",
+          "correct": "Most two-letter words are one syllable, but 'io' words in some languages can be two."
+        },
+        {
+          "wrong": "silent letters count as separate syllables",
+          "correct": "Silent letters do not produce sounds and do not create syllables. The 'e' in 'cake' is silent."
+        },
+        {
+          "wrong": "consonant-le syllables have a vowel sound from the 'e'",
+          "correct": "In consonant-le syllables (like 'ta-ble'), the 'e' is silent. The syllable's vowel sound comes from the 'schwa' or is very reduced."
+        }
+      ]
+    },
+    "spelling_patterns": {
+      "keywords": [
+        "spelling", "silent letter", "double consonant", "ie", "ei",
+        "ight", "ough", "rule", "plural", "suffix spelling"
+      ],
+      "facts": [
+        {
+          "statement": "Common silent letters include: k in 'knee,' w in 'write,' b in 'comb,' h in 'honest,' g in 'gnaw'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 'i before e except after c' rule applies when the sound is 'ee': receive, believe, ceiling, but has many exceptions like weird, seize, neither",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "When adding a suffix beginning with a vowel to a word ending in silent e, usually drop the e: make/making, hope/hoping",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "When a one-syllable word ends in a single consonant after a single short vowel, double the consonant before adding a vowel suffix: run/running, sit/sitting",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "To make most nouns plural, add -s; for words ending in s, sh, ch, x, z, add -es; for words ending in consonant+y, change y to i and add -es",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Some words have irregular plurals that do not follow standard rules: child/children, mouse/mice, tooth/teeth, person/people, foot/feet",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The '-igh' pattern makes the long 'i' sound: night, light, right, fight, sight, high",
+          "grade_min": 2,
+          "grade_max": 8
+        },
+        {
+          "statement": "The '-ough' pattern can make many different sounds: though (long o), through (oo), thought (aw), rough (uf), cough (off)",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Words ending in 'f' or 'fe' often change to 'v' before adding '-es' for the plural: knife/knives, leaf/leaves, wolf/wolves",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "When adding a suffix to a word ending in consonant+y, change the y to i: happy/happiness, carry/carried, beauty/beautiful",
+          "grade_min": 3,
+          "grade_max": 10
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "'i before e except after c' is always correct",
+          "correct": "This rule has many common exceptions: weird, seize, neither, leisure, protein, caffeine, forfeit."
+        },
+        {
+          "wrong": "you always add -s to make a plural",
+          "correct": "Words ending in s, sh, ch, x, or z need -es. Words ending in consonant+y change y to i before -es. Some words have irregular plurals."
+        },
+        {
+          "wrong": "hopping and hoping have the same number of p's",
+          "correct": "Hopping (jumping) has two p's; hoping (wishing) has one p. Doubling the consonant keeps the vowel short."
+        },
+        {
+          "wrong": "silent letters serve no purpose and are random",
+          "correct": "Silent letters often reflect a word's history and origin. 'Knight' once had the 'k' and 'gh' pronounced in Old English."
+        }
+      ]
+    },
+    "r_controlled_vowels": {
+      "keywords": [
+        "r-controlled", "bossy r", "ar", "er", "ir", "or", "ur",
+        "vowel r", "ar sound", "or sound"
+      ],
+      "facts": [
+        {
+          "statement": "R-controlled vowels (also called 'bossy r') occur when a vowel is followed by the letter 'r,' which changes the vowel sound",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "The 'ar' combination makes the sound heard in car, star, farm, park, and dark",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "The combinations 'er,' 'ir,' and 'ur' all make the same sound as heard in her, bird, and fur",
+          "grade_min": 2,
+          "grade_max": 10
+        },
+        {
+          "statement": "The 'or' combination makes the sound heard in for, corn, short, sport, and born",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "The combination 'ore' makes the long 'or' sound: more, store, before, shore, score",
+          "grade_min": 2,
+          "grade_max": 8
+        },
+        {
+          "statement": "The combination 'air' and 'are' make the same sound: chair/care, fair/fare, pair/pare",
+          "grade_min": 2,
+          "grade_max": 10
+        },
+        {
+          "statement": "The combination 'ear' can make different sounds: hear (long e + r), bear (air sound), earn (er sound)",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "R-controlled vowels are neither short nor long vowels; they are a distinct category of vowel sounds",
+          "grade_min": 2,
+          "grade_max": 10
+        },
+        {
+          "statement": "The 'war' and 'wor' combinations often make the same sound as 'or': warm, war, word, work, world, worm",
+          "grade_min": 2,
+          "grade_max": 8
+        },
+        {
+          "statement": "In the word 'dollar,' the 'ar' at the end sounds like the 'er' sound, not the typical 'ar' sound as in 'car'",
+          "grade_min": 3,
+          "grade_max": 8
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "er, ir, and ur make different sounds",
+          "correct": "The combinations 'er' (her), 'ir' (bird), and 'ur' (fur) all produce the same vowel sound in standard American English."
+        },
+        {
+          "wrong": "r-controlled vowels are just short vowels with an r after them",
+          "correct": "The 'r' changes the vowel sound entirely. The 'a' in 'car' sounds nothing like the short 'a' in 'cat.' R-controlled vowels are their own category."
+        },
+        {
+          "wrong": "'ear' always makes the same sound",
+          "correct": "'Ear' can sound different in different words: hear (eer), bear (air), earn (er). Context determines the pronunciation."
+        }
+      ]
+    },
+    "diphthongs": {
+      "keywords": [
+        "diphthong", "oi", "oy", "ou", "ow", "gliding vowel",
+        "vowel glide", "two sounds"
+      ],
+      "facts": [
+        {
+          "statement": "A diphthong is a complex vowel sound that glides from one vowel position to another within the same syllable",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The diphthong 'oi' and 'oy' make the same sound: coin, oil, boil, boy, toy, joy",
+          "grade_min": 2,
+          "grade_max": 8
+        },
+        {
+          "statement": "The diphthong 'ou' and 'ow' make the same sound in words like: out, house, mouse, cow, how, now",
+          "grade_min": 2,
+          "grade_max": 8
+        },
+        {
+          "statement": "'Oi' typically appears in the middle of a word (coin, point) while 'oy' typically appears at the end (boy, enjoy)",
+          "grade_min": 2,
+          "grade_max": 8
+        },
+        {
+          "statement": "'Ou' typically appears in the middle of a word (house, loud) while 'ow' can appear at the end (cow, now) or in the middle (down, town)",
+          "grade_min": 2,
+          "grade_max": 8
+        },
+        {
+          "statement": "The letters 'ow' can make two different sounds: the diphthong in 'cow' and the long 'o' sound in 'snow'",
+          "grade_min": 2,
+          "grade_max": 8
+        },
+        {
+          "statement": "Diphthongs are different from vowel teams because they produce a gliding sound rather than a single pure vowel sound",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "The word 'diphthong' comes from Greek, meaning 'two sounds' or 'two voices'",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The diphthong 'ew' as in 'few' and 'new' glides from one vowel position to the 'oo' sound",
+          "grade_min": 2,
+          "grade_max": 8
+        },
+        {
+          "statement": "English has four main diphthong sounds: /oi/ as in boy, /ou/ as in cow, /ai/ as in fly, and /au/ as in house",
+          "grade_min": 3,
+          "grade_max": 10
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "diphthongs and vowel teams are the same thing",
+          "correct": "Vowel teams make one pure sound (like 'ai' in rain = long a). Diphthongs glide between two sounds (like 'oi' in coin starts at one vowel and slides to another)."
+        },
+        {
+          "wrong": "'ow' always makes the same sound",
+          "correct": "'Ow' makes the diphthong sound in 'cow' and 'how' but the long 'o' sound in 'snow' and 'show.' You must use context to determine which."
+        },
+        {
+          "wrong": "diphthongs are two separate vowel sounds in two syllables",
+          "correct": "A diphthong is one syllable where the vowel sound glides smoothly from one position to another, not two separate syllables."
+        }
+      ]
+    },
+    "word_families": {
+      "keywords": [
+        "word family", "rime", "onset", "rhyming words", "pattern",
+        "-at", "-an", "-ig", "-op", "-ug", "-ake", "-ine"
+      ],
+      "facts": [
+        {
+          "statement": "A word family is a group of words that share the same ending pattern (rime): cat, hat, bat, sat, mat all belong to the '-at' family",
+          "grade_min": 0,
+          "grade_max": 4
+        },
+        {
+          "statement": "The onset is the consonant(s) before the vowel in a syllable; the rime is the vowel and everything after it: in 'cat,' 'c' is the onset and 'at' is the rime",
+          "grade_min": 1,
+          "grade_max": 6
+        },
+        {
+          "statement": "Learning word families helps children decode new words by recognizing patterns: knowing '-ake' helps read cake, make, lake, take, bake",
+          "grade_min": 0,
+          "grade_max": 4
+        },
+        {
+          "statement": "Common short vowel word families include: -at, -an, -ap, -ad, -ag, -et, -en, -ig, -in, -it, -op, -ot, -ug, -un, -ut",
+          "grade_min": 0,
+          "grade_max": 4
+        },
+        {
+          "statement": "Common long vowel word families include: -ake, -ame, -ate, -ine, -ite, -ide, -oke, -one, -ube, -ute",
+          "grade_min": 1,
+          "grade_max": 5
+        },
+        {
+          "statement": "Words in the same word family rhyme because they share the same vowel sound and ending consonants",
+          "grade_min": 0,
+          "grade_max": 4
+        },
+        {
+          "statement": "There are approximately 37 common word families (rimes) in English that can be used to generate about 500 common words",
+          "grade_min": 1,
+          "grade_max": 6
+        },
+        {
+          "statement": "Changing the onset of a word family pattern creates a new word: replacing 'c' in 'cat' with 'b' makes 'bat'",
+          "grade_min": 0,
+          "grade_max": 3
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "word families and rhyming words are completely different concepts",
+          "correct": "Word families and rhyming words overlap: words in the same family (cat, hat, bat) do rhyme. However, some rhyming words have different spelling patterns (great, late)."
+        },
+        {
+          "wrong": "all words that end with the same letters are in the same word family",
+          "correct": "Words must share the same ending SOUND pattern. 'Low' and 'cow' end with 'ow' but sound different, so they are in different word families."
+        },
+        {
+          "wrong": "word families only apply to three-letter words",
+          "correct": "Word families work with longer words too: the '-ake' family includes cake, brake, snowflake, and mistake."
+        }
+      ]
+    },
+    "sight_words": {
+      "keywords": [
+        "sight word", "high frequency", "Dolch", "Fry", "tricky word",
+        "irregular word", "the", "said", "was", "have"
+      ],
+      "facts": [
+        {
+          "statement": "Sight words are common words that children learn to recognize instantly without sounding them out, such as 'the,' 'and,' 'is,' 'was'",
+          "grade_min": 0,
+          "grade_max": 3
+        },
+        {
+          "statement": "Many sight words are irregularly spelled and cannot be decoded using standard phonics rules: 'said,' 'was,' 'the,' 'of,' 'come'",
+          "grade_min": 0,
+          "grade_max": 4
+        },
+        {
+          "statement": "The Dolch word list contains 220 high-frequency words organized by grade level from pre-primer through third grade",
+          "grade_min": 0,
+          "grade_max": 4
+        },
+        {
+          "statement": "The Fry word list contains the 1,000 most common English words; the first 100 Fry words make up about 50% of all written text",
+          "grade_min": 1,
+          "grade_max": 6
+        },
+        {
+          "statement": "Some sight words follow phonics rules but appear so frequently that instant recognition speeds up reading: 'and,' 'can,' 'not,' 'but'",
+          "grade_min": 0,
+          "grade_max": 3
+        },
+        {
+          "statement": "The word 'the' is the most common word in the English language, appearing in almost every sentence",
+          "grade_min": 0,
+          "grade_max": 3
+        },
+        {
+          "statement": "Sight words are also called high-frequency words because they appear very often in books and everyday reading",
+          "grade_min": 0,
+          "grade_max": 3
+        },
+        {
+          "statement": "Children typically learn sight words through repeated exposure, flashcards, reading practice, and writing the words",
+          "grade_min": 0,
+          "grade_max": 3
+        },
+        {
+          "statement": "Common pre-primer sight words include: a, and, the, I, is, it, in, my, to, we, can, see, go, like, you",
+          "grade_min": 0,
+          "grade_max": 2
+        },
+        {
+          "statement": "By the end of first grade, most students are expected to recognize approximately 100 high-frequency sight words automatically",
+          "grade_min": 0,
+          "grade_max": 3
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "sight words cannot be sounded out at all",
+          "correct": "Some sight words ARE decodable ('and,' 'not,' 'can') but are taught as sight words for fluency. Others ARE truly irregular ('said,' 'the,' 'was')."
+        },
+        {
+          "wrong": "sight words are only for beginning readers",
+          "correct": "While sight word instruction focuses on early grades, readers of all levels benefit from automatic recognition of high-frequency words for reading fluency."
+        },
+        {
+          "wrong": "memorizing sight words means phonics is not important",
+          "correct": "Phonics and sight words work together. Phonics teaches children to decode most words, while sight words cover the irregular and very common words that don't follow rules."
+        }
+      ]
+    },
+    "morphology": {
+      "keywords": [
+        "prefix", "suffix", "root", "base word", "morpheme",
+        "inflection", "derivation", "compound word", "affix",
+        "un-", "re-", "-ed", "-ing", "-s"
+      ],
+      "facts": [
+        {
+          "statement": "A morpheme is the smallest unit of meaning in a word; 'cats' has two morphemes: 'cat' (the animal) + 's' (plural)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A base word (or root word) is a word that can stand alone and has meaning by itself: 'play' is the base in 'replay' and 'playing'",
+          "grade_min": 2,
+          "grade_max": 10
+        },
+        {
+          "statement": "An inflectional suffix changes the form of a word without changing its part of speech: -s (cats), -ed (walked), -ing (running), -er (taller), -est (tallest)",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "A derivational affix changes the meaning or part of speech of a word: 'happy' (adjective) + '-ness' = 'happiness' (noun)",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A compound word is made by joining two smaller words together: sunshine (sun + shine), bedroom (bed + room), football (foot + ball)",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "The prefix 'un-' means 'not' or 'opposite': unhappy, unkind, unlock, undo, unfair",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "The prefix 're-' means 'again': rewrite, redo, replay, reread, rebuild",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "The suffix '-er' can mean 'one who does' (teacher, runner) or 'more' in comparisons (taller, faster)",
+          "grade_min": 2,
+          "grade_max": 8
+        },
+        {
+          "statement": "Adding the suffix '-ed' to a verb puts it in the past tense: walk/walked, jump/jumped, play/played",
+          "grade_min": 1,
+          "grade_max": 6
+        },
+        {
+          "statement": "The suffix '-ed' can make three different sounds: /t/ as in 'walked,' /d/ as in 'played,' and /id/ as in 'wanted'",
+          "grade_min": 2,
+          "grade_max": 8
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "a prefix changes the spelling of the base word",
+          "correct": "Adding a prefix does not change the base word's spelling: un + happy = unhappy, mis + spell = misspell (the double 's' is correct, not a change)."
+        },
+        {
+          "wrong": "every long word has a prefix or suffix",
+          "correct": "Some long words are single morphemes from other languages (chocolate, banana, dinosaur) and do not contain English prefixes or suffixes."
+        },
+        {
+          "wrong": "compound words always have no space between them",
+          "correct": "Compound words can be closed (sunflower), hyphenated (well-known), or open (ice cream). All three forms are compound words."
+        },
+        {
+          "wrong": "the suffix '-ed' always adds a syllable to a word",
+          "correct": "The '-ed' ending only adds a syllable when the base word ends in 't' or 'd': wanted, painted. In 'walked' and 'played,' '-ed' does not add a syllable."
+        }
+      ]
+    }
+  }
+}

@@ -20,7 +20,7 @@ interface HintDisplayProps {
 }
 
 const HintDisplay: React.FC<HintDisplayProps> = ({ hints }) => {
-  const { showHints, currentHintIndex, setCurrentHintIndex, totalHints, setTotalHints } = useHint();
+  const { showHints, currentHintIndex, setCurrentHintIndex, totalHints, setTotalHints, responsiveHint } = useHint();
 
   React.useEffect(() => {
     if (hints && hints.length > 0) {
@@ -30,7 +30,32 @@ const HintDisplay: React.FC<HintDisplayProps> = ({ hints }) => {
     }
   }, [hints, setTotalHints]);
 
-  if (!showHints || !hints || hints.length === 0) {
+  if (!showHints && !responsiveHint) {
+    return null;
+  }
+
+  // Show responsive hint even when pre-baked hints are hidden
+  if (responsiveHint && (!showHints || !hints || hints.length === 0)) {
+    return (
+      <div className="mt-4 md:mt-6 border-[3px] md:border-[4px] border-black dark:border-white bg-[#FFA500] dark:bg-[#E8930C] shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]">
+        <div className="p-4 md:p-5 lg:p-6">
+          <div className="flex items-center gap-2 md:gap-3 mb-3 pb-2 border-b-[2px] border-black dark:border-white">
+            <div className="p-1.5 md:p-2 border-[2px] md:border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]">
+              <span className="text-lg md:text-xl">🎯</span>
+            </div>
+            <h3 className="text-sm md:text-base font-black text-black uppercase tracking-tight">
+              Targeted Hint
+            </h3>
+          </div>
+          <div className="bg-white dark:bg-neutral-800 p-3 md:p-4 border-[2px] md:border-[3px] border-black dark:border-white">
+            <p className="text-sm md:text-base text-black dark:text-white leading-relaxed">{responsiveHint}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hints || hints.length === 0) {
     return null;
   }
 
@@ -100,6 +125,17 @@ const HintDisplay: React.FC<HintDisplayProps> = ({ hints }) => {
             </button>
           </div>
         </div>
+
+        {/* Responsive Hint (targeted to student's specific error) */}
+        {responsiveHint && (
+          <div className="mb-3 md:mb-4 bg-[#FFA500] dark:bg-[#E8930C] p-3 md:p-4 border-[2px] md:border-[3px] border-black dark:border-white">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-base">🎯</span>
+              <span className="text-xs font-black text-black uppercase tracking-tight">Targeted Hint</span>
+            </div>
+            <p className="text-sm md:text-base text-black leading-relaxed">{responsiveHint}</p>
+          </div>
+        )}
 
         {/* Hint Content */}
         <div className="bg-white dark:bg-neutral-800 p-3 md:p-4 border-[2px] md:border-[3px] border-black dark:border-white">

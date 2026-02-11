@@ -1,0 +1,182 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "math",
+    "last_updated": "2026-02-11",
+    "description": "Geometry facts: area, perimeter, volume, angles, Pythagorean theorem, circles, polygons, transformations, coordinate geometry, trigonometry basics"
+  },
+  "facts_by_topic": {
+    "area_perimeter": {
+      "keywords": ["area", "perimeter", "rectangle", "square", "triangle", "circle", "parallelogram", "trapezoid", "length", "width", "rhombus", "kite"],
+      "facts": [
+        {"statement": "Area of a rectangle = length x width", "grade_min": 3, "grade_max": 12},
+        {"statement": "Perimeter of a rectangle = 2(length + width)", "grade_min": 3, "grade_max": 12},
+        {"statement": "Area of a triangle = (1/2) x base x height", "grade_min": 4, "grade_max": 12},
+        {"statement": "Area of a circle = pi x radius squared (pi x r^2)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Circumference of a circle = 2 x pi x radius = pi x diameter", "grade_min": 5, "grade_max": 12},
+        {"statement": "Area of a parallelogram = base x height (height is perpendicular to the base)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Area of a trapezoid = (1/2)(base1 + base2) x height", "grade_min": 6, "grade_max": 12},
+        {"statement": "Pi (approximately 3.14159) is the ratio of a circle's circumference to its diameter", "grade_min": 5, "grade_max": 12},
+        {"statement": "Area is measured in square units (sq cm, sq m, sq ft); perimeter is measured in linear units (cm, m, ft)", "grade_min": 3, "grade_max": 12},
+        {"statement": "Area of a square = side x side = side^2", "grade_min": 3, "grade_max": 12},
+        {"statement": "Perimeter of a square = 4 x side", "grade_min": 3, "grade_max": 12},
+        {"statement": "Area of a rhombus = (1/2) x diagonal1 x diagonal2", "grade_min": 6, "grade_max": 12},
+        {"statement": "Area of a kite = (1/2) x diagonal1 x diagonal2", "grade_min": 7, "grade_max": 12},
+        {"statement": "Area of a regular polygon = (1/2) x apothem x perimeter", "grade_min": 8, "grade_max": 12},
+        {"statement": "Heron's formula: area of triangle with sides a, b, c is sqrt(s(s-a)(s-b)(s-c)) where s = (a+b+c)/2", "grade_min": 9, "grade_max": 12},
+        {"statement": "A sector area = (angle/360) x pi x r^2; arc length = (angle/360) x 2 x pi x r", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "area of a triangle is base times height", "correct": "Area of a triangle is HALF of base times height: (1/2) x base x height."},
+        {"wrong": "the height of a triangle is always one of its sides", "correct": "The height is the perpendicular distance from the base to the opposite vertex, which may or may not coincide with a side."},
+        {"wrong": "circumference equals pi times radius", "correct": "Circumference = 2 x pi x radius (or pi x diameter). Using just pi x radius gives half the circumference."},
+        {"wrong": "doubling the radius doubles the area of a circle", "correct": "Doubling the radius quadruples the area: pi(2r)^2 = 4 pi r^2."},
+        {"wrong": "perimeter and area use the same units", "correct": "Perimeter uses linear units (cm, m); area uses square units (cm^2, m^2)."}
+      ]
+    },
+    "angles": {
+      "keywords": ["angle", "acute", "obtuse", "right", "straight", "complementary", "supplementary", "vertical", "degree", "protractor", "reflex", "adjacent", "transversal", "parallel lines"],
+      "facts": [
+        {"statement": "A right angle measures exactly 90 degrees", "grade_min": 3, "grade_max": 12},
+        {"statement": "An acute angle measures less than 90 degrees", "grade_min": 3, "grade_max": 12},
+        {"statement": "An obtuse angle measures more than 90 degrees but less than 180 degrees", "grade_min": 3, "grade_max": 12},
+        {"statement": "A straight angle measures exactly 180 degrees", "grade_min": 4, "grade_max": 12},
+        {"statement": "Complementary angles add up to 90 degrees", "grade_min": 5, "grade_max": 12},
+        {"statement": "Supplementary angles add up to 180 degrees", "grade_min": 5, "grade_max": 12},
+        {"statement": "Vertical angles (formed by two intersecting lines) are always equal", "grade_min": 6, "grade_max": 12},
+        {"statement": "The sum of the interior angles of any triangle is 180 degrees", "grade_min": 5, "grade_max": 12},
+        {"statement": "The sum of the interior angles of a polygon with n sides is (n-2) x 180 degrees", "grade_min": 7, "grade_max": 12},
+        {"statement": "A reflex angle measures more than 180 degrees but less than 360 degrees", "grade_min": 5, "grade_max": 12},
+        {"statement": "Adjacent angles share a common side and vertex", "grade_min": 5, "grade_max": 12},
+        {"statement": "When a transversal crosses parallel lines, alternate interior angles are equal", "grade_min": 7, "grade_max": 12},
+        {"statement": "When a transversal crosses parallel lines, corresponding angles are equal", "grade_min": 7, "grade_max": 12},
+        {"statement": "When a transversal crosses parallel lines, co-interior (same-side interior) angles are supplementary (add to 180)", "grade_min": 7, "grade_max": 12},
+        {"statement": "An exterior angle of a triangle equals the sum of the two non-adjacent interior angles", "grade_min": 7, "grade_max": 12},
+        {"statement": "Each interior angle of a regular polygon with n sides = (n-2) x 180 / n", "grade_min": 8, "grade_max": 12},
+        {"statement": "The sum of exterior angles of any convex polygon is always 360 degrees", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "complementary angles add to 180 degrees", "correct": "Complementary angles add to 90 degrees. Supplementary angles add to 180 degrees."},
+        {"wrong": "the angles of a triangle can add up to more than 180 degrees", "correct": "The interior angles of any triangle in Euclidean geometry always sum to exactly 180 degrees."},
+        {"wrong": "vertical angles are adjacent to each other", "correct": "Vertical angles are the non-adjacent angles formed by two intersecting lines, and they are always equal."},
+        {"wrong": "alternate interior angles are supplementary", "correct": "Alternate interior angles are EQUAL (congruent) when formed by parallel lines cut by a transversal."},
+        {"wrong": "a right triangle can have an obtuse angle", "correct": "A right triangle has one 90-degree angle, and the other two must be acute (less than 90) since they sum to 90."}
+      ]
+    },
+    "pythagorean_theorem": {
+      "keywords": ["Pythagorean", "hypotenuse", "right triangle", "leg", "a squared", "b squared", "c squared", "distance formula"],
+      "facts": [
+        {"statement": "The Pythagorean theorem states that in a right triangle, a^2 + b^2 = c^2, where c is the hypotenuse", "grade_min": 7, "grade_max": 12},
+        {"statement": "The hypotenuse is the longest side of a right triangle, opposite the right angle", "grade_min": 7, "grade_max": 12},
+        {"statement": "Common Pythagorean triples include (3,4,5), (5,12,13), (8,15,17), and (7,24,25)", "grade_min": 7, "grade_max": 12},
+        {"statement": "The converse of the Pythagorean theorem: if a^2 + b^2 = c^2, then the triangle is a right triangle", "grade_min": 8, "grade_max": 12},
+        {"statement": "Any multiple of a Pythagorean triple is also a Pythagorean triple: (6,8,10) is 2x(3,4,5)", "grade_min": 8, "grade_max": 12},
+        {"statement": "The distance formula d = sqrt((x2-x1)^2 + (y2-y1)^2) is derived from the Pythagorean theorem", "grade_min": 8, "grade_max": 12},
+        {"statement": "In a 45-45-90 triangle, the legs are equal and the hypotenuse = leg x sqrt(2)", "grade_min": 9, "grade_max": 12},
+        {"statement": "In a 30-60-90 triangle, sides are in ratio 1 : sqrt(3) : 2", "grade_min": 9, "grade_max": 12},
+        {"statement": "The midpoint formula: midpoint = ((x1+x2)/2, (y1+y2)/2)", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the Pythagorean theorem works for all triangles", "correct": "The Pythagorean theorem only works for right triangles (triangles with one 90-degree angle)."},
+        {"wrong": "c is always the largest number", "correct": "c must be the hypotenuse (the side opposite the right angle). It is always the longest side of a right triangle."},
+        {"wrong": "a^2 + b^2 = c means you just add a and b", "correct": "You must square a and b first, add those squares, then take the square root to find c."},
+        {"wrong": "in a 30-60-90 triangle, the sides are 1, 2, 3", "correct": "The sides are in ratio 1 : sqrt(3) : 2, approximately 1 : 1.73 : 2."},
+        {"wrong": "the distance between (1,2) and (4,6) is (4-1) + (6-2) = 7", "correct": "Use the distance formula: sqrt((4-1)^2 + (6-2)^2) = sqrt(9+16) = sqrt(25) = 5."}
+      ]
+    },
+    "volume_3d": {
+      "keywords": ["volume", "surface area", "cube", "rectangular prism", "cylinder", "sphere", "cone", "pyramid", "three-dimensional", "prism"],
+      "facts": [
+        {"statement": "Volume of a rectangular prism = length x width x height", "grade_min": 4, "grade_max": 12},
+        {"statement": "Volume of a cube = side^3 (side cubed)", "grade_min": 4, "grade_max": 12},
+        {"statement": "Volume of a cylinder = pi x r^2 x height", "grade_min": 6, "grade_max": 12},
+        {"statement": "Volume of a sphere = (4/3) x pi x r^3", "grade_min": 7, "grade_max": 12},
+        {"statement": "Volume of a cone = (1/3) x pi x r^2 x height", "grade_min": 7, "grade_max": 12},
+        {"statement": "Volume of a pyramid = (1/3) x base area x height", "grade_min": 7, "grade_max": 12},
+        {"statement": "Surface area of a rectangular prism = 2(lw + lh + wh)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Volume is measured in cubic units (cm^3, m^3, ft^3)", "grade_min": 4, "grade_max": 12},
+        {"statement": "Surface area of a cube = 6 x side^2", "grade_min": 5, "grade_max": 12},
+        {"statement": "Surface area of a cylinder = 2 x pi x r^2 + 2 x pi x r x h", "grade_min": 7, "grade_max": 12},
+        {"statement": "Surface area of a sphere = 4 x pi x r^2", "grade_min": 8, "grade_max": 12},
+        {"statement": "Lateral surface area of a cone = pi x r x slant height", "grade_min": 8, "grade_max": 12},
+        {"statement": "Volume of a triangular prism = (1/2) x base x height of triangle x length of prism", "grade_min": 6, "grade_max": 12},
+        {"statement": "A net is a 2D pattern that can be folded to form a 3D shape", "grade_min": 4, "grade_max": 8}
+      ],
+      "common_errors": [
+        {"wrong": "volume of a cone is pi x r^2 x height", "correct": "Volume of a cone is (1/3) x pi x r^2 x height. A cone is one-third of a cylinder with the same base and height."},
+        {"wrong": "volume of a sphere is pi x r^3", "correct": "Volume of a sphere is (4/3) x pi x r^3. The coefficient 4/3 must not be omitted."},
+        {"wrong": "doubling each dimension doubles the volume", "correct": "Doubling each dimension of a 3D shape multiplies the volume by 8 (2^3), not 2."},
+        {"wrong": "surface area and volume use the same units", "correct": "Surface area uses square units (cm^2); volume uses cubic units (cm^3)."},
+        {"wrong": "a cube has 4 faces", "correct": "A cube has 6 faces, 12 edges, and 8 vertices."}
+      ]
+    },
+    "polygon_properties": {
+      "keywords": ["polygon", "triangle", "quadrilateral", "pentagon", "hexagon", "regular", "congruent", "similar", "symmetry", "line of symmetry", "rotational symmetry"],
+      "facts": [
+        {"statement": "A polygon is a closed figure with straight sides; triangles (3), quadrilaterals (4), pentagons (5), hexagons (6)", "grade_min": 3, "grade_max": 12},
+        {"statement": "A regular polygon has all sides equal and all angles equal", "grade_min": 4, "grade_max": 12},
+        {"statement": "Congruent figures have the same shape and size; similar figures have the same shape but may differ in size", "grade_min": 5, "grade_max": 12},
+        {"statement": "An equilateral triangle has three equal sides and three 60-degree angles", "grade_min": 4, "grade_max": 12},
+        {"statement": "An isosceles triangle has at least two equal sides and two equal base angles", "grade_min": 4, "grade_max": 12},
+        {"statement": "A scalene triangle has no equal sides and no equal angles", "grade_min": 4, "grade_max": 12},
+        {"statement": "The sum of the interior angles of a quadrilateral is 360 degrees", "grade_min": 5, "grade_max": 12},
+        {"statement": "A parallelogram has two pairs of parallel sides; opposite sides are equal and opposite angles are equal", "grade_min": 4, "grade_max": 12},
+        {"statement": "A rectangle is a parallelogram with four right angles", "grade_min": 3, "grade_max": 12},
+        {"statement": "A square is a rectangle with four equal sides (also a rhombus with four right angles)", "grade_min": 3, "grade_max": 12},
+        {"statement": "A rhombus has four equal sides; its diagonals bisect each other at right angles", "grade_min": 5, "grade_max": 12},
+        {"statement": "A trapezoid has exactly one pair of parallel sides", "grade_min": 4, "grade_max": 12},
+        {"statement": "The triangle inequality: the sum of any two sides must be greater than the third side", "grade_min": 6, "grade_max": 12},
+        {"statement": "Similar figures have proportional sides and equal corresponding angles; the scale factor relates their sizes", "grade_min": 6, "grade_max": 12},
+        {"statement": "A line of symmetry divides a figure into two mirror-image halves", "grade_min": 3, "grade_max": 12},
+        {"statement": "A heptagon has 7 sides, an octagon has 8, a nonagon has 9, and a decagon has 10", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "a square is not a rectangle", "correct": "A square IS a special type of rectangle where all four sides are equal. Every square is a rectangle, but not every rectangle is a square."},
+        {"wrong": "all quadrilaterals are parallelograms", "correct": "Quadrilaterals include many shapes (trapezoids, kites) that are not parallelograms. A parallelogram is a special quadrilateral with two pairs of parallel sides."},
+        {"wrong": "similar figures are the same size", "correct": "Similar figures have the same shape but may be different sizes. Congruent figures are both the same shape AND size."},
+        {"wrong": "a triangle can have sides 2, 3, and 6", "correct": "By the triangle inequality, 2 + 3 = 5, which is NOT greater than 6. These sides cannot form a triangle."},
+        {"wrong": "all rhombuses are squares", "correct": "A rhombus has 4 equal sides but does not need right angles. Only rhombuses with 4 right angles are squares."}
+      ]
+    },
+    "transformations": {
+      "keywords": ["translation", "rotation", "reflection", "dilation", "transformation", "slide", "turn", "flip", "scale factor", "congruence", "symmetry"],
+      "facts": [
+        {"statement": "A translation (slide) moves every point the same distance and direction without rotating or flipping", "grade_min": 4, "grade_max": 12},
+        {"statement": "A reflection (flip) produces a mirror image across a line of reflection", "grade_min": 4, "grade_max": 12},
+        {"statement": "A rotation (turn) turns a figure around a fixed point by a given angle", "grade_min": 4, "grade_max": 12},
+        {"statement": "A dilation changes the size of a figure by a scale factor, keeping the shape the same", "grade_min": 7, "grade_max": 12},
+        {"statement": "Translations, reflections, and rotations are rigid transformations: they preserve size and shape (congruence)", "grade_min": 7, "grade_max": 12},
+        {"statement": "A dilation is NOT a rigid transformation: it preserves shape (similarity) but not size", "grade_min": 7, "grade_max": 12},
+        {"statement": "A 90-degree clockwise rotation of point (x, y) around the origin gives (y, -x)", "grade_min": 8, "grade_max": 12},
+        {"statement": "A 180-degree rotation of point (x, y) around the origin gives (-x, -y)", "grade_min": 8, "grade_max": 12},
+        {"statement": "Reflecting (x, y) over the x-axis gives (x, -y); over the y-axis gives (-x, y)", "grade_min": 7, "grade_max": 12},
+        {"statement": "A scale factor greater than 1 enlarges; between 0 and 1 shrinks; equal to 1 keeps same size", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "a reflection changes the size of a figure", "correct": "Reflections are rigid transformations that preserve size and shape. Only dilations change size."},
+        {"wrong": "rotating 90 degrees clockwise is the same as rotating 90 degrees counterclockwise", "correct": "They produce different results. 90 CW maps (x,y) to (y,-x); 90 CCW maps (x,y) to (-y,x)."},
+        {"wrong": "dilation always makes figures bigger", "correct": "A scale factor less than 1 (like 0.5) shrinks the figure. Only scale factors greater than 1 enlarge."},
+        {"wrong": "after a translation, the figure faces a different direction", "correct": "A translation moves every point equally without rotating. The orientation stays the same."}
+      ]
+    },
+    "basic_trigonometry": {
+      "keywords": ["sine", "cosine", "tangent", "SOH CAH TOA", "opposite", "adjacent", "hypotenuse", "trigonometry", "trig"],
+      "facts": [
+        {"statement": "SOH CAH TOA: sin = opposite/hypotenuse, cos = adjacent/hypotenuse, tan = opposite/adjacent", "grade_min": 9, "grade_max": 12},
+        {"statement": "In a right triangle, the side opposite an angle is across from it; the adjacent side is next to it (not the hypotenuse)", "grade_min": 9, "grade_max": 12},
+        {"statement": "sin(30) = 1/2, cos(30) = sqrt(3)/2, tan(30) = 1/sqrt(3) = sqrt(3)/3", "grade_min": 9, "grade_max": 12},
+        {"statement": "sin(45) = cos(45) = sqrt(2)/2 (approximately 0.707)", "grade_min": 9, "grade_max": 12},
+        {"statement": "sin(60) = sqrt(3)/2, cos(60) = 1/2, tan(60) = sqrt(3)", "grade_min": 9, "grade_max": 12},
+        {"statement": "sin^2(x) + cos^2(x) = 1 for all angles x (Pythagorean identity)", "grade_min": 10, "grade_max": 12},
+        {"statement": "tan(x) = sin(x) / cos(x)", "grade_min": 9, "grade_max": 12},
+        {"statement": "The unit circle has radius 1 centered at the origin; any point on it is (cos(angle), sin(angle))", "grade_min": 10, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "sin means opposite over adjacent", "correct": "sin = opposite/hypotenuse (SOH). tan = opposite/adjacent (TOA)."},
+        {"wrong": "sin(30) = sqrt(3)/2", "correct": "sin(30) = 1/2. It is cos(30) that equals sqrt(3)/2."},
+        {"wrong": "trig ratios only work in right triangles with the standard right angle", "correct": "Basic SOH CAH TOA works in any right triangle. The right angle can be at any vertex."},
+        {"wrong": "sin(2x) = 2 sin(x)", "correct": "sin(2x) = 2 sin(x) cos(x). Trig functions are not linear; you cannot simply multiply the argument."}
+      ]
+    }
+  }
+}

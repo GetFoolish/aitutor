@@ -63,11 +63,15 @@ const AssessmentResults: React.FC<Props> = ({
           const data: GradingData = await response.json();
           setGradingData(data);
           
-          // Extract all units from grading data and create skill cards
+          // Extract units for the CURRENT subject only
           const allUnits: SkillCard[] = [];
           if (data.subjects) {
-            Object.values(data.subjects).forEach((subjectData) => {
-              Object.entries(subjectData.grade_levels || {}).forEach(([gradeLevel, gradeData]) => {
+            const subjectKey = Object.keys(data.subjects).find(
+              k => k.toLowerCase() === subject.toLowerCase()
+            );
+            const currentSubjectData = subjectKey ? data.subjects[subjectKey] : null;
+            if (currentSubjectData) {
+              Object.entries(currentSubjectData.grade_levels || {}).forEach(([gradeLevel, gradeData]) => {
                 (gradeData.units || []).forEach((unit) => {
                   allUnits.push({
                     id: unit.id,
@@ -76,7 +80,7 @@ const AssessmentResults: React.FC<Props> = ({
                   });
                 });
               });
-            });
+            }
           }
           
           // Randomly select 16-18 units (or all if fewer) for fuller grid
@@ -126,17 +130,18 @@ const AssessmentResults: React.FC<Props> = ({
     }
   }, [connected, client, disconnect]);
 
-  // Auto-redirect after showing personalizing animation with fade
-  // Wait for skills to load before starting transition
+  // Auto-redirect after showing results briefly
+  // If skillCards load → show personalization animation first
+  // Hard fallback: always redirect after 4s even if skillCards never load
   useEffect(() => {
-    if (skillCards.length === 0) return; // Don't start timers until skills are loaded
+    if (skillCards.length === 0) return;
 
     const fadeTimer = setTimeout(() => {
-      setIsFading(true); // Start fade out at 1.7s
+      setIsFading(true);
     }, 1700);
 
     const showTimer = setTimeout(() => {
-      setShowPersonalizing(true); // Show cards at 2s
+      setShowPersonalizing(true);
     }, 2000);
 
     return () => {
@@ -144,6 +149,16 @@ const AssessmentResults: React.FC<Props> = ({
       clearTimeout(showTimer);
     };
   }, [skillCards.length]);
+
+  // Hard fallback — if skillCards never load, redirect after 4s
+  useEffect(() => {
+    const fallback = setTimeout(() => {
+      if (!showPersonalizing) {
+        onContinue();
+      }
+    }, 4000);
+    return () => clearTimeout(fallback);
+  }, [onContinue, showPersonalizing]);
 
   // Handle personalization cards animation complete
   const handlePersonalizationComplete = () => {
@@ -219,7 +234,10 @@ const AssessmentResults: React.FC<Props> = ({
         backgroundColor: isPassed ? '#E8F5E9' : '#FFEBEE',
         padding: '24px',
         marginBottom: '32px',
-        boxShadow: '2px 2px 0 var(--neo-black)'
+        boxShadow: '2px 2px 0 var(--neo-black)',
+        position: 'relative',
+        zIndex: 5,
+        overflow: 'hidden'
       }}>
         {isPassed ? (
           <p style={{
@@ -245,6 +263,7 @@ const AssessmentResults: React.FC<Props> = ({
           </p>
         )}
       </div>
+
     </div>
   );
 };

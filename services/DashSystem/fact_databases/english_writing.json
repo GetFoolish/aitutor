@@ -1,0 +1,672 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "english",
+    "last_updated": "2026-02-11",
+    "description": "Writing facts: essay structure, transitions, writing process, persuasive writing, narrative writing, descriptive writing, research skills, citations, voice/tone"
+  },
+  "facts_by_topic": {
+    "essay_structure": {
+      "keywords": [
+        "essay", "introduction", "body", "conclusion", "thesis",
+        "paragraph", "five-paragraph", "topic sentence", "supporting detail",
+        "hook", "closing"
+      ],
+      "facts": [
+        {
+          "statement": "A basic essay has three parts: introduction, body paragraphs, and conclusion",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A thesis statement is a clear sentence in the introduction that states the main argument or point of the essay",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Each body paragraph should focus on one main idea that supports the thesis, introduced by a topic sentence",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Supporting details include facts, examples, statistics, quotes, and explanations that back up the topic sentence",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The conclusion summarizes main points and restates the thesis in a new way, without introducing new arguments",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A strong introduction should hook the reader, provide context, and present the thesis statement",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A paragraph is a group of related sentences about one main idea; it begins with a topic sentence and ends with a concluding or transition sentence",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A hook is the opening sentence or sentences designed to grab the reader's attention, such as a question, quote, surprising fact, or anecdote",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A topic sentence states the main idea of a paragraph and is usually the first sentence",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Every sentence in a paragraph should relate to the topic sentence; sentences that do not support the main idea are off-topic",
+          "grade_min": 3,
+          "grade_max": 10
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the introduction should start with the thesis statement",
+          "correct": "The introduction typically begins with a hook (question, quote, or interesting fact) to engage the reader before stating the thesis."
+        },
+        {
+          "wrong": "every essay must be exactly five paragraphs",
+          "correct": "The five-paragraph essay is a teaching tool. Real essays vary in length based on the topic and purpose."
+        },
+        {
+          "wrong": "the conclusion should introduce new arguments",
+          "correct": "The conclusion should summarize and synthesize existing arguments, not introduce new points that were not discussed in the body."
+        },
+        {
+          "wrong": "a topic sentence can appear anywhere in a paragraph",
+          "correct": "While a topic sentence CAN appear elsewhere, placing it first is the clearest approach for most academic writing, especially for young writers."
+        }
+      ]
+    },
+    "transition_words": {
+      "keywords": [
+        "transition", "however", "therefore", "furthermore", "in addition",
+        "consequently", "moreover", "on the other hand", "in contrast",
+        "signal words", "connecting words"
+      ],
+      "facts": [
+        {
+          "statement": "Transition words connect ideas between sentences and paragraphs, showing relationships like addition, contrast, cause-effect, or sequence",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Addition transitions include: furthermore, moreover, in addition, also, similarly",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Contrast transitions include: however, on the other hand, nevertheless, in contrast, although, yet",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Cause-effect transitions include: therefore, consequently, as a result, because, thus, hence",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Sequence transitions include: first, second, next, then, finally, meanwhile, subsequently",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Conclusion transitions include: in conclusion, to summarize, overall, in summary, ultimately",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Example transitions include: for example, for instance, such as, specifically, to illustrate",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Emphasis transitions include: most importantly, indeed, in fact, certainly, above all",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Simple transitions for young writers include: first, next, then, last, also, but, so, because",
+          "grade_min": 1,
+          "grade_max": 5
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "using 'and' or 'but' to start every sentence is fine in formal writing",
+          "correct": "While starting sentences with 'and' or 'but' is grammatically acceptable, formal writing benefits from varied transitions like 'furthermore,' 'however,' or 'in addition.'"
+        },
+        {
+          "wrong": "transition words are optional and not important",
+          "correct": "Transitions improve coherence and readability. Without them, writing can feel choppy and disconnected."
+        },
+        {
+          "wrong": "you should use the same transition word repeatedly",
+          "correct": "Varying transitions keeps writing interesting. Instead of using 'also' five times, try 'moreover,' 'in addition,' 'furthermore,' or 'similarly.'"
+        },
+        {
+          "wrong": "'in conclusion' is the only way to start a concluding paragraph",
+          "correct": "Other options include 'ultimately,' 'to summarize,' 'in summary,' 'all things considered,' or 'given these points.'"
+        }
+      ]
+    },
+    "writing_process": {
+      "keywords": [
+        "writing process", "brainstorm", "draft", "revise", "edit",
+        "proofread", "prewrite", "outline", "peer review", "publish"
+      ],
+      "facts": [
+        {
+          "statement": "The writing process includes five stages: prewriting, drafting, revising, editing, and publishing",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Prewriting includes brainstorming, outlining, and organizing ideas before writing a first draft",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Revising focuses on improving content, organization, and clarity of ideas (the big picture)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Editing focuses on correcting grammar, spelling, punctuation, and mechanics (the details)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Revising and editing are different steps: revising improves content and structure; editing fixes errors",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Peer review involves having another person read and provide feedback on your writing",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "An outline organizes ideas into a structure before writing, showing main points and supporting details in order",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Brainstorming techniques include freewriting, listing, clustering (web diagrams), and asking who/what/when/where/why/how questions",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "The writing process is recursive, meaning writers can go back to earlier stages at any time — revising might lead to more prewriting",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Proofreading is the final check for surface errors (spelling, punctuation, capitalization) after editing is complete",
+          "grade_min": 3,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "revising and editing are the same thing",
+          "correct": "Revising addresses content, organization, and ideas. Editing addresses grammar, spelling, and punctuation. They are separate steps."
+        },
+        {
+          "wrong": "good writers do not need to revise",
+          "correct": "All good writers revise their work. Writing is a process, and revision is essential for improving clarity and quality."
+        },
+        {
+          "wrong": "the first draft should be perfect",
+          "correct": "First drafts are meant to get ideas down. Revision and editing transform rough drafts into polished writing."
+        },
+        {
+          "wrong": "the writing process must follow a strict linear order",
+          "correct": "The writing process is flexible and recursive. A writer might draft, then return to prewriting, then revise, then draft again."
+        }
+      ]
+    },
+    "persuasive_writing": {
+      "keywords": [
+        "persuasive", "argument", "opinion", "claim", "reason",
+        "evidence", "counterargument", "rebuttal", "convince",
+        "ethos", "pathos", "logos"
+      ],
+      "facts": [
+        {
+          "statement": "Persuasive writing aims to convince the reader to agree with the writer's opinion or take a specific action",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A strong persuasive essay includes a clear claim (opinion), reasons that support the claim, and evidence for each reason",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A claim is the writer's position or opinion on a topic: 'Schools should offer more recess time'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A counterargument acknowledges the opposing viewpoint; a rebuttal explains why the writer's position is still stronger",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Ethos appeals to the writer's credibility, pathos appeals to the reader's emotions, and logos appeals to logic and reasoning",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "In early grades, opinion writing uses the format: state your opinion, give reasons, and write a conclusion",
+          "grade_min": 1,
+          "grade_max": 5
+        },
+        {
+          "statement": "Evidence in persuasive writing can include facts, statistics, expert quotes, examples, and personal anecdotes",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A call to action at the end of a persuasive essay tells the reader what specific step to take: 'Write to your representative today'",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Addressing a counterargument actually strengthens a persuasive essay by showing the writer has considered other viewpoints",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The difference between opinion and argument: opinion writing states personal feelings, while argument writing uses logic and evidence to prove a claim",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "persuasive writing should only use emotions to convince",
+          "correct": "Effective persuasion uses a combination of emotional appeals (pathos), logical evidence (logos), and credibility (ethos)."
+        },
+        {
+          "wrong": "you should ignore opposing viewpoints in persuasive writing",
+          "correct": "Addressing and rebutting counterarguments makes your argument stronger by showing you have considered multiple perspectives."
+        },
+        {
+          "wrong": "opinion and fact are the same in persuasive writing",
+          "correct": "An opinion is a personal belief that cannot be proven (pizza is the best food). A fact can be verified (pizza originated in Italy). Persuasion uses facts to support opinions."
+        },
+        {
+          "wrong": "persuasive writing and informational writing are the same",
+          "correct": "Informational writing presents facts objectively. Persuasive writing takes a position and tries to convince the reader to agree."
+        }
+      ]
+    },
+    "narrative_writing": {
+      "keywords": [
+        "narrative", "story", "personal narrative", "creative writing",
+        "dialogue", "setting", "character", "plot", "show don't tell",
+        "first person", "sensory details"
+      ],
+      "facts": [
+        {
+          "statement": "Narrative writing tells a story, either real (personal narrative) or imagined (creative fiction), with a beginning, middle, and end",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "A personal narrative is a true story from the writer's own life, told in first person using 'I'",
+          "grade_min": 2,
+          "grade_max": 10
+        },
+        {
+          "statement": "'Show, don't tell' means using actions, dialogue, and sensory details instead of just stating emotions: 'Her hands trembled' instead of 'She was scared'",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Dialogue in narrative writing should be punctuated with quotation marks around the spoken words: 'Let's go!' she shouted",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Sensory details describe what the character sees, hears, smells, tastes, and touches to make the story vivid",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Every narrative needs a problem or conflict that the main character faces and eventually resolves",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "A narrative should include a clear setting (when and where) established early in the story",
+          "grade_min": 2,
+          "grade_max": 10
+        },
+        {
+          "statement": "Pacing in narrative writing refers to how fast or slow the story moves; action scenes move quickly, reflective moments slow down",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A strong narrative ending resolves the conflict and often shows how the character changed or what they learned",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "In early grades (K-2), narrative writing involves drawing pictures and writing simple sentences about real or imagined events in sequence",
+          "grade_min": 0,
+          "grade_max": 3
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "a narrative and a summary are the same thing",
+          "correct": "A narrative tells a story with characters, dialogue, and details that engage the reader. A summary briefly restates the main events without creative elements."
+        },
+        {
+          "wrong": "dialogue tags must always be 'said'",
+          "correct": "While 'said' is often preferred for its simplicity, other dialogue tags like 'whispered,' 'shouted,' 'asked,' and 'replied' add variety when used appropriately."
+        },
+        {
+          "wrong": "every sentence in a narrative needs an adjective",
+          "correct": "Overusing adjectives makes writing feel cluttered. Strong nouns and verbs are more effective: 'She sprinted' is better than 'She ran very quickly.'"
+        },
+        {
+          "wrong": "a personal narrative must cover a long period of time",
+          "correct": "The best personal narratives often focus on a single small moment (a few minutes or hours) explored in rich detail, not weeks or months."
+        }
+      ]
+    },
+    "descriptive_writing": {
+      "keywords": [
+        "descriptive", "sensory details", "adjective", "adverb",
+        "imagery", "figurative language", "vivid", "specific",
+        "show don't tell", "paint a picture"
+      ],
+      "facts": [
+        {
+          "statement": "Descriptive writing uses vivid details and sensory language to paint a picture in the reader's mind",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The five senses — sight, sound, smell, taste, and touch — are the foundation of descriptive writing",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "Specific details are more effective than vague ones: 'a golden retriever' is better than 'a dog'; 'a crumbling brick wall' is better than 'a wall'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Figurative language (similes, metaphors, personification) enhances descriptive writing by creating comparisons and images",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Strong verbs create more vivid descriptions than weak verbs with adverbs: 'whispered' is better than 'said quietly'",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Spatial organization describes a scene in an orderly way: left to right, top to bottom, near to far, or outside to inside",
+          "grade_min": 3,
+          "grade_max": 10
+        },
+        {
+          "statement": "A descriptive paragraph focuses on creating one dominant impression — an overall feeling or image the writer wants to convey",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Precise adjectives paint clearer pictures: 'scorching' instead of 'hot,' 'miniature' instead of 'small,' 'crimson' instead of 'red'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Showing emotion through physical reactions is more powerful than naming the emotion: 'His stomach knotted' is stronger than 'He was nervous'",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "more adjectives always means better description",
+          "correct": "Overloading sentences with adjectives makes writing wordy. One or two well-chosen, specific adjectives are more effective than a long string."
+        },
+        {
+          "wrong": "descriptive writing only uses sight",
+          "correct": "Effective description uses all five senses. Describing sounds, smells, textures, and tastes makes writing much more immersive."
+        },
+        {
+          "wrong": "descriptive writing is only used in stories",
+          "correct": "Descriptive writing appears in all genres: science reports describe observations, social studies essays describe historical settings, and poems use imagery."
+        }
+      ]
+    },
+    "research_skills": {
+      "keywords": [
+        "research", "source", "credible", "reliable", "primary source",
+        "secondary source", "plagiarism", "paraphrase", "note-taking",
+        "bibliography", "database"
+      ],
+      "facts": [
+        {
+          "statement": "Research involves gathering information from multiple sources to learn about a topic and answer questions",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A credible source is trustworthy and reliable; credible sources include published books, educational websites (.edu), government sites (.gov), and peer-reviewed articles",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A primary source is an original, firsthand account such as a diary, interview, photograph, or historical document",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A secondary source analyzes or interprets primary sources, such as a textbook, encyclopedia article, or documentary",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Plagiarism is using someone else's words or ideas without giving credit; it is a serious form of academic dishonesty",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Paraphrasing means restating information in your own words while keeping the original meaning; it still requires a citation",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A research question guides the investigation and helps focus the search for information: 'How do volcanoes form?'",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "When taking notes for research, record the source information (author, title, date) along with the facts to make citations easier later",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Using multiple sources helps verify information and provides a more complete understanding of a topic",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "any website found through a search engine is a credible source",
+          "correct": "Websites vary widely in credibility. Evaluate the author, publisher, date, and evidence before trusting a source. Wikipedia is a starting point, not a final source."
+        },
+        {
+          "wrong": "paraphrasing means changing just a few words from the original",
+          "correct": "True paraphrasing involves completely restating the idea in your own sentence structure and word choices. Changing only a few words is too close to the original."
+        },
+        {
+          "wrong": "you only need to cite direct quotes",
+          "correct": "You must cite both direct quotes AND paraphrased ideas. Any information that is not your own original thought or common knowledge requires a citation."
+        },
+        {
+          "wrong": "one source is enough for a research project",
+          "correct": "Using multiple sources helps verify accuracy and provides different perspectives. Most research assignments require at least 3-5 sources."
+        }
+      ]
+    },
+    "citations": {
+      "keywords": [
+        "citation", "MLA", "APA", "bibliography", "works cited",
+        "in-text citation", "reference", "quote", "source", "credit"
+      ],
+      "facts": [
+        {
+          "statement": "A citation gives credit to the original author or source of information used in your writing",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "An in-text citation appears within the body of the paper, usually in parentheses, showing where specific information came from",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A bibliography or works cited page lists all the sources used in a paper, appearing at the end of the document",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "MLA format is commonly used in English and humanities classes; it includes the author's last name and page number in in-text citations: (Smith 42)",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "APA format is commonly used in science and social science classes; it includes the author's last name and year: (Smith, 2024)",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "A direct quote uses the exact words from a source, placed inside quotation marks, and always requires a citation",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Common knowledge (facts widely known, like 'water freezes at 32 degrees Fahrenheit') does not need a citation",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "For younger students, citing sources can be as simple as writing 'I learned this from [book title] by [author]' or listing the book title and author",
+          "grade_min": 2,
+          "grade_max": 6
+        },
+        {
+          "statement": "Block quotes (longer quotes of 4+ lines in MLA or 40+ words in APA) are indented and do not use quotation marks",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "you only need citations for direct quotes",
+          "correct": "Both direct quotes and paraphrased ideas from sources need citations. Any information that is not common knowledge or your own idea must be cited."
+        },
+        {
+          "wrong": "a bibliography and a works cited page are always the same",
+          "correct": "A works cited page (MLA) lists only sources actually cited in the paper. A bibliography may include all sources consulted, even those not directly cited."
+        },
+        {
+          "wrong": "citing sources makes your writing seem weak",
+          "correct": "Citations actually strengthen writing by showing your claims are backed by research and credible authorities."
+        }
+      ]
+    },
+    "voice_and_tone": {
+      "keywords": [
+        "voice", "tone", "audience", "purpose", "formal", "informal",
+        "word choice", "diction", "register", "style"
+      ],
+      "facts": [
+        {
+          "statement": "Voice is the unique personality and style that comes through in a writer's work, making their writing distinctive",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Tone is the writer's attitude toward the topic or audience, expressed through word choice: it can be serious, humorous, angry, hopeful, or sarcastic",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Audience is who the writer is writing for; writing for a teacher differs from writing for a friend or a younger child",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Purpose is the reason for writing: to inform, to persuade, to entertain, or to explain",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Formal writing uses complete sentences, standard grammar, and academic vocabulary; it avoids slang, contractions, and first person (in most cases)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Informal writing is more casual, like writing to a friend; it may use contractions, slang, and a conversational style",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Word choice (diction) is one of the most powerful tools for establishing voice and tone: 'strolled' vs. 'marched' vs. 'crept' all show different attitudes",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Writers should match their tone and level of formality to their audience and purpose: a science report requires different language than a personal letter",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Active voice ('The dog chased the cat') is generally stronger and clearer than passive voice ('The cat was chased by the dog')",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Writing with voice means the reader can sense a real person behind the words; it sounds genuine rather than flat or robotic",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "voice and tone are the same thing",
+          "correct": "Voice is the writer's overall personality and style (consistent across all their writing). Tone is the attitude toward a specific topic (it changes based on subject)."
+        },
+        {
+          "wrong": "formal writing is always better than informal writing",
+          "correct": "The best writing matches the audience and purpose. A formal tone is right for essays and reports, but informal tone is better for personal letters and blog posts."
+        },
+        {
+          "wrong": "passive voice is always wrong",
+          "correct": "Passive voice has its uses, such as in scientific writing ('The solution was heated') or when the actor is unknown. But active voice is preferred for clarity in most writing."
+        },
+        {
+          "wrong": "good writing never uses 'I'",
+          "correct": "First person ('I') is appropriate in personal narratives, opinion pieces, and reflective essays. It should be avoided in formal research papers and most academic essays."
+        }
+      ]
+    }
+  }
+}

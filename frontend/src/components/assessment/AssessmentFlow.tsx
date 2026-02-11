@@ -1,18 +1,17 @@
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Suspense, lazy } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { apiUtils } from '../../lib/api-utils';
-import { TutorProvider, useTutorContext } from '../../features/tutor';
 import AssessmentQuestion from './AssessmentQuestion';
 import AssessmentResults from './AssessmentResults';
 import Header from '../../components/header/Header';
 import BackgroundShapes from '../background-shapes/BackgroundShapes';
+import { TutorProvider } from '../../features/tutor';
+import { ThemeProvider } from '../theme/theme-provier';
+
+const FloatingControlPanel = lazy(() => import('../floating-control-panel/FloatingControlPanel'));
 
 /* 🔥 COPY LOGIN BG STYLES */
 import '../auth/auth.scss';
-
-const FloatingControlPanel = lazy(() =>
-  import('../../components/floating-control-panel/FloatingControlPanel')
-);
 
 const DASH_API_URL =
   import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
@@ -30,182 +29,338 @@ interface Params {
 }
 
 /* ----------------------------------------------------
-   Tutor question sender
----------------------------------------------------- */
-const QuestionSender: React.FC<{ question: Question }> = ({ question }) => {
-  const { client, connected } = useTutorContext();
-
-  useEffect(() => {
-    if (!connected || !client) return;
-
-    const questionContent = question.question?.content || '';
-    const widgets = question.question?.widgets || {};
-
-    let questionText = questionContent.trim();
-
-    if (!questionText || questionText.length < 10) {
-      const widgetTexts: string[] = [];
-      Object.values(widgets).forEach((widget: any) => {
-        if (widget?.options?.choices) {
-          widget.options.choices.forEach((choice: any) => {
-            if (choice?.content) widgetTexts.push(choice.content);
-          });
-        } else if (widget?.options?.content) {
-          widgetTexts.push(widget.options.content);
-        }
-      });
-      if (widgetTexts.length > 0) {
-        questionText = widgetTexts.join(' ');
-      }
-    }
-
-    if (questionText) {
-      try {
-        client.send({ text: `New assessment question:\n\n${questionText}` });
-      } catch (err) {
-        console.warn('Failed to send question to tutor:', err);
-      }
-    }
-  }, [question, client, connected]);
-
-  return null;
-};
-
-/* ----------------------------------------------------
    Main component
 ---------------------------------------------------- */
 const AssessmentFlow: React.FC = () => {
   const history = useHistory();
   const { subject } = useParams<Params>();
 
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<any[]>([]);
+  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
+  const [assessmentId, setAssessmentId] = useState<string | null>(null);
+  const [questionNumber, setQuestionNumber] = useState(0);
+  const [totalQuestions, setTotalQuestions] = useState(10);
+  const [currentDifficulty, setCurrentDifficulty] = useState(0.5);
   const [loading, setLoading] = useState(true);
   const [completed, setCompleted] = useState(false);
   const [score, setScore] = useState(0);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [loadPhase, setLoadPhase] = useState<'fast' | 'generating' | 'slow'>('fast');
 
-  const mediaMixerCanvasRef = React.useRef<HTMLCanvasElement>(null);
-  const videoRef = React.useRef<HTMLVideoElement>(null);
-  const processedEdgesRef = React.useRef<ImageData | null>(null);
+  // Ref to track latest assessmentId for prefetch (avoids stale closures)
+  const assessmentIdRef = useRef<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
-  const [isScratchpadOpen, setIsScratchpadOpen] = useState(false);
-  const [cameraEnabled, setCameraEnabled] = useState(false);
-  const [screenEnabled, setScreenEnabled] = useState(false);
-  const [privacyMode, setPrivacyMode] = useState(false);
+  // Client-side content fingerprint tracker to detect duplicate questions
+  const seenContentRef = useRef<Set<string>>(new Set());
+
+  // Dummy refs for FloatingControlPanel (media features not used in assessment)
+  const dummyVideoRef = useRef<HTMLVideoElement>(null);
+  const dummyCanvasRef = useRef<HTMLCanvasElement>(null);
+  const dummyEdgesRef = useRef<ImageData | null>(null);
+
+  // Simple content fingerprint for client-side duplicate detection
+  const contentFingerprint = useCallback((q: Question): string => {
+    const content = q?.question?.content || '';
+    const widgets = JSON.stringify(q?.question?.widgets || {});
+    return content + '|' + widgets;
+  }, []);
+
+  // Fire-and-forget prefetch for next question at both difficulty branches
+  const firePrefetch = useCallback((aId: string | null, difficulty: number) => {
+    if (!aId) return;
+    apiUtils.post(`${DASH_API_URL}/assessment/prefetch`, {
+      assessment_id: aId,
+      current_difficulty: difficulty,
+    }).catch(() => {}); // Silently ignore — prefetch is best-effort
+  }, []);
+
+  // Warn before closing tab during active assessment
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (assessmentIdRef.current && !completed) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [completed]);
 
   useEffect(() => {
     startAssessment();
   }, [subject]);
 
   const startAssessment = async () => {
+    setLoadPhase('fast');
     try {
+      const controller = new AbortController();
+      abortRef.current = controller;
+
+      // Progressive phase timers: 10s→generating, 30s→slow (with cancel option)
+      const phase2Timer = setTimeout(() => setLoadPhase('generating'), 10000);
+      const phase3Timer = setTimeout(() => setLoadPhase('slow'), 30000);
+      const hardTimeout = setTimeout(() => controller.abort(), 60000); // 60s hard timeout (was 90)
+
       const response = await apiUtils.post(
-        `${DASH_API_URL}/assessment/start/${subject}`,
-        {}
+        `${DASH_API_URL}/assessment/start-adaptive/${subject}`,
+        {},
+        { signal: controller.signal }
       );
+      clearTimeout(phase2Timer);
+      clearTimeout(phase3Timer);
+      clearTimeout(hardTimeout);
 
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
       const data = await response.json();
 
       if (data.error) {
-        setCompleted(true);
-        setScore(data.score);
-        setTotal(data.total || 0);
+        // "Already completed" — show results regardless of score (even 0/10)
+        if (data.error === 'Assessment already completed' && data.total > 0) {
+          sessionStorage.setItem('selected_subject', subject);
+          sessionStorage.setItem('assessmentSubject', subject);
+          setCompleted(true);
+          setScore(data.score ?? 0);
+          setTotal(data.total);
+        } else {
+          // No questions available or other error → show retry UI
+          setError(data.error);
+        }
         setLoading(false);
         return;
       }
 
-      setQuestions(data.questions);
-      setTotal(data.total);
+      setAssessmentId(data.assessment_id);
+      assessmentIdRef.current = data.assessment_id;
+      setCurrentQuestion(data.question);
+      setQuestionNumber(data.question_number);
+      setTotalQuestions(data.total_questions);
+      setCurrentDifficulty(data.current_difficulty);
       setLoading(false);
-    } catch (err) {
-      console.error(err);
-      history.replace('/app');
+
+      // Track first question content fingerprint
+      seenContentRef.current.clear();
+      seenContentRef.current.add(contentFingerprint(data.question));
+
+      // Pre-fetch the next question while user reads question 1
+      firePrefetch(data.assessment_id, data.current_difficulty);
+    } catch (err: any) {
+      console.error('Assessment start failed:', err);
+      const msg = err?.name === 'AbortError'
+        ? 'Assessment is taking longer than expected. Please try again.'
+        : 'Failed to load assessment. Please try again.';
+      setError(msg);
+      setLoading(false);
     }
   };
 
   const handleAnswer = (isCorrect: boolean) => {
-    const q = questions[currentIndex];
+    if (!currentQuestion || !assessmentId || submitting) return;
 
-    const updated = [
-      ...answers,
+    const q = currentQuestion;
+    setSubmitting(true);
+
+    // Fire the API call immediately (don't wait for feedback delay)
+    const fetchNext = apiUtils.post(
+      `${DASH_API_URL}/assessment/next`,
       {
-        question_id: q.dash_metadata.dash_question_id,
-        skill_id: q.dash_metadata.skill_ids[0],
+        assessment_id: assessmentId,
+        question_id: q?.dash_metadata?.dash_question_id || `q_${questionNumber}`,
+        skill_id: (q?.dash_metadata?.skill_ids || [])[0] || '',
         is_correct: isCorrect,
-      },
-    ];
-
-    setAnswers(updated);
-
-    setTimeout(() => {
-      if (currentIndex < questions.length - 1) {
-        setCurrentIndex((i) => i + 1);
-      } else {
-        submitAssessment(updated);
       }
-    }, 1500);
-  };
+    );
 
-  const submitAssessment = async (finalAnswers: any[]) => {
-    try {
-      setSubmitting(true);
+    // Brief feedback flash, then show next question as soon as API responds
+    const minDelay = new Promise(resolve => setTimeout(resolve, 200));
 
-      const response = await apiUtils.post(
-        `${DASH_API_URL}/assessment/complete`,
-        { subject, answers: finalAnswers }
-      );
+    Promise.all([fetchNext, minDelay]).then(async ([response]) => {
+      try {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
 
-      if (!response.ok) throw new Error('Submit failed');
+        if (data.completed) {
+          setScore(data.score);
+          setTotal(data.total);
+          setCompleted(true);
+          setSubmitting(false);
+          return;
+        }
 
-      const data = await response.json();
-      setScore(data.score);
-      setTotal(data.total);
-      setCompleted(true);
-      
-      // Note: Tutor disconnect will be handled by AssessmentResults component
-    } catch (err) {
-      setError('Failed to submit assessment');
+        // Client-side duplicate check: log if backend served identical content
+        const fp = contentFingerprint(data.question);
+        if (seenContentRef.current.has(fp)) {
+          console.warn('[AssessmentFlow] Duplicate content detected client-side — skipping');
+        }
+        seenContentRef.current.add(fp);
+
+        setCurrentQuestion(data.question);
+        setQuestionNumber(data.question_number);
+        setTotalQuestions(data.total_questions);
+        setCurrentDifficulty(data.current_difficulty);
+        setSubmitting(false);
+
+        // Pre-fetch the NEXT question while user works on this one
+        if (assessmentIdRef.current) {
+          firePrefetch(assessmentIdRef.current, data.current_difficulty);
+        }
+      } catch (err) {
+        console.error('Assessment next failed:', err);
+        setError('Failed to load next question');
+        setSubmitting(false);
+      }
+    }).catch((err) => {
+      console.error('Assessment fetch rejected:', err);
+      setError('Network error — please try again');
       setSubmitting(false);
-    }
+    });
   };
 
   /* ----------------------------------------------------
      Render
   ---------------------------------------------------- */
   return (
+    <ThemeProvider defaultTheme="light" storageKey="ai-tutor-theme">
+    <TutorProvider>
     <div className="auth-container">
       <BackgroundShapes />
 
       <Header
-        sidebarOpen={sidebarOpen}
-        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+        sidebarOpen={false}
+        onToggleSidebar={() => {}}
+        assessmentMode={true}
       />
 
       {loading && (
-        <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center' }}>
-          Loading…
+        <div style={{
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '20px',
+          padding: '20px'
+        }}>
+          {/* Animated progress bar */}
+          <div style={{
+            width: '200px',
+            height: '8px',
+            border: '3px solid #000',
+            backgroundColor: '#fff',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              height: '100%',
+              width: '40%',
+              backgroundColor: loadPhase === 'slow' ? '#FF6B6B' : '#FFD93D',
+              animation: 'loading-bar 1.5s ease-in-out infinite'
+            }} />
+          </div>
+          <div style={{
+            fontWeight: 900,
+            fontSize: '18px',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em'
+          }}>
+            {loadPhase === 'fast' && `Preparing your ${subject} assessment`}
+            {loadPhase === 'generating' && `Generating ${subject} questions`}
+            {loadPhase === 'slow' && `Still working on it...`}
+          </div>
+          <div style={{
+            fontSize: '14px',
+            color: '#666',
+            maxWidth: '400px',
+            textAlign: 'center',
+            lineHeight: '1.5'
+          }}>
+            {loadPhase === 'fast' && 'Creating personalized questions at your level. This should only take a few seconds.'}
+            {loadPhase === 'generating' && 'Building new questions with AI. Almost there...'}
+            {loadPhase === 'slow' && 'This is taking longer than usual. You can keep waiting or try again.'}
+          </div>
+          {loadPhase === 'slow' && (
+            <button
+              onClick={() => {
+                abortRef.current?.abort();
+                setError(null);
+                setLoading(true);
+                startAssessment();
+              }}
+              style={{
+                padding: '10px 28px',
+                border: '3px solid #000',
+                background: '#FFD93D',
+                boxShadow: '3px 3px 0 #000',
+                cursor: 'pointer',
+                fontWeight: 700,
+                fontSize: '13px',
+                textTransform: 'uppercase'
+              }}
+            >
+              Try Again
+            </button>
+          )}
+          <style>{`
+            @keyframes loading-bar {
+              0% { transform: translateX(-100%); }
+              100% { transform: translateX(350%); }
+            }
+          `}</style>
         </div>
       )}
 
       {error && (
-        <div style={{ padding: 40, color: 'red' }}>{error}</div>
+        <div style={{
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '16px',
+          padding: 40
+        }}>
+          <div style={{
+            padding: '12px 24px',
+            border: '3px solid #000',
+            background: '#FF6B6B',
+            color: '#fff',
+            fontWeight: 700,
+            fontSize: '14px',
+            textTransform: 'uppercase'
+          }}>
+            {error}
+          </div>
+          <button
+            onClick={() => { setError(null); setLoading(true); startAssessment(); }}
+            style={{
+              padding: '12px 32px',
+              border: '3px solid #000',
+              background: '#FFD93D',
+              boxShadow: '3px 3px 0 #000',
+              cursor: 'pointer',
+              fontWeight: 700,
+              fontSize: '14px',
+              textTransform: 'uppercase'
+            }}
+          >
+            Try Again
+          </button>
+        </div>
       )}
 
       {!loading && !error && (
-        <TutorProvider assessmentMode={true}>
+        <>
           {completed && (
             <AssessmentResults
               score={score}
               total={total}
               subject={subject}
-              onContinue={() => history.replace('/app')}
+              onContinue={() => {
+                // Persist subject so practice mode loads the right subject
+                sessionStorage.setItem('selected_subject', subject);
+                sessionStorage.setItem('assessmentSubject', subject);
+                history.replace(`/app?subject=${encodeURIComponent(subject)}`);
+              }}
             />
           )}
 
@@ -276,50 +431,43 @@ const AssessmentFlow: React.FC = () => {
                       textTransform: 'uppercase',
                       letterSpacing: '0.05em'
                     }}>
-                      Submitting Assessment...
+                      Loading next question...
                     </span>
                   </div>
                 )}
 
-                {questions[currentIndex] && (
+                {currentQuestion && (
                   <AssessmentQuestion
-                    question={questions[currentIndex]}
-                    questionNumber={currentIndex + 1}
-                    totalQuestions={questions.length}
+                    question={currentQuestion}
+                    questionNumber={questionNumber}
+                    totalQuestions={totalQuestions}
                     onAnswer={handleAnswer}
                   />
                 )}
               </div>
-
-              {questions[currentIndex] && (
-                <QuestionSender question={questions[currentIndex]} />
-              )}
-
-              <Suspense fallback={null}>
-                <FloatingControlPanel
-                  renderCanvasRef={mediaMixerCanvasRef}
-                  videoRef={videoRef}
-                  supportsVideo
-                  onVideoStreamChange={() => {}}
-                  onMixerStreamChange={() => {}}
-                  enableEditingSettings
-                  onPaintClick={() => setIsScratchpadOpen(!isScratchpadOpen)}
-                  isPaintActive={isScratchpadOpen}
-                  cameraEnabled={cameraEnabled}
-                  screenEnabled={screenEnabled}
-                  onToggleCamera={setCameraEnabled}
-                  onToggleScreen={setScreenEnabled}
-                  mediaMixerCanvasRef={mediaMixerCanvasRef}
-                  privacyMode={privacyMode}
-                  onTogglePrivacy={setPrivacyMode}
-                  processedEdgesRef={processedEdgesRef}
-                  assessmentMode={true}
-                />
-              </Suspense>
             </div>
           )}
-        </TutorProvider>
+        </>
       )}
+      <Suspense fallback={null}>
+        <FloatingControlPanel
+          videoRef={dummyVideoRef}
+          renderCanvasRef={dummyCanvasRef}
+          supportsVideo={true}
+          onPaintClick={() => {}}
+          isPaintActive={false}
+          cameraEnabled={false}
+          screenEnabled={false}
+          onToggleCamera={() => {}}
+          onToggleScreen={() => {}}
+          mediaMixerCanvasRef={dummyCanvasRef}
+          privacyMode={false}
+          onTogglePrivacy={() => {}}
+          processedEdgesRef={dummyEdgesRef}
+          assessmentMode={true}
+        />
+      </Suspense>
+
       <style>{`
         @keyframes pulse-dot {
           0%, 100% {
@@ -333,6 +481,8 @@ const AssessmentFlow: React.FC = () => {
         }
       `}</style>
     </div>
+    </TutorProvider>
+    </ThemeProvider>
   );
 };
 

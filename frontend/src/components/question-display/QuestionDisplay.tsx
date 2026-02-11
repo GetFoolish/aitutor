@@ -1,5 +1,6 @@
 import React from 'react';
 import RendererComponent from "../question-widget-renderer/RendererComponent";
+import ContentV1Experience from "../content-v1/ContentV1Experience";
 import './mcq-fix.css'; // Fix for MCQ highlighting bug
 
 
@@ -25,6 +26,18 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
   onAssessmentAnswer,
   currentQuestionIndex = 0
 }) => {
+  const contentV1Enabled = import.meta.env.VITE_CONTENT_V1_ENABLED === 'true';
+
+  if (contentV1Enabled && !assessmentMode) {
+    return (
+      <div className="w-full flex flex-col items-center bg-transparent">
+        <div className="w-full" id="perseus-capture-area">
+          <ContentV1Experience />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full flex flex-col items-center bg-transparent">
       <div className="w-full" id="perseus-capture-area">

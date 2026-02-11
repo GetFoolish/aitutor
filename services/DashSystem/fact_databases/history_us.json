@@ -1,0 +1,676 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "history",
+    "last_updated": "2026-02-11",
+    "description": "US History facts: American Revolution, Civil War, Constitution, Civil Rights, presidents, westward expansion, industrialization, WWI/WWII, immigration, Native Americans"
+  },
+  "facts_by_topic": {
+    "key_dates": {
+      "keywords": [
+        "1776", "1861", "1865", "1945", "1969", "independence",
+        "civil war", "world war", "founding", "date", "year"
+      ],
+      "facts": [
+        {
+          "statement": "The Declaration of Independence was adopted on July 4, 1776",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The U.S. Constitution was signed on September 17, 1787, and ratified in 1788",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The American Civil War lasted from 1861 to 1865",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The United States entered World War I in 1917 and World War II in 1941 (after Pearl Harbor, December 7, 1941)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Civil Rights Act of 1964 outlawed discrimination based on race, color, religion, sex, or national origin",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The first Moon landing occurred on July 20, 1969, with astronauts Neil Armstrong and Buzz Aldrin",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Emancipation Proclamation was issued by Abraham Lincoln on January 1, 1863, declaring slaves in Confederate states free",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 19th Amendment, ratified in 1920, granted women the right to vote",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Louisiana Purchase in 1803 doubled the size of the United States, buying land from France for about $15 million",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The War of 1812 between the United States and Great Britain lasted from 1812 to 1815",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Great Depression began with the stock market crash on October 29, 1929 (Black Tuesday) and lasted until about 1939",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The September 11, 2001 terrorist attacks destroyed the World Trade Center in New York City and killed nearly 3,000 people",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the Declaration of Independence was signed on July 4, 1776",
+          "correct": "July 4, 1776 is when the Declaration was adopted (approved) by Congress. Most delegates signed it on August 2, 1776."
+        },
+        {
+          "wrong": "the Civil War was only about slavery",
+          "correct": "While slavery was the central issue, the Civil War also involved states' rights, economic differences, and political power struggles between North and South."
+        },
+        {
+          "wrong": "the Emancipation Proclamation freed all slaves",
+          "correct": "It only applied to slaves in Confederate states. Slavery was not fully abolished until the 13th Amendment was ratified in 1865."
+        },
+        {
+          "wrong": "the Great Depression was caused only by the stock market crash",
+          "correct": "The stock market crash was a trigger, but underlying causes included overproduction, bank failures, high tariffs, and unequal wealth distribution."
+        }
+      ]
+    },
+    "presidents": {
+      "keywords": [
+        "president", "Washington", "Lincoln", "Roosevelt", "Jefferson",
+        "Adams", "Kennedy", "Obama", "first president", "commander in chief"
+      ],
+      "facts": [
+        {
+          "statement": "George Washington was the first President of the United States, serving from 1789 to 1797",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Abraham Lincoln was the 16th president, who led the nation through the Civil War and abolished slavery",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Thomas Jefferson was the 3rd president and primary author of the Declaration of Independence",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Franklin D. Roosevelt served the most terms of any president (4 terms, 1933-1945), leading through the Great Depression and most of World War II",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 22nd Amendment (ratified 1951) limits presidents to two terms in office",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Theodore Roosevelt (26th president) was known for conservation, trust-busting, and building the Panama Canal",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "John F. Kennedy was the 35th president, assassinated on November 22, 1963, in Dallas, Texas",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Andrew Jackson, the 7th president, signed the Indian Removal Act of 1830, which led to the Trail of Tears",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Dwight D. Eisenhower, the 34th president, was Supreme Allied Commander in World War II before becoming president",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Barack Obama became the first African American President of the United States in 2009",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "James Madison is called the Father of the Constitution because he played a key role in drafting the document and the Bill of Rights",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Lyndon B. Johnson became president after Kennedy's assassination and signed the Civil Rights Act of 1964 and the Voting Rights Act of 1965",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "Benjamin Franklin was a president",
+          "correct": "Benjamin Franklin was never president. He was a Founding Father, diplomat, inventor, and signer of the Declaration of Independence."
+        },
+        {
+          "wrong": "Abraham Lincoln freed the slaves immediately upon becoming president",
+          "correct": "Lincoln became president in 1861. The Emancipation Proclamation was issued in 1863, and the 13th Amendment abolished slavery in 1865."
+        },
+        {
+          "wrong": "George Washington had wooden teeth",
+          "correct": "Washington's dentures were made of various materials including ivory, lead, human teeth, and animal teeth, but not wood."
+        },
+        {
+          "wrong": "the president can make laws on their own",
+          "correct": "The president can sign or veto bills passed by Congress and issue executive orders, but only Congress can pass legislation."
+        }
+      ]
+    },
+    "constitutional_amendments": {
+      "keywords": [
+        "amendment", "Bill of Rights", "1st Amendment", "2nd Amendment",
+        "13th", "14th", "15th", "19th", "constitutional right", "freedom"
+      ],
+      "facts": [
+        {
+          "statement": "The Bill of Rights consists of the first 10 amendments to the Constitution, ratified in 1791",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 1st Amendment protects freedom of speech, religion, press, assembly, and petition",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 13th Amendment (1865) abolished slavery throughout the United States",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 14th Amendment (1868) granted citizenship to all persons born in the United States and guaranteed equal protection under the law",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 15th Amendment (1870) prohibited denying the right to vote based on race",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 19th Amendment (1920) guaranteed women's right to vote",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 26th Amendment (1971) lowered the voting age from 21 to 18",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "There are currently 27 amendments to the U.S. Constitution",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 2nd Amendment protects the right to keep and bear arms in connection with a well-regulated militia",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 4th Amendment protects against unreasonable searches and seizures and requires warrants to be based on probable cause",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 5th Amendment protects against self-incrimination and double jeopardy, and guarantees due process of law",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 18th Amendment (1919) prohibited the manufacture and sale of alcohol (Prohibition), and the 21st Amendment (1933) repealed it",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the 1st Amendment gives unlimited free speech",
+          "correct": "The 1st Amendment does not protect all speech. Exceptions include threats, incitement to imminent violence, defamation, and obscenity."
+        },
+        {
+          "wrong": "the Bill of Rights was part of the original Constitution",
+          "correct": "The Bill of Rights was added as amendments in 1791, four years after the Constitution was signed in 1787."
+        },
+        {
+          "wrong": "the 2nd Amendment was about hunting rights",
+          "correct": "The 2nd Amendment addresses the right to bear arms in the context of a well-regulated militia. Its exact scope continues to be interpreted by courts."
+        },
+        {
+          "wrong": "the 5th Amendment only applies in criminal trials",
+          "correct": "The 5th Amendment also applies outside of trials; it includes protections like due process and the prohibition against taking private property without just compensation."
+        }
+      ]
+    },
+    "supreme_court_cases": {
+      "keywords": [
+        "Supreme Court", "Marbury", "Brown", "Roe", "Miranda",
+        "case", "judicial review", "ruling", "unconstitutional", "landmark"
+      ],
+      "facts": [
+        {
+          "statement": "Marbury v. Madison (1803) established the principle of judicial review, giving the Supreme Court the power to declare laws unconstitutional",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Brown v. Board of Education (1954) declared racial segregation in public schools unconstitutional, overturning Plessy v. Ferguson",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Plessy v. Ferguson (1896) upheld 'separate but equal' racial segregation, which stood until Brown v. Board of Education",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "Miranda v. Arizona (1966) established that arrested persons must be informed of their rights (Miranda rights) before questioning",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Gideon v. Wainwright (1963) ruled that the 6th Amendment guarantees the right to a lawyer for defendants who cannot afford one",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Supreme Court has 9 justices who are appointed by the President and confirmed by the Senate for life terms",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Tinker v. Des Moines (1969) ruled that students do not lose their First Amendment rights at school, as long as expression does not cause substantial disruption",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Dred Scott v. Sandford (1857) ruled that African Americans were not citizens and had no standing in court, a decision later overturned by the 14th Amendment",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the Supreme Court can make new laws",
+          "correct": "The Supreme Court interprets laws and the Constitution. It can strike down laws as unconstitutional but cannot create new legislation. That power belongs to Congress."
+        },
+        {
+          "wrong": "Brown v. Board immediately ended school segregation",
+          "correct": "The ruling ordered desegregation but did not set a timeline. Many schools remained segregated for years, and enforcement required further legal and political action."
+        },
+        {
+          "wrong": "Supreme Court justices are elected by the public",
+          "correct": "Supreme Court justices are nominated by the President and confirmed by the Senate. They are not elected by voters."
+        }
+      ]
+    },
+    "american_revolution": {
+      "keywords": [
+        "revolution", "colonial", "independence", "13 colonies", "Boston",
+        "tea party", "Lexington", "Concord", "Continental Congress",
+        "Founding Fathers", "British", "patriot", "loyalist"
+      ],
+      "facts": [
+        {
+          "statement": "The 13 original colonies declared independence from Great Britain in 1776",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Boston Tea Party (1773) was a protest against British taxation without representation, where colonists dumped tea into Boston Harbor",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The battles of Lexington and Concord in April 1775 were the first military engagements of the American Revolution",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The phrase 'no taxation without representation' expressed colonists' anger at being taxed by Parliament without having elected representatives there",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Continental Army, led by George Washington, defeated the British with help from France, which provided soldiers, ships, and supplies",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Treaty of Paris (1783) officially ended the American Revolution and recognized American independence",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Stamp Act (1765) taxed printed materials in the colonies and was one of the earliest sources of colonial resentment toward Britain",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Boston Massacre (1770) was a confrontation in which British soldiers killed five colonists, fueling anti-British sentiment",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Articles of Confederation were the first governing document of the United States (1781-1789), replaced by the Constitution because the central government was too weak",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "Paul Revere rode alone shouting 'the British are coming'",
+          "correct": "Revere was one of several riders (including William Dawes and Samuel Prescott), and he likely said 'the Regulars are coming' since colonists were also British subjects."
+        },
+        {
+          "wrong": "all colonists supported independence from Britain",
+          "correct": "Colonists were divided into Patriots (supported independence), Loyalists (supported Britain), and many who remained neutral."
+        },
+        {
+          "wrong": "America won the Revolution without any foreign help",
+          "correct": "France provided crucial military and financial support. Spain and the Netherlands also helped. The French navy was decisive at the Battle of Yorktown."
+        },
+        {
+          "wrong": "the Boston Tea Party was about the price of tea being too high",
+          "correct": "The protest was about the principle of taxation without representation, not the price of tea itself. The Tea Act actually lowered the price of tea."
+        }
+      ]
+    },
+    "westward_expansion": {
+      "keywords": [
+        "manifest destiny", "frontier", "Oregon Trail", "gold rush",
+        "homestead", "Lewis and Clark", "trail of tears", "Native American",
+        "railroad", "transcontinental", "westward"
+      ],
+      "facts": [
+        {
+          "statement": "Manifest Destiny was the 19th-century belief that the United States was destined to expand across the North American continent",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Lewis and Clark Expedition (1804-1806) explored the western territory acquired in the Louisiana Purchase, guided in part by Sacagawea",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The California Gold Rush began in 1848 when gold was discovered at Sutter's Mill, attracting hundreds of thousands of settlers",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Homestead Act of 1862 gave 160 acres of public land to settlers who farmed it for five years",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Trail of Tears (1838) was the forced relocation of Cherokee and other Native American nations from their homelands to Indian Territory (present-day Oklahoma), resulting in thousands of deaths",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The transcontinental railroad was completed in 1869 at Promontory Summit, Utah, connecting the East and West coasts by rail",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Oregon Trail was a major overland route used by settlers in the 1840s-1860s to travel from Missouri to the Pacific Northwest",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Mexican-American War (1846-1848) ended with the Treaty of Guadalupe Hidalgo, which gave the U.S. California, Nevada, Utah, and parts of several other states",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the American West was empty before settlers arrived",
+          "correct": "Millions of Native Americans had lived across the West for thousands of years before European-American expansion."
+        },
+        {
+          "wrong": "all Native Americans were nomadic",
+          "correct": "Many Native American groups were settled farmers (Pueblo, Cherokee, Iroquois) or lived in permanent villages. Lifestyles varied greatly among hundreds of distinct nations."
+        },
+        {
+          "wrong": "the transcontinental railroad was built entirely by American-born workers",
+          "correct": "Chinese immigrants made up a large portion of the workforce on the western section (Central Pacific), and Irish immigrants built much of the eastern section (Union Pacific)."
+        },
+        {
+          "wrong": "Sacagawea led the Lewis and Clark expedition",
+          "correct": "Sacagawea served as an interpreter and guide but did not lead the expedition. Meriwether Lewis and William Clark were the leaders."
+        }
+      ]
+    },
+    "civil_rights_movement": {
+      "keywords": [
+        "civil rights", "Martin Luther King", "Rosa Parks", "segregation",
+        "desegregation", "Jim Crow", "NAACP", "march", "boycott",
+        "sit-in", "freedom riders", "equality"
+      ],
+      "facts": [
+        {
+          "statement": "The Civil Rights Movement of the 1950s-1960s fought to end racial segregation and discrimination against African Americans",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Rosa Parks refused to give up her bus seat to a white passenger in Montgomery, Alabama, in 1955, sparking the Montgomery Bus Boycott",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Martin Luther King Jr. delivered the 'I Have a Dream' speech during the March on Washington on August 28, 1963",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Jim Crow laws were state and local laws in the South that enforced racial segregation from the 1870s through the 1960s",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Voting Rights Act of 1965 prohibited racial discrimination in voting, including literacy tests and other barriers",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Little Rock Nine were nine African American students who integrated Central High School in Little Rock, Arkansas, in 1957, protected by federal troops",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Freedom Riders were civil rights activists who rode interstate buses in 1961 to challenge segregation in bus terminals across the South",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The NAACP (National Association for the Advancement of Colored People), founded in 1909, was a major organization in the fight for civil rights",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Cesar Chavez and Dolores Huerta co-founded the National Farm Workers Association to fight for the rights of migrant farmworkers",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Thurgood Marshall argued the Brown v. Board of Education case and later became the first African American Supreme Court Justice in 1967",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "Rosa Parks refused to give up her seat because she was tired",
+          "correct": "Parks later said she was not physically tired but 'tired of giving in.' Her refusal was a deliberate act of civil disobedience."
+        },
+        {
+          "wrong": "Martin Luther King Jr. single-handedly led the civil rights movement",
+          "correct": "The movement involved thousands of leaders and organizations including the NAACP, SCLC, SNCC, and many unnamed activists."
+        },
+        {
+          "wrong": "the civil rights movement only benefited African Americans",
+          "correct": "Civil rights legislation benefited all minorities, women, and other groups facing discrimination. The movement inspired other rights movements worldwide."
+        },
+        {
+          "wrong": "racism ended when the Civil Rights Act was passed",
+          "correct": "The Civil Rights Act was a major legal milestone, but racial discrimination and inequality continued in various forms after 1964."
+        }
+      ]
+    },
+    "industrialization": {
+      "keywords": [
+        "industry", "factory", "railroad", "Carnegie", "Rockefeller",
+        "labor", "union", "strike", "progressive", "gilded age",
+        "invention", "immigration", "urbanization"
+      ],
+      "facts": [
+        {
+          "statement": "The Industrial Revolution transformed the United States from an agricultural to an industrial economy in the late 1800s",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Andrew Carnegie built a massive steel empire and later became one of the greatest philanthropists, funding libraries across America",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "John D. Rockefeller founded Standard Oil and became one of the wealthiest Americans in history",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Gilded Age (roughly 1870s-1900) was a period of rapid economic growth but also extreme inequality, corruption, and poor working conditions",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Labor unions formed to fight for better wages, shorter hours, and safer working conditions for factory workers",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Thomas Edison's laboratory in Menlo Park produced inventions including the practical incandescent light bulb and the phonograph",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Progressive Era (1890s-1920s) was a period of reform addressing problems caused by industrialization, including child labor, unsafe food, and corruption",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Millions of immigrants arrived at Ellis Island in New York Harbor between 1892 and 1954, seeking opportunity in industrial America",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "Edison invented the light bulb",
+          "correct": "Edison improved the light bulb and made it practical for widespread use. Many inventors contributed to its development, including Humphry Davy and Joseph Swan."
+        },
+        {
+          "wrong": "child labor was always illegal in the United States",
+          "correct": "Child labor was common in factories and mines during the 1800s. Federal child labor laws were not effectively enforced until the Fair Labor Standards Act of 1938."
+        },
+        {
+          "wrong": "the Gilded Age only benefited the rich",
+          "correct": "While inequality was extreme, industrialization also created new jobs, lowered the cost of goods, and built infrastructure that benefited many Americans over time."
+        }
+      ]
+    },
+    "immigration_and_diversity": {
+      "keywords": [
+        "immigration", "immigrant", "Ellis Island", "Angel Island",
+        "melting pot", "citizenship", "naturalization", "refugee",
+        "ethnic", "diversity", "assimilation"
+      ],
+      "facts": [
+        {
+          "statement": "The United States is often called a nation of immigrants because people from all over the world have settled here throughout its history",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Ellis Island in New York processed over 12 million immigrants between 1892 and 1954, mostly from Europe",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Angel Island in San Francisco Bay processed immigrants from Asia, particularly Chinese immigrants, between 1910 and 1940",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Chinese Exclusion Act of 1882 was the first federal law to restrict immigration based on nationality, barring Chinese laborers from entering the US",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "During World War II, approximately 120,000 Japanese Americans were forcibly relocated to internment camps by Executive Order 9066",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Immigration and Nationality Act of 1965 eliminated national-origin quotas and opened immigration from Asia, Africa, and Latin America",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Statue of Liberty, a gift from France dedicated in 1886, became a symbol of welcome for immigrants arriving in New York",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Great Migration (1910-1970) saw approximately 6 million African Americans move from the rural South to cities in the North, Midwest, and West",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "all immigrants to America came through Ellis Island",
+          "correct": "Ellis Island primarily processed European immigrants. Asian immigrants often came through Angel Island, and many others arrived through other ports or overland."
+        },
+        {
+          "wrong": "Japanese internment during WWII was justified by actual espionage",
+          "correct": "No evidence of widespread Japanese American espionage was ever found. The internment is now widely recognized as a grave injustice driven by wartime fear and racism."
+        },
+        {
+          "wrong": "the Statue of Liberty was built in the United States",
+          "correct": "The Statue of Liberty was designed by French sculptor Frederic Auguste Bartholdi and built in France. It was shipped to America in pieces and assembled on Bedloe's Island."
+        },
+        {
+          "wrong": "immigrants always assimilated quickly and easily",
+          "correct": "Immigrants often faced discrimination, language barriers, and economic hardship. Assimilation happened over generations, not overnight."
+        }
+      ]
+    }
+  }
+}

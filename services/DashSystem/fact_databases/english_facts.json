@@ -1,0 +1,547 @@
+{
+  "meta": {"version": 2, "subject": "english", "last_updated": "2026-02-07", "topics_count": 15, "description": "English Language Arts fact verification database covering grammar, reading, writing, vocabulary, and literary analysis for grades K-12"},
+  "facts_by_topic": {
+    "grammar_subject_verb": {
+      "keywords": ["subject", "verb", "agreement", "singular", "plural", "collective noun", "indefinite pronoun", "compound subject", "inverted sentence", "number", "person"],
+      "facts": [
+        {"statement": "A singular subject takes a singular verb, and a plural subject takes a plural verb", "grade_min": 2, "grade_max": 12},
+        {"statement": "Collective nouns (team, family, group, class) are usually treated as singular in American English", "grade_min": 4, "grade_max": 12},
+        {"statement": "The indefinite pronouns everyone, everybody, someone, somebody, anyone, anybody, no one, nobody, each, and either are singular and take singular verbs", "grade_min": 5, "grade_max": 12},
+        {"statement": "Compound subjects joined by 'and' generally take a plural verb", "grade_min": 4, "grade_max": 12},
+        {"statement": "When compound subjects are joined by 'or' or 'nor,' the verb agrees with the subject closest to it", "grade_min": 6, "grade_max": 12},
+        {"statement": "In inverted sentences where the subject follows the verb, the verb must still agree with the subject, not a word that precedes it", "grade_min": 7, "grade_max": 12},
+        {"statement": "The indefinite pronouns both, few, many, and several are always plural and take plural verbs", "grade_min": 5, "grade_max": 12},
+        {"statement": "The indefinite pronouns all, any, most, none, and some can be singular or plural depending on what they refer to", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "The team are winning the game", "correct": "In American English, collective nouns like 'team' typically take a singular verb: 'The team is winning the game.'"},
+        {"wrong": "Everyone need to bring their book", "correct": "'Everyone' is singular and takes a singular verb: 'Everyone needs to bring their book.' (Singular 'they' for the pronoun is now widely accepted.)"},
+        {"wrong": "There is many reasons to study grammar", "correct": "The subject 'reasons' is plural, so use 'There are many reasons to study grammar.'"},
+        {"wrong": "Neither the teacher nor the students was ready", "correct": "When using 'nor,' the verb agrees with the nearest subject: 'Neither the teacher nor the students were ready.'"},
+        {"wrong": "Mathematics are a difficult subject", "correct": "Subjects that look plural but refer to one thing (mathematics, physics, news) take singular verbs: 'Mathematics is a difficult subject.'"}
+      ]
+    },
+    "grammar_pronouns": {
+      "keywords": ["pronoun", "antecedent", "agreement", "subjective", "objective", "possessive", "reflexive", "intensive", "case", "who", "whom", "whose", "relative pronoun", "demonstrative"],
+      "facts": [
+        {"statement": "A pronoun must agree with its antecedent in number (singular or plural) and gender", "grade_min": 4, "grade_max": 12},
+        {"statement": "Subjective case pronouns (I, he, she, we, they, who) are used as subjects of sentences or clauses", "grade_min": 4, "grade_max": 12},
+        {"statement": "Objective case pronouns (me, him, her, us, them, whom) are used as objects of verbs or prepositions", "grade_min": 4, "grade_max": 12},
+        {"statement": "Possessive pronouns (my, mine, your, yours, his, her, hers, its, our, ours, their, theirs) show ownership and never use apostrophes", "grade_min": 3, "grade_max": 12},
+        {"statement": "Reflexive pronouns (myself, yourself, himself, herself, itself, ourselves, themselves) are used when the subject and object are the same person or thing", "grade_min": 5, "grade_max": 12},
+        {"statement": "Intensive pronouns have the same form as reflexive pronouns but are used for emphasis and can be removed without changing the sentence's meaning", "grade_min": 7, "grade_max": 12},
+        {"statement": "'Who' is a subjective pronoun and 'whom' is an objective pronoun; 'who' is used as a subject, and 'whom' is used as an object", "grade_min": 7, "grade_max": 12},
+        {"statement": "Singular 'they' is grammatically accepted as a pronoun for a person whose gender is unknown or who uses they/them pronouns", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Me and him went to the store", "correct": "Subjective pronouns are needed for subjects: 'He and I went to the store.'"},
+        {"wrong": "The book lost it's cover", "correct": "'Its' (no apostrophe) is the possessive form; 'it's' means 'it is': 'The book lost its cover.'"},
+        {"wrong": "Each student should bring their own pencil is wrong", "correct": "Singular 'they' is now widely accepted in standard English. 'Each student should bring their own pencil' is grammatically acceptable."},
+        {"wrong": "I did it by themself", "correct": "'Themself' is nonstandard; use 'themselves' for plural or 'myself/himself/herself' for singular: 'I did it by myself.'"},
+        {"wrong": "Who did you give it to is always wrong", "correct": "While 'whom' is technically correct as the object ('To whom did you give it?'), 'who' is widely accepted in informal speech and writing."}
+      ]
+    },
+    "grammar_verb_tense": {
+      "keywords": ["verb tense", "past tense", "present tense", "future tense", "perfect", "progressive", "continuous", "irregular verb", "participle", "had", "have", "has", "will"],
+      "facts": [
+        {"statement": "English has three simple tenses: past, present, and future", "grade_min": 2, "grade_max": 12},
+        {"statement": "The perfect tenses (present perfect, past perfect, future perfect) use a form of 'have' plus a past participle and indicate completed actions", "grade_min": 6, "grade_max": 12},
+        {"statement": "The progressive (continuous) tenses use a form of 'be' plus a present participle (-ing) and indicate ongoing actions", "grade_min": 5, "grade_max": 12},
+        {"statement": "Irregular verbs do not follow standard rules for forming past tense and past participle (e.g., go/went/gone, swim/swam/swum, write/wrote/written)", "grade_min": 3, "grade_max": 12},
+        {"statement": "The past perfect tense (had + past participle) describes an action completed before another past action", "grade_min": 7, "grade_max": 12},
+        {"statement": "Verb tense should remain consistent within a passage unless there is a clear reason to shift tenses", "grade_min": 4, "grade_max": 12},
+        {"statement": "The present tense can be used to discuss facts, habitual actions, and literary works", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "I have went to the store yesterday", "correct": "Use simple past with 'yesterday': 'I went to the store yesterday.' Or use present perfect without a specific time: 'I have gone to the store.'"},
+        {"wrong": "She swum across the lake", "correct": "'Swum' is the past participle; the simple past is 'swam': 'She swam across the lake.'"},
+        {"wrong": "He should of gone earlier", "correct": "'Should of' is a mishearing of 'should have': 'He should have gone earlier.'"},
+        {"wrong": "We was walking home", "correct": "'We' requires 'were': 'We were walking home.'"},
+        {"wrong": "The book was wrote by a famous author", "correct": "Use the past participle with passive voice: 'The book was written by a famous author.'"}
+      ]
+    },
+    "grammar_sentence_structure": {
+      "keywords": ["sentence", "fragment", "run-on", "comma splice", "compound", "complex", "simple", "clause", "independent clause", "dependent clause", "subordination", "coordination", "conjunction"],
+      "facts": [
+        {"statement": "A complete sentence must have a subject and a predicate and express a complete thought", "grade_min": 2, "grade_max": 12},
+        {"statement": "A sentence fragment is a group of words that lacks a subject, a verb, or a complete thought", "grade_min": 3, "grade_max": 12},
+        {"statement": "A run-on sentence occurs when two or more independent clauses are joined without proper punctuation or conjunctions", "grade_min": 4, "grade_max": 12},
+        {"statement": "A comma splice occurs when two independent clauses are joined with only a comma and no coordinating conjunction", "grade_min": 6, "grade_max": 12},
+        {"statement": "A compound sentence joins two independent clauses with a coordinating conjunction (for, and, nor, but, or, yet, so — FANBOYS) or a semicolon", "grade_min": 4, "grade_max": 12},
+        {"statement": "A complex sentence contains one independent clause and at least one dependent (subordinate) clause", "grade_min": 5, "grade_max": 12},
+        {"statement": "Subordinating conjunctions (because, although, when, if, since, while, after, before, unless) introduce dependent clauses", "grade_min": 5, "grade_max": 12},
+        {"statement": "A compound-complex sentence contains at least two independent clauses and at least one dependent clause", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Because I was tired. I went to bed.", "correct": "'Because I was tired' is a dependent clause and cannot stand alone. Combine: 'Because I was tired, I went to bed.'"},
+        {"wrong": "I like pizza I eat it every day", "correct": "This is a run-on sentence. Fix with punctuation: 'I like pizza. I eat it every day.' or 'I like pizza, so I eat it every day.'"},
+        {"wrong": "She studied hard, she passed the test", "correct": "This is a comma splice. Fix: 'She studied hard, so she passed the test.' or 'She studied hard; she passed the test.'"},
+        {"wrong": "Running quickly down the street to catch the bus", "correct": "This is a fragment with no subject or main verb. Fix: 'She was running quickly down the street to catch the bus.'"},
+        {"wrong": "Every group of words with a period is a sentence", "correct": "A sentence must contain a subject and predicate and express a complete thought, not just end with a period."}
+      ]
+    },
+    "grammar_punctuation": {
+      "keywords": ["comma", "semicolon", "colon", "dash", "apostrophe", "quotation marks", "period", "question mark", "exclamation point", "parentheses", "hyphen", "ellipsis", "punctuation"],
+      "facts": [
+        {"statement": "Commas separate items in a list of three or more (the Oxford comma before the conjunction is optional but recommended for clarity)", "grade_min": 3, "grade_max": 12},
+        {"statement": "A comma follows an introductory word, phrase, or clause at the beginning of a sentence", "grade_min": 4, "grade_max": 12},
+        {"statement": "Commas set off nonessential (nonrestrictive) appositives and clauses from the rest of the sentence", "grade_min": 6, "grade_max": 12},
+        {"statement": "A semicolon joins two closely related independent clauses without a conjunction", "grade_min": 7, "grade_max": 12},
+        {"statement": "A colon introduces a list, an explanation, or a quotation that follows an independent clause", "grade_min": 7, "grade_max": 12},
+        {"statement": "An apostrophe shows possession (the dog's bone) or indicates a contraction (don't, can't, it's)", "grade_min": 3, "grade_max": 12},
+        {"statement": "To form the possessive of a singular noun, add an apostrophe and s; for plural nouns already ending in s, add only an apostrophe", "grade_min": 4, "grade_max": 12},
+        {"statement": "An em dash (—) is used to set off an abrupt change in thought or to add emphasis to parenthetical information", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Its important to study for the test", "correct": "'Its' is possessive; 'it's' is the contraction for 'it is': 'It's important to study for the test.'"},
+        {"wrong": "The dog wagged it's tail", "correct": "Possessive 'its' does not have an apostrophe: 'The dog wagged its tail.'"},
+        {"wrong": "The students book was on the desk", "correct": "Singular possessive requires an apostrophe: 'The student's book was on the desk.'"},
+        {"wrong": "I bought apples oranges and bananas", "correct": "Use commas to separate items in a list: 'I bought apples, oranges, and bananas.'"},
+        {"wrong": "However I think we should go", "correct": "Use a comma after an introductory word: 'However, I think we should go.'"}
+      ]
+    },
+    "grammar_modifiers": {
+      "keywords": ["modifier", "dangling modifier", "misplaced modifier", "adjective", "adverb", "parallel structure", "parallelism", "squinting modifier", "limiting modifier"],
+      "facts": [
+        {"statement": "A modifier should be placed as close as possible to the word it modifies to avoid confusion", "grade_min": 6, "grade_max": 12},
+        {"statement": "A dangling modifier is a phrase that does not clearly or logically modify any word in the sentence", "grade_min": 7, "grade_max": 12},
+        {"statement": "A misplaced modifier is a word or phrase placed too far from the word it modifies, causing ambiguity or unintended meaning", "grade_min": 6, "grade_max": 12},
+        {"statement": "Parallel structure means using the same grammatical form for items in a list, comparison, or paired construction", "grade_min": 6, "grade_max": 12},
+        {"statement": "Correlative conjunctions (both...and, either...or, neither...nor, not only...but also) require parallel structure in the elements they connect", "grade_min": 8, "grade_max": 12},
+        {"statement": "Limiting modifiers (only, just, nearly, almost, merely) should be placed directly before the word they modify", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Walking down the street, the trees were beautiful", "correct": "Dangling modifier: the trees were not walking. Fix: 'Walking down the street, I noticed the beautiful trees.'"},
+        {"wrong": "She almost drove her car for six hours", "correct": "Misplaced modifier: 'She drove her car for almost six hours.' (She did drive, not almost drove.)"},
+        {"wrong": "I like swimming, to run, and biking", "correct": "Use parallel structure: 'I like swimming, running, and biking.'"},
+        {"wrong": "The teacher only gave homework to the students who misbehaved means the teacher gave nothing else", "correct": "'Only' should be placed before what it modifies. 'The teacher gave homework only to the students who misbehaved' clarifies who received homework."}
+      ]
+    },
+    "grammar_usage_style": {
+      "keywords": ["affect", "effect", "their", "there", "they're", "its", "it's", "who", "whom", "lay", "lie", "active voice", "passive voice", "wordiness", "concise", "frequently confused"],
+      "facts": [
+        {"statement": "'Affect' is usually a verb meaning to influence; 'effect' is usually a noun meaning a result", "grade_min": 5, "grade_max": 12},
+        {"statement": "'Their' is possessive, 'there' refers to a place, and 'they're' is a contraction of 'they are'", "grade_min": 3, "grade_max": 12},
+        {"statement": "'Lay' means to put or place something down (transitive — requires an object); 'lie' means to recline (intransitive — no object)", "grade_min": 7, "grade_max": 12},
+        {"statement": "Active voice (the subject performs the action) is generally preferred over passive voice (the subject receives the action) for clarity and directness", "grade_min": 6, "grade_max": 12},
+        {"statement": "'Who' is used as a subject and 'whom' is used as an object; a trick is to substitute 'he/she' (who) or 'him/her' (whom)", "grade_min": 7, "grade_max": 12},
+        {"statement": "'Fewer' is used with countable nouns and 'less' is used with uncountable nouns", "grade_min": 6, "grade_max": 12},
+        {"statement": "'Farther' refers to physical distance and 'further' refers to figurative or additional degree", "grade_min": 7, "grade_max": 12},
+        {"statement": "Concise writing avoids unnecessary words; phrases like 'due to the fact that' can be replaced with 'because'", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "The weather will effect our plans", "correct": "'Effect' is a noun; use the verb 'affect': 'The weather will affect our plans.'"},
+        {"wrong": "Lay down and rest for a while", "correct": "'Lay' requires an object. Use 'lie': 'Lie down and rest for a while.'"},
+        {"wrong": "There going to the store", "correct": "'There' is a place; use the contraction 'they're' (they are): 'They're going to the store.'"},
+        {"wrong": "Less students attended the meeting", "correct": "'Students' is countable; use 'fewer': 'Fewer students attended the meeting.'"},
+        {"wrong": "The ball was threw by the boy is correct passive voice", "correct": "Passive voice uses the past participle: 'The ball was thrown by the boy.'"}
+      ]
+    },
+    "reading_comprehension": {
+      "keywords": ["main idea", "supporting details", "inference", "author's purpose", "text structure", "cause and effect", "compare and contrast", "chronological", "problem and solution", "summary", "central idea", "theme"],
+      "facts": [
+        {"statement": "The main idea is the most important point the author makes about a topic, often found in the first or last sentence of a paragraph", "grade_min": 2, "grade_max": 12},
+        {"statement": "Supporting details are facts, examples, reasons, or descriptions that explain or prove the main idea", "grade_min": 2, "grade_max": 12},
+        {"statement": "Making an inference means using clues from the text combined with prior knowledge to draw a conclusion the author does not explicitly state", "grade_min": 3, "grade_max": 12},
+        {"statement": "Common author's purposes include to persuade, to inform, to entertain, and to explain", "grade_min": 3, "grade_max": 12},
+        {"statement": "Common text structures include cause and effect, compare and contrast, chronological order, problem and solution, and description", "grade_min": 4, "grade_max": 12},
+        {"statement": "A summary is a brief restatement of the main ideas and key details of a text in the reader's own words", "grade_min": 3, "grade_max": 12},
+        {"statement": "Context clues are hints in the surrounding text that help a reader determine the meaning of an unfamiliar word", "grade_min": 3, "grade_max": 12},
+        {"statement": "Signal words help identify text structure: 'because' and 'as a result' signal cause/effect; 'similarly' and 'however' signal compare/contrast; 'first' and 'then' signal chronological order", "grade_min": 4, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "The main idea is the same as the topic", "correct": "The topic is the general subject; the main idea is the specific point the author makes about that topic."},
+        {"wrong": "An inference is just a guess", "correct": "An inference is a logical conclusion supported by text evidence and prior knowledge, not a random guess."},
+        {"wrong": "The author's purpose is always stated directly", "correct": "The author's purpose is often implied and must be inferred from the content, tone, and word choice."},
+        {"wrong": "A summary includes the reader's opinions", "correct": "A summary is an objective restatement of the text's main ideas and does not include personal opinions."},
+        {"wrong": "Every paragraph has its main idea in the first sentence", "correct": "The main idea can appear anywhere in a paragraph — beginning, middle, or end — or it may be implied."}
+      ]
+    },
+    "reading_literary": {
+      "keywords": ["theme", "character", "point of view", "first person", "third person", "narrator", "protagonist", "antagonist", "conflict", "setting", "plot", "figurative language", "characterization", "climax", "resolution"],
+      "facts": [
+        {"statement": "Theme is the underlying message or lesson about life that the author conveys through the story, not the same as the topic or subject", "grade_min": 3, "grade_max": 12},
+        {"statement": "First-person point of view uses 'I' and 'we' and is told from a character's perspective within the story", "grade_min": 3, "grade_max": 12},
+        {"statement": "Third-person omniscient narration reveals the thoughts and feelings of multiple characters; third-person limited reveals only one character's thoughts", "grade_min": 5, "grade_max": 12},
+        {"statement": "The four main types of conflict are person vs. person, person vs. self, person vs. nature, and person vs. society", "grade_min": 4, "grade_max": 12},
+        {"statement": "Characterization can be direct (the author explicitly describes a character) or indirect (revealed through the character's actions, speech, thoughts, and other characters' reactions)", "grade_min": 5, "grade_max": 12},
+        {"statement": "The standard plot structure includes exposition, rising action, climax, falling action, and resolution (denouement)", "grade_min": 4, "grade_max": 12},
+        {"statement": "Setting refers to the time and place in which a story occurs and can influence mood, characters, and plot", "grade_min": 3, "grade_max": 12},
+        {"statement": "Second-person point of view uses 'you' and is rare in fiction but common in choose-your-own-adventure stories and instructional writing", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "The theme of the story is 'friendship'", "correct": "A theme is a complete statement about life, not a single word. A better theme would be: 'True friendship requires sacrifice and loyalty.'"},
+        {"wrong": "The protagonist is always the hero or a good person", "correct": "The protagonist is the main character of a story and can be flawed, morally ambiguous, or even villainous (an antihero)."},
+        {"wrong": "Point of view and perspective are exactly the same thing", "correct": "Point of view is the narrative position (first person, third person, etc.); perspective is the character's attitudes, beliefs, and way of seeing the world."},
+        {"wrong": "The climax is always at the end of the story", "correct": "The climax is the turning point of highest tension; it is followed by the falling action and resolution before the story ends."},
+        {"wrong": "Conflict only means two characters fighting", "correct": "Conflict includes internal struggles (person vs. self) and external struggles (person vs. society, nature, or another person)."}
+      ]
+    },
+    "reading_informational": {
+      "keywords": ["claim", "evidence", "argument", "primary source", "secondary source", "bias", "text features", "heading", "caption", "graph", "credibility", "fact", "opinion", "counterclaim", "rhetorical"],
+      "facts": [
+        {"statement": "A claim is a statement that asserts something to be true and can be supported or refuted with evidence", "grade_min": 5, "grade_max": 12},
+        {"statement": "Evidence includes facts, statistics, quotations, and examples used to support a claim or argument", "grade_min": 5, "grade_max": 12},
+        {"statement": "A primary source is an original, firsthand account or document from the time period being studied (letters, diaries, photographs, speeches)", "grade_min": 5, "grade_max": 12},
+        {"statement": "A secondary source analyzes, interprets, or discusses information from primary sources (textbooks, biographies, review articles)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Bias is a prejudice or inclination that prevents objective consideration of an issue and can appear in word choice, source selection, and omission of information", "grade_min": 6, "grade_max": 12},
+        {"statement": "Text features such as headings, subheadings, bold words, captions, graphs, charts, and tables help readers locate and understand information", "grade_min": 3, "grade_max": 12},
+        {"statement": "A fact is a statement that can be verified as true or false; an opinion expresses a personal judgment or belief", "grade_min": 3, "grade_max": 12},
+        {"statement": "A strong argument addresses counterclaims and explains why the author's position is more convincing", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "An opinion cannot be part of a persuasive argument", "correct": "Persuasive arguments include opinions (claims), but those opinions must be supported by credible evidence and logical reasoning."},
+        {"wrong": "If it is published, it is a reliable source", "correct": "Published materials can still contain bias, errors, or misinformation; readers should evaluate the source's credibility, expertise, and potential bias."},
+        {"wrong": "A textbook is a primary source", "correct": "Textbooks are secondary sources because they compile and interpret information from primary sources."},
+        {"wrong": "Bias means the source is completely wrong", "correct": "Bias means the source has a particular perspective or slant; it does not necessarily mean all the information is false, but it should be read critically."},
+        {"wrong": "Facts and opinions are always easy to distinguish", "correct": "Some statements blend fact and opinion (e.g., 'The tallest building in the world is the most impressive'); critical reading is needed to separate them."}
+      ]
+    },
+    "vocabulary_roots": {
+      "keywords": ["root", "prefix", "suffix", "Latin", "Greek", "etymology", "morpheme", "base word", "word part", "bio", "geo", "auto", "graph", "phon", "dict", "struct", "rupt", "port", "ject"],
+      "facts": [
+        {"statement": "Many English words are formed from Latin and Greek roots, prefixes, and suffixes", "grade_min": 3, "grade_max": 12},
+        {"statement": "The Greek root 'bio' means life (biology, biography, biome)", "grade_min": 4, "grade_max": 12},
+        {"statement": "The Greek root 'graph' or 'gram' means to write or record (autograph, diagram, photograph, telegram)", "grade_min": 4, "grade_max": 12},
+        {"statement": "The Latin root 'dict' means to say or speak (dictionary, predict, contradict, verdict)", "grade_min": 5, "grade_max": 12},
+        {"statement": "The Latin root 'struct' means to build (structure, construct, destruct, instruct)", "grade_min": 5, "grade_max": 12},
+        {"statement": "The Latin root 'rupt' means to break (interrupt, erupt, corrupt, rupture)", "grade_min": 5, "grade_max": 12},
+        {"statement": "The Latin root 'port' means to carry (transport, export, import, portable)", "grade_min": 5, "grade_max": 12},
+        {"statement": "The Latin root 'ject' means to throw (eject, inject, project, reject)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Knowing common roots, prefixes, and suffixes can help readers decode unfamiliar words by breaking them into meaningful parts", "grade_min": 3, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "All English words come from Latin or Greek", "correct": "English borrows from many languages including Latin, Greek, French, German, Old Norse, Arabic, and others."},
+        {"wrong": "A root word and a base word are exactly the same thing", "correct": "A root is the core morpheme that carries meaning and may not be a standalone word (e.g., 'ject'); a base word can stand alone (e.g., 'play')."},
+        {"wrong": "The prefix 'un-' always means 'not'", "correct": "While 'un-' usually means 'not' (unhappy, unfair), it can also mean to reverse an action (undo, untie, unlock)."},
+        {"wrong": "You can always determine a word's exact meaning from its roots alone", "correct": "Roots provide clues to meaning, but context and how the word has evolved over time are also important for accurate definition."}
+      ]
+    },
+    "vocabulary_context_clues": {
+      "keywords": ["context clue", "definition clue", "synonym", "antonym", "example clue", "inference", "unfamiliar word", "restatement", "contrast clue", "vocabulary strategy"],
+      "facts": [
+        {"statement": "A definition clue directly states the meaning of an unfamiliar word, often using commas, dashes, or phrases like 'which means' or 'that is'", "grade_min": 3, "grade_max": 12},
+        {"statement": "A synonym clue provides a word with a similar meaning near the unfamiliar word", "grade_min": 3, "grade_max": 12},
+        {"statement": "An antonym (contrast) clue provides a word with the opposite meaning, often signaled by words like 'but,' 'however,' 'unlike,' or 'instead'", "grade_min": 3, "grade_max": 12},
+        {"statement": "An example clue provides instances or illustrations that help define the unfamiliar word, often signaled by 'such as,' 'for example,' 'including,' or 'like'", "grade_min": 3, "grade_max": 12},
+        {"statement": "An inference clue requires the reader to use surrounding sentences and prior knowledge to figure out the word's meaning", "grade_min": 4, "grade_max": 12},
+        {"statement": "Words with multiple meanings (homonyms) require readers to use context to determine which meaning is intended", "grade_min": 3, "grade_max": 12},
+        {"statement": "Connotation is the emotional or cultural association a word carries beyond its dictionary definition (denotation)", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "You should always look up every unfamiliar word in the dictionary immediately", "correct": "Good readers first try to determine meaning from context clues, then confirm with a dictionary if needed."},
+        {"wrong": "A word always means the same thing in every context", "correct": "Many words have multiple meanings (e.g., 'run' can mean to jog, to operate, a score in baseball, or a tear in fabric); context determines the meaning."},
+        {"wrong": "If I cannot find the exact definition from context, the clues are useless", "correct": "Context clues often give an approximate meaning, which is enough to understand the passage; exact definitions can be confirmed later."},
+        {"wrong": "Connotation and denotation mean the same thing", "correct": "Denotation is the literal dictionary definition; connotation is the emotional or cultural feeling associated with the word (e.g., 'thrifty' vs. 'cheap')."}
+      ]
+    },
+    "writing_essay": {
+      "keywords": ["thesis", "topic sentence", "transition", "evidence", "conclusion", "introduction", "body paragraph", "argumentative", "informational", "narrative", "persuasive", "hook", "counterargument", "outline"],
+      "facts": [
+        {"statement": "A thesis statement presents the main argument or claim of an essay, typically in one or two sentences at the end of the introduction", "grade_min": 5, "grade_max": 12},
+        {"statement": "Each body paragraph should begin with a topic sentence that states the paragraph's main point and connects to the thesis", "grade_min": 4, "grade_max": 12},
+        {"statement": "Transition words and phrases (furthermore, in contrast, similarly, as a result, consequently) connect ideas between and within paragraphs", "grade_min": 4, "grade_max": 12},
+        {"statement": "Evidence in an essay includes direct quotations, paraphrases, statistics, examples, and expert opinions that support the writer's claims", "grade_min": 5, "grade_max": 12},
+        {"statement": "An effective conclusion restates the thesis in a new way, summarizes key points, and leaves the reader with a final thought or call to action", "grade_min": 5, "grade_max": 12},
+        {"statement": "An argumentative essay presents a claim, supports it with evidence and reasoning, addresses counterclaims, and concludes with a position", "grade_min": 6, "grade_max": 12},
+        {"statement": "A narrative essay tells a story with a clear sequence of events, descriptive details, and often a reflective conclusion", "grade_min": 4, "grade_max": 12},
+        {"statement": "An informational (expository) essay explains a topic using facts, definitions, details, and examples without expressing personal opinions", "grade_min": 4, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "A thesis statement is the same as a topic", "correct": "A thesis is a specific, arguable claim about a topic. 'Dogs' is a topic; 'Dogs make better pets than cats because of their loyalty' is a thesis."},
+        {"wrong": "A good introduction starts with 'In this essay I will...'", "correct": "Strong introductions use a hook (anecdote, question, surprising fact, quotation) to engage the reader rather than announcing the essay structure."},
+        {"wrong": "The conclusion should just repeat the introduction word for word", "correct": "A conclusion should restate the thesis in a fresh way and synthesize the key points, not simply copy the introduction."},
+        {"wrong": "You only need one piece of evidence per body paragraph", "correct": "Strong paragraphs typically include multiple pieces of evidence with analysis explaining how each piece supports the topic sentence."},
+        {"wrong": "Personal opinions do not need evidence in an argumentative essay", "correct": "In argumentative writing, every claim must be supported by evidence and logical reasoning, even if the claim reflects a personal opinion."}
+      ]
+    },
+    "literary_devices": {
+      "keywords": ["simile", "metaphor", "personification", "hyperbole", "alliteration", "onomatopoeia", "irony", "symbolism", "imagery", "tone", "mood", "foreshadowing", "flashback", "allusion", "oxymoron"],
+      "facts": [
+        {"statement": "A simile is a comparison between two unlike things using 'like' or 'as' (e.g., 'Her eyes sparkled like diamonds')", "grade_min": 2, "grade_max": 12},
+        {"statement": "A metaphor is a direct comparison between two unlike things without using 'like' or 'as' (e.g., 'Time is money')", "grade_min": 3, "grade_max": 12},
+        {"statement": "Personification gives human qualities, feelings, or actions to non-human things (e.g., 'The wind howled through the night')", "grade_min": 3, "grade_max": 12},
+        {"statement": "Irony has three types: verbal irony (saying the opposite of what is meant), situational irony (when the outcome is opposite of what is expected), and dramatic irony (when the audience knows something the characters do not)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Symbolism uses a concrete object to represent an abstract idea (e.g., a dove symbolizes peace; a rose symbolizes love)", "grade_min": 5, "grade_max": 12},
+        {"statement": "Imagery is descriptive language that appeals to the five senses (sight, sound, taste, touch, smell) to create vivid mental pictures", "grade_min": 3, "grade_max": 12},
+        {"statement": "Tone is the author's attitude toward the subject or audience, conveyed through word choice and style; mood is the feeling the text creates in the reader", "grade_min": 5, "grade_max": 12},
+        {"statement": "Foreshadowing is a literary device in which the author gives hints or clues about events that will happen later in the story", "grade_min": 5, "grade_max": 12},
+        {"statement": "An allusion is a brief reference to a well-known person, place, event, or literary work (e.g., 'He had the Midas touch')", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "All comparisons are metaphors", "correct": "Comparisons using 'like' or 'as' are similes, not metaphors. Metaphors make direct comparisons without these words."},
+        {"wrong": "Irony just means something funny or coincidental", "correct": "Irony involves a contrast between expectation and reality. A coincidence is not irony unless there is a meaningful reversal of expectations."},
+        {"wrong": "Tone and mood are the same thing", "correct": "Tone is the author's attitude; mood is the feeling the reader experiences. They may differ (e.g., a sarcastic tone might create an uncomfortable mood)."},
+        {"wrong": "Symbolism is only in poetry", "correct": "Symbolism is used across all literary genres including fiction, drama, nonfiction, and poetry."},
+        {"wrong": "Hyperbole is the same as lying", "correct": "Hyperbole is intentional exaggeration for emphasis or humor that is not meant to be taken literally, unlike a lie, which intends to deceive."}
+      ]
+    },
+    "literary_genres": {
+      "keywords": ["fiction", "nonfiction", "poetry", "drama", "sonnet", "haiku", "free verse", "limerick", "act", "scene", "dialogue", "stage directions", "short story", "novel", "myth", "fable", "genre"],
+      "facts": [
+        {"statement": "Fiction is writing that comes from the author's imagination, while nonfiction is writing based on real events, people, or facts", "grade_min": 2, "grade_max": 12},
+        {"statement": "A haiku is a traditional Japanese poetry form with three lines of 5, 7, and 5 syllables respectively", "grade_min": 3, "grade_max": 12},
+        {"statement": "A Shakespearean (English) sonnet has 14 lines in iambic pentameter with the rhyme scheme ABAB CDCD EFEF GG", "grade_min": 8, "grade_max": 12},
+        {"statement": "Free verse poetry does not follow a regular meter or rhyme scheme", "grade_min": 5, "grade_max": 12},
+        {"statement": "A limerick is a humorous five-line poem with the rhyme scheme AABBA", "grade_min": 4, "grade_max": 12},
+        {"statement": "In drama, a play is divided into acts and scenes; dialogue is the words spoken by characters; stage directions describe the setting, characters' movements, and manner of speaking", "grade_min": 4, "grade_max": 12},
+        {"statement": "A fable is a short story, often with animal characters, that teaches a moral or lesson; a myth is a traditional story that explains natural phenomena or cultural beliefs", "grade_min": 3, "grade_max": 12},
+        {"statement": "The five elements of a short story are character, setting, plot, conflict, and theme", "grade_min": 3, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "Historical fiction is nonfiction because it is based on real events", "correct": "Historical fiction is fiction because it includes imagined characters, dialogue, or events, even though it is set in a real historical period."},
+        {"wrong": "All poetry must rhyme", "correct": "Many poems, such as free verse and blank verse, do not rhyme. Poetry is defined by its use of language, imagery, and structure, not by rhyme alone."},
+        {"wrong": "A play and a movie script are the same thing", "correct": "While both use dialogue, plays include stage directions for live theater, while screenplays include camera directions and shots for film production."},
+        {"wrong": "A novel and a short story are the same except for length", "correct": "Besides length, novels typically have more complex plots, multiple subplots, and more developed characters than short stories."},
+        {"wrong": "Myths are just made-up stories with no cultural significance", "correct": "Myths were foundational stories for ancient cultures, explaining natural phenomena, human behavior, and cultural values; they hold deep cultural and literary significance."}
+      ]
+    }
+  },
+  "parts_of_speech": {
+    "noun": {
+      "definition": "A word that represents a person, place, thing, or idea",
+      "examples": ["dog", "city", "happiness", "teacher", "school"],
+      "subtypes": {
+        "common": {"definition": "A general name for a person, place, or thing", "examples": ["cat", "river", "building"]},
+        "proper": {"definition": "The specific name of a person, place, or thing; always capitalized", "examples": ["London", "Shakespeare", "Atlantic Ocean"]},
+        "abstract": {"definition": "A noun that names an idea, quality, or state that cannot be perceived by the senses", "examples": ["freedom", "courage", "love"]},
+        "concrete": {"definition": "A noun that names something that can be perceived by the senses", "examples": ["apple", "music", "perfume"]},
+        "collective": {"definition": "A noun that refers to a group of individuals", "examples": ["team", "flock", "audience"]},
+        "compound": {"definition": "A noun made up of two or more words", "examples": ["toothpaste", "mother-in-law", "ice cream"]}
+      }
+    },
+    "verb": {
+      "definition": "A word that describes an action, state, or occurrence",
+      "examples": ["run", "is", "become", "think", "write"],
+      "subtypes": {
+        "action": {"definition": "Expresses physical or mental action", "examples": ["run", "think", "write"]},
+        "linking": {"definition": "Connects the subject to a word that describes or identifies it", "examples": ["is", "seems", "becomes"]},
+        "helping": {"definition": "Assists the main verb to form tense, mood, or voice", "examples": ["have", "will", "can", "should", "might"]}
+      }
+    },
+    "adjective": {
+      "definition": "A word that describes or modifies a noun",
+      "examples": ["tall", "blue", "happy", "large", "beautiful"],
+      "order": "In English, multiple adjectives generally follow this order: opinion, size, age, shape, color, origin, material, purpose"
+    },
+    "adverb": {
+      "definition": "A word that modifies a verb, adjective, or other adverb",
+      "examples": ["quickly", "very", "silently", "always", "never"],
+      "types": ["manner (quickly)", "time (yesterday)", "place (here)", "frequency (always)", "degree (very)"]
+    },
+    "pronoun": {
+      "definition": "A word used in place of a noun",
+      "examples": ["he", "she", "it", "they", "we", "you"],
+      "subtypes": {
+        "personal": {"examples": ["I", "you", "he", "she", "it", "we", "they"]},
+        "possessive": {"examples": ["my", "your", "his", "her", "its", "our", "their"]},
+        "reflexive": {"examples": ["myself", "yourself", "himself", "herself", "itself"]},
+        "demonstrative": {"examples": ["this", "that", "these", "those"]},
+        "interrogative": {"examples": ["who", "whom", "whose", "which", "what"]},
+        "relative": {"examples": ["who", "whom", "whose", "which", "that"]},
+        "indefinite": {"examples": ["everyone", "somebody", "anything", "none", "all"]}
+      }
+    },
+    "preposition": {
+      "definition": "A word that shows the relationship between a noun or pronoun and other words in a sentence",
+      "examples": ["in", "on", "at", "by", "under", "between", "through", "during", "before", "after"]
+    },
+    "conjunction": {
+      "definition": "A word that connects words, phrases, or clauses",
+      "examples": ["and", "but", "or", "because", "although"],
+      "subtypes": {
+        "coordinating": {"definition": "Connects equal grammatical elements", "examples": ["for", "and", "nor", "but", "or", "yet", "so"], "mnemonic": "FANBOYS"},
+        "subordinating": {"definition": "Introduces a dependent clause", "examples": ["because", "although", "when", "if", "since", "while", "unless", "after", "before"]},
+        "correlative": {"definition": "Work in pairs to connect equal elements", "examples": ["both...and", "either...or", "neither...nor", "not only...but also", "whether...or"]}
+      }
+    },
+    "interjection": {
+      "definition": "A word or phrase that expresses emotion and is grammatically independent from the rest of the sentence",
+      "examples": ["wow", "ouch", "hooray", "oh", "hey", "alas", "bravo"]
+    },
+    "article": {
+      "definition": "A word that defines a noun as specific or unspecific",
+      "examples": ["a", "an", "the"],
+      "rules": {
+        "definite": "'The' refers to a specific noun",
+        "indefinite": "'A' is used before consonant sounds; 'an' is used before vowel sounds"
+      }
+    }
+  },
+  "grammar_rules": {
+    "subject_verb_agreement": {
+      "rule": "A singular subject takes a singular verb; a plural subject takes a plural verb",
+      "correct_examples": ["The dog runs.", "The dogs run.", "She writes.", "They write.", "The team is winning.", "The students are studying."],
+      "incorrect_examples": ["The dog run.", "The dogs runs.", "She write.", "They writes.", "The team are winning.", "The students is studying."]
+    },
+    "homophones": {
+      "pairs": [
+        {"words": ["their", "there", "they're"], "definitions": ["possessive form of they", "in or at that place", "contraction of they are"]},
+        {"words": ["your", "you're"], "definitions": ["possessive form of you", "contraction of you are"]},
+        {"words": ["its", "it's"], "definitions": ["possessive form of it", "contraction of it is or it has"]},
+        {"words": ["to", "too", "two"], "definitions": ["preposition indicating direction", "also or excessively", "the number 2"]},
+        {"words": ["affect", "effect"], "definitions": ["verb meaning to influence", "noun meaning a result (also a verb meaning to bring about)"]},
+        {"words": ["then", "than"], "definitions": ["next in time or order", "used in comparisons"]},
+        {"words": ["accept", "except"], "definitions": ["to receive willingly", "not including"]},
+        {"words": ["principle", "principal"], "definitions": ["a fundamental truth or rule", "the head of a school; or primary/main"]},
+        {"words": ["weather", "whether"], "definitions": ["atmospheric conditions", "expressing a choice between alternatives"]},
+        {"words": ["hear", "here"], "definitions": ["to perceive sound", "in this place"]},
+        {"words": ["write", "right", "rite"], "definitions": ["to form letters or words", "correct or opposite of left", "a ceremony or ritual"]},
+        {"words": ["know", "no"], "definitions": ["to be aware of", "negative response or not any"]},
+        {"words": ["peace", "piece"], "definitions": ["absence of conflict", "a part of something"]},
+        {"words": ["weak", "week"], "definitions": ["lacking strength", "a period of seven days"]},
+        {"words": ["break", "brake"], "definitions": ["to separate into pieces; a pause", "a device for stopping motion"]},
+        {"words": ["bare", "bear"], "definitions": ["uncovered or empty", "a large mammal; to carry or endure"]},
+        {"words": ["altar", "alter"], "definitions": ["a raised structure for worship", "to change or modify"]},
+        {"words": ["complement", "compliment"], "definitions": ["something that completes or goes well with", "an expression of praise or admiration"]},
+        {"words": ["stationary", "stationery"], "definitions": ["not moving; fixed in place", "writing materials such as paper and envelopes"]},
+        {"words": ["counsel", "council"], "definitions": ["advice or guidance; to advise", "a group of people who meet to make decisions"]},
+        {"words": ["cite", "site", "sight"], "definitions": ["to quote or reference a source", "a location or place", "the ability to see or something seen"]},
+        {"words": ["capitol", "capital"], "definitions": ["the building where a legislature meets", "a city that is the seat of government; uppercase letter; wealth"]},
+        {"words": ["desert", "dessert"], "definitions": ["a dry, barren area; to abandon", "a sweet course served after a meal"]},
+        {"words": ["loose", "lose"], "definitions": ["not tight; not firmly attached", "to be unable to find; to fail to win"]},
+        {"words": ["passed", "past"], "definitions": ["went by; succeeded (verb, past tense of pass)", "a time before the present; beyond (noun, adjective, preposition)"]},
+        {"words": ["threw", "through"], "definitions": ["past tense of throw", "moving in one side and out the other; finished"]},
+        {"words": ["whose", "who's"], "definitions": ["possessive form of who", "contraction of who is or who has"]},
+        {"words": ["aloud", "allowed"], "definitions": ["spoken out loud; audibly", "permitted"]},
+        {"words": ["coarse", "course"], "definitions": ["rough in texture; crude", "a path or route; a series of lessons; part of a meal"]}
+      ]
+    },
+    "punctuation": {
+      "period": "Used at the end of a declarative sentence or abbreviation",
+      "question_mark": "Used at the end of an interrogative sentence (a direct question)",
+      "exclamation_mark": "Used to express strong emotion, emphasis, or surprise",
+      "comma": "Used to separate items in a list, after introductory phrases, between independent clauses joined by a coordinating conjunction, to set off nonessential information, and before direct quotations",
+      "apostrophe": "Used to show possession (the dog's bone, the students' books) or to form contractions (don't, it's, they're)",
+      "quotation_marks": "Used to indicate direct speech, quotations, or titles of short works (poems, articles, short stories, songs)",
+      "semicolon": "Used to join two closely related independent clauses without a conjunction, or to separate items in a list when the items contain commas",
+      "colon": "Used after an independent clause to introduce a list, explanation, elaboration, or quotation",
+      "em_dash": "Used to set off parenthetical information with emphasis, indicate an abrupt change, or replace commas/parentheses for dramatic effect",
+      "en_dash": "Used to indicate a range of numbers, dates, or scores (e.g., pages 10–25, 2020–2025)",
+      "hyphen": "Used to join compound adjectives before a noun (well-known author), compound numbers (twenty-one), and some prefixes (self-taught)",
+      "ellipsis": "Three spaced periods (...) used to indicate an omission in a quotation or a trailing off of thought",
+      "parentheses": "Used to enclose supplementary or explanatory material that is not essential to the sentence"
+    },
+    "sentence_types": {
+      "declarative": {"definition": "Makes a statement and ends with a period", "example": "The sky is blue."},
+      "interrogative": {"definition": "Asks a question and ends with a question mark", "example": "Is the sky blue?"},
+      "imperative": {"definition": "Gives a command or request; may end with a period or exclamation mark", "example": "Close the door."},
+      "exclamatory": {"definition": "Expresses strong emotion and ends with an exclamation mark", "example": "What a beautiful day!"}
+    },
+    "capitalization": {
+      "rules": [
+        "Capitalize the first word of a sentence",
+        "Capitalize proper nouns (names of specific people, places, organizations)",
+        "Capitalize the pronoun 'I'",
+        "Capitalize titles when used before a name (President Lincoln)",
+        "Capitalize days of the week, months, and holidays",
+        "Capitalize the first word and all major words in titles of books, movies, and songs",
+        "Do not capitalize seasons (spring, summer) unless part of a proper noun"
+      ]
+    }
+  },
+  "vocabulary_by_grade": {
+    "K-2": {
+      "word_length_max": 7,
+      "syllable_max": 3,
+      "description": "Simple, high-frequency words; short sentences; concrete vocabulary",
+      "banned_words": ["hypothesis", "evaluate", "determine", "significant", "phenomenon", "synthesize", "juxtaposition", "ubiquitous", "paradigm", "rhetoric", "consequently", "furthermore", "predominantly", "methodology", "infrastructure"],
+      "sample_tier_words": ["big", "small", "happy", "sad", "run", "play", "help", "kind", "fair", "brave"]
+    },
+    "3-5": {
+      "word_length_max": 10,
+      "syllable_max": 4,
+      "description": "Academic vocabulary introduction; transition words; multi-syllable words with common roots",
+      "banned_words": ["juxtaposition", "paradigm", "ubiquitous", "epistemological", "dichotomy", "hegemony", "phenomenological", "antithetical", "postmodernism", "existential"],
+      "sample_tier_words": ["compare", "contrast", "analyze", "evidence", "summarize", "character", "setting", "sequence", "predict", "describe"]
+    },
+    "6-8": {
+      "word_length_max": 14,
+      "syllable_max": 6,
+      "description": "Increasingly abstract and domain-specific vocabulary; figurative language; connotation/denotation",
+      "banned_words": ["epistemological", "phenomenological", "hermeneutic", "deconstructionism", "poststructuralism"],
+      "sample_tier_words": ["analyze", "synthesize", "evaluate", "interpret", "inference", "rhetoric", "perspective", "connotation", "ambiguous", "elaborate"]
+    },
+    "9-12": {
+      "word_length_max": 20,
+      "syllable_max": 8,
+      "description": "Advanced academic and literary vocabulary; SAT/ACT-level words; discipline-specific terminology",
+      "banned_words": [],
+      "sample_tier_words": ["juxtaposition", "paradigm", "rhetoric", "dichotomy", "synthesis", "epistemology", "antithetical", "ubiquitous", "existential", "ameliorate"]
+    }
+  },
+  "literary_terms": {
+    "simile": {"definition": "A comparison between two unlike things using 'like' or 'as'", "example": "Her smile was like sunshine.", "keywords": ["like", "as", "comparison"]},
+    "metaphor": {"definition": "A direct comparison between two unlike things without using 'like' or 'as'", "example": "The world is a stage.", "keywords": ["comparison", "is", "direct"]},
+    "alliteration": {"definition": "Repetition of initial consonant sounds in closely connected words", "example": "Peter Piper picked a peck of pickled peppers.", "keywords": ["same sound", "beginning", "consonant"]},
+    "onomatopoeia": {"definition": "A word that imitates the natural sound it describes", "example": "buzz, hiss, splash, bang, sizzle", "keywords": ["sound", "imitate"]},
+    "hyperbole": {"definition": "Extreme exaggeration for emphasis or humor, not meant to be taken literally", "example": "I have told you a million times.", "keywords": ["exaggeration", "overstatement"]},
+    "personification": {"definition": "Giving human qualities, feelings, or actions to non-human things or abstract ideas", "example": "The wind whispered through the trees.", "keywords": ["human", "non-human", "qualities"]},
+    "rhyme": {"definition": "Correspondence of sound between words, especially at the ends of lines of poetry", "example": "cat and hat; moon and spoon", "keywords": ["sound", "end", "matching"]},
+    "idiom": {"definition": "A common expression whose meaning cannot be understood from the literal definitions of its individual words", "example": "It is raining cats and dogs.", "keywords": ["phrase", "figurative meaning"]},
+    "imagery": {"definition": "Descriptive language that appeals to the five senses to create vivid mental pictures", "example": "The golden sun melted into the crimson horizon.", "keywords": ["senses", "describe", "vivid"]},
+    "tone": {"definition": "The author's attitude toward the subject or audience, conveyed through word choice, detail, and style", "example": "The tone can be serious, humorous, sarcastic, formal, or informal.", "keywords": ["attitude", "author", "feeling"]},
+    "mood": {"definition": "The feeling or atmosphere a text creates in the reader", "example": "A dark, stormy setting creates a mood of suspense.", "keywords": ["feeling", "atmosphere", "reader"]},
+    "symbolism": {"definition": "The use of a concrete object, character, or event to represent an abstract idea or concept", "example": "A dove often symbolizes peace; a red rose symbolizes love.", "keywords": ["represent", "abstract", "object"]},
+    "irony": {"definition": "A contrast between expectation and reality; includes verbal, situational, and dramatic irony", "example": "A fire station burns down (situational irony).", "keywords": ["opposite", "unexpected", "contrast"]},
+    "foreshadowing": {"definition": "Hints or clues the author provides about events that will happen later in the story", "example": "Dark clouds gathered as the character set out on the journey.", "keywords": ["hint", "clue", "future"]},
+    "flashback": {"definition": "An interruption in the narrative to show events that happened at an earlier time", "example": "The character recalled the summer day when they first met.", "keywords": ["past", "memory", "earlier"]},
+    "allusion": {"definition": "A brief, indirect reference to a well-known person, place, event, or literary work", "example": "He had the Midas touch when it came to business.", "keywords": ["reference", "well-known"]},
+    "oxymoron": {"definition": "A figure of speech that combines two contradictory or opposite terms", "example": "jumbo shrimp, deafening silence, bittersweet", "keywords": ["contradictory", "opposite", "combined"]},
+    "paradox": {"definition": "A statement that seems contradictory but reveals a deeper truth", "example": "You must be cruel to be kind.", "keywords": ["contradictory", "truth"]},
+    "analogy": {"definition": "A comparison between two things for the purpose of explanation or clarification", "example": "The heart is like a pump that moves blood through the body.", "keywords": ["comparison", "explain", "clarify"]},
+    "satire": {"definition": "The use of humor, irony, exaggeration, or ridicule to expose and criticize people's vices or societal problems", "example": "Jonathan Swift's 'A Modest Proposal' uses satire to critique British policy in Ireland.", "keywords": ["humor", "ridicule", "criticize", "society"]},
+    "allegory": {"definition": "A narrative in which characters, settings, and events represent abstract ideas or moral concepts, creating a parallel meaning", "example": "George Orwell's 'Animal Farm' is an allegory for the Russian Revolution.", "keywords": ["symbolic", "parallel meaning", "moral"]},
+    "assonance": {"definition": "Repetition of vowel sounds within nearby words", "example": "The rain in Spain falls mainly on the plain.", "keywords": ["vowel", "repetition", "internal"]},
+    "consonance": {"definition": "Repetition of consonant sounds within or at the end of nearby words (different from alliteration, which is at the beginning)", "example": "pitter patter; odds and ends", "keywords": ["consonant", "repetition", "internal", "end"]},
+    "motif": {"definition": "A recurring element, image, idea, or theme throughout a literary work that contributes to the overall meaning", "example": "The recurring appearance of light and darkness in Romeo and Juliet.", "keywords": ["recurring", "pattern", "theme"]},
+    "juxtaposition": {"definition": "Placing two things side by side for comparison or contrast to highlight differences", "example": "The palace stood next to the slum, wealth beside poverty.", "keywords": ["side by side", "contrast", "compare"]},
+    "anaphora": {"definition": "Repetition of a word or phrase at the beginning of successive clauses, sentences, or lines", "example": "I have a dream... I have a dream... I have a dream...", "keywords": ["repetition", "beginning", "successive"]},
+    "epiphany": {"definition": "A sudden realization or insight by a character that changes their understanding", "example": "In that moment, she realized she had been wrong all along.", "keywords": ["realization", "insight", "sudden"]},
+    "apostrophe": {"definition": "A figure of speech in which a character addresses an absent person, an abstract idea, or an inanimate object", "example": "O Death, where is thy sting?", "keywords": ["address", "absent", "abstract"]},
+    "foil": {"definition": "A character who contrasts with another character (usually the protagonist) to highlight particular qualities", "example": "In Harry Potter, Draco Malfoy serves as a foil to Harry.", "keywords": ["contrast", "character", "highlight"]},
+    "diction": {"definition": "The author's choice of words and style of expression, which contributes to tone and meaning", "example": "Formal diction: 'I shall endeavor to assist you.' Informal: 'I'll try to help.'", "keywords": ["word choice", "style", "language"]}
+  },
+  "prefixes": {
+    "un-": {"meaning": "not or reverse of", "examples": ["unhappy", "unkind", "undo", "unlock"]},
+    "re-": {"meaning": "again or back", "examples": ["redo", "rewrite", "return", "rebuild"]},
+    "pre-": {"meaning": "before", "examples": ["preview", "preschool", "preheat", "predict"]},
+    "dis-": {"meaning": "not, opposite of, or apart", "examples": ["disagree", "disappear", "disconnect", "dislike"]},
+    "mis-": {"meaning": "wrongly or badly", "examples": ["mistake", "misunderstand", "misspell", "mislead"]},
+    "over-": {"meaning": "too much or above", "examples": ["overeat", "overflow", "overlook", "overcome"]},
+    "under-": {"meaning": "too little or below", "examples": ["undercooked", "underpaid", "underground", "underestimate"]},
+    "non-": {"meaning": "not", "examples": ["nonsense", "nonfiction", "nonprofit", "nonstop"]},
+    "inter-": {"meaning": "between or among", "examples": ["interact", "international", "interrupt", "interview"]},
+    "sub-": {"meaning": "under or below", "examples": ["submarine", "subway", "subtract", "subtitle"]},
+    "super-": {"meaning": "above, beyond, or greater", "examples": ["superhero", "supernatural", "supervise", "supermarket"]},
+    "anti-": {"meaning": "against or opposed to", "examples": ["antibody", "antifreeze", "antisocial", "antivirus"]},
+    "trans-": {"meaning": "across or beyond", "examples": ["transport", "transfer", "translate", "transform"]},
+    "semi-": {"meaning": "half or partly", "examples": ["semicircle", "semifinal", "semicolon", "semiannual"]},
+    "auto-": {"meaning": "self", "examples": ["automobile", "autobiography", "automatic", "autograph"]},
+    "bi-": {"meaning": "two", "examples": ["bicycle", "bilingual", "biweekly", "binoculars"]},
+    "tri-": {"meaning": "three", "examples": ["triangle", "tricycle", "triple", "trilogy"]},
+    "multi-": {"meaning": "many", "examples": ["multiply", "multicolor", "multimedia", "multitask"]},
+    "ex-": {"meaning": "out of or former", "examples": ["exit", "export", "exclude", "ex-president"]},
+    "in-/im-/il-/ir-": {"meaning": "not (changes form based on the following letter)", "examples": ["invisible", "impossible", "illegal", "irregular"]}
+  },
+  "suffixes": {
+    "-ful": {"meaning": "full of", "examples": ["beautiful", "helpful", "grateful", "powerful"]},
+    "-less": {"meaning": "without", "examples": ["careless", "homeless", "fearless", "endless"]},
+    "-ness": {"meaning": "state or quality of being", "examples": ["happiness", "darkness", "kindness", "sadness"]},
+    "-ment": {"meaning": "action, process, or result", "examples": ["movement", "enjoyment", "treatment", "government"]},
+    "-able/-ible": {"meaning": "capable of or worthy of", "examples": ["readable", "visible", "comfortable", "flexible"]},
+    "-ly": {"meaning": "in a certain manner (forms adverbs)", "examples": ["quickly", "quietly", "carefully", "honestly"]},
+    "-er": {"meaning": "one who does or more (comparative)", "examples": ["teacher", "runner", "taller", "faster"]},
+    "-est": {"meaning": "most (superlative)", "examples": ["tallest", "fastest", "brightest", "smallest"]},
+    "-tion/-sion": {"meaning": "act, process, or state (forms nouns)", "examples": ["education", "creation", "decision", "television"]},
+    "-ous/-ious": {"meaning": "full of or having the quality of", "examples": ["dangerous", "famous", "curious", "mysterious"]},
+    "-al": {"meaning": "relating to or characterized by", "examples": ["musical", "natural", "historical", "personal"]},
+    "-ive": {"meaning": "having the nature of or tending to", "examples": ["creative", "active", "protective", "detective"]},
+    "-ize/-ise": {"meaning": "to make or become", "examples": ["organize", "realize", "memorize", "summarize"]},
+    "-ist": {"meaning": "one who practices or believes in", "examples": ["artist", "scientist", "pianist", "cyclist"]},
+    "-ology": {"meaning": "the study of", "examples": ["biology", "geology", "psychology", "technology"]},
+    "-ing": {"meaning": "present participle; the act of (forms gerunds and progressive tenses)", "examples": ["running", "singing", "reading", "building"]},
+    "-ed": {"meaning": "past tense or past participle of regular verbs", "examples": ["walked", "played", "jumped", "painted"]},
+    "-en": {"meaning": "made of or to become", "examples": ["wooden", "golden", "strengthen", "brighten"]}
+  }
+}

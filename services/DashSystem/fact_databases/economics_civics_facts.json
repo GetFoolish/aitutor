@@ -1,0 +1,442 @@
+{
+  "meta": {"version": 2, "subject": "economics_civics", "last_updated": "2026-02-07"},
+  "facts_by_topic": {
+    "supply_demand": {
+      "keywords": ["supply", "demand", "equilibrium", "price", "quantity", "surplus", "shortage", "price floor", "price ceiling", "elasticity", "elastic", "inelastic", "market"],
+      "facts": [
+        {"statement": "The law of demand states that as the price of a good increases, the quantity demanded decreases, all else being equal", "grade_min": 6, "grade_max": 12},
+        {"statement": "The law of supply states that as the price of a good increases, the quantity supplied increases, all else being equal", "grade_min": 6, "grade_max": 12},
+        {"statement": "Equilibrium is the point where the supply curve and demand curve intersect, determining the market price and quantity", "grade_min": 7, "grade_max": 12},
+        {"statement": "A price floor is a minimum price set by the government above the equilibrium price, such as minimum wage", "grade_min": 8, "grade_max": 12},
+        {"statement": "A price ceiling is a maximum price set by the government below the equilibrium price, such as rent control", "grade_min": 8, "grade_max": 12},
+        {"statement": "A surplus occurs when the quantity supplied exceeds the quantity demanded at a given price", "grade_min": 7, "grade_max": 12},
+        {"statement": "A shortage occurs when the quantity demanded exceeds the quantity supplied at a given price", "grade_min": 7, "grade_max": 12},
+        {"statement": "Price elasticity of demand measures how sensitive the quantity demanded is to a change in price; goods with many substitutes tend to be more elastic", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "when price goes up, demand goes up", "correct": "When price goes up, the quantity demanded goes down (law of demand), assuming all else is equal"},
+        {"wrong": "a price floor is the lowest a price can drop to naturally", "correct": "A price floor is a government-imposed minimum price set above equilibrium, preventing the price from falling to its natural level"},
+        {"wrong": "surplus and shortage are the same thing", "correct": "A surplus means too much supply relative to demand; a shortage means too much demand relative to supply"},
+        {"wrong": "all goods are equally affected by price changes", "correct": "Goods vary in elasticity; necessities like insulin are inelastic (demand changes little with price), while luxuries tend to be elastic"}
+      ]
+    },
+    "market_structures": {
+      "keywords": ["monopoly", "oligopoly", "competition", "perfect competition", "monopolistic competition", "market structure", "barrier to entry", "antitrust", "cartel", "price taker", "price maker"],
+      "facts": [
+        {"statement": "Perfect competition is a market structure with many sellers offering identical products, where no single seller can influence the market price", "grade_min": 9, "grade_max": 12},
+        {"statement": "A monopoly exists when a single seller controls the entire supply of a good or service with no close substitutes", "grade_min": 8, "grade_max": 12},
+        {"statement": "An oligopoly is a market dominated by a small number of large firms, such as the automobile or airline industries", "grade_min": 9, "grade_max": 12},
+        {"statement": "Monopolistic competition features many sellers offering differentiated products, such as restaurants or clothing brands", "grade_min": 9, "grade_max": 12},
+        {"statement": "Barriers to entry are obstacles that prevent new firms from entering a market, including high startup costs, patents, and government regulations", "grade_min": 9, "grade_max": 12},
+        {"statement": "In perfect competition, firms are price takers, meaning they must accept the market price; in a monopoly, the firm is a price maker", "grade_min": 10, "grade_max": 12},
+        {"statement": "Antitrust laws, such as the Sherman Antitrust Act of 1890, were created to prevent monopolies and promote fair competition", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "a monopoly is illegal in the United States", "correct": "Monopolies themselves are not illegal; it is the abuse of monopoly power or anticompetitive practices to create or maintain a monopoly that violates antitrust law"},
+        {"wrong": "oligopoly means only two companies exist in a market", "correct": "An oligopoly is a market with a small number of dominant firms (not necessarily just two); a market with exactly two firms is called a duopoly"},
+        {"wrong": "perfect competition is the most common market structure", "correct": "Perfect competition is largely a theoretical model; most real-world markets fall under monopolistic competition or oligopoly"}
+      ]
+    },
+    "macroeconomics": {
+      "keywords": ["GDP", "gross domestic product", "inflation", "deflation", "unemployment", "CPI", "consumer price index", "business cycle", "recession", "expansion", "peak", "trough", "contraction", "frictional", "structural", "cyclical"],
+      "facts": [
+        {"statement": "Gross Domestic Product (GDP) is the total market value of all final goods and services produced within a country in a given period, calculated as C + I + G + NX (Consumption + Investment + Government Spending + Net Exports)", "grade_min": 9, "grade_max": 12},
+        {"statement": "Inflation is a general increase in prices and a decrease in the purchasing power of money over time", "grade_min": 7, "grade_max": 12},
+        {"statement": "Deflation is a general decrease in prices, which can lead to reduced consumer spending and economic slowdown", "grade_min": 9, "grade_max": 12},
+        {"statement": "The Consumer Price Index (CPI) measures the average change in prices paid by consumers for a basket of goods and services and is a key indicator of inflation", "grade_min": 9, "grade_max": 12},
+        {"statement": "Frictional unemployment occurs when workers are temporarily between jobs or are searching for new employment", "grade_min": 9, "grade_max": 12},
+        {"statement": "Structural unemployment results from a mismatch between workers' skills and the skills demanded by employers, often due to technological changes", "grade_min": 10, "grade_max": 12},
+        {"statement": "Cyclical unemployment is caused by downturns in the business cycle and rises during recessions", "grade_min": 10, "grade_max": 12},
+        {"statement": "The business cycle consists of four phases: expansion (growth), peak (highest point), contraction (decline), and trough (lowest point)", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "GDP includes all economic activity in a country", "correct": "GDP measures only final goods and services to avoid double counting; it does not include intermediate goods, unpaid work, or the underground economy"},
+        {"wrong": "inflation means all prices go up at the same rate", "correct": "Inflation refers to the general trend of rising prices; individual goods and services may increase at different rates or even decrease"},
+        {"wrong": "zero unemployment is the goal of economic policy", "correct": "Some unemployment is natural and healthy; economists consider full employment to exist when only frictional and structural unemployment remain (typically around 4-5%)"},
+        {"wrong": "a recession means GDP goes down for one quarter", "correct": "A recession is commonly defined as two consecutive quarters of declining real GDP, though the official determination is made by the NBER based on multiple factors"}
+      ]
+    },
+    "monetary_fiscal_policy": {
+      "keywords": ["Federal Reserve", "Fed", "interest rate", "money supply", "monetary policy", "fiscal policy", "tax", "taxes", "government spending", "national debt", "deficit", "surplus", "budget", "inflation", "central bank", "quantitative easing"],
+      "facts": [
+        {"statement": "The Federal Reserve (the Fed) is the central bank of the United States, established in 1913, and is responsible for conducting monetary policy", "grade_min": 8, "grade_max": 12},
+        {"statement": "Monetary policy involves the Federal Reserve adjusting interest rates and the money supply to influence economic activity", "grade_min": 9, "grade_max": 12},
+        {"statement": "When the Fed lowers interest rates, borrowing becomes cheaper, which tends to stimulate economic growth; raising rates has the opposite effect", "grade_min": 9, "grade_max": 12},
+        {"statement": "Fiscal policy refers to government decisions about taxing and spending to influence the economy", "grade_min": 8, "grade_max": 12},
+        {"statement": "A budget deficit occurs when government spending exceeds government revenue in a given year", "grade_min": 7, "grade_max": 12},
+        {"statement": "A budget surplus occurs when government revenue exceeds government spending in a given year", "grade_min": 7, "grade_max": 12},
+        {"statement": "The national debt is the total accumulation of annual budget deficits minus surpluses over time", "grade_min": 8, "grade_max": 12},
+        {"statement": "The three main tools of the Federal Reserve are open market operations, the discount rate, and reserve requirements", "grade_min": 10, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the president controls interest rates", "correct": "The Federal Reserve, an independent central bank, sets interest rates through its Federal Open Market Committee (FOMC); the president does not directly control them"},
+        {"wrong": "the national debt and the budget deficit are the same thing", "correct": "The deficit is the shortfall in a single year; the national debt is the cumulative total of all past deficits minus surpluses"},
+        {"wrong": "printing more money solves economic problems", "correct": "Excessively increasing the money supply can lead to inflation or hyperinflation, reducing the purchasing power of each dollar"},
+        {"wrong": "fiscal policy and monetary policy are the same", "correct": "Fiscal policy involves government taxing and spending (controlled by Congress and the President); monetary policy involves the money supply and interest rates (controlled by the Federal Reserve)"}
+      ]
+    },
+    "international_trade": {
+      "keywords": ["import", "export", "trade", "tariff", "quota", "comparative advantage", "absolute advantage", "exchange rate", "trade deficit", "trade surplus", "free trade", "globalization", "NAFTA", "WTO"],
+      "facts": [
+        {"statement": "Imports are goods and services purchased from other countries; exports are goods and services sold to other countries", "grade_min": 5, "grade_max": 12},
+        {"statement": "A trade deficit occurs when a country imports more than it exports; a trade surplus occurs when exports exceed imports", "grade_min": 7, "grade_max": 12},
+        {"statement": "A tariff is a tax placed on imported goods, which raises the price of those goods and is designed to protect domestic industries", "grade_min": 7, "grade_max": 12},
+        {"statement": "A quota is a limit on the quantity of a specific good that can be imported into a country", "grade_min": 8, "grade_max": 12},
+        {"statement": "Comparative advantage means a country can produce a good at a lower opportunity cost than another country, which is the basis for mutually beneficial trade", "grade_min": 9, "grade_max": 12},
+        {"statement": "Absolute advantage means a country can produce more of a good using the same amount of resources as another country", "grade_min": 9, "grade_max": 12},
+        {"statement": "Exchange rates determine how much one country's currency is worth in terms of another country's currency", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "a trade deficit means a country is losing money", "correct": "A trade deficit means a country imports more than it exports, but it does not necessarily indicate economic weakness; it can reflect strong consumer demand"},
+        {"wrong": "comparative advantage and absolute advantage are the same", "correct": "Absolute advantage is about total output; comparative advantage is about lower opportunity cost. A country can lack absolute advantage in everything but still have a comparative advantage in something"},
+        {"wrong": "tariffs only affect foreign producers", "correct": "Tariffs raise the price of imported goods for domestic consumers and can also lead to retaliatory tariffs from trade partners"},
+        {"wrong": "free trade benefits all workers equally", "correct": "Free trade increases overall economic efficiency but can harm specific industries and workers who face increased foreign competition"}
+      ]
+    },
+    "personal_finance": {
+      "keywords": ["budget", "saving", "investing", "income", "expense", "compound interest", "credit", "loan", "debt", "interest", "stock", "bond", "401k", "tax", "insurance", "mortgage"],
+      "facts": [
+        {"statement": "A budget is a plan for managing income and expenses over a specific period of time", "grade_min": 5, "grade_max": 12},
+        {"statement": "Compound interest is interest calculated on both the initial principal and the accumulated interest from previous periods, causing money to grow exponentially over time", "grade_min": 7, "grade_max": 12},
+        {"statement": "A credit score is a numerical rating (typically 300-850) that represents a person's creditworthiness based on their borrowing and repayment history", "grade_min": 8, "grade_max": 12},
+        {"statement": "The difference between gross income and net income is that gross income is total earnings before deductions, while net income is take-home pay after taxes and other deductions", "grade_min": 7, "grade_max": 12},
+        {"statement": "Stocks represent partial ownership in a company, while bonds represent a loan made to a company or government that pays back with interest", "grade_min": 8, "grade_max": 12},
+        {"statement": "The Rule of 72 is a quick way to estimate how long it takes an investment to double: divide 72 by the annual interest rate", "grade_min": 8, "grade_max": 12},
+        {"statement": "Diversification means spreading investments across different asset types to reduce risk", "grade_min": 9, "grade_max": 12},
+        {"statement": "Income tax in the United States uses a progressive system, meaning higher income is taxed at higher rates through tax brackets", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "putting money in a savings account is the best way to grow wealth", "correct": "Savings accounts provide safety and liquidity but typically earn low interest; investing in diversified assets like index funds historically provides higher long-term returns"},
+        {"wrong": "being in a higher tax bracket means all your income is taxed at the higher rate", "correct": "The U.S. uses a marginal tax system; only the income within each bracket is taxed at that bracket's rate, not all income"},
+        {"wrong": "credit cards are free money", "correct": "Credit cards are short-term loans; unpaid balances accrue interest, often at high rates (15-25% APR), making purchases significantly more expensive"},
+        {"wrong": "you should avoid all debt", "correct": "Some debt can be strategic, such as a mortgage or student loans with low interest rates; the key is managing debt responsibly and avoiding high-interest consumer debt"}
+      ]
+    },
+    "us_government_structure": {
+      "keywords": ["branch", "legislative", "executive", "judicial", "Congress", "President", "Supreme Court", "checks and balances", "separation of powers", "federalism", "Senate", "House of Representatives", "bicameral", "veto", "federal", "state"],
+      "facts": [
+        {"statement": "The U.S. government is divided into three branches: legislative (Congress), executive (President), and judicial (Supreme Court and federal courts)", "grade_min": 3, "grade_max": 12},
+        {"statement": "Checks and balances is the system that gives each branch of government the power to limit the other branches, preventing any one branch from becoming too powerful", "grade_min": 4, "grade_max": 12},
+        {"statement": "Congress is bicameral, meaning it has two chambers: the Senate (100 members, 2 per state) and the House of Representatives (435 members, apportioned by state population)", "grade_min": 5, "grade_max": 12},
+        {"statement": "The President can veto legislation passed by Congress, but Congress can override the veto with a two-thirds vote in both chambers", "grade_min": 5, "grade_max": 12},
+        {"statement": "Federalism is the system of shared power between the federal (national) government and state governments", "grade_min": 5, "grade_max": 12},
+        {"statement": "The Supreme Court has the power of judicial review, established in Marbury v. Madison (1803), which allows it to declare laws unconstitutional", "grade_min": 7, "grade_max": 12},
+        {"statement": "Senators serve 6-year terms, Representatives serve 2-year terms, and the President serves a 4-year term with a maximum of two terms", "grade_min": 5, "grade_max": 12},
+        {"statement": "The separation of powers ensures that the legislative branch makes laws, the executive branch enforces laws, and the judicial branch interprets laws", "grade_min": 4, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the President makes the laws", "correct": "Congress (the legislative branch) makes the laws; the President signs or vetoes them and is responsible for enforcing them"},
+        {"wrong": "the Supreme Court can create new laws", "correct": "The Supreme Court interprets laws and determines their constitutionality; it does not create new legislation"},
+        {"wrong": "each state has representatives based on equal representation", "correct": "The Senate provides equal representation (2 per state), but the House provides proportional representation based on state population"},
+        {"wrong": "the President can serve unlimited terms", "correct": "The 22nd Amendment (ratified in 1951) limits the President to two elected terms in office"}
+      ]
+    },
+    "constitution": {
+      "keywords": ["Constitution", "amendment", "Bill of Rights", "Preamble", "Article", "ratify", "founding fathers", "framers", "constitutional", "First Amendment", "Second Amendment", "rights"],
+      "facts": [
+        {"statement": "The U.S. Constitution was written in 1787 at the Constitutional Convention in Philadelphia and is the supreme law of the United States", "grade_min": 4, "grade_max": 12},
+        {"statement": "The Preamble begins with 'We the People of the United States' and outlines the purposes of the Constitution including forming a more perfect union, establishing justice, and securing liberty", "grade_min": 4, "grade_max": 12},
+        {"statement": "The Constitution contains 7 Articles: Article I (Legislative), Article II (Executive), Article III (Judicial), Article IV (States), Article V (Amendments), Article VI (Supremacy), and Article VII (Ratification)", "grade_min": 7, "grade_max": 12},
+        {"statement": "The Bill of Rights consists of the first 10 amendments to the Constitution, ratified in 1791, which guarantee fundamental individual freedoms", "grade_min": 5, "grade_max": 12},
+        {"statement": "The 13th Amendment (1865) abolished slavery in the United States", "grade_min": 5, "grade_max": 12},
+        {"statement": "The 14th Amendment (1868) grants citizenship to all persons born in the United States and guarantees equal protection under the law", "grade_min": 7, "grade_max": 12},
+        {"statement": "The 15th Amendment (1870) prohibits denying the right to vote based on race, color, or previous condition of servitude", "grade_min": 7, "grade_max": 12},
+        {"statement": "The 19th Amendment (1920) guarantees women the right to vote, and the 26th Amendment (1971) lowered the voting age to 18", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the Declaration of Independence and the Constitution are the same document", "correct": "The Declaration of Independence (1776) declared independence from Britain; the Constitution (1787) established the framework of the U.S. government"},
+        {"wrong": "the Bill of Rights was part of the original Constitution", "correct": "The Bill of Rights was added as the first 10 amendments in 1791, four years after the Constitution was written, to address concerns about protecting individual liberties"},
+        {"wrong": "the Constitution cannot be changed", "correct": "The Constitution can be amended through a process outlined in Article V, requiring a two-thirds vote in both houses of Congress and ratification by three-fourths of state legislatures (or conventions)"},
+        {"wrong": "the 13th Amendment gave all citizens the right to vote", "correct": "The 13th Amendment abolished slavery; voting rights were addressed in the 15th Amendment (race), 19th Amendment (sex), and 26th Amendment (age 18+)"}
+      ]
+    },
+    "elections_voting": {
+      "keywords": ["election", "vote", "voting", "Electoral College", "primary", "caucus", "candidate", "ballot", "campaign", "political party", "Democrat", "Republican", "popular vote", "electoral vote", "registration"],
+      "facts": [
+        {"statement": "The Electoral College consists of 538 electors, and a presidential candidate needs at least 270 electoral votes to win the presidency", "grade_min": 6, "grade_max": 12},
+        {"statement": "Each state's number of electoral votes equals its total number of Senators (2) plus its number of Representatives in the House", "grade_min": 7, "grade_max": 12},
+        {"statement": "Primary elections and caucuses are held to determine each political party's nominee for the general election", "grade_min": 7, "grade_max": 12},
+        {"statement": "The two major political parties in the United States are the Democratic Party and the Republican Party", "grade_min": 5, "grade_max": 12},
+        {"statement": "Presidential elections are held every four years on the first Tuesday after the first Monday in November", "grade_min": 5, "grade_max": 12},
+        {"statement": "A candidate can win the popular vote but lose the presidential election if they do not win enough electoral votes, as occurred in 2000 and 2016", "grade_min": 7, "grade_max": 12},
+        {"statement": "Citizens must register to vote in most states, and the 26th Amendment sets the minimum voting age at 18", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the president is elected by popular vote alone", "correct": "The president is elected through the Electoral College system; the popular vote in each state generally determines how that state's electoral votes are cast"},
+        {"wrong": "the Electoral College has 500 electors", "correct": "The Electoral College has 538 electors (435 Representatives + 100 Senators + 3 for Washington D.C.)"},
+        {"wrong": "there have always been only two political parties", "correct": "While two major parties dominate today, U.S. history includes periods with different party systems; third parties such as the Green Party and Libertarian Party also participate in elections"},
+        {"wrong": "all states award electoral votes proportionally", "correct": "Most states use a winner-take-all system; only Maine and Nebraska use a proportional method that can split their electoral votes"}
+      ]
+    },
+    "civil_rights_liberties": {
+      "keywords": ["civil rights", "civil liberties", "First Amendment", "freedom of speech", "freedom of religion", "freedom of press", "due process", "equal protection", "discrimination", "segregation", "Brown v Board", "Miranda", "rights"],
+      "facts": [
+        {"statement": "The First Amendment protects five fundamental freedoms: freedom of religion, speech, the press, the right to peaceably assemble, and the right to petition the government", "grade_min": 4, "grade_max": 12},
+        {"statement": "Civil liberties are individual freedoms protected from government interference (such as free speech), while civil rights are protections against discrimination (such as equal treatment regardless of race)", "grade_min": 8, "grade_max": 12},
+        {"statement": "Brown v. Board of Education (1954) was the landmark Supreme Court case that declared racial segregation in public schools unconstitutional, overturning the 'separate but equal' doctrine from Plessy v. Ferguson", "grade_min": 6, "grade_max": 12},
+        {"statement": "Miranda v. Arizona (1966) established that arrested individuals must be informed of their rights, including the right to remain silent and the right to an attorney", "grade_min": 7, "grade_max": 12},
+        {"statement": "The due process clauses in the 5th and 14th Amendments guarantee that no person shall be deprived of life, liberty, or property without fair legal procedures", "grade_min": 8, "grade_max": 12},
+        {"statement": "The equal protection clause of the 14th Amendment requires states to treat all people equally under the law and has been the basis for many civil rights rulings", "grade_min": 8, "grade_max": 12},
+        {"statement": "The Civil Rights Act of 1964 prohibited discrimination based on race, color, religion, sex, or national origin in employment and public accommodations", "grade_min": 6, "grade_max": 12},
+        {"statement": "Freedom of speech under the First Amendment is not absolute; the government can restrict certain categories such as true threats, incitement to imminent lawless action, and defamation", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "freedom of speech means you can say anything without consequences", "correct": "The First Amendment protects individuals from government censorship, but private companies, employers, and individuals can impose their own consequences for speech; some categories of speech are also not protected"},
+        {"wrong": "the Bill of Rights originally applied to state governments", "correct": "The Bill of Rights originally limited only the federal government; it was gradually applied to state governments through the 14th Amendment's due process clause (a process called incorporation)"},
+        {"wrong": "Brown v. Board of Education ended all racial discrimination", "correct": "Brown v. Board declared school segregation unconstitutional, but discrimination persisted in many forms; further legislation and court decisions were needed to address broader civil rights issues"},
+        {"wrong": "Miranda rights are in the Constitution", "correct": "Miranda rights are not explicitly written in the Constitution; they were established by the Supreme Court's interpretation of the 5th and 6th Amendments in Miranda v. Arizona (1966)"}
+      ]
+    },
+    "citizenship": {
+      "keywords": ["citizen", "citizenship", "naturalization", "civic", "duty", "responsibility", "jury duty", "Pledge of Allegiance", "participate", "community", "rights", "obligation", "immigrant", "resident"],
+      "facts": [
+        {"statement": "U.S. citizenship can be acquired by birth in the United States (jus soli), by birth to U.S. citizen parents (jus sanguinis), or through the process of naturalization", "grade_min": 5, "grade_max": 12},
+        {"statement": "Naturalization is the legal process by which a foreign citizen becomes a U.S. citizen, which includes meeting residency requirements, passing a civics and English test, and taking the Oath of Allegiance", "grade_min": 6, "grade_max": 12},
+        {"statement": "Civic responsibilities include obeying laws, paying taxes, serving on juries when called, registering for Selective Service (for males aged 18-25), and staying informed about community issues", "grade_min": 4, "grade_max": 12},
+        {"statement": "Rights of U.S. citizens include the right to vote, the right to run for federal office, the right to a fair trial, and protection under all provisions of the Constitution and Bill of Rights", "grade_min": 4, "grade_max": 12},
+        {"statement": "The Pledge of Allegiance was originally written by Francis Bellamy in 1892, and the phrase 'under God' was added by Congress in 1954", "grade_min": 5, "grade_max": 12},
+        {"statement": "Jury duty is both a right and a civic responsibility; the Sixth Amendment guarantees the right to a trial by an impartial jury", "grade_min": 6, "grade_max": 12},
+        {"statement": "Civic participation includes activities beyond voting, such as attending town hall meetings, contacting elected officials, volunteering, and participating in community organizations", "grade_min": 4, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "only people born in the United States can be citizens", "correct": "People can also become U.S. citizens through naturalization or by being born to U.S. citizen parents abroad"},
+        {"wrong": "citizens are only required to vote", "correct": "While voting is an important civic duty, responsibilities also include paying taxes, obeying laws, serving on juries, and staying informed about civic issues"},
+        {"wrong": "legal permanent residents have the same rights as citizens", "correct": "Legal permanent residents (green card holders) can live and work in the U.S. but cannot vote in federal elections, serve on juries, or run for federal office"},
+        {"wrong": "the Pledge of Allegiance has always contained the phrase 'under God'", "correct": "The original Pledge written in 1892 did not include 'under God'; that phrase was added by an act of Congress in 1954"}
+      ]
+    },
+    "labor_economics": {
+      "keywords": ["labor", "unemployment", "minimum wage", "union", "labor union", "collective bargaining", "human capital", "wage", "workforce", "labor market", "labor force", "gig economy", "automation", "worker", "employment"],
+      "facts": [
+        {"statement": "The labor force includes all people aged 16 and older who are either employed or actively seeking employment; it does not include retirees, students not working, or discouraged workers who have stopped looking", "grade_min": 8, "grade_max": 12},
+        {"statement": "The unemployment rate is calculated by dividing the number of unemployed people actively seeking work by the total labor force and multiplying by 100", "grade_min": 8, "grade_max": 12},
+        {"statement": "Frictional unemployment occurs when workers are between jobs or entering the workforce for the first time; structural unemployment occurs when workers' skills no longer match available jobs; cyclical unemployment is caused by economic downturns", "grade_min": 9, "grade_max": 12},
+        {"statement": "The federal minimum wage was established by the Fair Labor Standards Act of 1938; states and cities can set higher minimum wages, but not lower than the federal level", "grade_min": 7, "grade_max": 12},
+        {"statement": "Labor unions are organizations of workers that collectively bargain with employers for better wages, benefits, and working conditions", "grade_min": 7, "grade_max": 12},
+        {"statement": "Human capital refers to the skills, knowledge, education, and experience that make workers more productive and valuable in the labor market", "grade_min": 8, "grade_max": 12},
+        {"statement": "The law of demand applies to labor markets: when wages rise, employers tend to demand fewer workers (hire fewer people), all else being equal", "grade_min": 9, "grade_max": 12},
+        {"statement": "The National Labor Relations Act of 1935 (Wagner Act) guaranteed workers the right to organize unions and engage in collective bargaining", "grade_min": 10, "grade_max": 12},
+        {"statement": "Seasonal unemployment occurs when workers are laid off due to seasonal changes in demand, such as agricultural workers after harvest or retail workers after the holiday season", "grade_min": 8, "grade_max": 12},
+        {"statement": "Automation and technological change can cause structural unemployment as machines and software replace certain types of jobs, while also creating new types of employment", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the unemployment rate counts everyone who doesn't have a job", "correct": "The unemployment rate only counts people who are actively seeking work; it excludes retirees, full-time students, stay-at-home parents, and discouraged workers who have given up looking"},
+        {"wrong": "raising the minimum wage always causes mass unemployment", "correct": "The effect of minimum wage increases on employment is debated among economists; moderate increases have often had minimal impact on employment levels, though large increases may reduce employment in some sectors"},
+        {"wrong": "unions are no longer relevant in the modern economy", "correct": "While union membership has declined from its peak, unions continue to play significant roles in industries such as education, healthcare, public sector, and entertainment, advocating for worker protections and benefits"},
+        {"wrong": "human capital and physical capital are the same thing", "correct": "Human capital refers to workers' skills, education, and experience; physical capital refers to tools, machinery, buildings, and equipment used in production"},
+        {"wrong": "all unemployment is bad for the economy", "correct": "Some unemployment, particularly frictional unemployment, is a natural and healthy part of a dynamic economy as workers transition to jobs that better match their skills"}
+      ]
+    },
+    "economic_systems": {
+      "keywords": ["capitalism", "socialism", "communism", "mixed economy", "market economy", "command economy", "traditional economy", "free market", "private property", "central planning", "economic system", "Adam Smith", "Karl Marx"],
+      "facts": [
+        {"statement": "A market economy (capitalism) is an economic system where private individuals and businesses make production and consumption decisions based on supply and demand, with minimal government intervention", "grade_min": 7, "grade_max": 12},
+        {"statement": "A command economy (planned economy) is an economic system where the government controls the means of production and makes all major economic decisions, including what to produce, how much, and at what price", "grade_min": 7, "grade_max": 12},
+        {"statement": "A mixed economy combines elements of both market and command economies; most modern countries, including the United States, operate as mixed economies with private enterprise and some government regulation", "grade_min": 7, "grade_max": 12},
+        {"statement": "Socialism is an economic system where the means of production are owned or regulated by the community or state, with the goal of distributing wealth more equally", "grade_min": 9, "grade_max": 12},
+        {"statement": "Communism, as theorized by Karl Marx, envisions a classless society where all property is communally owned and each person contributes according to ability and receives according to need", "grade_min": 9, "grade_max": 12},
+        {"statement": "Adam Smith, often called the father of modern economics, argued in The Wealth of Nations (1776) that free markets guided by an 'invisible hand' of self-interest lead to efficient allocation of resources", "grade_min": 9, "grade_max": 12},
+        {"statement": "A traditional economy is based on customs, traditions, and beliefs, where economic roles and decisions are determined by cultural norms passed down through generations", "grade_min": 7, "grade_max": 12},
+        {"statement": "Private property rights, the ability to own and control property, are a fundamental feature of market economies and are protected by law in the United States", "grade_min": 7, "grade_max": 12},
+        {"statement": "The three fundamental economic questions every society must answer are: What goods and services should be produced? How should they be produced? For whom should they be produced?", "grade_min": 6, "grade_max": 12},
+        {"statement": "Scarcity is the fundamental economic problem: unlimited human wants exceed the limited resources available, requiring every society to make choices about how to allocate resources", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the United States is a purely capitalist economy", "correct": "The United States is a mixed economy; while it is primarily market-based, the government provides public goods (roads, defense), regulates industries, and runs social programs (Social Security, Medicare)"},
+        {"wrong": "socialism and communism are the same thing", "correct": "Socialism involves government or collective ownership of the means of production but can coexist with democratic governance; communism as theorized by Marx envisions a stateless, classless society with all property held in common"},
+        {"wrong": "command economies are always more efficient than market economies", "correct": "Command economies often struggle with inefficiency because central planners cannot process all the information that decentralized markets handle through price signals; this has led to shortages and surpluses in many planned economies"},
+        {"wrong": "Adam Smith believed in no government involvement in the economy", "correct": "While Smith advocated for free markets, he also recognized roles for government including national defense, administration of justice, and providing public works and institutions that the private market would not supply"},
+        {"wrong": "capitalism means there are no rules or regulations", "correct": "Even in strongly capitalist economies, governments enforce property rights, contracts, antitrust laws, consumer protections, and environmental regulations to ensure markets function fairly"}
+      ]
+    },
+    "supreme_court_cases": {
+      "keywords": ["Supreme Court", "court case", "ruling", "decision", "precedent", "judicial review", "Marbury", "Brown", "Miranda", "Roe", "Citizens United", "Gideon", "Tinker", "Plessy", "landmark case", "constitutional"],
+      "facts": [
+        {"statement": "Marbury v. Madison (1803) established the principle of judicial review, giving the Supreme Court the power to declare laws unconstitutional; this is considered the most important case in American constitutional law", "grade_min": 8, "grade_max": 12},
+        {"statement": "Brown v. Board of Education (1954) unanimously ruled that racial segregation in public schools violated the 14th Amendment's equal protection clause, overturning the 'separate but equal' doctrine of Plessy v. Ferguson (1896)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Miranda v. Arizona (1966) required that individuals in police custody be informed of their rights (right to remain silent, right to an attorney) before interrogation; these became known as Miranda rights", "grade_min": 7, "grade_max": 12},
+        {"statement": "Gideon v. Wainwright (1963) ruled that the Sixth Amendment requires states to provide an attorney to defendants in criminal cases who cannot afford one", "grade_min": 8, "grade_max": 12},
+        {"statement": "Tinker v. Des Moines (1969) ruled that students do not lose their First Amendment rights at the schoolhouse gate, protecting student free speech as long as it does not substantially disrupt the educational process", "grade_min": 7, "grade_max": 12},
+        {"statement": "Citizens United v. FEC (2010) ruled that political spending by corporations, associations, and labor unions is a form of protected speech under the First Amendment, striking down limits on independent political expenditures", "grade_min": 10, "grade_max": 12},
+        {"statement": "McCulloch v. Maryland (1819) established that Congress has implied powers under the Necessary and Proper Clause and that states cannot tax federal institutions, affirming federal supremacy", "grade_min": 9, "grade_max": 12},
+        {"statement": "Plessy v. Ferguson (1896) upheld racial segregation under the 'separate but equal' doctrine; it was later overturned by Brown v. Board of Education in 1954", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the Supreme Court can overturn any law it wants at any time", "correct": "The Supreme Court can only rule on cases brought before it; it cannot proactively review laws. Cases must present an actual controversy and typically must be appealed through lower courts first"},
+        {"wrong": "Miranda rights are written in the Constitution", "correct": "Miranda rights were established by the Supreme Court's interpretation of the 5th and 6th Amendments in Miranda v. Arizona (1966); the specific warnings are a court-created procedural requirement"},
+        {"wrong": "Plessy v. Ferguson was unanimously decided", "correct": "Plessy v. Ferguson was decided 7-1 (one justice did not participate); Justice John Marshall Harlan wrote a famous lone dissent arguing the Constitution is 'color-blind'"},
+        {"wrong": "Brown v. Board of Education immediately desegregated all schools", "correct": "The Court ordered desegregation 'with all deliberate speed' in Brown II (1955), but many schools resisted for years; full desegregation required additional enforcement through the Civil Rights Act and federal court orders"},
+        {"wrong": "Supreme Court decisions can never be changed", "correct": "The Supreme Court can overturn its own precedents; for example, Brown v. Board overturned Plessy v. Ferguson, and the Court has reversed previous decisions throughout its history"}
+      ]
+    },
+    "federalism": {
+      "keywords": ["federalism", "federal", "state", "enumerated powers", "reserved powers", "implied powers", "concurrent powers", "10th Amendment", "elastic clause", "necessary and proper", "supremacy clause", "interstate commerce", "dual federalism", "cooperative federalism"],
+      "facts": [
+        {"statement": "Federalism is the constitutional division of power between the national (federal) government and state governments, with each level having its own areas of authority", "grade_min": 6, "grade_max": 12},
+        {"statement": "Enumerated (expressed) powers are those specifically granted to Congress in Article I, Section 8 of the Constitution, including the power to tax, coin money, declare war, and regulate interstate commerce", "grade_min": 8, "grade_max": 12},
+        {"statement": "Reserved powers are those not delegated to the federal government and are retained by the states, as guaranteed by the 10th Amendment; these include education policy, marriage laws, and intrastate commerce", "grade_min": 8, "grade_max": 12},
+        {"statement": "Implied powers are those not explicitly stated in the Constitution but are reasonably inferred from enumerated powers through the Necessary and Proper Clause (elastic clause) in Article I, Section 8, Clause 18", "grade_min": 9, "grade_max": 12},
+        {"statement": "Concurrent powers are those shared by both the federal and state governments, including the power to tax, build roads, establish courts, and enforce laws", "grade_min": 8, "grade_max": 12},
+        {"statement": "The Supremacy Clause (Article VI) establishes that the Constitution and federal laws are the supreme law of the land; when state and federal laws conflict, federal law prevails", "grade_min": 8, "grade_max": 12},
+        {"statement": "The 10th Amendment states that powers not delegated to the United States by the Constitution, nor prohibited to the states, are reserved to the states or to the people", "grade_min": 7, "grade_max": 12},
+        {"statement": "The Commerce Clause gives Congress the power to regulate interstate commerce, and its broad interpretation has been used to expand federal authority in areas such as civil rights and environmental regulation", "grade_min": 10, "grade_max": 12},
+        {"statement": "Dual federalism (layer cake) views federal and state governments as having distinct, separate spheres of authority, while cooperative federalism (marble cake) sees them as overlapping and working together", "grade_min": 10, "grade_max": 12},
+        {"statement": "The Full Faith and Credit Clause requires states to honor the public acts, records, and judicial proceedings of other states, such as driver's licenses and court judgments", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the federal government has power over everything", "correct": "The federal government only has powers granted by the Constitution (enumerated and implied); the 10th Amendment reserves all other powers to the states or the people"},
+        {"wrong": "states can ignore federal law whenever they want", "correct": "Under the Supremacy Clause, federal law takes precedence when there is a direct conflict between federal and state law; states cannot nullify federal legislation"},
+        {"wrong": "enumerated and implied powers are the same thing", "correct": "Enumerated powers are explicitly listed in the Constitution; implied powers are not written out but are reasonably inferred from enumerated powers via the Necessary and Proper Clause"},
+        {"wrong": "the 10th Amendment gives states unlimited power", "correct": "The 10th Amendment reserves non-delegated powers to the states, but states are still bound by the Constitution, the Bill of Rights (through incorporation), and the Supremacy Clause"},
+        {"wrong": "federalism means all states have the same laws", "correct": "Federalism allows states to create their own laws in areas not controlled by the federal government, which is why laws on issues like speed limits, marijuana, and the death penalty vary by state"}
+      ]
+    },
+    "political_parties": {
+      "keywords": ["political party", "Democrat", "Republican", "third party", "party platform", "partisanship", "primary", "caucus", "realignment", "two-party system", "independent", "Libertarian", "Green Party", "ideology", "liberal", "conservative"],
+      "facts": [
+        {"statement": "The Democratic Party, founded in 1828, and the Republican Party, founded in 1854, are the two major political parties in the United States", "grade_min": 6, "grade_max": 12},
+        {"statement": "A party platform is an official statement of a political party's positions on major issues, adopted at the party's national convention", "grade_min": 8, "grade_max": 12},
+        {"statement": "The United States has a two-party system, where two major parties dominate elections, largely due to the winner-take-all (plurality) voting system used in most elections", "grade_min": 8, "grade_max": 12},
+        {"statement": "Third parties such as the Libertarian Party, Green Party, and others have influenced American politics by raising issues and sometimes affecting election outcomes, even though they rarely win major offices", "grade_min": 8, "grade_max": 12},
+        {"statement": "A political realignment occurs when the coalitions of voters supporting each party shift significantly, as happened during the New Deal era (1930s) and the Civil Rights era (1960s)", "grade_min": 10, "grade_max": 12},
+        {"statement": "Open primaries allow any registered voter to vote in either party's primary, while closed primaries only allow registered party members to vote in their own party's primary", "grade_min": 9, "grade_max": 12},
+        {"statement": "The Republican Party was originally founded as an anti-slavery party before the Civil War; Abraham Lincoln was the first Republican president", "grade_min": 7, "grade_max": 12},
+        {"statement": "Political polarization refers to the growing ideological distance between the two major parties, with each party becoming more internally unified and more opposed to the other", "grade_min": 9, "grade_max": 12},
+        {"statement": "Gerrymandering is the practice of drawing electoral district boundaries to benefit a particular political party, which can reduce electoral competition and increase partisan advantage", "grade_min": 9, "grade_max": 12},
+        {"statement": "Interest groups and Political Action Committees (PACs) influence the political process by lobbying elected officials, funding campaigns, and mobilizing voters around specific issues", "grade_min": 9, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the Democratic and Republican parties have always stood for the same things", "correct": "Both parties have evolved significantly over time; for example, the Republican Party was founded as anti-slavery, and the parties' geographic and ideological bases shifted substantially during the 20th century"},
+        {"wrong": "third parties have no impact on American politics", "correct": "Third parties can influence elections by drawing votes from major party candidates (spoiler effect), and they often introduce ideas that are later adopted by major parties"},
+        {"wrong": "all Democrats are liberal and all Republicans are conservative", "correct": "Both parties contain a range of views; there are moderate Democrats and Republicans, and individual positions on issues can cross party lines"},
+        {"wrong": "the Founding Fathers wanted a two-party system", "correct": "Many Founders, including George Washington, warned against the dangers of political factions and parties; the two-party system developed organically from the structure of American elections"},
+        {"wrong": "gerrymandering is a recent invention", "correct": "Gerrymandering has been practiced since the early days of the republic; the term comes from Massachusetts Governor Elbridge Gerry, whose administration approved a partisan redistricting plan in 1812"}
+      ]
+    },
+    "media_public_opinion": {
+      "keywords": ["media", "news", "bias", "public opinion", "poll", "polling", "survey", "propaganda", "political socialization", "social media", "free press", "journalism", "misinformation", "media literacy", "bandwagon"],
+      "facts": [
+        {"statement": "Freedom of the press, protected by the First Amendment, ensures that news media can report on government actions without prior censorship, serving as a watchdog on government power", "grade_min": 6, "grade_max": 12},
+        {"statement": "Public opinion polls measure the attitudes and beliefs of a population by surveying a representative sample; the accuracy depends on sample size, randomness, and question wording", "grade_min": 8, "grade_max": 12},
+        {"statement": "Political socialization is the process by which individuals develop their political attitudes and beliefs, influenced by family, education, peers, media, and life experiences", "grade_min": 8, "grade_max": 12},
+        {"statement": "Media bias can take several forms including selection bias (which stories are covered), framing bias (how stories are presented), and confirmation bias (audiences seeking sources that align with their views)", "grade_min": 9, "grade_max": 12},
+        {"statement": "Common propaganda techniques include bandwagon (everyone is doing it), card stacking (presenting only one side), name-calling, glittering generalities (vague positive statements), and testimonials (celebrity endorsements)", "grade_min": 7, "grade_max": 12},
+        {"statement": "The rise of social media has changed how people consume news, allowing for faster information sharing but also increasing the spread of misinformation and creating echo chambers where people encounter only views similar to their own", "grade_min": 7, "grade_max": 12},
+        {"statement": "A sampling error (margin of error) in polling indicates the range within which the true population value is likely to fall; a poll with a 3% margin of error means results could be 3 points higher or lower", "grade_min": 9, "grade_max": 12},
+        {"statement": "The agenda-setting function of media refers to the media's ability to influence which issues the public considers important, not necessarily what people think, but what they think about", "grade_min": 10, "grade_max": 12},
+        {"statement": "Media literacy is the ability to critically analyze media messages, identify potential bias, evaluate sources, and distinguish between factual reporting, opinion, and misinformation", "grade_min": 6, "grade_max": 12},
+        {"statement": "Push polls are not legitimate surveys but are designed to influence respondents' opinions by presenting misleading or negative information disguised as survey questions", "grade_min": 10, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "polls always accurately predict election outcomes", "correct": "Polls are snapshots of opinion at a specific time and have margins of error; they can be affected by sampling bias, question wording, response rates, and the difficulty of predicting who will actually vote"},
+        {"wrong": "all media is biased, so none of it can be trusted", "correct": "While all media sources may have some degree of bias, many practice professional journalism with editorial standards, fact-checking, and corrections; the key is to consume multiple sources and evaluate claims critically"},
+        {"wrong": "social media is the same as news reporting", "correct": "Social media platforms host a mix of journalism, opinion, user-generated content, and misinformation; unlike professional news outlets, most social media content is not subject to editorial review or fact-checking standards"},
+        {"wrong": "freedom of the press means media can publish anything", "correct": "While the press has broad protections, there are legal limits including defamation (libel/slander), publishing classified information that endangers national security, and obscenity; the standard for restricting press freedom is very high"},
+        {"wrong": "propaganda only comes from foreign governments", "correct": "Propaganda techniques are used by domestic political campaigns, interest groups, advertisers, and media organizations, not just foreign governments; recognizing propaganda techniques is an important media literacy skill"}
+      ]
+    },
+    "constitutional_amendments": {
+      "keywords": ["amendment", "Bill of Rights", "1st Amendment", "2nd Amendment", "4th Amendment", "5th Amendment", "13th Amendment", "14th Amendment", "15th Amendment", "19th Amendment", "26th Amendment", "prohibition", "suffrage", "due process", "equal protection"],
+      "facts": [
+        {"statement": "The 1st Amendment protects freedom of religion (establishment and free exercise clauses), speech, the press, peaceful assembly, and the right to petition the government for redress of grievances", "grade_min": 4, "grade_max": 12},
+        {"statement": "The 2nd Amendment protects the right to keep and bear arms; its scope regarding individual versus collective rights has been debated, with the Supreme Court affirming an individual right in District of Columbia v. Heller (2008)", "grade_min": 7, "grade_max": 12},
+        {"statement": "The 4th Amendment protects against unreasonable searches and seizures and requires warrants to be supported by probable cause; it is the basis for privacy rights in criminal law", "grade_min": 7, "grade_max": 12},
+        {"statement": "The 5th Amendment provides protections in criminal cases including the right against self-incrimination (right to remain silent), protection against double jeopardy (being tried twice for the same crime), and the requirement of due process", "grade_min": 7, "grade_max": 12},
+        {"statement": "The 13th Amendment (1865) abolished slavery and involuntary servitude throughout the United States, except as punishment for a crime", "grade_min": 5, "grade_max": 12},
+        {"statement": "The 14th Amendment (1868) established birthright citizenship, guaranteed due process and equal protection under the law, and has been used to apply the Bill of Rights to state governments through the incorporation doctrine", "grade_min": 7, "grade_max": 12},
+        {"statement": "The 15th Amendment (1870) prohibited denying the right to vote based on race, though many states used poll taxes, literacy tests, and other methods to suppress Black voting until the Voting Rights Act of 1965", "grade_min": 7, "grade_max": 12},
+        {"statement": "The 18th Amendment (1919) established Prohibition, banning the manufacture, sale, and transportation of alcohol; it was repealed by the 21st Amendment (1933), the only amendment to repeal another", "grade_min": 7, "grade_max": 12},
+        {"statement": "The 19th Amendment (1920) guaranteed women the right to vote nationwide after decades of the women's suffrage movement", "grade_min": 5, "grade_max": 12},
+        {"statement": "The 22nd Amendment (1951) limits the President to two terms in office, a tradition started by George Washington and codified after Franklin Roosevelt was elected four times", "grade_min": 7, "grade_max": 12},
+        {"statement": "The 26th Amendment (1971) lowered the voting age from 21 to 18, largely driven by the argument that those old enough to be drafted to fight in Vietnam were old enough to vote", "grade_min": 6, "grade_max": 12},
+        {"statement": "There are currently 27 amendments to the Constitution; the most recent, the 27th Amendment (1992), prevents Congress from giving itself an immediate pay raise by requiring any change to take effect after the next election", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the 2nd Amendment gives an unlimited right to own any weapon", "correct": "The Supreme Court has ruled that the 2nd Amendment protects an individual right to bear arms but also stated that this right is not unlimited and is subject to reasonable regulation"},
+        {"wrong": "the 5th Amendment only applies to criminal trials", "correct": "The 5th Amendment also includes protections against government taking of private property without just compensation (eminent domain), and the due process clause applies broadly to government actions"},
+        {"wrong": "the 14th Amendment only applies to racial discrimination", "correct": "The 14th Amendment's equal protection clause has been applied to many forms of discrimination including gender, national origin, and other classifications, not just race"},
+        {"wrong": "Prohibition was in the original Constitution", "correct": "Prohibition was established by the 18th Amendment in 1919 and repealed by the 21st Amendment in 1933; it was not part of the original Constitution or Bill of Rights"},
+        {"wrong": "the Bill of Rights has always applied to state governments", "correct": "The Bill of Rights originally only limited the federal government; it was gradually applied to the states through the 14th Amendment's due process clause in a process called selective incorporation, primarily in the 20th century"}
+      ]
+    },
+    "founding_documents": {
+      "keywords": ["Declaration of Independence", "Articles of Confederation", "Federalist Papers", "Anti-Federalist", "Federalist 10", "Federalist 51", "Federalist 78", "Brutus", "natural rights", "social contract", "John Locke", "consent of the governed", "founding documents"],
+      "facts": [
+        {"statement": "The Declaration of Independence (1776), primarily authored by Thomas Jefferson, asserts that all men are created equal with unalienable rights to life, liberty, and the pursuit of happiness, and that governments derive their just powers from the consent of the governed", "grade_min": 5, "grade_max": 12},
+        {"statement": "The Declaration of Independence drew heavily on Enlightenment ideas, particularly John Locke's social contract theory and concept of natural rights (life, liberty, and property)", "grade_min": 8, "grade_max": 12},
+        {"statement": "The Articles of Confederation (1781-1789) was the first governing document of the United States; it created a weak central government with no power to tax, regulate commerce, or enforce laws, leading to its replacement by the Constitution", "grade_min": 7, "grade_max": 12},
+        {"statement": "Federalist No. 10, written by James Madison, argues that a large republic can control the dangers of factions (groups of citizens united by a common interest adverse to the rights of others) better than a small democracy", "grade_min": 9, "grade_max": 12},
+        {"statement": "Federalist No. 51, written by James Madison, explains the system of checks and balances and separation of powers, arguing that 'ambition must be made to counteract ambition' to prevent tyranny", "grade_min": 9, "grade_max": 12},
+        {"statement": "Federalist No. 78, written by Alexander Hamilton, argues for an independent judiciary and explains the concept of judicial review, describing the judiciary as the 'least dangerous' branch because it has neither the sword nor the purse", "grade_min": 10, "grade_max": 12},
+        {"statement": "Anti-Federalists opposed ratification of the Constitution, arguing it gave too much power to the federal government and lacked a bill of rights; their arguments led directly to the adoption of the Bill of Rights", "grade_min": 8, "grade_max": 12},
+        {"statement": "The Great Compromise (Connecticut Compromise) at the Constitutional Convention resolved the dispute between large and small states by creating a bicameral legislature with proportional representation in the House and equal representation in the Senate", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "the Declaration of Independence established the U.S. government", "correct": "The Declaration of Independence declared independence from Britain and articulated principles of self-governance; the actual framework of government was first established by the Articles of Confederation and then the Constitution"},
+        {"wrong": "the Articles of Confederation were a complete failure with no accomplishments", "correct": "While the Articles had serious weaknesses, they successfully governed during the Revolutionary War and established important precedents including the Northwest Ordinance (1787), which organized western territories and banned slavery in them"},
+        {"wrong": "the Federalist Papers were written by all the Founding Fathers", "correct": "The Federalist Papers were written by only three authors: Alexander Hamilton (who wrote the majority), James Madison, and John Jay, under the shared pseudonym 'Publius'"},
+        {"wrong": "Anti-Federalists wanted no central government at all", "correct": "Anti-Federalists did not oppose all central government; they wanted a weaker central government with stronger protections for individual rights and state sovereignty, leading to the Bill of Rights"},
+        {"wrong": "the Constitution was unanimously supported by all delegates", "correct": "Several delegates refused to sign the Constitution, including George Mason and Edmund Randolph of Virginia, who objected to the lack of a bill of rights; ratification debates were contentious in many states"}
+      ]
+    }
+  },
+  "key_terms": {
+    "supply": {"definition": "The total amount of a good or service that producers are willing and able to sell at various prices during a given time period", "subject_area": "economics"},
+    "demand": {"definition": "The total amount of a good or service that consumers are willing and able to purchase at various prices during a given time period", "subject_area": "economics"},
+    "equilibrium": {"definition": "The point at which the quantity supplied equals the quantity demanded, determining the market-clearing price", "subject_area": "economics"},
+    "elasticity": {"definition": "A measure of how much the quantity demanded or supplied of a good responds to a change in price or other factors", "subject_area": "economics"},
+    "GDP": {"definition": "Gross Domestic Product; the total market value of all final goods and services produced within a country in a specific time period, calculated as C + I + G + NX", "subject_area": "economics"},
+    "inflation": {"definition": "A sustained increase in the general price level of goods and services in an economy over time, reducing purchasing power", "subject_area": "economics"},
+    "deflation": {"definition": "A sustained decrease in the general price level of goods and services, which can discourage spending and investment", "subject_area": "economics"},
+    "CPI": {"definition": "Consumer Price Index; a measure that examines the weighted average of prices of a basket of consumer goods and services to track inflation", "subject_area": "economics"},
+    "recession": {"definition": "A significant decline in economic activity, commonly defined as two consecutive quarters of declining real GDP", "subject_area": "economics"},
+    "monopoly": {"definition": "A market structure in which a single firm is the sole producer of a product with no close substitutes and significant barriers to entry", "subject_area": "economics"},
+    "oligopoly": {"definition": "A market structure dominated by a small number of large firms whose decisions significantly influence each other and the market", "subject_area": "economics"},
+    "tariff": {"definition": "A tax imposed by a government on imported goods and services, raising their price to protect domestic industries or generate revenue", "subject_area": "economics"},
+    "quota": {"definition": "A government-imposed limit on the quantity of a specific good that can be imported or exported during a given time period", "subject_area": "economics"},
+    "comparative_advantage": {"definition": "The ability of a party to produce a particular good or service at a lower opportunity cost than another party, forming the basis for beneficial trade", "subject_area": "economics"},
+    "absolute_advantage": {"definition": "The ability to produce more of a good or service than another producer using the same amount of resources", "subject_area": "economics"},
+    "fiscal_policy": {"definition": "Government policy regarding taxation and public spending, used to influence economic conditions such as growth, employment, and inflation", "subject_area": "economics"},
+    "monetary_policy": {"definition": "Actions by a central bank (such as the Federal Reserve) to manage the money supply and interest rates to achieve economic goals", "subject_area": "economics"},
+    "federal_reserve": {"definition": "The central banking system of the United States, established in 1913, responsible for conducting monetary policy, supervising banks, and maintaining financial stability", "subject_area": "economics"},
+    "national_debt": {"definition": "The total amount of money that a country's government has borrowed and not yet repaid, accumulated from annual budget deficits", "subject_area": "economics"},
+    "compound_interest": {"definition": "Interest calculated on both the initial principal and the accumulated interest from previous periods, causing exponential growth over time", "subject_area": "economics"},
+    "credit_score": {"definition": "A numerical rating, typically ranging from 300 to 850, that represents a person's creditworthiness based on their credit history", "subject_area": "economics"},
+    "exchange_rate": {"definition": "The price at which one country's currency can be exchanged for another country's currency", "subject_area": "economics"},
+    "scarcity": {"definition": "The fundamental economic problem that unlimited human wants exceed the limited resources available to fulfill them", "subject_area": "economics"},
+    "opportunity_cost": {"definition": "The value of the next best alternative that must be given up when making a choice", "subject_area": "economics"},
+    "human_capital": {"definition": "The skills, knowledge, education, training, and experience that make workers more productive and valuable in the labor market", "subject_area": "economics"},
+    "labor_union": {"definition": "An organized association of workers formed to protect and further their rights and interests through collective bargaining with employers", "subject_area": "economics"},
+    "minimum_wage": {"definition": "The lowest hourly wage that employers are legally required to pay workers, established by the Fair Labor Standards Act at the federal level and set higher by many states", "subject_area": "economics"},
+    "capitalism": {"definition": "An economic system based on private ownership of the means of production, free markets, and voluntary exchange, where prices and production are determined by supply and demand", "subject_area": "economics"},
+    "socialism": {"definition": "An economic system where the means of production are owned or regulated by the community or state, aiming for more equal distribution of wealth and resources", "subject_area": "economics"},
+    "communism": {"definition": "An economic and political ideology envisioning a classless society where all property is communally owned and each person contributes and receives according to their ability and needs", "subject_area": "economics"},
+    "mixed_economy": {"definition": "An economic system that combines elements of market and command economies, with both private enterprise and government intervention", "subject_area": "economics"},
+    "constitution": {"definition": "The supreme law of the United States, written in 1787, establishing the framework of the federal government including its structure, powers, and limits", "subject_area": "civics"},
+    "amendment": {"definition": "A formal change or addition to the U.S. Constitution; there are currently 27 amendments", "subject_area": "civics"},
+    "bill_of_rights": {"definition": "The first ten amendments to the U.S. Constitution, ratified in 1791, which guarantee fundamental individual rights and liberties", "subject_area": "civics"},
+    "checks_and_balances": {"definition": "The system in which each branch of government has the power to limit or check the actions of the other branches, preventing any single branch from becoming too powerful", "subject_area": "government"},
+    "separation_of_powers": {"definition": "The division of government authority into three distinct branches (legislative, executive, judicial), each with its own responsibilities and powers", "subject_area": "government"},
+    "federalism": {"definition": "A system of government in which power is divided between a central (national) government and regional (state) governments", "subject_area": "government"},
+    "electoral_college": {"definition": "The body of 538 electors who formally elect the President and Vice President of the United States; a candidate needs 270 electoral votes to win", "subject_area": "government"},
+    "veto": {"definition": "The constitutional power of the President to reject a bill passed by Congress; Congress can override a veto with a two-thirds vote in both chambers", "subject_area": "government"},
+    "judicial_review": {"definition": "The power of the Supreme Court to examine laws and government actions and declare them unconstitutional, established in Marbury v. Madison (1803)", "subject_area": "government"},
+    "due_process": {"definition": "The constitutional guarantee that the government must respect all legal rights owed to a person and follow fair procedures before depriving them of life, liberty, or property", "subject_area": "civics"},
+    "equal_protection": {"definition": "The 14th Amendment principle requiring that states treat all individuals equally under the law without unreasonable discrimination", "subject_area": "civics"},
+    "naturalization": {"definition": "The legal process through which a foreign citizen or national can become a citizen of the United States", "subject_area": "civics"},
+    "civil_liberties": {"definition": "Individual freedoms protected by the Constitution from government interference, such as freedom of speech, religion, and the press", "subject_area": "civics"},
+    "civil_rights": {"definition": "The rights of individuals to receive equal treatment and be free from discrimination based on characteristics such as race, sex, religion, or national origin", "subject_area": "civics"},
+    "bicameral": {"definition": "A legislative body consisting of two separate chambers; the U.S. Congress is bicameral, composed of the Senate and the House of Representatives", "subject_area": "government"},
+    "suffrage": {"definition": "The right to vote in political elections; key amendments extending suffrage include the 15th (race), 19th (sex), and 26th (age 18+)", "subject_area": "civics"},
+    "precedent": {"definition": "A legal principle established by a court decision that serves as a guide for future cases with similar issues", "subject_area": "government"},
+    "popular_sovereignty": {"definition": "The principle that the authority of government is derived from the consent of the people", "subject_area": "government"},
+    "enumerated_powers": {"definition": "Powers specifically granted to Congress in Article I, Section 8 of the Constitution, including the power to tax, coin money, declare war, and regulate commerce", "subject_area": "government"},
+    "reserved_powers": {"definition": "Powers not delegated to the federal government that are retained by the states or the people, as protected by the 10th Amendment", "subject_area": "government"},
+    "implied_powers": {"definition": "Powers not explicitly stated in the Constitution but reasonably inferred from enumerated powers through the Necessary and Proper Clause (elastic clause)", "subject_area": "government"},
+    "supremacy_clause": {"definition": "Article VI of the Constitution establishing that the Constitution and federal laws are the supreme law of the land, taking precedence over conflicting state laws", "subject_area": "government"},
+    "gerrymandering": {"definition": "The practice of drawing electoral district boundaries to give an advantage to a particular political party or group", "subject_area": "government"},
+    "political_socialization": {"definition": "The process by which individuals develop their political attitudes, values, and beliefs, shaped by family, education, peers, media, and experiences", "subject_area": "government"},
+    "media_bias": {"definition": "The tendency of news media to present information in a way that reflects a particular perspective, whether through story selection, framing, or emphasis", "subject_area": "government"},
+    "propaganda": {"definition": "Information or messaging designed to influence public opinion, often using emotional appeals, selective facts, and persuasive techniques rather than objective analysis", "subject_area": "government"}
+  }
+}

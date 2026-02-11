@@ -1,0 +1,732 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "other",
+    "last_updated": "2026-02-11",
+    "description": "Social studies facts: communities, cultures, map skills, government basics, citizenship, economics basics, global awareness, current events literacy, world religions, human rights, United Nations"
+  },
+  "facts_by_topic": {
+    "world_religions": {
+      "keywords": [
+        "religion",
+        "Christianity",
+        "Islam",
+        "Judaism",
+        "Buddhism",
+        "Hinduism",
+        "monotheism",
+        "polytheism",
+        "faith",
+        "worship",
+        "sacred"
+      ],
+      "facts": [
+        {
+          "statement": "The five major world religions by number of followers are Christianity (~2.4 billion), Islam (~1.9 billion), Hinduism (~1.2 billion), Buddhism (~500 million), and Judaism (~15 million)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Monotheistic religions worship one God; Christianity, Islam, and Judaism are all monotheistic and share Abraham as a common patriarch",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Hinduism is one of the world's oldest religions, originating in South Asia, and includes belief in many forms of the divine (Brahma, Vishnu, Shiva)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Buddhism was founded by Siddhartha Gautama (the Buddha) in India around 500 BCE and teaches the Four Noble Truths and the Eightfold Path to end suffering",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The three Abrahamic religions (Judaism, Christianity, Islam) all originated in the Middle East and share common historical narratives",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Freedom of religion is a fundamental human right recognized by the United Nations Universal Declaration of Human Rights",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Sikhism was founded by Guru Nanak in the Punjab region of South Asia in the late 15th century; it is a monotheistic religion with about 30 million followers worldwide",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Sacred texts include the Bible (Christianity), the Quran (Islam), the Torah (Judaism), the Vedas and Bhagavad Gita (Hinduism), and the Tripitaka (Buddhism)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A place of worship is called a church (Christianity), mosque (Islam), synagogue (Judaism), temple (Hinduism/Buddhism), or gurdwara (Sikhism)",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "Islam is only practiced in the Middle East",
+          "correct": "Islam is practiced worldwide. The countries with the largest Muslim populations are Indonesia, Pakistan, India, and Bangladesh, all in South and Southeast Asia."
+        },
+        {
+          "wrong": "Buddhism requires belief in a god",
+          "correct": "Buddhism focuses on personal spiritual development and does not require belief in a creator god. It centers on the Buddha's teachings about ending suffering."
+        },
+        {
+          "wrong": "Hinduism has only one holy book",
+          "correct": "Hinduism has many sacred texts including the Vedas, Upanishads, Bhagavad Gita, Ramayana, and Mahabharata."
+        },
+        {
+          "wrong": "all religions worship the same way",
+          "correct": "Different religions have distinct practices: Christians may attend church services, Muslims pray five times daily facing Mecca, Buddhists meditate, and Hindus may worship at home shrines or temples."
+        }
+      ]
+    },
+    "human_rights": {
+      "keywords": [
+        "human rights",
+        "Universal Declaration",
+        "freedom",
+        "equality",
+        "dignity",
+        "justice",
+        "liberty",
+        "civil rights",
+        "amendment"
+      ],
+      "facts": [
+        {
+          "statement": "The Universal Declaration of Human Rights (UDHR) was adopted by the United Nations General Assembly on December 10, 1948",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The UDHR includes 30 articles covering civil, political, economic, social, and cultural rights for all people",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Human rights include the right to life, liberty, education, freedom of thought and religion, and freedom from slavery and torture",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The US civil rights movement of the 1950s-1960s fought for racial equality, led by figures including Martin Luther King Jr., Rosa Parks, and John Lewis",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Martin Luther King Jr. advocated for civil rights through nonviolent protest and civil disobedience, inspired by Mahatma Gandhi's philosophy",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The UN Convention on the Rights of the Child (1989) is the most widely ratified human rights treaty in history",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 19th Amendment to the US Constitution, ratified in 1920, granted women the right to vote",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Civil Rights Act of 1964 outlawed discrimination based on race, color, religion, sex, or national origin in the United States",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The 13th Amendment (1865) abolished slavery in the United States, and the 14th Amendment (1868) granted citizenship and equal protection under the law to all persons born in the US",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "human rights were invented in the 20th century",
+          "correct": "While the UDHR was adopted in 1948, concepts of human rights have roots in ancient codes of law, the Magna Carta (1215), and Enlightenment philosophy."
+        },
+        {
+          "wrong": "human rights are only about government actions",
+          "correct": "Human rights apply broadly and can be violated by governments, corporations, groups, and individuals. Protecting them is a shared responsibility."
+        },
+        {
+          "wrong": "Martin Luther King Jr. was the only civil rights leader",
+          "correct": "The civil rights movement involved many leaders: Rosa Parks, Malcolm X, John Lewis, Medgar Evers, Fannie Lou Hamer, Thurgood Marshall, and many others."
+        },
+        {
+          "wrong": "slavery only existed in the United States",
+          "correct": "Slavery existed in many civilizations throughout history, including ancient Rome, ancient Greece, the Middle East, Africa, Asia, and the Americas. The transatlantic slave trade was one of the most large-scale systems."
+        }
+      ]
+    },
+    "united_nations": {
+      "keywords": [
+        "United Nations",
+        "UN",
+        "General Assembly",
+        "Security Council",
+        "UNESCO",
+        "UNICEF",
+        "peacekeeping",
+        "international"
+      ],
+      "facts": [
+        {
+          "statement": "The United Nations was founded on October 24, 1945, after World War II, with the goal of maintaining international peace and security",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The UN has 193 member states and is headquartered in New York City",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The UN Security Council has 5 permanent members (US, UK, France, Russia, China) with veto power, and 10 non-permanent rotating members",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "UNICEF (United Nations Children's Fund) provides humanitarian aid and development assistance to children and mothers worldwide",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "UNESCO promotes international cooperation in education, science, culture, and communication",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The UN Sustainable Development Goals (SDGs) are 17 global goals adopted in 2015 to be achieved by 2030, covering poverty, hunger, health, education, and climate action",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The World Health Organization (WHO) is a UN agency responsible for international public health, coordinating responses to global health emergencies",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "UN peacekeeping missions deploy military and civilian personnel to help countries navigate the difficult transition from conflict to peace",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "The International Court of Justice (ICJ), located in The Hague, Netherlands, is the principal judicial organ of the UN that settles legal disputes between nations",
+          "grade_min": 8,
+          "grade_max": 12
+        },
+        {
+          "statement": "The UN Secretary-General is the chief administrative officer of the United Nations; the position serves as a spokesperson and leader of the organization",
+          "grade_min": 7,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the UN is a world government",
+          "correct": "The UN is an international organization where sovereign nations cooperate voluntarily. It cannot force member states to take action."
+        },
+        {
+          "wrong": "the UN was founded after World War I",
+          "correct": "The League of Nations was founded after WWI (1920). The United Nations was founded after WWII (1945) as a more effective successor."
+        },
+        {
+          "wrong": "all UN decisions are binding on member states",
+          "correct": "Only UN Security Council resolutions are binding. General Assembly resolutions are recommendations and are not legally enforceable."
+        },
+        {
+          "wrong": "every country in the world is a member of the United Nations",
+          "correct": "While 193 countries are UN members, some entities are not, such as the Vatican City (which has observer status) and some disputed territories."
+        }
+      ]
+    },
+    "communities_and_cultures": {
+      "keywords": [
+        "community",
+        "culture",
+        "tradition",
+        "custom",
+        "diversity",
+        "heritage",
+        "neighborhood",
+        "rural",
+        "urban",
+        "suburban",
+        "family"
+      ],
+      "facts": [
+        {
+          "statement": "A community is a group of people who live, work, or share common interests in the same area or have a shared identity",
+          "grade_min": 0,
+          "grade_max": 6
+        },
+        {
+          "statement": "Culture includes the beliefs, customs, arts, foods, languages, and traditions shared by a group of people",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "Urban areas are cities with dense populations; suburban areas surround cities with lower density; rural areas are countryside with farms and open land",
+          "grade_min": 2,
+          "grade_max": 8
+        },
+        {
+          "statement": "Diversity means having people of different races, ethnicities, religions, languages, and backgrounds in a community; it enriches society with varied perspectives",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Traditions are customs, beliefs, or practices passed down from generation to generation within a family or culture",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "Every country has a unique national culture, but within each country there are also many regional and local subcultures",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Heritage is something passed down from previous generations, including buildings, customs, language, and cultural practices",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "There are approximately 7,000 languages spoken in the world today; Mandarin Chinese, Spanish, English, Hindi, and Arabic have the most native speakers",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Cultural exchange occurs when different cultures share ideas, traditions, food, music, and art with each other",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Holidays like Diwali, Eid, Chinese New Year, Hanukkah, Christmas, and Kwanzaa are cultural celebrations observed by different communities around the world",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "Immigration is the process of moving to a new country to live permanently; immigrants bring diverse skills, cultures, and perspectives to their new communities",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Indigenous peoples are the original inhabitants of a region; in North America, Native Americans lived on the continent for thousands of years before European colonization",
+          "grade_min": 3,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "everyone in the same country has the same culture",
+          "correct": "Most countries contain many different cultural groups with distinct languages, foods, customs, and traditions. Cultural diversity exists within every nation."
+        },
+        {
+          "wrong": "rural areas are less important than urban areas",
+          "correct": "Rural areas play a vital role in society, providing food production, natural resources, and open spaces. Both rural and urban communities are essential."
+        },
+        {
+          "wrong": "traditions never change over time",
+          "correct": "Traditions evolve as communities change, adapt to new circumstances, and blend with other cultures. Some traditions are modified while preserving their core meaning."
+        },
+        {
+          "wrong": "diversity only refers to race",
+          "correct": "Diversity encompasses race, ethnicity, religion, language, gender, age, ability, socioeconomic status, and many other aspects of human identity."
+        }
+      ]
+    },
+    "map_skills_and_geography": {
+      "keywords": [
+        "map",
+        "globe",
+        "compass",
+        "north",
+        "south",
+        "east",
+        "west",
+        "continent",
+        "ocean",
+        "equator",
+        "latitude",
+        "longitude",
+        "legend",
+        "scale"
+      ],
+      "facts": [
+        {
+          "statement": "The four cardinal directions are north, south, east, and west; intermediate directions include northeast, northwest, southeast, and southwest",
+          "grade_min": 0,
+          "grade_max": 6
+        },
+        {
+          "statement": "A compass rose on a map shows the cardinal and intermediate directions",
+          "grade_min": 1,
+          "grade_max": 6
+        },
+        {
+          "statement": "A map legend (or key) explains what the symbols, colors, and lines on a map represent",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "A map scale shows the relationship between distances on the map and actual distances on Earth",
+          "grade_min": 2,
+          "grade_max": 8
+        },
+        {
+          "statement": "There are seven continents: Africa, Antarctica, Asia, Australia (Oceania), Europe, North America, and South America",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "There are five oceans: Pacific (largest), Atlantic, Indian, Southern (Antarctic), and Arctic (smallest)",
+          "grade_min": 1,
+          "grade_max": 12
+        },
+        {
+          "statement": "The equator is an imaginary line around the middle of the Earth at 0 degrees latitude, dividing it into the Northern and Southern Hemispheres",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Latitude lines run east-west (horizontally) and measure distance north or south of the equator; longitude lines run north-south (vertically) and measure distance east or west of the Prime Meridian",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Prime Meridian is an imaginary line at 0 degrees longitude running through Greenwich, England, dividing the Earth into Eastern and Western Hemispheres",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A globe is a spherical model of Earth that shows the true shape and relative sizes of continents and oceans; flat maps always involve some distortion",
+          "grade_min": 2,
+          "grade_max": 8
+        },
+        {
+          "statement": "Asia is the largest continent by both area and population; Australia (Oceania) is the smallest continent by area",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "A physical map shows natural features like mountains, rivers, lakes, deserts, and plains; a political map shows boundaries between countries, states, and cities",
+          "grade_min": 2,
+          "grade_max": 8
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "north is always up and south is always down",
+          "correct": "North is the direction toward the North Pole and south toward the South Pole. On most maps, north is placed at the top by convention, but this is a choice, not a rule."
+        },
+        {
+          "wrong": "flat maps show the Earth accurately",
+          "correct": "All flat maps distort the Earth's surface because a sphere cannot be perfectly represented on a flat surface. Different map projections minimize different types of distortion."
+        },
+        {
+          "wrong": "the equator goes through the United States",
+          "correct": "The equator passes through South America, Africa, and Asia. The United States is entirely in the Northern Hemisphere, well north of the equator."
+        },
+        {
+          "wrong": "Africa is a country",
+          "correct": "Africa is a continent containing 54 independent countries including Nigeria, Egypt, South Africa, Kenya, and many others."
+        },
+        {
+          "wrong": "latitude and longitude are the same thing",
+          "correct": "Latitude lines run east-west and measure north/south position (0 at equator). Longitude lines run north-south and measure east/west position (0 at Prime Meridian). Together they pinpoint any location."
+        }
+      ]
+    },
+    "government_basics": {
+      "keywords": [
+        "government",
+        "democracy",
+        "law",
+        "president",
+        "congress",
+        "constitution",
+        "vote",
+        "election",
+        "branch",
+        "legislative",
+        "executive",
+        "judicial",
+        "mayor"
+      ],
+      "facts": [
+        {
+          "statement": "A democracy is a form of government where citizens have the power to choose their leaders through free and fair elections",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The United States government has three branches: legislative (Congress makes laws), executive (President enforces laws), and judicial (courts interpret laws)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The US Constitution is the supreme law of the land, establishing the framework of the government and protecting citizens' rights",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The system of checks and balances ensures that no single branch of government becomes too powerful; each branch can limit the powers of the others",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Congress is the legislative branch consisting of two chambers: the Senate (100 members, 2 per state) and the House of Representatives (435 members, based on state population)",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Bill of Rights is the first ten amendments to the US Constitution, guaranteeing freedoms including speech, religion, press, assembly, and the right to bear arms",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Local government includes mayors, city councils, and county boards that manage local services like schools, police, fire departments, and road maintenance",
+          "grade_min": 2,
+          "grade_max": 8
+        },
+        {
+          "statement": "The President of the United States serves a four-year term and can serve a maximum of two terms (10 years total under special circumstances)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Supreme Court is the highest court in the United States, consisting of nine justices appointed for life by the President with Senate confirmation",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A monarchy is a form of government where a king or queen serves as head of state; a constitutional monarchy (like the United Kingdom) limits the monarch's power through a constitution and parliament",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A dictatorship is a form of government where one person or a small group holds absolute power without the consent of the governed and restricts individual freedoms",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "The Federalist system divides power among local, state, and national levels of government, each with specific responsibilities and authority",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the President makes all the laws",
+          "correct": "Congress (the legislative branch) makes laws. The President can sign bills into law or veto them, and can propose legislation, but cannot create laws alone."
+        },
+        {
+          "wrong": "a democracy and a republic are the same thing",
+          "correct": "In a direct democracy, citizens vote on all laws. In a republic (like the US), citizens elect representatives to make laws on their behalf. The US is a democratic republic."
+        },
+        {
+          "wrong": "the Constitution has never been changed",
+          "correct": "The Constitution has been amended 27 times. The first 10 amendments (the Bill of Rights) were added in 1791, and the most recent (27th) was ratified in 1992."
+        },
+        {
+          "wrong": "only the federal government has power in the United States",
+          "correct": "The US has a federal system where power is shared between the national (federal) government and state governments. States have their own constitutions, laws, and elected officials."
+        }
+      ]
+    },
+    "economics_basics": {
+      "keywords": [
+        "economics",
+        "money",
+        "trade",
+        "supply",
+        "demand",
+        "goods",
+        "services",
+        "wants",
+        "needs",
+        "budget",
+        "savings",
+        "tax",
+        "producer",
+        "consumer"
+      ],
+      "facts": [
+        {
+          "statement": "Needs are things required for survival (food, water, shelter, clothing); wants are things desired but not essential (toys, games, vacations)",
+          "grade_min": 0,
+          "grade_max": 6
+        },
+        {
+          "statement": "Goods are physical products that can be bought and sold (books, food, clothing); services are actions performed for others (teaching, healthcare, haircuts)",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "A producer makes or provides goods and services; a consumer buys or uses goods and services",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "Supply is the amount of a product available for sale; demand is how much consumers want to buy; prices generally rise when demand exceeds supply",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "A budget is a plan for how to spend and save money; it helps people and organizations manage their finances",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Taxes are required payments to the government used to fund public services like schools, roads, police, fire departments, and the military",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Scarcity means that resources are limited while human wants are unlimited; all economic decisions involve trade-offs because of scarcity",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "An opportunity cost is the value of the next best alternative given up when a choice is made; for example, choosing to buy a book means you cannot spend that money on a game",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "International trade allows countries to specialize in producing goods they can make most efficiently and import goods from other countries",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Saving money in a bank account earns interest, which is money the bank pays you for letting them use your money",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Inflation is the general increase in prices over time, which reduces the purchasing power of money",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Entrepreneurship is the process of starting and running a new business; entrepreneurs take financial risks in hopes of making a profit",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Natural resources are materials from the Earth that people use, including water, minerals, timber, and fossil fuels; renewable resources can be replenished, while nonrenewable resources cannot",
+          "grade_min": 3,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "money has always existed",
+          "correct": "Before money, people used a barter system (trading goods directly). Coins were first used around 600 BCE in ancient Lydia (modern Turkey). Paper money came later."
+        },
+        {
+          "wrong": "printing more money makes everyone richer",
+          "correct": "Printing more money without increasing goods and services causes inflation (prices go up), which means each dollar buys less. The total wealth does not increase."
+        },
+        {
+          "wrong": "needs and wants are the same thing",
+          "correct": "Needs are essentials for survival (food, water, shelter). Wants are things you desire but can live without (video games, designer clothes). Distinguishing them is key to budgeting."
+        },
+        {
+          "wrong": "trade only happens between countries",
+          "correct": "Trade happens at all levels: individuals trade with stores, businesses trade with each other, cities trade with nearby areas, and countries trade internationally."
+        }
+      ]
+    },
+    "citizenship_and_civic_responsibility": {
+      "keywords": [
+        "citizen",
+        "citizenship",
+        "civic",
+        "responsibility",
+        "volunteer",
+        "vote",
+        "jury",
+        "rights",
+        "duty",
+        "patriotism",
+        "community service"
+      ],
+      "facts": [
+        {
+          "statement": "A citizen is a person who is a legal member of a country; citizenship grants both rights (like voting) and responsibilities (like obeying laws)",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "In the United States, citizens can gain citizenship by being born on US soil, having US citizen parents, or through the naturalization process",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Civic responsibilities include voting in elections, serving on a jury when called, obeying laws, paying taxes, and staying informed about community and national issues",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "The right to vote in the US is guaranteed to citizens age 18 and older, regardless of race, gender, or wealth",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Community service and volunteering are ways citizens can help improve their communities through actions like cleaning parks, helping at food banks, or mentoring younger students",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "The Pledge of Allegiance is a statement of loyalty to the United States and its flag, often recited in schools and at public events",
+          "grade_min": 1,
+          "grade_max": 8
+        },
+        {
+          "statement": "Freedom of speech, protected by the First Amendment, allows citizens to express opinions, but it does not protect threats, fraud, or incitement to violence",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Civic participation can include voting, contacting elected officials, attending town meetings, peaceful protest, and joining community organizations",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The rule of law means that all people and institutions, including the government, are subject to and accountable under the law",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Taxes fund public goods and services that benefit everyone, including public schools, roads, libraries, parks, police, and fire protection",
+          "grade_min": 3,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "only adults have civic responsibilities",
+          "correct": "Children and teens also have civic responsibilities including following rules, being respectful community members, staying informed, and volunteering. Many of these build habits for adult citizenship."
+        },
+        {
+          "wrong": "voting is the only way to participate in democracy",
+          "correct": "Citizens can participate through contacting representatives, attending public meetings, peaceful protest, serving on juries, volunteering, and running for office."
+        },
+        {
+          "wrong": "freedom of speech means you can say anything without consequences",
+          "correct": "The First Amendment protects citizens from government censorship. However, speech that involves threats, fraud, or incitement to violence is not protected, and private entities can set their own rules."
+        },
+        {
+          "wrong": "you have to be rich to run for public office",
+          "correct": "While campaigns can be expensive, many elected officials come from modest backgrounds. Public financing, small donations, and grassroots organizing help diverse candidates run for office."
+        }
+      ]
+    }
+  }
+}

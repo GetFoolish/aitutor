@@ -1,0 +1,907 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "math",
+    "last_updated": "2026-02-11",
+    "description": "Fraction rules, decimal conversions, percent equivalents, ratios and proportions"
+  },
+  "facts_by_topic": {
+    "fraction_basics": {
+      "keywords": [
+        "fraction",
+        "numerator",
+        "denominator",
+        "proper",
+        "improper",
+        "mixed number",
+        "equivalent",
+        "simplify",
+        "reduce",
+        "unit fraction"
+      ],
+      "facts": [
+        {
+          "statement": "A fraction represents a part of a whole, written as numerator over denominator (a/b)",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "The numerator is the top number showing how many parts are taken; the denominator is the bottom number showing total equal parts",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "A proper fraction has a numerator less than the denominator (e.g., 3/4), and its value is less than 1",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "An improper fraction has a numerator greater than or equal to the denominator (e.g., 7/4), and its value is 1 or greater",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A mixed number combines a whole number and a proper fraction (e.g., 1 3/4 = 7/4)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Equivalent fractions represent the same value: 1/2 = 2/4 = 3/6 = 4/8",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "To simplify a fraction, divide both numerator and denominator by their greatest common factor (GCF)",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Any whole number can be written as a fraction with denominator 1: for example, 5 = 5/1",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A unit fraction has a numerator of 1: examples are 1/2, 1/3, 1/4, 1/5",
+          "grade_min": 2,
+          "grade_max": 6
+        },
+        {
+          "statement": "To convert a mixed number to an improper fraction: multiply whole number by denominator, add numerator, keep denominator. 2 3/5 = (2x5+3)/5 = 13/5",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "To convert an improper fraction to a mixed number: divide numerator by denominator. 17/5 = 3 remainder 2 = 3 2/5",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "To create equivalent fractions, multiply (or divide) both numerator and denominator by the same nonzero number",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A fraction equals 1 when the numerator and denominator are the same nonzero number: 5/5 = 1",
+          "grade_min": 2,
+          "grade_max": 12
+        },
+        {
+          "statement": "Comparing fractions with the same denominator: the fraction with the larger numerator is greater. 5/8 > 3/8",
+          "grade_min": 3,
+          "grade_max": 8
+        },
+        {
+          "statement": "Comparing fractions with the same numerator: the fraction with the smaller denominator is greater. 1/3 > 1/5",
+          "grade_min": 3,
+          "grade_max": 8
+        },
+        {
+          "statement": "Cross multiplication can compare fractions: a/b vs c/d, compare a*d to b*c. If a*d > b*c, then a/b > c/d",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A fraction is in simplest form (lowest terms) when the GCF of the numerator and denominator is 1",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The denominator of a fraction can never be zero because division by zero is undefined",
+          "grade_min": 3,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "a fraction with a larger denominator is always larger",
+          "correct": "A larger denominator means smaller pieces. 1/8 is smaller than 1/4 even though 8 > 4."
+        },
+        {
+          "wrong": "you can simplify by subtracting the same number from top and bottom",
+          "correct": "To simplify, divide both numerator and denominator by the same number, not subtract."
+        },
+        {
+          "wrong": "3/0 is a valid fraction equal to zero",
+          "correct": "A fraction with denominator 0 is undefined. Division by zero is not allowed."
+        },
+        {
+          "wrong": "0/5 is undefined",
+          "correct": "0 divided by any nonzero number is 0. So 0/5 = 0 — it is a valid fraction."
+        },
+        {
+          "wrong": "2 3/5 as an improper fraction is 23/5",
+          "correct": "To convert, multiply whole number by denominator and add numerator: (2x5+3)/5 = 13/5, not 23/5."
+        },
+        {
+          "wrong": "3/4 is larger than 5/6 because 4 < 6",
+          "correct": "You must compare with common denominators: 3/4 = 9/12 and 5/6 = 10/12. So 5/6 > 3/4."
+        }
+      ]
+    },
+    "fraction_operations": {
+      "keywords": [
+        "add fractions",
+        "subtract fractions",
+        "multiply fractions",
+        "divide fractions",
+        "common denominator",
+        "LCD",
+        "reciprocal",
+        "cross multiply"
+      ],
+      "facts": [
+        {
+          "statement": "To add or subtract fractions, they must have the same denominator (common denominator)",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "The least common denominator (LCD) is the smallest number that is a multiple of both denominators",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "To multiply fractions, multiply the numerators together and multiply the denominators together: (a/b) x (c/d) = (ac)/(bd)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "To divide by a fraction, multiply by its reciprocal: (a/b) / (c/d) = (a/b) x (d/c)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "The reciprocal of a fraction a/b is b/a; the reciprocal of 3/4 is 4/3",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "When adding fractions with the same denominator, add the numerators and keep the denominator: 2/5 + 1/5 = 3/5",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "To add 1/3 + 1/4: find LCD = 12, convert to 4/12 + 3/12 = 7/12",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "When multiplying mixed numbers, first convert to improper fractions: 1 1/2 x 2 1/3 = 3/2 x 7/3 = 21/6 = 3 1/2",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Multiplying a fraction by its reciprocal always equals 1: (3/4) x (4/3) = 1",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "You can simplify (cancel) before multiplying fractions by dividing a numerator and a denominator by their common factor",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "To subtract fractions with unlike denominators: 3/4 - 1/3 = 9/12 - 4/12 = 5/12",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "When dividing whole number by a fraction: 6 / (1/2) = 6 x 2 = 12. Six halves make twelve halves (or 6 wholes worth of halves)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "To add fractions with unlike denominators: 2/3 + 1/6 = 4/6 + 1/6 = 5/6 (LCD is 6)",
+          "grade_min": 4,
+          "grade_max": 8
+        },
+        {
+          "statement": "When adding three or more fractions, find the LCD of all denominators: 1/2 + 1/3 + 1/6 = 3/6 + 2/6 + 1/6 = 6/6 = 1",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Multiplying a number by a fraction between 0 and 1 makes it smaller: 12 x 3/4 = 9",
+          "grade_min": 5,
+          "grade_max": 8
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "to add fractions, add both numerators and denominators: 1/3 + 1/4 = 2/7",
+          "correct": "You must find a common denominator first. 1/3 + 1/4 = 4/12 + 3/12 = 7/12."
+        },
+        {
+          "wrong": "to divide fractions, just divide across: (2/3)/(4/5) = (2/4)/(3/5)",
+          "correct": "To divide fractions, multiply by the reciprocal: (2/3) / (4/5) = (2/3) x (5/4) = 10/12 = 5/6."
+        },
+        {
+          "wrong": "multiplying fractions always gives a bigger number",
+          "correct": "Multiplying a fraction by a proper fraction gives a smaller result: 1/2 x 1/3 = 1/6, which is less than either."
+        },
+        {
+          "wrong": "to subtract fractions, subtract numerators and denominators: 3/4 - 1/3 = 2/1 = 2",
+          "correct": "Find common denominator first: 3/4 - 1/3 = 9/12 - 4/12 = 5/12."
+        },
+        {
+          "wrong": "6 / (1/2) = 3",
+          "correct": "Dividing by 1/2 is the same as multiplying by 2: 6 / (1/2) = 6 x 2 = 12."
+        },
+        {
+          "wrong": "you can cancel across an addition sign: in (2/4) + (3/4), cancel the 4s to get 2+3=5",
+          "correct": "Cancellation only works in multiplication. In addition, keep the common denominator: (2/4)+(3/4)=5/4."
+        }
+      ]
+    },
+    "decimals": {
+      "keywords": [
+        "decimal",
+        "decimal point",
+        "tenths",
+        "hundredths",
+        "thousandths",
+        "place value",
+        "terminating",
+        "repeating",
+        "decimal operations"
+      ],
+      "facts": [
+        {
+          "statement": "Decimals extend the place value system to the right of the decimal point: tenths, hundredths, thousandths",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "0.1 equals one tenth (1/10), 0.01 equals one hundredth (1/100), 0.001 equals one thousandth (1/1000)",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "A terminating decimal has a finite number of digits after the decimal point (e.g., 0.25, 0.5)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A repeating decimal has one or more digits that repeat infinitely (e.g., 1/3 = 0.333...)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "To compare decimals, align the decimal points and compare digit by digit from left to right",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Moving the decimal point one place to the right multiplies by 10; one place to the left divides by 10",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "To add or subtract decimals, align the decimal points and add/subtract column by column",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "When multiplying decimals, multiply as whole numbers then count total decimal places in both factors: 0.3 x 0.2 = 0.06 (2 decimal places)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "When dividing by a decimal, move the decimal point in the divisor to make it a whole number, and move the dividend's decimal the same number of places: 4.8 / 0.6 = 48 / 6 = 8",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "To convert a fraction to a decimal, divide the numerator by the denominator: 3/8 = 3 divided by 8 = 0.375",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "To convert a terminating decimal to a fraction, use place value: 0.75 = 75/100 = 3/4",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Common fraction-decimal equivalents: 1/2=0.5, 1/4=0.25, 3/4=0.75, 1/5=0.2, 1/8=0.125, 1/3=0.333...",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "Every terminating decimal can be written as a fraction with a denominator that is a power of 10: 0.125 = 125/1000 = 1/8",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "To convert 0.6 repeating to a fraction: let x = 0.666..., 10x = 6.666..., 10x - x = 6, 9x = 6, x = 6/9 = 2/3",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Rounding 3.456 to the nearest hundredth: look at thousandths digit (6 >= 5), round up to 3.46",
+          "grade_min": 4,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "0.5 is less than 0.25 because 5 < 25",
+          "correct": "0.5 = 0.50, which is greater than 0.25. Compare place values, not the digits after the decimal."
+        },
+        {
+          "wrong": "0.1 + 0.2 = 0.3 exactly in computers",
+          "correct": "Due to floating-point representation, computers may store 0.1 + 0.2 as 0.30000000000000004, a well-known computer science fact."
+        },
+        {
+          "wrong": "adding a zero after a decimal changes its value",
+          "correct": "0.5 = 0.50 = 0.500. Trailing zeros after a decimal point do not change the value."
+        },
+        {
+          "wrong": "0.3 x 0.2 = 0.6",
+          "correct": "Count decimal places: 0.3 (1 place) x 0.2 (1 place) = 0.06 (2 places total)."
+        },
+        {
+          "wrong": "when adding 1.5 + 2.35, line up the last digits",
+          "correct": "Align decimal points: 1.50 + 2.35 = 3.85. Add trailing zeros to align."
+        },
+        {
+          "wrong": "0.9 repeating is less than 1",
+          "correct": "0.999... (repeating) is exactly equal to 1. This can be proven algebraically."
+        }
+      ]
+    },
+    "percent_conversions": {
+      "keywords": [
+        "percent",
+        "percentage",
+        "convert",
+        "fraction to percent",
+        "decimal to percent",
+        "discount",
+        "tax",
+        "tip",
+        "increase",
+        "decrease",
+        "markup",
+        "markdown"
+      ],
+      "facts": [
+        {
+          "statement": "Percent means per hundred. 50% means 50 out of 100, or 50/100 = 1/2 = 0.5",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "To convert a decimal to a percent, multiply by 100: 0.75 = 75%",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "To convert a percent to a decimal, divide by 100: 25% = 0.25",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "To convert a fraction to a percent, divide numerator by denominator and multiply by 100: 3/4 = 0.75 = 75%",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Common equivalents: 1/4 = 25%, 1/3 = 33.3%, 1/2 = 50%, 2/3 = 66.7%, 3/4 = 75%, 1/5 = 20%",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "100% represents the whole amount; 200% is double the amount; 50% is half",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "To find a percent of a number, convert the percent to a decimal and multiply: 20% of 50 = 0.20 x 50 = 10",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Percent increase = (new - original) / original x 100. If price went from $50 to $60, increase = (10/50) x 100 = 20%",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Percent decrease = (original - new) / original x 100. If price went from $80 to $60, decrease = (20/80) x 100 = 25%",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Sales tax is added to the price: $50 item + 8% tax = $50 x 1.08 = $54",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A discount reduces the price: 30% off $80 = $80 x 0.70 = $56",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "To find what percent one number is of another: (part/whole) x 100. 15 is what % of 60? (15/60)x100 = 25%",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Simple interest formula: I = P x r x t, where P is principal, r is rate (as decimal), and t is time in years",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "To find the original price before a discount: if the sale price is $42 after 30% off, original = $42 / 0.70 = $60",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "Compound interest grows faster than simple interest because interest is earned on previously earned interest",
+          "grade_min": 8,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "50% of 80 is 50",
+          "correct": "50% of 80 = 0.50 x 80 = 40. To find a percent, convert it to a decimal first."
+        },
+        {
+          "wrong": "1/3 = 33%",
+          "correct": "1/3 = 33.333...% (repeating). It is approximately 33.3%, not exactly 33%."
+        },
+        {
+          "wrong": "a 20% increase followed by a 20% decrease returns to the original",
+          "correct": "A 20% increase on 100 gives 120. A 20% decrease on 120 gives 96, not 100. Percent changes are not symmetric."
+        },
+        {
+          "wrong": "to find 15% tip, divide by 15",
+          "correct": "To find 15% tip, multiply by 0.15: $40 x 0.15 = $6 tip."
+        },
+        {
+          "wrong": "two successive 50% discounts give 100% off (free)",
+          "correct": "First 50% off $100 = $50. Second 50% off $50 = $25. You pay $25, not $0."
+        },
+        {
+          "wrong": "a percent can never be more than 100%",
+          "correct": "Percents over 100% are valid: 150% of 40 = 60. Sales can grow 200%, meaning they tripled."
+        },
+        {
+          "wrong": "to find the original price before a 25% discount, add 25% to the sale price",
+          "correct": "If sale price is $75 after 25% off, the original is $75 / 0.75 = $100. Adding 25% of $75 gives $93.75, which is wrong."
+        },
+        {
+          "wrong": "10% of a number is found by moving the decimal two places left",
+          "correct": "10% means dividing by 10, so move the decimal one place left. 10% of 250 = 25, not 2.5."
+        }
+      ]
+    },
+    "ratios_proportions": {
+      "keywords": [
+        "ratio",
+        "proportion",
+        "rate",
+        "unit rate",
+        "scale",
+        "equivalent ratio",
+        "cross multiply",
+        "proportional"
+      ],
+      "facts": [
+        {
+          "statement": "A ratio compares two quantities: the ratio of 3 to 5 can be written as 3:5, 3/5, or '3 to 5'",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A proportion is an equation stating that two ratios are equal: 1/2 = 3/6",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A unit rate is a ratio with a denominator of 1: if 6 apples cost $3, the unit rate is $0.50 per apple",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Cross multiplication solves proportions: if a/b = c/d, then a x d = b x c",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Speed is a rate: distance divided by time. Traveling 150 miles in 3 hours = 50 mph",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Equivalent ratios are found by multiplying or dividing both parts by the same number: 2:3 = 4:6 = 6:9",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "A scale on a map means a ratio between the map distance and real distance: scale 1:100 means 1 cm on map = 100 cm in reality",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "In a proportional relationship, the ratio between the two quantities stays constant: y/x = k (constant of proportionality)",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "A proportion can be solved by finding the missing value: 2/5 = x/15, so x = (2 x 15) / 5 = 6",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "Part-to-whole ratios differ from part-to-part: in 3 red and 5 blue, part-to-part is 3:5, part-to-whole is 3:8 or 5:8",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "the ratio 3:5 is the same as 5:3",
+          "correct": "Order matters in ratios. 3:5 means 3 for every 5, while 5:3 means 5 for every 3."
+        },
+        {
+          "wrong": "a ratio of 3:5 means there are 3 items total",
+          "correct": "A ratio of 3:5 means 3 parts to 5 parts, totaling 8 parts. It describes relative amounts, not absolute quantities."
+        },
+        {
+          "wrong": "to find unit price, multiply cost by quantity",
+          "correct": "Unit price = total cost / quantity. $6 for 3 items = $6/3 = $2 per item."
+        },
+        {
+          "wrong": "doubling a recipe means adding 2 of everything",
+          "correct": "Doubling means multiplying everything by 2. If recipe calls for 1/2 cup, doubling gives 1 cup, not 2 1/2 cups."
+        },
+        {
+          "wrong": "a ratio of 2:3 means 2 out of 3",
+          "correct": "2:3 is a part-to-part ratio meaning 2 parts to 3 parts. The part-to-whole would be 2 out of 5 (or 3 out of 5)."
+        },
+        {
+          "wrong": "to scale a ratio up, add the same number to both parts: 2:3 becomes 4:5",
+          "correct": "To create equivalent ratios, multiply both parts by the same number: 2:3 becomes 4:6 (multiply by 2), not 4:5."
+        }
+      ]
+    },
+    "comparing_fractions": {
+      "keywords": [
+        "compare fractions",
+        "order fractions",
+        "greater than",
+        "less than",
+        "benchmark fractions",
+        "number line",
+        "fraction inequality"
+      ],
+      "facts": [
+        {
+          "statement": "To compare fractions with different denominators, find a common denominator and then compare the numerators",
+          "grade_min": 3,
+          "grade_max": 12
+        },
+        {
+          "statement": "Benchmark fractions like 0, 1/4, 1/2, 3/4, and 1 help estimate and compare other fractions quickly",
+          "grade_min": 3,
+          "grade_max": 8
+        },
+        {
+          "statement": "On a number line, fractions increase in value from left to right, just like whole numbers",
+          "grade_min": 2,
+          "grade_max": 8
+        },
+        {
+          "statement": "Any fraction less than 1/2 has a numerator that is less than half its denominator: 3/8 < 1/2 because 3 < 4",
+          "grade_min": 3,
+          "grade_max": 8
+        },
+        {
+          "statement": "When comparing fractions with the same numerator, the fraction with the smaller denominator is larger: 2/3 > 2/5 because thirds are bigger than fifths",
+          "grade_min": 3,
+          "grade_max": 8
+        },
+        {
+          "statement": "To order fractions from least to greatest, convert all fractions to the same denominator, then order by numerator",
+          "grade_min": 4,
+          "grade_max": 8
+        },
+        {
+          "statement": "Any positive fraction is greater than 0 and any fraction with numerator equal to denominator equals 1",
+          "grade_min": 2,
+          "grade_max": 6
+        },
+        {
+          "statement": "Negative fractions are less than zero; -3/4 is less than -1/4 because -3/4 is farther left on the number line",
+          "grade_min": 6,
+          "grade_max": 12
+        },
+        {
+          "statement": "To compare a fraction and a decimal, convert both to the same form: is 3/8 or 0.4 larger? 3/8 = 0.375, so 0.4 > 3/8",
+          "grade_min": 4,
+          "grade_max": 8
+        },
+        {
+          "statement": "Between any two fractions, there are infinitely many other fractions: between 1/3 and 1/2, you can find 5/12, 2/5, 3/7, and more",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "3/5 > 4/7 because 5 < 7",
+          "correct": "You cannot compare by denominator alone. Convert: 3/5 = 21/35 and 4/7 = 20/35, so 3/5 > 4/7, but the reasoning must use common denominators."
+        },
+        {
+          "wrong": "1/3 = 1/4 because they are both one piece",
+          "correct": "1/3 > 1/4 because dividing something into 3 equal parts gives bigger pieces than dividing into 4 equal parts."
+        },
+        {
+          "wrong": "2/6 > 1/3 because 2 > 1 and 6 > 3",
+          "correct": "2/6 = 1/3 — they are equivalent fractions. You must simplify or find common denominators to compare."
+        },
+        {
+          "wrong": "fractions are always less than 1",
+          "correct": "Improper fractions like 5/3 or 7/4 are greater than 1. A fraction is less than 1 only if the numerator is less than the denominator."
+        }
+      ]
+    },
+    "mixed_number_operations": {
+      "keywords": [
+        "mixed number",
+        "add mixed numbers",
+        "subtract mixed numbers",
+        "multiply mixed numbers",
+        "divide mixed numbers",
+        "improper fraction",
+        "regrouping"
+      ],
+      "facts": [
+        {
+          "statement": "To add mixed numbers, add the whole number parts and fraction parts separately, then simplify: 2 1/4 + 3 1/4 = 5 2/4 = 5 1/2",
+          "grade_min": 4,
+          "grade_max": 8
+        },
+        {
+          "statement": "When adding mixed numbers and the fraction sum exceeds 1, regroup: 2 3/4 + 1 3/4 = 3 6/4 = 3 + 1 2/4 = 4 1/2",
+          "grade_min": 4,
+          "grade_max": 8
+        },
+        {
+          "statement": "To subtract mixed numbers when the fraction part of the subtrahend is larger, borrow 1 from the whole number: 5 1/4 - 2 3/4 requires regrouping 5 1/4 as 4 5/4",
+          "grade_min": 4,
+          "grade_max": 8
+        },
+        {
+          "statement": "To multiply mixed numbers, convert each to an improper fraction first, then multiply: 1 1/2 x 2 2/3 = 3/2 x 8/3 = 24/6 = 4",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "To divide mixed numbers, convert each to an improper fraction and then multiply by the reciprocal of the divisor",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "3 1/2 as an improper fraction is 7/2 because (3 x 2 + 1) / 2 = 7/2",
+          "grade_min": 4,
+          "grade_max": 8
+        },
+        {
+          "statement": "To convert 17/5 to a mixed number: 17 / 5 = 3 remainder 2, so 17/5 = 3 2/5",
+          "grade_min": 4,
+          "grade_max": 8
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "to multiply mixed numbers, multiply the whole numbers and fractions separately: 1 1/2 x 2 1/3 = 2 1/6",
+          "correct": "You must convert to improper fractions first: 1 1/2 x 2 1/3 = 3/2 x 7/3 = 21/6 = 3 1/2, not 2 1/6."
+        },
+        {
+          "wrong": "5 1/4 - 2 3/4 = 3 2/4 because 5-2=3 and you just subtract fractions",
+          "correct": "Since 1/4 < 3/4, you must borrow: 5 1/4 = 4 5/4. Then 4 5/4 - 2 3/4 = 2 2/4 = 2 1/2."
+        },
+        {
+          "wrong": "2 3/5 as an improper fraction is 2 x 5 + 3 = 13, so it is 13/3",
+          "correct": "Keep the original denominator: 2 3/5 = (2 x 5 + 3)/5 = 13/5, not 13/3."
+        },
+        {
+          "wrong": "to add mixed numbers, you can just add the whole parts and ignore the fractions",
+          "correct": "You must add both the whole number parts AND the fraction parts: 2 1/3 + 1 1/3 = 3 2/3, not 3."
+        },
+        {
+          "wrong": "3 1/2 / 1 1/4 = 3 because you just divide the whole numbers",
+          "correct": "Convert to improper fractions: 7/2 / 5/4 = 7/2 x 4/5 = 28/10 = 2 4/5, not 3."
+        }
+      ]
+    },
+    "decimal_operations": {
+      "keywords": [
+        "add decimals",
+        "subtract decimals",
+        "multiply decimals",
+        "divide decimals",
+        "decimal place value",
+        "rounding decimals",
+        "estimating decimals"
+      ],
+      "facts": [
+        {
+          "statement": "When adding or subtracting decimals, always align the decimal points vertically before computing",
+          "grade_min": 4,
+          "grade_max": 8
+        },
+        {
+          "statement": "When multiplying decimals, multiply as whole numbers, then place the decimal point so the product has the same total number of decimal places as both factors combined",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "1.5 x 2.3 = 3.45 because 15 x 23 = 345, and there are 2 total decimal places in the factors",
+          "grade_min": 5,
+          "grade_max": 8
+        },
+        {
+          "statement": "To divide by a decimal, multiply both the divisor and dividend by a power of 10 to make the divisor a whole number: 3.6 / 0.4 = 36 / 4 = 9",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Multiplying a decimal by 10 moves the decimal point one place to the right; by 100, two places; by 1000, three places",
+          "grade_min": 4,
+          "grade_max": 8
+        },
+        {
+          "statement": "Dividing a decimal by 10 moves the decimal point one place to the left; by 100, two places; by 1000, three places",
+          "grade_min": 4,
+          "grade_max": 8
+        },
+        {
+          "statement": "When rounding decimals, look at the digit to the right of the rounding place: if it is 5 or more, round up; if less than 5, round down",
+          "grade_min": 4,
+          "grade_max": 8
+        },
+        {
+          "statement": "Estimating with decimals: round each number to a convenient value first. To estimate 3.87 x 4.12, round to 4 x 4 = 16",
+          "grade_min": 4,
+          "grade_max": 8
+        },
+        {
+          "statement": "Multiplying any number by 0.1 is the same as dividing it by 10: 45 x 0.1 = 4.5",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Dividing a number by 0.5 is the same as multiplying it by 2: 7 / 0.5 = 14",
+          "grade_min": 5,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "1.5 x 2.3 = 34.5",
+          "correct": "Count total decimal places in factors (1 + 1 = 2). 15 x 23 = 345, place decimal to get 3.45, not 34.5."
+        },
+        {
+          "wrong": "when dividing 4.8 / 0.6, just ignore the decimals and do 48/6",
+          "correct": "The method works (4.8/0.6 = 48/6 = 8), but you must move both decimal points the same number of places, not just ignore them."
+        },
+        {
+          "wrong": "2.5 + 3.15 = 5.40 because you line up the last digits",
+          "correct": "Align decimal points: 2.50 + 3.15 = 5.65. Do not line up the rightmost digits."
+        },
+        {
+          "wrong": "4.7 rounded to the nearest whole number is 4",
+          "correct": "4.7 rounds to 5 because the tenths digit (7) is 5 or greater."
+        }
+      ]
+    },
+    "fraction_decimal_percent_conversions": {
+      "keywords": [
+        "convert fraction to decimal",
+        "convert decimal to fraction",
+        "convert fraction to percent",
+        "convert percent to fraction",
+        "equivalent forms",
+        "fraction decimal percent"
+      ],
+      "facts": [
+        {
+          "statement": "The three equivalent forms — fraction, decimal, percent — all represent the same value: 3/4 = 0.75 = 75%",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "To convert a fraction to a decimal, divide the numerator by the denominator: 5/8 = 0.625",
+          "grade_min": 4,
+          "grade_max": 12
+        },
+        {
+          "statement": "To convert a decimal to a percent, multiply by 100 and add a percent sign: 0.35 = 35%",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "To convert a percent to a fraction, write the percent over 100 and simplify: 60% = 60/100 = 3/5",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Common equivalents: 1/8 = 0.125 = 12.5%, 3/8 = 0.375 = 37.5%, 5/8 = 0.625 = 62.5%, 7/8 = 0.875 = 87.5%",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "1/6 = 0.1666... = 16.67% (repeating), 5/6 = 0.8333... = 83.33% (repeating)",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "To convert a repeating decimal like 0.333... to a fraction: let x = 0.333..., then 10x = 3.333..., subtract to get 9x = 3, so x = 3/9 = 1/3",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "A fraction in lowest terms produces a terminating decimal only if the denominator's only prime factors are 2 and/or 5",
+          "grade_min": 7,
+          "grade_max": 12
+        },
+        {
+          "statement": "To convert a percent to a decimal, divide by 100 (move decimal two places left): 6.5% = 0.065",
+          "grade_min": 5,
+          "grade_max": 12
+        },
+        {
+          "statement": "Fractions, decimals, and percents can all be placed on the same number line: 1/4, 0.25, and 25% occupy the same point",
+          "grade_min": 4,
+          "grade_max": 8
+        },
+        {
+          "statement": "To convert a mixed number to a percent, first convert to an improper fraction, then to a decimal, then to a percent: 1 1/4 = 5/4 = 1.25 = 125%",
+          "grade_min": 6,
+          "grade_max": 12
+        }
+      ],
+      "common_errors": [
+        {
+          "wrong": "to convert 3/8 to a percent, just put 3/8 next to a percent sign: 3/8%",
+          "correct": "First divide: 3/8 = 0.375, then multiply by 100: 0.375 x 100 = 37.5%."
+        },
+        {
+          "wrong": "0.25% is the same as 1/4",
+          "correct": "0.25% = 0.0025 = 25/10000 = 1/400. The fraction 1/4 equals 25%, not 0.25%."
+        },
+        {
+          "wrong": "to convert 0.6 to a fraction, write 6/10 and that is the final answer",
+          "correct": "6/10 is correct but should be simplified: 6/10 = 3/5."
+        },
+        {
+          "wrong": "1/3 = 0.33 exactly",
+          "correct": "1/3 = 0.333... (repeating). 0.33 = 33/100, which is slightly less than 1/3."
+        }
+      ]
+    }
+  }
+}

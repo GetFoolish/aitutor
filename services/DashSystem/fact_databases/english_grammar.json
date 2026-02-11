@@ -1,0 +1,300 @@
+{
+  "meta": {
+    "version": 2,
+    "subject": "english",
+    "last_updated": "2026-02-11",
+    "description": "Grammar facts: parts of speech, punctuation rules, sentence types, subject-verb agreement, verb tenses, pronouns, clauses"
+  },
+  "facts_by_topic": {
+    "parts_of_speech": {
+      "keywords": [
+        "noun", "verb", "adjective", "adverb", "preposition", "conjunction",
+        "interjection", "article", "part of speech", "pronoun", "common noun",
+        "proper noun", "abstract noun", "collective noun"
+      ],
+      "facts": [
+        {"statement": "There are eight parts of speech: noun, pronoun, verb, adjective, adverb, preposition, conjunction, interjection", "grade_min": 3, "grade_max": 12},
+        {"statement": "A noun names a person, place, thing, or idea", "grade_min": 2, "grade_max": 12},
+        {"statement": "A verb expresses an action or state of being", "grade_min": 2, "grade_max": 12},
+        {"statement": "An adjective modifies (describes) a noun or pronoun", "grade_min": 2, "grade_max": 12},
+        {"statement": "An adverb modifies a verb, adjective, or another adverb, often ending in -ly", "grade_min": 3, "grade_max": 12},
+        {"statement": "A preposition shows the relationship between a noun/pronoun and another word (in, on, at, by, for, with, about, between)", "grade_min": 3, "grade_max": 12},
+        {"statement": "A conjunction connects words, phrases, or clauses (and, but, or, so, yet, for, nor)", "grade_min": 3, "grade_max": 12},
+        {"statement": "An interjection expresses emotion and is often followed by an exclamation point (wow!, ouch!, hey!)", "grade_min": 3, "grade_max": 12},
+        {"statement": "A pronoun takes the place of a noun (he, she, it, they, we, us, them, who, which)", "grade_min": 2, "grade_max": 12},
+        {"statement": "A common noun is a general name (city, dog), while a proper noun names a specific person, place, or thing (Chicago, Rover) and is always capitalized", "grade_min": 2, "grade_max": 12},
+        {"statement": "An abstract noun names an idea, quality, or state that cannot be physically touched (freedom, happiness, justice, love)", "grade_min": 4, "grade_max": 12},
+        {"statement": "A collective noun names a group (team, flock, audience, committee)", "grade_min": 3, "grade_max": 12},
+        {"statement": "Articles (a, an, the) are a type of adjective; 'a' and 'an' are indefinite articles, 'the' is the definite article", "grade_min": 2, "grade_max": 12},
+        {"statement": "Use 'an' before words that begin with a vowel sound (an apple, an hour) and 'a' before consonant sounds (a dog, a university)", "grade_min": 2, "grade_max": 12},
+        {"statement": "Coordinating conjunctions (FANBOYS: for, and, nor, but, or, yet, so) join equal grammatical elements", "grade_min": 5, "grade_max": 12},
+        {"statement": "Subordinating conjunctions (because, although, while, if, when, since, until) begin dependent clauses", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "adverbs only modify verbs", "correct": "Adverbs can modify verbs, adjectives, and other adverbs. 'She ran very quickly' - 'very' modifies the adverb 'quickly.'"},
+        {"wrong": "all adverbs end in -ly", "correct": "Many adverbs do not end in -ly: 'fast', 'well', 'never', 'always', 'very', 'here', 'there', 'soon', 'often.'"},
+        {"wrong": "a word can only be one part of speech", "correct": "Many words can function as different parts of speech depending on context. 'Run' can be a verb ('I run') or a noun ('a good run')."},
+        {"wrong": "use 'a' before all words starting with vowel letters", "correct": "Use 'an' based on the SOUND, not the letter. 'An hour' (silent h) but 'a university' (starts with 'yoo' sound)."},
+        {"wrong": "proper nouns are always people's names", "correct": "Proper nouns include specific places (Paris), organizations (NASA), days (Monday), months (January), holidays, and brand names."}
+      ]
+    },
+    "punctuation_rules": {
+      "keywords": [
+        "punctuation", "comma", "period", "semicolon", "colon", "apostrophe",
+        "quotation marks", "dash", "hyphen", "ellipsis", "exclamation",
+        "question mark", "parentheses", "comma splice", "run-on"
+      ],
+      "facts": [
+        {"statement": "A period ends a declarative or imperative sentence", "grade_min": 1, "grade_max": 12},
+        {"statement": "A comma separates items in a list, joins independent clauses with a conjunction, and sets off introductory elements", "grade_min": 3, "grade_max": 12},
+        {"statement": "A semicolon joins two related independent clauses without a conjunction", "grade_min": 6, "grade_max": 12},
+        {"statement": "A colon introduces a list, explanation, or elaboration that follows an independent clause", "grade_min": 6, "grade_max": 12},
+        {"statement": "An apostrophe shows possession (dog's bone) or marks contractions (don't, isn't)", "grade_min": 3, "grade_max": 12},
+        {"statement": "Quotation marks enclose direct speech or titles of short works like poems, short stories, and articles", "grade_min": 3, "grade_max": 12},
+        {"statement": "The Oxford (serial) comma is the comma before 'and' in a list of three or more items, and its use is a matter of style", "grade_min": 5, "grade_max": 12},
+        {"statement": "A hyphen joins compound adjectives before a noun (well-known author), while an em dash sets off parenthetical information", "grade_min": 7, "grade_max": 12},
+        {"statement": "A comma splice is the error of joining two independent clauses with only a comma (no conjunction); it can be fixed with a period, semicolon, or adding a conjunction", "grade_min": 6, "grade_max": 12},
+        {"statement": "A run-on sentence occurs when two independent clauses are joined without proper punctuation or a conjunction", "grade_min": 5, "grade_max": 12},
+        {"statement": "In American English, periods and commas go inside quotation marks; semicolons and colons go outside", "grade_min": 6, "grade_max": 12},
+        {"statement": "An ellipsis (...) indicates omitted words in a quotation or a trailing off in speech", "grade_min": 6, "grade_max": 12},
+        {"statement": "For singular possessives, add 's (the cat's toy); for plural possessives ending in s, add only an apostrophe (the dogs' park)", "grade_min": 3, "grade_max": 12},
+        {"statement": "Parentheses enclose supplementary information that could be removed without changing the sentence's meaning", "grade_min": 5, "grade_max": 12},
+        {"statement": "Use a comma after introductory words, phrases, or clauses: 'However, I disagree.' 'After dinner, we left.'", "grade_min": 4, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "its and it's mean the same thing", "correct": "'Its' (no apostrophe) is possessive: 'The dog wagged its tail.' 'It's' is a contraction of 'it is' or 'it has.'"},
+        {"wrong": "you always put a comma before 'and'", "correct": "A comma before 'and' depends on context. Use one when joining independent clauses or in a serial list, but not when joining just two items."},
+        {"wrong": "a semicolon works like a comma", "correct": "A semicolon joins two independent clauses. A comma alone between two independent clauses creates a comma splice error."},
+        {"wrong": "apostrophes make words plural", "correct": "Apostrophes show possession or contractions, not plurals. 'Dogs' is plural; 'dog's' is possessive."},
+        {"wrong": "you can use a comma to join any two sentences", "correct": "Two independent clauses need more than a comma. Use a comma + conjunction, a semicolon, or a period. A comma alone creates a comma splice."},
+        {"wrong": "a colon can follow any word", "correct": "A colon must follow an independent clause. 'My favorites are: red, blue, green' is wrong; 'My favorites are red, blue, and green' or 'I have three favorites: red, blue, and green.'"}
+      ]
+    },
+    "sentence_types": {
+      "keywords": [
+        "declarative", "interrogative", "imperative", "exclamatory",
+        "simple sentence", "compound sentence", "complex sentence",
+        "compound-complex", "independent clause", "dependent clause",
+        "fragment", "run-on", "subject", "predicate"
+      ],
+      "facts": [
+        {"statement": "A declarative sentence makes a statement and ends with a period", "grade_min": 2, "grade_max": 12},
+        {"statement": "An interrogative sentence asks a question and ends with a question mark", "grade_min": 2, "grade_max": 12},
+        {"statement": "An imperative sentence gives a command or request and often has an implied subject 'you'", "grade_min": 3, "grade_max": 12},
+        {"statement": "An exclamatory sentence expresses strong emotion and ends with an exclamation point", "grade_min": 2, "grade_max": 12},
+        {"statement": "A simple sentence contains one independent clause", "grade_min": 3, "grade_max": 12},
+        {"statement": "A compound sentence contains two or more independent clauses joined by a conjunction or semicolon", "grade_min": 4, "grade_max": 12},
+        {"statement": "A complex sentence contains one independent clause and one or more dependent clauses", "grade_min": 5, "grade_max": 12},
+        {"statement": "A compound-complex sentence has at least two independent clauses and at least one dependent clause", "grade_min": 7, "grade_max": 12},
+        {"statement": "An independent clause has a subject and predicate and can stand alone as a sentence", "grade_min": 4, "grade_max": 12},
+        {"statement": "A dependent (subordinate) clause has a subject and predicate but cannot stand alone; it begins with a subordinating conjunction or relative pronoun", "grade_min": 5, "grade_max": 12},
+        {"statement": "A sentence fragment is an incomplete sentence that lacks a subject, a predicate, or does not express a complete thought", "grade_min": 4, "grade_max": 12},
+        {"statement": "Every complete sentence must have a subject (who or what) and a predicate (what the subject does or is)", "grade_min": 2, "grade_max": 12},
+        {"statement": "The subject of a sentence is who or what the sentence is about; the predicate contains the verb and tells what the subject does", "grade_min": 2, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "a long sentence is always a compound or complex sentence", "correct": "Sentence classification depends on clause structure, not length. A long sentence with one subject-verb pair is still simple."},
+        {"wrong": "imperative sentences always end with exclamation points", "correct": "Imperative sentences can end with periods (Please sit down.) or exclamation points (Stop!) depending on the tone."},
+        {"wrong": "a dependent clause can stand alone as a sentence", "correct": "A dependent clause cannot stand alone; it needs an independent clause to form a complete sentence. Standing alone, it is a fragment."},
+        {"wrong": "starting a sentence with 'because' always makes a fragment", "correct": "'Because' starts a dependent clause, which is fine if attached to an independent clause: 'Because it rained, we stayed inside.'"},
+        {"wrong": "a compound sentence must use 'and'", "correct": "Compound sentences can use any coordinating conjunction (for, and, nor, but, or, yet, so) or a semicolon."}
+      ]
+    },
+    "subject_verb_agreement": {
+      "keywords": [
+        "subject", "verb", "agreement", "singular", "plural", "collective noun",
+        "compound subject", "indefinite pronoun", "inverted sentence"
+      ],
+      "facts": [
+        {"statement": "A singular subject takes a singular verb; a plural subject takes a plural verb: 'The dog runs' (singular) vs. 'The dogs run' (plural)", "grade_min": 3, "grade_max": 12},
+        {"statement": "Compound subjects joined by 'and' take a plural verb: 'Tom and Jerry are friends'", "grade_min": 4, "grade_max": 12},
+        {"statement": "Compound subjects joined by 'or' or 'nor' agree with the subject closest to the verb: 'Neither the cats nor the dog is outside'", "grade_min": 6, "grade_max": 12},
+        {"statement": "Collective nouns (team, family, group) usually take a singular verb when acting as one unit: 'The team is winning'", "grade_min": 5, "grade_max": 12},
+        {"statement": "Indefinite pronouns like 'everyone,' 'each,' 'nobody,' and 'anyone' take singular verbs: 'Everyone is here'", "grade_min": 5, "grade_max": 12},
+        {"statement": "Indefinite pronouns like 'both,' 'few,' 'many,' and 'several' take plural verbs: 'Many are called'", "grade_min": 5, "grade_max": 12},
+        {"statement": "Words between the subject and verb (prepositional phrases) do not affect agreement: 'The box of books is heavy' (box is singular)", "grade_min": 5, "grade_max": 12},
+        {"statement": "In questions and sentences beginning with 'there' or 'here,' the subject follows the verb: 'There are many reasons'", "grade_min": 5, "grade_max": 12},
+        {"statement": "The pronoun 'I' takes special verb forms: 'I am' (not 'I is'), 'I was' (not 'I were'), 'I have' (not 'I has')", "grade_min": 2, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "'everyone' and 'everybody' take plural verbs because they refer to many people", "correct": "'Everyone' and 'everybody' are grammatically singular: 'Everyone is invited' (not 'Everyone are invited')."},
+        {"wrong": "'the team are' is correct because there are multiple players", "correct": "In American English, collective nouns like 'team' typically take a singular verb: 'The team is playing well.'"},
+        {"wrong": "the verb agrees with the closest noun", "correct": "The verb agrees with the subject, not the nearest noun. 'The box of books IS heavy' (subject is 'box,' not 'books')."},
+        {"wrong": "'there's' can be used with plural nouns", "correct": "'There's' means 'there is' (singular). For plurals, use 'there are': 'There are many options' (not 'There's many options')."}
+      ]
+    },
+    "verb_tenses": {
+      "keywords": [
+        "tense", "past tense", "present tense", "future tense", "irregular verb",
+        "regular verb", "progressive", "perfect", "helping verb", "auxiliary",
+        "participle", "gerund", "infinitive"
+      ],
+      "facts": [
+        {"statement": "The three main tenses are past, present, and future; each has simple, progressive, and perfect forms", "grade_min": 3, "grade_max": 12},
+        {"statement": "Regular verbs form the past tense by adding -ed: walk/walked, play/played, talk/talked", "grade_min": 2, "grade_max": 12},
+        {"statement": "Irregular verbs do not follow the -ed pattern: go/went, eat/ate, see/saw, run/ran, write/wrote, take/took", "grade_min": 3, "grade_max": 12},
+        {"statement": "The present progressive tense uses 'am/is/are' + verb-ing to show ongoing action: 'She is running'", "grade_min": 3, "grade_max": 12},
+        {"statement": "The past progressive tense uses 'was/were' + verb-ing to show ongoing past action: 'He was sleeping'", "grade_min": 4, "grade_max": 12},
+        {"statement": "The present perfect tense uses 'has/have' + past participle: 'I have eaten' (action completed at an unspecified past time)", "grade_min": 5, "grade_max": 12},
+        {"statement": "The past perfect tense uses 'had' + past participle: 'She had left before I arrived' (one past action before another)", "grade_min": 6, "grade_max": 12},
+        {"statement": "The future tense uses 'will' + verb: 'They will arrive tomorrow'", "grade_min": 3, "grade_max": 12},
+        {"statement": "Helping (auxiliary) verbs include: am, is, are, was, were, have, has, had, do, does, did, will, shall, would, could, should, may, might, must, can", "grade_min": 3, "grade_max": 12},
+        {"statement": "A gerund is a verb form ending in -ing used as a noun: 'Swimming is fun' (swimming is the subject)", "grade_min": 6, "grade_max": 12},
+        {"statement": "An infinitive is 'to' + base verb: 'to run,' 'to eat,' 'to learn.' It can function as a noun, adjective, or adverb", "grade_min": 6, "grade_max": 12},
+        {"statement": "Common irregular past tenses: be/was-were, have/had, do/did, say/said, make/made, know/knew, think/thought, come/came, give/gave, find/found", "grade_min": 3, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "all past tenses are formed by adding -ed", "correct": "Only regular verbs add -ed. Irregular verbs change form: go/went, eat/ate, swim/swam, bring/brought. Irregulars must be memorized."},
+        {"wrong": "'I seen' is correct past tense", "correct": "'Seen' is the past participle and needs a helping verb: 'I have seen' or 'I saw.' 'I seen' is nonstandard."},
+        {"wrong": "'I could of gone' is correct", "correct": "The correct form is 'could have gone' (contracted: could've). 'Could of' is a common spelling error based on how 'could've' sounds."},
+        {"wrong": "you can mix tenses freely in the same paragraph", "correct": "Verb tenses should be consistent within a passage. Shift tenses only when the time frame actually changes."},
+        {"wrong": "'he don't' is correct grammar", "correct": "The correct form is 'he doesn't' (does not). 'Don't' is used with I, you, we, they. 'Doesn't' is used with he, she, it."}
+      ]
+    },
+    "pronoun_usage": {
+      "keywords": [
+        "pronoun", "subject pronoun", "object pronoun", "possessive pronoun",
+        "antecedent", "who", "whom", "whose", "reflexive", "relative pronoun"
+      ],
+      "facts": [
+        {"statement": "Subject pronouns are used as the subject of a sentence: I, you, he, she, it, we, they", "grade_min": 3, "grade_max": 12},
+        {"statement": "Object pronouns receive the action or follow a preposition: me, you, him, her, it, us, them", "grade_min": 3, "grade_max": 12},
+        {"statement": "Possessive pronouns show ownership: my/mine, your/yours, his, her/hers, its, our/ours, their/theirs", "grade_min": 3, "grade_max": 12},
+        {"statement": "A pronoun's antecedent is the noun it refers to; pronouns must agree in number and gender with their antecedent", "grade_min": 5, "grade_max": 12},
+        {"statement": "'Who' is a subject pronoun (Who is calling?); 'whom' is an object pronoun (To whom did you speak?)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Reflexive pronouns reflect back to the subject: myself, yourself, himself, herself, itself, ourselves, themselves", "grade_min": 4, "grade_max": 12},
+        {"statement": "Relative pronouns (who, whom, whose, which, that) introduce relative clauses that modify nouns", "grade_min": 6, "grade_max": 12},
+        {"statement": "Use 'I' as a subject and 'me' as an object. Test by removing the other person: 'She and I went' (I went), 'Give it to him and me' (give it to me)", "grade_min": 4, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "'me and him went to the store' is correct", "correct": "Subject pronouns are needed: 'He and I went to the store.' Test: 'I went' (not 'me went') and 'he went' (not 'him went')."},
+        {"wrong": "'between you and I' is correct because 'I' sounds more formal", "correct": "'Between' is a preposition, so object pronouns follow: 'between you and me.' 'I' is never used after a preposition."},
+        {"wrong": "'everyone should bring their book' has incorrect agreement", "correct": "While grammatically 'everyone' is singular, using 'their' as a singular pronoun is widely accepted: 'Everyone should bring their book.'"},
+        {"wrong": "'whose' and 'who's' are the same", "correct": "'Whose' is possessive (Whose book is this?). 'Who's' is a contraction of 'who is' (Who's coming?)."}
+      ]
+    },
+    "clauses_and_phrases": {
+      "keywords": [
+        "clause", "phrase", "adjective clause", "adverb clause", "noun clause",
+        "prepositional phrase", "participial phrase", "appositive", "gerund phrase",
+        "infinitive phrase", "relative clause", "restrictive", "nonrestrictive"
+      ],
+      "facts": [
+        {"statement": "A phrase is a group of related words that does not contain both a subject and a verb acting as a predicate", "grade_min": 4, "grade_max": 12},
+        {"statement": "A prepositional phrase begins with a preposition and ends with a noun or pronoun (the object): 'in the park,' 'before noon'", "grade_min": 4, "grade_max": 12},
+        {"statement": "An adjective clause (relative clause) modifies a noun and usually begins with who, whom, whose, which, or that", "grade_min": 6, "grade_max": 12},
+        {"statement": "An adverb clause modifies a verb, adjective, or adverb and begins with a subordinating conjunction (because, when, although, if)", "grade_min": 6, "grade_max": 12},
+        {"statement": "A noun clause functions as a noun in a sentence: 'What she said surprised everyone' (subject); 'I know that he is right' (object)", "grade_min": 7, "grade_max": 12},
+        {"statement": "A participial phrase uses a present (-ing) or past (-ed/-en) participle to modify a noun: 'Running quickly, the dog caught the ball'", "grade_min": 7, "grade_max": 12},
+        {"statement": "An appositive is a noun or phrase that renames or explains another noun right beside it: 'My brother, a doctor, lives in Boston'", "grade_min": 5, "grade_max": 12},
+        {"statement": "A gerund phrase includes a gerund (-ing verb used as noun) and its modifiers: 'Playing chess requires patience'", "grade_min": 7, "grade_max": 12},
+        {"statement": "An infinitive phrase includes an infinitive (to + verb) and its modifiers: 'To win the game was her only goal'", "grade_min": 7, "grade_max": 12},
+        {"statement": "A restrictive (essential) clause is necessary to identify the noun and uses no commas: 'The student who studied passed'", "grade_min": 7, "grade_max": 12},
+        {"statement": "A nonrestrictive (nonessential) clause adds extra information and is set off by commas: 'My sister, who lives in Texas, visited'", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "all -ing words are gerunds", "correct": "An -ing word is a gerund only when used as a noun. 'Swimming is fun' (gerund/noun). 'The swimming fish' (adjective/participle). 'She is swimming' (verb/progressive)."},
+        {"wrong": "a phrase and a clause are the same thing", "correct": "A clause has a subject and a verb; a phrase does not. 'After dinner' is a phrase. 'After we ate dinner' is a clause."},
+        {"wrong": "nonrestrictive clauses don't need commas", "correct": "Nonrestrictive (nonessential) clauses MUST be set off by commas: 'My dog, who is very old, sleeps all day.' Without commas, it implies you have multiple dogs."},
+        {"wrong": "you can dangle a participial phrase without consequence", "correct": "A dangling modifier lacks a clear subject: 'Running to class, the bell rang' is wrong (the bell wasn't running). Fix: 'Running to class, I heard the bell ring.'"}
+      ]
+    },
+    "active_passive_voice": {
+      "keywords": [
+        "active voice", "passive voice", "voice", "by phrase", "agent",
+        "transitive verb", "direct object", "past participle"
+      ],
+      "facts": [
+        {"statement": "In active voice, the subject performs the action: 'The cat chased the mouse'", "grade_min": 5, "grade_max": 12},
+        {"statement": "In passive voice, the subject receives the action: 'The mouse was chased by the cat'", "grade_min": 5, "grade_max": 12},
+        {"statement": "Passive voice uses a form of 'be' (is, was, were, been) + past participle: 'The cake was eaten'", "grade_min": 5, "grade_max": 12},
+        {"statement": "Active voice is generally preferred in writing because it is more direct and concise", "grade_min": 5, "grade_max": 12},
+        {"statement": "Passive voice is appropriate when the actor is unknown, unimportant, or obvious: 'The window was broken' (unknown actor)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Scientific writing often uses passive voice: 'The solution was heated to 100 degrees'", "grade_min": 7, "grade_max": 12},
+        {"statement": "Only transitive verbs (verbs that take a direct object) can be made passive; intransitive verbs like 'sleep' and 'arrive' cannot", "grade_min": 7, "grade_max": 12},
+        {"statement": "The 'by phrase' in passive voice identifies the agent (doer): 'The book was written by the author'", "grade_min": 6, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "passive voice is always wrong", "correct": "Passive voice is a valid grammatical construction. It's preferred when the actor is unknown, when focusing on the action/result, or in scientific writing."},
+        {"wrong": "any sentence with 'was' is passive voice", "correct": "'Was' can be a linking verb (He was happy), past progressive (He was running), or passive (He was chased). Only 'was + past participle' with a received action is passive."},
+        {"wrong": "'The dog is sleeping' is passive because it uses 'is + -ing'", "correct": "'Is sleeping' is present progressive (active voice). Passive requires 'is + past participle': 'The dog is walked every morning.'"},
+        {"wrong": "passive voice always needs a 'by' phrase", "correct": "The 'by' phrase is optional and often omitted: 'Mistakes were made' is passive without naming who made them."}
+      ]
+    },
+    "parallel_structure": {
+      "keywords": [
+        "parallel structure", "parallelism", "correlative conjunctions",
+        "lists", "comparisons", "not only but also", "either or", "consistency"
+      ],
+      "facts": [
+        {"statement": "Parallel structure means using the same grammatical form for items in a series: 'She likes reading, writing, and painting' (all gerunds)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Correlative conjunctions (either/or, neither/nor, not only/but also, both/and) require parallel structure on both sides", "grade_min": 7, "grade_max": 12},
+        {"statement": "Comparisons should use parallel structure: 'She prefers swimming to running' (not 'swimming to run')", "grade_min": 6, "grade_max": 12},
+        {"statement": "In lists, all items should be the same part of speech or structure: nouns with nouns, phrases with phrases, clauses with clauses", "grade_min": 6, "grade_max": 12},
+        {"statement": "Faulty parallelism occurs when items in a series shift grammatical form: 'I like to swim, running, and play tennis' (mixes infinitive, gerund, and infinitive)", "grade_min": 6, "grade_max": 12},
+        {"statement": "Parallel structure applies to headings, bullet points, and outlines in formal writing for clarity and consistency", "grade_min": 7, "grade_max": 12},
+        {"statement": "With 'not only...but also,' both parts must have the same structure: 'She not only sings but also dances' (both verbs)", "grade_min": 7, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "mixing verb forms in a list is acceptable if the meaning is clear", "correct": "Correct parallelism requires consistent form: 'I enjoy reading, writing, and painting' (all gerunds), not 'I enjoy reading, to write, and painting.'"},
+        {"wrong": "'either you apologize or leaving' is correct", "correct": "Correlative conjunctions need parallel forms: 'Either you apologize or you leave' (both clauses) or 'Either apologize or leave' (both imperatives)."},
+        {"wrong": "parallelism only matters in formal writing", "correct": "Parallelism improves clarity in all writing. 'The dog ran, jumped, and was swimming' is awkward even in casual writing. Fix: 'ran, jumped, and swam.'"}
+      ]
+    },
+    "commonly_confused_words": {
+      "keywords": [
+        "their there they're", "your you're", "to too two", "affect effect",
+        "then than", "accept except", "lose loose", "weather whether",
+        "homophone", "commonly confused"
+      ],
+      "facts": [
+        {"statement": "'Their' is possessive (their house), 'there' indicates place (over there), 'they're' is a contraction of 'they are'", "grade_min": 3, "grade_max": 12},
+        {"statement": "'Your' is possessive (your book), 'you're' is a contraction of 'you are' (you're welcome)", "grade_min": 3, "grade_max": 12},
+        {"statement": "'To' is a preposition or infinitive marker, 'too' means 'also' or 'excessively,' 'two' is the number 2", "grade_min": 2, "grade_max": 12},
+        {"statement": "'Affect' is usually a verb meaning to influence; 'effect' is usually a noun meaning the result: 'The rain affected the game. The effect was a delay.'", "grade_min": 5, "grade_max": 12},
+        {"statement": "'Then' refers to time or sequence; 'than' is used for comparisons: 'First we ate, then we left. She is taller than her sister.'", "grade_min": 4, "grade_max": 12},
+        {"statement": "'Accept' means to receive or agree; 'except' means to exclude: 'I accept the invitation. Everyone came except Maria.'", "grade_min": 4, "grade_max": 12},
+        {"statement": "'Lose' is a verb meaning to misplace or fail to win; 'loose' is an adjective meaning not tight: 'Don't lose your keys. The knot is loose.'", "grade_min": 3, "grade_max": 12},
+        {"statement": "'Weather' refers to atmospheric conditions; 'whether' introduces alternatives: 'Check the weather. I don't know whether to go.'", "grade_min": 4, "grade_max": 12},
+        {"statement": "'Lie' means to recline (lie, lay, lain); 'lay' means to put down (lay, laid, laid): 'I lie on the bed. I lay the book on the table.'", "grade_min": 5, "grade_max": 12},
+        {"statement": "'Farther' refers to physical distance; 'further' refers to degree or extent: 'We walked farther. Let's discuss this further.'", "grade_min": 6, "grade_max": 12},
+        {"statement": "'Who' is a subject pronoun; 'whom' is an object pronoun. Test: replace with he/him. 'Who called?' (He called.) 'To whom?' (To him.)", "grade_min": 6, "grade_max": 12},
+        {"statement": "'Less' is for uncountable nouns (less water); 'fewer' is for countable nouns (fewer cookies): 'Less noise. Fewer students.'", "grade_min": 4, "grade_max": 12},
+        {"statement": "'Principal' is the head of a school or means 'main'; 'principle' is a rule or belief: 'The principal announced a new principle of conduct.'", "grade_min": 4, "grade_max": 12},
+        {"statement": "'Stationary' means not moving; 'stationery' means writing materials: 'The car was stationary. She bought new stationery.'", "grade_min": 4, "grade_max": 12},
+        {"statement": "'Complement' means to complete or enhance; 'compliment' means praise: 'The scarf complements her outfit. She received a compliment.'", "grade_min": 5, "grade_max": 12},
+        {"statement": "'Emigrate' means to leave a country; 'immigrate' means to enter a country: 'She emigrated from Italy and immigrated to America.'", "grade_min": 6, "grade_max": 12},
+        {"statement": "'Allude' means to hint at indirectly; 'elude' means to escape: 'The poem alludes to Greek mythology. The thief eluded capture.'", "grade_min": 7, "grade_max": 12},
+        {"statement": "'Disinterested' means unbiased; 'uninterested' means not interested: 'A judge should be disinterested. The student was uninterested in math.'", "grade_min": 8, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "'their,' 'there,' and 'they're' are interchangeable", "correct": "Each has a specific meaning: 'their' = possessive (their car), 'there' = place (over there), 'they're' = they are (they're coming)."},
+        {"wrong": "'affect' and 'effect' mean the same thing", "correct": "'Affect' is usually a verb (the cold affects my health); 'effect' is usually a noun (the effect of cold). Tip: Affect=Action, Effect=End result."},
+        {"wrong": "'less' and 'fewer' are interchangeable", "correct": "'Fewer' is for things you can count (fewer apples), 'less' is for things you can't count (less sugar). '10 items or fewer' is correct."},
+        {"wrong": "'i.e.' and 'e.g.' mean the same thing", "correct": "'i.e.' means 'that is' (clarifies), 'e.g.' means 'for example' (gives examples). 'She likes citrus, i.e., oranges and lemons' vs 'She likes fruit, e.g., apples and bananas.'"},
+        {"wrong": "'literally' can mean 'figuratively'", "correct": "While informal usage has blurred the line, in standard English 'literally' means 'actually/exactly as stated,' not as an intensifier for exaggeration."},
+        {"wrong": "'lay' and 'lie' are the same verb", "correct": "'Lie' (to recline) is intransitive: lie, lay, lain. 'Lay' (to put down) is transitive and needs an object: lay, laid, laid. 'I lie down' vs 'I lay the book down.'"},
+        {"wrong": "'who' and 'whom' are interchangeable in all cases", "correct": "Use 'who' as a subject (Who is there? = He is there) and 'whom' as an object (To whom? = To him). The he/him test works reliably."},
+        {"wrong": "'good' and 'well' are the same", "correct": "'Good' is an adjective (a good book); 'well' is usually an adverb (she writes well). Exception: 'I feel well' (healthy) vs 'I feel good' (happy)."}
+      ]
+    },
+    "capitalization_rules": {
+      "keywords": [
+        "capitalization", "capitalize", "proper noun", "title", "sentence",
+        "heading", "first word", "I", "title case"
+      ],
+      "facts": [
+        {"statement": "Always capitalize the first word of a sentence, the pronoun 'I,' and proper nouns (specific names of people, places, organizations)", "grade_min": 1, "grade_max": 12},
+        {"statement": "Capitalize days of the week (Monday), months (January), and holidays (Thanksgiving), but not seasons (spring, summer) unless part of a proper name", "grade_min": 2, "grade_max": 12},
+        {"statement": "In titles, capitalize the first and last words and all major words; do not capitalize short prepositions (in, on, at), articles (a, an, the), or short conjunctions (and, but, or) unless they start the title", "grade_min": 4, "grade_max": 12},
+        {"statement": "Capitalize geographic names (Pacific Ocean, Rocky Mountains), but not general geographic terms (the ocean, the mountains) unless part of a proper name", "grade_min": 3, "grade_max": 12},
+        {"statement": "Capitalize titles when used before a name (President Lincoln, Dr. Smith) but not when used alone or after a name (the president, the doctor)", "grade_min": 5, "grade_max": 12}
+      ],
+      "common_errors": [
+        {"wrong": "seasons should be capitalized like months", "correct": "Seasons (spring, summer, fall, winter) are NOT capitalized unless they begin a sentence or are part of a proper name (Spring Break, Winter Olympics)."},
+        {"wrong": "capitalize every word in a title", "correct": "In title case, do NOT capitalize short prepositions (in, on, at, to), articles (a, an, the), or short conjunctions (and, but, or) unless they are the first or last word."},
+        {"wrong": "always capitalize 'mom' and 'dad'", "correct": "Capitalize family titles when used as proper names (I asked Mom) but not when preceded by a possessive (I asked my mom). Test: can you replace it with a name?"}
+      ]
+    }
+  }
+}
