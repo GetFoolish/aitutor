@@ -110,16 +110,16 @@ const AssessmentQuestion: React.FC<Props> = ({
         }
         // Expression: ensure buttonSets and other required fields
         if (w?.type === 'expression' && w.options) {
-          q.question.widgets[key] = {
-            ...w,
-            options: {
-              buttonSets: ['basic'],
-              functions: ['f', 'g', 'h'],
-              times: false,
-              buttonsVisible: 'never',
-              ...w.options,
-            },
-          };
+          const exprOpts = { ...w.options };
+          if (!exprOpts.buttonSets || !Array.isArray(exprOpts.buttonSets) || exprOpts.buttonSets.length === 0) {
+            exprOpts.buttonSets = ['basic'];
+          }
+          if (!exprOpts.functions || !Array.isArray(exprOpts.functions) || exprOpts.functions.length === 0) {
+            exprOpts.functions = ['f', 'g', 'h'];
+          }
+          if (exprOpts.times === undefined) exprOpts.times = false;
+          if (!exprOpts.buttonsVisible) exprOpts.buttonsVisible = 'never';
+          q.question.widgets[key] = { ...w, options: exprOpts };
         }
         // Dropdown: ensure placeholder and static fields
         if (w?.type === 'dropdown' && w.options) {

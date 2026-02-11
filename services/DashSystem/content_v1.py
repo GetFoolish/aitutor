@@ -814,8 +814,12 @@ class ContentV1Engine:
                     return False
 
             elif wtype == "expression":
-                forms = widget.get("options", {}).get("answerForms", [])
+                expr_opts = widget.get("options", {})
+                forms = expr_opts.get("answerForms", [])
                 if not forms or not any(f.get("considered") == "correct" and f.get("value") for f in forms):
+                    return False
+                # Ensure required rendering fields exist (Perseus crashes without these)
+                if not expr_opts.get("buttonSets"):
                     return False
 
             elif wtype == "matcher":
