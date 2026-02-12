@@ -846,6 +846,8 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
         sample_size: Number of questions to return
     """
     ensure_dash_system()
+    if sample_size < 1 or sample_size > 50:
+        raise HTTPException(status_code=422, detail="sample_size must be between 1 and 50")
     # Get user_id and age from JWT token
     jwt_payload = get_jwt_payload(request)
     user_id = jwt_payload.get("sub")
