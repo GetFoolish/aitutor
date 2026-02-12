@@ -321,7 +321,7 @@ const AssessmentQuestion: React.FC<Props> = ({
             marginBottom: '8px',
             fontFamily: 'system-ui, -apple-system, sans-serif'
           }}>
-            QUESTION {questionNumber} OF {totalQuestions}
+            QUESTION {questionNumber} OF {totalQuestions || '?'}
           </div>
           <div style={{
             fontSize: '14px',
@@ -471,6 +471,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         <div style={{ marginBottom: '24px' }}>
           <button
             onClick={handleSubmit}
+            disabled={isAnswered}
             style={{
               width: '100%',
               padding: '20px 32px',
@@ -478,10 +479,11 @@ const AssessmentQuestion: React.FC<Props> = ({
               fontWeight: 900,
               textTransform: 'uppercase',
               letterSpacing: '0.1em',
-              backgroundColor: '#FFD93D',
+              backgroundColor: isAnswered ? '#ccc' : '#FFD93D',
               color: '#000000',
               border: '5px solid #000000',
-              cursor: 'pointer',
+              cursor: isAnswered ? 'not-allowed' : 'pointer',
+              opacity: isAnswered ? 0.5 : 1,
               boxShadow: '4px 4px 0px 0px #000000',
               transition: 'all 0.1s ease-out',
               fontFamily: 'system-ui, -apple-system, sans-serif'

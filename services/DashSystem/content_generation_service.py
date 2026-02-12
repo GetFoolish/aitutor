@@ -254,8 +254,9 @@ class ContentGenerationService:
     def is_near_duplicate(self, skill_id: str, item: dict) -> bool:
         """Check if question is too similar to existing pool questions for this skill."""
         new_text = self._extract_question_text(item)
-        if not new_text:
-            return False
+        if not new_text or len(new_text.strip()) < 10:
+            # Empty/near-empty question text — treat as duplicate to prevent storage
+            return True
 
         existing = self.pool_col.find(
             {"skill_id": skill_id}, {"question_text": 1, "_id": 0}
@@ -666,9 +667,17 @@ class ContentGenerationService:
             )
             return True
         except Exception as e:
+            # Handle duplicate key errors from concurrent inserts (unique index on content_hash)
+            err_str = str(e)
+            if "duplicate key" in err_str.lower() or "E11000" in err_str:
+                audit["stored"] = False
+                audit["rejected_reason"] = "duplicate_key_constraint"
+                self._save_audit(audit)
+                logger.info(f"[CONTENT_GEN] Concurrent duplicate for {skill_id}: {content_hash[:12]}")
+                return False
             logger.warning(f"[CONTENT_GEN] Store failed for {skill_id}: {e}")
             audit["stored"] = False
-            audit["rejected_reason"] = f"store_error: {str(e)}"
+            audit["rejected_reason"] = f"store_error: {err_str}"
             self._save_audit(audit)
             return False
 

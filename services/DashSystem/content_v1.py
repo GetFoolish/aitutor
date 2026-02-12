@@ -65,6 +65,10 @@ class ContentV1Engine:
 
     def _extract_json(self, text: str) -> Dict[str, Any]:
         cleaned = text.strip()
+        # Normalize Unicode smart quotes/dashes that Gemini sometimes returns
+        cleaned = cleaned.replace("\u201c", '"').replace("\u201d", '"')
+        cleaned = cleaned.replace("\u2018", "'").replace("\u2019", "'")
+        cleaned = cleaned.replace("\u2014", "--").replace("\u2013", "-")
         if cleaned.startswith("```"):
             cleaned = re.sub(r"^```(?:json)?", "", cleaned).strip()
             cleaned = re.sub(r"```$", "", cleaned).strip()
@@ -1444,7 +1448,11 @@ class ContentV1Engine:
                 return None
             for part in parts:
                 if getattr(part, 'inline_data', None) is not None:
-                    img_hash = hashlib.sha256(part.inline_data.data).hexdigest()[:16]
+                    img_data = part.inline_data.data
+                    if not img_data:
+                        logger.warning("[IMAGE] Gemini returned inline_data with empty data")
+                        continue
+                    img_hash = hashlib.sha256(img_data).hexdigest()[:16]
                     filename = f"{img_hash}.png"
                     filepath = os.path.join(STATIC_IMAGES_DIR, filename)
                     if not os.path.exists(filepath):
@@ -1511,6 +1519,8 @@ class ContentV1Engine:
             hint_text = response.text.strip() if response.text else None
             if hint_text:
                 logger.info(f"[RESPONSIVE_HINT] Generated hint for skill={skill_name} ({len(hint_text)} chars)")
+            else:
+                logger.warning(f"[RESPONSIVE_HINT] Gemini returned empty response for skill={skill_name}")
             return hint_text
         except Exception as e:
             logger.warning(f"[RESPONSIVE_HINT] Generation failed: {e}")
