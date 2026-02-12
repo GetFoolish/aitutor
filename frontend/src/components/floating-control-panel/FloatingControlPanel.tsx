@@ -112,7 +112,7 @@ function FloatingControlPanel({
   const [sharedMediaOpen, setSharedMediaOpen] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(assessmentMode);
   const [sessionTime, setSessionTime] = useState(0);
   const [popoverPosition, setPopoverPosition] = useState<"left" | "right">("right");
   const [mediaMixerStatus, setMediaMixerStatus] = useState<{

@@ -321,7 +321,7 @@ const AssessmentQuestion: React.FC<Props> = ({
             marginBottom: '8px',
             fontFamily: 'system-ui, -apple-system, sans-serif'
           }}>
-            QUESTION {questionNumber} OF {totalQuestions || '?'}
+            QUESTION {questionNumber || 1} OF {totalQuestions || '?'}
           </div>
           <div style={{
             fontSize: '14px',
