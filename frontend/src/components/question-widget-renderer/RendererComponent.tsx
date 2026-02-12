@@ -70,6 +70,7 @@ const RendererComponent = ({
     const [isLoadingNextBatch, setIsLoadingNextBatch] = useState(false);
     const rendererRef = useRef<ServerItemRenderer>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const currentItemRef = useRef(0);
 
     // Get user_id from auth context
     const user_id = user?.user_id || 'mongodb_test_user';
@@ -484,9 +485,10 @@ const RendererComponent = ({
                             selected_answer: selectedText.substring(0, 200),
                             correct_answer: correctText.substring(0, 200),
                         }).then((resp: Response) => resp.json()).then((data: any) => {
-                            // Guard: only set hint if still on the same question
-                            const currentMeta = (perseusItems[item] as any)?.dash_metadata || {};
-                            const currentQid = currentMeta.dash_question_id || `q_${item}`;
+                            // Guard: only set hint if still on the same question (use ref to avoid stale closure)
+                            const currentIdx = currentItemRef.current;
+                            const currentMeta = (perseusItems[currentIdx] as any)?.dash_metadata || {};
+                            const currentQid = currentMeta.dash_question_id || `q_${currentIdx}`;
                             if (currentQid === questionIdAtRequest && data?.hint_content) {
                                 setResponsiveHint(data.hint_content);
                             }
@@ -716,6 +718,7 @@ const RendererComponent = ({
 
     // Reset hint index, close hints, and clear responsive hint when question changes
     useEffect(() => {
+        currentItemRef.current = item;
         setCurrentHintIndex(0);
         setShowHints(false);
         setResponsiveHint(null);

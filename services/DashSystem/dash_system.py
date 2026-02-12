@@ -271,16 +271,31 @@ class DASHSystem:
     def reload_curriculum(self):
         """Reload skills from MongoDB after new curriculum is generated.
 
+        Builds new data structures then swaps references atomically.
         Call this after CurriculumGenerator finishes so DASH picks up
         the newly created courses/units/lessons without a server restart.
         """
-        self.skills.clear()
-        self.khan_skills.clear()
-        self.khan_sub_skills.clear()
-        self.question_index.clear()
-        self.skill_question_index.clear()
+        # Save old references so concurrent reads keep working during reload
+        old_skills, old_khan, old_sub = self.skills, self.khan_skills, self.khan_sub_skills
+        old_qi, old_sqi = self.question_index, self.skill_question_index
+
+        # Point to fresh empty dicts for _load_from_khan_hierarchy to populate
+        self.skills = {}
+        self.khan_skills = {}
+        self.khan_sub_skills = {}
+        self.question_index = {}
+        self.skill_question_index = {}
+
+        try:
+            self._load_from_khan_hierarchy()
+        except Exception as e:
+            # Rollback on failure — restore old data
+            self.skills, self.khan_skills, self.khan_sub_skills = old_skills, old_khan, old_sub
+            self.question_index, self.skill_question_index = old_qi, old_sqi
+            log_print(f"[RELOAD] Curriculum reload FAILED, rolled back: {e}")
+            return
+
         self.question_cache.clear()
-        self._load_from_khan_hierarchy()
         log_print(f"[RELOAD] Curriculum reloaded: {len(self.skills)} skills")
 
     def set_content_service(self, service):
@@ -955,7 +970,7 @@ class DASHSystem:
         # Update memory strength based on performance
         if is_correct:
             # Base strength increment with diminishing returns
-            strength_increment = 1.0 / (1 + 0.1 * state.correct_count)
+            strength_increment = 1.0 / (1 + 0.03 * state.correct_count)
             
             # Apply time penalty using separate function
             time_penalty = self.calculate_time_penalty(response_time_seconds)
@@ -985,27 +1000,33 @@ class DASHSystem:
     def update_with_prerequisites(self, student_id: str, skill_ids: List[str], is_correct: bool, current_time: float, response_time_seconds: float = 0.0) -> List[str]:
         """Update student state including prerequisites on wrong answers"""
         all_affected_skills = []
-        
+        already_updated = set()  # Track what we've already touched
+
         for skill_id in skill_ids:
             # Always update the direct skill
             self.update_student_state(student_id, skill_id, is_correct, current_time, response_time_seconds)
             all_affected_skills.append(skill_id)
-            
-            # If answer is wrong, also penalize prerequisites
-            if not is_correct:
+            already_updated.add(skill_id)
+
+        # Penalize prerequisites only if incorrect, and only once per prereq
+        if not is_correct:
+            for skill_id in skill_ids:
                 prerequisites = self.get_all_prerequisites(skill_id)
                 for prereq_id in prerequisites:
+                    if prereq_id in already_updated:
+                        continue  # Already updated — don't double-penalize
+                    already_updated.add(prereq_id)
                     # Apply penalty to prerequisite (but don't count as practice attempt)
                     # Use stored strength (not decayed) to avoid double-decay
                     state = self.get_student_state(student_id, prereq_id)
                     stored_strength = state.memory_strength
 
-                    # Apply smaller penalty to prerequisites
-                    state.memory_strength = max(-2.0, stored_strength - 0.1)
+                    # Apply smaller penalty to prerequisites; clamp at 0 not negative
+                    state.memory_strength = max(0.0, stored_strength - 0.1)
                     state.last_practice_time = current_time
-                    
+
                     all_affected_skills.append(prereq_id)
-        
+
         # Remove duplicates while preserving order
         seen = set()
         unique_affected_skills = []
@@ -1013,7 +1034,7 @@ class DASHSystem:
             if skill_id not in seen:
                 seen.add(skill_id)
                 unique_affected_skills.append(skill_id)
-        
+
         return unique_affected_skills
 
     def check_prerequisites(
@@ -1636,6 +1657,10 @@ class DASHSystem:
             prerequisites_met = True
             missing_prereqs = []
             for prereq_id in skill.prerequisites:
+                # Don't block on prerequisites the student has never attempted
+                prereq_state = self.get_student_state(student_id, prereq_id)
+                if prereq_state.practice_count == 0:
+                    continue
                 prereq_prob = self.predict_correctness(student_id, prereq_id, current_time)
                 if prereq_prob < threshold:
                     prerequisites_met = False
@@ -1748,7 +1773,7 @@ class DASHSystem:
             rate <  0.2  -> base - 0.20  (really struggling, significant ease)
 
         Returns:
-            float clamped to [0.1, 1.0]
+            float clamped to [0.2, 1.0]
         """
         # 1. Base difficulty from skill definition
         skill = self.skills.get(skill_id)
@@ -1756,7 +1781,7 @@ class DASHSystem:
 
         # 2. Fetch the attempts array for this student + skill from MongoDB
         if not self.mongo:
-            return max(0.1, min(1.0, base_difficulty))
+            return max(0.2, min(1.0, base_difficulty))
 
         try:
             coll = self.mongo.db['student_difficulty_history']
@@ -1766,17 +1791,17 @@ class DASHSystem:
             )
         except Exception as e:
             log_print(f"[ADAPTIVE_DIFFICULTY] DB read failed for {student_id}/{skill_id}: {e}")
-            return max(0.1, min(1.0, base_difficulty))
+            return max(0.2, min(1.0, base_difficulty))
 
         # 3. Extract last 5 attempts from the capped array
         if not doc or not doc.get("attempts"):
-            return max(0.1, min(1.0, base_difficulty))
+            return max(0.2, min(1.0, base_difficulty))
 
         recent = doc["attempts"][-5:]  # Last 5 (array is already capped at 10)
 
         # If fewer than 2 attempts, not enough data — return base
         if len(recent) < 2:
-            return max(0.1, min(1.0, base_difficulty))
+            return max(0.2, min(1.0, base_difficulty))
 
         # 4. Calculate recent correct rate
         correct_count = sum(1 for a in recent if a.get("correct", False))
@@ -1799,11 +1824,11 @@ class DASHSystem:
         log_print(
             f"[ADAPTIVE_DIFFICULTY] student={student_id} skill={skill_id} "
             f"rate={rate:.2f} ({correct_count}/{len(recent)}) "
-            f"base={base_difficulty:.2f} adj={adjustment:+.2f} final={max(0.1, min(1.0, adjusted)):.2f}"
+            f"base={base_difficulty:.2f} adj={adjustment:+.2f} final={max(0.2, min(1.0, adjusted)):.2f}"
         )
 
-        # 6. Clamp to [0.1, 1.0] — allows synthesis tier (0.92-1.0) for experts
-        return max(0.1, min(1.0, adjusted))
+        # 6. Clamp to [0.2, 1.0] — allows synthesis tier (0.92-1.0) for experts
+        return max(0.2, min(1.0, adjusted))
 
     def record_attempt_for_difficulty(self, student_id: str, skill_id: str, correct: bool):
         """

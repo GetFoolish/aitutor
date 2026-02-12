@@ -875,6 +875,9 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
         pending_evt.wait(timeout=WARMSTART_WAIT_TIMEOUT)
         with _warmstart_lock:
             cached = _warmstart_cache.pop(warmstart_key, None)
+            if not cached:
+                # Timeout expired — clean up stale event to prevent memory leak
+                _warmstart_events.pop(warmstart_key, None)
 
     if cached and time.time() - cached.get("ts", 0) < WARMSTART_TTL:
         from services.DashSystem.dash_system import Question
@@ -1628,6 +1631,8 @@ def start_assessment(
         user_profile = dash_system.load_user_or_create(user_id, age=jwt_age if jwt_age else 5)
         # Normalize grade — handles "Grade 8", "GRADE_8", "grade_8", "K", int 8, etc.
         raw_grade = user_profile.current_grade
+        if raw_grade is None:
+            raw_grade = "GRADE_5"  # Safe default when profile has no grade
         if isinstance(raw_grade, (int, float)):
             # Numeric grade (e.g. 8 or 0 for K)
             grade_key = "K" if int(raw_grade) == 0 else f"GRADE_{int(raw_grade)}"
@@ -2005,6 +2010,9 @@ def start_adaptive_assessment(subject: str, request: Request):
             pending_evt.wait(timeout=WARMSTART_WAIT_TIMEOUT)
             with _warmstart_lock:
                 cached = _warmstart_cache.pop(warmstart_key, None)
+                if not cached:
+                    # Timeout expired — clean up stale event to prevent memory leak
+                    _warmstart_events.pop(warmstart_key, None)
             if cached:
                 logger.info(f"[ADAPTIVE_ASSESSMENT] Warm-start completed while waiting")
 
@@ -2135,8 +2143,8 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
 
         mongo_db.db["assessment_sessions"].update_one(
             {"assessment_id": payload.assessment_id},
-            {"$set": {"status": "completed", "current_difficulty": new_diff,
-                       "questions_asked": questions_asked},
+            {"$inc": {"questions_asked": 1},
+             "$set": {"status": "completed", "current_difficulty": new_diff},
              "$push": {"answers": answer_record}}
         )
 
@@ -2332,9 +2340,11 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
     _patch_numeric_input_widgets(q_data)
 
     # Update session AFTER Perseus load + patching succeeds (avoids inconsistent state on load failure)
+    # Use $inc for questions_asked to prevent race conditions from concurrent requests
     mongo_db.db["assessment_sessions"].update_one(
         {"assessment_id": payload.assessment_id},
-        {"$set": {"current_difficulty": new_diff, "questions_asked": questions_asked},
+        {"$inc": {"questions_asked": 1},
+         "$set": {"current_difficulty": new_diff},
          "$push": {"answers": answer_record, "used_question_ids": next_q.question_id,
                    "used_skill_ids": next_q.skill_ids[0] if next_q.skill_ids else "",
                    "used_content_hashes": next_content_hash}}

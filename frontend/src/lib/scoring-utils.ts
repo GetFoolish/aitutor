@@ -24,8 +24,10 @@ export function deepNormalize(s: string): string {
     n = n.replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, '($1)/($2)');
     // Normalize multiplication: \cdot, \times → *
     n = n.replace(/[\\](?:cdot|times)/g, '*');
-    // Remove braces that are just grouping: {x} → x
-    n = n.replace(/\{([^{}]+)\}/g, '$1');
+    // Remove braces that are just grouping: {x} → x (loop for nested braces)
+    while (/\{([^{}]+)\}/.test(n)) {
+        n = n.replace(/\{([^{}]+)\}/g, '$1');
+    }
     // Strip trivial parentheses around single tokens: (2) → 2, ((x)) → x
     while (/\((\w+)\)/.test(n)) {
         n = n.replace(/\((\w+)\)/g, '$1');
@@ -46,7 +48,8 @@ export function deepNormalize(s: string): string {
     // Only sort when ALL terms are additive (no subtraction) to avoid "5-3" ≠ "3-5" bug
     const terms = n.split(/(?=[+-])/);
     const hasSubtraction = terms.some(t => t.startsWith('-'));
-    if (terms.length > 1 && !hasSubtraction && !n.includes('(') && !n.includes('/')) {
+    const hasMultiplication = terms.some(t => /[*^]/.test(t));
+    if (terms.length > 1 && !hasSubtraction && !hasMultiplication && !n.includes('(') && !n.includes('/')) {
         n = terms.sort().join('');
     }
     return n;
@@ -99,7 +102,7 @@ export function scorePerseusQuestion(
                     .map((c: any, i: number) => c.correct ? i : -1)
                     .filter((i: number) => i >= 0);
                 const selectedIndices = selectedIds.map((id: string) => {
-                    const match = id.match(/choice-(\d+)-/);
+                    const match = id.match(/choice-(\d+)/);
                     return match ? parseInt(match[1]) : -1;
                 }).filter((i: number) => i >= 0);
                 // Bidirectional check: selected must match correct exactly (no over-selecting)
@@ -108,7 +111,7 @@ export function scorePerseusQuestion(
                     selectedIndices.every((idx: number) => correctIndices.includes(idx));
             } else {
                 if (selectedIds.length === 1) {
-                    const match = selectedIds[0].match(/choice-(\d+)-/);
+                    const match = selectedIds[0].match(/choice-(\d+)/);
                     if (match) {
                         const idx = parseInt(match[1]);
                         widgetCorrect = choices[idx]?.correct === true;
@@ -183,7 +186,7 @@ export function scorePerseusQuestion(
             const userExpr = typeof widgetInput === 'string'
                 ? widgetInput
                 : ((widgetInput as any)?.currentValue || '');
-            if (userExpr && answerForms.length > 0) {
+            if (userExpr && userExpr.trim() && answerForms.length > 0) {
                 const userNorm = deepNormalize(userExpr);
                 widgetCorrect = answerForms.some((f: any) =>
                     f.considered === 'correct' && deepNormalize(f.value || '') === userNorm
@@ -218,7 +221,9 @@ export function scorePerseusQuestion(
             const correctValues: number[] = widgetDef.options?.values || [];
             const userValues: number[] = (widgetInput as any)?.values || [];
             if (correctValues.length > 0 && correctValues.length === userValues.length) {
-                widgetCorrect = correctValues.every((val: number, idx: number) => val === userValues[idx]);
+                widgetCorrect = correctValues.every((val: number, idx: number) =>
+                    userValues[idx] != null && val === userValues[idx]
+                );
             }
             scoreableCount++;
             if (widgetCorrect) correctCount++;
@@ -231,8 +236,27 @@ export function scorePerseusQuestion(
                 const snap = widgetDef.options?.snapDivisions || 2;
                 const tickStep = widgetDef.options?.tickStep || 1;
                 const tolerance = tickStep / snap / 2;  // half a snap step
-                if (correctRel === 'eq') {
-                    widgetCorrect = Math.abs(userX - correctX) <= tolerance;
+                switch (correctRel) {
+                    case 'eq':
+                        widgetCorrect = Math.abs(userX - correctX) <= tolerance;
+                        break;
+                    case 'lt':
+                        widgetCorrect = userX < correctX;
+                        break;
+                    case 'gt':
+                        widgetCorrect = userX > correctX;
+                        break;
+                    case 'le':
+                        widgetCorrect = userX <= correctX + tolerance;
+                        break;
+                    case 'ge':
+                        widgetCorrect = userX >= correctX - tolerance;
+                        break;
+                    case 'ne':
+                        widgetCorrect = Math.abs(userX - correctX) > tolerance;
+                        break;
+                    default:
+                        widgetCorrect = Math.abs(userX - correctX) <= tolerance;
                 }
             }
             scoreableCount++;
@@ -301,7 +325,7 @@ export function hasUserInput(
             const val = typeof widgetInput === 'string'
                 ? widgetInput
                 : ((widgetInput as any)?.currentValue || '');
-            if (val) return true;
+            if (val && val.trim()) return true;
         } else if (widgetDef.type === 'dropdown') {
             const idx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
             // Any non-null selection counts as real input (index 0 can be a valid choice)

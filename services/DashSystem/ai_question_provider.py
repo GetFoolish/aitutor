@@ -538,8 +538,17 @@ class AIQuestionProvider:
         """Generate evenly spread difficulties around the center value."""
         spread = 0.3  # +/-0.15 from center
         step = spread / max(count - 1, 1)
-        base = max(0.05, center - spread / 2)
-        return [round(min(1.0, base + i * step), 2) for i in range(count)]
+        # Shift the window to avoid clamping at boundaries
+        low = center - spread / 2
+        high = center + spread / 2
+        if low < 0.05:
+            low = 0.05
+            high = low + spread
+        if high > 1.0:
+            high = 1.0
+            low = high - spread
+        low = max(0.05, low)
+        return [round(low + i * step, 2) for i in range(count)]
 
     def refill_queue(
         self,

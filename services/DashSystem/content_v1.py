@@ -218,7 +218,7 @@ class ContentV1Engine:
                         }
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": hints,
             }
         elif fmt == "dropdown":
@@ -241,7 +241,7 @@ class ContentV1Engine:
                         }
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": f"Think about what studying {topic_clean} actually involves."},
                     {"content": f"Does {topic_clean} have its own concepts, or is it identical to another subject?"},
@@ -272,7 +272,7 @@ class ContentV1Engine:
                         }
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": "What would you do first when starting something new?"},
                     {"content": "Start with basics, then practice, then try harder things."},
@@ -301,7 +301,7 @@ class ContentV1Engine:
                         }
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": f"Think about how people actually learn {topic_clean}."},
                     {"content": "Can you improve at something by studying and practicing?"},
@@ -329,7 +329,7 @@ class ContentV1Engine:
                         }
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": "When you add like terms, add the coefficients."},
                     {"content": f"${a}x + {b}x$ means {a} groups of $x$ plus {b} groups of $x$."},
@@ -355,7 +355,7 @@ class ContentV1Engine:
                         }
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": "A beginner is someone who is just starting out."},
                     {"content": "An expert knows enough to teach others."},
@@ -380,7 +380,7 @@ class ContentV1Engine:
                         }
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": "Which one is the very smallest?"},
                     {"content": "After smallest, what comes next?"},
@@ -418,7 +418,7 @@ class ContentV1Engine:
                         },
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": "Look at the definition — what does it say this topic is?"},
                     {"content": "The definition mentions ideas, methods, and problems."},
@@ -444,7 +444,7 @@ class ContentV1Engine:
                         }
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": f"Which activities involve {topic_clean}?"},
                     {"content": "Cooking dinner is not related to this subject."},
@@ -481,7 +481,7 @@ class ContentV1Engine:
                         }
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": f"What is {a} + {b}?"},
                     {"content": f"Start at {a} and count up {b} more."},
@@ -508,7 +508,7 @@ class ContentV1Engine:
                         }
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": f"Each output is the input times {mult}. What is 1 x {mult}?"},
                     {"content": f"Row 1: 1 x {mult} = {mult}. Row 2: 2 x {mult} = {2*mult}."},
@@ -538,7 +538,7 @@ class ContentV1Engine:
                         }
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": f"Think about what studying {topic_clean} actually involves."},
                     {"content": f"Does {topic_clean} require learning specific skills?"},
@@ -594,10 +594,14 @@ class ContentV1Engine:
                         widget["options"]["answerForms"] = [forms]
                         logger.info(f"[REPAIR] Fixed expression answerForms: dict → list")
                     # Ensure required fields that Perseus MathInput needs
-                    opts.setdefault("buttonSets", ["basic"])
-                    opts.setdefault("functions", ["f", "g", "h"])
+                    # Use explicit falsy checks — setdefault won't override empty lists/strings
+                    if not opts.get("buttonSets"):
+                        opts["buttonSets"] = ["basic"]
+                    if not opts.get("functions"):
+                        opts["functions"] = ["f", "g", "h"]
                     opts.setdefault("times", False)
-                    opts.setdefault("buttonsVisible", "never")
+                    if not opts.get("buttonsVisible"):
+                        opts["buttonsVisible"] = "never"
 
                 # Fix 5: orderer — normalize options and correctOptions to {content: str} objects
                 if wtype == "orderer":
@@ -615,7 +619,22 @@ class ContentV1Engine:
                 # --- Perseus format compliance (match reference format) ---
                 # Every widget needs version, alignment, static
                 if "version" not in widget:
-                    widget["version"] = {"major": 0, "minor": 0}
+                    # Type-specific versions matching Perseus widget schemas
+                    version_map = {
+                        "radio": {"major": 2, "minor": 0},
+                        "numeric-input": {"major": 0, "minor": 0},
+                        "expression": {"major": 2, "minor": 0},
+                        "dropdown": {"major": 0, "minor": 0},
+                        "orderer": {"major": 0, "minor": 0},
+                        "sorter": {"major": 0, "minor": 0},
+                        "matcher": {"major": 0, "minor": 0},
+                        "categorizer": {"major": 0, "minor": 0},
+                        "definition": {"major": 0, "minor": 0},
+                        "image": {"major": 0, "minor": 0},
+                        "number-line": {"major": 0, "minor": 0},
+                        "table": {"major": 0, "minor": 0},
+                    }
+                    widget["version"] = version_map.get(wtype, {"major": 0, "minor": 0})
                 if "alignment" not in widget:
                     widget["alignment"] = "block" if wtype == "image" else "default"
                 if "static" not in widget:
@@ -1070,7 +1089,7 @@ class ContentV1Engine:
         if fmt == "numeric_input":
             a, b = random.randint(2, 12), random.randint(2, 12)
             answer = a * b
-            return {
+            item = {
                 "question": {
                     "content": f"{seed} What is {a} times {b}? [[☃ numeric-input 1]]",
                     "images": {},
@@ -1088,15 +1107,15 @@ class ContentV1Engine:
                         }
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": f"What operation do you need to find {a} times {b}?"},
                     {"content": f"Multiplication means repeated addition: {a} groups of {b}."},
                     {"content": f"Calculate: {a} x {b} = {answer}. The answer is {answer}."},
                 ],
             }
-        if fmt == "dropdown":
-            return {
+        elif fmt == "dropdown":
+            item = {
                 "question": {
                     "content": f"{seed} Which answer is correct? [[☃ dropdown 1]]",
                     "images": {},
@@ -1115,18 +1134,18 @@ class ContentV1Engine:
                         }
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": f"What is {topic_title} actually about? Focus on its core ideas."},
                     {"content": f"{topic_title} has specific principles that distinguish it from other subjects."},
                     {"content": f"The answer that describes a key concept in {topic_title} is correct."},
                 ],
             }
-        if fmt == "orderer":
+        elif fmt == "orderer":
             order = [f"Introduction to {topic_title}", f"Core {topic_title} concepts", f"Practice {topic_title}", f"Apply {topic_title}"]
             shuffled = order[:]
             random.shuffle(shuffled)
-            return {
+            item = {
                 "question": {
                     "content": f"{seed} Arrange these from foundational to advanced.",
                     "images": {},
@@ -1142,15 +1161,15 @@ class ContentV1Engine:
                         }
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": f"Which {topic_title} topic would you learn first?"},
                     {"content": "Start with introductions, then learn core concepts, then practice, then apply."},
                     {"content": f"Order: Introduction -> Core concepts -> Practice -> Apply {topic_title}."},
                 ],
             }
-        if fmt == "radio_multi":
-            return {
+        elif fmt == "radio_multi":
+            item = {
                 "question": {
                     "content": f"{seed} Which TWO are directly related to {topic_title}? Select all that apply.",
                     "images": {},
@@ -1171,17 +1190,17 @@ class ContentV1Engine:
                         }
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": f"Which options are actually about {topic_title}?"},
                     {"content": f"{topic_title} involves both understanding and application of concepts."},
                     {"content": f"The two options about understanding and applying {topic_title} are both correct."},
                 ],
             }
-        if fmt == "expression":
+        elif fmt == "expression":
             a, b = random.randint(2, 9), random.randint(1, 9)
             answer_val = f"{a + b}x"
-            return {
+            item = {
                 "question": {
                     "content": f"{seed} Simplify: ${a}x + {b}x$ [[☃ expression 1]]",
                     "images": {},
@@ -1198,15 +1217,15 @@ class ContentV1Engine:
                         }
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": "When you add like terms, what do you do with the coefficients?"},
                     {"content": f"${a}x + {b}x$ means {a} groups of $x$ plus {b} groups of $x$."},
                     {"content": f"Add the coefficients: {a} + {b} = {a + b}, so the answer is ${a + b}x$."},
                 ],
             }
-        if fmt == "matcher":
-            return {
+        elif fmt == "matcher":
+            item = {
                 "question": {
                     "content": f"{seed} Match each concept with its description. [[☃ matcher 1]]",
                     "images": {},
@@ -1224,16 +1243,16 @@ class ContentV1Engine:
                         }
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": f"Think about what each aspect of {topic_title} involves."},
                     {"content": "Fundamentals = basics, Methods = techniques, Applications = real-world use."},
                     {"content": "'Fundamentals' matches 'Core principles', 'Methods' matches 'Techniques', etc."},
                 ],
             }
-        if fmt == "sorter":
+        elif fmt == "sorter":
             items_list = [f"Define {topic_title}", f"Explore examples", f"Practice problems", f"Master {topic_title}"]
-            return {
+            item = {
                 "question": {
                     "content": f"{seed} Sort these milestones from first to last. [[☃ sorter 1]]",
                     "images": {},
@@ -1249,15 +1268,15 @@ class ContentV1Engine:
                         }
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": f"What would be the very first step when learning {topic_title}?"},
                     {"content": "Start by defining the concept, then explore, practice, and finally master."},
                     {"content": f"Order: Define -> Explore examples -> Practice problems -> Master {topic_title}."},
                 ],
             }
-        if fmt == "definition":
-            return {
+        elif fmt == "definition":
+            item = {
                 "question": {
                     "content": f"{seed}\n\nRead about [[☃ definition 1]] and answer below. What does this term refer to? [[☃ radio 1]]",
                     "images": {},
@@ -1287,42 +1306,46 @@ class ContentV1Engine:
                         },
                     },
                 },
-                "answerArea": {"calculator": False},
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
                 "hints": [
                     {"content": f"Re-read the definition. What does it say about {topic_title}?"},
                     {"content": f"The definition describes {topic_title} as a fundamental concept in this subject."},
                     {"content": f"Since it is fundamental to {topic_title}, the answer about a core concept is correct."},
                 ],
             }
-        # radio_single — skill-specific, not meta-question
-        return {
-            "question": {
-                "content": f"{seed} Which of the following is true about {topic_title}?",
-                "images": {},
-                "widgets": {
-                    "radio 1": {
-                        "type": "radio",
-                        "graded": True,
-                        "options": {
-                            "multipleSelect": False,
-                            "displayCount": None,
-                            "choices": [
-                                {"content": f"{topic_title} involves understanding concepts and applying them", "correct": True},
-                                {"content": f"{topic_title} is only about memorizing random facts", "correct": False},
-                                {"content": f"{topic_title} requires no practice at all", "correct": False},
-                                {"content": f"{topic_title} cannot be learned through examples", "correct": False},
-                            ],
-                        },
-                    }
+        else:
+            # radio_single — skill-specific, not meta-question
+            item = {
+                "question": {
+                    "content": f"{seed} Which of the following is true about {topic_title}?",
+                    "images": {},
+                    "widgets": {
+                        "radio 1": {
+                            "type": "radio",
+                            "graded": True,
+                            "options": {
+                                "multipleSelect": False,
+                                "displayCount": None,
+                                "choices": [
+                                    {"content": f"{topic_title} involves understanding concepts and applying them", "correct": True},
+                                    {"content": f"{topic_title} is only about memorizing random facts", "correct": False},
+                                    {"content": f"{topic_title} requires no practice at all", "correct": False},
+                                    {"content": f"{topic_title} cannot be learned through examples", "correct": False},
+                                ],
+                            },
+                        }
+                    },
                 },
-            },
-            "answerArea": {"calculator": False},
-            "hints": [
-                {"content": f"Think about what you know about {topic_title} as a subject."},
-                {"content": f"Most subjects, including {topic_title}, involve both understanding and practice."},
-                {"content": f"The correct answer describes {topic_title} as involving concepts and application."},
-            ],
-        }
+                "answerArea": {"calculator": False, "type": "multiple", "options": {"content": "", "images": {}, "widgets": {}}},
+                "hints": [
+                    {"content": f"Think about what you know about {topic_title} as a subject."},
+                    {"content": f"Most subjects, including {topic_title}, involve both understanding and practice."},
+                    {"content": f"The correct answer describes {topic_title} as involving concepts and application."},
+                ],
+            }
+        # Always run repair to ensure Perseus compliance for all widget types
+        item = self._repair_item(item, fmt=fmt)
+        return item
 
     def _simple_fallback_question(self, skill_name: str, lesson_name: str, age: int) -> Optional[Dict[str, Any]]:
         """Last-resort fallback: very simple prompt that generates a basic radio question."""
