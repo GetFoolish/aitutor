@@ -72,7 +72,11 @@ class ContentV1Engine:
         end = cleaned.rfind("}")
         if start >= 0 and end > start:
             cleaned = cleaned[start : end + 1]
-        return json.loads(cleaned)
+        try:
+            return json.loads(cleaned)
+        except (json.JSONDecodeError, ValueError):
+            logger.warning(f"[EXTRACT_JSON] Failed to parse ({len(cleaned)} chars): {cleaned[:120]}")
+            return {}
 
     def _age_band(self, age: int) -> str:
         if age <= 9:
@@ -1043,9 +1047,12 @@ class ContentV1Engine:
                 future = executor.submit(_call_gemini)
                 response = future.result(timeout=20)
             parsed = self._extract_json(response.text or "")
-            parsed = self._repair_item(parsed, fmt=fmt)
-            if self._validate_item(parsed, fmt=fmt):
-                return parsed
+            if not isinstance(parsed, dict) or not parsed:
+                logger.warning("[GENERATE] _extract_json returned non-dict or empty, falling through to fallback")
+            else:
+                parsed = self._repair_item(parsed, fmt=fmt)
+                if self._validate_item(parsed, fmt=fmt):
+                    return parsed
         except FutureTimeoutError:
             return None
         except Exception:
@@ -1382,10 +1389,11 @@ class ContentV1Engine:
                 future = executor.submit(_call)
                 response = future.result(timeout=10)
             parsed = self._extract_json(response.text or "")
-            parsed = self._repair_item(parsed, fmt="radio_single")
-            if self._validate_item(parsed, fmt="radio_single"):
-                logger.info(f"[GENERATE] Simple fallback succeeded for {skill_name}")
-                return parsed
+            if isinstance(parsed, dict) and parsed:
+                parsed = self._repair_item(parsed, fmt="radio_single")
+                if self._validate_item(parsed, fmt="radio_single"):
+                    logger.info(f"[GENERATE] Simple fallback succeeded for {skill_name}")
+                    return parsed
         except Exception as e:
             logger.warning(f"[GENERATE] Simple fallback also failed: {e}")
         fb = self._fallback_question(skill_name, 8, "radio_single", 0.5)
@@ -1435,7 +1443,7 @@ class ContentV1Engine:
                 logger.warning("[IMAGE] Gemini response has no content parts")
                 return None
             for part in parts:
-                if part.inline_data is not None:
+                if getattr(part, 'inline_data', None) is not None:
                     img_hash = hashlib.sha256(part.inline_data.data).hexdigest()[:16]
                     filename = f"{img_hash}.png"
                     filepath = os.path.join(STATIC_IMAGES_DIR, filename)
@@ -1582,6 +1590,9 @@ class ContentV1Engine:
                     continue
 
                 parsed = self._extract_json(raw)
+                if not isinstance(parsed, dict) or not parsed:
+                    logger.warning(f"[GENERATE] Attempt {attempt+1}: _extract_json returned non-dict/empty, retrying")
+                    continue
                 parsed = self._repair_item(parsed, fmt=fmt)
                 if not self._validate_item(parsed, fmt=fmt):
                     logger.warning(f"[GENERATE] Attempt {attempt+1}: validation failed, retrying")

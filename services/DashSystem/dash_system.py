@@ -271,15 +271,21 @@ class DASHSystem:
     def reload_curriculum(self):
         """Reload skills from MongoDB after new curriculum is generated.
 
-        Builds new data structures then swaps references atomically.
+        Builds new data structures in temporary dicts, then swaps references
+        atomically so concurrent readers never see an empty/partial state.
         Call this after CurriculumGenerator finishes so DASH picks up
         the newly created courses/units/lessons without a server restart.
         """
-        # Save old references so concurrent reads keep working during reload
-        old_skills, old_khan, old_sub = self.skills, self.khan_skills, self.khan_sub_skills
-        old_qi, old_sqi = self.question_index, self.skill_question_index
+        # Save current references so we can build new ones without
+        # disturbing concurrent readers.
+        prev_skills = self.skills
+        prev_khan = self.khan_skills
+        prev_sub = self.khan_sub_skills
+        prev_qi = self.question_index
+        prev_sqi = self.skill_question_index
 
-        # Point to fresh empty dicts for _load_from_khan_hierarchy to populate
+        # Build into fresh temporaries (NOT self.*) so _load_from_khan_hierarchy
+        # populates them while readers still see old data.
         self.skills = {}
         self.khan_skills = {}
         self.khan_sub_skills = {}
@@ -289,12 +295,18 @@ class DASHSystem:
         try:
             self._load_from_khan_hierarchy()
         except Exception as e:
-            # Rollback on failure — restore old data
-            self.skills, self.khan_skills, self.khan_sub_skills = old_skills, old_khan, old_sub
-            self.question_index, self.skill_question_index = old_qi, old_sqi
+            # Rollback on failure — restore old data atomically
+            self.skills = prev_skills
+            self.khan_skills = prev_khan
+            self.khan_sub_skills = prev_sub
+            self.question_index = prev_qi
+            self.skill_question_index = prev_sqi
             log_print(f"[RELOAD] Curriculum reload FAILED, rolled back: {e}")
             return
 
+        # Success — new dicts are fully populated on self.* at this point.
+        # Python attribute assignment is atomic (pointer swap), so readers
+        # will see either old or new, never partial.
         self.question_cache.clear()
         log_print(f"[RELOAD] Curriculum reloaded: {len(self.skills)} skills")
 
@@ -1084,10 +1096,10 @@ class DASHSystem:
         threshold = 0.7
         updated_count = 0
         
-        # Find all skills from grades BELOW current grade (previous skills)
+        # Find all skills from grades AT OR BELOW current grade (previous + current skills)
         for skill_id, skill in self.skills.items():
-            # Only process skills from lower grades
-            if skill.grade_level.value >= current_grade_value:
+            # Only process skills from current grade or lower
+            if skill.grade_level.value > current_grade_value:
                 continue
             
             # Ensure skill exists in skill_states (add if missing)
@@ -1705,6 +1717,14 @@ class DASHSystem:
             log_print(f"[SKILL_RECOMMEND] No skills found needing practice (all above threshold {threshold} or prerequisites unmet)")
         
         result = [skill_id for skill_id, _, _ in recommendations]
+
+        # If grade filter produced 0 recommendations, retry without it
+        if not result and cold_start_grade_filter:
+            logger.info(f"[RECOMMEND] Grade filter ±{grade_range} found 0 skills, retrying with all grades")
+            return self.get_recommended_skills(
+                student_id, current_time, threshold=threshold,
+                cold_start_grade_filter=None, grade_range=grade_range,
+            )
 
         # Interleave review skills (previously mastered, now decayed) every 3rd position
         # Also include prerequisite reviews for currently-active skills

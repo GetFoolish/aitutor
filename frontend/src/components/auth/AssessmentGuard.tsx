@@ -55,6 +55,7 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
 
       // If URL has a subject param (e.g. after assessment), update sessionStorage
       // and WAIT for backend to switch before proceeding
+      let subjectAlreadySwitched = false;
       if (urlSubject && urlSubject !== savedSubject) {
         sessionStorage.setItem('selected_subject', urlSubject);
         try {
@@ -62,6 +63,7 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
             subject: urlSubject,
             region: 'US'
           });
+          subjectAlreadySwitched = true;
         } catch (err) {
           console.warn('Failed to switch subject after assessment:', err);
         }
@@ -79,10 +81,12 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
         // Both done — start subject + check assessment IN PARALLEL
         setOnboardingComplete(true);
         setSelectedSubject(effectiveSubject);
-        const subjectPromise = apiUtils.post(`${DASH_API_URL}/api/start-subject`, {
-          subject: effectiveSubject,
-          region: 'US'
-        }).catch((err: any) => console.warn('Failed to ensure subject:', err));
+        const subjectPromise = subjectAlreadySwitched
+          ? Promise.resolve()
+          : apiUtils.post(`${DASH_API_URL}/api/start-subject`, {
+              subject: effectiveSubject,
+              region: 'US'
+            }).catch((err: any) => console.warn('Failed to ensure subject:', err));
 
         const statusPromise = checkAssessmentStatus(effectiveSubject);
         await Promise.all([subjectPromise, statusPromise]);

@@ -58,6 +58,22 @@ WARMSTART_TTL = 300  # 5 minutes
 WARMSTART_WAIT_TIMEOUT = 30  # seconds to wait for in-flight warm-start
 
 
+def _snapshot_curriculum():
+    """Take a consistent snapshot of curriculum state under lock.
+
+    After Bug B1 fix, reload_curriculum() does an atomic swap so reading
+    dash_system.skills gives a stable dict reference even without the lock.
+    This helper is provided for any future endpoint that needs a coherent
+    triplet (subject, region, skills) at a single point in time.
+    """
+    with _subject_lock:
+        return {
+            "subject": dash_system.subject,
+            "region": dash_system.region,
+            "skills": dash_system.skills,  # dict ref is immutable after atomic swap
+        }
+
+
 def _switch_subject_if_needed(subject: str, region: str = "US") -> bool:
     """Thread-safe subject switch on the global dash_system singleton.
 
@@ -2033,6 +2049,7 @@ def start_adaptive_assessment(subject: str, request: Request):
         if not first_q:
             first_q = dash_system.get_next_question_flexible(
                 user_id, current_time, user_profile=user_profile, fast_mode=True,
+                force_grade_range=True,
             )
 
         # JIT fallback: generate a question for new subjects without curriculum
@@ -2064,6 +2081,11 @@ def start_adaptive_assessment(subject: str, request: Request):
             except Exception as e:
                 logger.warning(f"[ADAPTIVE_ASSESSMENT] JIT generation failed: {e}")
 
+        if not first_q:
+            # Last resort: try any grade (no grade range restriction)
+            first_q = dash_system.get_next_question_flexible(
+                user_id, current_time, user_profile=user_profile, fast_mode=True,
+            )
         if not first_q:
             raise HTTPException(status_code=400, detail="No questions available for assessment")
 

@@ -570,4 +570,8 @@ class CurriculumGenerator:
             except json.JSONDecodeError:
                 # Last resort: remove control chars and retry
                 fixed = re.sub(r"[\x00-\x1f]+", " ", fixed)
-                return json.loads(fixed)
+                try:
+                    return json.loads(fixed)
+                except json.JSONDecodeError:
+                    logger.error(f"[PARSE_JSON_ARRAY] All 3 parse attempts failed ({len(fixed)} chars): {fixed[:120]}")
+                    return []

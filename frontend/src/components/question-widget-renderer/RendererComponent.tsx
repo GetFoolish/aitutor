@@ -71,6 +71,7 @@ const RendererComponent = ({
     const rendererRef = useRef<ServerItemRenderer>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const currentItemRef = useRef(0);
+    const mountedRef = useRef(true);
 
     // Get user_id from auth context
     const user_id = user?.user_id || 'mongodb_test_user';
@@ -187,6 +188,11 @@ const RendererComponent = ({
             });
         }
     }, [isError, error]);
+
+    // Cleanup: mark component as unmounted to prevent stale state updates
+    useEffect(() => {
+        return () => { mountedRef.current = false; };
+    }, []);
 
     // Log when question is displayed (once per item change) and emit question ID
     useEffect(() => {
@@ -478,6 +484,7 @@ const RendererComponent = ({
 
                     if (selectedText && skillIds.length > 0) {
                         const questionIdAtRequest = questionId;
+                        currentItemRef.current = item;  // Ensure ref is current before async hint fetch
                         apiUtils.post(`${DASH_API_URL}/api/responsive-hint`, {
                             question_id: questionId,
                             skill_id: skillIds[0],
@@ -485,11 +492,9 @@ const RendererComponent = ({
                             selected_answer: selectedText.substring(0, 200),
                             correct_answer: correctText.substring(0, 200),
                         }).then((resp: Response) => resp.json()).then((data: any) => {
-                            // Guard: only set hint if still on the same question (use ref to avoid stale closure)
-                            const currentIdx = currentItemRef.current;
-                            const currentMeta = (perseusItems[currentIdx] as any)?.dash_metadata || {};
-                            const currentQid = currentMeta.dash_question_id || `q_${currentIdx}`;
-                            if (currentQid === questionIdAtRequest && data?.hint_content) {
+                            if (!mountedRef.current) return;  // component unmounted, skip state update
+                            // Guard: only set hint if still on the same question
+                            if (currentItemRef.current === item && data?.hint_content) {
                                 setResponsiveHint(data.hint_content);
                             }
                         }).catch((err: any) => {

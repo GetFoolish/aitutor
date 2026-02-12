@@ -5,7 +5,7 @@
  * Calls /api/start-subject to ensure curriculum is ready.
  * Shows generation progress for new subjects.
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { apiUtils } from '../../lib/api-utils';
 import BackgroundShapes from '../background-shapes/BackgroundShapes';
 
@@ -42,11 +42,27 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   const [pollUrl, setPollUrl] = useState<string | null>(null);
   const [generationProgress, setGenerationProgress] = useState('');
 
+  // Stable ref for callback to avoid effect re-runs on parent re-render (Bug H1)
+  const onSubjectReadyRef = useRef(onSubjectReady);
+  onSubjectReadyRef.current = onSubjectReady;
+
+  // AbortController ref to cancel stale polls on rapid subject changes (Bug H2)
+  const pollAbortRef = useRef<AbortController | null>(null);
+
   // Poll for curriculum generation status
   useEffect(() => {
     if (status !== 'generating' || !pollUrl) return;
 
+    // Abort previous polling cycle
+    pollAbortRef.current?.abort();
+    const abortController = new AbortController();
+    pollAbortRef.current = abortController;
+
     const interval = setInterval(async () => {
+      if (abortController.signal.aborted) {
+        clearInterval(interval);
+        return;
+      }
       try {
         const response = await apiUtils.get(`${DASH_API_URL}${pollUrl}`);
         if (!response.ok) return;
@@ -62,7 +78,7 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             if (r.ok) {
               const d = await r.json();
               if (d.status === 'ready') {
-                onSubjectReady(selectedSubject);
+                onSubjectReadyRef.current(selectedSubject);
                 return;
               }
             }
@@ -76,8 +92,11 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
       }
     }, 3000);
 
-    return () => clearInterval(interval);
-  }, [status, pollUrl, selectedSubject, region, onSubjectReady]);
+    return () => {
+      clearInterval(interval);
+      abortController.abort();
+    };
+  }, [status, pollUrl, selectedSubject, region]);
 
   const handleSelect = async (subject: string) => {
     const trimmed = subject.trim();

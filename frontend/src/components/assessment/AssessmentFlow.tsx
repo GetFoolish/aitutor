@@ -153,6 +153,8 @@ const AssessmentFlow: React.FC = () => {
       // Pre-fetch the next question while user reads question 1
       firePrefetch(data.assessment_id, data.current_difficulty);
     } catch (err: any) {
+      timersRef.current.forEach(clearTimeout);
+      timersRef.current = [];
       console.error('Assessment start failed:', err);
       const msg = err?.name === 'AbortError'
         ? 'Assessment is taking longer than expected. Please try again.'
