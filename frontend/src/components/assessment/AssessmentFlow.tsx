@@ -394,8 +394,32 @@ const AssessmentFlow: React.FC = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '12px',
-                  margin: '0 20px'
+                  margin: '0 20px',
+                  position: 'relative',
                 }}>
+                  {/* Exit assessment link */}
+                  <button
+                    onClick={() => {
+                      if (window.confirm('Are you sure you want to leave this assessment? Your progress will be lost.')) {
+                        window.location.href = '/app/dev-login';
+                      }
+                    }}
+                    style={{
+                      position: 'absolute',
+                      left: '12px',
+                      background: 'none',
+                      border: '2px solid #fff',
+                      color: '#fff',
+                      fontSize: '11px',
+                      fontWeight: 700,
+                      padding: '4px 10px',
+                      cursor: 'pointer',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                    }}
+                  >
+                    Exit
+                  </button>
                   <div style={{
                     width: '12px',
                     height: '12px',

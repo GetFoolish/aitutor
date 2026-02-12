@@ -133,6 +133,29 @@
     }
 }
 
+/* Fix 8a: Prevent text truncation in Perseus question content */
+#question-content-container .framework-perseus,
+#question-content-container .framework-perseus .paragraph,
+#question-content-container .framework-perseus .perseus-renderer {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
+}
+
+#question-content-container .framework-perseus .paragraph p {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+/* Ensure hint text doesn't overflow */
+.framework-perseus + div [style*="FFF9C4"],
+.framework-perseus ~ div [style*="FFF9C4"] {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
 /* Fix 8: Safe area insets for notched devices */
 @supports (padding: max(0px)) {
     .app-container {

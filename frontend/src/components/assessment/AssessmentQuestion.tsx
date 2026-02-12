@@ -10,6 +10,28 @@ import { KEScore } from "@khanacademy/perseus-core";
 import AudioPlayButton, { extractAudioWord } from "../AudioPlayButton";
 import { reportQuestionAnalytics } from "../../lib/api-utils";
 import { scorePerseusQuestion, hasUserInput } from "../../lib/scoring-utils";
+// @ts-ignore — katex types require 'bundler' moduleResolution
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+
+/** Render text with inline LaTeX ($...$) as rendered math via KaTeX */
+function renderTextWithLatex(text: string): React.ReactNode {
+  if (!text) return '';
+  // Split on $...$ patterns (inline math)
+  const parts = text.split(/(\$[^$]+\$)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('$') && part.endsWith('$') && part.length > 2) {
+      const tex = part.slice(1, -1);
+      try {
+        const html = katex.renderToString(tex, { throwOnError: false, displayMode: false });
+        return <span key={i} dangerouslySetInnerHTML={{ __html: html }} />;
+      } catch {
+        return <code key={i}>{tex}</code>;
+      }
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
 
 interface Props {
   question: any;
@@ -415,12 +437,14 @@ const AssessmentQuestion: React.FC<Props> = ({
                   backgroundColor: '#FFF9C4',
                   boxShadow: '2px 2px 0 #000',
                   fontSize: '14px',
-                  lineHeight: '1.5'
+                  lineHeight: '1.5',
+                  overflowWrap: 'break-word',
+                  wordBreak: 'break-word',
                 }}>
                   <strong style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     Hint {idx + 1}:
                   </strong>{' '}
-                  {hint.content}
+                  {renderTextWithLatex(hint.content)}
                 </div>
               ))}
             </div>
@@ -562,7 +586,7 @@ const AssessmentQuestion: React.FC<Props> = ({
               <strong style={{ textTransform: 'uppercase', fontSize: '12px', letterSpacing: '0.05em' }}>
                 Explanation:
               </strong>{' '}
-              {question.hints[question.hints.length - 1]?.content || question.hints[0]?.content || ''}
+              {renderTextWithLatex(question.hints[question.hints.length - 1]?.content || question.hints[0]?.content || '')}
             </div>
           )}
         </div>

@@ -65,3 +65,84 @@ html.dark #question-content-container .framework-perseus code,
 html.dark #question-content-container .framework-perseus pre {
     color: white !important;
 }
+
+/* Dark mode: orderer, sorter, matcher drag-and-drop widgets */
+.dark .draggy-boxy-thing .draggable-box,
+html.dark .draggy-boxy-thing .draggable-box,
+.dark .draggy-boxy-thing .cards-area,
+html.dark .draggy-boxy-thing .cards-area {
+    background: #333 !important;
+    border-color: #555 !important;
+    box-shadow: 0 1px 2px #222 !important;
+}
+
+.dark .draggy-boxy-thing .card,
+html.dark .draggy-boxy-thing .card {
+    background-color: #444 !important;
+    border-color: #666 !important;
+    color: white !important;
+}
+
+.dark .draggy-boxy-thing .card.placeholder,
+html.dark .draggy-boxy-thing .card.placeholder {
+    background: #555 !important;
+    border-color: #666 !important;
+}
+
+.dark .draggy-boxy-thing .card.drag-hint,
+html.dark .draggy-boxy-thing .card.drag-hint {
+    border-color: #777 !important;
+}
+
+.dark .draggy-boxy-thing .card.dragging,
+html.dark .draggy-boxy-thing .card.dragging {
+    background-color: #5a4a2a !important;
+}
+
+.dark .draggy-boxy-thing .card:hover,
+html.dark .draggy-boxy-thing .card:hover {
+    border-color: #ffa500 !important;
+}
+
+.dark .draggy-boxy-thing .card.stack:after,
+html.dark .draggy-boxy-thing .card.stack:after {
+    background-color: #444 !important;
+    border-color: #666 !important;
+}
+
+/* Dark mode: orderer bank and draggable-box */
+.dark .orderer .bank,
+html.dark .orderer .bank,
+.dark .orderer .draggable-box,
+html.dark .orderer .draggable-box {
+    background: #333 !important;
+}
+
+/* Dark mode: matcher widget */
+.dark .matcher .column,
+html.dark .matcher .column {
+    background: #333 !important;
+    border-color: #555 !important;
+}
+
+/* Dark mode: dropdown widget */
+.dark #question-content-container .framework-perseus select,
+html.dark #question-content-container .framework-perseus select {
+    background-color: #444 !important;
+    color: white !important;
+    border-color: #666 !important;
+}
+
+/* Dark mode: numeric-input */
+.dark #question-content-container .framework-perseus input[type="text"],
+html.dark #question-content-container .framework-perseus input[type="text"] {
+    background-color: #444 !important;
+    color: white !important;
+    border-color: #666 !important;
+}
+
+/* Dark mode: radio choice backgrounds */
+.dark #question-content-container .framework-perseus .choice,
+html.dark #question-content-container .framework-perseus .choice {
+    color: white !important;
+}

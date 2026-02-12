@@ -562,7 +562,8 @@ def _load_ai_generated_perseus_items(ai_questions: List[Question]) -> List[Dict]
 
 
 def _strip_objectids(obj):
-    """Recursively convert bson ObjectId instances to strings so Pydantic can serialize."""
+    """Recursively convert bson ObjectId instances to strings and sanitize
+    control characters so the JSON response is always parseable by browsers."""
     from bson import ObjectId
     if isinstance(obj, dict):
         return {k: _strip_objectids(v) for k, v in obj.items() if k != "_id"}
@@ -570,6 +571,10 @@ def _strip_objectids(obj):
         return [_strip_objectids(v) for v in obj]
     if isinstance(obj, ObjectId):
         return str(obj)
+    if isinstance(obj, str):
+        # Strip ASCII control characters (0x00-0x1F except \t \n \r)
+        # that could cause JSON parsing failures in browsers
+        return "".join(c if c >= " " or c in "\t\n\r" else " " for c in obj)
     return obj
 
 
@@ -2159,8 +2164,9 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
     }
     questions_asked = session.get("questions_asked", 0) + 1
 
-    # Check if assessment is complete
-    if questions_asked >= session.get("max_questions", 10):
+    # Check if assessment is complete (> not >= because questions_asked already
+    # includes the current answer; >= would skip the last question)
+    if questions_asked > session.get("max_questions", 10):
         # Complete the assessment
         all_answers = session.get("answers", []) + [answer_record]
         correct_count = sum(1 for a in all_answers if a["is_correct"])
@@ -2391,7 +2397,7 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
 
     return {
         "completed": False,
-        "question_number": questions_asked + 1,
+        "question_number": questions_asked,
         "total_questions": session.get("max_questions", 10),
         "question": q_data,
         "current_difficulty": round(new_diff, 3),
