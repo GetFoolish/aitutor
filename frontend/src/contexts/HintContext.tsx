@@ -33,10 +33,11 @@ export const HintProvider: React.FC<HintProviderProps> = ({ children }) => {
   const [responsiveHint, setResponsiveHint] = useState<string | null>(null);
 
   const toggleHints = () => {
-    setShowHints(prev => !prev);
-    if (!showHints) {
-      setCurrentHintIndex(0);
-    }
+    setShowHints(prev => {
+      // Reset hint index when opening (prev=false means we're about to show)
+      if (!prev) setCurrentHintIndex(0);
+      return !prev;
+    });
   };
 
   return (

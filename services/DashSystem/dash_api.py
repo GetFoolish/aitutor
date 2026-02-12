@@ -1618,15 +1618,23 @@ def start_assessment(
 
         # Get user's current grade (use JWT age as fallback for new users)
         user_profile = dash_system.load_user_or_create(user_id, age=jwt_age if jwt_age else 5)
-        # Normalize grade string — handles "Grade 8", "GRADE_8", "grade_8", "K" etc.
-        grade_str = user_profile.current_grade.strip()
-        grade_key = grade_str.upper().replace(" ", "_")
-        if grade_key.startswith("GRADE") and not grade_key.startswith("GRADE_"):
-            grade_key = grade_key.replace("GRADE", "GRADE_", 1)
+        # Normalize grade — handles "Grade 8", "GRADE_8", "grade_8", "K", int 8, etc.
+        raw_grade = user_profile.current_grade
+        if isinstance(raw_grade, (int, float)):
+            # Numeric grade (e.g. 8 or 0 for K)
+            grade_key = "K" if int(raw_grade) == 0 else f"GRADE_{int(raw_grade)}"
+        else:
+            grade_str = str(raw_grade).strip()
+            grade_key = grade_str.upper().replace(" ", "_")
+            # Handle bare numbers: "8" → "GRADE_8"
+            if grade_key.isdigit():
+                grade_key = f"GRADE_{grade_key}"
+            elif grade_key.startswith("GRADE") and not grade_key.startswith("GRADE_"):
+                grade_key = grade_key.replace("GRADE", "GRADE_", 1)
         try:
             current_grade_value = GradeLevel[grade_key].value
         except KeyError:
-            logger.warning(f"[ASSESSMENT] Unknown grade '{grade_str}', defaulting to K")
+            logger.warning(f"[ASSESSMENT] Unknown grade '{raw_grade}', defaulting to K")
             current_grade_value = GradeLevel.K.value
 
         logger.info(f"[ASSESSMENT] User grade: {user_profile.current_grade} (value: {current_grade_value})")
@@ -2101,7 +2109,7 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
     # Record answer
     current_diff = session.get("current_difficulty", 0.5)
     new_diff = current_diff + (0.15 if payload.is_correct else -0.15)
-    new_diff = max(0.1, min(0.9, new_diff))
+    new_diff = max(0.1, min(1.0, new_diff))  # 1.0 cap enables synthesis tier
 
     answer_record = {
         "question_id": payload.question_id,

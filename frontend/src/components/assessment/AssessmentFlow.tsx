@@ -51,6 +51,7 @@ const AssessmentFlow: React.FC = () => {
   // Ref to track latest assessmentId for prefetch (avoids stale closures)
   const assessmentIdRef = useRef<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   // Client-side content fingerprint tracker to detect duplicate questions
   const seenContentRef = useRef<Set<string>>(new Set());
@@ -90,6 +91,12 @@ const AssessmentFlow: React.FC = () => {
 
   useEffect(() => {
     startAssessment();
+    return () => {
+      // Cleanup: abort in-flight request + clear timers on unmount
+      abortRef.current?.abort();
+      timersRef.current.forEach(clearTimeout);
+      timersRef.current = [];
+    };
   }, [subject]);
 
   const startAssessment = async () => {
@@ -101,16 +108,16 @@ const AssessmentFlow: React.FC = () => {
       // Progressive phase timers: 10s→generating, 30s→slow (with cancel option)
       const phase2Timer = setTimeout(() => setLoadPhase('generating'), 10000);
       const phase3Timer = setTimeout(() => setLoadPhase('slow'), 30000);
-      const hardTimeout = setTimeout(() => controller.abort(), 60000); // 60s hard timeout (was 90)
+      const hardTimeout = setTimeout(() => controller.abort(), 60000); // 60s hard timeout
+      timersRef.current = [phase2Timer, phase3Timer, hardTimeout];
 
       const response = await apiUtils.post(
         `${DASH_API_URL}/assessment/start-adaptive/${subject}`,
         {},
         { signal: controller.signal }
       );
-      clearTimeout(phase2Timer);
-      clearTimeout(phase3Timer);
-      clearTimeout(hardTimeout);
+      timersRef.current.forEach(clearTimeout);
+      timersRef.current = [];
 
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
@@ -181,8 +188,8 @@ const AssessmentFlow: React.FC = () => {
         const data = await response.json();
 
         if (data.completed) {
-          setScore(data.score);
-          setTotal(data.total);
+          setScore(data.score ?? 0);
+          setTotal(data.total ?? totalQuestions);
           setCompleted(true);
           setSubmitting(false);
           return;
