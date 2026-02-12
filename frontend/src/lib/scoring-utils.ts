@@ -50,7 +50,10 @@ export function deepNormalize(s: string): string {
     const hasSubtraction = terms.some(t => t.startsWith('-'));
     const hasMultiplication = terms.some(t => /[*^]/.test(t));
     if (terms.length > 1 && !hasSubtraction && !hasMultiplication && !n.includes('(') && !n.includes('/')) {
-        n = terms.sort().join('');
+        // Normalize first term to have '+' prefix so sorting is consistent
+        // e.g. '7+x' splits to ['7','+x'] → ['+7','+x'] → sort → join → strip leading '+'
+        const normalized = terms.map(t => t.startsWith('+') || t.startsWith('-') ? t : '+' + t);
+        n = normalized.sort().join('').replace(/^\+/, '');
     }
     return n;
 }
