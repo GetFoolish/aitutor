@@ -258,7 +258,7 @@ class ContentGenerationService:
 
         existing = self.pool_col.find(
             {"skill_id": skill_id}, {"question_text": 1, "_id": 0}
-        )
+        ).sort("created_at", -1).limit(100)  # Cap to prevent full-collection scan
         for doc in existing:
             existing_text = doc.get("question_text", "")
             if self.trigram_similarity(new_text, existing_text) > SIMILARITY_THRESHOLD:
@@ -791,7 +791,7 @@ class ContentGenerationService:
             self.pool_col.update_one(
                 {"_id": doc["_id"]}, {"$inc": {"attempt_count": 1}}
             )
-            qd = doc.get("question_data") or {}
+            qd = dict(doc.get("question_data") or {})  # Copy to avoid mutating cached doc
             # Ensure question_id is present (backfill for older docs)
             q_id = doc.get("question_id") or f"pool_{doc.get('content_hash', '')[:16]}"
             if isinstance(qd, dict):
@@ -867,7 +867,11 @@ class ContentGenerationService:
             q = doc.get("perseus_json") or doc.get("question_data") or doc.get("item")
             # Strip any MongoDB ObjectIds that would crash FastAPI serialization
             if isinstance(q, dict):
+                q = dict(q)  # Copy to avoid mutating cached doc
                 q.pop("_id", None)
+                # Backfill question_id for analytics tracking
+                if "question_id" not in q and "question_id" in doc:
+                    q["question_id"] = doc["question_id"]
             return q
 
         # Last-last resort: untagged legacy questions
@@ -882,7 +886,10 @@ class ContentGenerationService:
             if doc:
                 q = doc.get("perseus_json") or doc.get("question_data") or doc.get("item")
                 if isinstance(q, dict):
+                    q = dict(q)  # Copy to avoid mutating cached doc
                     q.pop("_id", None)
+                    if "question_id" not in q and "question_id" in doc:
+                        q["question_id"] = doc["question_id"]
                 return q
 
         return None  # Truly empty -- caller should trigger ensure_pool

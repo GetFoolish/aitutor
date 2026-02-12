@@ -102,8 +102,10 @@ export function scorePerseusQuestion(
                     const match = id.match(/choice-(\d+)-/);
                     return match ? parseInt(match[1]) : -1;
                 }).filter((i: number) => i >= 0);
+                // Bidirectional check: selected must match correct exactly (no over-selecting)
                 widgetCorrect = correctIndices.length === selectedIndices.length &&
-                    correctIndices.every((idx: number) => selectedIndices.includes(idx));
+                    correctIndices.every((idx: number) => selectedIndices.includes(idx)) &&
+                    selectedIndices.every((idx: number) => correctIndices.includes(idx));
             } else {
                 if (selectedIds.length === 1) {
                     const match = selectedIds[0].match(/choice-(\d+)-/);
