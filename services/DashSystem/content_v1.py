@@ -21,7 +21,10 @@ logger = logging.getLogger(__name__)
 # Image generation settings
 STATIC_IMAGES_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "static", "images")
 os.makedirs(STATIC_IMAGES_DIR, exist_ok=True)
-IMAGE_PROBABILITY = float(os.getenv("IMAGE_PROBABILITY", "0.20"))
+try:
+    IMAGE_PROBABILITY = float(os.getenv("IMAGE_PROBABILITY", "0.20"))
+except (ValueError, TypeError):
+    IMAGE_PROBABILITY = 0.20
 IMAGE_ELIGIBLE_FORMATS = {"radio_single", "radio_multi", "numeric_input", "dropdown"}
 # Base URL for serving images (frontend needs absolute URL since it's on a different port)
 IMAGE_BASE_URL = os.getenv("DASH_API_BASE_URL", "http://localhost:8000")
@@ -1390,7 +1393,16 @@ class ContentV1Engine:
                 future = executor.submit(_call_image)
                 response = future.result(timeout=30)
 
-            for part in response.candidates[0].content.parts:
+            candidates = getattr(response, "candidates", None)
+            if not candidates or not candidates[0]:
+                logger.warning("[IMAGE] Gemini returned empty candidates")
+                return None
+            content = getattr(candidates[0], "content", None)
+            parts = getattr(content, "parts", None) if content else None
+            if not parts:
+                logger.warning("[IMAGE] Gemini response has no content parts")
+                return None
+            for part in parts:
                 if part.inline_data is not None:
                     img_hash = hashlib.sha256(part.inline_data.data).hexdigest()[:16]
                     filename = f"{img_hash}.png"

@@ -606,6 +606,18 @@ const RendererComponent = ({
                     if (!exprOpts.buttonsVisible) exprOpts.buttonsVisible = 'never';
                     itemCopy.question.widgets[key] = { ...w, options: exprOpts };
                 }
+                // Definition: ensure togglePrompt, definition, and static fields
+                if (w?.type === 'definition' && w.options) {
+                    itemCopy.question.widgets[key] = {
+                        ...w,
+                        options: {
+                            togglePrompt: 'Definition',
+                            definition: '',
+                            static: false,
+                            ...w.options,
+                        },
+                    };
+                }
                 // Dropdown: ensure placeholder and static fields
                 if (w?.type === 'dropdown' && w.options) {
                     itemCopy.question.widgets[key] = {

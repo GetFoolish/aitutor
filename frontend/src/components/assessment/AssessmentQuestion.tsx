@@ -121,6 +121,18 @@ const AssessmentQuestion: React.FC<Props> = ({
           if (!exprOpts.buttonsVisible) exprOpts.buttonsVisible = 'never';
           q.question.widgets[key] = { ...w, options: exprOpts };
         }
+        // Definition: ensure togglePrompt, definition, and static fields
+        if (w?.type === 'definition' && w.options) {
+          q.question.widgets[key] = {
+            ...w,
+            options: {
+              togglePrompt: 'Definition',
+              definition: '',
+              static: false,
+              ...w.options,
+            },
+          };
+        }
         // Dropdown: ensure placeholder and static fields
         if (w?.type === 'dropdown' && w.options) {
           q.question.widgets[key] = {

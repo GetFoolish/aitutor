@@ -29,7 +29,10 @@ from shared.logging_config import get_logger
 logger = get_logger(__name__)
 
 PROMPT_VERSION = "v4.0"  # Increment when prompts change
-POOL_MIN_PER_BUCKET = int(os.getenv("POOL_MIN_PER_BUCKET", "10"))  # per bucket
+try:
+    POOL_MIN_PER_BUCKET = int(os.getenv("POOL_MIN_PER_BUCKET", "10"))
+except (ValueError, TypeError):
+    POOL_MIN_PER_BUCKET = 10  # per bucket
 DIFFICULTY_BUCKETS = {
     "easy": (0.1, 0.35),
     "medium": (0.35, 0.65),
