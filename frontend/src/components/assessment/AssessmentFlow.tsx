@@ -401,6 +401,10 @@ const AssessmentFlow: React.FC = () => {
                   <button
                     onClick={() => {
                       if (window.confirm('Are you sure you want to leave this assessment? Your progress will be lost.')) {
+                        // Clear session state so AssessmentGuard doesn't redirect back
+                        sessionStorage.removeItem('selected_subject');
+                        sessionStorage.removeItem('onboarding_complete');
+                        localStorage.removeItem('jwt_token');
                         window.location.href = '/app/dev-login';
                       }
                     }}

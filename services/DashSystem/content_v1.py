@@ -581,12 +581,11 @@ class ContentV1Engine:
                     widget["options"] = {"choices": opts, "placeholder": "select one"}
                     logger.info(f"[REPAIR] Fixed dropdown options: list → dict with choices")
 
-                # Fix 2: radio choices missing 'correct' key (default to False)
+                # Fix 2: radio choices — ensure 'correct' key exists and is boolean
                 if wtype == "radio" and isinstance(widget.get("options"), dict):
                     choices = widget["options"].get("choices", [])
                     for c in choices:
-                        if "correct" not in c:
-                            c["correct"] = False
+                        c["correct"] = bool(c.get("correct", False))
 
                 # Fix 3: numeric-input answers as single dict instead of list
                 if wtype == "numeric-input":
@@ -682,11 +681,17 @@ class ContentV1Engine:
                         ans.setdefault("simplify", "required")
                         ans.setdefault("strict", False)
 
-                # Dropdown: ensure placeholder and static
+                # Dropdown: ensure placeholder, static, and boolean correct flags
                 if wtype == "dropdown":
                     dd_opts = widget.get("options", {})
                     dd_opts.setdefault("placeholder", "Select an answer")
                     dd_opts.setdefault("static", False)
+                    # Coerce correct field to boolean (Gemini may return "true"/1/etc)
+                    for c in dd_opts.get("choices", []):
+                        if "correct" in c:
+                            c["correct"] = bool(c["correct"])
+                        else:
+                            c["correct"] = False
                     # Backfill misconception field on dropdown distractors
                     for c in dd_opts.get("choices", []):
                         if not c.get("correct", False):

@@ -21,6 +21,23 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 // @ts-ignore
 import "./package/perseus/testing/perseus-init.tsx";
+
+// Suppress noisy Perseus library warnings that we cannot fix (upstream issues)
+const _origWarn = console.warn;
+const _origError = console.error;
+const SUPPRESSED = [
+  'findDOMNode is deprecated',
+  'is not accessible',
+  'A component is changing an uncontrolled',
+  'String refs are deprecated',
+];
+const _filter = (orig: typeof console.warn) => (...args: any[]) => {
+  const msg = typeof args[0] === 'string' ? args[0] : '';
+  if (SUPPRESSED.some(s => msg.includes(s))) return;
+  orig.apply(console, args);
+};
+console.warn = _filter(_origWarn);
+console.error = _filter(_origError);
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import ComingSoonGuard from "./components/coming-soon/ComingSoonGuard"; // Commented out to allow home page access

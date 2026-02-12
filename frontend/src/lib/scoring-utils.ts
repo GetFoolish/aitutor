@@ -117,7 +117,7 @@ export function scorePerseusQuestion(
                     const match = selectedIds[0].match(/choice-(\d+)/);
                     if (match) {
                         const idx = parseInt(match[1]);
-                        widgetCorrect = choices[idx]?.correct === true;
+                        widgetCorrect = !!choices[idx]?.correct;
                         if (!selectedAnswerText) {
                             selectedAnswerText = choices[idx]?.content || '';
                             selectedAnswerIndex = idx;
@@ -175,7 +175,7 @@ export function scorePerseusQuestion(
             const choices = widgetDef.options?.choices || [];
             const selectedIdx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
             if (selectedIdx != null && selectedIdx >= 0 && selectedIdx < choices.length) {
-                widgetCorrect = choices[selectedIdx]?.correct === true;
+                widgetCorrect = !!choices[selectedIdx]?.correct;
                 if (!selectedAnswerText) {
                     selectedAnswerText = choices[selectedIdx]?.content || '';
                     selectedAnswerIndex = selectedIdx;
