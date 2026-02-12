@@ -109,10 +109,10 @@ class QualityTracker:
             return 0.5  # Not enough data, neutral score
 
         attempts = analytics["attempt_count"]
-        correct_rate = analytics.get("correct_count", 0) / attempts
-        skip_rate = analytics.get("skip_count", 0) / attempts
-        avg_hints = analytics.get("hint_usage_total", 0) / attempts
-        avg_time = analytics.get("total_time_seconds", 0) / attempts
+        correct_rate = (analytics.get("correct_count") or 0) / attempts
+        skip_rate = (analytics.get("skip_count") or 0) / attempts
+        avg_hints = (analytics.get("hint_usage_total") or 0) / attempts
+        avg_time = (analytics.get("total_time_seconds") or 0) / attempts
 
         # --- Correctness score ---
         # Peak at 0.55, drops off at extremes.

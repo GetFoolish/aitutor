@@ -166,11 +166,13 @@ class QuestionAnalytics:
 
     def _is_flagged(self, metrics: Dict) -> bool:
         """Determine if a question should be flagged as low quality."""
+        cr = metrics.get("correctness_rate")
+        qs = metrics.get("quality_score")
         return (
             metrics.get("skip_rate", 0) > 0.5
-            or metrics.get("correctness_rate", 1) < 0.1
-            or metrics.get("correctness_rate", 0) > 0.95
-            or metrics.get("quality_score", 1) < 0.3
+            or (cr is not None and cr < 0.1)
+            or (cr is not None and cr > 0.95)
+            or (qs is not None and qs < 0.3)
         )
 
     def get_quality_score(self, question_id: str) -> Dict:

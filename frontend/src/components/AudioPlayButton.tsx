@@ -40,8 +40,15 @@ const AudioPlayButton: React.FC<AudioPlayButtonProps> = ({ word, autoPlay = true
     if (autoPlay && word) {
       // Small delay to let the question render first
       const timer = setTimeout(speak, 500);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        // Cancel any in-progress speech on unmount or word change
+        window.speechSynthesis?.cancel();
+      };
     }
+    return () => {
+      window.speechSynthesis?.cancel();
+    };
   }, [word, autoPlay, speak]);
 
   return (

@@ -105,7 +105,7 @@ const AssessmentResults: React.FC<Props> = ({
     };
 
     fetchGradingData();
-  }, []);
+  }, [subject]);
 
   // Send transition message and disconnect tutor when results are shown
   useEffect(() => {
