@@ -27,7 +27,7 @@ const DevLogin: React.FC = () => {
   const [selectedSubject, setSelectedSubject] = useState<string>('Math');
   const [customSubject, setCustomSubject] = useState('');
   const [selectedAge, setSelectedAge] = useState<number | null>(null);
-  const [name, setName] = useState('Test Student');
+  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -148,8 +148,9 @@ const DevLogin: React.FC = () => {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Student name"
+            placeholder="Student name (optional)"
             disabled={loading}
+            onFocus={(e) => e.target.select()}
             style={{
               padding: '10px 16px',
               border: '3px solid #000',
