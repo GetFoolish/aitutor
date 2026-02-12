@@ -52,7 +52,14 @@ const DevLogin: React.FC = () => {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.detail || `Failed: ${res.status}`);
+        const detail = data.detail || `HTTP ${res.status}`;
+        throw new Error(
+          res.status === 404
+            ? 'Auth service unavailable. Please ensure the auth server is running on port 8003.'
+            : res.status === 500
+            ? 'Server error. Please check the backend logs and try again.'
+            : `Login failed: ${detail}`
+        );
       }
 
       const data = await res.json();
@@ -78,7 +85,7 @@ const DevLogin: React.FC = () => {
     }
   };
 
-  const activeColor = SUBJECTS.find(s => s.id === selectedSubject)?.color || '#FFD93D';
+  const activeColor = SUBJECTS.find(s => s.id === selectedSubject)?.color || (customSubject ? '#C3ACD0' : '#FFD93D');
 
   return (
     <div style={{
@@ -142,16 +149,19 @@ const DevLogin: React.FC = () => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Student name"
+            disabled={loading}
             style={{
               padding: '10px 16px',
               border: '3px solid #000',
-              background: '#fff',
+              background: loading ? '#eee' : '#fff',
               boxShadow: '3px 3px 0 #000',
               fontSize: '14px',
               fontWeight: 700,
               width: '240px',
               textAlign: 'center',
-              outline: 'none'
+              outline: 'none',
+              opacity: loading ? 0.6 : 1,
+              cursor: loading ? 'not-allowed' : 'text'
             }}
           />
         </div>
@@ -354,15 +364,31 @@ const DevLogin: React.FC = () => {
 
         {loading && (
           <div style={{
-            padding: '12px 16px',
-            border: '3px solid #000',
+            padding: '16px 24px',
+            border: '4px solid #000',
             background: activeColor,
-            fontWeight: 700,
-            fontSize: '13px',
+            boxShadow: '4px 4px 0 #000',
+            fontWeight: 900,
+            fontSize: '14px',
             textTransform: 'uppercase',
-            marginBottom: '12px'
+            letterSpacing: '0.05em',
+            marginBottom: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px'
           }}>
-            Starting {selectedSubject} for age {selectedAge}...
+            <span style={{
+              display: 'inline-block',
+              width: '18px',
+              height: '18px',
+              border: '3px solid #000',
+              borderTopColor: 'transparent',
+              borderRadius: '50%',
+              animation: 'spin 0.8s linear infinite'
+            }} />
+            Creating assessment for {selectedSubject}, age {selectedAge}...
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           </div>
         )}
 
