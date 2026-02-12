@@ -2632,7 +2632,10 @@ def _patch_numeric_input_widgets(perseus: dict) -> None:
             opts.setdefault("static", False)
             opts.setdefault("highlightLint", False)
         elif wtype == "number-line":
-            opts.setdefault("labelRange", "")
+            rng = opts.get("range")
+            if not isinstance(rng, list) or len(rng) != 2:
+                rng = [0, 10]
+            opts.setdefault("labelRange", rng)
             opts.setdefault("initialX", opts.get("correctX", 0))
             opts.setdefault("tickStep", 1)
             opts.setdefault("labelStyle", "decimal")
@@ -2641,7 +2644,7 @@ def _patch_numeric_input_widgets(perseus: dict) -> None:
             opts.setdefault("snapDivisions", 2)
             opts.setdefault("correctRel", "eq")
             opts.setdefault("numDivisions", 10)
-            opts.setdefault("divisionRange", opts.get("range", [0, 10]))
+            opts.setdefault("divisionRange", rng)
             opts.setdefault("isTickCtrl", False)
             opts.setdefault("static", False)
         elif wtype == "table":

@@ -26,8 +26,10 @@ export function deepNormalize(s: string): string {
     n = n.replace(/[\\](?:cdot|times)/g, '*');
     // Remove braces that are just grouping: {x} → x
     n = n.replace(/\{([^{}]+)\}/g, '$1');
-    // Strip trivial parentheses around single tokens: (2) → 2, (x) → x
-    n = n.replace(/\((\w+)\)/g, '$1');
+    // Strip trivial parentheses around single tokens: (2) → 2, ((x)) → x
+    while (/\((\w+)\)/.test(n)) {
+        n = n.replace(/\((\w+)\)/g, '$1');
+    }
     // Evaluate simple integer exponents: 2^3 → 8 (only safe small values)
     n = n.replace(/(\d+)\^(\d+)/g, (match, base, exp) => {
         const result = Math.pow(parseInt(base), parseInt(exp));
@@ -287,7 +289,8 @@ export function hasUserInput(
             if (val) return true;
         } else if (widgetDef.type === 'dropdown') {
             const idx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
-            if (idx != null && idx >= 0) return true;
+            // Index 0 is the placeholder ("Select an answer") — not real input
+            if (idx != null && idx > 0) return true;
         } else if (widgetDef.type === 'orderer') {
             const curr = (widgetInput as any)?.current || [];
             if (curr.length > 0) return true;

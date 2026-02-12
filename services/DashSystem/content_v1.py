@@ -627,8 +627,10 @@ class ContentV1Engine:
                     radio_opts.setdefault("hasNoneOfTheAbove", False)
                     radio_opts.setdefault("multipleSelect", False)
                     radio_opts.setdefault("randomize", False)
-                    # Compute numCorrect from choices
+                    # Normalize choices: ensure all items are dicts
                     choices = radio_opts.get("choices", [])
+                    choices = [c if isinstance(c, dict) else {"content": str(c), "correct": False} for c in choices]
+                    radio_opts["choices"] = choices
                     radio_opts["numCorrect"] = sum(1 for c in choices if c.get("correct"))
                     # Backfill misconception field on distractors for responsive hints
                     for c in choices:
@@ -816,7 +818,7 @@ class ContentV1Engine:
             elif wtype == "expression":
                 expr_opts = widget.get("options", {})
                 forms = expr_opts.get("answerForms", [])
-                if not forms or not any(f.get("considered") == "correct" and f.get("value") for f in forms):
+                if not forms or not any(f.get("considered") == "correct" and f.get("value") is not None for f in forms):
                     return False
                 # Ensure required rendering fields exist (Perseus crashes without these)
                 if not expr_opts.get("buttonSets"):
@@ -895,7 +897,10 @@ class ContentV1Engine:
 
             # Check hints: require at least 2 with substantive content
             hints = item.get("hints", [])
-            if len(hints) < 2 or not all(h.get("content") and len(h["content"]) >= 10 for h in hints[:2]):
+            valid_hints = [h for h in hints if isinstance(h, dict)]
+            if len(valid_hints) < 2 or not all(
+                h.get("content") and len(h["content"]) >= 10 for h in valid_hints[:2]
+            ):
                 return False
 
             # Reject questions that reference pictures/images without having an image widget
