@@ -84,8 +84,8 @@ export function scorePerseusQuestion(
     for (const [widgetId, widgetInput] of Object.entries(userInput)) {
         const widgetDef = questionWidgets?.[widgetId];
         if (!widgetDef) continue;
-        // Skip display-only widgets
-        if (widgetDef.type === 'image' || widgetDef.type === 'definition') continue;
+        // Skip display-only widgets (image only — definition has a companion radio that IS scored)
+        if (widgetDef.type === 'image') continue;
 
         let widgetCorrect = false;
 
@@ -122,14 +122,18 @@ export function scorePerseusQuestion(
             scoreableCount++;
             if (widgetCorrect) correctCount++;
 
+        } else if (widgetDef.type === 'definition') {
+            // Definition widget is display-only — skip scoring (companion radio is scored separately)
+            continue;
+
         } else if (widgetDef.type === 'orderer') {
             const correctOptions = widgetDef.options?.correctOptions || [];
             const userOrder = (widgetInput as any).current || [];
             if (correctOptions.length === userOrder.length) {
                 widgetCorrect = correctOptions.every((correctOpt: any, index: number) => {
                     const userItem = userOrder[index];
-                    const userContent = typeof userItem === 'string' ? userItem : userItem?.content;
-                    const correctContent = typeof correctOpt === 'string' ? correctOpt : correctOpt?.content;
+                    const userContent = (typeof userItem === 'string' ? userItem : userItem?.content || '').trim();
+                    const correctContent = (typeof correctOpt === 'string' ? correctOpt : correctOpt?.content || '').trim();
                     return correctContent === userContent;
                 });
             }
@@ -146,12 +150,13 @@ export function scorePerseusQuestion(
                 const correctAnswer = answers.find((a: any) => a.status === 'correct');
                 if (correctAnswer) {
                     let maxError = correctAnswer.maxError;
-                    if (maxError == null || maxError === 0) {
+                    if (maxError == null || maxError <= 0) {
                         const cv = correctAnswer.value;
                         if (cv === 0) {
                             maxError = 0.001;
                         } else {
-                            maxError = Number.isInteger(cv) ? 0.01 : Math.max(0.01, Math.abs(cv) * 0.01);
+                            // Use 1% of absolute value, with a floor of 0.01
+                            maxError = Math.max(0.01, Math.abs(cv) * 0.01);
                         }
                     }
                     widgetCorrect = Math.abs(userValue - correctAnswer.value) <= maxError;
@@ -200,7 +205,11 @@ export function scorePerseusQuestion(
             const correctOrder = widgetDef.options?.correct || [];
             const userOrder = (widgetInput as any)?.options || (widgetInput as any)?.current || [];
             if (correctOrder.length > 0 && correctOrder.length === userOrder.length) {
-                widgetCorrect = correctOrder.every((val: string, idx: number) => val === userOrder[idx]);
+                widgetCorrect = correctOrder.every((val: string, idx: number) => {
+                    const cv = (typeof val === 'string' ? val : '').trim();
+                    const uv = (typeof userOrder[idx] === 'string' ? userOrder[idx] : '').trim();
+                    return cv === uv;
+                });
             }
             scoreableCount++;
             if (widgetCorrect) correctCount++;
@@ -277,7 +286,11 @@ export function hasUserInput(
     for (const [widgetId, widgetInput] of Object.entries(userInput)) {
         const widgetDef = questionWidgets?.[widgetId];
         if (!widgetDef) continue;
-        if (widgetDef.type === 'image' || widgetDef.type === 'definition') continue;
+        if (widgetDef.type === 'image') continue;
+
+        // Definition widget itself is display-only — skip it in input check
+        // (its companion radio widget will be checked separately)
+        if (widgetDef.type === 'definition') continue;
 
         if (widgetDef.type === 'radio') {
             if (((widgetInput as any).selectedChoiceIds || []).length > 0) return true;
@@ -291,8 +304,8 @@ export function hasUserInput(
             if (val) return true;
         } else if (widgetDef.type === 'dropdown') {
             const idx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
-            // Index 0 is the placeholder ("Select an answer") — not real input
-            if (idx != null && idx > 0) return true;
+            // Any non-null selection counts as real input (index 0 can be a valid choice)
+            if (idx != null && idx >= 0) return true;
         } else if (widgetDef.type === 'orderer') {
             const curr = (widgetInput as any)?.current || [];
             if (curr.length > 0) return true;

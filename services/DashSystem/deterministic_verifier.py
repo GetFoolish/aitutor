@@ -165,6 +165,23 @@ class SubjectVerifier(ABC):
                 for a in opts.get("answers", []):
                     if a.get("status") == "correct":
                         return str(a.get("value", ""))
+            elif wtype == "expression":
+                for af in opts.get("answerForms", []):
+                    if af.get("considered") == "correct":
+                        return str(af.get("value", ""))
+            elif wtype == "matcher":
+                left = opts.get("left", [])
+                right = opts.get("right", [])
+                if left and right:
+                    return json.dumps({"left": left, "right": right})
+            elif wtype == "sorter":
+                correct = opts.get("correct", opts.get("correctOptions", []))
+                if correct:
+                    return json.dumps({"correct_order": correct})
+            elif wtype == "orderer":
+                correct = opts.get("correctOptions", opts.get("correct", []))
+                if correct:
+                    return json.dumps({"correct_order": correct})
         return ""
 
     _STOP_WORDS = frozenset({
@@ -215,6 +232,25 @@ class SubjectVerifier(ABC):
 
     # Math symbols that prove a math topic is being tested
     _MATH_SYMBOLS = {"+", "-", "×", "÷", "=", "*", "/", "<", ">", "≤", "≥"}
+
+    @staticmethod
+    def _check_multi_correct_radio(item: Dict) -> Optional[str]:
+        """Detect multiple correct choices in a non-multiSelect radio widget."""
+        widgets = item.get("question", {}).get("widgets", {})
+        for w in widgets.values():
+            wtype = w.get("type", "")
+            if wtype == "radio":
+                opts = w.get("options", {})
+                multi_select = opts.get("multipleSelect", False)
+                if not multi_select:
+                    correct_count = sum(1 for ch in opts.get("choices", []) if ch.get("correct"))
+                    if correct_count > 1:
+                        return (
+                            f"Radio widget has {correct_count} correct choices but "
+                            f"multipleSelect is not enabled. Either enable multipleSelect "
+                            f"or ensure exactly 1 choice is marked correct."
+                        )
+        return None
 
     @staticmethod
     def _fuzzy_contains(haystack: str, needle: str, threshold: int = 3) -> bool:
@@ -358,7 +394,9 @@ class MathVerifier(SubjectVerifier):
                     return True
                 except Exception:
                     pass
-            return True
+            # No extractable arithmetic patterns found — fail-closed so the
+            # question gets flagged for manual/LLM review rather than silently passing.
+            return False
         except Exception:
             return True
 
@@ -620,11 +658,33 @@ class EnglishVerifier(SubjectVerifier):
                 # Question asks about this part of speech — verify correct answer
                 correct_lower = correct_text.lower().strip()
                 examples = [e.lower() for e in pos_info.get("examples", [])]
-                # If the correct answer IS the part of speech name, verify it
+                # If the correct answer IS a POS name but the WRONG one, flag it
                 if correct_lower in pos_data and correct_lower != pos_name:
                     # E.g., question asks "What part of speech is 'run'?" and answer is "adjective" — wrong
-                    # This is a weak check, only flag obvious mismatches
-                    pass
+                    failures.append(
+                        f"Question asks about '{pos_name}' but the correct answer is "
+                        f"'{correct_lower}', which is a different part of speech. "
+                        f"Ensure the answer matches the POS type being asked about."
+                    )
+                # If the correct answer is a word, check it's in the examples for the expected POS
+                elif correct_lower and correct_lower not in pos_data and examples:
+                    if correct_lower in examples:
+                        pass  # Correct: answer is a known example of this POS
+                    else:
+                        # Check if the answer appears in ANY other POS examples
+                        found_in_other = False
+                        for other_pos, other_info in pos_data.items():
+                            if other_pos == pos_name:
+                                continue
+                            other_examples = [e.lower() for e in other_info.get("examples", [])]
+                            if correct_lower in other_examples:
+                                failures.append(
+                                    f"The word '{correct_text.strip()}' is listed as a "
+                                    f"'{other_pos}', not a '{pos_name}'. Fix the correct "
+                                    f"answer to be a valid {pos_name}."
+                                )
+                                found_in_other = True
+                                break
                 break
 
         # Check 3: Literary term accuracy
@@ -762,7 +822,7 @@ class HistoryVerifier(SubjectVerifier):
                         # Allow range (event spans multiple years)
                         if not (event_year <= y <= event_end):
                             # Only flag if the year is close but wrong (not just a random number)
-                            if abs(y - event_year) < 200 and abs(y - event_year) > 5:
+                            if abs(y - event_year) < 10 and abs(y - event_year) > 5:
                                 errors.append(
                                     f"Date mismatch: text says {y} in context of "
                                     f"'{event['event']}', but the actual year is "
@@ -919,7 +979,7 @@ class DeterministicVerifier:
             with open(path, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
-            logger.warning(f"[VERIFIER] Failed to load {filename}: {e}")
+            logger.error(f"[VERIFIER] Failed to load {filename}: {e} — verification for this subject will be degraded")
             return {}
 
     @classmethod
@@ -1062,5 +1122,10 @@ class DeterministicVerifier:
                 "Question has no interactive answer widget. Ensure the question includes "
                 "a radio, numeric-input, dropdown, expression, orderer, matcher, or sorter widget."
             )
+
+        # Multi-correct radio detection
+        multi_err = SubjectVerifier._check_multi_correct_radio(item)
+        if multi_err:
+            failures.append(multi_err)
 
         return failures

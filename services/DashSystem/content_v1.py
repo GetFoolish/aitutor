@@ -650,7 +650,7 @@ class ContentV1Engine:
                     ni_opts.setdefault("size", "normal")
                     ni_opts.setdefault("static", False)
                     for ans in ni_opts.get("answers", []):
-                        ans.setdefault("maxError", None)
+                        ans.setdefault("maxError", 0.01)
                         ans.setdefault("message", "")
                         ans.setdefault("simplify", "required")
                         ans.setdefault("strict", False)
@@ -756,7 +756,7 @@ class ContentV1Engine:
             aa.setdefault("type", "multiple")
 
         except Exception as e:
-            logger.warning(f"[REPAIR] Repair failed: {e}")
+            logger.error(f"[REPAIR] Repair failed for fmt={fmt}: {e}", exc_info=True)
         return item
 
     def _validate_item(self, item: Dict[str, Any], fmt: str = None) -> bool:
@@ -833,6 +833,15 @@ class ContentV1Engine:
                 right = opts.get("right", [])
                 if len(left) < 3 or len(right) < 3 or len(left) != len(right):
                     return False
+                # Ensure a correct answer mapping exists (otherwise unanswerable)
+                if not opts.get("correct") and not opts.get("orderMatters"):
+                    # If no explicit correct array and order doesn't matter,
+                    # the right array as-is IS the answer key — that's fine
+                    pass
+                elif opts.get("correct"):
+                    correct = opts["correct"]
+                    if len(correct) != len(left):
+                        return False
 
             elif wtype == "sorter":
                 correct = widget.get("options", {}).get("correct", [])
@@ -1423,6 +1432,9 @@ class ContentV1Engine:
         item["question"]["widgets"]["image 1"] = {
             "type": "image",
             "graded": False,
+            "version": {"major": 0, "minor": 0},
+            "alignment": "block",
+            "static": False,
             "options": {
                 "backgroundImage": {"url": image_url, "width": 400, "height": 300},
                 "alt": f"Illustration for {skill_name}",

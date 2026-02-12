@@ -222,7 +222,7 @@ class ContentGenerationService:
         """Extract character trigrams from text."""
         text = text.lower().strip()
         if len(text) < 3:
-            return {text}
+            return {text} if text else set()  # Empty string → empty set (not {""})
         return {text[i : i + 3] for i in range(len(text) - 2)}
 
     @staticmethod
@@ -241,13 +241,14 @@ class ContentGenerationService:
         """Extract the main question text from a Perseus item for similarity comparison."""
         content = ""
         if "question" in item and "content" in item["question"]:
-            content = item["question"]["content"]
+            content = str(item["question"]["content"] or "")
         # Also include choice text for radio questions
         widgets = item.get("question", {}).get("widgets", {})
         for w in widgets.values():
             if w.get("type") == "radio":
                 for choice in w.get("options", {}).get("choices", []):
-                    content += " " + choice.get("content", "")
+                    choice_text = choice.get("content") or ""
+                    content += " " + str(choice_text)
         return content
 
     def is_near_duplicate(self, skill_id: str, item: dict) -> bool:
@@ -872,6 +873,9 @@ class ContentGenerationService:
                 # Backfill question_id for analytics tracking
                 if "question_id" not in q and "question_id" in doc:
                     q["question_id"] = doc["question_id"]
+            elif q is not None:
+                logger.warning(f"[CONTENT_GEN] Legacy question has non-dict data: {type(q)}")
+                q = None  # Reject non-dict data rather than passing garbage downstream
             return q
 
         # Last-last resort: untagged legacy questions
@@ -890,6 +894,9 @@ class ContentGenerationService:
                     q.pop("_id", None)
                     if "question_id" not in q and "question_id" in doc:
                         q["question_id"] = doc["question_id"]
+                elif q is not None:
+                    logger.warning(f"[CONTENT_GEN] Legacy untagged question has non-dict data: {type(q)}")
+                    q = None
                 return q
 
         return None  # Truly empty -- caller should trigger ensure_pool
@@ -919,6 +926,7 @@ class ContentGenerationService:
             qd = doc.get("question_data") or {}
             q_id = doc.get("question_id") or f"pool_{doc.get('content_hash', '')[:16]}"
             if isinstance(qd, dict):
+                qd = dict(qd)  # Copy to avoid mutating cached MongoDB doc
                 qd.setdefault("question_id", q_id)
             return qd
 

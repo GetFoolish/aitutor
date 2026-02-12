@@ -156,13 +156,20 @@ FORMAT_INSTRUCTIONS = {
     ),
     "definition": (
         "Format: DEFINITION with follow-up question.\n"
-        "The question must use TWO widgets:\n"
-        "  1. A 'definition 1' widget (type 'definition') with options.definition (the term's definition text) "
-        "and options.togglePrompt (the term to highlight)\n"
+        "The question must use TWO widgets in the 'widgets' object:\n"
+        "  1. A 'definition 1' widget (type 'definition') with these REQUIRED options:\n"
+        "     - definition: string (the term's full definition text)\n"
+        "     - togglePrompt: string (the term to highlight/define)\n"
+        "     - static: false\n"
         "  2. A 'radio 1' widget (type 'radio') for the follow-up question about the term\n"
-        "The question content should present a sentence using the term (highlighted via [[☃ definition 1]]) "
-        "then ask a comprehension question answered via [[☃ radio 1]].\n"
-        "The radio widget must have 4 choices with exactly 1 correct.\n"
+        "     with 4 choices, exactly 1 correct, multipleSelect: false\n"
+        "IMPORTANT: The 'widgets' object MUST contain BOTH widgets. Example:\n"
+        '  "widgets": {\n'
+        '    "definition 1": {"type":"definition","graded":false,"options":{"definition":"...","togglePrompt":"...","static":false}},\n'
+        '    "radio 1": {"type":"radio","graded":true,"options":{"choices":[...], "multipleSelect":false}}\n'
+        "  }\n"
+        "The question content MUST include BOTH placeholders with text between them:\n"
+        '  "content": "Read about [[☃ definition 1]]. Based on the definition, answer: [[☃ radio 1]]"\n'
         "Use this format for: vocabulary, reading comprehension, term identification, concept definitions."
     ),
     "categorizer": (
@@ -412,7 +419,7 @@ def build_skill_question_prompt(
         '  "question": {\n'
         f'    "content": "<question text> {widget_placeholder}",\n'
         '    "images": {},\n'
-        '    "widgets": { <one widget as described above> }\n'
+        '    "widgets": { <widget(s) as described above — definition format needs TWO widgets> }\n'
         "  },\n"
         '  "answerArea": { "calculator": false },\n'
         '  "hints": [\n'

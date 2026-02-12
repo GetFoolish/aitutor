@@ -518,9 +518,17 @@ def _load_ai_generated_perseus_items(ai_questions: List[Question]) -> List[Dict]
 
             # Fix radio: options is a list instead of {"choices": [...]}
             if wtype == "radio" and isinstance(opts, list):
+                choices = opts
+                # Preserve any extra fields that were at widget level
                 multi = wval.pop("multipleSelect", False)
                 rand = wval.pop("randomize", False)
-                wval["options"] = {"choices": opts, "multipleSelect": multi, "randomize": rand}
+                wval["options"] = {"choices": choices}
+                wval["options"].setdefault("multipleSelect", multi)
+                wval["options"].setdefault("randomize", rand)
+                wval["options"].setdefault("deselectEnabled", False)
+                wval["options"].setdefault("displayCount", None)
+                wval["options"].setdefault("hasNoneOfTheAbove", False)
+                wval["options"].setdefault("countChoices", False)
                 logger.info(f"[AI_LOAD] Fixed radio options: list → dict for {q.question_id}")
 
             # Fix numeric-input: ensure required fields
@@ -1294,7 +1302,7 @@ def get_responsive_hint(request: Request, req: ResponsiveHintRequest):
     if hint_text:
         return {"hint_content": hint_text, "skill_name": skill_name}
     else:
-        return {"hint_content": None, "error": "Could not generate hint"}
+        return {"hint_content": "Try re-reading the question carefully. Look at each answer choice and think about why it might or might not be correct.", "skill_name": skill_name}
 
 @app.get("/api/misconceptions")
 def get_misconceptions(request: Request):
@@ -2047,13 +2055,13 @@ def start_adaptive_assessment(subject: str, request: Request):
                 logger.warning(f"[ADAPTIVE_ASSESSMENT] JIT generation failed: {e}")
 
         if not first_q:
-            return {"error": "No questions available for assessment"}
+            raise HTTPException(status_code=400, detail="No questions available for assessment")
 
         # Load Perseus data (warm-start already has it; pool/JIT need loading)
         if not q_data:
             q_data = getattr(first_q, "perseus_data", None) or _load_question_perseus(first_q.question_id, mongo_db)
         if not q_data:
-            return {"error": "Failed to load question data"}
+            raise HTTPException(status_code=500, detail="Failed to load question data")
 
         # Update session (track content hash alongside question ID for content-level dedup)
         first_content_hash = _compute_content_hash(q_data)
@@ -2257,6 +2265,38 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
                 break  # Got a unique question from the pool
 
     if not next_q:
+        # Last-resort JIT retry with a random skill before giving up
+        if dash_system.use_ai_questions and dash_system.ai_provider:
+            logger.info(f"[ADAPTIVE_NEXT] Pool exhausted — last-resort JIT retry for {payload.assessment_id}")
+            grade_name = user_profile.current_grade.replace("GRADE_", "Grade ").replace("K", "Kindergarten")
+            fallback_synthetic_id = f"assessment_{subject.lower().replace(' ', '_')}_{user_profile.current_grade.lower()}_{questions_asked}_fallback_{int(time.time()*1000) % 100000}"
+            try:
+                ai_result = dash_system.ai_provider.get_question_for_skill(
+                    skill_id=fallback_synthetic_id,
+                    skill_name=f"{subject} for {grade_name}",
+                    target_difficulty=new_diff,
+                    grade_level=user_profile.current_grade,
+                    age=user_profile.age if user_profile.age else 10,
+                    exclude_question_ids=used_q_ids,
+                    user_id=user_id,
+                    fast_mode=True,
+                    subject=subject,
+                )
+                if ai_result:
+                    fallback_qid = ai_result["dash_metadata"]["dash_question_id"]
+                    if fallback_qid not in used_q_ids:
+                        next_q = Question(
+                            question_id=fallback_qid,
+                            skill_ids=[fallback_synthetic_id],
+                            content="",
+                            difficulty=ai_result["dash_metadata"]["difficulty"],
+                            expected_time_seconds=60.0,
+                        )
+                        logger.info(f"[ADAPTIVE_NEXT] Last-resort JIT success: {fallback_qid}")
+            except Exception as e:
+                logger.warning(f"[ADAPTIVE_NEXT] Last-resort JIT failed: {e}")
+
+    if not next_q:
         # No more questions — auto-complete
         all_answers = session.get("answers", []) + [answer_record]
         correct_count = sum(1 for a in all_answers if a["is_correct"])
@@ -2288,7 +2328,10 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
             _prefetch_cache.pop(payload.assessment_id, None)
         return {"completed": True, "score": correct_count, "total": len(all_answers), "final_difficulty": round(new_diff, 3)}
 
-    # Update session (track content hash alongside question ID)
+    # Patch widget fields before returning (prefetch/pool data may lack defaults)
+    _patch_numeric_input_widgets(q_data)
+
+    # Update session AFTER Perseus load + patching succeeds (avoids inconsistent state on load failure)
     mongo_db.db["assessment_sessions"].update_one(
         {"assessment_id": payload.assessment_id},
         {"$set": {"current_difficulty": new_diff, "questions_asked": questions_asked},
@@ -2311,9 +2354,6 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
             except Exception as e:
                 logger.warning(f"[AUTO_PREFETCH] Failed (non-blocking): {e}")
         threading.Thread(target=_auto_prefetch, daemon=True).start()
-
-    # Patch widget fields before returning (prefetch/pool data may lack defaults)
-    _patch_numeric_input_widgets(q_data)
 
     return {
         "completed": False,
@@ -2540,12 +2580,42 @@ def _compute_content_hash(q_data: dict) -> str:
         q_data.get("question", {}).get("widgets", {}),
         sort_keys=True, ensure_ascii=True,
     )
-    return hashlib.sha256((content_str + widgets_str).encode()).hexdigest()
+    # Include answerArea so different-answer variants aren't treated as same question
+    answer_str = json.dumps(
+        q_data.get("answerArea", {}),
+        sort_keys=True, ensure_ascii=True,
+    )
+    return hashlib.sha256((content_str + widgets_str + answer_str).encode()).hexdigest()
 
 
 def _load_question_perseus(question_id: str, mongo_db) -> Optional[dict]:
     """Load Perseus question data from MongoDB for a given question_id."""
+    # Support Khan questions too — try questions_db if not an AI/pool question
     if not question_id.startswith("ai_q_") and not question_id.startswith("pool_"):
+        # Try Khan Academy questions collection
+        try:
+            khan_doc = mongo_db.questions.find_one({"question_id": question_id})
+            if not khan_doc:
+                khan_doc = mongo_db.questions.find_one({"unit_id": question_id})
+            if khan_doc:
+                perseus = khan_doc.get("perseus_json", {})
+                if isinstance(perseus, dict):
+                    perseus = dict(perseus)
+                    perseus.pop("_id", None)
+                    if "dash_metadata" not in perseus:
+                        perseus["dash_metadata"] = {
+                            "dash_question_id": question_id,
+                            "skill_ids": [khan_doc.get("unit_id", question_id)],
+                            "difficulty": khan_doc.get("difficulty", 0.5),
+                            "skill_names": [khan_doc.get("skill_name", "")],
+                            "unit_name": khan_doc.get("unit_name", ""),
+                            "lesson_name": khan_doc.get("lesson_name", "Practice"),
+                            "ai_generated": False,
+                        }
+                    _patch_numeric_input_widgets(perseus)
+                    return _strip_objectids(perseus)
+        except Exception as e:
+            logger.warning(f"[LOAD_PERSEUS] Khan question lookup failed for {question_id}: {e}")
         return None
 
     # Try ai_generated_questions first (most common)

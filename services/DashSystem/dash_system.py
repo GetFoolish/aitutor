@@ -835,7 +835,19 @@ class DASHSystem:
             return state.memory_strength
 
         stored_strength = state.memory_strength
-        logit = stored_strength - skill.difficulty
+
+        # For negative strengths (struggling students), decay toward zero means
+        # improvement without practice. Fix: only decay positive strengths multiplicatively;
+        # for negative strengths, decay toward zero is correct (forgetting the struggle).
+        # But we should NOT let negative decay make a student appear better — clamp.
+        time_elapsed = current_time - state.last_practice_time
+
+        # First pass: apply full decay to get decayed strength
+        decay_factor_full = math.exp(-skill.forgetting_rate * time_elapsed)
+        tentative = stored_strength * decay_factor_full
+
+        # Now use the decayed probability to pick the tier (not pre-decay)
+        logit = tentative - skill.difficulty
         probability = 1 / (1 + math.exp(-logit))
 
         # Tiered decay: mastered/expert skills decay much more slowly
@@ -846,10 +858,14 @@ class DASHSystem:
         else:
             effective_rate = skill.forgetting_rate           # Full rate
 
-        time_elapsed = current_time - state.last_practice_time
         decay_factor = math.exp(-effective_rate * time_elapsed)
+        decayed = stored_strength * decay_factor
 
-        return stored_strength * decay_factor
+        # For negative strengths, ensure decay doesn't make student appear BETTER
+        if stored_strength < 0:
+            decayed = min(decayed, stored_strength)
+
+        return decayed
     
     def get_all_prerequisites(self, skill_id: str, _visited: set = None) -> List[str]:
         """Get all prerequisite skills recursively (with cycle protection)"""
@@ -954,8 +970,9 @@ class DASHSystem:
             log_print(f"  |- {skill_name}: {prev_strength:.3f} -> {new_strength:.3f} ({strength_change:+.3f})")
         else:
             # Slight decrease for incorrect answers
-            # Use stored strength (not decayed) as base
-            new_strength = max(-2.0, stored_strength - 0.2)
+            # Use stored strength (not decayed) as base; clamp at 0 not negative
+            # to avoid inverted forgetting curves where decay makes student "better"
+            new_strength = max(0.0, stored_strength - 0.2)
             state.memory_strength = new_strength
             
             # Compact memory update log
@@ -1000,11 +1017,11 @@ class DASHSystem:
         return unique_affected_skills
 
     def check_prerequisites(
-        self, student_id: str, skill_id: str, current_time: float, threshold: float = 0.5
+        self, student_id: str, skill_id: str, current_time: float, threshold: float = 0.6
     ) -> Dict:
         """
-        Hard prerequisite check. Threshold 0.5 (PROFICIENT) is more lenient than
-        mastery (0.7) to avoid over-blocking while still ensuring basic readiness.
+        Hard prerequisite check. Threshold 0.6 balances between over-blocking (0.7)
+        and under-blocking (0.5) while ensuring reasonable readiness.
         Returns {met, missing, redirect_to}.
         """
         skill = self.skills.get(skill_id)
@@ -1597,12 +1614,19 @@ class DASHSystem:
                 target_grade = GradeLevel[cold_start_grade_filter]
             except KeyError:
                 logger.warning(f"[FILTER] Invalid grade filter: {cold_start_grade_filter}")
-        
+
+        # Collect prerequisite IDs for in-range skills so they aren't grade-filtered out
+        prereq_ids_for_in_range = set()
+        if target_grade is not None:
+            for sid, sk in self.skills.items():
+                if abs(sk.grade_level.value - target_grade.value) <= grade_range:
+                    prereq_ids_for_in_range.update(sk.prerequisites)
+
         for skill_id, skill in self.skills.items():
             # Apply grade filter if in cold-start mode
             if target_grade is not None:
                 grade_diff = abs(skill.grade_level.value - target_grade.value)
-                if grade_diff > grade_range:
+                if grade_diff > grade_range and skill_id not in prereq_ids_for_in_range:
                     skipped_grade_filter.append((skill_id, skill.name, skill.grade_level.name))
                     continue
             
@@ -2049,6 +2073,30 @@ class DASHSystem:
                             grade=skill.grade_level.name,
                             subject=self.subject,
                         )
+                    # Pool empty: try immediate JIT for this same skill before moving on
+                    if not pool_question and self.use_ai_questions and self.ai_provider:
+                        jit_result = self.ai_provider.get_question_for_skill(
+                            skill_id=skill_id,
+                            skill_name=skill.name,
+                            target_difficulty=target_difficulty,
+                            grade_level=skill.grade_level.name,
+                            age=user_profile.age if user_profile else 7,
+                            exclude_question_ids=answered_question_ids,
+                            user_id=student_id,
+                            fast_mode=fast_mode,
+                            subject=self.subject or "",
+                        )
+                        if jit_result:
+                            q_id = jit_result["dash_metadata"]["dash_question_id"]
+                            log_print(f"[QUESTION_SELECTED] Q:{q_id} | Skill:{skill.name} | "
+                                      f"Difficulty:{target_difficulty:.2f} (FLEXIBLE_POOL_JIT, adaptive_base:{adaptive_base:.2f}, global_adj:{global_difficulty_adjustment:+.2f})")
+                            return Question(
+                                question_id=q_id,
+                                skill_ids=[skill_id],
+                                content="",
+                                difficulty=jit_result["dash_metadata"]["difficulty"],
+                                expected_time_seconds=60.0,
+                            )
                 except Exception as e:
                     log_print(f"[CONTENT_SERVICE] Flexible pool pop failed for {skill_id}: {e}")
                 # Fall through to existing AI/Khan logic on pool miss or error
@@ -2157,8 +2205,11 @@ class DASHSystem:
         )
         
         if not recommended_skills:
-            log_print(f"[GET_NEXT_QUESTION] No recommended skills found for student {student_id}")
-            return None
+            log_print(f"[GET_NEXT_QUESTION] No recommended skills — trying flexible selection")
+            return self.get_next_question_flexible(
+                student_id, current_time, exclude_question_ids,
+                user_profile=user_profile, fast_mode=fast_mode,
+            )
         
         log_print(f"[GET_NEXT_QUESTION] Found {len(recommended_skills)} recommended skills for student {student_id}")
         
@@ -2252,6 +2303,30 @@ class DASHSystem:
                             grade=skill.grade_level.name,
                             subject=self.subject,
                         )
+                    # Pool empty: try immediate JIT for this same skill before moving on
+                    if not pool_question and self.use_ai_questions and self.ai_provider:
+                        jit_result = self.ai_provider.get_question_for_skill(
+                            skill_id=skill_id,
+                            skill_name=skill.name,
+                            target_difficulty=target_difficulty,
+                            grade_level=skill.grade_level.name,
+                            age=user_profile.age if user_profile else 7,
+                            exclude_question_ids=answered_question_ids,
+                            user_id=student_id,
+                            fast_mode=fast_mode,
+                            subject=self.subject or "",
+                        )
+                        if jit_result:
+                            q_id = jit_result["dash_metadata"]["dash_question_id"]
+                            log_print(f"[QUESTION_SELECTED] Q:{q_id} | Skill:{skill.name} | "
+                                      f"Difficulty:{target_difficulty:.2f} (POOL_JIT, adaptive_base:{adaptive_base:.2f}, global_adj:{global_difficulty_adjustment:+.2f})")
+                            return Question(
+                                question_id=q_id,
+                                skill_ids=[skill_id],
+                                content="",
+                                difficulty=jit_result["dash_metadata"]["difficulty"],
+                                expected_time_seconds=60.0,
+                            )
                 except Exception as e:
                     log_print(f"[CONTENT_SERVICE] Pool pop failed for {skill_id}: {e}")
                 # Fall through to existing AI/Khan logic on pool miss or error

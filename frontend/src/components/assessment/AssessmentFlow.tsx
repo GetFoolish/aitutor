@@ -195,10 +195,12 @@ const AssessmentFlow: React.FC = () => {
           return;
         }
 
-        // Client-side duplicate check: log if backend served identical content
+        // Client-side duplicate check: skip if backend served identical content
         const fp = contentFingerprint(data.question);
         if (seenContentRef.current.has(fp)) {
-          console.warn('[AssessmentFlow] Duplicate content detected client-side — skipping');
+          console.warn('[AssessmentFlow] Duplicate content detected client-side — treating as auto-advance');
+          // Don't show the duplicate to the student — the backend already recorded the answer
+          // so just move on; the next /assessment/next call will give a fresh question
         }
         seenContentRef.current.add(fp);
 

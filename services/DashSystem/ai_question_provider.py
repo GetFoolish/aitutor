@@ -97,7 +97,10 @@ def _filter_formats_by_age(formats: list, weights: list, age: int) -> tuple:
     # If all weights are zero (shouldn't happen), fall back to radio_single
     if sum(filtered_w) == 0:
         return ["radio_single"], [1]
-    return formats, filtered_w
+    # Remove zero-weighted entries so random.choices can't pick them
+    filtered_formats = [f for f, w in zip(formats, filtered_w) if w > 0]
+    filtered_w = [w for w in filtered_w if w > 0]
+    return filtered_formats, filtered_w
 
 
 # Keywords used to detect subject category from skill_id / subject strings
@@ -310,8 +313,7 @@ class AIQuestionProvider:
         )
         # Fallback: try untagged queue items if subject filter returned nothing
         if not queue_item and subject:
-            untagged_query = {**query, "subject": {"$in": [None, ""]}}
-            del untagged_query["subject"]  # remove old subject key
+            untagged_query = {k: v for k, v in query.items() if k != "subject"}
             untagged_query["$or"] = [{"subject": None}, {"subject": ""}, {"subject": {"$exists": False}}]
             queue_item = self.queue.find_one_and_update(
                 untagged_query,
@@ -591,6 +593,10 @@ class AIQuestionProvider:
                     perseus_json = fallback["item"]
                     # Repair fallback question (add missing placeholders, field defaults)
                     perseus_json = self.content_engine._repair_item(perseus_json, fmt=fmt)
+                    # Validate fallback — don't insert broken questions into queue
+                    if not self.content_engine._validate_item(perseus_json, fmt=fmt):
+                        logger.warning(f"[AI_PROVIDER] Fallback question failed validation for {skill_name}/{fmt}")
+                        return (diff, fmt, None)
                 return (diff, fmt, perseus_json)
             except Exception as e:
                 logger.warning(f"[AI_PROVIDER] Parallel gen failed for {skill_name}: {e}")
@@ -697,12 +703,18 @@ class AIQuestionProvider:
             sort_keys=True,
             ensure_ascii=True,
         )
+        # Include answerArea so different-answer variants aren't treated as same question
+        answer_area = json.dumps(
+            perseus_json.get("answerArea", {}),
+            sort_keys=True,
+            ensure_ascii=True,
+        )
         widgets = json.dumps(
             perseus_json.get("question", {}).get("widgets", {}),
             sort_keys=True,
             ensure_ascii=True,
         )
-        combined = content + widgets
+        combined = content + widgets + answer_area
         return hashlib.sha256(combined.encode()).hexdigest()
 
     # Keywords per subject for matching Khan question unit_ids in fallback

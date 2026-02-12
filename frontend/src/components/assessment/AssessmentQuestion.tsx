@@ -232,12 +232,10 @@ const AssessmentQuestion: React.FC<Props> = ({
   const handleSubmit = () => {
     if (isAnswered) return; // Prevent double-submit
     if (!rendererRef.current) {
-      console.error('[AssessmentQuestion] rendererRef is null — widget failed to render, skipping as incorrect');
-      // Widget failed to render — mark as incorrect and move on
-      setIsAnswered(true);
-      setShowFeedback(true);
-      setKeScore({ correct: false, empty: false, message: null, guess: null, state: null });
-      onAnswer(false);
+      console.error('[AssessmentQuestion] rendererRef is null — widget still loading, please wait');
+      // Widget still loading — show a warning instead of force-marking incorrect
+      setEmptyWarning(true);
+      setTimeout(() => setEmptyWarning(false), 2000);
       return;
     }
 
