@@ -206,7 +206,7 @@ self.onmessage = (e: MessageEvent) => {
       throw new Error(`Invalid data type: ${typeof data}`);
     }
 
-    const imageData = new ImageData(imageDataArray, width, height);
+    const imageData = new ImageData(new Uint8ClampedArray(imageDataArray.buffer as ArrayBuffer), width, height);
 
     // Apply Canny edge detection
     const resultImageData = cannyEdgeDetection(
@@ -224,7 +224,7 @@ self.onmessage = (e: MessageEvent) => {
       width: resultImageData.width,
       height: resultImageData.height,
       data: resultBuffer
-    }, [resultBuffer]);
+    }, { transfer: [resultBuffer] });
 
   } catch (error: any) {
     console.error('[Canny Worker] Error:', error);

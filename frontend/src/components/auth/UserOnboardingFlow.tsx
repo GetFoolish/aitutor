@@ -396,6 +396,7 @@ const UserOnboardingFlow: React.FC = () => {
                         render={({ field }) => (
                           <Input
                             {...field}
+                            value={field.value as string ?? ''}
                             id="dateOfBirth"
                             type="date"
                             className="h-12 text-lg"
@@ -442,7 +443,7 @@ const UserOnboardingFlow: React.FC = () => {
                         name="gender"
                         control={control}
                         render={({ field }) => (
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value as string}>
                             <SelectTrigger className="h-12 text-lg" style={{
                               border: '4px solid #000000',
                               backgroundColor: '#FFFFFF',
@@ -495,7 +496,7 @@ const UserOnboardingFlow: React.FC = () => {
                         name="preferredLanguage"
                         control={control}
                         render={({ field }) => (
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value as string}>
                             <SelectTrigger className="h-12 text-lg" style={{
                               border: '4px solid #000000',
                               backgroundColor: '#FFFFFF',
@@ -559,7 +560,7 @@ const UserOnboardingFlow: React.FC = () => {
                         name="location"
                         control={control}
                         render={({ field }) => (
-                          <Select onValueChange={(value) => { field.onChange(value); setCountrySearch(''); }} value={field.value}>
+                          <Select onValueChange={(value) => { field.onChange(value); setCountrySearch(''); }} value={field.value as string}>
                             <SelectTrigger className="h-12 text-lg" style={{
                               border: '4px solid #000000',
                               backgroundColor: '#FFFFFF',

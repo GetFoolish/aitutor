@@ -34,7 +34,7 @@ function renderTextWithLatex(text: string): React.ReactNode {
 }
 
 // Widget types that use deprecated string refs and are broken in React 18
-const BROKEN_WIDGET_TYPES = new Set(['orderer']);
+const BROKEN_WIDGET_TYPES = new Set(['orderer', 'matcher']);
 
 interface Props {
   question: any;
@@ -196,52 +196,7 @@ const AssessmentQuestion: React.FC<Props> = ({
             },
           };
         }
-        // Matcher: convert to per-row dropdowns (Perseus DnD broken in React 18)
-        if (w?.type === 'matcher' && w.options) {
-          const mLeft: string[] = w.options.left || [];
-          const mRight: string[] = w.options.right || [];
-          const mLabels = w.options.labels || ['Left', 'Right'];
-
-          if (mLeft.length > 0 && mRight.length > 0) {
-            const shuffled = [...mRight];
-            let seed = 0;
-            for (const s of mLeft.concat(mRight)) {
-              for (let j = 0; j < s.length; j++) seed = (seed * 31 + s.charCodeAt(j)) | 0;
-            }
-            for (let i = shuffled.length - 1; i > 0; i--) {
-              seed = (seed * 1103515245 + 12345) & 0x7fffffff;
-              const j = seed % (i + 1);
-              [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-            if (shuffled.every((v, i) => v === mRight[i])) shuffled.reverse();
-
-            delete q.question.widgets[key];
-            for (let i = 0; i < mLeft.length; i++) {
-              const dKey = `matcher-dd-${i + 1}`;
-              q.question.widgets[dKey] = {
-                type: 'dropdown',
-                graded: true,
-                options: {
-                  placeholder: 'Select a match',
-                  static: false,
-                  choices: shuffled.map((item: string) => ({
-                    content: item,
-                    correct: item === mRight[i],
-                  })),
-                },
-              };
-            }
-            const mPlaceholder = `[[☃ ${key}]]`;
-            if (typeof q.question.content === 'string' && q.question.content.includes(mPlaceholder)) {
-              let table = `**${mLabels[0]}** | **${mLabels[1]}**\n\n`;
-              for (let i = 0; i < mLeft.length; i++) {
-                table += `**${mLeft[i]}** → [[☃ matcher-dd-${i + 1}]]\n\n`;
-              }
-              q.question.content = q.question.content.replace(mPlaceholder, table);
-            }
-            continue;
-          }
-        }
+        // Matcher: leave as-is — BROKEN_WIDGET_TYPES will trigger "Skip" UX
         // Sorter: ensure layout
         if (w?.type === 'sorter' && w.options) {
           q.question.widgets[key] = {

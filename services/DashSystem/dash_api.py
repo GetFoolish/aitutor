@@ -90,7 +90,13 @@ def _switch_subject_if_needed(subject: str, region: str = "US") -> bool:
         logger.info(f"[SUBJECT_SWITCH] {dash_system.subject}/{dash_system.region} -> {subject}/{region}")
         dash_system.subject = subject
         dash_system.region = region
-        dash_system.reload_curriculum()
+        try:
+            dash_system.reload_curriculum()
+        except Exception as e:
+            logger.error(f"[SUBJECT_SWITCH] reload_curriculum failed for {subject}/{region}: {e}")
+            # Continue with whatever skills are already loaded rather than crash
+            if len(dash_system.skills) == 0:
+                logger.warning(f"[SUBJECT_SWITCH] No skills loaded — assessment may fail")
         return True
 
 # Configure CORS with secure origins from environment
@@ -602,21 +608,29 @@ def load_perseus_items_for_dash_questions_from_mongodb(
             need_loading.append(q)
 
     if not need_loading:
-        from pre_serve_validator import validate_pre_serve
+        try:
+            from pre_serve_validator import validate_pre_serve
+        except Exception:
+            # Validator unavailable — pass through all results
+            return [_strip_objectids(r) for r in results]
         validated = []
         for r in results:
             _patch_numeric_input_widgets(r)
             dm = r.get("dash_metadata", {})
             skill_ids = dm.get("skill_ids", []) if isinstance(dm, dict) else []
-            vr = validate_pre_serve(
-                r,
-                skill_id=skill_ids[0] if skill_ids else None,
-                db_collection=mongo_db.db["validation_failures"],
-            )
-            if vr.passed:
+            try:
+                vr = validate_pre_serve(
+                    r,
+                    skill_id=skill_ids[0] if skill_ids else None,
+                    db_collection=mongo_db.db["validation_failures"],
+                )
+                if vr.passed:
+                    validated.append(_strip_objectids(r))
+                else:
+                    logger.warning(f"[LOAD_PERSEUS] Warm-start pre-serve REJECT: {vr.failures}")
+            except Exception as e:
+                logger.warning(f"[LOAD_PERSEUS] Warm-start validator error: {e}")
                 validated.append(_strip_objectids(r))
-            else:
-                logger.warning(f"[LOAD_PERSEUS] Warm-start pre-serve REJECT: {vr.failures}")
         return validated
 
     # Split remaining questions by source
@@ -632,22 +646,32 @@ def load_perseus_items_for_dash_questions_from_mongodb(
         results.extend(_load_khan_perseus_items(khan_questions))
 
     # Patch all widget types with required defaults, then validate
-    from pre_serve_validator import validate_pre_serve
+    try:
+        from pre_serve_validator import validate_pre_serve
+    except Exception:
+        # Validator unavailable — pass through all results
+        for r in results:
+            _patch_numeric_input_widgets(r)
+        return [_strip_objectids(r) for r in results]
     validated = []
     for r in results:
         _patch_numeric_input_widgets(r)
         dm = r.get("dash_metadata", {})
         skill_ids = dm.get("skill_ids", []) if isinstance(dm, dict) else []
-        vr = validate_pre_serve(
-            r,
-            skill_id=skill_ids[0] if skill_ids else None,
-            subject=None,
-            db_collection=mongo_db.db["validation_failures"],
-        )
-        if vr.passed:
+        try:
+            vr = validate_pre_serve(
+                r,
+                skill_id=skill_ids[0] if skill_ids else None,
+                subject=None,
+                db_collection=mongo_db.db["validation_failures"],
+            )
+            if vr.passed:
+                validated.append(_strip_objectids(r))
+            else:
+                logger.warning(f"[LOAD_PERSEUS] Batch pre-serve REJECT: {vr.failures}")
+        except Exception as e:
+            logger.warning(f"[LOAD_PERSEUS] Batch validator error: {e}")
             validated.append(_strip_objectids(r))
-        else:
-            logger.warning(f"[LOAD_PERSEUS] Batch pre-serve REJECT: {vr.failures}")
 
     return validated
 
@@ -2347,8 +2371,18 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
             _switch_subject_if_needed(subject, "US")
 
         # Retry loop: try pool first, then force JIT with unique IDs on duplicate
-        MAX_RETRIES = 3
+        # Total budget: 20 seconds to prevent frontend timeout
+        import concurrent.futures
+        JIT_TIMEOUT = 12  # seconds per JIT attempt
+        MAX_RETRIES = 2   # reduced from 3 to stay within budget
+        retry_start = time.time()
+
         for attempt in range(MAX_RETRIES):
+            # Bail if we've spent too long already
+            if time.time() - retry_start > 20:
+                logger.warning(f"[ADAPTIVE_NEXT] Retry budget exhausted after {attempt} attempts")
+                break
+
             if attempt == 0:
                 # First attempt: try the pool via DASH
                 next_q = dash_system.get_next_question_flexible(
@@ -2364,23 +2398,31 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
                 logger.info(f"[ADAPTIVE_NEXT] Attempt {attempt+1}: duplicate {next_q.question_id} — forcing JIT")
                 next_q = None
 
+            # If we have a valid question, we're done
+            if next_q:
+                break
+
             # Force JIT generation if pool returned None or duplicate
-            if not next_q and dash_system.use_ai_questions and dash_system.ai_provider:
+            if dash_system.use_ai_questions and dash_system.ai_provider:
                 grade_name = user_profile.current_grade.replace("GRADE_", "Grade ").replace("K", "Kindergarten")
                 # Unique synthetic ID per retry to force fresh generation
                 synthetic_id = f"assessment_{subject.lower().replace(' ', '_')}_{user_profile.current_grade.lower()}_{questions_asked}_r{attempt}_{int(time.time()*1000) % 100000}"
                 try:
-                    ai_result = dash_system.ai_provider.get_question_for_skill(
-                        skill_id=synthetic_id,
-                        skill_name=f"{subject} for {grade_name}",
-                        target_difficulty=new_diff,
-                        grade_level=user_profile.current_grade,
-                        age=user_profile.age if user_profile.age else 10,
-                        exclude_question_ids=used_q_ids,
-                        user_id=user_id,
-                        fast_mode=True,
-                        subject=subject,
-                    )
+                    # Run JIT with a timeout to prevent hanging
+                    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                        future = executor.submit(
+                            dash_system.ai_provider.get_question_for_skill,
+                            skill_id=synthetic_id,
+                            skill_name=f"{subject} for {grade_name}",
+                            target_difficulty=new_diff,
+                            grade_level=user_profile.current_grade,
+                            age=user_profile.age if user_profile.age else 10,
+                            exclude_question_ids=used_q_ids,
+                            user_id=user_id,
+                            fast_mode=True,
+                            subject=subject,
+                        )
+                        ai_result = future.result(timeout=JIT_TIMEOUT)
                     if ai_result:
                         jit_qid = ai_result["dash_metadata"]["dash_question_id"]
                         if jit_qid not in used_q_ids:
@@ -2396,42 +2438,12 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
                         else:
                             logger.info(f"[ADAPTIVE_NEXT] JIT returned duplicate {jit_qid}, retrying")
                             next_q = None
+                except concurrent.futures.TimeoutError:
+                    logger.warning(f"[ADAPTIVE_NEXT] JIT attempt {attempt+1} timed out after {JIT_TIMEOUT}s")
                 except Exception as e:
                     logger.warning(f"[ADAPTIVE_NEXT] JIT attempt {attempt+1} failed: {e}")
             else:
-                break  # Got a unique question from the pool
-
-    if not next_q:
-        # Last-resort JIT retry with a random skill before giving up
-        if dash_system.use_ai_questions and dash_system.ai_provider:
-            logger.info(f"[ADAPTIVE_NEXT] Pool exhausted — last-resort JIT retry for {payload.assessment_id}")
-            grade_name = user_profile.current_grade.replace("GRADE_", "Grade ").replace("K", "Kindergarten")
-            fallback_synthetic_id = f"assessment_{subject.lower().replace(' ', '_')}_{user_profile.current_grade.lower()}_{questions_asked}_fallback_{int(time.time()*1000) % 100000}"
-            try:
-                ai_result = dash_system.ai_provider.get_question_for_skill(
-                    skill_id=fallback_synthetic_id,
-                    skill_name=f"{subject} for {grade_name}",
-                    target_difficulty=new_diff,
-                    grade_level=user_profile.current_grade,
-                    age=user_profile.age if user_profile.age else 10,
-                    exclude_question_ids=used_q_ids,
-                    user_id=user_id,
-                    fast_mode=True,
-                    subject=subject,
-                )
-                if ai_result:
-                    fallback_qid = ai_result["dash_metadata"]["dash_question_id"]
-                    if fallback_qid not in used_q_ids:
-                        next_q = Question(
-                            question_id=fallback_qid,
-                            skill_ids=[fallback_synthetic_id],
-                            content="",
-                            difficulty=ai_result["dash_metadata"]["difficulty"],
-                            expected_time_seconds=60.0,
-                        )
-                        logger.info(f"[ADAPTIVE_NEXT] Last-resort JIT success: {fallback_qid}")
-            except Exception as e:
-                logger.warning(f"[ADAPTIVE_NEXT] Last-resort JIT failed: {e}")
+                break  # No AI provider available
 
     if not next_q:
         # No more questions — auto-complete
@@ -2808,14 +2820,17 @@ def _load_question_perseus(question_id: str, mongo_db) -> Optional[dict]:
                             "ai_generated": True,
                         }
                     _patch_numeric_input_widgets(perseus)
-                    from pre_serve_validator import validate_pre_serve
-                    vr = validate_pre_serve(
-                        perseus, skill_id=skill_id,
-                        db_collection=mongo_db.db["validation_failures"],
-                    )
-                    if not vr.passed:
-                        logger.warning(f"[LOAD_PERSEUS] Pool pre-serve REJECT {question_id}: {vr.failures}")
-                        return None
+                    try:
+                        from pre_serve_validator import validate_pre_serve
+                        vr = validate_pre_serve(
+                            perseus, skill_id=skill_id,
+                            db_collection=mongo_db.db["validation_failures"],
+                        )
+                        if not vr.passed:
+                            logger.warning(f"[LOAD_PERSEUS] Pool pre-serve REJECT {question_id}: {vr.failures}")
+                            return None
+                    except Exception as e:
+                        logger.warning(f"[LOAD_PERSEUS] Pool pre-serve validator error for {question_id}: {e}")
                     return _strip_objectids(perseus)
 
     if doc:
@@ -2841,15 +2856,18 @@ def _load_question_perseus(question_id: str, mongo_db) -> Optional[dict]:
             "mongodb_id": str(doc.get("_id", question_id)),
         }
         _patch_numeric_input_widgets(perseus)
-        from pre_serve_validator import validate_pre_serve
-        vr = validate_pre_serve(
-            perseus, skill_id=skill_id,
-            subject=doc.get("subject"),
-            db_collection=mongo_db.db["validation_failures"],
-        )
-        if not vr.passed:
-            logger.warning(f"[LOAD_PERSEUS] AI pre-serve REJECT {question_id}: {vr.failures}")
-            return None
+        try:
+            from pre_serve_validator import validate_pre_serve
+            vr = validate_pre_serve(
+                perseus, skill_id=skill_id,
+                subject=doc.get("subject"),
+                db_collection=mongo_db.db["validation_failures"],
+            )
+            if not vr.passed:
+                logger.warning(f"[LOAD_PERSEUS] AI pre-serve REJECT {question_id}: {vr.failures}")
+                return None
+        except Exception as e:
+            logger.warning(f"[LOAD_PERSEUS] AI pre-serve validator error for {question_id}: {e}")
         return _strip_objectids(perseus)
     return None
 

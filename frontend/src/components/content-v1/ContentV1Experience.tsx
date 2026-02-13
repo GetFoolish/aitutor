@@ -49,7 +49,7 @@ const ContentV1Experience: React.FC = () => {
     try {
       const questionData = question.question;
       const scoreResult = scorePerseusItem(questionData, userInput, "en");
-      return !!scoreResult?.correct;
+      return scoreResult?.type === 'points' && scoreResult.earned === scoreResult.total;
     } catch (err) {
       console.warn("[ContentV1] Scoring failed, falling back to incorrect.", err);
       return false;

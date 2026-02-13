@@ -76,7 +76,8 @@ function App() {
     toggleCamera,
     toggleScreen,
     cameraVideoRef,
-    screenVideoRef
+    screenVideoRef,
+    processedEdgesRef
   } = useMediaCapture({});
 
   const [privacyEnabled, setPrivacyEnabled] = useState(false);
@@ -301,7 +302,7 @@ function App() {
                           privacyMode={privacyEnabled}
                           onTogglePrivacy={setPrivacyEnabled}
                           mediaMixerCanvasRef={mediaMixer.canvasRef}
-                          processedEdgesRef={mediaMixer.processedEdgesRef}
+                          processedEdgesRef={processedEdgesRef}
                           assessmentMode={assessmentMode}
                         />
                       </div>

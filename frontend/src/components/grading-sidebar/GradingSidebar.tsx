@@ -373,13 +373,13 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                                     mastery >= 50 ? "PROFICIENT" :
                                     mastery >= 30 ? "FAMILIAR" : "ATTEMPTED"
                                 );
-                                const masteryLabel = {
+                                const masteryLabel = ({
                                     EXPERT: "Expert",
                                     MASTERED: "Mastered",
                                     PROFICIENT: "Proficient",
                                     FAMILIAR: "Familiar",
                                     ATTEMPTED: "Attempted",
-                                }[masteryLevelName] || masteryLevelName;
+                                } as Record<string, string>)[masteryLevelName] || masteryLevelName;
 
                                 // Determine strength level for color based on mastery level
                                 const getStrengthColor = () => {

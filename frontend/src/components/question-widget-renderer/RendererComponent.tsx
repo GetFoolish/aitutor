@@ -665,59 +665,8 @@ const RendererComponent = ({
                         },
                     };
                 }
-                // Matcher: convert to per-row dropdowns (Perseus DnD broken in React 18)
-                if (w?.type === 'matcher' && w.options) {
-                    const mLeft: string[] = w.options.left || [];
-                    const mRight: string[] = w.options.right || [];
-                    const mLabels = w.options.labels || ['Left', 'Right'];
-
-                    if (mLeft.length > 0 && mRight.length > 0) {
-                        // Deterministic shuffle seeded on content to stay stable across re-renders
-                        const shuffled = [...mRight];
-                        let seed = 0;
-                        for (const s of mLeft.concat(mRight)) {
-                            for (let j = 0; j < s.length; j++) seed = (seed * 31 + s.charCodeAt(j)) | 0;
-                        }
-                        for (let i = shuffled.length - 1; i > 0; i--) {
-                            seed = (seed * 1103515245 + 12345) & 0x7fffffff;
-                            const j = seed % (i + 1);
-                            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-                        }
-                        // If shuffle accidentally produced the correct order, reverse
-                        if (shuffled.every((v, i) => v === mRight[i])) shuffled.reverse();
-
-                        // Delete original matcher widget
-                        delete itemCopy.question.widgets[key];
-
-                        // Create one dropdown per left item
-                        for (let i = 0; i < mLeft.length; i++) {
-                            const dKey = `matcher-dd-${i + 1}`;
-                            itemCopy.question.widgets[dKey] = {
-                                type: 'dropdown',
-                                graded: true,
-                                options: {
-                                    placeholder: 'Select a match',
-                                    static: false,
-                                    choices: shuffled.map((item: string) => ({
-                                        content: item,
-                                        correct: item === mRight[i],
-                                    })),
-                                },
-                            };
-                        }
-
-                        // Replace the [[☃ matcher 1]] placeholder with labeled dropdowns
-                        const mPlaceholder = `[[☃ ${key}]]`;
-                        if (typeof itemCopy.question.content === 'string' && itemCopy.question.content.includes(mPlaceholder)) {
-                            let table = `**${mLabels[0]}** | **${mLabels[1]}**\n\n`;
-                            for (let i = 0; i < mLeft.length; i++) {
-                                table += `**${mLeft[i]}** → [[☃ matcher-dd-${i + 1}]]\n\n`;
-                            }
-                            itemCopy.question.content = itemCopy.question.content.replace(mPlaceholder, table);
-                        }
-                        continue;
-                    }
-                }
+                // Matcher: skip conversion — Perseus DnD is broken in React 18
+                // In practice mode the widget renders as-is (may be non-interactive)
                 // Sorter: ensure layout
                 if (w?.type === 'sorter' && w.options) {
                     itemCopy.question.widgets[key] = {

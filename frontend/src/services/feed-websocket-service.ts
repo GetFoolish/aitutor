@@ -106,7 +106,7 @@ class FeedWebSocketService {
             window.dispatchEvent(disconnectEvent);
             
             // Show toast notification
-            import('@/components/ui/sonner').then(({ toast }) => {
+            import('sonner').then(({ toast }) => {
               toast.error("⏱️ Session Auto-Ended", {
                 description: data.message || "Your tutoring session has ended.",
                 duration: 8000,

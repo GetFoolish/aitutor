@@ -1,14 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { apiUtils } from '../../lib/api-utils';
 import AssessmentQuestion from './AssessmentQuestion';
 import AssessmentResults from './AssessmentResults';
 import Header from '../../components/header/Header';
 import BackgroundShapes from '../background-shapes/BackgroundShapes';
-import { TutorProvider } from '../../features/tutor';
-import { ThemeProvider } from '../theme/theme-provier';
-
-const FloatingControlPanel = lazy(() => import('../floating-control-panel/FloatingControlPanel'));
 
 /* 🔥 COPY LOGIN BG STYLES */
 import '../auth/auth.scss';
@@ -58,10 +54,6 @@ const AssessmentFlow: React.FC = () => {
   // Client-side content fingerprint tracker to detect duplicate questions
   const seenContentRef = useRef<Set<string>>(new Set());
 
-  // Dummy refs for FloatingControlPanel (media features not used in assessment)
-  const dummyVideoRef = useRef<HTMLVideoElement>(null);
-  const dummyCanvasRef = useRef<HTMLCanvasElement>(null);
-  const dummyEdgesRef = useRef<ImageData | null>(null);
 
   // Simple content fingerprint for client-side duplicate detection
   const contentFingerprint = useCallback((q: Question): string => {
@@ -184,7 +176,9 @@ const AssessmentFlow: React.FC = () => {
     const q = currentQuestion;
     setSubmitting(true);
 
-    // Fire the API call immediately (don't wait for feedback delay)
+    const TIMEOUT_MS = 25000;
+
+    // Fire the API call immediately
     const fetchNext = apiUtils.post(
       `${DASH_API_URL}/assessment/next`,
       {
@@ -195,10 +189,18 @@ const AssessmentFlow: React.FC = () => {
       }
     );
 
+    // Race the fetch against a hard timeout (JIT generation can be very slow)
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => {
+        console.warn(`[AssessmentFlow] Frontend timeout fired after ${TIMEOUT_MS}ms`);
+        reject(new Error('TIMEOUT'));
+      }, TIMEOUT_MS)
+    );
+
     // Brief feedback flash, then show next question as soon as API responds
     const minDelay = new Promise(resolve => setTimeout(resolve, 200));
 
-    Promise.all([fetchNext, minDelay]).then(async ([response]) => {
+    Promise.all([Promise.race([fetchNext, timeoutPromise]), minDelay]).then(async ([response]) => {
       try {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
@@ -215,8 +217,6 @@ const AssessmentFlow: React.FC = () => {
         const fp = contentFingerprint(data.question);
         if (seenContentRef.current.has(fp)) {
           console.warn('[AssessmentFlow] Duplicate content detected client-side — treating as auto-advance');
-          // Don't show the duplicate to the student — the backend already recorded the answer
-          // so just move on; the next /assessment/next call will give a fresh question
         }
         seenContentRef.current.add(fp);
 
@@ -232,12 +232,16 @@ const AssessmentFlow: React.FC = () => {
         }
       } catch (err) {
         console.error('Assessment next failed:', err);
-        setError('Failed to load next question');
+        setError('Failed to load next question. Please try again.');
         setSubmitting(false);
       }
     }).catch((err) => {
-      console.error('Assessment fetch rejected:', err);
-      setError('Network error — please try again');
+      console.error('Assessment fetch error:', err);
+      if (err?.message === 'TIMEOUT') {
+        setError('Question generation is taking too long. Please try again.');
+      } else {
+        setError('Network error — please try again.');
+      }
       setSubmitting(false);
     });
   };
@@ -246,8 +250,6 @@ const AssessmentFlow: React.FC = () => {
      Render
   ---------------------------------------------------- */
   return (
-    <ThemeProvider defaultTheme="light" storageKey="ai-tutor-theme">
-    <TutorProvider>
     <div className="auth-container" style={{ overflow: 'visible' }}>
       <BackgroundShapes />
 
@@ -543,24 +545,6 @@ const AssessmentFlow: React.FC = () => {
           )}
         </>
       )}
-      <Suspense fallback={null}>
-        <FloatingControlPanel
-          videoRef={dummyVideoRef}
-          renderCanvasRef={dummyCanvasRef}
-          supportsVideo={true}
-          onPaintClick={() => {}}
-          isPaintActive={false}
-          cameraEnabled={false}
-          screenEnabled={false}
-          onToggleCamera={() => {}}
-          onToggleScreen={() => {}}
-          mediaMixerCanvasRef={dummyCanvasRef}
-          privacyMode={false}
-          onTogglePrivacy={() => {}}
-          processedEdgesRef={dummyEdgesRef}
-          assessmentMode={true}
-        />
-      </Suspense>
 
       <style>{`
         @keyframes pulse-dot {
@@ -575,8 +559,6 @@ const AssessmentFlow: React.FC = () => {
         }
       `}</style>
     </div>
-    </TutorProvider>
-    </ThemeProvider>
   );
 };
 
