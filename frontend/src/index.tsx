@@ -23,23 +23,28 @@ import reportWebVitals from "./reportWebVitals";
 import "./package/perseus/testing/perseus-init.tsx";
 
 // Suppress noisy Perseus library warnings that we cannot fix (upstream issues)
-const _origWarn = console.warn;
-const _origError = console.error;
-const SUPPRESSED = [
-  'findDOMNode is deprecated',
-  'is not accessible',
-  'A component is changing an uncontrolled',
-  'String refs are deprecated',
-];
-const _filter = (orig: typeof console.warn) => (...args: any[]) => {
-  const msg = typeof args[0] === 'string' ? args[0] : '';
-  if (SUPPRESSED.some(s => msg.includes(s))) return;
-  orig.apply(console, args);
-};
-console.warn = _filter(_origWarn);
-console.error = _filter(_origError);
+{
+  const _origWarn = console.warn;
+  const _origError = console.error;
+  const SUPPRESSED = [
+    'findDOMNode is deprecated',
+    'A component is changing an uncontrolled',
+    'A string ref',                // React: "A string ref, "%s", has been found..."
+    'String refs are not supported', // React 18+ variant
+    'deprecated and will be removed', // General deprecation pattern
+    // NOTE: "is not accessible" REMOVED (Bug #69) — was hiding real a11y bugs
+  ];
+  const _filter = (orig: Function) => (...args: any[]) => {
+    const msg = String(args[0] || '');
+    if (SUPPRESSED.some(s => msg.includes(s))) return;
+    orig.apply(console, args);
+  };
+  console.warn = _filter(_origWarn) as typeof console.warn;
+  console.error = _filter(_origError) as typeof console.error;
+}
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { ThemeProvider } from "./components/theme/theme-provier";
 import ComingSoonGuard from "./components/coming-soon/ComingSoonGuard"; // Commented out to allow home page access
 
 const LoginPage = lazy(() => import("./components/auth/LoginPage"));
@@ -51,24 +56,89 @@ const DevLogin = lazy(() => import("./components/auth/DevLogin"));
 const AdminVideoPanel = lazy(() => import("./components/admin/AdminVideoPanel"));
 const CostTrackingPage = lazy(() => import("./components/admin/CostTrackingPage"));
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement,
+// Simple 404 page for unknown routes (Bug #42)
+const NotFound: React.FC = () => (
+  <div style={{
+    position: 'fixed',
+    inset: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    background: '#FFFDF5',
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    textAlign: 'center',
+    padding: '20px'
+  }}>
+    <div style={{
+      padding: '12px 24px',
+      border: '4px solid #000',
+      background: '#FF6B6B',
+      color: '#fff',
+      fontWeight: 900,
+      fontSize: '48px',
+      marginBottom: '24px',
+      boxShadow: '4px 4px 0 #000'
+    }}>
+      404
+    </div>
+    <h1 style={{
+      fontSize: '24px',
+      fontWeight: 900,
+      textTransform: 'uppercase',
+      letterSpacing: '0.1em',
+      marginBottom: '12px',
+      color: '#000'
+    }}>
+      Page Not Found
+    </h1>
+    <p style={{
+      fontSize: '14px',
+      fontWeight: 600,
+      color: '#666',
+      marginBottom: '24px',
+      maxWidth: '400px'
+    }}>
+      The page you're looking for doesn't exist or has been moved.
+    </p>
+    <button
+      onClick={() => window.location.href = '/app'}
+      style={{
+        padding: '12px 32px',
+        border: '3px solid #000',
+        background: '#FFD93D',
+        boxShadow: '3px 3px 0 #000',
+        cursor: 'pointer',
+        fontWeight: 900,
+        fontSize: '14px',
+        textTransform: 'uppercase',
+        letterSpacing: '0.05em'
+      }}
+    >
+      Go Home
+    </button>
+  </div>
 );
+
+// Guard against HMR re-creating the root (Bug #5)
+const container = document.getElementById("root") as HTMLElement;
+const root = (container as any).__reactRoot ||
+  ((container as any).__reactRoot = ReactDOM.createRoot(container));
 
 const queryClient = new QueryClient();
 
 // Suppress Perseus library warnings (known issues in the library)
+// NOTE (Bug #69): Only suppress truly benign upstream Perseus noise — do NOT suppress
+// "Blocked aria-hidden" or a11y warnings, as those indicate real accessibility problems.
 if (import.meta.env.DEV) {
   const originalWarn = console.warn;
   console.warn = (...args: any[]) => {
-    // Filter out known Perseus warnings
     const message = args[0]?.toString() || '';
     if (
       message.includes('findDOMNode is deprecated') ||
-      message.includes('Multiple versions of @khanacademy') ||
-      message.includes('Blocked aria-hidden')
+      message.includes('Multiple versions of @khanacademy')
     ) {
-      return; // Suppress these warnings
+      return;
     }
     originalWarn.apply(console, args);
   };
@@ -163,6 +233,7 @@ root.render(
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <ThemeProvider defaultTheme="light" storageKey="ai-tutor-theme">
         <AuthProvider>
           <ComingSoonGuard>
             <Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
@@ -178,13 +249,13 @@ root.render(
                 <Route path="/app/assessment/:subject" component={AssessmentFlow} />
                 <Route path="/landing/:id" component={LandingPageWrapper} /> {/* Dynamic landing page routes */}
                 <Route path="/app" exact component={LandingPageOrApp} />
-                <Route path="/app" component={App} />
                 <Route path="/" exact render={() => <Redirect to="/comingsoon" />} />
-                <Route component={LandingPageOrApp} /> {/* Catch-all route - fallback to landing page */}
+                <Route component={NotFound} /> {/* 404 catch-all (Bug #42) */}
               </Switch>
             </Suspense>
           </ComingSoonGuard>
         </AuthProvider>
+        </ThemeProvider>
       </BrowserRouter>
     </QueryClientProvider>
   </ErrorBoundary>

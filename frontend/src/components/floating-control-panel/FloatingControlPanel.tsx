@@ -794,8 +794,10 @@ function FloatingControlPanel({
   // Calculate initial position once without state
   const initialPosition = useMemo(() => {
     if (typeof window === "undefined") return { x: 0, y: 0 };
-    return { x: window.innerWidth - 380, y: 96 };
-  }, []);
+    // In assessment mode the panel starts collapsed (55px wide) — hug the right edge
+    const rightOffset = assessmentMode ? 75 : 380;
+    return { x: window.innerWidth - rightOffset, y: 96 };
+  }, [assessmentMode]);
 
   const calculatePopoverPosition = useCallback(() => {
     if (!panelRef.current) return { side: "right" as const, vertical: "top" as const };
@@ -859,7 +861,7 @@ function FloatingControlPanel({
   const panelClasses = useMemo(
     () =>
       cn(
-        "fixed z-[1000] bg-[#FFFDF5] dark:bg-[#000000] border-[2px] md:border-[3px] border-black dark:border-white rounded-lg md:rounded-xl",
+        "fixed z-[1000] floating-toolbar-panel bg-[#FFFDF5] dark:bg-[#000000] border-[2px] md:border-[3px] border-black dark:border-white rounded-lg md:rounded-xl",
         isCollapsed
           ? "w-[50px] md:w-[55px] py-2 md:py-2.5 px-1 md:px-1.5 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)]"
           : "w-[220px] md:w-[250px] p-2.5 md:p-3 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1),_6px_6px_16px_rgba(0,0,0,0.15),_12px_12px_32px_rgba(0,0,0,0.1)]",

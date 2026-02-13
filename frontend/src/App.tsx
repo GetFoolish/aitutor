@@ -24,7 +24,6 @@ import Header from "./components/header/Header";
 import BackgroundShapes from "./components/background-shapes/BackgroundShapes";
 import QuestionDisplay from "./components/question-display/QuestionDisplay";
 import Scratchpad from "./components/scratchpad/Scratchpad";
-import { ThemeProvider } from "./components/theme/theme-provier";
 import { HintProvider } from "./contexts/HintContext";
 import { Toaster } from "@/components/ui/sonner";
 import { useMediaMixer } from "./hooks/useMediaMixer";
@@ -214,7 +213,6 @@ function App() {
   }, [toggleDeveloperMode]);
 
   return (
-    <ThemeProvider defaultTheme="light" storageKey="ai-tutor-theme">
       <div className="App">
         <AuthGuard>
           <AssessmentGuard subject="math" onStartAssessment={startAssessment}>
@@ -233,15 +231,7 @@ function App() {
                         onToggle={toggleSidebar}
                       />
                     )}
-                    {!isDeveloperMode && (
-                      <LearningAssetsPanel
-                        questionId={currentQuestionId}
-                        open={isSidebarOpen}
-                        onToggle={toggleSidebar}
-                        onVideosWatched={setWatchedVideoIds}
-                        isDeveloperMode={isDeveloperMode}
-                      />
-                    )}
+                    {/* Learning Assets panel hidden — placeholder content removed (Bug #24) */}
                     <GradingSidebar
                       open={isGradingSidebarOpen}
                       onToggle={toggleGradingSidebar}
@@ -324,7 +314,6 @@ function App() {
           </AssessmentGuard>
         </AuthGuard>
       </div>
-    </ThemeProvider>
   );
 }
 

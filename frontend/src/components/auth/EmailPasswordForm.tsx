@@ -160,6 +160,8 @@ const EmailPasswordForm: React.FC<EmailPasswordFormProps> = ({ onAuthSuccess }) 
   const switchMode = () => {
     setMode(mode === 'login' ? 'signup' : 'login');
     setSubmitError('');
+    setShowPassword(false);
+    setShowConfirmPassword(false);
     resetLogin();
     resetSignup();
   };
@@ -214,7 +216,7 @@ const EmailPasswordForm: React.FC<EmailPasswordFormProps> = ({ onAuthSuccess }) 
 
       {/* Login Form */}
       {mode === 'login' && (
-        <form onSubmit={handleLoginSubmit(onLogin)}>
+        <form onSubmit={handleLoginSubmit(onLogin)} autoComplete="off">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div>
               <Label htmlFor="login-email" style={{ display: 'block', marginBottom: '8px', fontWeight: 700, fontSize: '14px' }}>
@@ -228,6 +230,7 @@ const EmailPasswordForm: React.FC<EmailPasswordFormProps> = ({ onAuthSuccess }) 
                     {...field}
                     id="login-email"
                     type="email"
+                    autoComplete="off"
                     placeholder="your@email.com"
                     className="h-12 text-lg"
                   />
@@ -253,6 +256,7 @@ const EmailPasswordForm: React.FC<EmailPasswordFormProps> = ({ onAuthSuccess }) 
                       {...field}
                       id="login-password"
                       type={showPassword ? 'text' : 'password'}
+                      autoComplete="new-password"
                       placeholder="Enter password"
                       className="h-12 text-lg"
                     />
@@ -350,6 +354,7 @@ const EmailPasswordForm: React.FC<EmailPasswordFormProps> = ({ onAuthSuccess }) 
                     {...field}
                     id="signup-email"
                     type="email"
+                    autoComplete="off"
                     placeholder="your@email.com"
                     className="h-12 text-lg"
                   />
@@ -375,6 +380,7 @@ const EmailPasswordForm: React.FC<EmailPasswordFormProps> = ({ onAuthSuccess }) 
                       {...field}
                       id="signup-password"
                       type={showPassword ? 'text' : 'password'}
+                      autoComplete="new-password"
                       placeholder="Min 8 chars, 1 uppercase, 1 digit"
                       className="h-12 text-lg"
                     />
@@ -417,6 +423,7 @@ const EmailPasswordForm: React.FC<EmailPasswordFormProps> = ({ onAuthSuccess }) 
                       {...field}
                       id="signup-confirm"
                       type={showConfirmPassword ? 'text' : 'password'}
+                      autoComplete="new-password"
                       placeholder="Re-enter password"
                       className="h-12 text-lg"
                     />

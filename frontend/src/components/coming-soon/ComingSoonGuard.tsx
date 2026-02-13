@@ -6,9 +6,6 @@ import React, { ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import ComingSoon from './ComingSoon';
 
-// Access prefixes - paths that bypass the coming soon page
-const ACCESS_PREFIXES = ['/app', '/landing', '/pricing'];
-
 interface ComingSoonGuardProps {
   children: ReactNode;
 }
@@ -16,18 +13,13 @@ interface ComingSoonGuardProps {
 const ComingSoonGuard: React.FC<ComingSoonGuardProps> = ({ children }) => {
   const location = useLocation();
 
-  // Check if current pathname starts with any of the access prefixes
-  const hasAccess = ACCESS_PREFIXES.some(prefix =>
-    location.pathname.startsWith(prefix)
-  );
-
-  if (hasAccess) {
-    // User has access - render normal app
-    return <>{children}</>;
+  // Show coming-soon page only for the explicit /comingsoon path
+  // All other paths pass through to the router (Switch handles 404 via NotFound)
+  if (location.pathname === '/comingsoon') {
+    return <ComingSoon />;
   }
 
-  // No access - show coming soon page
-  return <ComingSoon />;
+  return <>{children}</>;
 };
 
 export default ComingSoonGuard;

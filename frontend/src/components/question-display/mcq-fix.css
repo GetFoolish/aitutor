@@ -125,12 +125,55 @@ html.dark .matcher .column {
     border-color: #555 !important;
 }
 
+/* Fix: Perseus dropdown (Wonder Blocks SingleSelect) popover visibility */
+/* The popover/listbox gets clipped by overflow:hidden on ancestor containers */
+.framework-perseus [role="listbox"],
+#question-content-container [role="listbox"],
+.perseus-dropdown [role="listbox"] {
+    z-index: 9999 !important;
+    position: fixed !important;
+}
+
+/* Ensure the dropdown opener button is clickable */
+.framework-perseus .perseus-widget-dropdown {
+    position: relative;
+    z-index: 1;
+    overflow: visible !important;
+}
+
 /* Dark mode: dropdown widget */
 .dark #question-content-container .framework-perseus select,
 html.dark #question-content-container .framework-perseus select {
     background-color: #444 !important;
     color: white !important;
     border-color: #666 !important;
+}
+
+/* Dark mode: Wonder Blocks dropdown button */
+.dark .framework-perseus .perseus-widget-dropdown button,
+html.dark .framework-perseus .perseus-widget-dropdown button {
+    background-color: #444 !important;
+    color: white !important;
+    border-color: #666 !important;
+}
+
+/* Dark mode: Wonder Blocks dropdown listbox */
+.dark [role="listbox"],
+html.dark [role="listbox"] {
+    background-color: #333 !important;
+    border-color: #666 !important;
+}
+
+.dark [role="option"],
+html.dark [role="option"] {
+    color: white !important;
+}
+
+.dark [role="option"]:hover,
+html.dark [role="option"]:hover,
+.dark [role="option"][aria-selected="true"],
+html.dark [role="option"][aria-selected="true"] {
+    background-color: #555 !important;
 }
 
 /* Dark mode: numeric-input */
@@ -145,4 +188,40 @@ html.dark #question-content-container .framework-perseus input[type="text"] {
 .dark #question-content-container .framework-perseus .choice,
 html.dark #question-content-container .framework-perseus .choice {
     color: white !important;
+}
+
+/* Dark mode: radio choice selected state needs visible background */
+.dark #question-content-container .framework-perseus .choice:has(> button[aria-pressed="true"]),
+html.dark #question-content-container .framework-perseus .choice:has(> button[aria-pressed="true"]) {
+    background-color: rgba(24, 101, 242, 0.25) !important;
+}
+
+/* Dark mode: radio choice hover state */
+@media (hover: hover) {
+    .dark #question-content-container .framework-perseus .choice:hover:not(:has(> button[aria-pressed="true"])),
+    html.dark #question-content-container .framework-perseus .choice:hover:not(:has(> button[aria-pressed="true"])) {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+    }
+}
+
+/* Fix: Tiny numeric-input box (Bug #55) — make inputs large enough to be usable */
+#question-content-container .framework-perseus input[type="text"] {
+    min-width: 140px !important;
+    min-height: 38px !important;
+    padding: 6px 10px !important;
+    font-size: 16px !important;
+    box-sizing: border-box;
+}
+
+/* Definition widget popover: constrain z-index so it doesn't block action buttons */
+.framework-perseus [role="dialog"] {
+    z-index: 15 !important;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Ensure definition popover close button is always clickable */
+.framework-perseus [role="dialog"] [aria-label="Close Popover"] {
+    z-index: 16 !important;
+    cursor: pointer !important;
 }

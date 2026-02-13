@@ -299,7 +299,7 @@ const UserOnboardingFlow: React.FC = () => {
             fontFamily: 'system-ui, -apple-system, sans-serif',
             lineHeight: '1.2'
           }}>
-            LETS GET TO KNOW WHERE YOU STAND
+            LET'S GET TO KNOW WHERE YOU STAND
           </h1>
 
           {/* Checklist - Always visible with animation */}

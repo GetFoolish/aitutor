@@ -67,6 +67,24 @@ def get_jwt_payload(request: Request) -> Dict:
         raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
 
 
+def require_admin(request: Request) -> str:
+    """
+    Verify the request comes from an admin user.
+    Checks user_type in MongoDB. Returns user_id or raises 403.
+    """
+    user_id = get_current_user(request)
+    try:
+        from managers.mongodb_manager import mongo_db
+        user_data = mongo_db.users.find_one({"user_id": user_id})
+        if not user_data or user_data.get("user_type") != "admin":
+            raise HTTPException(status_code=403, detail="Admin access required")
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return user_id
+
+
 def get_user_from_token(token: str) -> Optional[Dict]:
     """
     Extract user information from JWT token (for WebSocket connections)

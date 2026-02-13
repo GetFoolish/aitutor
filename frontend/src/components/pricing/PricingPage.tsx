@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '../ui/card';
 import { Button } from '../ui/button';
 import cn from 'classnames';
 import { Check, Star } from 'lucide-react';
 import { paymentAPI } from '../../lib/payment-api';
 import { authAPI } from '../../lib/auth-api';
+import { useAuth } from '../../contexts/AuthContext';
+import Header from '../header/Header';
 
 interface PricingTier {
   name: string;
@@ -21,7 +24,7 @@ const pricingTiers: PricingTier[] = [
     price: '$9.99',
     description: 'Perfect for getting started',
     features: [
-      '5 hours of tutoring',
+      '300 minutes of tutoring',
       'Basic question bank access',
       'Email support',
       'Progress tracking'
@@ -33,7 +36,7 @@ const pricingTiers: PricingTier[] = [
     price: '$19.99',
     description: 'Most popular choice',
     features: [
-      '20 hours of tutoring',
+      '1,200 minutes of tutoring',
       'Full question bank access',
       'Priority email support',
       'Advanced progress tracking',
@@ -48,7 +51,7 @@ const pricingTiers: PricingTier[] = [
     price: '$39.99',
     description: 'For serious learners',
     features: [
-      '50 hours of tutoring',
+      '3,000 minutes of tutoring',
       'Full question bank access',
       '24/7 priority support',
       'Advanced progress tracking',
@@ -62,12 +65,18 @@ const pricingTiers: PricingTier[] = [
 ];
 
 const PricingPage: React.FC = () => {
+  const history = useHistory();
+  const { isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [accountInfo, setAccountInfo] = useState<any>(null);
   const [loadingAccount, setLoadingAccount] = useState(true);
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setLoadingAccount(false);
+      return;
+    }
     const fetchAccountInfo = async () => {
       try {
         setLoadingAccount(true);
@@ -81,9 +90,14 @@ const PricingPage: React.FC = () => {
     };
 
     fetchAccountInfo();
-  }, []);
+  }, [isAuthenticated]);
 
   const handleSelectPlan = async (tierName: string) => {
+    // Redirect unauthenticated users to login (Bug #49)
+    if (!isAuthenticated) {
+      history.push('/app/login');
+      return;
+    }
     try {
       setIsLoading(tierName);
       setError(null);
@@ -102,14 +116,20 @@ const PricingPage: React.FC = () => {
         window.location.href = session.checkout_url;
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create checkout session';
-      setError(errorMessage);
+      const rawMessage = err instanceof Error ? err.message : '';
       console.error('Checkout error:', err);
-      
-      // Show alert for better UX when user already has subscription
-      if (errorMessage.includes('already have an active')) {
-        alert(`${errorMessage}\n\nPlease visit your Account page to manage your subscription.`);
+
+      // Translate raw/technical errors into user-friendly messages (Bug #41)
+      let friendlyMessage: string;
+      if (rawMessage.includes('already have an active')) {
+        friendlyMessage = rawMessage;
+        alert(`${rawMessage}\n\nPlease visit your Account page to manage your subscription.`);
+      } else if (rawMessage.includes('Failed to fetch') || rawMessage.includes('NetworkError')) {
+        friendlyMessage = 'Unable to reach the payment server. Please check your connection and try again.';
+      } else {
+        friendlyMessage = 'Payment processing is currently unavailable. Please try again later.';
       }
+      setError(friendlyMessage);
     } finally {
       setIsLoading(null);
     }
@@ -129,7 +149,9 @@ const PricingPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8">
+    <>
+    <Header sidebarOpen={false} onToggleSidebar={() => {}} />
+    <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8 pt-16">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8 md:mb-12">
           <h1 className={cn(
@@ -277,6 +299,7 @@ const PricingPage: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

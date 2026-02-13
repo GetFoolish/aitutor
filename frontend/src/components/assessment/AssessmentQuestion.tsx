@@ -33,6 +33,9 @@ function renderTextWithLatex(text: string): React.ReactNode {
   });
 }
 
+// Widget types that use deprecated string refs and are broken in React 18
+const BROKEN_WIDGET_TYPES = new Set(['orderer']);
+
 interface Props {
   question: any;
   questionNumber: number;
@@ -77,12 +80,11 @@ const AssessmentQuestion: React.FC<Props> = ({
     if (!question?.question) return question;
     try {
     const q = { ...question, question: { ...question.question } };
-    // Strip picture/image references with no actual images
+    // Strip STANDALONE image-reference sentences (not mid-sentence references)
+    // Only strip when the reference is the entire sentence to avoid breaking question text
     if (typeof q.question.content === 'string') {
       q.question.content = q.question.content
-        .replace(/\b(?:look at|examine|see|observe|study|check out)\s+(?:the\s+)?(?:picture|image|diagram|illustration|photo|figure)s?\b[^.!?\n]*[.!?]?\s*/gi, '')
-        .replace(/\b(?:in the (?:picture|image|diagram|illustration) (?:below|above|shown))[^.!?\n]*[.!?]?\s*/gi, '')
-        .replace(/\b(?:the (?:picture|image|diagram|illustration) (?:below|above|shows?))[^.!?\n]*[.!?]?\s*/gi, '')
+        .replace(/^(?:look at|examine|see|observe|study|check out)\s+(?:the\s+)?(?:picture|image|diagram|illustration|photo|figure)s?\b[^.!?\n]*[.!?]\s*/gim, '')
         .trim();
     }
     // Ensure every widget has a placeholder in content (definition+radio combo fix)
@@ -130,21 +132,49 @@ const AssessmentQuestion: React.FC<Props> = ({
             },
           };
         }
-        // Expression: ensure buttonSets and other required fields
+        // Expression: convert to numeric-input to avoid MathInput crash (string ref issue in React 18)
         if (w?.type === 'expression' && w.options) {
-          const exprOpts = { ...w.options };
-          if (!exprOpts.buttonSets || !Array.isArray(exprOpts.buttonSets) || exprOpts.buttonSets.length === 0) {
-            exprOpts.buttonSets = ['basic'];
+          const answerForms = w.options.answerForms || [];
+          const firstAnswer = answerForms[0]?.value || '0';
+          // Replace placeholder in content
+          if (typeof q.question.content === 'string') {
+            q.question.content = q.question.content.replace(`[[☃ ${key}]]`, `[[☃ ${key}]]`);
           }
-          if (!exprOpts.functions || !Array.isArray(exprOpts.functions) || exprOpts.functions.length === 0) {
-            exprOpts.functions = ['f', 'g', 'h'];
-          }
-          if (exprOpts.times === undefined) exprOpts.times = false;
-          if (!exprOpts.buttonsVisible) exprOpts.buttonsVisible = 'never';
-          q.question.widgets[key] = { ...w, options: exprOpts };
+          q.question.widgets[key] = {
+            type: 'numeric-input',
+            graded: true,
+            options: {
+              coefficient: false,
+              static: false,
+              labelText: '',
+              size: 'normal',
+              answers: [{
+                status: 'correct',
+                value: parseFloat(firstAnswer) || 0,
+                maxError: 0.01,
+                simplify: 'optional',
+                strict: false,
+                message: '',
+              }],
+            },
+          };
         }
-        // Definition: ensure togglePrompt, definition, and static fields
+        // Definition: inline the definition text to avoid popover dismiss bugs
+        // The definition widget's Wonder Blocks Popover has dismiss issues,
+        // so we render definition text directly in content and remove the widget.
         if (w?.type === 'definition' && w.options) {
+          const defText = (w.options.definition || '').trim();
+          const prompt = (w.options.togglePrompt || 'Definition').trim();
+          const placeholder = `[[☃ ${key}]]`;
+          if (defText && typeof q.question.content === 'string' && q.question.content.includes(placeholder)) {
+            q.question.content = q.question.content.replace(
+              placeholder,
+              ` (*${prompt}:* ${defText}) `
+            );
+            delete q.question.widgets[key];
+            continue; // Skip further processing for this widget
+          }
+          // Fallback: if no definition text, keep widget but add required fields
           q.question.widgets[key] = {
             ...w,
             options: {
@@ -166,17 +196,51 @@ const AssessmentQuestion: React.FC<Props> = ({
             },
           };
         }
-        // Matcher: ensure labels and padding
+        // Matcher: convert to per-row dropdowns (Perseus DnD broken in React 18)
         if (w?.type === 'matcher' && w.options) {
-          q.question.widgets[key] = {
-            ...w,
-            options: {
-              labels: ['Left', 'Right'],
-              orderMatters: false,
-              padding: true,
-              ...w.options,
-            },
-          };
+          const mLeft: string[] = w.options.left || [];
+          const mRight: string[] = w.options.right || [];
+          const mLabels = w.options.labels || ['Left', 'Right'];
+
+          if (mLeft.length > 0 && mRight.length > 0) {
+            const shuffled = [...mRight];
+            let seed = 0;
+            for (const s of mLeft.concat(mRight)) {
+              for (let j = 0; j < s.length; j++) seed = (seed * 31 + s.charCodeAt(j)) | 0;
+            }
+            for (let i = shuffled.length - 1; i > 0; i--) {
+              seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+              const j = seed % (i + 1);
+              [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            if (shuffled.every((v, i) => v === mRight[i])) shuffled.reverse();
+
+            delete q.question.widgets[key];
+            for (let i = 0; i < mLeft.length; i++) {
+              const dKey = `matcher-dd-${i + 1}`;
+              q.question.widgets[dKey] = {
+                type: 'dropdown',
+                graded: true,
+                options: {
+                  placeholder: 'Select a match',
+                  static: false,
+                  choices: shuffled.map((item: string) => ({
+                    content: item,
+                    correct: item === mRight[i],
+                  })),
+                },
+              };
+            }
+            const mPlaceholder = `[[☃ ${key}]]`;
+            if (typeof q.question.content === 'string' && q.question.content.includes(mPlaceholder)) {
+              let table = `**${mLabels[0]}** | **${mLabels[1]}**\n\n`;
+              for (let i = 0; i < mLeft.length; i++) {
+                table += `**${mLeft[i]}** → [[☃ matcher-dd-${i + 1}]]\n\n`;
+              }
+              q.question.content = q.question.content.replace(mPlaceholder, table);
+            }
+            continue;
+          }
         }
         // Sorter: ensure layout
         if (w?.type === 'sorter' && w.options) {
@@ -243,6 +307,17 @@ const AssessmentQuestion: React.FC<Props> = ({
     }
   }, [question]);
 
+  // Detect if question has only widget types broken in React 18
+  const brokenWidgetOnly = useMemo(() => {
+    const widgets = sanitizedQuestion?.question?.widgets || {};
+    const scoreable = Object.values(widgets).filter((w: any) => {
+      const t = w?.type;
+      return t && t !== 'image' && t !== 'definition';
+    });
+    if (scoreable.length === 0) return false;
+    return scoreable.every((w: any) => BROKEN_WIDGET_TYPES.has(w.type));
+  }, [sanitizedQuestion]);
+
   // Detect if question needs audio (phonics/listening questions)
   const audioWord = useMemo(() => {
     const content = question?.question?.content || '';
@@ -269,7 +344,10 @@ const AssessmentQuestion: React.FC<Props> = ({
     // Empty submission guard
     if (!hasUserInput(questionData.widgets || {}, userInput)) {
       setEmptyWarning(true);
-      setTimeout(() => setEmptyWarning(false), 2500);
+      setTimeout(() => {
+        document.getElementById('empty-submit-warning')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 50);
+      setTimeout(() => setEmptyWarning(false), 3500);
       return;
     }
 
@@ -312,7 +390,12 @@ const AssessmentQuestion: React.FC<Props> = ({
 
     } catch (err) {
       console.error('[AssessmentQuestion] Scoring error:', err);
-      // Don't penalize — allow retry
+      // Show visible error to user instead of silent failure
+      setEmptyWarning(true);
+      setTimeout(() => {
+        document.getElementById('empty-submit-warning')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 50);
+      setTimeout(() => setEmptyWarning(false), 4000);
       setIsAnswered(false);
     }
   };
@@ -320,72 +403,25 @@ const AssessmentQuestion: React.FC<Props> = ({
   const progressPercentage = (questionNumber / totalQuestions) * 100;
 
   return (
-    <div className="framework-perseus" style={{ marginTop: '0' }}>
+    <div className="framework-perseus mt-0">
       {/* Enhanced Question Header with Progress */}
-      <div style={{
-        marginBottom: '32px',
-        border: '5px solid #000000',
-        backgroundColor: '#FFD93D',
-        boxShadow: '4px 4px 0px 0px #000000',
-        overflow: 'hidden'
-      }}>
-        <div style={{
-          padding: '20px 24px',
-          textAlign: 'center',
-          borderBottom: '3px solid #000000'
-        }}>
-          <div style={{
-            fontSize: '20px',
-            fontWeight: 900,
-            color: '#000000',
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em',
-            marginBottom: '8px',
-            fontFamily: 'system-ui, -apple-system, sans-serif'
-          }}>
+      <div className="mb-8 border-[5px] border-black dark:border-white bg-[#FFD93D] shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] overflow-hidden">
+        <div className="px-6 py-5 text-center border-b-[3px] border-black dark:border-white">
+          <div className="text-xl font-black text-black uppercase tracking-widest mb-2 font-sans">
             QUESTION {questionNumber || 1} OF {totalQuestions || '?'}
           </div>
-          <div style={{
-            fontSize: '14px',
-            fontWeight: 700,
-            color: '#000000',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            opacity: 0.8
-          }}>
+          <div className="text-sm font-bold text-black uppercase tracking-wide opacity-80">
             Assessment in Progress
           </div>
         </div>
 
         {/* Progress Bar */}
-        <div style={{
-          height: '12px',
-          backgroundColor: '#FFFFFF',
-          borderTop: '3px solid #000000',
-          position: 'relative',
-          overflow: 'hidden'
-        }}>
-          <div style={{
-            height: '100%',
-            width: `${progressPercentage}%`,
-            backgroundColor: '#FF6B6B',
-            borderRight: '3px solid #000000',
-            transition: 'width 0.3s ease-out',
-            boxShadow: 'inset 0 0 0 2px #000000'
-          }}></div>
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            fontSize: '10px',
-            fontWeight: 900,
-            color: '#000000',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            zIndex: 1,
-            textShadow: '0 0 4px #FFFFFF'
-          }}>
+        <div className="h-3 bg-white dark:bg-neutral-800 border-t-[3px] border-black dark:border-white relative overflow-hidden">
+          <div
+            className="h-full bg-[#FF6B6B] border-r-[3px] border-black dark:border-white transition-all duration-300 ease-out"
+            style={{ width: `${progressPercentage}%` }}
+          />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] font-black text-black dark:text-white uppercase tracking-wide z-10">
             {Math.round(progressPercentage)}%
           </div>
         </div>
@@ -393,7 +429,7 @@ const AssessmentQuestion: React.FC<Props> = ({
 
       {/* Audio play button for phonics/listening questions */}
       {audioWord && (
-        <div style={{ marginBottom: '16px' }}>
+        <div className="mb-4">
           <AudioPlayButton word={audioWord} autoPlay={true} />
         </div>
       )}
@@ -401,10 +437,12 @@ const AssessmentQuestion: React.FC<Props> = ({
       <div
         id="question-content-container"
         className="border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white p-4 md:p-5 lg:p-6 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] mb-6"
+        style={{ overflow: 'visible' }}
       >
         <PerseusI18nContextProvider locale="en" strings={mockStrings}>
           <RenderStateRoot>
             <ServerItemRenderer
+              key={question?.dash_metadata?.dash_question_id || `q-${questionNumber}`}
               ref={rendererRef}
               problemNum={0}
               item={sanitizedQuestion}
@@ -426,22 +464,12 @@ const AssessmentQuestion: React.FC<Props> = ({
 
       {/* Progressive Hints */}
       {!isAnswered && question?.hints?.length > 0 && (
-        <div style={{ marginBottom: '16px' }}>
+        <div className="mb-4">
           {hintsShown > 0 && (
-            <div style={{ marginBottom: '12px' }}>
+            <div className="mb-3">
               {(question.hints || []).slice(0, hintsShown).map((hint: any, idx: number) => (
-                <div key={idx} style={{
-                  padding: '12px 16px',
-                  marginBottom: '8px',
-                  border: '3px solid #000',
-                  backgroundColor: '#FFF9C4',
-                  boxShadow: '2px 2px 0 #000',
-                  fontSize: '14px',
-                  lineHeight: '1.5',
-                  overflowWrap: 'break-word',
-                  wordBreak: 'break-word',
-                }}>
-                  <strong style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <div key={idx} className="py-3 px-4 mb-2 border-[3px] border-black dark:border-white bg-[#FFF9C4] dark:bg-amber-900/40 shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] text-sm leading-relaxed break-words text-black dark:text-white">
+                  <strong className="text-[11px] uppercase tracking-wide">
                     Hint {idx + 1}:
                   </strong>{' '}
                   {renderTextWithLatex(hint.content)}
@@ -452,19 +480,7 @@ const AssessmentQuestion: React.FC<Props> = ({
           {hintsShown < (question.hints || []).length && (
             <button
               onClick={() => setHintsShown(h => h + 1)}
-              style={{
-                padding: '10px 20px',
-                fontSize: '13px',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                backgroundColor: '#E3F2FD',
-                color: '#1565C0',
-                border: '3px solid #000',
-                cursor: 'pointer',
-                boxShadow: '2px 2px 0 #000',
-                marginBottom: '8px'
-              }}
+              className="py-2.5 px-5 text-[13px] font-bold uppercase tracking-wide bg-[#E3F2FD] dark:bg-blue-900/40 text-[#1565C0] dark:text-blue-300 border-[3px] border-black dark:border-white cursor-pointer shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] mb-2 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all duration-100"
             >
               Show Hint ({hintsShown + 1}/{(question.hints || []).length})
             </button>
@@ -472,103 +488,58 @@ const AssessmentQuestion: React.FC<Props> = ({
         </div>
       )}
 
-      {/* Empty submission warning */}
-      {emptyWarning && (
-        <div style={{
-          marginBottom: '12px',
-          padding: '12px 16px',
-          border: '3px solid #000',
-          backgroundColor: '#FFF3E0',
-          boxShadow: '2px 2px 0 #000',
-          fontSize: '14px',
-          fontWeight: 700,
-          color: '#E65100',
-          textTransform: 'uppercase',
-          letterSpacing: '0.03em',
-          textAlign: 'center'
-        }}>
-          Please select or enter an answer first
-        </div>
-      )}
-
-      {!isAnswered && (
-        <div style={{ marginBottom: '24px' }}>
+      {!isAnswered && brokenWidgetOnly && (
+        <div className="mb-6 relative z-10">
+          <div className="mb-3 py-3 px-5 border-[3px] border-black dark:border-white bg-[#FFF3E0] dark:bg-orange-900/30 text-sm font-bold text-center text-black dark:text-orange-200 uppercase tracking-wide">
+            Drag-and-drop questions are not supported yet
+          </div>
           <button
-            onClick={handleSubmit}
-            disabled={isAnswered}
-            style={{
-              width: '100%',
-              padding: '20px 32px',
-              fontSize: '18px',
-              fontWeight: 900,
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              backgroundColor: isAnswered ? '#ccc' : '#FFD93D',
-              color: '#000000',
-              border: '5px solid #000000',
-              cursor: isAnswered ? 'not-allowed' : 'pointer',
-              opacity: isAnswered ? 0.5 : 1,
-              boxShadow: '4px 4px 0px 0px #000000',
-              transition: 'all 0.1s ease-out',
-              fontFamily: 'system-ui, -apple-system, sans-serif'
-            }}
-            onMouseDown={(e) => {
-              (e.target as HTMLElement).style.boxShadow = '2px 2px 0px 0px #000000';
-              (e.target as HTMLElement).style.transform = 'translate(2px, 2px)';
-            }}
-            onMouseUp={(e) => {
-              (e.target as HTMLElement).style.boxShadow = '4px 4px 0px 0px #000000';
-              (e.target as HTMLElement).style.transform = 'translate(0, 0)';
-            }}
-            onMouseLeave={(e) => {
-              (e.target as HTMLElement).style.boxShadow = '4px 4px 0px 0px #000000';
-              (e.target as HTMLElement).style.transform = 'translate(0, 0)';
-            }}
+            onClick={() => onAnswer(false)}
+            className="w-full py-4 px-6 text-base font-black uppercase tracking-widest bg-[#E0E0E0] text-black border-[4px] border-black cursor-pointer shadow-[3px_3px_0_0_rgba(0,0,0,1)] transition-all duration-100 font-sans hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)]"
           >
-            Submit Answer
+            Skip Question
           </button>
         </div>
       )}
 
+      {!isAnswered && !brokenWidgetOnly && (
+        <div className="mb-6" style={{ position: 'relative', zIndex: 20, isolation: 'isolate' }}>
+          <button
+            onClick={handleSubmit}
+            disabled={isAnswered}
+            className="w-full py-5 px-8 text-lg font-black uppercase tracking-widest bg-[#FFD93D] text-black border-[5px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
+          >
+            Submit Answer
+          </button>
+          {emptyWarning && (
+            <div
+              id="empty-submit-warning"
+              className="mt-3 py-4 px-5 border-[4px] border-black dark:border-white bg-[#FFF3E0] dark:bg-orange-900/40 shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] text-base font-black text-[#E65100] dark:text-orange-300 uppercase tracking-wide text-center animate-bounce"
+              style={{ animationDuration: '0.4s', animationIterationCount: '2' }}
+            >
+              Please select or enter an answer first
+            </div>
+          )}
+        </div>
+      )}
+
       {showFeedback && keScore && (
-        <div style={{
-          marginBottom: '24px',
-          border: '5px solid #000000',
-          backgroundColor: keScore.correct ? '#E8F5E9' : '#FFEBEE',
-          boxShadow: '4px 4px 0px 0px #000000',
-          overflow: 'hidden',
-        }}>
-          <div style={{
-            padding: '16px 20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '16px',
-            borderBottom: !keScore.correct && question?.hints?.length ? '3px solid #000' : 'none'
-          }}>
+        <div
+          className={`mb-6 border-[5px] border-black dark:border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] overflow-hidden ${keScore.correct ? 'bg-[#E8F5E9]' : 'bg-[#FFEBEE]'}`}
+          style={{ position: 'relative', zIndex: 20, isolation: 'isolate', backgroundColor: keScore.correct ? '#E8F5E9' : '#FFEBEE' }}
+        >
+          <div className={`px-5 py-4 flex items-center justify-center gap-4 ${!keScore.correct && question?.hints?.length ? 'border-b-[3px] border-black dark:border-white' : ''}`}>
             {keScore.correct ? (
               <>
-                <CheckCircle2 size={32} style={{ color: '#2E7D32', flexShrink: 0 }} />
-                <span style={{
-                  color: '#2E7D32',
-                  fontWeight: 700,
-                  fontSize: '18px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em'
-                }}>
+                <CheckCircle2 size={32} className="text-[#2E7D32] dark:text-green-400 flex-shrink-0" />
+                <span className="text-[#2E7D32] dark:text-green-400 font-bold text-lg uppercase tracking-wide">
                   Correct!
                 </span>
               </>
             ) : (
               <>
-                <XCircle size={32} style={{ color: '#C62828', flexShrink: 0 }} />
-                <span style={{
-                  color: '#C62828',
-                  fontWeight: 700,
-                  fontSize: '18px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em'
-                }}>
+                <XCircle size={32} className="text-[#C62828] dark:text-red-400 flex-shrink-0" />
+                <span className="text-[#C62828] dark:text-red-400 font-bold text-lg uppercase tracking-wide">
                   Incorrect
                 </span>
               </>
@@ -576,14 +547,8 @@ const AssessmentQuestion: React.FC<Props> = ({
           </div>
           {/* Show explanation hint when incorrect */}
           {!keScore.correct && question?.hints?.length > 0 && (
-            <div style={{
-              padding: '14px 20px',
-              fontSize: '14px',
-              lineHeight: '1.5',
-              color: '#333',
-              backgroundColor: '#FFF3E0'
-            }}>
-              <strong style={{ textTransform: 'uppercase', fontSize: '12px', letterSpacing: '0.05em' }}>
+            <div className="px-5 py-3.5 text-sm leading-relaxed text-[#333] dark:text-neutral-200 bg-[#FFF3E0] dark:bg-amber-900/30">
+              <strong className="uppercase text-xs tracking-wide">
                 Explanation:
               </strong>{' '}
               {renderTextWithLatex(question.hints[question.hints.length - 1]?.content || question.hints[0]?.content || '')}
@@ -594,36 +559,10 @@ const AssessmentQuestion: React.FC<Props> = ({
 
       {/* Next Question button — shown after submit, student advances when ready */}
       {isAnswered && pendingCorrect !== null && (
-        <div style={{ marginBottom: '24px' }}>
+        <div className="mb-6" style={{ position: 'relative', zIndex: 20, isolation: 'isolate' }}>
           <button
             onClick={handleNext}
-            style={{
-              width: '100%',
-              padding: '20px 32px',
-              fontSize: '18px',
-              fontWeight: 900,
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              backgroundColor: '#4FC3F7',
-              color: '#000000',
-              border: '5px solid #000000',
-              cursor: 'pointer',
-              boxShadow: '4px 4px 0px 0px #000000',
-              transition: 'all 0.1s ease-out',
-              fontFamily: 'system-ui, -apple-system, sans-serif'
-            }}
-            onMouseDown={(e) => {
-              (e.target as HTMLElement).style.boxShadow = '2px 2px 0px 0px #000000';
-              (e.target as HTMLElement).style.transform = 'translate(2px, 2px)';
-            }}
-            onMouseUp={(e) => {
-              (e.target as HTMLElement).style.boxShadow = '4px 4px 0px 0px #000000';
-              (e.target as HTMLElement).style.transform = 'translate(0, 0)';
-            }}
-            onMouseLeave={(e) => {
-              (e.target as HTMLElement).style.boxShadow = '4px 4px 0px 0px #000000';
-              (e.target as HTMLElement).style.transform = 'translate(0, 0)';
-            }}
+            className="w-full py-5 px-8 text-lg font-black uppercase tracking-widest bg-[#4FC3F7] text-black border-[5px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none"
           >
             Next Question
           </button>

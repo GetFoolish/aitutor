@@ -77,15 +77,15 @@ export default function Header({ sidebarOpen, onToggleSidebar, assessmentMode }:
     const logoSource = isDarkMode ? '/logo_white.png' : '/logo.png';
 
     return (
-        <header className="fixed top-0 left-0 right-0 h-[44px] lg:h-[48px] bg-[#FFFDF5] dark:bg-[#000000] border-b-[3px] lg:border-b-[4px] border-black dark:border-white z-40 flex items-center justify-between px-2 md:px-4 lg:px-5 shadow-[0_2px_0_0_rgba(0,0,0,1)] lg:shadow-[0_2px_0_0_rgba(0,0,0,1)] dark:shadow-[0_2px_0_0_rgba(255,255,255,0.3)]">
+        <header className="fixed top-0 left-0 right-0 h-[44px] lg:h-[48px] bg-[#FFFDF5] dark:bg-[#000000] border-b-[3px] lg:border-b-[4px] border-black dark:border-white z-40 flex items-center justify-between px-2 md:px-4 lg:px-5 shadow-[0_2px_0_0_rgba(0,0,0,1)] lg:shadow-[0_2px_0_0_rgba(0,0,0,1)] dark:shadow-[0_2px_0_0_rgba(255,255,255,0.3)] select-none">
             {/* Left side - Logo */}
-            <div className="flex items-center gap-1.5 md:gap-2 group cursor-pointer">
+            <Link to="/app" className="flex items-center gap-1.5 md:gap-2 group cursor-pointer no-underline">
                 <img
                     src={logoSource}
                     alt="teachr"
                     className="h-7 md:h-8 lg:h-9 w-auto group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform duration-100"
                 />
-            </div>
+            </Link>
 
             {/* Right side - Actions */}
             <div className="flex items-center gap-1.5 md:gap-2">
@@ -105,7 +105,6 @@ export default function Header({ sidebarOpen, onToggleSidebar, assessmentMode }:
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="relative h-7 w-7 md:h-8 md:w-8 lg:h-8 lg:w-8 p-0 border-[2px] border-black dark:border-white bg-[#FF6B6B] hover:bg-[#FF6B6B] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[1px_1px_0_0_rgba(0,0,0,1)] lg:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100">
                             <Avatar className="h-full w-full border-none">
-                                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
                                 <AvatarFallback className="bg-transparent text-white font-black text-xs">{(user?.name || 'S').charAt(0).toUpperCase()}</AvatarFallback>
                             </Avatar>
                         </Button>
@@ -127,9 +126,11 @@ export default function Header({ sidebarOpen, onToggleSidebar, assessmentMode }:
                                     <span>Account</span>
                                 </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Settings className="mr-2 h-4 w-4" />
-                                <span>Settings</span>
+                            <DropdownMenuItem asChild>
+                                <Link to="/app/account" className="flex items-center">
+                                    <Settings className="mr-2 h-4 w-4" />
+                                    <span>Settings</span>
+                                </Link>
                             </DropdownMenuItem>
                             {!assessmentMode && (
                                 <DropdownMenuItem onClick={() => {

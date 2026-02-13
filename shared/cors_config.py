@@ -35,7 +35,7 @@ def get_allowed_origins() -> List[str]:
         "http://127.0.0.1:4173",
         "http://127.0.0.1:5173",
         "http://127.0.0.1:8080",  # For serving test HTML files
-        "null",  # For file:// protocol (dev only)
+        # "null" origin REMOVED — file:// protocol attack vector (Bug #65)
     ]
     
     # Add production domain if set

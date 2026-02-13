@@ -160,6 +160,7 @@ class AIQuestionProvider:
         self.collection = mongo.db["ai_generated_questions"]
         self.queue = mongo.db["ai_question_queue"]
         self._khan_example_cache: Dict[str, str] = {}
+        self._validation_failures_col = mongo.db["validation_failures"]
         self._ensure_indexes()
 
     # ------------------------------------------------------------------
@@ -220,7 +221,10 @@ class AIQuestionProvider:
                 skill_id, skill_name, effective_lesson, target_difficulty, grade_level, age, user_id,
                 subject=subject,
             )
-            return self._format_output(result, skill_id, skill_name, effective_lesson)
+            formatted = self._format_output(result, skill_id, skill_name, effective_lesson)
+            if formatted:
+                return formatted
+            # Validation failed — fall through to next tier
 
         # Tier 2: reuse from collection
         result = self._reuse_existing(skill_id, target_difficulty, exclude_question_ids, subject=subject)
@@ -230,7 +234,10 @@ class AIQuestionProvider:
                 skill_id, skill_name, effective_lesson, target_difficulty, grade_level, age, user_id,
                 subject=subject,
             )
-            return self._format_output(result, skill_id, skill_name, effective_lesson)
+            formatted = self._format_output(result, skill_id, skill_name, effective_lesson)
+            if formatted:
+                return formatted
+            # Validation failed — fall through to next tier
 
         # Tier 3: generate just-in-time
         result = self._generate_jit(
@@ -244,7 +251,9 @@ class AIQuestionProvider:
                 skill_id, skill_name, effective_lesson, target_difficulty, grade_level, age, user_id,
                 subject=subject,
             )
-            return self._format_output(result, skill_id, skill_name, effective_lesson)
+            formatted = self._format_output(result, skill_id, skill_name, effective_lesson)
+            if formatted:
+                return formatted
 
         logger.warning(f"[AI_PROVIDER] ALL TIERS FAILED for skill={skill_name}")
         return None
@@ -311,15 +320,8 @@ class AIQuestionProvider:
             {"$set": {"status": "served", "served_at": datetime.utcnow()}},
             sort=[("created_at", 1)],
         )
-        # Fallback: try untagged queue items if subject filter returned nothing
-        if not queue_item and subject:
-            untagged_query = {k: v for k, v in query.items() if k != "subject"}
-            untagged_query["$or"] = [{"subject": None}, {"subject": ""}, {"subject": {"$exists": False}}]
-            queue_item = self.queue.find_one_and_update(
-                untagged_query,
-                {"$set": {"status": "served", "served_at": datetime.utcnow()}},
-                sort=[("created_at", 1)],
-            )
+        # NOTE: Untagged fallback removed — serving old math questions for
+        # non-math subjects caused wrong-subject content (Bug #21).
         if not queue_item:
             return None
 
@@ -358,11 +360,7 @@ class AIQuestionProvider:
             query["question_id"] = {"$nin": list(exclude_ids)}
 
         doc = self.collection.find_one(query, sort=[("used_count", 1), ("created_at", -1)])
-        # Fallback: try untagged questions if subject filter returned nothing
-        if not doc and subject:
-            untagged_query = {k: v for k, v in query.items() if k != "subject"}
-            untagged_query["$or"] = [{"subject": None}, {"subject": ""}, {"subject": {"$exists": False}}]
-            doc = self.collection.find_one(untagged_query, sort=[("used_count", 1), ("created_at", -1)])
+        # NOTE: Untagged fallback removed — same reason as _pop_from_queue (Bug #21).
         if doc:
             self.collection.update_one(
                 {"_id": doc["_id"]}, {"$inc": {"used_count": 1}, "$set": {"last_served_at": datetime.utcnow()}}
@@ -412,14 +410,11 @@ class AIQuestionProvider:
         )
 
         if not perseus_json:
-            # Ultimate fallback: programmatic question
-            fallback_topic = f"{subject}: {skill_name}" if subject else skill_name
-            fallback = self.content_engine._fallback_question(fallback_topic, age, fmt, target_difficulty)
-            perseus_json = fallback["item"]
-            # Repair fallback question (add missing placeholders, field defaults)
-            perseus_json = self.content_engine._repair_item(perseus_json, fmt=fmt)
-
-        if not perseus_json:
+            # Don't use generic fallback — it produces meta-learning garbage
+            # ("Which statement is most accurate about X?") that doesn't test
+            # subject knowledge. Return None so the caller retries with the
+            # next skill or a fresh JIT attempt.
+            logger.warning(f"[JIT] Gemini generation failed for skill={skill_id}, fmt={fmt} — returning None (caller will retry)")
             return None
 
         return self._store_question(
@@ -670,9 +665,27 @@ class AIQuestionProvider:
         skill_id: str,
         skill_name: str,
         lesson_name: str,
-    ) -> Dict[str, Any]:
-        """Wrap Perseus JSON with dash_metadata matching frontend expectations."""
+    ) -> Optional[Dict[str, Any]]:
+        """Wrap Perseus JSON with dash_metadata matching frontend expectations.
+        Returns None if pre-serve validation fails.
+        """
+        from pre_serve_validator import validate_pre_serve
+
         payload = dict(question_doc["perseus_json"])
+
+        # Pre-serve validation gate
+        vr = validate_pre_serve(
+            payload,
+            skill_id=skill_id,
+            subject=question_doc.get("subject"),
+            db_collection=self._validation_failures_col,
+        )
+        if not vr.passed:
+            logger.warning(
+                f"[AI_PROVIDER] Pre-serve REJECT {question_doc.get('question_id')}: {vr.failures}"
+            )
+            return None
+
         payload["dash_metadata"] = self._build_dash_metadata(question_doc, skill_id, skill_name, lesson_name)
         return payload
 

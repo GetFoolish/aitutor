@@ -5,6 +5,34 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* FloatingControlPanel: show on desktop, hide on mobile (Bug #44) */
+.floating-toolbar-panel {
+  display: flex;
+}
+@media (max-width: 767px) {
+  .floating-toolbar-panel {
+    display: none !important;
+  }
+}
+
+/* Visible focus indicators for keyboard navigation (WCAG 2.4.7) */
+*:focus-visible {
+  outline: 3px solid #4A90E2;
+  outline-offset: 2px;
+}
+/* Neobrutalist focus ring on buttons */
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid #000;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgba(74, 144, 226, 0.4);
+}
+.dark button:focus-visible,
+.dark [role="button"]:focus-visible {
+  outline-color: #fff;
+  box-shadow: 0 0 0 5px rgba(74, 144, 226, 0.5);
+}
+
 body {
   margin: 0;
   font-family:

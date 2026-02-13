@@ -52,6 +52,8 @@ const AssessmentFlow: React.FC = () => {
   const assessmentIdRef = useRef<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  // Generation counter — prevents stale abort errors from overwriting new state
+  const generationRef = useRef(0);
 
   // Client-side content fingerprint tracker to detect duplicate questions
   const seenContentRef = useRef<Set<string>>(new Set());
@@ -89,6 +91,15 @@ const AssessmentFlow: React.FC = () => {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [completed]);
 
+  // Block in-app navigation during active assessment (Bug #62)
+  useEffect(() => {
+    if (!assessmentId || completed) return;
+    const unblock = history.block(
+      'You have an active assessment in progress. Are you sure you want to leave? Your progress will be lost.'
+    );
+    return unblock;
+  }, [assessmentId, completed, history]);
+
   useEffect(() => {
     startAssessment();
     return () => {
@@ -100,15 +111,16 @@ const AssessmentFlow: React.FC = () => {
   }, [subject]);
 
   const startAssessment = async () => {
+    const gen = ++generationRef.current;
     setLoadPhase('fast');
     try {
       const controller = new AbortController();
       abortRef.current = controller;
 
-      // Progressive phase timers: 10s→generating, 30s→slow (with cancel option)
-      const phase2Timer = setTimeout(() => setLoadPhase('generating'), 10000);
-      const phase3Timer = setTimeout(() => setLoadPhase('slow'), 30000);
-      const hardTimeout = setTimeout(() => controller.abort(), 60000); // 60s hard timeout
+      // Progressive phase timers: 15s→generating, 45s→slow (with cancel option)
+      const phase2Timer = setTimeout(() => setLoadPhase('generating'), 15000);
+      const phase3Timer = setTimeout(() => setLoadPhase('slow'), 45000);
+      const hardTimeout = setTimeout(() => controller.abort(), 120000); // 120s hard timeout
       timersRef.current = [phase2Timer, phase3Timer, hardTimeout];
 
       const response = await apiUtils.post(
@@ -155,6 +167,8 @@ const AssessmentFlow: React.FC = () => {
     } catch (err: any) {
       timersRef.current.forEach(clearTimeout);
       timersRef.current = [];
+      // Stale request (user clicked Try Again) — ignore the error
+      if (gen !== generationRef.current) return;
       console.error('Assessment start failed:', err);
       const msg = err?.name === 'AbortError'
         ? 'Assessment is taking longer than expected. Please try again.'
@@ -234,7 +248,7 @@ const AssessmentFlow: React.FC = () => {
   return (
     <ThemeProvider defaultTheme="light" storageKey="ai-tutor-theme">
     <TutorProvider>
-    <div className="auth-container">
+    <div className="auth-container" style={{ overflow: 'visible' }}>
       <BackgroundShapes />
 
       <Header
@@ -289,6 +303,27 @@ const AssessmentFlow: React.FC = () => {
             {loadPhase === 'generating' && 'Building new questions with AI. Almost there...'}
             {loadPhase === 'slow' && 'This is taking longer than usual. You can keep waiting or try again.'}
           </div>
+          {/* Cancel button — always visible during loading (Bug #54) */}
+          <button
+            onClick={() => {
+              abortRef.current?.abort();
+              assessmentIdRef.current = null;
+              sessionStorage.removeItem('selected_subject');
+              sessionStorage.removeItem('onboarding_complete');
+              window.location.replace('/app/dev-login');
+            }}
+            style={{
+              padding: '10px 24px',
+              border: '2px solid #000',
+              background: '#fff',
+              cursor: 'pointer',
+              fontWeight: 700,
+              fontSize: '12px',
+              textTransform: 'uppercase',
+            }}
+          >
+            Cancel
+          </button>
           {loadPhase === 'slow' && (
             <button
               onClick={() => {
@@ -356,6 +391,26 @@ const AssessmentFlow: React.FC = () => {
           >
             Try Again
           </button>
+          <button
+            onClick={() => {
+              assessmentIdRef.current = null;
+              sessionStorage.removeItem('selected_subject');
+              sessionStorage.removeItem('onboarding_complete');
+              history.replace('/app/dev-login');
+            }}
+            style={{
+              padding: '10px 24px',
+              border: '2px solid #000',
+              background: '#fff',
+              cursor: 'pointer',
+              fontWeight: 700,
+              fontSize: '12px',
+              textTransform: 'uppercase',
+              marginTop: '8px',
+            }}
+          >
+            Back to Dev Login
+          </button>
         </div>
       )}
 
@@ -379,81 +434,81 @@ const AssessmentFlow: React.FC = () => {
             <div style={{ position: 'relative', minHeight: '100vh', paddingTop: '60px' }}>
               {/* Assessment Mode Banner */}
               <div style={{
-                position: 'sticky',
-                top: '48px',
-                zIndex: 30,
                 width: '100%',
                 marginBottom: '24px'
               }}>
                 <div style={{
                   border: '5px solid #000000',
                   backgroundColor: '#FF6B6B',
-                  padding: '12px 24px',
+                  padding: '10px 16px',
                   boxShadow: '0 4px 0px 0px #000000',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
                   gap: '12px',
                   margin: '0 20px',
-                  position: 'relative',
                 }}>
-                  {/* Exit assessment link */}
+                  {/* Exit assessment — regular flex child, no absolute positioning */}
                   <button
-                    onClick={() => {
-                      if (window.confirm('Are you sure you want to leave this assessment? Your progress will be lost.')) {
-                        // Clear session state so AssessmentGuard doesn't redirect back
-                        sessionStorage.removeItem('selected_subject');
-                        sessionStorage.removeItem('onboarding_complete');
-                        localStorage.removeItem('jwt_token');
-                        window.location.href = '/app/dev-login';
-                      }
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Clear assessmentId FIRST so beforeunload handler won't fire a second dialog
+                      assessmentIdRef.current = null;
+                      sessionStorage.removeItem('selected_subject');
+                      sessionStorage.removeItem('onboarding_complete');
+                      // Full page navigation — reliable, avoids confirm() suppression issues
+                      window.location.replace('/app/dev-login');
                     }}
                     style={{
-                      position: 'absolute',
-                      left: '12px',
-                      background: 'none',
-                      border: '2px solid #fff',
-                      color: '#fff',
-                      fontSize: '11px',
-                      fontWeight: 700,
-                      padding: '4px 10px',
+                      flexShrink: 0,
+                      background: '#FFFFFF',
+                      border: '3px solid #000000',
+                      color: '#000000',
+                      fontSize: '13px',
+                      fontWeight: 900,
+                      padding: '6px 14px',
                       cursor: 'pointer',
                       textTransform: 'uppercase',
                       letterSpacing: '0.05em',
+                      boxShadow: '2px 2px 0 #000',
                     }}
                   >
-                    Exit
+                    ✕ Exit
                   </button>
-                  <div style={{
-                    width: '12px',
-                    height: '12px',
-                    backgroundColor: '#FFFFFF',
-                    border: '2px solid #000000',
-                    borderRadius: '50%',
-                    animation: 'pulse-dot 1.5s ease-in-out infinite'
-                  }}></div>
-                  <span style={{
-                    fontSize: '16px',
-                    fontWeight: 900,
-                    color: '#FFFFFF',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.1em',
-                    fontFamily: 'system-ui, -apple-system, sans-serif'
-                  }}>
-                    ASSESSMENT MODE
-                  </span>
-                  <div style={{
-                    width: '12px',
-                    height: '12px',
-                    backgroundColor: '#FFFFFF',
-                    border: '2px solid #000000',
-                    borderRadius: '50%',
-                    animation: 'pulse-dot 1.5s ease-in-out infinite'
-                  }}></div>
+                  <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+                    <div style={{
+                      width: '12px',
+                      height: '12px',
+                      backgroundColor: '#FFFFFF',
+                      border: '2px solid #000000',
+                      borderRadius: '50%',
+                      animation: 'pulse-dot 1.5s ease-in-out infinite'
+                    }}></div>
+                    <span style={{
+                      fontSize: '16px',
+                      fontWeight: 900,
+                      color: '#FFFFFF',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em',
+                      fontFamily: 'system-ui, -apple-system, sans-serif'
+                    }}>
+                      ASSESSMENT MODE
+                    </span>
+                    <div style={{
+                      width: '12px',
+                      height: '12px',
+                      backgroundColor: '#FFFFFF',
+                      border: '2px solid #000000',
+                      borderRadius: '50%',
+                      animation: 'pulse-dot 1.5s ease-in-out infinite'
+                    }}></div>
+                  </div>
+                  {/* Right spacer to balance the Exit button */}
+                  <div style={{ width: '70px', flexShrink: 0 }}></div>
                 </div>
               </div>
 
-              <div style={{ padding: '0 20px 40px', maxWidth: 900, margin: '0 auto' }}>
+              <div style={{ padding: '0 80px 40px 20px', maxWidth: 900, margin: '0 auto' }}>
                 {submitting && (
                   <div style={{
                     textAlign: 'center',

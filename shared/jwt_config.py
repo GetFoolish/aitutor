@@ -77,8 +77,11 @@ if not is_valid:
         print("⛔ REFUSING TO START IN PRODUCTION WITH WEAK JWT SECRET")
         sys.exit(1)
     else:
-        print("⚠️  WARNING: Running in development mode with weak JWT secret")
-        print("⚠️  This is INSECURE and should NEVER be used in production!\n")
+        # Auto-generate a random secret for dev so we never run with a blank/known key
+        import secrets
+        _jwt_secret_raw = secrets.token_urlsafe(32)
+        print("⚠️  WARNING: Auto-generated random JWT secret for this session (dev mode)")
+        print("⚠️  Set JWT_SECRET in .env for persistent tokens across restarts\n")
 
 JWT_SECRET = _jwt_secret_raw
 

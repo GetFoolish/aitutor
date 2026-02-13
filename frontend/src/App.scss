@@ -255,6 +255,13 @@ body {
     overflow-y: auto;
     overflow-x: hidden;
     background: var(--neo-bg);
+    // Reserve space for the FloatingControlPanel toolbar (Bug #38)
+    padding-right: 70px;
+
+    @media (max-width: 768px) {
+      // No toolbar on mobile (Bug #36) — remove extra padding
+      padding-right: 0;
+    }
 
     // SVG dot pattern background
     &::before {

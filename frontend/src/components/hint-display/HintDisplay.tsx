@@ -80,7 +80,7 @@ const HintDisplay: React.FC<HintDisplayProps> = ({ hints }) => {
   };
 
   return (
-    <div className="mt-4 md:mt-6 border-[3px] md:border-[4px] border-black dark:border-white bg-[#FFE500] dark:bg-[#FFD93D] shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]">
+    <div className="mt-4 md:mt-6 border-t-[3px] border-black dark:border-white bg-[#FFE500]/30 dark:bg-[#FFD93D]/20 rounded-b-sm">
       <div className="p-4 md:p-5 lg:p-6">
         {/* Hint Header */}
         <div className="flex items-center justify-between mb-3 md:mb-4 pb-2 md:pb-3 border-b-[2px] md:border-b-[3px] border-black dark:border-white">

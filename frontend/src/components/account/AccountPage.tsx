@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { authAPI, AccountInfo } from '../../lib/auth-api';
+import { useAuth } from '../../contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Skeleton } from '../ui/skeleton';
@@ -9,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import cn from 'classnames';
 import { User, MapPin, Calendar, Clock, Loader2, Edit2, Save, X } from 'lucide-react';
 import { getCountryList } from '../../lib/countries';
+import Header from '../header/Header';
 
 const LANGUAGES = ["English", "Hindi", "Spanish", "French"];
 const GENDERS = ["Male", "Female", "Other", "Prefer not to say"];
@@ -16,6 +18,7 @@ const COUNTRIES = getCountryList();
 
 const AccountPage: React.FC = () => {
   const history = useHistory();
+  const { isAuthenticated, isLoading: authLoading, refreshUser } = useAuth();
   const [accountInfo, setAccountInfo] = useState<AccountInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +63,9 @@ const AccountPage: React.FC = () => {
   const formatDate = (dateString: string) => {
     if (!dateString) return 'Not set';
     try {
-      const date = new Date(dateString);
+      // Append T12:00:00 for date-only strings to avoid UTC→local timezone day shift (Bug #40)
+      const normalized = dateString.includes('T') ? dateString : dateString + 'T12:00:00';
+      const date = new Date(normalized);
       return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     } catch {
       return dateString;
@@ -126,6 +131,8 @@ const AccountPage: React.FC = () => {
       
       setAccountInfo(updatedInfo);
       setIsEditing(false);
+      // Refresh auth context so Header picks up new name (Bug #47)
+      refreshUser();
     } catch (err: any) {
       console.error('Failed to update account info:', err);
       setError(err?.message || 'Failed to update account information');
@@ -134,9 +141,17 @@ const AccountPage: React.FC = () => {
     }
   };
 
+  // Redirect unauthenticated users to login (Bug #48)
+  if (!authLoading && !isAuthenticated) {
+    history.replace('/app/login');
+    return null;
+  }
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8">
+      <>
+      <Header sidebarOpen={false} onToggleSidebar={() => {}} />
+      <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8 pt-16">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <Card className={cn(
@@ -165,12 +180,15 @@ const AccountPage: React.FC = () => {
           </div>
         </div>
       </div>
+      </>
     );
   }
 
   if (error && !isEditing) {
     return (
-      <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8 flex items-center justify-center">
+      <>
+      <Header sidebarOpen={false} onToggleSidebar={() => {}} />
+      <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8 pt-16 flex items-center justify-center">
         <Card className={cn(
           "border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] max-w-md"
         )}>
@@ -179,6 +197,7 @@ const AccountPage: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+      </>
     );
   }
 
@@ -187,7 +206,9 @@ const AccountPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8">
+    <>
+    <Header sidebarOpen={false} onToggleSidebar={() => {}} />
+    <div className="min-h-screen bg-[#FFFDF5] dark:bg-[#000000] p-4 md:p-8 pt-16">
       <div className="max-w-6xl mx-auto">
         <h1 className={cn(
           "text-3xl md:text-4xl font-black mb-6 md:mb-8 text-black dark:text-white uppercase tracking-wide",
@@ -571,6 +592,7 @@ const AccountPage: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

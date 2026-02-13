@@ -4,6 +4,7 @@
  */
 import React, { useState } from 'react';
 import BackgroundShapes from '../background-shapes/BackgroundShapes';
+import { useTheme } from '../theme/theme-provier';
 
 const AUTH_API_URL = import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003';
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
@@ -19,12 +20,14 @@ const SUBJECTS = [
 
 const gradeForAge = (age: number) => {
   if (age <= 5) return 'K';
-  if (age >= 18) return 'Grade 12';
+  if (age >= 18) return 'Grade 12+';
   return `Grade ${age - 5}`;
 };
 
 const DevLogin: React.FC = () => {
+  const { theme, setTheme } = useTheme();
   const [selectedSubject, setSelectedSubject] = useState<string>('Math');
+  const [presetSubject, setPresetSubject] = useState<string>('Math'); // last clicked preset
   const [customSubject, setCustomSubject] = useState('');
   const [selectedAge, setSelectedAge] = useState<number | null>(null);
   const [name, setName] = useState('');
@@ -47,7 +50,7 @@ const DevLogin: React.FC = () => {
       const res = await fetch(`${AUTH_API_URL}/auth/dev-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ age, name: name || 'Test Student' })
+        body: JSON.stringify({ age, name: name.trim() || 'Test Student' })
       });
 
       if (!res.ok) {
@@ -100,6 +103,32 @@ const DevLogin: React.FC = () => {
       overflow: 'auto'
     }}>
       <BackgroundShapes />
+
+      {/* Theme toggle — top-right corner */}
+      <button
+        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        style={{
+          position: 'fixed',
+          top: '16px',
+          right: '16px',
+          zIndex: 10,
+          width: '36px',
+          height: '36px',
+          border: '3px solid currentColor',
+          borderRadius: '0',
+          background: 'transparent',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '18px',
+          boxShadow: '2px 2px 0 currentColor'
+        }}
+        title="Toggle dark mode"
+      >
+        {theme === 'dark' ? '\u2600' : '\u263D'}
+      </button>
+
       <div style={{
         position: 'relative',
         zIndex: 1,
@@ -147,7 +176,9 @@ const DevLogin: React.FC = () => {
           <input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            maxLength={40}
+            onChange={(e) => setName(e.target.value.replace(/[^a-zA-Z0-9 .\-']/g, ''))}
+            onBlur={() => setName(n => n.trim())}
             placeholder="Student name (optional)"
             disabled={loading}
             onFocus={(e) => e.target.select()}
@@ -193,6 +224,7 @@ const DevLogin: React.FC = () => {
                 onClick={() => {
                   if (loading) return;
                   setSelectedSubject(subj.id);
+                  setPresetSubject(subj.id);
                   setCustomSubject('');
                 }}
                 disabled={loading}
@@ -253,10 +285,15 @@ const DevLogin: React.FC = () => {
           <input
             type="text"
             value={customSubject}
+            maxLength={60}
             onChange={(e) => {
-              setCustomSubject(e.target.value);
-              if (e.target.value.trim()) {
-                setSelectedSubject(e.target.value.trim());
+              const cleaned = e.target.value.replace(/[^a-zA-Z0-9 ,.\-']/g, '');
+              setCustomSubject(cleaned);
+              if (cleaned.trim()) {
+                setSelectedSubject(cleaned.trim());
+              } else {
+                // Restore last clicked preset instead of hardcoding 'Math' (Bug #26)
+                setSelectedSubject(presetSubject);
               }
             }}
             placeholder="e.g. Geography, Music Theory, Python..."
@@ -280,13 +317,18 @@ const DevLogin: React.FC = () => {
         <div style={{
           marginBottom: '16px',
           padding: '8px 16px',
-          background: '#f5f5f5',
+          background: activeColor,
           border: '2px solid #000',
           display: 'inline-block',
           fontSize: '12px',
           fontWeight: 700,
           textTransform: 'uppercase',
-          letterSpacing: '0.05em'
+          letterSpacing: '0.05em',
+          color: '#000',
+          maxWidth: '90%',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap'
         }}>
           Testing: {selectedSubject}
         </div>

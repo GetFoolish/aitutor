@@ -1363,13 +1363,16 @@ class ContentV1Engine:
         item = self._repair_item(item, fmt=fmt)
         return item
 
-    def _simple_fallback_question(self, skill_name: str, lesson_name: str, age: int) -> Optional[Dict[str, Any]]:
+    def _simple_fallback_question(self, skill_name: str, lesson_name: str, age: int, subject: str = "") -> Optional[Dict[str, Any]]:
         """Last-resort fallback: very simple prompt that generates a basic radio question."""
         if not self.client:
             return None
+        subject_line = f"SUBJECT: {subject}\n" if subject else ""
         prompt = (
+            f"{subject_line}"
             f"Create a simple multiple-choice question about: {skill_name} — {lesson_name}\n"
-            f"Student age: {age}\n\n"
+            f"Student age: {age}\n"
+            f"The question MUST be specifically about {subject or skill_name}. Do NOT generate math/arithmetic problems unless the subject is math.\n\n"
             "Return ONLY this JSON (no markdown, no extra text):\n"
             "{\n"
             '  "question": {"content": "<question text> [[☃ radio 1]]", "images": {}, "widgets": {\n'
@@ -1669,7 +1672,7 @@ class ContentV1Engine:
         # Fallback: try a simplified radio_single prompt as last resort
         if item is None:
             logger.warning(f"[GENERATE] All attempts failed for {skill_name}/{fmt}, trying simple fallback")
-            item = self._simple_fallback_question(skill_name, lesson_name, age)
+            item = self._simple_fallback_question(skill_name, lesson_name, age, subject=subject)
 
         if item is None:
             return None

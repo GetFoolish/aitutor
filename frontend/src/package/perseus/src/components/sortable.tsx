@@ -452,6 +452,9 @@ type SortableState = {
     texRendererLoaded: boolean;
 };
 class Sortable extends React.Component<SortableProps, SortableState> {
+    // Callback ref map: stores refs to Draggable items and Placeholder items by key
+    private itemRefs: Record<string, any> = {};
+
     static defaultProps: DefaultProps = {
         layout: "horizontal",
         padding: true,
@@ -563,9 +566,8 @@ class Sortable extends React.Component<SortableProps, SortableState> {
         const $items = _.map(
             items,
             function (item) {
-                // eslint-disable-next-line react/no-string-refs
                 // @ts-expect-error - TS2769 - No overload matches this call. | TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
-                return $(ReactDOM.findDOMNode(this.refs[item.key]));
+                return $(ReactDOM.findDOMNode(this.itemRefs[item.key]));
             },
             this,
         );
@@ -575,27 +577,30 @@ class Sortable extends React.Component<SortableProps, SortableState> {
 
         const {constraints, layout} = this.props;
 
+        // Guard: _.max() returns -Infinity on empty arrays — use null instead
+        const safeMax = (arr: ReadonlyArray<number>) => arr.length > 0 ? _.max(arr) : null;
+
         let syncWidth: number | null = null;
         if (constraints?.width) {
             // Items must be at least as wide as the specified constraint
-            syncWidth = _.max(widths.concat(constraints.width));
+            syncWidth = safeMax(widths.concat(constraints.width));
         } else if (layout === "vertical") {
             // Sync widths to get a clean column
-            syncWidth = _.max(widths);
+            syncWidth = safeMax(widths);
         }
 
         let syncHeight: number | null = null;
         if (constraints?.height) {
             // Items must be at least as high as the specified constraint
-            syncHeight = _.max(heights.concat(constraints.height));
+            syncHeight = safeMax(heights.concat(constraints.height));
         } else if (layout === "horizontal") {
             // Sync widths to get a clean row
-            syncHeight = _.max(heights);
+            syncHeight = safeMax(heights);
         }
 
         items = _.map(items, function (item, i) {
-            item.width = syncWidth || widths[i];
-            item.height = syncHeight || heights[i];
+            item.width = (syncWidth && syncWidth > 0) ? syncWidth : widths[i];
+            item.height = (syncHeight && syncHeight > 0) ? syncHeight : heights[i];
             return item;
         });
 
@@ -658,9 +663,8 @@ class Sortable extends React.Component<SortableProps, SortableState> {
 
     onMouseMove(key: SortableItem["key"]) {
         // Dragging: Rearrange items based on draggable's position
-        // eslint-disable-next-line react/no-string-refs
         // @ts-expect-error - TS2769 - No overload matches this call.
-        const $draggable = $(ReactDOM.findDOMNode(this.refs[key]));
+        const $draggable = $(ReactDOM.findDOMNode(this.itemRefs[key]));
         // @ts-expect-error - TS2769 - No overload matches this call.
         const $sortable = $(ReactDOM.findDOMNode(this));
         const items = _.clone(this.state.items);
@@ -720,11 +724,9 @@ class Sortable extends React.Component<SortableProps, SortableState> {
                     if (item.key === key) {
                         item.state = ItemState.ANIMATING;
                         const $placeholder = $(
-                            // @ts-expect-error - TS2769 - No overload matches this call.
+                            // @ts-expect-error - TS2769 - No overload matches this call. | TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
                             ReactDOM.findDOMNode(
-                                // eslint-disable-next-line react/no-string-refs
-                                // @ts-expect-error - TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
-                                this.refs["placeholder_" + key],
+                                this.itemRefs["placeholder_" + key],
                             ),
                         );
                         // @ts-expect-error - TS2339 - Property 'position' does not exist on type 'JQueryStatic'.
@@ -840,8 +842,8 @@ class Sortable extends React.Component<SortableProps, SortableState> {
                         content={item.option}
                         key={item.key}
                         state={item.state}
-                        // @ts-expect-error - TS2769 - No overload matches this call.
-                        ref={item.key}
+                        // @ts-expect-error - TS2769 - No overload matches this call. | TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
+                        ref={(el) => { this.itemRefs[item.key] = el; }}
                         width={syncWidth ? item.width : undefined}
                         height={syncHeight ? item.height : undefined}
                         layout={layout}
@@ -891,7 +893,8 @@ class Sortable extends React.Component<SortableProps, SortableState> {
                     cards.push(
                         <Placeholder
                             key={"placeholder_" + item.key}
-                            ref={"placeholder_" + item.key}
+                            // @ts-expect-error - TS2683 - 'this' implicitly has type 'any' because it does not have a type annotation.
+                            ref={(el) => { this.itemRefs["placeholder_" + item.key] = el; }}
                             width={item.width}
                             height={item.height}
                             layout={layout}

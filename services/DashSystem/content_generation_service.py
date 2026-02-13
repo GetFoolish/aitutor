@@ -68,6 +68,7 @@ class ContentGenerationService:
         self.khan_questions_col = db_questions["questions"]
         self._khan_example_cache: Dict[str, str] = {}
         self._format_history: Dict[str, List[str]] = {}  # skill_id -> last N formats served
+        self._validation_failures_col = db_ai_tutor["validation_failures"]
         self._ensure_indexes()
 
     # ------------------------------------------------------------------
@@ -796,16 +797,29 @@ class ContentGenerationService:
         if exclude_ids:
             base_filter["question_id"] = {"$nin": list(exclude_ids)}
 
-        def _serve(doc: dict) -> dict:
-            """Mark doc as served and return question_data with question_id."""
-            self.pool_col.update_one(
-                {"_id": doc["_id"]}, {"$inc": {"attempt_count": 1}}
-            )
+        from pre_serve_validator import validate_pre_serve
+
+        def _serve(doc: dict) -> Optional[dict]:
+            """Mark doc as served and return question_data — or None if validation fails."""
             qd = dict(doc.get("question_data") or {})  # Copy to avoid mutating cached doc
             # Ensure question_id is present (backfill for older docs)
             q_id = doc.get("question_id") or f"pool_{doc.get('content_hash', '')[:16]}"
             if isinstance(qd, dict):
                 qd.setdefault("question_id", q_id)
+
+            # Pre-serve validation gate
+            vr = validate_pre_serve(
+                qd, skill_id=doc.get("skill_id", skill_id),
+                subject=doc.get("subject", subject),
+                db_collection=self._validation_failures_col,
+            )
+            if not vr.passed:
+                logger.warning(f"[CONTENT_GEN] Pre-serve REJECT {q_id}: {vr.failures}")
+                return None
+
+            self.pool_col.update_one(
+                {"_id": doc["_id"]}, {"$inc": {"attempt_count": 1}}
+            )
             # Track format for diversity enforcement
             fmt = doc.get("format", "unknown")
             history = self._format_history.setdefault(skill_id, [])
@@ -813,6 +827,9 @@ class ContentGenerationService:
             if len(history) > 10:
                 history.pop(0)
             return qd
+
+        _SORT = [("quality_score", -1), ("attempt_count", 1)]
+        _RETRY = 3  # Max candidates to try per tier before falling through
 
         # Format diversity: check if last 3 serves were the same format
         recent = self._format_history.get(skill_id, [])
@@ -826,41 +843,31 @@ class ContentGenerationService:
         # If format is overused, try a different format first
         if overused_fmt:
             diverse_filter = {**exact_filter, "format": {"$ne": overused_fmt}}
-            doc = self.pool_col.find_one(
-                diverse_filter,
-                sort=[("quality_score", -1), ("attempt_count", 1)],
-            )
-            if doc:
-                return _serve(doc)
+            for doc in self.pool_col.find(diverse_filter).sort(_SORT).limit(_RETRY):
+                result = _serve(doc)
+                if result is not None:
+                    return result
 
-        doc = self.pool_col.find_one(
-            exact_filter,
-            sort=[("quality_score", -1), ("attempt_count", 1)],
-        )
-
-        if doc:
-            return _serve(doc)
+        for doc in self.pool_col.find(exact_filter).sort(_SORT).limit(_RETRY):
+            result = _serve(doc)
+            if result is not None:
+                return result
 
         # Fallback: any bucket for this skill
-        doc = self.pool_col.find_one(
-            base_filter,
-            sort=[("quality_score", -1), ("attempt_count", 1)],
-        )
-
-        if doc:
-            return _serve(doc)
+        for doc in self.pool_col.find(base_filter).sort(_SORT).limit(_RETRY):
+            result = _serve(doc)
+            if result is not None:
+                return result
 
         # Fallback: try untagged (subject=None) pool questions for this skill
         if subject:
             untagged_filter: dict = {"skill_id": skill_id, "subject": {"$in": [None, ""]}}
             if exclude_ids:
                 untagged_filter["question_id"] = {"$nin": list(exclude_ids)}
-            doc = self.pool_col.find_one(
-                untagged_filter,
-                sort=[("quality_score", -1), ("attempt_count", 1)],
-            )
-            if doc:
-                return _serve(doc)
+            for doc in self.pool_col.find(untagged_filter).sort(_SORT).limit(_RETRY):
+                result = _serve(doc)
+                if result is not None:
+                    return result
 
         # Last resort: check ai_generated_questions collection (legacy pool)
         legacy_filter: dict = {"skill_id": skill_id}
@@ -868,11 +875,7 @@ class ContentGenerationService:
             legacy_filter["subject"] = subject
         if exclude_ids:
             legacy_filter["question_id"] = {"$nin": list(exclude_ids)}
-        doc = self.questions_col.find_one(
-            legacy_filter,
-            sort=[("created_at", -1)],
-        )
-        if doc:
+        for doc in self.questions_col.find(legacy_filter).sort([("created_at", -1)]).limit(_RETRY):
             # Return perseus_json or item depending on how it was stored
             q = doc.get("perseus_json") or doc.get("question_data") or doc.get("item")
             # Strip any MongoDB ObjectIds that would crash FastAPI serialization
@@ -882,31 +885,40 @@ class ContentGenerationService:
                 # Backfill question_id for analytics tracking
                 if "question_id" not in q and "question_id" in doc:
                     q["question_id"] = doc["question_id"]
+                # Pre-serve validation gate
+                vr = validate_pre_serve(
+                    q, skill_id=skill_id, subject=subject,
+                    db_collection=self._validation_failures_col,
+                )
+                if not vr.passed:
+                    logger.warning(f"[CONTENT_GEN] Legacy pre-serve REJECT: {vr.failures}")
+                    continue
+                return q
             elif q is not None:
                 logger.warning(f"[CONTENT_GEN] Legacy question has non-dict data: {type(q)}")
-                q = None  # Reject non-dict data rather than passing garbage downstream
-            return q
 
         # Last-last resort: untagged legacy questions
         if subject:
             legacy_untagged: dict = {"skill_id": skill_id, "subject": {"$in": [None, ""]}}
             if exclude_ids:
                 legacy_untagged["question_id"] = {"$nin": list(exclude_ids)}
-            doc = self.questions_col.find_one(
-                legacy_untagged,
-                sort=[("created_at", -1)],
-            )
-            if doc:
+            for doc in self.questions_col.find(legacy_untagged).sort([("created_at", -1)]).limit(_RETRY):
                 q = doc.get("perseus_json") or doc.get("question_data") or doc.get("item")
                 if isinstance(q, dict):
                     q = dict(q)  # Copy to avoid mutating cached doc
                     q.pop("_id", None)
                     if "question_id" not in q and "question_id" in doc:
                         q["question_id"] = doc["question_id"]
+                    vr = validate_pre_serve(
+                        q, skill_id=skill_id, subject=subject,
+                        db_collection=self._validation_failures_col,
+                    )
+                    if not vr.passed:
+                        logger.warning(f"[CONTENT_GEN] Legacy untagged pre-serve REJECT: {vr.failures}")
+                        continue
+                    return q
                 elif q is not None:
                     logger.warning(f"[CONTENT_GEN] Legacy untagged question has non-dict data: {type(q)}")
-                    q = None
-                return q
 
         return None  # Truly empty -- caller should trigger ensure_pool
 
@@ -928,32 +940,46 @@ class ContentGenerationService:
         if exclude_ids:
             base_filter["question_id"] = {"$nin": list(exclude_ids)}
 
-        def _serve(doc: dict) -> dict:
-            self.pool_col.update_one(
-                {"_id": doc["_id"]}, {"$inc": {"attempt_count": 1}}
-            )
+        from pre_serve_validator import validate_pre_serve
+
+        def _serve(doc: dict) -> Optional[dict]:
             qd = doc.get("question_data") or {}
             q_id = doc.get("question_id") or f"pool_{doc.get('content_hash', '')[:16]}"
             if isinstance(qd, dict):
                 qd = dict(qd)  # Copy to avoid mutating cached MongoDB doc
                 qd.setdefault("question_id", q_id)
+
+            # Pre-serve validation gate
+            vr = validate_pre_serve(
+                qd, skill_id=doc.get("skill_id", skill_id),
+                subject=doc.get("subject", subject),
+                db_collection=self._validation_failures_col,
+            )
+            if not vr.passed:
+                logger.warning(f"[CONTENT_GEN] Assessment pre-serve REJECT {q_id}: {vr.failures}")
+                return None
+
+            self.pool_col.update_one(
+                {"_id": doc["_id"]}, {"$inc": {"attempt_count": 1}}
+            )
             return qd
 
+        _SORT = [("quality_score", -1), ("attempt_count", 1)]
+        _RETRY = 3
+
         # Try exact bucket (verified only)
-        doc = self.pool_col.find_one(
-            {**base_filter, "difficulty_bucket": bucket},
-            sort=[("quality_score", -1), ("attempt_count", 1)],
-        )
-        if doc:
-            return _serve(doc)
+        for doc in self.pool_col.find(
+            {**base_filter, "difficulty_bucket": bucket}
+        ).sort(_SORT).limit(_RETRY):
+            result = _serve(doc)
+            if result is not None:
+                return result
 
         # Any bucket (verified only)
-        doc = self.pool_col.find_one(
-            base_filter,
-            sort=[("quality_score", -1), ("attempt_count", 1)],
-        )
-        if doc:
-            return _serve(doc)
+        for doc in self.pool_col.find(base_filter).sort(_SORT).limit(_RETRY):
+            result = _serve(doc)
+            if result is not None:
+                return result
 
         # Fall back to regular pop (includes unverified/legacy)
         return self.pop_question(skill_id, difficulty, exclude_ids, subject=subject)

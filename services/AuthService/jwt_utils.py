@@ -10,8 +10,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-JWT_SECRET = os.getenv("JWT_SECRET", "change-me-in-production")
-JWT_ALGORITHM = "HS256"
+# Import validated secret from shared config (refuses weak defaults in production)
+from shared.jwt_config import JWT_SECRET, JWT_ALGORITHM
 JWT_EXPIRATION_MINUTES = 1440 # 24 hours
 
 
@@ -33,6 +33,9 @@ def create_jwt_token(user_data: Dict) -> str:
         "iat": datetime.utcnow(),
         "exp": datetime.utcnow() + timedelta(minutes=JWT_EXPIRATION_MINUTES)
     }
+    # Include age if provided (dev-login, setup flow) — used by DASH for grade calculation
+    if user_data.get("age"):
+        payload["age"] = user_data["age"]
     
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
     return token

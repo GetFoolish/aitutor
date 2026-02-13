@@ -1161,17 +1161,22 @@ class DASHSystem:
         return len(user_profile.question_history) < 20
     
     def save_user_state(self, user_id: str, user_profile: UserProfile):
-        """Save current student states back to user profile"""
+        """Save current student states back to user profile.
+
+        Copies ALL in-memory student states to user_profile.skill_states,
+        creating new entries for skills that were practiced but not yet in
+        the profile (e.g. skills added during assessment).
+        """
         if user_id in self.student_states:
             for skill_id, student_state in self.student_states[user_id].items():
-                if skill_id in user_profile.skill_states:
-                    user_profile.skill_states[skill_id] = SkillState(
-                        memory_strength=student_state.memory_strength,
-                        last_practice_time=student_state.last_practice_time,
-                        practice_count=student_state.practice_count,
-                        correct_count=student_state.correct_count
-                    )
-        
+                # Always save — create entry if missing (Bug #22 fix)
+                user_profile.skill_states[skill_id] = SkillState(
+                    memory_strength=student_state.memory_strength,
+                    last_practice_time=student_state.last_practice_time,
+                    practice_count=student_state.practice_count,
+                    correct_count=student_state.correct_count
+                )
+
         self.user_manager.save_user(user_profile)
     
     def record_question_attempt(self, user_profile: UserProfile, question_id: str, 
@@ -1257,7 +1262,12 @@ class DASHSystem:
     #  AI-subject grading panel  (uses self.skills, not questions_db)     #
     # ------------------------------------------------------------------ #
     def _get_ai_grading_panel(self, user_id: str) -> Dict[str, Any]:
-        """Build grading panel from DASH skill graph for AI-generated subjects."""
+        """Build grading panel from DASH skill graph for AI-generated subjects.
+
+        Reads persisted skill_states from MongoDB (source of truth) instead of
+        in-memory self.student_states, which can be stale after load_user_or_create
+        resets them.
+        """
         current_time = time.time()
         subject_name = self.subject or "General"
 
@@ -1267,13 +1277,43 @@ class DASHSystem:
             "overall_mastery": 0,
         }
 
+        # ── Load user profile from MongoDB (source of truth for practice data) ──
+        user_profile = self.user_manager.load_user(user_id)
+        profile_states = user_profile.skill_states if user_profile else {}
+
+        # ── Grade range filter (same ±2 logic as Khan path) ──
+        student_grade_value = 0  # Default to K
+        if user_profile and user_profile.current_grade:
+            try:
+                student_grade_value = parse_grade_level(user_profile.current_grade).value
+            except (KeyError, Exception):
+                student_grade_value = 0
+        log_print(f"[GRADING_PANEL_AI] user={user_id}, profile_found={user_profile is not None}, "
+                  f"current_grade={getattr(user_profile, 'current_grade', None)}, "
+                  f"grade_value={student_grade_value}, profile_skills={len(profile_states)}")
+
+        grade_range = 2
+        grade_min = max(0, student_grade_value - grade_range)
+        grade_max = min(12, student_grade_value + grade_range)
+        log_print(f"[GRADING_PANEL_AI] Showing grades {grade_min}-{grade_max} (student grade {student_grade_value})")
+
         total_mastery = 0.0
         practiced_count = 0
+        filtered_count = 0
 
         for skill_id, skill in self.skills.items():
             grade_name = skill.grade_level.name if skill.grade_level else "Unknown"
             # Normalise grade label for display
             grade_label = "K" if grade_name == "K" else grade_name.replace("GRADE_", "")
+
+            # ── Filter to ±2 grade range (Bug #33) ──
+            try:
+                skill_grade_val = skill.grade_level.value if skill.grade_level else -1
+            except Exception:
+                skill_grade_val = -1
+            if skill_grade_val < grade_min or skill_grade_val > grade_max:
+                filtered_count += 1
+                continue
 
             # Ensure subject → grade structure
             subj_dict = grading_data["subjects"].setdefault(
@@ -1283,10 +1323,11 @@ class DASHSystem:
                 grade_label, {"units": []}
             )
 
-            # Pull student state
-            state = self.get_student_state(user_id, skill_id)
-            attempts = state.practice_count if state else 0
-            correct = state.correct_count if state else 0
+            # Pull student state from MongoDB profile (Bug #22 fix)
+            # This is the source of truth — in-memory states can be stale
+            profile_state = profile_states.get(skill_id)
+            attempts = profile_state.practice_count if profile_state else 0
+            correct = profile_state.correct_count if profile_state else 0
             mastery_pct = (correct / attempts * 100) if attempts > 0 else 0
 
             if attempts > 0:
@@ -1315,7 +1356,9 @@ class DASHSystem:
                 "C" if avg >= 70 else "D" if avg >= 60 else "F"
             )
 
-        log_print(f"[GRADING_PANEL_AI] {subject_name}: {len(self.skills)} skills, {practiced_count} practiced")
+        log_print(f"[GRADING_PANEL_AI] {subject_name}: {len(self.skills)} total skills, "
+                  f"{filtered_count} filtered out, {len(self.skills) - filtered_count} shown, "
+                  f"{practiced_count} practiced, overall_grade={grading_data['overall_grade']}")
         return grading_data
 
     def get_grading_panel_data(self, user_id: str) -> Dict[str, any]:

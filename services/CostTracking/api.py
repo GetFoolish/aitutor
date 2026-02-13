@@ -4,7 +4,7 @@ Cost Tracking API Endpoints
 
 from fastapi import APIRouter, HTTPException, Request
 from managers.mongodb_manager import mongo_db
-from shared.auth_middleware import get_current_user
+from shared.auth_middleware import get_current_user, require_admin
 from shared.logging_config import get_logger
 from bson import ObjectId
 from datetime import datetime
@@ -56,8 +56,7 @@ async def get_session_costs(session_id: str, request: Request):
 @router.get("/user")
 async def get_user_costs(request: Request, limit: int = 10):
     """Get all costs for all users (admin view)"""
-    # Authentication check - user must be logged in
-    get_current_user(request)
+    require_admin(request)
 
     # Return all sessions, not filtered by user_id
     sessions = list(mongo_db.session_costs.find(
@@ -71,8 +70,8 @@ async def get_user_costs(request: Request, limit: int = 10):
 
 @router.get("/analytics")
 async def get_cost_analytics(request: Request):
-    """Cost analytics endpoint (simple - accessible from frontend)"""
-    # No admin check - keep it simple as requested
+    """Cost analytics endpoint — admin only"""
+    require_admin(request)
     
     pipeline = [
         {

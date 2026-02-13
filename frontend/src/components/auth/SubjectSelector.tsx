@@ -355,7 +355,8 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           <input
             type="text"
             value={customSubject}
-            onChange={(e) => setCustomSubject(e.target.value)}
+            maxLength={50}
+            onChange={(e) => setCustomSubject(e.target.value.replace(/[^a-zA-Z0-9 ,.\-']/g, ''))}
             placeholder="e.g. Geography, Music Theory, Python..."
             disabled={isDisabled}
             style={{

@@ -132,14 +132,20 @@ const RendererComponent = ({
                         return;
                     }
 
-                    // Use the already-started fresh fetch (no wasted time)
-                    const response = await freshPromise;
+                    // Use the already-started fresh fetch with a 30s timeout
+                    const timeoutPromise = new Promise<never>((_, reject) =>
+                        setTimeout(() => reject(new Error('Question generation is taking longer than expected')), 30000)
+                    );
+                    const response = await Promise.race([freshPromise, timeoutPromise]);
 
                     if (!response.ok) {
                         throw new Error(`Failed to fetch questions: ${response.status}`);
                     }
 
                     const data = await response.json();
+                    if (!data || data.length === 0) {
+                        throw new Error('No questions available yet — the system may still be generating content for this subject');
+                    }
                     setPerseusItems(data);
                     setItem(0);
                     setEndOfTest(false);
@@ -600,21 +606,44 @@ const RendererComponent = ({
                         },
                     };
                 }
-                // Expression: ensure buttonSets and other required fields
+                // Expression: convert to numeric-input to avoid MathInput crash (string ref issue in React 18)
                 if (w?.type === 'expression' && w.options) {
-                    const exprOpts = { ...w.options };
-                    if (!exprOpts.buttonSets || !Array.isArray(exprOpts.buttonSets) || exprOpts.buttonSets.length === 0) {
-                        exprOpts.buttonSets = ['basic'];
-                    }
-                    if (!exprOpts.functions || !Array.isArray(exprOpts.functions) || exprOpts.functions.length === 0) {
-                        exprOpts.functions = ['f', 'g', 'h'];
-                    }
-                    if (exprOpts.times === undefined) exprOpts.times = false;
-                    if (!exprOpts.buttonsVisible) exprOpts.buttonsVisible = 'never';
-                    itemCopy.question.widgets[key] = { ...w, options: exprOpts };
+                    const answerForms = w.options.answerForms || [];
+                    const firstAnswer = answerForms[0]?.value || '0';
+                    itemCopy.question.widgets[key] = {
+                        type: 'numeric-input',
+                        graded: true,
+                        options: {
+                            coefficient: false,
+                            static: false,
+                            labelText: '',
+                            size: 'normal',
+                            answers: [{
+                                status: 'correct',
+                                value: parseFloat(firstAnswer) || 0,
+                                maxError: 0.01,
+                                simplify: 'optional',
+                                strict: false,
+                                message: '',
+                            }],
+                        },
+                    };
+                    continue;
                 }
-                // Definition: ensure togglePrompt, definition, and static fields
+                // Definition: inline the definition text to avoid popover dismiss bugs
                 if (w?.type === 'definition' && w.options) {
+                    const defText = (w.options.definition || '').trim();
+                    const prompt = (w.options.togglePrompt || 'Definition').trim();
+                    const placeholder = `[[☃ ${key}]]`;
+                    if (defText && typeof itemCopy.question.content === 'string' && itemCopy.question.content.includes(placeholder)) {
+                        itemCopy.question.content = itemCopy.question.content.replace(
+                            placeholder,
+                            ` (*${prompt}:* ${defText}) `
+                        );
+                        delete itemCopy.question.widgets[key];
+                        continue;
+                    }
+                    // Fallback: keep widget with required fields
                     itemCopy.question.widgets[key] = {
                         ...w,
                         options: {
@@ -636,17 +665,58 @@ const RendererComponent = ({
                         },
                     };
                 }
-                // Matcher: ensure labels and padding
+                // Matcher: convert to per-row dropdowns (Perseus DnD broken in React 18)
                 if (w?.type === 'matcher' && w.options) {
-                    itemCopy.question.widgets[key] = {
-                        ...w,
-                        options: {
-                            labels: ['Left', 'Right'],
-                            orderMatters: false,
-                            padding: true,
-                            ...w.options,
-                        },
-                    };
+                    const mLeft: string[] = w.options.left || [];
+                    const mRight: string[] = w.options.right || [];
+                    const mLabels = w.options.labels || ['Left', 'Right'];
+
+                    if (mLeft.length > 0 && mRight.length > 0) {
+                        // Deterministic shuffle seeded on content to stay stable across re-renders
+                        const shuffled = [...mRight];
+                        let seed = 0;
+                        for (const s of mLeft.concat(mRight)) {
+                            for (let j = 0; j < s.length; j++) seed = (seed * 31 + s.charCodeAt(j)) | 0;
+                        }
+                        for (let i = shuffled.length - 1; i > 0; i--) {
+                            seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+                            const j = seed % (i + 1);
+                            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                        }
+                        // If shuffle accidentally produced the correct order, reverse
+                        if (shuffled.every((v, i) => v === mRight[i])) shuffled.reverse();
+
+                        // Delete original matcher widget
+                        delete itemCopy.question.widgets[key];
+
+                        // Create one dropdown per left item
+                        for (let i = 0; i < mLeft.length; i++) {
+                            const dKey = `matcher-dd-${i + 1}`;
+                            itemCopy.question.widgets[dKey] = {
+                                type: 'dropdown',
+                                graded: true,
+                                options: {
+                                    placeholder: 'Select a match',
+                                    static: false,
+                                    choices: shuffled.map((item: string) => ({
+                                        content: item,
+                                        correct: item === mRight[i],
+                                    })),
+                                },
+                            };
+                        }
+
+                        // Replace the [[☃ matcher 1]] placeholder with labeled dropdowns
+                        const mPlaceholder = `[[☃ ${key}]]`;
+                        if (typeof itemCopy.question.content === 'string' && itemCopy.question.content.includes(mPlaceholder)) {
+                            let table = `**${mLabels[0]}** | **${mLabels[1]}**\n\n`;
+                            for (let i = 0; i < mLeft.length; i++) {
+                                table += `**${mLeft[i]}** → [[☃ matcher-dd-${i + 1}]]\n\n`;
+                            }
+                            itemCopy.question.content = itemCopy.question.content.replace(mPlaceholder, table);
+                        }
+                        continue;
+                    }
                 }
                 // Sorter: ensure layout
                 if (w?.type === 'sorter' && w.options) {
@@ -883,12 +953,12 @@ const RendererComponent = ({
                                             />
                                         </RenderStateRoot>
                                     </PerseusI18nContextProvider>
-                                </div>
 
-                                {/* Hints Display */}
-                                {hints.length > 0 && (
-                                    <HintDisplay hints={hints} />
-                                )}
+                                    {/* Hints Display — inside question card (Bug #39) */}
+                                    {hints.length > 0 && (
+                                        <HintDisplay hints={hints} />
+                                    )}
+                                </div>
 
                                 {/* Inline feedback panel — stays visible until "Next" */}
                                 {isAnswered && score && (
@@ -927,11 +997,43 @@ const RendererComponent = ({
                             </div>
                         ) : (
                             <div className="flex h-full items-center justify-center">
-                                <div className="text-center space-y-2 md:space-y-3 border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 p-6 md:p-8 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]">
-                                    <div className="text-3xl md:text-4xl mb-1 md:mb-2">📝</div>
+                                <div className="text-center space-y-3 md:space-y-4 border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 p-6 md:p-8 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]">
+                                    <div className="text-3xl md:text-4xl mb-1 md:mb-2">{isError ? '⚠️' : '📝'}</div>
                                     <p className="text-xs md:text-sm font-black uppercase text-black dark:text-white tracking-wider">
-                                        No questions available.
+                                        {isError
+                                            ? 'Questions are being generated. Please retry.'
+                                            : 'No questions available.'}
                                     </p>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setIsError(false);
+                                            setError(null);
+                                            setIsLoading(true);
+                                            // Re-trigger question fetch
+                                            const refetch = async () => {
+                                                try {
+                                                    const resp = await apiUtils.get(`${DASH_API_URL}/api/questions/5`);
+                                                    if (resp.ok) {
+                                                        const d = await resp.json();
+                                                        if (d && d.length > 0) {
+                                                            setPerseusItems(d);
+                                                            setItem(0);
+                                                            setEndOfTest(false);
+                                                            setIsAnswered(false);
+                                                            setStartTime(Date.now());
+                                                        }
+                                                    }
+                                                } catch { /* ignore */ } finally {
+                                                    setIsLoading(false);
+                                                }
+                                            };
+                                            refetch();
+                                        }}
+                                        className="mt-2 px-4 py-2 border-[3px] border-black dark:border-white bg-[#FFD93D] text-black font-black uppercase text-xs tracking-wider shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 transition-all"
+                                    >
+                                        Retry
+                                    </button>
                                 </div>
                             </div>
                         )}

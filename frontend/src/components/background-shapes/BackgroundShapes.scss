@@ -5,14 +5,18 @@
     pointer-events: none;
     overflow: hidden;
     color: #000000;
-  
+
     svg {
       pointer-events: none;
     }
+
+    // Hide decorative shapes on small mobile screens (Bug #37)
+    @media (max-width: 640px) {
+      display: none;
+    }
   }
-  
+
   // Dark mode - change stroke color to white
   :global(.dark) .background-shapes {
     color: #ffffff;
   }
-  

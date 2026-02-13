@@ -29,6 +29,44 @@ from shared.logging_config import get_logger
 logger = get_logger(__name__)
 
 
+# ── In-memory rate limiter (Bug #68) ──────────────────────────────
+import time as _time
+from collections import defaultdict as _defaultdict
+
+class _RateLimiter:
+    """Simple sliding-window rate limiter keyed by IP."""
+    def __init__(self, max_requests: int, window_seconds: int):
+        self.max_requests = max_requests
+        self.window_seconds = window_seconds
+        self._hits: dict[str, list[float]] = _defaultdict(list)
+
+    def check(self, key: str) -> bool:
+        now = _time.time()
+        cutoff = now - self.window_seconds
+        bucket = self._hits[key]
+        self._hits[key] = bucket = [t for t in bucket if t > cutoff]
+        if len(bucket) >= self.max_requests:
+            return False
+        bucket.append(now)
+        return True
+
+_login_limiter = _RateLimiter(max_requests=10, window_seconds=60)
+_signup_limiter = _RateLimiter(max_requests=5, window_seconds=300)
+_dev_login_limiter = _RateLimiter(max_requests=20, window_seconds=60)
+
+
+def _client_ip(request: Request) -> str:
+    """Best-effort client IP extraction (handles proxies)."""
+    forwarded = request.headers.get("X-Forwarded-For", "")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    real = request.headers.get("X-Real-IP", "")
+    if real:
+        return real
+    return request.client.host if request.client else "unknown"
+# ──────────────────────────────────────────────────────────────────
+
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -266,8 +304,11 @@ async def complete_setup(request: CompleteSetupRequest):
 
 
 @app.post("/auth/signup")
-async def email_signup(request: EmailSignupRequest):
+async def email_signup(http_req: Request, request: EmailSignupRequest):
     """Register a new user with email and password"""
+    # Rate limit by IP (Bug #68)
+    if not _signup_limiter.check(_client_ip(http_req)):
+        raise HTTPException(status_code=429, detail="Too many signup attempts. Please try again later.")
     try:
         # Validate password strength
         is_valid, error_message = validate_password_strength(request.password)
@@ -343,8 +384,11 @@ async def email_signup(request: EmailSignupRequest):
 
 
 @app.post("/auth/login")
-async def email_login(request: EmailLoginRequest):
+async def email_login(http_req: Request, request: EmailLoginRequest):
     """Login with email and password"""
+    # Rate limit by IP (Bug #68)
+    if not _login_limiter.check(_client_ip(http_req)):
+        raise HTTPException(status_code=429, detail="Too many login attempts. Please try again in a minute.")
     try:
         # Get user by email
         from managers.mongodb_manager import mongo_db
@@ -421,7 +465,7 @@ async def get_current_user_info(request: Request):
     return {
         "user_id": user_profile.user_id,
         "email": user_data.get("google_email", "") if user_data else "",
-        "name": user_data.get("google_name", "") if user_data else "",
+        "name": (user_data.get("google_name") or user_data.get("name", "")) if user_data else "",
         "age": user_profile.age,
         "current_grade": user_profile.current_grade,
         "user_type": user_data.get("user_type", "student") if user_data else "student",
@@ -597,11 +641,9 @@ async def update_account_info(request: Request, update_data: UpdateAccountReques
     update_dict = {}
     
     if update_data.name is not None:
-        # Update both google_name and name fields
-        if user_data.get("auth_method") == "google":
-            update_dict["google_name"] = update_data.name
-        else:
-            update_dict["name"] = update_data.name
+        # Always update google_name (what /auth/me reads) + name for consistency
+        update_dict["google_name"] = update_data.name
+        update_dict["name"] = update_data.name
     
     if update_data.date_of_birth is not None:
         update_dict["date_of_birth"] = update_data.date_of_birth.isoformat()
@@ -702,9 +744,15 @@ class DevLoginRequest(BaseModel):
 
 
 @app.post("/auth/dev-login")
-async def dev_login(request: DevLoginRequest):
+async def dev_login(http_req: Request, request: DevLoginRequest):
     """DEV ONLY: Create a test user with a specific age and return a JWT instantly.
     Skips password, email, and onboarding. For testing different age/grade combos."""
+    # Block in production — this endpoint must NEVER be available outside dev (Bug #63)
+    if os.getenv("ENVIRONMENT", "development") == "production":
+        raise HTTPException(status_code=404, detail="Not found")
+    # Rate limit by IP (Bug #68)
+    if not _dev_login_limiter.check(_client_ip(http_req)):
+        raise HTTPException(status_code=429, detail="Too many requests. Please slow down.")
     import uuid
     from managers.mongodb_manager import mongo_db
 
@@ -737,6 +785,7 @@ async def dev_login(request: DevLoginRequest):
         "user_id": user_id,
         "email": user_doc["email"],
         "name": request.name,
+        "age": age,
     })
 
     logger.info(f"[DEV] Created test user {user_id}, age={age}, grade={current_grade}")
@@ -921,28 +970,8 @@ async def update_missing_info(request: Request, update_data: UpdateMissingInfoRe
 
 @app.get("/auth/gemini-key")
 async def get_gemini_key(request: Request):
-    """Get Gemini API key for authenticated user (DEPRECATED - use /auth/gemini-token instead)"""
-    try:
-        # Verify JWT token
-        user_id = get_current_user(request)
-
-        # Get API key and model from environment variables
-        api_key = os.getenv("GEMINI_API_KEY")
-        model = os.getenv("GEMINI_MODEL", "models/gemini-2.5-flash-native-audio-preview-09-2025")
-
-        if not api_key:
-            logger.error("GEMINI_API_KEY not configured in environment")
-            raise HTTPException(status_code=500, detail="Gemini API key not configured")
-
-        return {
-            "api_key": api_key,
-            "model": model
-        }
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error getting Gemini API key: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to get API key: {str(e)}")
+    """REMOVED — raw API key exposure. Use /auth/gemini-token for ephemeral tokens."""
+    raise HTTPException(status_code=410, detail="This endpoint has been removed. Use /auth/gemini-token instead.")
 
 
 @app.get("/auth/gemini-token")

@@ -301,12 +301,12 @@ const CostTrackingPage: React.FC = () => {
                             <span
                               className={cn(
                                 "px-2 py-0.5 text-xs font-black uppercase",
-                                session.status === 'active'
-                                  ? "bg-[#C4B5FD] text-black"
-                                  : "bg-[#E8F5E9] text-black"
+                                session.ended_at
+                                  ? "bg-[#E8F5E9] text-black"
+                                  : "bg-[#C4B5FD] text-black"
                               )}
                             >
-                              {session.status}
+                              {session.ended_at ? 'ended' : 'active'}
                             </span>
                           </div>
                           <div className="flex items-center gap-4">

@@ -30,7 +30,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 
 from services.DashSystem.dash_system import DASHSystem, Question, GradeLevel
 from services.DashSystem.content_v1 import ContentV1Engine
-from shared.auth_middleware import get_current_user, get_jwt_payload
+from shared.auth_middleware import get_current_user, get_jwt_payload, require_admin
 from shared.cache_middleware import CacheControlMiddleware
 from shared.cors_config import ALLOWED_ORIGINS, ALLOW_CREDENTIALS, ALLOWED_METHODS, ALLOWED_HEADERS
 
@@ -602,9 +602,22 @@ def load_perseus_items_for_dash_questions_from_mongodb(
             need_loading.append(q)
 
     if not need_loading:
+        from pre_serve_validator import validate_pre_serve
+        validated = []
         for r in results:
             _patch_numeric_input_widgets(r)
-        return [_strip_objectids(r) for r in results]
+            dm = r.get("dash_metadata", {})
+            skill_ids = dm.get("skill_ids", []) if isinstance(dm, dict) else []
+            vr = validate_pre_serve(
+                r,
+                skill_id=skill_ids[0] if skill_ids else None,
+                db_collection=mongo_db.db["validation_failures"],
+            )
+            if vr.passed:
+                validated.append(_strip_objectids(r))
+            else:
+                logger.warning(f"[LOAD_PERSEUS] Warm-start pre-serve REJECT: {vr.failures}")
+        return validated
 
     # Split remaining questions by source
     ai_questions = [q for q in need_loading if q.question_id.startswith("ai_q_")]
@@ -618,11 +631,25 @@ def load_perseus_items_for_dash_questions_from_mongodb(
     if khan_questions:
         results.extend(_load_khan_perseus_items(khan_questions))
 
-    # Patch all widget types with required defaults
+    # Patch all widget types with required defaults, then validate
+    from pre_serve_validator import validate_pre_serve
+    validated = []
     for r in results:
         _patch_numeric_input_widgets(r)
+        dm = r.get("dash_metadata", {})
+        skill_ids = dm.get("skill_ids", []) if isinstance(dm, dict) else []
+        vr = validate_pre_serve(
+            r,
+            skill_id=skill_ids[0] if skill_ids else None,
+            subject=None,
+            db_collection=mongo_db.db["validation_failures"],
+        )
+        if vr.passed:
+            validated.append(_strip_objectids(r))
+        else:
+            logger.warning(f"[LOAD_PERSEUS] Batch pre-serve REJECT: {vr.failures}")
 
-    return [_strip_objectids(r) for r in results]
+    return validated
 
 
 def _load_khan_perseus_items(khan_questions: List[Question]) -> List[Dict]:
@@ -1623,6 +1650,9 @@ def start_assessment(
     ensure_dash_system()
     from managers.mongodb_manager import mongo_db
 
+    # Normalize subject casing to match curriculum storage (e.g. "python" → "Python")
+    subject = subject.strip().title()
+
     jwt_payload = get_jwt_payload(request)
     user_id = jwt_payload.get("sub")
     jwt_age = jwt_payload.get("age")
@@ -1647,6 +1677,7 @@ def start_assessment(
             return {
                 "error": "Assessment already completed",
                 "score": existing.get("score"),
+                "total": existing.get("total", 10),
                 "date": existing.get("assessment_date")
             }
 
@@ -1820,7 +1851,7 @@ def complete_assessment(
     from managers.mongodb_manager import mongo_db
 
     user_id = get_current_user(request)
-    subject = payload.subject
+    subject = payload.subject.strip().title()
     answers = payload.answers
 
     logger.info(f"\n{'='*80}")
@@ -1939,6 +1970,7 @@ def check_assessment_status(
     from managers.mongodb_manager import mongo_db
 
     user_id = get_current_user(request)
+    subject = subject.strip().title()
 
     try:
         assessment = mongo_db.subject_assessments.find_one({
@@ -1977,6 +2009,9 @@ def start_adaptive_assessment(subject: str, request: Request):
         ensure_dash_system()
         from managers.mongodb_manager import mongo_db
         import uuid
+
+        # Normalize subject casing to match curriculum storage (e.g. "python" → "Python")
+        subject = subject.strip().title()
 
         jwt_payload = get_jwt_payload(request)
         user_id = jwt_payload.get("sub")
@@ -2118,6 +2153,17 @@ def start_adaptive_assessment(subject: str, request: Request):
         # Patch widget fields before returning (prefetch/pool data may lack defaults)
         _patch_numeric_input_widgets(q_data)
 
+        # ── Inject skill_ids from Question object into Perseus response (Bug #22) ──
+        # _load_question_perseus builds dash_metadata from MongoDB docs which may
+        # lack skill_ids.  The Question object always has the correct ones.
+        if first_q.skill_ids and q_data:
+            dm = q_data.setdefault("dash_metadata", {})
+            existing = dm.get("skill_ids") or []
+            # Only override if the existing list is empty or contains only empty strings
+            if not existing or all(s == "" for s in existing):
+                dm["skill_ids"] = first_q.skill_ids
+                logger.info(f"[ADAPTIVE_ASSESSMENT] Injected skill_ids={first_q.skill_ids} into q_data")
+
         return {
             "assessment_id": assessment_id,
             "question_number": 1,
@@ -2163,6 +2209,54 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
         "difficulty_at_time": current_diff,
     }
     questions_asked = session.get("questions_asked", 0) + 1
+
+    # ── Sync assessment answers into DASH student states for mastery tracking ──
+    try:
+        # Try load_user first (cheap); only create if missing
+        user_profile = dash_system.user_manager.load_user(user_id)
+        if not user_profile:
+            user_profile = dash_system.load_user_or_create(user_id, age=jwt_age if jwt_age else 10)
+
+        # ── Resolve skill_id: trust frontend, fall back to session/DB (Bug #22) ──
+        resolved_skill_id = payload.skill_id or ""
+        if not resolved_skill_id:
+            # Try assessment session's used_skill_ids (indexed by question order)
+            used_skills = session.get("used_skill_ids", [])
+            q_idx = questions_asked - 2  # -1 for 0-index, -1 more because we already incremented
+            if 0 <= q_idx < len(used_skills) and used_skills[q_idx]:
+                resolved_skill_id = used_skills[q_idx]
+                logger.info(f"[ASSESSMENT] Resolved skill_id from session: {resolved_skill_id}")
+        if not resolved_skill_id:
+            # Last resort: look up from the question document in MongoDB
+            q_doc = mongo_db.ai_generated_questions.find_one(
+                {"question_id": payload.question_id}, {"skill_id": 1, "skill_ids": 1}
+            )
+            if q_doc:
+                resolved_skill_id = (q_doc.get("skill_ids") or [q_doc.get("skill_id", "")])[0] or ""
+                if resolved_skill_id:
+                    logger.info(f"[ASSESSMENT] Resolved skill_id from DB: {resolved_skill_id}")
+
+        skill_ids = [resolved_skill_id] if resolved_skill_id else []
+        if skill_ids:
+            # Ensure the skill exists in user_profile.skill_states for save_user_state
+            for sid in skill_ids:
+                if sid not in user_profile.skill_states:
+                    from managers.user_manager import SkillState
+                    user_profile.skill_states[sid] = SkillState(
+                        memory_strength=0.0, last_practice_time=None,
+                        practice_count=0, correct_count=0
+                    )
+            dash_system.record_question_attempt(
+                user_profile, payload.question_id, skill_ids,
+                payload.is_correct, 30.0  # default response time for assessment
+            )
+            logger.info(f"[ASSESSMENT] Synced attempt: q={payload.question_id} skill={payload.skill_id} correct={payload.is_correct}")
+        else:
+            logger.warning(f"[ASSESSMENT] No skill_id in payload — skipping student state sync")
+    except Exception as e:
+        logger.warning(f"[ASSESSMENT] Failed to sync student state: {e}")
+        import traceback
+        logger.warning(traceback.format_exc())
 
     # Check if assessment is complete (> not >= because questions_asked already
     # includes the current answer; >= would skip the last question)
@@ -2245,7 +2339,12 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
 
         user_profile = dash_system.load_user_or_create(user_id, age=jwt_age if jwt_age else 5)
         current_time = time.time()
-        subject = session.get("subject", "")
+        subject = (session.get("subject") or "").strip().title()
+
+        # Pin DASH system to the session's subject — prevents wrong-subject
+        # questions when concurrent requests switch the global singleton
+        if subject:
+            _switch_subject_if_needed(subject, "US")
 
         # Retry loop: try pool first, then force JIT with unique IDs on duplicate
         MAX_RETRIES = 3
@@ -2369,6 +2468,14 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
     # Patch widget fields before returning (prefetch/pool data may lack defaults)
     _patch_numeric_input_widgets(q_data)
 
+    # ── Inject skill_ids from Question object into Perseus response (Bug #22) ──
+    if next_q.skill_ids and q_data:
+        dm = q_data.setdefault("dash_metadata", {})
+        existing = dm.get("skill_ids") or []
+        if not existing or all(s == "" for s in existing):
+            dm["skill_ids"] = next_q.skill_ids
+            logger.info(f"[ADAPTIVE_NEXT] Injected skill_ids={next_q.skill_ids} into q_data")
+
     # Update session AFTER Perseus load + patching succeeds (avoids inconsistent state on load failure)
     # Use $inc for questions_asked to prevent race conditions from concurrent requests
     mongo_db.db["assessment_sessions"].update_one(
@@ -2429,7 +2536,12 @@ def _assessment_prefetch_worker(assessment_id: str, user_id: str, current_diffic
         used_skill_ids = session.get("used_skill_ids", [])
         user_profile = dash_system.load_user_or_create(user_id, age=jwt_payload_age if jwt_payload_age else 5)
         current_time = time.time()
-        subject = session.get("subject", "")
+        subject = (session.get("subject") or "").strip().title()
+
+        # Pin DASH system to the session's subject — prevents wrong-subject
+        # questions when concurrent requests switch the global singleton
+        if subject:
+            _switch_subject_if_needed(subject, "US")
 
         # Retry loop: try pool first, then JIT with unique IDs on duplicate
         q = None
@@ -2497,6 +2609,13 @@ def _assessment_prefetch_worker(assessment_id: str, user_id: str, current_diffic
 
             q_data = getattr(q, "perseus_data", None) or _load_question_perseus(q.question_id, _mongo)
             if q_data:
+                # Inject skill_ids into Perseus dash_metadata (Bug #22)
+                if q.skill_ids:
+                    dm = q_data.setdefault("dash_metadata", {})
+                    existing = dm.get("skill_ids") or []
+                    if not existing or all(s == "" for s in existing):
+                        dm["skill_ids"] = q.skill_ids
+
                 # Content-hash dedup: reject questions with identical content
                 fresh_hashes = set(fresh_session.get("used_content_hashes", [])) if fresh_session else set()
                 ch = _compute_content_hash(q_data)
@@ -2677,8 +2796,8 @@ def _load_question_perseus(question_id: str, mongo_db) -> Optional[dict]:
                 if q_data:
                     perseus = dict(q_data)
                     # Ensure dash_metadata exists
+                    skill_id = pool_doc.get("skill_id", "")
                     if "dash_metadata" not in perseus:
-                        skill_id = pool_doc.get("skill_id", "")
                         perseus["dash_metadata"] = {
                             "dash_question_id": question_id,
                             "skill_ids": [skill_id],
@@ -2689,6 +2808,14 @@ def _load_question_perseus(question_id: str, mongo_db) -> Optional[dict]:
                             "ai_generated": True,
                         }
                     _patch_numeric_input_widgets(perseus)
+                    from pre_serve_validator import validate_pre_serve
+                    vr = validate_pre_serve(
+                        perseus, skill_id=skill_id,
+                        db_collection=mongo_db.db["validation_failures"],
+                    )
+                    if not vr.passed:
+                        logger.warning(f"[LOAD_PERSEUS] Pool pre-serve REJECT {question_id}: {vr.failures}")
+                        return None
                     return _strip_objectids(perseus)
 
     if doc:
@@ -2698,13 +2825,14 @@ def _load_question_perseus(question_id: str, mongo_db) -> Optional[dict]:
             perseus = dict(raw)
         else:
             perseus = {k: v for k, v in doc.items() if k != "_id"}
+        skill_id = doc.get("skill_id", "")
         skill_name = doc.get("skill_name", "AI Generated")
         lesson_name = doc.get("lesson_name", "") or "Practice"
         if lesson_name == skill_name:
             lesson_name = "Practice"
         perseus["dash_metadata"] = {
             "dash_question_id": question_id,
-            "skill_ids": doc.get("skill_ids", [doc.get("skill_id", "")]),
+            "skill_ids": doc.get("skill_ids", [skill_id]),
             "difficulty": doc.get("difficulty", 0.5),
             "skill_names": [skill_name],
             "unit_name": skill_name,
@@ -2713,6 +2841,15 @@ def _load_question_perseus(question_id: str, mongo_db) -> Optional[dict]:
             "mongodb_id": str(doc.get("_id", question_id)),
         }
         _patch_numeric_input_widgets(perseus)
+        from pre_serve_validator import validate_pre_serve
+        vr = validate_pre_serve(
+            perseus, skill_id=skill_id,
+            subject=doc.get("subject"),
+            db_collection=mongo_db.db["validation_failures"],
+        )
+        if not vr.passed:
+            logger.warning(f"[LOAD_PERSEUS] AI pre-serve REJECT {question_id}: {vr.failures}")
+            return None
         return _strip_objectids(perseus)
     return None
 
@@ -2954,7 +3091,7 @@ def get_suggested_videos(
     """
     from managers.mongodb_manager import mongo_db
 
-    user_id = get_current_user(request)
+    user_id = require_admin(request)
 
     logger.info(f"[ADMIN_PANEL] Fetching suggested videos (limit: {limit}, offset: {offset})")
 
@@ -3012,7 +3149,7 @@ def get_videos_stats(
     """
     from managers.mongodb_manager import mongo_db
 
-    user_id = get_current_user(request)
+    user_id = require_admin(request)
 
     logger.info(f"[ADMIN_PANEL] Fetching video statistics")
 
@@ -3135,6 +3272,13 @@ def _prewarm_assessment_questions(user_id: str, subject: str, region: str):
             if not q_data:
                 return
 
+            # Inject skill_ids into Perseus dash_metadata (Bug #22)
+            if q.skill_ids:
+                dm = q_data.setdefault("dash_metadata", {})
+                existing = dm.get("skill_ids") or []
+                if not existing or all(s == "" for s in existing):
+                    dm["skill_ids"] = q.skill_ids
+
             with _warmstart_lock:
                 _warmstart_cache[cache_key] = {
                     "q_data": q_data,
@@ -3165,7 +3309,7 @@ def start_subject(request: Request, payload: StartSubjectRequest):
         raise HTTPException(status_code=503, detail="System not initialized")
 
     user_id = get_current_user(request)
-    subject = payload.subject.strip()
+    subject = payload.subject.strip().title()
     region = payload.region.strip().upper()
 
     logger.info(f"[START_SUBJECT] User {user_id} requested {subject}/{region}")
@@ -3236,7 +3380,7 @@ def curriculum_status(subject: str, region: str):
     if curriculum_generator is None:
         raise HTTPException(status_code=503, detail="System not initialized")
 
-    result = curriculum_generator.check_status(subject.strip(), region.strip().upper())
+    result = curriculum_generator.check_status(subject.strip().title(), region.strip().upper())
     return result
 
 
@@ -3303,8 +3447,9 @@ def get_question_quality(question_id: str):
 
 
 @app.get("/api/flagged-questions")
-def get_flagged_questions(min_attempts: int = 5):
+def get_flagged_questions(request: Request, min_attempts: int = 5):
     """Get all questions flagged as low quality."""
+    require_admin(request)
     if question_analytics is None:
         raise HTTPException(status_code=503, detail="Question analytics not initialized")
 
@@ -3324,7 +3469,7 @@ def get_skill_analytics(skill_id: str):
 
 
 @app.post("/api/quality-sweep")
-async def run_quality_sweep():
+async def run_quality_sweep(request: Request):
     """
     Run a quality sweep across all questions with enough analytics data.
     Admin action that retires, demotes, or boosts questions based on
@@ -3332,6 +3477,7 @@ async def run_quality_sweep():
 
     Returns counts of retired, demoted, boosted, and neutral questions.
     """
+    require_admin(request)
     if quality_tracker is None:
         raise HTTPException(status_code=503, detail="QualityTracker not initialized")
     results = await quality_tracker.run_quality_sweep()
@@ -3339,12 +3485,13 @@ async def run_quality_sweep():
 
 
 @app.get("/api/quality-report")
-async def get_quality_report():
+async def get_quality_report(request: Request):
     """
     Get a summary report of question quality across the system.
     Includes average quality score, score distribution, top/bottom questions,
     recently retired questions, and action summary.
     """
+    require_admin(request)
     if quality_tracker is None:
         raise HTTPException(status_code=503, detail="QualityTracker not initialized")
     report = await quality_tracker.get_quality_report()
@@ -3396,12 +3543,28 @@ async def get_pool_stats(skill_id: str):
 
 
 @app.get("/api/generation-audit")
-async def get_generation_audit(skill_id: str = None, limit: int = 50):
+async def get_generation_audit(request: Request, skill_id: str = None, limit: int = 50):
     """Get generation audit log."""
+    require_admin(request)
     if not content_service:
         raise HTTPException(status_code=503, detail="Content service not initialized")
     log = content_service.get_audit_log(skill_id, limit)
     return {"entries": log}
+
+
+@app.get("/api/validation-failures")
+async def get_validation_failures(request: Request, limit: int = 50, skill_id: str = None):
+    """List recent pre-serve validation failures for debugging."""
+    require_admin(request)
+    from managers.mongodb_manager import mongo_db
+    col = mongo_db.db["validation_failures"]
+    query = {}
+    if skill_id:
+        query["skill_id"] = skill_id
+    docs = list(col.find(query).sort("timestamp", -1).limit(limit))
+    for d in docs:
+        d["_id"] = str(d["_id"])
+    return {"failures": docs, "count": len(docs)}
 
 
 if __name__ == "__main__":

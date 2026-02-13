@@ -67,7 +67,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userData = await authAPI.getCurrentUser(token);
       setUser(userData);
     } catch (error) {
-      console.error('Failed to refresh user:', error);
+      // Network errors (backend down) are expected during dev — log quietly
+      const isNetworkError = error instanceof TypeError && (error as TypeError).message === 'Failed to fetch';
+      if (isNetworkError) {
+        console.warn('Auth service unreachable — clearing stale token');
+      } else {
+        console.error('Failed to refresh user:', error);
+      }
       jwtUtils.removeToken();
       setUser(null);
     } finally {

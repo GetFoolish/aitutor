@@ -134,7 +134,7 @@ export function scorePerseusQuestion(
 
         } else if (widgetDef.type === 'orderer') {
             const correctOptions = widgetDef.options?.correctOptions || [];
-            const userOrder = (widgetInput as any).current || [];
+            const userOrder = (widgetInput as any).current || (widgetInput as any).options || [];
             if (correctOptions.length === userOrder.length) {
                 widgetCorrect = correctOptions.every((correctOpt: any, index: number) => {
                     const userItem = userOrder[index];
@@ -174,11 +174,14 @@ export function scorePerseusQuestion(
         } else if (widgetDef.type === 'dropdown') {
             const choices = widgetDef.options?.choices || [];
             const selectedIdx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
-            if (selectedIdx != null && selectedIdx >= 0 && selectedIdx < choices.length) {
-                widgetCorrect = !!choices[selectedIdx]?.correct;
+            // Perseus dropdown uses index 0 for the placeholder ("Select an answer"),
+            // so real choices start at index 1. Subtract 1 to map to 0-based choices array.
+            const choiceIdx = (selectedIdx != null && selectedIdx >= 1) ? selectedIdx - 1 : -1;
+            if (choiceIdx >= 0 && choiceIdx < choices.length) {
+                widgetCorrect = !!choices[choiceIdx]?.correct;
                 if (!selectedAnswerText) {
-                    selectedAnswerText = choices[selectedIdx]?.content || '';
-                    selectedAnswerIndex = selectedIdx;
+                    selectedAnswerText = choices[choiceIdx]?.content || '';
+                    selectedAnswerIndex = choiceIdx;
                 }
             }
             scoreableCount++;
@@ -331,10 +334,10 @@ export function hasUserInput(
             if (val && val.trim()) return true;
         } else if (widgetDef.type === 'dropdown') {
             const idx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
-            // Any non-null selection counts as real input (index 0 can be a valid choice)
-            if (idx != null && idx >= 0) return true;
+            // Index 0 is the placeholder ("Select an answer"), real choices start at 1
+            if (idx != null && idx >= 1) return true;
         } else if (widgetDef.type === 'orderer') {
-            const curr = (widgetInput as any)?.current || [];
+            const curr = (widgetInput as any)?.current || (widgetInput as any)?.options || [];
             if (curr.length > 0) return true;
         } else if (widgetDef.type === 'matcher') {
             const right = (widgetInput as any)?.right || [];
