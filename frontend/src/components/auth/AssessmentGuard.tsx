@@ -30,6 +30,7 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [showSubjectSelector, setShowSubjectSelector] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState<string>(defaultSubject);
+  const [curriculumGenerating, setCurriculumGenerating] = useState(false);
   const [assessmentStatus, setAssessmentStatus] = useState<{
     loading: boolean;
     completed: boolean;
@@ -39,6 +40,51 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
     completed: false,
     checkFailed: false
   });
+
+  // Call /api/start-subject and poll until curriculum is ready if generating
+  const ensureSubjectReady = async (subject: string): Promise<void> => {
+    try {
+      const resp = await apiUtils.post(`${DASH_API_URL}/api/start-subject`, {
+        subject,
+        region: 'US'
+      });
+      if (!resp.ok) {
+        console.warn('start-subject returned non-OK:', resp.status);
+        return;
+      }
+      const data = await resp.json();
+      if (data.status === 'generating' && data.poll_url) {
+        // Curriculum is being generated — poll until ready
+        setCurriculumGenerating(true);
+        const pollUrl = `${DASH_API_URL}${data.poll_url}`;
+        const maxPollTime = 120_000; // 2 minutes max
+        const pollInterval = 3_000;
+        const start = Date.now();
+        while (Date.now() - start < maxPollTime) {
+          await new Promise(r => setTimeout(r, pollInterval));
+          try {
+            const pollResp = await apiUtils.get(pollUrl);
+            if (pollResp.ok) {
+              const pollData = await pollResp.json();
+              if (pollData.status === 'complete') {
+                // Reload DASH with the newly generated curriculum
+                await apiUtils.post(`${DASH_API_URL}/api/start-subject`, {
+                  subject,
+                  region: 'US'
+                });
+                break;
+              }
+            }
+          } catch (err) {
+            console.warn('Curriculum poll failed:', err);
+          }
+        }
+        setCurriculumGenerating(false);
+      }
+    } catch (err) {
+      console.warn('Failed to ensure subject ready:', err);
+    }
+  };
 
   useEffect(() => {
     if (!isAuthenticated || isLoading) {
@@ -58,15 +104,8 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
       let subjectAlreadySwitched = false;
       if (urlSubject && urlSubject !== savedSubject) {
         sessionStorage.setItem('selected_subject', urlSubject);
-        try {
-          await apiUtils.post(`${DASH_API_URL}/api/start-subject`, {
-            subject: urlSubject,
-            region: 'US'
-          });
-          subjectAlreadySwitched = true;
-        } catch (err) {
-          console.warn('Failed to switch subject after assessment:', err);
-        }
+        await ensureSubjectReady(urlSubject);
+        subjectAlreadySwitched = true;
       }
 
       const effectiveSubject = urlSubject || savedSubject;
@@ -83,10 +122,7 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
         setSelectedSubject(effectiveSubject);
         const subjectPromise = subjectAlreadySwitched
           ? Promise.resolve()
-          : apiUtils.post(`${DASH_API_URL}/api/start-subject`, {
-              subject: effectiveSubject,
-              region: 'US'
-            }).catch((err: any) => console.warn('Failed to ensure subject:', err));
+          : ensureSubjectReady(effectiveSubject);
 
         const statusPromise = checkAssessmentStatus(effectiveSubject);
         await Promise.all([subjectPromise, statusPromise]);
@@ -179,16 +215,47 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
     return <SubjectSelector onSubjectReady={handleSubjectReady} />;
   }
 
-  if (!onboardingComplete || assessmentStatus.loading) {
+  if (!onboardingComplete || assessmentStatus.loading || curriculumGenerating) {
     return (
       <div style={{
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
-        background: '#FFFDF5'
+        gap: '16px',
+        background: '#FFFDF5',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
       }}>
-        <div>Checking assessment status...</div>
+        <div style={{
+          width: '200px',
+          height: '8px',
+          border: '3px solid #000',
+          backgroundColor: '#fff',
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            height: '100%',
+            width: '40%',
+            backgroundColor: '#C4B5FD',
+            animation: 'guard-loading-bar 1.5s ease-in-out infinite',
+          }} />
+        </div>
+        <div style={{
+          fontWeight: 900,
+          fontSize: '14px',
+          textTransform: 'uppercase',
+          letterSpacing: '0.1em',
+          color: '#000',
+        }}>
+          {curriculumGenerating ? 'Preparing your curriculum...' : 'Checking assessment status...'}
+        </div>
+        <style>{`
+          @keyframes guard-loading-bar {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(350%); }
+          }
+        `}</style>
       </div>
     );
   }

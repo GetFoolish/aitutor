@@ -861,8 +861,10 @@ def get_preloaded_questions(request: Request):
         
         # Load Perseus items for pre-loaded questions
         perseus_items = load_perseus_items_for_dash_questions_from_mongodb(selected_questions)
-        logger.info(f"[PRELOADED] Loaded {len(perseus_items)} Perseus questions from MongoDB")
-        
+        # Filter out broken widget types (orderer/matcher)
+        perseus_items = [q for q in perseus_items if not _has_only_broken_widgets(q)]
+        logger.info(f"[PRELOADED] Loaded {len(perseus_items)} Perseus questions from MongoDB (after widget filter)")
+
         # Validate perseus_items structure before returning
         if perseus_items:
             # Validate first item structure
@@ -1095,9 +1097,11 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
         logger.warning(f"[DEV_BYPASS] No DASH questions selected, fetching {sample_size} random questions from Perseus DB")
         if dash_system.mongo:
             random_perseus = list(dash_system.mongo.perseus_questions.aggregate([
-                {"$sample": {"size": sample_size}}
+                {"$sample": {"size": sample_size * 2}}
             ]))
             if random_perseus:
+                # Filter out broken widget types (orderer/matcher)
+                random_perseus = [q for q in random_perseus if not _has_only_broken_widgets(q)][:sample_size]
                 logger.info(f"[DEV_BYPASS] Found {len(random_perseus)} random Perseus questions")
                 return [_strip_objectids(q) for q in random_perseus]
     
@@ -1108,7 +1112,10 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
     except Exception as e:
         logger.error(f"[ERROR] MongoDB Perseus load failed: {e}. Local fallback disabled.")
         raise HTTPException(status_code=500, detail=f"Failed to load Perseus questions from MongoDB: {e}")
-    
+
+    # Filter out questions with only broken widget types (orderer/matcher)
+    perseus_items = [q for q in perseus_items if not _has_only_broken_widgets(q)]
+
     if not perseus_items:
         logger.error(f"[ERROR] No Perseus questions found in MongoDB")
         raise HTTPException(status_code=404, detail="No Perseus questions found in MongoDB")
@@ -1573,8 +1580,10 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
     # Load Perseus items for selected questions
     try:
         perseus_items = load_perseus_items_for_dash_questions_from_mongodb(selected_questions)
-        logger.info(f"[RECOMMEND_NEXT] Loaded {len(perseus_items)} new questions")
-        
+        # Filter out broken widget types (orderer/matcher)
+        perseus_items = [q for q in perseus_items if not _has_only_broken_widgets(q)]
+        logger.info(f"[RECOMMEND_NEXT] Loaded {len(perseus_items)} new questions (after widget filter)")
+
         # Verify no overlap with current questions (should not happen due to exclusion, but check for safety)
         new_question_ids = {item.get('dash_metadata', {}).get('dash_question_id') for item in perseus_items if item.get('dash_metadata', {}).get('dash_question_id')}
         current_question_ids_set = set(req.current_question_ids)
