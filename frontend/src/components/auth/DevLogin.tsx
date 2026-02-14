@@ -90,7 +90,13 @@ const DevLogin: React.FC = () => {
     }
   };
 
+  const isDark = theme === 'dark';
   const activeColor = SUBJECTS.find(s => s.id === selectedSubject)?.color || (customSubject ? '#C3ACD0' : '#FFD93D');
+  const borderColor = isDark ? '#fff' : '#000';
+  const textColor = isDark ? '#fff' : '#000';
+  const bgColor = isDark ? '#000' : '#FFFDF5';
+  const inputBg = isDark ? '#1a1a1a' : '#fff';
+  const shadowColor = isDark ? 'rgba(255,255,255,0.3)' : '#000';
 
   return (
     <div style={{
@@ -100,9 +106,11 @@ const DevLogin: React.FC = () => {
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      background: '#FFFDF5',
+      background: bgColor,
       fontFamily: 'system-ui, -apple-system, sans-serif',
-      overflow: 'auto'
+      overflow: 'auto',
+      color: textColor,
+      transition: 'background 200ms ease-out, color 200ms ease-out'
     }}>
       <BackgroundShapes />
 
@@ -142,7 +150,7 @@ const DevLogin: React.FC = () => {
         <div style={{
           display: 'inline-block',
           padding: '6px 16px',
-          border: '3px solid #000',
+          border: `3px solid ${borderColor}`,
           background: '#FF6B6B',
           color: '#fff',
           fontWeight: 900,
@@ -160,14 +168,14 @@ const DevLogin: React.FC = () => {
           textTransform: 'uppercase',
           letterSpacing: '0.1em',
           marginBottom: '8px',
-          color: '#000'
+          color: textColor
         }}>
           Quick Test Login
         </h1>
         <p style={{
           fontSize: '13px',
           fontWeight: 600,
-          color: '#666',
+          color: isDark ? '#aaa' : '#666',
           marginBottom: '20px'
         }}>
           Pick a subject, then click an age to jump straight into assessment.
@@ -180,17 +188,17 @@ const DevLogin: React.FC = () => {
             className="dev-login-input"
             value={name}
             maxLength={40}
-            onChange={(e) => setName(e.target.value.replace(/[^a-zA-Z0-9 .\-']/g, ''))}
+            onChange={(e) => setName(e.target.value.replace(/[^\p{L}\p{N} .\-']/gu, ''))}
             onBlur={() => setName(n => n.trim())}
             placeholder="Student name (optional)"
             disabled={loading}
             onFocus={(e) => e.target.select()}
             style={{
               padding: '10px 16px',
-              border: '3px solid #000',
-              background: loading ? '#eee' : '#fff',
-              color: '#000',
-              boxShadow: '3px 3px 0 #000',
+              border: `3px solid ${borderColor}`,
+              background: loading ? (isDark ? '#333' : '#eee') : inputBg,
+              color: textColor,
+              boxShadow: `3px 3px 0 ${shadowColor}`,
               fontSize: '14px',
               fontWeight: 700,
               width: '240px',
@@ -208,7 +216,7 @@ const DevLogin: React.FC = () => {
           fontWeight: 900,
           textTransform: 'uppercase',
           letterSpacing: '0.1em',
-          color: '#000',
+          color: textColor,
           marginBottom: '10px'
         }}>
           1. Subject
@@ -234,9 +242,9 @@ const DevLogin: React.FC = () => {
                 disabled={loading}
                 style={{
                   padding: '12px 20px',
-                  border: isActive ? '4px solid #000' : '3px solid #000',
-                  background: isActive ? subj.color : '#fff',
-                  boxShadow: isActive ? '4px 4px 0 #000' : '2px 2px 0 #000',
+                  border: isActive ? `4px solid ${borderColor}` : `3px solid ${borderColor}`,
+                  background: isActive ? subj.color : inputBg,
+                  boxShadow: isActive ? `4px 4px 0 ${shadowColor}` : `2px 2px 0 ${shadowColor}`,
                   cursor: loading ? 'wait' : 'pointer',
                   transition: 'all 100ms ease-out',
                   display: 'flex',
@@ -251,7 +259,7 @@ const DevLogin: React.FC = () => {
                   fontWeight: 900,
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
-                  color: '#000'
+                  color: isActive ? '#000' : textColor
                 }}>
                   {subj.label}
                 </span>
@@ -268,17 +276,17 @@ const DevLogin: React.FC = () => {
           marginBottom: '12px',
           justifyContent: 'center'
         }}>
-          <div style={{ flex: '0 0 auto', height: '3px', width: '40px', background: '#000' }} />
+          <div style={{ flex: '0 0 auto', height: '3px', width: '40px', background: borderColor }} />
           <span style={{
             fontSize: '11px',
             fontWeight: 900,
             textTransform: 'uppercase',
             letterSpacing: '0.1em',
-            color: '#000'
+            color: textColor
           }}>
             or type any subject
           </span>
-          <div style={{ flex: '0 0 auto', height: '3px', width: '40px', background: '#000' }} />
+          <div style={{ flex: '0 0 auto', height: '3px', width: '40px', background: borderColor }} />
         </div>
         <div style={{
           display: 'flex',
@@ -292,7 +300,7 @@ const DevLogin: React.FC = () => {
             value={customSubject}
             maxLength={50}
             onChange={(e) => {
-              const cleaned = e.target.value.replace(/[^a-zA-Z0-9 ,.\-']/g, '');
+              const cleaned = e.target.value.replace(/[^\p{L}\p{N} ,.\-']/gu, '');
               setCustomSubject(cleaned);
               if (cleaned.trim()) {
                 setSelectedSubject(cleaned.trim());
@@ -305,10 +313,10 @@ const DevLogin: React.FC = () => {
             disabled={loading}
             style={{
               padding: '10px 16px',
-              border: customSubject ? '4px solid #000' : '3px solid #000',
-              background: customSubject ? '#C3ACD0' : '#fff',
-              color: '#000',
-              boxShadow: customSubject ? '4px 4px 0 #000' : '2px 2px 0 #000',
+              border: customSubject ? `4px solid ${borderColor}` : `3px solid ${borderColor}`,
+              background: customSubject ? '#C3ACD0' : inputBg,
+              color: customSubject ? '#000' : textColor,
+              boxShadow: customSubject ? `4px 4px 0 ${shadowColor}` : `2px 2px 0 ${shadowColor}`,
               fontSize: '14px',
               fontWeight: 700,
               width: '320px',
@@ -325,13 +333,13 @@ const DevLogin: React.FC = () => {
           marginBottom: '16px',
           padding: '8px 16px',
           background: activeColor,
-          border: '2px solid #000',
+          border: `2px solid ${borderColor}`,
           display: 'inline-block',
           fontSize: '12px',
           fontWeight: 700,
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
-          color: '#000',
+          color: '#000', // Always dark text on colored background
           maxWidth: '90%',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
@@ -346,7 +354,7 @@ const DevLogin: React.FC = () => {
           fontWeight: 900,
           textTransform: 'uppercase',
           letterSpacing: '0.1em',
-          color: '#000',
+          color: textColor,
           marginBottom: '10px'
         }}>
           2. Age (click to start)
@@ -366,9 +374,9 @@ const DevLogin: React.FC = () => {
                 disabled={loading}
                 style={{
                   padding: '16px 8px',
-                  border: '3px solid #000',
-                  background: isSelected ? '#ddd' : activeColor,
-                  boxShadow: loading ? '1px 1px 0 #000' : '3px 3px 0 #000',
+                  border: `3px solid ${borderColor}`,
+                  background: isSelected ? (isDark ? '#333' : '#ddd') : activeColor,
+                  boxShadow: loading ? `1px 1px 0 ${shadowColor}` : `3px 3px 0 ${shadowColor}`,
                   cursor: loading ? 'wait' : 'pointer',
                   transition: 'all 100ms ease-out',
                   display: 'flex',
@@ -379,22 +387,22 @@ const DevLogin: React.FC = () => {
                 onMouseDown={(e) => {
                   if (!loading) {
                     (e.currentTarget).style.transform = 'translate(2px, 2px)';
-                    (e.currentTarget).style.boxShadow = '1px 1px 0 #000';
+                    (e.currentTarget).style.boxShadow = `1px 1px 0 ${shadowColor}`;
                   }
                 }}
                 onMouseUp={(e) => {
                   (e.currentTarget).style.transform = 'none';
-                  (e.currentTarget).style.boxShadow = '3px 3px 0 #000';
+                  (e.currentTarget).style.boxShadow = `3px 3px 0 ${shadowColor}`;
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget).style.transform = 'none';
-                  (e.currentTarget).style.boxShadow = '3px 3px 0 #000';
+                  (e.currentTarget).style.boxShadow = `3px 3px 0 ${shadowColor}`;
                 }}
               >
                 <span style={{
                   fontSize: '22px',
                   fontWeight: 900,
-                  color: '#000'
+                  color: '#000' // Always dark on colored background
                 }}>
                   {age}
                 </span>
@@ -415,9 +423,9 @@ const DevLogin: React.FC = () => {
         {loading && (
           <div style={{
             padding: '16px 24px',
-            border: '4px solid #000',
+            border: `4px solid ${borderColor}`,
             background: activeColor,
-            boxShadow: '4px 4px 0 #000',
+            boxShadow: `4px 4px 0 ${shadowColor}`,
             fontWeight: 900,
             fontSize: '14px',
             textTransform: 'uppercase',
@@ -426,7 +434,8 @@ const DevLogin: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '12px'
+            gap: '12px',
+            color: '#000'
           }}>
             <span style={{
               display: 'inline-block',
@@ -445,7 +454,7 @@ const DevLogin: React.FC = () => {
         {error && (
           <div style={{
             padding: '10px 16px',
-            border: '3px solid #000',
+            border: `3px solid ${borderColor}`,
             background: '#FF6B6B',
             color: '#fff',
             fontWeight: 700,
@@ -467,10 +476,10 @@ const DevLogin: React.FC = () => {
         </p>
       </div>
 
-      {/* Ensure input placeholder is visible in both themes (Bug #2/#5) */}
+      {/* Ensure input placeholder is visible in both themes (Bug #2/#5/#7) */}
       <style>{`
         .dev-login-input::placeholder {
-          color: rgba(0, 0, 0, 0.45) !important;
+          color: ${isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.45)'} !important;
           opacity: 1 !important;
         }
       `}</style>
