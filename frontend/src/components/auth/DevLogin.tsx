@@ -3,6 +3,7 @@
  * Access at /app/dev-login
  */
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import BackgroundShapes from '../background-shapes/BackgroundShapes';
 import { useTheme } from '../theme/theme-provier';
 
@@ -25,6 +26,7 @@ const gradeForAge = (age: number) => {
 };
 
 const DevLogin: React.FC = () => {
+  const history = useHistory();
   const { theme, setTheme } = useTheme();
   const [selectedSubject, setSelectedSubject] = useState<string>('Math');
   const [presetSubject, setPresetSubject] = useState<string>('Math'); // last clicked preset
@@ -78,10 +80,10 @@ const DevLogin: React.FC = () => {
         body: JSON.stringify({ subject: selectedSubject, region: 'US' })
       }).catch(() => {});
 
-      // 3. Redirect immediately — assessment flow handles subject init + loading
+      // 3. Navigate via React Router — avoids full page reload blank screen (Bug #1)
       sessionStorage.setItem('onboarding_complete', 'true');
       sessionStorage.setItem('selected_subject', selectedSubject);
-      window.location.href = `/app/assessment/${selectedSubject}`;
+      history.push(`/app/assessment/${selectedSubject}`);
     } catch (err: any) {
       setError(err.message || 'Login failed');
       setLoading(false);
@@ -175,6 +177,7 @@ const DevLogin: React.FC = () => {
         <div style={{ marginBottom: '20px' }}>
           <input
             type="text"
+            className="dev-login-input"
             value={name}
             maxLength={40}
             onChange={(e) => setName(e.target.value.replace(/[^a-zA-Z0-9 .\-']/g, ''))}
@@ -186,6 +189,7 @@ const DevLogin: React.FC = () => {
               padding: '10px 16px',
               border: '3px solid #000',
               background: loading ? '#eee' : '#fff',
+              color: '#000',
               boxShadow: '3px 3px 0 #000',
               fontSize: '14px',
               fontWeight: 700,
@@ -284,8 +288,9 @@ const DevLogin: React.FC = () => {
         }}>
           <input
             type="text"
+            className="dev-login-input"
             value={customSubject}
-            maxLength={60}
+            maxLength={50}
             onChange={(e) => {
               const cleaned = e.target.value.replace(/[^a-zA-Z0-9 ,.\-']/g, '');
               setCustomSubject(cleaned);
@@ -302,10 +307,12 @@ const DevLogin: React.FC = () => {
               padding: '10px 16px',
               border: customSubject ? '4px solid #000' : '3px solid #000',
               background: customSubject ? '#C3ACD0' : '#fff',
+              color: '#000',
               boxShadow: customSubject ? '4px 4px 0 #000' : '2px 2px 0 #000',
               fontSize: '14px',
               fontWeight: 700,
               width: '320px',
+              maxWidth: '90%',
               outline: 'none',
               fontFamily: 'system-ui, -apple-system, sans-serif',
               transition: 'all 100ms ease-out'
@@ -459,6 +466,14 @@ const DevLogin: React.FC = () => {
           Come back here anytime to switch subject or age.
         </p>
       </div>
+
+      {/* Ensure input placeholder is visible in both themes (Bug #2/#5) */}
+      <style>{`
+        .dev-login-input::placeholder {
+          color: rgba(0, 0, 0, 0.45) !important;
+          opacity: 1 !important;
+        }
+      `}</style>
     </div>
   );
 };
