@@ -300,7 +300,7 @@ const DevLogin: React.FC = () => {
             value={customSubject}
             maxLength={50}
             onChange={(e) => {
-              const cleaned = e.target.value.replace(/[^\p{L}\p{N} ,.\-']/gu, '');
+              const cleaned = e.target.value.replace(/[^\p{L}\p{N} ,.\-'&]/gu, '');
               setCustomSubject(cleaned);
               if (cleaned.trim()) {
                 setSelectedSubject(cleaned.trim());

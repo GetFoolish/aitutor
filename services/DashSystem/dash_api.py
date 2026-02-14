@@ -339,7 +339,7 @@ def content_v1_onboarding(request: Request, payload: ContentV1OnboardingRequest)
                 topic=topic,
                 age=payload.age,
                 difficulty=float(profile_doc.get("difficulty_cursor", 0.35)),
-                fmt=random.choice(["radio_single", "radio_multi", "orderer"]),
+                fmt=random.choice(["radio_single", "radio_multi"]),
                 memory=memory,
             )
             break
