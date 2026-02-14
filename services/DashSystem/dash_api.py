@@ -2502,6 +2502,19 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
             {"assessment_id": payload.assessment_id},
             {"$set": {"status": "completed"}, "$push": {"answers": answer_record}}
         )
+        # Also mark in subject_assessments so status check returns completed
+        mongo_db.subject_assessments.update_one(
+            {"user_id": user_id, "subject": session["subject"]},
+            {"$set": {
+                "assessment_completed": True,
+                "assessment_date": datetime.now(),
+                "score": correct_count,
+                "total": len(all_answers),
+                "adaptive": True,
+                "final_difficulty": new_diff,
+            }},
+            upsert=True,
+        )
         with _prefetch_lock:
             _prefetch_cache.pop(payload.assessment_id, None)
         return {"completed": True, "score": correct_count, "total": len(all_answers), "final_difficulty": round(new_diff, 3)}
@@ -2515,6 +2528,19 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
         mongo_db.db["assessment_sessions"].update_one(
             {"assessment_id": payload.assessment_id},
             {"$set": {"status": "completed"}, "$push": {"answers": answer_record}}
+        )
+        # Also mark in subject_assessments so status check returns completed
+        mongo_db.subject_assessments.update_one(
+            {"user_id": user_id, "subject": session["subject"]},
+            {"$set": {
+                "assessment_completed": True,
+                "assessment_date": datetime.now(),
+                "score": correct_count,
+                "total": len(all_answers),
+                "adaptive": True,
+                "final_difficulty": new_diff,
+            }},
+            upsert=True,
         )
         with _prefetch_lock:
             _prefetch_cache.pop(payload.assessment_id, None)
