@@ -178,7 +178,7 @@ const DevLogin: React.FC = () => {
           color: isDark ? '#aaa' : '#666',
           marginBottom: '20px'
         }}>
-          Pick a subject, then click an age to jump straight into assessment.
+          Select a subject, then choose your age to begin.
         </p>
 
         {/* Name field */}
@@ -357,7 +357,7 @@ const DevLogin: React.FC = () => {
           color: textColor,
           marginBottom: '10px'
         }}>
-          2. Age (click to start)
+          2. Select your age
         </p>
         <div style={{
           display: 'grid',
@@ -373,7 +373,9 @@ const DevLogin: React.FC = () => {
                 onClick={() => !loading && handleLogin(age)}
                 disabled={loading}
                 style={{
-                  padding: '16px 8px',
+                  padding: '18px 8px',
+                  minHeight: '44px',
+                  minWidth: '44px',
                   border: `3px solid ${borderColor}`,
                   background: isSelected ? (isDark ? '#333' : '#ddd') : activeColor,
                   boxShadow: loading ? `1px 1px 0 ${shadowColor}` : `3px 3px 0 ${shadowColor}`,
@@ -402,16 +404,18 @@ const DevLogin: React.FC = () => {
                 <span style={{
                   fontSize: '22px',
                   fontWeight: 900,
-                  color: '#000' // Always dark on colored background
+                  color: '#fff',
+                  textShadow: '1px 1px 0 rgba(0,0,0,0.3)'
                 }}>
                   {age}
                 </span>
                 <span style={{
-                  fontSize: '9px',
-                  fontWeight: 700,
-                  color: '#555',
+                  fontSize: '10px',
+                  fontWeight: 800,
+                  color: 'rgba(255,255,255,0.85)',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.05em'
+                  letterSpacing: '0.05em',
+                  textShadow: '1px 1px 0 rgba(0,0,0,0.2)'
                 }}>
                   {gradeForAge(age)}
                 </span>

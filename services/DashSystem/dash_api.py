@@ -2159,6 +2159,26 @@ def start_adaptive_assessment(subject: str, request: Request):
         if not q_data:
             raise HTTPException(status_code=500, detail="Failed to load question data")
 
+        # Skip questions with only broken widget types (orderer/matcher — unsupported in React 18)
+        if _has_only_broken_widgets(q_data):
+            logger.info(f"[ADAPTIVE_ASSESSMENT] Skipping broken-widget-only question {first_q.question_id} — retrying")
+            q_data = None
+            user_profile = dash_system.load_user_or_create(user_id, age=jwt_age if jwt_age else 5)
+            current_time = time.time()
+            for _retry in range(3):
+                alt_q = dash_system.get_next_question_flexible(
+                    user_id, current_time, user_profile=user_profile, fast_mode=True,
+                    exclude_question_ids=[first_q.question_id],
+                )
+                if alt_q:
+                    alt_data = _load_question_perseus(alt_q.question_id, mongo_db)
+                    if alt_data and not _has_only_broken_widgets(alt_data):
+                        first_q = alt_q
+                        q_data = alt_data
+                        break
+            if not q_data:
+                raise HTTPException(status_code=400, detail="No supported questions available")
+
         # Update session (track content hash alongside question ID for content-level dedup)
         first_content_hash = _compute_content_hash(q_data)
         mongo_db.db["assessment_sessions"].update_one(
@@ -2467,6 +2487,20 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
     if next_content_hash in used_content_hashes:
         logger.warning(f"[ADAPTIVE_NEXT] Content-hash duplicate detected: {next_q.question_id} — skipping")
         # Auto-complete rather than serve duplicate content
+        all_answers = session.get("answers", []) + [answer_record]
+        correct_count = sum(1 for a in all_answers if a["is_correct"])
+        mongo_db.db["assessment_sessions"].update_one(
+            {"assessment_id": payload.assessment_id},
+            {"$set": {"status": "completed"}, "$push": {"answers": answer_record}}
+        )
+        with _prefetch_lock:
+            _prefetch_cache.pop(payload.assessment_id, None)
+        return {"completed": True, "score": correct_count, "total": len(all_answers), "final_difficulty": round(new_diff, 3)}
+
+    # Skip questions with only broken widget types (orderer/matcher — unsupported in React 18)
+    if _has_only_broken_widgets(q_data):
+        logger.info(f"[ADAPTIVE_NEXT] Skipping broken-widget-only question {next_q.question_id}")
+        # Auto-complete rather than serve unsupported question
         all_answers = session.get("answers", []) + [answer_record]
         correct_count = sum(1 for a in all_answers if a["is_correct"])
         mongo_db.db["assessment_sessions"].update_one(
@@ -2870,6 +2904,22 @@ def _load_question_perseus(question_id: str, mongo_db) -> Optional[dict]:
             logger.warning(f"[LOAD_PERSEUS] AI pre-serve validator error for {question_id}: {e}")
         return _strip_objectids(perseus)
     return None
+
+
+# Widget types broken in React 18 (string refs) — skip questions with only these
+_BROKEN_WIDGET_TYPES = {"orderer", "matcher"}
+
+
+def _has_only_broken_widgets(perseus: dict) -> bool:
+    """Return True if question only has widget types unsupported in the frontend."""
+    widgets = perseus.get("question", {}).get("widgets", {})
+    scoreable = [
+        w for w in widgets.values()
+        if isinstance(w, dict) and w.get("type") not in (None, "image", "definition")
+    ]
+    if not scoreable:
+        return False
+    return all(w.get("type") in _BROKEN_WIDGET_TYPES for w in scoreable)
 
 
 def _patch_numeric_input_widgets(perseus: dict) -> None:
