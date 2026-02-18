@@ -94,7 +94,10 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
     const init = async () => {
       // Check if returning from assessment with a subject in the URL
       const urlParams = new URLSearchParams(window.location.search);
-      const urlSubject = urlParams.get('subject');
+      const pathMatch = window.location.pathname.match(/^\/app\/learn\/([^/?#]+)/i);
+      const pathSubject = pathMatch ? decodeURIComponent(pathMatch[1]) : null;
+      const urlSubject = pathSubject || urlParams.get('subject');
+      const fromAssessment = urlParams.get('fromAssessment') === '1';
 
       const onboardingDone = sessionStorage.getItem('onboarding_complete');
       const savedSubject = sessionStorage.getItem('selected_subject');
@@ -123,6 +126,16 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
         const subjectPromise = subjectAlreadySwitched
           ? Promise.resolve()
           : ensureSubjectReady(effectiveSubject);
+
+        if (fromAssessment) {
+          await subjectPromise;
+          setAssessmentStatus({
+            loading: false,
+            completed: true,
+            checkFailed: false,
+          });
+          return;
+        }
 
         const statusPromise = checkAssessmentStatus(effectiveSubject);
         await Promise.all([subjectPromise, statusPromise]);

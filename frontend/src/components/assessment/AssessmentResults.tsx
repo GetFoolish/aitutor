@@ -41,7 +41,6 @@ const AssessmentResults: React.FC<Props> = ({
   onContinue
 }) => {
   const [showPersonalizing, setShowPersonalizing] = useState(false);
-  const [isFading, setIsFading] = useState(false);
   const [gradingData, setGradingData] = useState<GradingData | null>(null);
   const [skillCards, setSkillCards] = useState<SkillCard[]>([]);
   const tutor = useOptionalTutorContext();
@@ -50,8 +49,6 @@ const AssessmentResults: React.FC<Props> = ({
   const disconnect = tutor?.disconnect;
 
   const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
-  const passColor = percentage >= 70 ? '#4CAF50' : '#FF9800';
-
   const isPassed = percentage >= 70;
 
   // Prefetch grading data when results are shown (no loading state needed)
@@ -130,38 +127,16 @@ const AssessmentResults: React.FC<Props> = ({
     }
   }, [connected, client, disconnect]);
 
-  // Auto-redirect after showing results briefly
-  // If skillCards load → show personalization animation first
-  // Hard fallback: always redirect after 4s even if skillCards never load
-  useEffect(() => {
-    if (skillCards.length === 0) return;
-
-    const fadeTimer = setTimeout(() => {
-      setIsFading(true);
-    }, 1700);
-
-    const showTimer = setTimeout(() => {
-      setShowPersonalizing(true);
-    }, 2000);
-
-    return () => {
-      clearTimeout(fadeTimer);
-      clearTimeout(showTimer);
-    };
-  }, [skillCards.length]);
-
-  // Hard fallback — if skillCards never load, redirect after 4s
-  useEffect(() => {
-    const fallback = setTimeout(() => {
-      if (!showPersonalizing) {
-        onContinue();
-      }
-    }, 4000);
-    return () => clearTimeout(fallback);
-  }, [onContinue, showPersonalizing]);
-
   // Handle personalization cards animation complete
   const handlePersonalizationComplete = () => {
+    onContinue();
+  };
+
+  const handleContinueClick = () => {
+    if (skillCards.length > 0) {
+      setShowPersonalizing(true);
+      return;
+    }
     onContinue();
   };
 
@@ -177,40 +152,41 @@ const AssessmentResults: React.FC<Props> = ({
 
   return (
     <div style={{
-      padding: '40px 20px',
-      textAlign: 'center',
-      maxWidth: '600px',
-      margin: '0 auto',
-      minHeight: '100vh',
+      marginTop: '56px',
+      padding: '14px 14px 20px',
+      maxWidth: '860px',
+      width: '100%',
+      marginLeft: 'auto',
+      marginRight: 'auto',
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'center',
-      backgroundColor: 'var(--neo-bg)',
-      opacity: isFading ? 0 : 1,
-      transition: 'opacity 300ms ease-out'
+      alignItems: 'stretch',
+      gap: '12px',
+      backgroundColor: 'transparent',
     }}>
       <div style={{
         border: '5px solid var(--neo-black)',
         backgroundColor: 'var(--neo-yellow)',
-        padding: '32px',
-        marginBottom: '32px',
-        boxShadow: '3px 3px 0 var(--neo-black)'
+        padding: '18px 20px',
+        boxShadow: '3px 3px 0 var(--neo-black)',
+        textAlign: 'center',
       }}>
         <h1 style={{
-          fontSize: '28px',
-          fontWeight: 700,
-          marginBottom: '24px',
+          fontSize: 'clamp(20px, 2.6vw, 30px)',
+          fontWeight: 900,
+          margin: '0 0 10px 0',
           color: 'var(--neo-black)',
           textTransform: 'uppercase',
-          letterSpacing: '0.05em'
+          letterSpacing: '0.06em'
         }}>
           Assessment Complete!
         </h1>
 
         <div style={{
-          fontSize: '64px',
+          fontSize: 'clamp(44px, 8vw, 72px)',
           fontWeight: 900,
-          margin: '24px 0',
+          lineHeight: 1,
+          margin: '8px 0 4px 0',
           color: 'var(--neo-black)',
           fontFamily: 'Space Mono, monospace'
         }}>
@@ -218,8 +194,8 @@ const AssessmentResults: React.FC<Props> = ({
         </div>
 
         <div style={{
-          fontSize: '20px',
-          marginBottom: '24px',
+          fontSize: 'clamp(14px, 2vw, 20px)',
+          marginBottom: '0',
           color: 'var(--neo-black)',
           fontWeight: 700,
           textTransform: 'uppercase',
@@ -232,18 +208,15 @@ const AssessmentResults: React.FC<Props> = ({
       <div style={{
         border: '5px solid var(--neo-black)',
         backgroundColor: isPassed ? '#E8F5E9' : '#FFEBEE',
-        padding: '24px',
-        marginBottom: '32px',
+        padding: '16px 18px',
         boxShadow: '2px 2px 0 var(--neo-black)',
-        position: 'relative',
-        zIndex: 5,
-        overflow: 'hidden'
+        textAlign: 'center',
       }}>
         {isPassed ? (
           <p style={{
-            fontSize: '18px',
+            fontSize: 'clamp(16px, 2vw, 20px)',
             color: '#2E7D32',
-            fontWeight: 700,
+            fontWeight: 800,
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
             margin: 0
@@ -252,9 +225,9 @@ const AssessmentResults: React.FC<Props> = ({
           </p>
         ) : (
           <p style={{
-            fontSize: '18px',
+            fontSize: 'clamp(16px, 2vw, 20px)',
             color: '#C62828',
-            fontWeight: 700,
+            fontWeight: 800,
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
             margin: 0
@@ -263,6 +236,28 @@ const AssessmentResults: React.FC<Props> = ({
           </p>
         )}
       </div>
+
+      <button
+        onClick={handleContinueClick}
+        style={{
+          width: '100%',
+          maxWidth: '420px',
+          margin: '0 auto',
+          padding: '14px 24px',
+          border: '4px solid var(--neo-black)',
+          background: '#4FC3F7',
+          color: 'var(--neo-black)',
+          fontWeight: 900,
+          fontSize: '16px',
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+          boxShadow: '3px 3px 0 var(--neo-black)',
+          cursor: 'pointer',
+          alignSelf: 'center'
+        }}
+      >
+        Continue to Learning
+      </button>
 
     </div>
   );

@@ -5,6 +5,8 @@ import AssessmentQuestion from './AssessmentQuestion';
 import AssessmentResults from './AssessmentResults';
 import Header from '../../components/header/Header';
 import BackgroundShapes from '../background-shapes/BackgroundShapes';
+import FloatingControlPanel from '../floating-control-panel/FloatingControlPanel';
+import { TutorProvider } from '../../features/tutor';
 
 /* 🔥 COPY LOGIN BG STYLES */
 import '../auth/auth.scss';
@@ -30,6 +32,12 @@ interface Params {
 const AssessmentFlow: React.FC = () => {
   const history = useHistory();
   const { subject } = useParams<Params>();
+  const [viewportHeight, setViewportHeight] = useState<number>(() =>
+    typeof window !== 'undefined' ? window.innerHeight : 900
+  );
+  const HEADER_OFFSET_PX = 52;
+  const rootHeight = `${viewportHeight}px`;
+  const contentPaneHeight = `${Math.max(320, viewportHeight - HEADER_OFFSET_PX)}px`;
 
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
@@ -40,19 +48,36 @@ const AssessmentFlow: React.FC = () => {
   const [completed, setCompleted] = useState(false);
   const [score, setScore] = useState(0);
   const [total, setTotal] = useState(0);
-  const [error, setError] = useState<string | null>(null);
+  const [startError, setStartError] = useState<string | null>(null);
+  const [nextQuestionError, setNextQuestionError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showSubmittingOverlay, setShowSubmittingOverlay] = useState(false);
   const [loadPhase, setLoadPhase] = useState<'fast' | 'generating' | 'slow'>('fast');
+  const [isScratchpadOpen, setIsScratchpadOpen] = useState(false);
+  const [cameraEnabled, setCameraEnabled] = useState(false);
+  const [screenEnabled, setScreenEnabled] = useState(false);
+  const [privacyMode, setPrivacyMode] = useState(false);
 
   // Ref to track latest assessmentId for prefetch (avoids stale closures)
   const assessmentIdRef = useRef<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const submitOverlayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Generation counter — prevents stale abort errors from overwriting new state
   const generationRef = useRef(0);
 
   // Client-side content fingerprint tracker to detect duplicate questions
   const seenContentRef = useRef<Set<string>>(new Set());
+  const pendingAnswerRef = useRef<{
+    assessment_id: string;
+    question_id: string;
+    skill_id: string;
+    is_correct: boolean;
+  } | null>(null);
+  const floatingVideoRef = useRef<HTMLVideoElement>(null);
+  const floatingRenderCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const floatingMixerCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const floatingProcessedEdgesRef = useRef<ImageData | null>(null);
 
 
   // Simple content fingerprint for client-side duplicate detection
@@ -99,30 +124,97 @@ const AssessmentFlow: React.FC = () => {
       abortRef.current?.abort();
       timersRef.current.forEach(clearTimeout);
       timersRef.current = [];
+      if (submitOverlayTimerRef.current) {
+        clearTimeout(submitOverlayTimerRef.current);
+        submitOverlayTimerRef.current = null;
+      }
     };
   }, [subject]);
+
+  useEffect(() => {
+    const onResize = () => setViewportHeight(window.innerHeight);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  useEffect(() => {
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+    };
+  }, []);
 
   const startAssessment = async () => {
     const gen = ++generationRef.current;
     setLoadPhase('fast');
+    setStartError(null);
+    setNextQuestionError(null);
     try {
       const controller = new AbortController();
       abortRef.current = controller;
+      const MAX_START_RETRIES = 2;
+      const START_HARD_TIMEOUT_MS = 25000;
 
-      // Progressive phase timers: 15s→generating, 45s→slow (with cancel option)
-      const phase2Timer = setTimeout(() => setLoadPhase('generating'), 15000);
-      const phase3Timer = setTimeout(() => setLoadPhase('slow'), 45000);
-      const hardTimeout = setTimeout(() => controller.abort(), 120000); // 120s hard timeout
+      // Progressive phase timers: keep UX honest and fail fast on stalls.
+      const phase2Timer = setTimeout(() => setLoadPhase('generating'), 3000);
+      const phase3Timer = setTimeout(() => setLoadPhase('slow'), 9000);
+      const hardTimeout = setTimeout(() => controller.abort(), START_HARD_TIMEOUT_MS);
       timersRef.current = [phase2Timer, phase3Timer, hardTimeout];
 
-      const response = await apiUtils.post(
-        `${DASH_API_URL}/assessment/start-adaptive/${subject}`,
-        {},
-        { signal: controller.signal }
-      );
+      // Kick warm-up immediately (best-effort) so adaptive start can hit warm cache faster.
+      apiUtils
+        .post(
+          `${DASH_API_URL}/api/start-subject`,
+          { subject, region: 'US' },
+          { signal: controller.signal }
+        )
+        .catch(() => null);
+
+      let response: Response | null = null;
+      for (let attempt = 0; attempt < MAX_START_RETRIES; attempt += 1) {
+        response = await apiUtils.post(
+          `${DASH_API_URL}/assessment/start-adaptive/${subject}`,
+          {},
+          { signal: controller.signal }
+        );
+
+        if (response.ok) break;
+
+        const status = response.status;
+        let detail = '';
+        try {
+          const errJson = await response.clone().json();
+          detail = String(errJson?.detail || errJson?.error || '').toLowerCase();
+        } catch {
+          detail = '';
+        }
+
+        const transientStartFailure =
+          status === 503 ||
+          (status === 400 &&
+            (detail.includes('no questions') ||
+              detail.includes('no supported questions') ||
+              detail.includes('prepared')));
+
+        if (!transientStartFailure || attempt >= MAX_START_RETRIES - 1) {
+          break;
+        }
+
+        // Short backoff; avoid long frozen loading screens.
+        await new Promise((resolve) => {
+          const timer = setTimeout(resolve, 500 * (attempt + 1));
+          timersRef.current.push(timer);
+        });
+      }
+
       timersRef.current.forEach(clearTimeout);
       timersRef.current = [];
 
+      if (!response) throw new Error('No response from assessment start');
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
 
@@ -136,7 +228,7 @@ const AssessmentFlow: React.FC = () => {
           setTotal(data.total);
         } else {
           // No questions available or other error → show retry UI
-          setError(data.error);
+          setStartError(data.error);
         }
         setLoading(false);
         return;
@@ -163,94 +255,182 @@ const AssessmentFlow: React.FC = () => {
       if (gen !== generationRef.current) return;
       console.error('Assessment start failed:', err);
       const msg = err?.name === 'AbortError'
-        ? 'Assessment is taking longer than expected. Please try again.'
+        ? 'Assessment setup timed out. Please try again.'
         : 'Failed to load assessment. Please try again.';
-      setError(msg);
+      setStartError(msg);
       setLoading(false);
     }
   };
 
-  const handleAnswer = (isCorrect: boolean) => {
+  const applyNextResponse = useCallback((data: any) => {
+    if (data.completed) {
+      setScore(data.score ?? 0);
+      setTotal(data.total ?? totalQuestions);
+      setCompleted(true);
+      return;
+    }
+
+    if (!data.question) {
+      throw new Error('Missing question payload');
+    }
+
+    // Client-side duplicate check: keep flowing even if backend reused content.
+    const fp = contentFingerprint(data.question);
+    if (seenContentRef.current.has(fp)) {
+      console.warn('[AssessmentFlow] Duplicate content detected client-side');
+    }
+    seenContentRef.current.add(fp);
+
+    setCurrentQuestion(data.question);
+    setQuestionNumber(data.question_number);
+    setTotalQuestions(data.total_questions);
+    setCurrentDifficulty(data.current_difficulty);
+
+    if (assessmentIdRef.current) {
+      firePrefetch(assessmentIdRef.current, data.current_difficulty);
+    }
+  }, [contentFingerprint, firePrefetch, totalQuestions]);
+
+  const requestNextQuestion = useCallback(async (
+    payload: { assessment_id: string; question_id: string; skill_id: string; is_correct: boolean },
+  ): Promise<Response> => {
+    // Fast-settle policy: avoid long blocking spinner loops on next-question fetch.
+    const NEXT_REQUEST_TIMEOUTS_MS = [1500, 1900];
+
+    for (let attempt = 0; attempt < NEXT_REQUEST_TIMEOUTS_MS.length; attempt += 1) {
+      const timeoutMs = NEXT_REQUEST_TIMEOUTS_MS[attempt];
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+      let response: Response;
+      try {
+        response = await apiUtils.post(
+          `${DASH_API_URL}/assessment/next`,
+          payload,
+          { signal: controller.signal },
+        );
+      } catch (err: any) {
+        clearTimeout(timeoutId);
+        const aborted = err?.name === 'AbortError';
+        if (aborted && attempt < NEXT_REQUEST_TIMEOUTS_MS.length - 1) {
+          await new Promise((resolve) => setTimeout(resolve, 120 * (attempt + 1)));
+          continue;
+        }
+        if (aborted) throw new Error('TIMEOUT');
+        throw err;
+      }
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        return response;
+      }
+
+      if (response.status === 503 && attempt < NEXT_REQUEST_TIMEOUTS_MS.length - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 120 * (attempt + 1)));
+        continue;
+      }
+
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    throw new Error('HTTP 503');
+  }, []);
+
+  const retryPendingNextQuestion = useCallback(async () => {
+    const payload = pendingAnswerRef.current;
+    if (!payload || submitting) return;
+
+    setSubmitting(true);
+    setShowSubmittingOverlay(false);
+    if (submitOverlayTimerRef.current) {
+      clearTimeout(submitOverlayTimerRef.current);
+    }
+    submitOverlayTimerRef.current = setTimeout(() => setShowSubmittingOverlay(true), 350);
+    setNextQuestionError(null);
+
+    try {
+      const response = await requestNextQuestion(payload);
+      const data = await response.json();
+      applyNextResponse(data);
+      pendingAnswerRef.current = null;
+    } catch (err: any) {
+      console.error('Assessment next retry failed:', err);
+      if (err?.message === 'TIMEOUT' || String(err?.message || '').includes('HTTP 503')) {
+        setNextQuestionError('Still preparing your next question. Please retry in a moment.');
+      } else {
+        setNextQuestionError('Network issue while fetching next question. Please retry.');
+      }
+    } finally {
+      setSubmitting(false);
+      setShowSubmittingOverlay(false);
+      if (submitOverlayTimerRef.current) {
+        clearTimeout(submitOverlayTimerRef.current);
+        submitOverlayTimerRef.current = null;
+      }
+    }
+  }, [applyNextResponse, requestNextQuestion, submitting]);
+
+  const handleAnswer = async (isCorrect: boolean) => {
     if (!currentQuestion || !assessmentId || submitting) return;
 
-    const q = currentQuestion;
+    const payload = {
+      assessment_id: assessmentId,
+      question_id: currentQuestion?.dash_metadata?.dash_question_id || `q_${questionNumber}`,
+      skill_id: (currentQuestion?.dash_metadata?.skill_ids || [])[0] || '',
+      is_correct: isCorrect,
+    };
+    pendingAnswerRef.current = payload;
     setSubmitting(true);
+    setShowSubmittingOverlay(false);
+    if (submitOverlayTimerRef.current) {
+      clearTimeout(submitOverlayTimerRef.current);
+    }
+    submitOverlayTimerRef.current = setTimeout(() => setShowSubmittingOverlay(true), 350);
+    setNextQuestionError(null);
 
-    const TIMEOUT_MS = 25000;
-
-    // Fire the API call immediately
-    const fetchNext = apiUtils.post(
-      `${DASH_API_URL}/assessment/next`,
-      {
-        assessment_id: assessmentId,
-        question_id: q?.dash_metadata?.dash_question_id || `q_${questionNumber}`,
-        skill_id: (q?.dash_metadata?.skill_ids || [])[0] || '',
-        is_correct: isCorrect,
-      }
-    );
-
-    // Race the fetch against a hard timeout (JIT generation can be very slow)
-    const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => {
-        console.warn(`[AssessmentFlow] Frontend timeout fired after ${TIMEOUT_MS}ms`);
-        reject(new Error('TIMEOUT'));
-      }, TIMEOUT_MS)
-    );
-
-    // Brief feedback flash, then show next question as soon as API responds
-    const minDelay = new Promise(resolve => setTimeout(resolve, 200));
-
-    Promise.all([Promise.race([fetchNext, timeoutPromise]), minDelay]).then(async ([response]) => {
-      try {
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
-
-        if (data.completed) {
-          setScore(data.score ?? 0);
-          setTotal(data.total ?? totalQuestions);
-          setCompleted(true);
-          setSubmitting(false);
-          return;
-        }
-
-        // Client-side duplicate check: skip if backend served identical content
-        const fp = contentFingerprint(data.question);
-        if (seenContentRef.current.has(fp)) {
-          console.warn('[AssessmentFlow] Duplicate content detected client-side — treating as auto-advance');
-        }
-        seenContentRef.current.add(fp);
-
-        setCurrentQuestion(data.question);
-        setQuestionNumber(data.question_number);
-        setTotalQuestions(data.total_questions);
-        setCurrentDifficulty(data.current_difficulty);
-        setSubmitting(false);
-
-        // Pre-fetch the NEXT question while user works on this one
-        if (assessmentIdRef.current) {
-          firePrefetch(assessmentIdRef.current, data.current_difficulty);
-        }
-      } catch (err) {
-        console.error('Assessment next failed:', err);
-        setError('Failed to load next question. Please try again.');
-        setSubmitting(false);
-      }
-    }).catch((err) => {
-      console.error('Assessment fetch error:', err);
-      if (err?.message === 'TIMEOUT') {
-        setError('Question generation is taking too long. Please try again.');
+    try {
+      const response = await requestNextQuestion(payload);
+      const data = await response.json();
+      applyNextResponse(data);
+      pendingAnswerRef.current = null;
+    } catch (err: any) {
+      console.error('Assessment next failed:', err);
+      if (err?.message === 'TIMEOUT' || String(err?.message || '').includes('HTTP 503')) {
+        setNextQuestionError('Still preparing your next question. Please retry in a moment.');
       } else {
-        setError('Network error — please try again.');
+        setNextQuestionError('Failed to load next question. Please retry.');
       }
+    } finally {
       setSubmitting(false);
-    });
+      setShowSubmittingOverlay(false);
+      if (submitOverlayTimerRef.current) {
+        clearTimeout(submitOverlayTimerRef.current);
+        submitOverlayTimerRef.current = null;
+      }
+    }
   };
 
   /* ----------------------------------------------------
      Render
   ---------------------------------------------------- */
   return (
-    <div className="auth-container" style={{ overflow: 'visible' }}>
+    <div
+      className="auth-container"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        overflowX: 'hidden',
+        overflowY: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: rootHeight,
+        height: rootHeight,
+        width: '100vw',
+        padding: 0,
+        alignItems: 'stretch',
+        justifyContent: 'flex-start',
+      }}
+    >
       <BackgroundShapes />
 
       <Header
@@ -261,7 +441,7 @@ const AssessmentFlow: React.FC = () => {
 
       {loading && (
         <div style={{
-          minHeight: '100vh',
+          minHeight: rootHeight,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -330,7 +510,7 @@ const AssessmentFlow: React.FC = () => {
             <button
               onClick={() => {
                 abortRef.current?.abort();
-                setError(null);
+                setStartError(null);
                 setLoading(true);
                 startAssessment();
               }}
@@ -357,9 +537,9 @@ const AssessmentFlow: React.FC = () => {
         </div>
       )}
 
-      {error && (
+      {startError && (
         <div style={{
-          minHeight: '100vh',
+          minHeight: rootHeight,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -376,10 +556,10 @@ const AssessmentFlow: React.FC = () => {
             fontSize: '14px',
             textTransform: 'uppercase'
           }}>
-            {error}
+            {startError}
           </div>
           <button
-            onClick={() => { setError(null); setLoading(true); startAssessment(); }}
+            onClick={() => { setStartError(null); setLoading(true); startAssessment(); }}
             style={{
               padding: '12px 32px',
               border: '3px solid #000',
@@ -416,7 +596,7 @@ const AssessmentFlow: React.FC = () => {
         </div>
       )}
 
-      {!loading && !error && (
+      {!loading && !startError && (
         <>
           {completed && (
             <AssessmentResults
@@ -424,20 +604,30 @@ const AssessmentFlow: React.FC = () => {
               total={total}
               subject={subject}
               onContinue={() => {
-                // Persist subject so practice mode loads the right subject
-                sessionStorage.setItem('selected_subject', subject);
-                sessionStorage.setItem('assessmentSubject', subject);
-                history.replace(`/app?subject=${encodeURIComponent(subject)}`);
+                // Persist subject and deep-link into learning mode route.
+                const normalizedSubject = String(subject || '').trim() || 'math';
+                const encodedSubject = encodeURIComponent(normalizedSubject);
+                sessionStorage.setItem('selected_subject', normalizedSubject);
+                sessionStorage.setItem('assessmentSubject', normalizedSubject);
+                sessionStorage.setItem('assessment_completed_subject', normalizedSubject);
+
+                // Warm the subject switch before routing so first learning question appears reliably.
+                void apiUtils
+                  .post(`${DASH_API_URL}/api/start-subject`, { subject: normalizedSubject, region: 'US' })
+                  .catch(() => null)
+                  .finally(() => {
+                    history.replace(`/app/learn/${encodedSubject}?subject=${encodedSubject}&fromAssessment=1`);
+                  });
               }}
             />
           )}
 
           {!completed && (
-            <div style={{ position: 'relative', minHeight: '100vh', paddingTop: '60px' }}>
+            <div style={{ position: 'relative', marginTop: `${HEADER_OFFSET_PX}px`, height: contentPaneHeight, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
               {/* Assessment Mode Banner */}
               <div style={{
                 width: '100%',
-                marginBottom: '24px'
+                marginBottom: '10px'
               }}>
                 <div style={{
                   border: '5px solid #000000',
@@ -447,7 +637,7 @@ const AssessmentFlow: React.FC = () => {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '12px',
-                  margin: '0 20px',
+                  margin: '0 10px',
                 }}>
                   {/* Exit assessment — regular flex child, no absolute positioning */}
                   <button
@@ -510,40 +700,127 @@ const AssessmentFlow: React.FC = () => {
                 </div>
               </div>
 
-              <div style={{ padding: '0 80px 40px 20px', maxWidth: 900, margin: '0 auto' }}>
-                {submitting && (
+              <div style={{
+                padding: '0 12px 10px 12px',
+                maxWidth: 900,
+                margin: '0 auto',
+                width: '100%',
+                flex: 1,
+                minHeight: 0,
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+              }}>
+                {nextQuestionError && (
                   <div style={{
-                    textAlign: 'center',
-                    padding: '20px',
-                    border: '5px solid #000000',
-                    backgroundColor: '#FFD93D',
-                    marginBottom: '24px',
-                    boxShadow: '3px 3px 0 #000000'
+                    border: '4px solid #000000',
+                    backgroundColor: '#FF6B6B',
+                    color: '#fff',
+                    padding: '14px 16px',
+                    marginBottom: '20px',
+                    boxShadow: '3px 3px 0 #000',
+                    textAlign: 'center'
                   }}>
-                    <span style={{
-                      fontSize: '18px',
-                      fontWeight: 700,
-                      color: '#000000',
+                    <div style={{
+                      fontSize: '14px',
+                      fontWeight: 800,
                       textTransform: 'uppercase',
-                      letterSpacing: '0.05em'
+                      letterSpacing: '0.05em',
+                      marginBottom: '10px',
                     }}>
-                      Loading next question...
-                    </span>
+                      {nextQuestionError}
+                    </div>
+                    <button
+                      onClick={retryPendingNextQuestion}
+                      disabled={submitting}
+                      style={{
+                        padding: '10px 24px',
+                        border: '3px solid #000',
+                        background: '#FFD93D',
+                        color: '#000',
+                        cursor: submitting ? 'not-allowed' : 'pointer',
+                        fontWeight: 800,
+                        fontSize: '13px',
+                        textTransform: 'uppercase',
+                        opacity: submitting ? 0.7 : 1,
+                      }}
+                    >
+                      {submitting ? 'Retrying...' : 'Retry Next Question'}
+                    </button>
                   </div>
                 )}
-
                 {currentQuestion && (
-                  <AssessmentQuestion
-                    question={currentQuestion}
-                    questionNumber={questionNumber}
-                    totalQuestions={totalQuestions}
-                    onAnswer={handleAnswer}
-                  />
+                  <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+                    <AssessmentQuestion
+                      question={currentQuestion}
+                      questionNumber={questionNumber}
+                      totalQuestions={totalQuestions}
+                      onAnswer={handleAnswer}
+                    />
+                    {submitting && showSubmittingOverlay && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          inset: 0,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          pointerEvents: 'none',
+                          background: 'rgba(255, 253, 245, 0.62)',
+                          backdropFilter: 'blur(1px)',
+                          zIndex: 40,
+                        }}
+                      >
+                        <div
+                          style={{
+                            textAlign: 'center',
+                            padding: '12px 18px',
+                            border: '4px solid #000000',
+                            backgroundColor: '#FFD93D',
+                            boxShadow: '3px 3px 0 #000000'
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: '16px',
+                              fontWeight: 800,
+                              color: '#000000',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.05em'
+                            }}
+                          >
+                            Loading next question...
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
           )}
         </>
+      )}
+
+      {!loading && !startError && !completed && (
+        <TutorProvider assessmentMode={true}>
+          <FloatingControlPanel
+            renderCanvasRef={floatingRenderCanvasRef}
+            videoRef={floatingVideoRef}
+            supportsVideo={true}
+            onPaintClick={() => setIsScratchpadOpen((prev) => !prev)}
+            isPaintActive={isScratchpadOpen}
+            cameraEnabled={cameraEnabled}
+            screenEnabled={screenEnabled}
+            onToggleCamera={setCameraEnabled}
+            onToggleScreen={setScreenEnabled}
+            privacyMode={privacyMode}
+            onTogglePrivacy={setPrivacyMode}
+            mediaMixerCanvasRef={floatingMixerCanvasRef}
+            processedEdgesRef={floatingProcessedEdgesRef}
+            assessmentMode={true}
+          />
+        </TutorProvider>
       )}
 
       <style>{`

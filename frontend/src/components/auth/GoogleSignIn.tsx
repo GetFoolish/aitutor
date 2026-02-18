@@ -33,34 +33,40 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
   // Check if we're returning from OAuth callback
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    const isNewUser = urlParams.get('is_new_user') === 'true';
-    const setupTokenParam = urlParams.get('setup_token');
+    const authCode = urlParams.get('auth_code');
 
-    if (token) {
-      // Existing user - login directly
-      // We need to get user info from token
-      fetch(`${import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003'}/auth/me`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+    if (!authCode) return;
+
+    authAPI.exchangeAuthCode(authCode)
+      .then(async exchange => {
+        // Clean up URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+
+        if (exchange.token) {
+          const response = await fetch(`${import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003'}/auth/me`, {
+            headers: {
+              'Authorization': `Bearer ${exchange.token}`,
+            },
+          });
+          if (!response.ok) {
+            throw new Error(`Failed to load user profile (${response.status})`);
+          }
+          const userData = await response.json();
+          onAuthSuccess(exchange.token, userData);
+          return;
+        }
+
+        if (exchange.setup_token) {
+          setSetupToken(exchange.setup_token);
+          setShowSignupForm(true);
+          return;
+        }
+
+        throw new Error('Invalid auth exchange payload');
       })
-        .then(res => res.json())
-        .then(userData => {
-          onAuthSuccess(token, userData);
-          // Clean up URL
-          window.history.replaceState({}, document.title, window.location.pathname);
-        })
-        .catch(error => {
-          console.error('Failed to get user info:', error);
-        });
-    } else if (setupTokenParam) {
-      // New user - show signup form
-      setSetupToken(setupTokenParam);
-      setShowSignupForm(true);
-      // Clean up URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
+      .catch(error => {
+        console.error('OAuth callback handling failed:', error);
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

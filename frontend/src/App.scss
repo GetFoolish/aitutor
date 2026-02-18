@@ -6,6 +6,7 @@
   --neo-red: #FF6B6B; // Hot Red
   --neo-violet: #C4B5FD; // Soft Violet
   --neo-bg: #FFFDF5; // Cream background (aged paper)
+  --neo-dot-color: rgba(0, 0, 0, 0.5);
 
   // Legacy color mappings for backward compatibility
   --neo-cyan: #C4B5FD; // Map cyan to violet
@@ -83,6 +84,7 @@ html.dark,
   --text: var(--neo-black); // Inherit white color
   --border-stroke: var(--neo-black); // White borders
   --Neutral-00: var(--neo-black); // White in dark mode
+  --neo-dot-color: rgba(255, 255, 255, 0.5);
   
   // Update scrollbar colors for dark mode
   scrollbar-color: var(--neo-black) var(--neo-bg);
@@ -177,20 +179,115 @@ body {
 .streaming-console {
   color: var(--neo-black);
   display: flex;
-  height: calc(100vh - 48px); // Reduced from 56px
+  height: calc(100dvh - 48px); // Dynamic viewport for browser chrome/toolbar correctness
   width: 100vw;
   margin-top: 48px; // Reduced from 56px
   position: relative;
   background: var(--neo-bg);
-  overflow-y: auto; // Enable scrolling when content exceeds viewport
+  // Dot texture is rendered by .question-panel::before only.
+  // Keep the app shell solid so grading rail/cards never inherit dot bleed.
+  background-image: none;
+  overflow-y: hidden; // App shell must stay viewport-locked; internal panes handle content fit
   overflow-x: hidden;
 
   // Responsive layout
   @media (max-width: 768px) {
     flex-direction: column;
-    height: calc(100vh - 44px); // Reduced from 50px
+    height: calc(100dvh - 44px); // Dynamic viewport for mobile browser bars
     margin-top: 44px;
   }
+}
+
+.grading-sidebar-shell,
+.grading-sidebar-scroll {
+  background-color: var(--neo-bg);
+  /* Keep grading rail surfaces solid; dot pattern belongs to main question canvas only. */
+  background-image: none !important;
+  background-repeat: no-repeat !important;
+  contain: paint;
+}
+
+.grading-sidebar-shell {
+  isolation: isolate;
+  position: relative;
+}
+
+.grading-sidebar-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--neo-bg);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.grading-sidebar-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+.dark .grading-sidebar-shell,
+.dark .grading-sidebar-scroll {
+  background-image: none !important;
+}
+
+/* Hard guard: never allow dot/texture images to bleed into grading rail descendants. */
+.streaming-console .grading-sidebar-shell,
+.streaming-console .grading-sidebar-shell *,
+.streaming-console .grading-sidebar-shell *::before,
+.streaming-console .grading-sidebar-shell *::after {
+  background-image: none !important;
+}
+
+/* Floating panel must always be a solid surface; no dot texture or alpha bleed. */
+.floating-toolbar-panel {
+  isolation: isolate;
+  background-color: var(--neo-bg) !important;
+  background-image: none !important;
+  background-repeat: no-repeat !important;
+  contain: paint;
+}
+
+.floating-toolbar-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--neo-bg);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.floating-toolbar-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.floating-toolbar-panel,
+.floating-toolbar-panel *,
+.floating-toolbar-panel *::before,
+.floating-toolbar-panel *::after {
+  background-image: none !important;
+}
+
+// Sidebar cards must remain solid surfaces; dots are page background only.
+.grading-card-surface {
+  background-image: none !important;
+  background-repeat: no-repeat !important;
+  contain: paint;
+  isolation: isolate;
+}
+
+.grading-card-muted {
+  background-color: #ede9db !important;
+  background-image: none !important;
+  background-repeat: no-repeat !important;
+  contain: paint;
+  isolation: isolate;
+}
+
+.dark .grading-card-muted {
+  background-color: #121212 !important;
+  background-image: none !important;
 }
 
   a,
@@ -214,9 +311,10 @@ body {
     align-items: center;
     justify-content: center;
     flex-grow: 1;
+    min-height: 0;
     gap: 0.75rem;
     width: 100%;
-    overflow: visible; // Allow content to flow so parent can scroll
+    overflow: hidden; // Keep shell viewport-locked; question container handles internal fit/overflow
     transition: margin-right 300ms ease-in-out, margin-left 300ms ease-in-out;
     background: var(--neo-bg);
 
@@ -229,6 +327,7 @@ body {
   .main-app-area {
     display: flex;
     flex: 1;
+    min-height: 0;
     align-items: center;
     justify-content: center;
     width: 100%;
@@ -246,13 +345,16 @@ body {
 
   .question-panel {
     position: relative;
+    isolation: isolate;
+    z-index: 0;
     display: flex;
     flex: 2;
+    min-height: 0;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    height: 100vh;
-    overflow-y: auto;
+    height: 100%;
+    overflow-y: hidden;
     overflow-x: hidden;
     background: var(--neo-bg);
     // Reserve space for the FloatingControlPanel toolbar (Bug #38)

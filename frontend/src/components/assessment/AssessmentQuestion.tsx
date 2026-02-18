@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import React, { useRef, useState, useEffect, useMemo, useLayoutEffect } from 'react';
 import { ServerItemRenderer } from "../../package/perseus/src/server-item-renderer";
 import { storybookDependenciesV2 } from "../../package/perseus/testing/test-dependencies";
 import { RenderStateRoot } from "@khanacademy/wonder-blocks-core";
@@ -13,6 +13,7 @@ import { scorePerseusQuestion, hasUserInput } from "../../lib/scoring-utils";
 // @ts-ignore — katex types require 'bundler' moduleResolution
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
+import '../question-display/mcq-fix.css';
 
 /** Render text with inline LaTeX ($...$) as rendered math via KaTeX */
 function renderTextWithLatex(text: string): React.ReactNode {
@@ -36,6 +37,88 @@ function renderTextWithLatex(text: string): React.ReactNode {
 // Widget types that use deprecated string refs and are broken in React 18
 const BROKEN_WIDGET_TYPES = new Set(['orderer', 'matcher']);
 
+const stripWrappingQuotes = (value: unknown): string => {
+  const text = typeof value === 'string' ? value.trim() : String(value ?? '').trim();
+  if (text.length >= 2) {
+    const first = text[0];
+    const last = text[text.length - 1];
+    if ((first === '"' && last === '"') || (first === "'" && last === "'")) {
+      return text.slice(1, -1).trim();
+    }
+  }
+  return text;
+};
+
+const sanitizeChoicesArray = (choices: any[]): any[] => {
+  return (choices || []).map((choice: any, index: number) => {
+    if (typeof choice === 'string') {
+      return { id: `choice-${index}`, content: stripWrappingQuotes(choice), correct: false };
+    }
+    if (!choice || typeof choice !== 'object') {
+      return { id: `choice-${index}`, content: stripWrappingQuotes(choice), correct: false };
+    }
+    return {
+      ...choice,
+      id: typeof choice.id === 'string' && choice.id.trim() ? choice.id : `choice-${index}`,
+      content: stripWrappingQuotes(choice.content),
+      correct: Boolean(choice.correct),
+    };
+  });
+};
+
+const normalizeInlineWidgetLayout = (container: HTMLElement) => {
+  const inlineContainers = container.querySelectorAll<HTMLElement>('.perseus-widget-container.widget-inline-block');
+  inlineContainers.forEach((el) => {
+    el.style.setProperty('display', 'inline-flex', 'important');
+    el.style.setProperty('vertical-align', 'baseline', 'important');
+    el.style.setProperty('align-items', 'baseline', 'important');
+    el.style.setProperty('width', 'auto', 'important');
+    el.style.setProperty('max-width', 'min(52vw, 320px)', 'important');
+  });
+
+  const inlineDropdowns = container.querySelectorAll<HTMLElement>('.perseus-widget-container.widget-inline-block .perseus-dropdown');
+  inlineDropdowns.forEach((el) => {
+    el.style.setProperty('display', 'inline-flex', 'important');
+    el.style.setProperty('max-width', 'min(52vw, 320px)', 'important');
+    el.style.setProperty('width', 'auto', 'important');
+  });
+
+  const inlineComboboxButtons = container.querySelectorAll<HTMLElement>(
+    '.perseus-widget-container.widget-inline-block .perseus-dropdown > button[role="combobox"]'
+  );
+  inlineComboboxButtons.forEach((btn) => {
+    btn.style.setProperty('min-width', 'clamp(120px, 18vw, 220px)', 'important');
+    btn.style.setProperty('max-width', 'min(52vw, 320px)', 'important');
+    btn.style.setProperty('width', 'auto', 'important');
+    btn.style.setProperty('min-height', '38px', 'important');
+    btn.style.setProperty('height', 'auto', 'important');
+    btn.style.setProperty('padding', '6px 10px', 'important');
+    btn.style.setProperty('line-height', '1.2', 'important');
+    btn.style.setProperty('font-size', '14px', 'important');
+    btn.style.setProperty('align-items', 'flex-start', 'important');
+  });
+
+  const inlineValueSpans = container.querySelectorAll<HTMLElement>(
+    '.perseus-widget-container.widget-inline-block .perseus-dropdown > button[role="combobox"] > span:first-child'
+  );
+  inlineValueSpans.forEach((span) => {
+    span.style.setProperty('white-space', 'normal', 'important');
+    span.style.setProperty('overflow', 'visible', 'important');
+    span.style.setProperty('text-overflow', 'clip', 'important');
+    span.style.setProperty('word-break', 'break-word', 'important');
+  });
+
+  const inlineTextInputs = container.querySelectorAll<HTMLInputElement>(
+    '.perseus-widget-container.widget-inline-block input[type="text"]'
+  );
+  inlineTextInputs.forEach((input) => {
+    input.style.setProperty('min-width', 'clamp(120px, 16vw, 220px)', 'important');
+    input.style.setProperty('max-width', 'min(52vw, 320px)', 'important');
+    input.style.setProperty('width', 'auto', 'important');
+    input.style.setProperty('font-size', '14px', 'important');
+  });
+};
+
 interface Props {
   question: any;
   questionNumber: number;
@@ -50,12 +133,55 @@ const AssessmentQuestion: React.FC<Props> = ({
   onAnswer
 }) => {
   const rendererRef = useRef<ServerItemRenderer>(null);
+  const questionCardRef = useRef<HTMLDivElement>(null);
+  const headerBlockRef = useRef<HTMLDivElement>(null);
+  const contentBlockRef = useRef<HTMLDivElement>(null);
+  const actionDockRef = useRef<HTMLDivElement>(null);
+  const feedbackRef = useRef<HTMLDivElement>(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [keScore, setKeScore] = useState<KEScore | null>(null);
   const [hintsShown, setHintsShown] = useState(0);
   const [pendingCorrect, setPendingCorrect] = useState<boolean | null>(null);
   const startTimeRef = useRef<number>(Date.now());
+  const [viewportHeight, setViewportHeight] = useState<number>(() =>
+    typeof window !== 'undefined' ? window.innerHeight : 1024
+  );
+  const [fitContentZoom, setFitContentZoom] = useState<number>(1);
+  const compactViewport = viewportHeight <= 920;
+  const ultraCompactViewport = viewportHeight <= 800;
+  const contentZoom =
+    viewportHeight <= 700 ? 0.74 :
+    viewportHeight <= 760 ? 0.8 :
+    viewportHeight <= 840 ? 0.88 :
+    viewportHeight <= 920 ? 0.94 :
+    1;
+  const actionDockStyle: React.CSSProperties = {
+    position: 'sticky',
+    bottom: 'max(4px, env(safe-area-inset-bottom))',
+    left: 0,
+    width: '100%',
+    zIndex: 60,
+    padding: ultraCompactViewport ? '1px' : compactViewport ? '3px' : '6px',
+    border: ultraCompactViewport ? '2px solid #000' : '3px solid #000',
+    background: 'rgba(255,255,255,0.96)',
+    boxShadow: '3px 3px 0 #000',
+    backdropFilter: 'blur(2px)',
+    pointerEvents: 'auto',
+  };
+  const postAnswerActionDockStyle: React.CSSProperties = {
+    position: 'sticky',
+    bottom: 'max(4px, env(safe-area-inset-bottom))',
+    left: 0,
+    width: '100%',
+    zIndex: 70,
+    padding: ultraCompactViewport ? '1px' : compactViewport ? '3px' : '6px',
+    border: ultraCompactViewport ? '2px solid #000' : '3px solid #000',
+    background: 'rgba(255,255,255,0.96)',
+    boxShadow: '3px 3px 0 #000',
+    backdropFilter: 'blur(2px)',
+    pointerEvents: 'auto',
+  };
 
   // Reset answer state when question changes
   useEffect(() => {
@@ -66,6 +192,44 @@ const AssessmentQuestion: React.FC<Props> = ({
     setPendingCorrect(null);
     startTimeRef.current = Date.now();
   }, [question]);
+
+  useEffect(() => {
+    const onResize = () => setViewportHeight(window.innerHeight);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // Enforce compact inline widget geometry for sentence-embedded dropdown/text widgets.
+  // This runs after each question render to override widget-internal style drift.
+  useEffect(() => {
+    const container = document.getElementById("question-content-container");
+    if (!container) return;
+
+    let cancelled = false;
+    const applyLayout = () => {
+      if (cancelled) return;
+      normalizeInlineWidgetLayout(container);
+    };
+
+    const raf1 = requestAnimationFrame(applyLayout);
+    const raf2 = requestAnimationFrame(applyLayout);
+    const timeoutId = window.setTimeout(applyLayout, 40);
+    const observer = new MutationObserver(() => applyLayout());
+    observer.observe(container, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['class', 'style', 'aria-expanded'],
+    });
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+      window.clearTimeout(timeoutId);
+      observer.disconnect();
+    };
+  }, [question, questionNumber, isAnswered, compactViewport, contentZoom]);
 
   // Handle "Next Question" — deferred until student clicks the button
   const handleNext = () => {
@@ -85,6 +249,14 @@ const AssessmentQuestion: React.FC<Props> = ({
     if (typeof q.question.content === 'string') {
       q.question.content = q.question.content
         .replace(/^(?:look at|examine|see|observe|study|check out)\s+(?:the\s+)?(?:picture|image|diagram|illustration|photo|figure)s?\b[^.!?\n]*[.!?]\s*/gim, '')
+        .trim();
+    }
+    const hasRadioWidget = Object.values(q.question.widgets || {}).some((w: any) => w?.type === 'radio');
+    if (hasRadioWidget && typeof q.question.content === 'string') {
+      q.question.content = q.question.content
+        .replace(/^\s*choose\s+\d+\s+answers?:\s*$/gim, '')
+        .replace(/^\s*choose\s+one\s+answer:\s*$/gim, '')
+        .replace(/\n{3,}/g, '\n\n')
         .trim();
     }
     // Ensure every widget has a placeholder in content (definition+radio combo fix)
@@ -109,7 +281,15 @@ const AssessmentQuestion: React.FC<Props> = ({
           const { multipleSelect: _ms, randomize: _rz, ...rest } = w;
           q.question.widgets[key] = {
             ...rest,
-            options: { choices: w.options, multipleSelect, randomize },
+            options: { choices: sanitizeChoicesArray(w.options), multipleSelect, randomize },
+          };
+        } else if (w?.type === 'radio' && w.options && Array.isArray(w.options.choices)) {
+          q.question.widgets[key] = {
+            ...w,
+            options: {
+              ...w.options,
+              choices: sanitizeChoicesArray(w.options.choices),
+            },
           };
         }
         if (w?.type === 'numeric-input' && w.options) {
@@ -189,11 +369,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         if (w?.type === 'dropdown' && w.options) {
           q.question.widgets[key] = {
             ...w,
-            options: {
-              placeholder: 'Select an answer',
-              static: false,
-              ...w.options,
-            },
+            options: { placeholder: 'Select an answer', static: false, ...w.options, choices: sanitizeChoicesArray(w.options.choices || []) },
           };
         }
         // Matcher: leave as-is — BROKEN_WIDGET_TYPES will trigger "Skip" UX
@@ -272,7 +448,74 @@ const AssessmentQuestion: React.FC<Props> = ({
     if (scoreable.length === 0) return false;
     return scoreable.every((w: any) => BROKEN_WIDGET_TYPES.has(w.type));
   }, [sanitizedQuestion]);
+  const hasOverlaySensitiveWidget = useMemo(() => {
+    const widgets = (sanitizedQuestion?.question?.widgets || {}) as Record<string, any>;
+    return Object.values(widgets).some(
+      (w: any) => w?.type === 'dropdown' || w?.type === 'definition'
+    );
+  }, [sanitizedQuestion]);
+  const baseContentZoom = hasOverlaySensitiveWidget ? 1 : contentZoom;
+  const answeredContentZoom = isAnswered
+    ? Math.min(baseContentZoom, viewportHeight <= 800 ? 0.72 : 0.78)
+    : baseContentZoom;
+  const resolvedContentZoom = Math.min(answeredContentZoom, fitContentZoom || answeredContentZoom);
+  const contentZoomWrapperStyle: React.CSSProperties | undefined =
+    resolvedContentZoom < 1
+      ? ({
+          zoom: resolvedContentZoom,
+          width: '100%',
+          maxWidth: '100%',
+          boxSizing: 'border-box',
+        } as React.CSSProperties)
+      : undefined;
+  const contentBlockStyle: React.CSSProperties = {
+    ...(contentZoomWrapperStyle || {}),
+    flex: 1,
+    minHeight: 0,
+    overflowY: 'auto',
+    overflowX: 'hidden',
+    paddingRight: compactViewport ? '2px' : '4px',
+  };
 
+  useEffect(() => {
+    setFitContentZoom(answeredContentZoom);
+  }, [answeredContentZoom, question?.dash_metadata?.dash_question_id, questionNumber, isAnswered]);
+
+  useLayoutEffect(() => {
+    const cardEl = questionCardRef.current;
+    const contentEl = contentBlockRef.current;
+    if (!cardEl || !contentEl) return;
+
+    const MIN_ZOOM = 0.62;
+    const STEP = 0.04;
+    const runFit = () => {
+      let nextZoom = answeredContentZoom;
+      contentEl.style.zoom = String(nextZoom);
+      let overflow = cardEl.scrollHeight - cardEl.clientHeight;
+      let attempts = 0;
+
+      while (overflow > 2 && nextZoom > MIN_ZOOM && attempts < 10) {
+        nextZoom = Math.max(MIN_ZOOM, Number((nextZoom - STEP).toFixed(3)));
+        contentEl.style.zoom = String(nextZoom);
+        overflow = cardEl.scrollHeight - cardEl.clientHeight;
+        attempts += 1;
+      }
+
+      setFitContentZoom((prev) => (Math.abs(prev - nextZoom) < 0.005 ? prev : nextZoom));
+    };
+
+    const raf = requestAnimationFrame(runFit);
+    return () => cancelAnimationFrame(raf);
+  }, [
+    answeredContentZoom,
+    viewportHeight,
+    question?.dash_metadata?.dash_question_id,
+    questionNumber,
+    hintsShown,
+    isAnswered,
+    showFeedback,
+    pendingCorrect,
+  ]);
   // Detect if question needs audio (phonics/listening questions)
   const audioWord = useMemo(() => {
     const content = question?.question?.content || '';
@@ -356,16 +599,24 @@ const AssessmentQuestion: React.FC<Props> = ({
   };
 
   const progressPercentage = (questionNumber / totalQuestions) * 100;
+  const isFinalQuestion = totalQuestions > 0 && questionNumber >= totalQuestions;
 
   return (
-    <div className="framework-perseus mt-0">
+    <div
+      ref={questionCardRef}
+      className="framework-perseus mt-0"
+      style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', height: '100%', overflow: 'hidden' }}
+    >
       {/* Enhanced Question Header with Progress */}
-      <div className="mb-8 border-[5px] border-black dark:border-white bg-[#FFD93D] shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] overflow-hidden">
-        <div className="px-6 py-5 text-center border-b-[3px] border-black dark:border-white">
-          <div className="text-xl font-black text-black uppercase tracking-widest mb-2 font-sans">
+      <div
+        ref={headerBlockRef}
+        className={`${ultraCompactViewport ? 'mb-1' : compactViewport ? 'mb-2' : 'mb-3'} border-[5px] border-black dark:border-white bg-[#FFD93D] shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] overflow-hidden`}
+      >
+        <div className={`${ultraCompactViewport ? 'px-3 py-2' : compactViewport ? 'px-4 py-3' : 'px-6 py-5'} text-center border-b-[3px] border-black dark:border-white`}>
+          <div className={`${ultraCompactViewport ? 'text-base mb-0.5' : compactViewport ? 'text-lg mb-1' : 'text-xl mb-2'} font-black text-black uppercase tracking-widest font-sans`}>
             QUESTION {questionNumber || 1} OF {totalQuestions || '?'}
           </div>
-          <div className="text-sm font-bold text-black uppercase tracking-wide opacity-80">
+          <div className={`${ultraCompactViewport ? 'text-[11px]' : compactViewport ? 'text-xs' : 'text-sm'} font-bold text-black uppercase tracking-wide opacity-80`}>
             Assessment in Progress
           </div>
         </div>
@@ -384,67 +635,81 @@ const AssessmentQuestion: React.FC<Props> = ({
 
       {/* Audio play button for phonics/listening questions */}
       {audioWord && (
-        <div className="mb-4">
+        <div className={`${compactViewport ? 'mb-2' : 'mb-3'}`}>
           <AudioPlayButton word={audioWord} autoPlay={true} />
         </div>
       )}
 
-      <div
-        id="question-content-container"
-        className="border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white p-4 md:p-5 lg:p-6 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] mb-6"
-        style={{ overflow: 'visible' }}
-      >
-        <PerseusI18nContextProvider locale="en" strings={mockStrings}>
-          <RenderStateRoot>
-            <ServerItemRenderer
-              key={question?.dash_metadata?.dash_question_id || `q-${questionNumber}`}
-              ref={rendererRef}
-              problemNum={0}
-              item={sanitizedQuestion}
-              dependencies={storybookDependenciesV2}
-              apiOptions={{}}
-              linterContext={{
-                contentType: "",
-                highlightLint: true,
-                paths: [],
-                stack: [],
-              }}
-              showSolutions="none"
-              hintsVisible={0}
-              reviewMode={false}
-            />
-          </RenderStateRoot>
-        </PerseusI18nContextProvider>
-      </div>
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div ref={contentBlockRef} style={contentBlockStyle}>
+          <div
+            id="question-content-container"
+            className={`border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white ${ultraCompactViewport ? 'p-2 mb-1' : compactViewport ? 'p-3 mb-2' : 'p-4 md:p-5 lg:p-6 mb-3'} shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]`}
+            style={{
+              overflowX: 'clip',
+              overflowY: 'visible',
+              maxHeight: 'none',
+              flexShrink: 0,
+            }}
+          >
+            <PerseusI18nContextProvider locale="en" strings={mockStrings}>
+              <RenderStateRoot>
+                <ServerItemRenderer
+                  key={question?.dash_metadata?.dash_question_id || `q-${questionNumber}`}
+                  ref={rendererRef}
+                  problemNum={0}
+                  item={sanitizedQuestion}
+                  dependencies={storybookDependenciesV2}
+                  apiOptions={{}}
+                  linterContext={{
+                    contentType: "",
+                    highlightLint: true,
+                    paths: [],
+                    stack: [],
+                  }}
+                  showSolutions="none"
+                  hintsVisible={0}
+                  reviewMode={false}
+                />
+              </RenderStateRoot>
+            </PerseusI18nContextProvider>
+          </div>
 
-      {/* Progressive Hints */}
-      {!isAnswered && question?.hints?.length > 0 && (
-        <div className="mb-4">
-          {hintsShown > 0 && (
-            <div className="mb-3">
-              {(question.hints || []).slice(0, hintsShown).map((hint: any, idx: number) => (
-                <div key={idx} className="py-3 px-4 mb-2 border-[3px] border-black dark:border-white bg-[#FFF9C4] dark:bg-amber-900/40 shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] text-sm leading-relaxed break-words text-black dark:text-white">
-                  <strong className="text-[11px] uppercase tracking-wide">
-                    Hint {idx + 1}:
-                  </strong>{' '}
-                  {renderTextWithLatex(hint.content)}
+          {/* Progressive Hints */}
+          {!isAnswered && question?.hints?.length > 0 && (
+            <div className={`${ultraCompactViewport ? 'mb-1' : compactViewport ? 'mb-2' : 'mb-3'}`}>
+              {hintsShown > 0 && (
+                <div className={ultraCompactViewport ? 'mb-1' : 'mb-2'}>
+                  {(question.hints || []).slice(0, hintsShown).map((hint: any, idx: number) => (
+                    <div
+                      key={idx}
+                      data-testid="assessment-inline-hint"
+                      className={`${ultraCompactViewport ? 'py-1.5 px-2.5 text-[12px]' : compactViewport ? 'py-2 px-3 text-[13px]' : 'py-3 px-4 text-sm'} mb-2 border-[3px] border-black dark:border-white bg-[#FFF9C4] dark:bg-amber-900/40 shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] leading-relaxed break-words text-[#111827] dark:text-[#F9FAFB]`}
+                    >
+                      <strong className="text-[11px] uppercase tracking-wide">
+                        Hint {idx + 1}:
+                      </strong>{' '}
+                      <span>{renderTextWithLatex(hint.content)}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
+              {hintsShown < (question.hints || []).length && (
+                <button
+                  data-testid="assessment-show-hint-button"
+                  onClick={() => setHintsShown(h => h + 1)}
+                  className={`${ultraCompactViewport ? 'py-2 px-4 text-[12px]' : 'py-2.5 px-5 text-[13px]'} font-black uppercase tracking-wide bg-[#FFD93D] dark:bg-[#FFD93D] text-black dark:text-black border-[3px] border-black dark:border-white cursor-pointer shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] mb-2 hover:bg-[#FFE066] dark:hover:bg-[#FFE066] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all duration-100`}
+                >
+                  Show Hint ({hintsShown + 1}/{(question.hints || []).length})
+                </button>
+              )}
             </div>
           )}
-          {hintsShown < (question.hints || []).length && (
-            <button
-              onClick={() => setHintsShown(h => h + 1)}
-              className="py-2.5 px-5 text-[13px] font-bold uppercase tracking-wide bg-[#E3F2FD] dark:bg-blue-900/40 text-[#1565C0] dark:text-blue-300 border-[3px] border-black dark:border-white cursor-pointer shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] mb-2 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all duration-100"
-            >
-              Show Hint ({hintsShown + 1}/{(question.hints || []).length})
-            </button>
-          )}
         </div>
-      )}
+      </div>
 
       {!isAnswered && brokenWidgetOnly && (
-        <div className="mb-6 relative z-10">
+        <div className={`${compactViewport ? 'mb-3' : 'mb-5'} relative z-10`}>
           <div className="mb-3 py-3 px-5 border-[3px] border-black dark:border-white bg-[#FFF3E0] dark:bg-orange-900/30 text-sm font-bold text-center text-black dark:text-orange-200 uppercase tracking-wide">
             Drag-and-drop questions are not supported yet
           </div>
@@ -458,11 +723,17 @@ const AssessmentQuestion: React.FC<Props> = ({
       )}
 
       {!isAnswered && !brokenWidgetOnly && (
-        <div className="mb-6" style={{ position: 'relative', zIndex: 20, isolation: 'isolate' }}>
+        <div
+          ref={actionDockRef}
+          data-testid="assessment-action-dock"
+          className={ultraCompactViewport ? 'mb-1' : compactViewport ? 'mb-2' : 'mb-4'}
+          style={actionDockStyle}
+        >
           <button
+            data-testid="assessment-submit-button"
             onClick={handleSubmit}
             disabled={isAnswered}
-            className="w-full py-5 px-8 text-lg font-black uppercase tracking-widest bg-[#FFD93D] text-black border-[5px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
+            className={`${ultraCompactViewport ? 'py-2.5 px-4 text-sm' : compactViewport ? 'py-3 px-5 text-base' : 'py-5 px-8 text-lg'} w-full font-black uppercase tracking-widest bg-[#FFD93D] text-black border-[5px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)]`}
           >
             Submit Answer
           </button>
@@ -478,10 +749,29 @@ const AssessmentQuestion: React.FC<Props> = ({
         </div>
       )}
 
+      {/* Next Question button — shown immediately after submit, kept sticky so it can't drop below fold */}
+      {isAnswered && pendingCorrect !== null && (
+        <div
+          ref={actionDockRef}
+          data-testid="assessment-action-dock"
+          className={ultraCompactViewport ? 'mb-1' : compactViewport ? 'mb-2' : 'mb-4'}
+          style={postAnswerActionDockStyle}
+        >
+          <button
+            data-testid="assessment-next-button"
+            onClick={handleNext}
+            className={`${ultraCompactViewport ? 'py-2.5 px-4 text-sm' : compactViewport ? 'py-3 px-5 text-base' : 'py-5 px-8 text-lg'} w-full font-black uppercase tracking-widest bg-[#4FC3F7] text-black border-[5px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none`}
+          >
+            {isFinalQuestion ? 'Finish Assessment' : 'Next Question'}
+          </button>
+        </div>
+      )}
+
       {showFeedback && keScore && (
         <div
-          className={`mb-6 border-[5px] border-black dark:border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] overflow-hidden ${keScore.correct ? 'bg-[#E8F5E9]' : 'bg-[#FFEBEE]'}`}
-          style={{ position: 'relative', zIndex: 20, isolation: 'isolate', backgroundColor: keScore.correct ? '#E8F5E9' : '#FFEBEE' }}
+          ref={feedbackRef}
+          className={`${compactViewport ? 'mb-2' : 'mb-4'} border-[5px] border-black dark:border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] overflow-hidden ${keScore.correct ? 'bg-[#E8F5E9]' : 'bg-[#FFEBEE]'}`}
+          style={{ position: 'relative', zIndex: 20, isolation: 'isolate', backgroundColor: keScore.correct ? '#E8F5E9' : '#FFEBEE', flexShrink: 0 }}
         >
           <div className={`px-5 py-4 flex items-center justify-center gap-4 ${!keScore.correct && question?.hints?.length ? 'border-b-[3px] border-black dark:border-white' : ''}`}>
             {keScore.correct ? (
@@ -502,27 +792,29 @@ const AssessmentQuestion: React.FC<Props> = ({
           </div>
           {/* Show explanation hint when incorrect */}
           {!keScore.correct && question?.hints?.length > 0 && (
-            <div className="px-5 py-3.5 text-sm leading-relaxed text-[#333] dark:text-neutral-200 bg-[#FFF3E0] dark:bg-amber-900/30">
+            <div
+              data-testid="assessment-explanation"
+              className="px-5 py-3.5 text-sm leading-relaxed text-[#1F2937] dark:text-[#F9FAFB] bg-[#FFF3E0] dark:bg-[#3B2A14]"
+              style={{
+                minHeight: ultraCompactViewport ? 56 : 72,
+                maxHeight: ultraCompactViewport ? 104 : compactViewport ? 124 : 140,
+                overflowY: 'auto',
+                overflowX: 'hidden',
+                lineHeight: 1.5,
+                whiteSpace: 'normal',
+                wordBreak: 'break-word',
+                flexShrink: 0,
+              }}
+            >
               <strong className="uppercase text-xs tracking-wide">
                 Explanation:
               </strong>{' '}
-              {renderTextWithLatex(question.hints[question.hints.length - 1]?.content || question.hints[0]?.content || '')}
+              <span>{renderTextWithLatex(question.hints[question.hints.length - 1]?.content || question.hints[0]?.content || '')}</span>
             </div>
           )}
         </div>
       )}
 
-      {/* Next Question button — shown after submit, student advances when ready */}
-      {isAnswered && pendingCorrect !== null && (
-        <div className="mb-6" style={{ position: 'relative', zIndex: 20, isolation: 'isolate' }}>
-          <button
-            onClick={handleNext}
-            className="w-full py-5 px-8 text-lg font-black uppercase tracking-widest bg-[#4FC3F7] text-black border-[5px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none"
-          >
-            Next Question
-          </button>
-        </div>
-      )}
     </div>
   );
 };
