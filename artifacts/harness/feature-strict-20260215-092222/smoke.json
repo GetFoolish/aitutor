@@ -1,0 +1,291 @@
+{
+  "created_at": "2026-02-15T14:22:22.651181+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.01849675178527832,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 101,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.006989955902099609,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": true,
+      "actual_ok": false,
+      "optional": true,
+      "code": 0,
+      "elapsed_s": 0.0,
+      "body": {
+        "error": "<urlopen error [Errno 61] Connection refused>"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.04498720169067383,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": true,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 0.05376696586608887,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 101
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 2.4564437866210938,
+        "count": 5,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 12.0,
+        "min_question_count": 5
+      }
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "start_code": 200,
+        "start_elapsed_s": 0.8660790920257568,
+        "start_body": {
+          "assessment_id": "assess_ac884d7fb70c",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "A small island ecosystem contains only grass, rabbits, and eagles. If a sudden disease eliminated all the rabbits from the island, what would be the most likely long-term impact on the eagles and the grass?\n\n[[\u2603 radio 1]]",
+              "images": {},
+              "widgets": {
+                "radio 1": {
+                  "alignment": "default",
+                  "graded": true,
+                  "options": {
+                    "choices": [
+                      {
+                        "content": "The eagle population would decrease significantly, and the grass population would increase.",
+                        "correct": true,
+                        "misconception": null
+                      },
+                      {
+                        "content": "Both the eagle and grass populations would decrease significantly.",
+                        "correct": false,
+                        "misconception": "Believes eagles eat grass or that rabbits are essential for grass survival."
+                      },
+                      {
+                        "content": "The eagle population would increase due to less competition, and the grass population would decrease.",
+                        "correct": false,
+                        "misconception": "Confuses competition among predators with lack of prey, or assumes eagles eat grass."
+                      },
+                      {
+                        "content": "The eagle population would decrease, but the grass population would remain unchanged.",
+                        "correct": false,
+                        "misconception": "Understands impact on eagles but forgets rabbits eat grass."
+                      }
+                    ],
+                    "countChoices": false,
+                    "deselectEnabled": false,
+                    "displayCount": null,
+                    "hasNoneOfTheAbove": false,
+                    "multipleSelect": false,
+                    "numCorrect": 1,
+                    "randomize": false
+                  },
+                  "static": false,
+                  "type": "radio",
+                  "version": {
+                    "major": 2,
+                    "minor": 0
+                  }
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "Think about the role each organism plays in the ecosystem. How does energy flow from the grass to the rabbits, and then to the eagles?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Remember that grass is a producer, rabbits are primary consumers (herbivores) that eat grass, and eagles are secondary consumers (carnivores) that eat rabbits. If the rabbits disappear, consider what happens to their food source and their predators.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Without rabbits, the eagles lose their main food source and will likely starve, causing their population to drop. With no rabbits left to eat the grass, what do you think will happen to the amount of grass on the island?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_79780721bc53660a",
+            "dash_metadata": {
+              "dash_question_id": "pool_79780721bc53660a",
+              "skill_ids": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "difficulty": 0.9560000000000001,
+              "skill_names": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "next": {
+          "code": 200,
+          "elapsed_s": 0.9926910400390625,
+          "completed_early": false,
+          "has_next_question": true,
+          "body": {
+            "completed": false,
+            "question_number": 2,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Only a tiny fraction of Earth's total water is readily available for human use. Suppose that over several decades, a significant amount of freshwater stored in glaciers and ice caps melts. At the same time, a major underground freshwater aquifer, which supplies millions of people, is completely used up due to over-pumping.\n\nConsidering these two events, what would be the most likely long-term effect on the amount of *readily available freshwater* for human populations globally? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "The amount of readily available freshwater would significantly increase, because melted ice caps add a huge volume of new freshwater.",
+                          "correct": false,
+                          "misconception": "Assumes all melted glacial ice directly becomes readily available freshwater for human use, ignoring its ultimate destination and mixing with saltwater."
+                        },
+                        {
+                          "content": "The amount of readily available freshwater would significantly decrease, as the loss from the aquifer is a direct reduction of usable water, while most melted ice flows into oceans.",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "The amount of readily available freshwater would remain mostly the same, as the melting ice would balance out the water lost from the aquifer.",
+                          "correct": false,
+                          "misconception": "Overestimates the usable portion of melted glacial ice and believes it would fully compensate for a direct loss from an aquifer."
+                        },
+                        {
+                          "content": "The amount of readily available freshwater would slightly increase in coastal regions, but decrease significantly inland.",
+                          "correct": false,
+                          "misconception": "Focuses on localized or regional effects rather than the overall global supply of readily available freshwater, and still misinterprets the fate of melted ice."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about where most of the Earth's water is stored and how different types of freshwater reservoirs (like glaciers and aquifers) contribute to the water humans can actually use. What makes water 'readily available'?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Remember that while glaciers hold a lot of freshwater, when they melt, much of that water eventually flows into the oceans, mixing with saltwater and becoming unusable for drinking. Aquifers, however, are direct sources of usable groundwater that can be pumped out.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider the impact of each event separately. First, melting glaciers add water, but most of it ends up in the salty ocean, raising sea levels, not increasing our freshwater supply. Second, depleting an aquifer directly removes a large amount of freshwater that was previously accessible for human use. Now, combine these two effects on the *readily available* supply.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_c19877f5f7a9",
+                "skill_ids": [
+                  "ai_gen_science_us_middle-school-earth-space-science_unit_water-on-earth"
+                ],
+                "difficulty": 0.88,
+                "skill_names": [
+                  "Water on Earth"
+                ],
+                "unit_name": "Water on Earth",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991d152a4789515daff58c3"
+              }
+            },
+            "current_difficulty": 0.65
+          }
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 25.0
+      }
+    },
+    "websocket": {
+      "ok": true,
+      "skipped": true,
+      "reason": "HARNESS_SKIP_WEBSOCKET=true"
+    }
+  },
+  "ok": true,
+  "errors": []
+}

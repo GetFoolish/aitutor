@@ -1,0 +1,280 @@
+{
+  "created_at": "2026-02-15T14:21:34.041347+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.02029109001159668,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 101,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.006207942962646484,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": true,
+      "actual_ok": false,
+      "optional": true,
+      "code": 0,
+      "elapsed_s": 0.0,
+      "body": {
+        "error": "<urlopen error [Errno 61] Connection refused>"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.06816792488098145,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": true,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 0.05863189697265625,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 101
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 1.2233600616455078,
+        "count": 5,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 12.0,
+        "min_question_count": 5
+      }
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "start_code": 200,
+        "start_elapsed_s": 0.869286060333252,
+        "start_body": {
+          "assessment_id": "assess_c13d238f2039",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "In an ecosystem, only about 10% of the energy from one trophic level is typically transferred to the next. If a producer contains $E$ units of energy, write an expression that represents the amount of energy (in terms of $E$) that would be transferred to a primary consumer that eats the producer. \n\n[[\u2603 expression 1]]",
+              "images": {},
+              "widgets": {
+                "expression 1": {
+                  "type": "expression",
+                  "options": {
+                    "buttonsVisible": "never",
+                    "functions": [
+                      "f",
+                      "g",
+                      "h"
+                    ],
+                    "times": false,
+                    "answerForms": [
+                      {
+                        "value": "0.1E",
+                        "form": true,
+                        "simplify": false,
+                        "considered": "correct"
+                      }
+                    ],
+                    "buttonSets": [
+                      "basic"
+                    ]
+                  },
+                  "graded": true,
+                  "version": {
+                    "major": 2,
+                    "minor": 0
+                  },
+                  "alignment": "default",
+                  "static": false
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "To find a percentage of a quantity, you need to perform a mathematical operation. What operation is used to calculate a part of a whole?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "The 10% rule means that only one-tenth of the energy moves up the food chain. To calculate 10% of a value, you can convert the percentage to a decimal (10% = 0.1) and then multiply it by the value.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "If the producer has $E$ units of energy, and only 10% of that energy is transferred to the primary consumer, you need to multiply $E$ by the decimal equivalent of 10%. What expression results from this multiplication?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_96bf42de7b765deb",
+            "dash_metadata": {
+              "dash_question_id": "pool_96bf42de7b765deb",
+              "skill_ids": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "difficulty": 0.3291666666666666,
+              "skill_names": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "next": {
+          "code": 200,
+          "elapsed_s": 1.028182029724121,
+          "completed_early": false,
+          "has_next_question": true,
+          "body": {
+            "completed": false,
+            "question_number": 2,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following is the largest reservoir of water on Earth? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Glaciers and Ice Caps",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Oceans",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Groundwater",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Lakes and Rivers",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about where the majority of the Earth's surface water is located.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Oceans cover approximately 71% of the Earth's surface and are very deep.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider the relative sizes of oceans, glaciers, groundwater, and lakes/rivers.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_69244f8c1155",
+                "skill_ids": [
+                  "ai_gen_science_us_middle-school-earth-space-science_unit_water-on-earth"
+                ],
+                "difficulty": 0.95,
+                "skill_names": [
+                  "Water on Earth"
+                ],
+                "unit_name": "Water on Earth",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991d145a4789515daff58be"
+              }
+            },
+            "current_difficulty": 0.65
+          }
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 25.0
+      }
+    },
+    "websocket": {
+      "ok": true,
+      "skipped": true,
+      "reason": "HARNESS_SKIP_WEBSOCKET=true"
+    }
+  },
+  "ok": true,
+  "errors": []
+}

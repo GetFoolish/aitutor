@@ -1,0 +1,352 @@
+{
+  "created_at": "2026-02-15T15:17:41.358839+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.024508953094482422,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 101,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.021876811981201172,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.012690305709838867,
+      "body": {
+        "status": "healthy",
+        "service": "TeachingAssistant"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.05280113220214844,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": true,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 0.04457998275756836,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 101
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 1.439073085784912,
+        "count": 5,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 12.0,
+        "min_question_count": 5
+      }
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "subject_used": "Science",
+        "start_code": 200,
+        "start_elapsed_s": 0.8237340450286865,
+        "start_body": {
+          "assessment_id": "assess_68248872549b",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "A sunflower plant uses sunlight to grow. A bee visits the sunflower to collect nectar. Later, the bee flies back to its hive, using energy to move its wings.\n\nWhich of the following statements accurately describe energy transformations occurring in this scenario? Select all that apply. [[\u2603 radio 1]]",
+              "images": {},
+              "widgets": {
+                "radio 1": {
+                  "alignment": "default",
+                  "graded": true,
+                  "options": {
+                    "choices": [
+                      {
+                        "content": "The sunflower converts light energy from the sun into chemical energy stored in its tissues.",
+                        "correct": true,
+                        "misconception": null
+                      },
+                      {
+                        "content": "The bee creates new energy when it flies, as it needs a lot of power for movement.",
+                        "correct": false,
+                        "misconception": "Believes living organisms can create energy, violating the law of conservation of energy."
+                      },
+                      {
+                        "content": "The bee transforms chemical energy from the nectar into mechanical energy for flight and heat energy.",
+                        "correct": true,
+                        "misconception": null
+                      },
+                      {
+                        "content": "The sunflower directly absorbs chemical energy from the soil to grow.",
+                        "correct": false,
+                        "misconception": "Confuses nutrient absorption from soil with the primary source of energy for plant growth (photosynthesis)."
+                      }
+                    ],
+                    "countChoices": false,
+                    "deselectEnabled": false,
+                    "displayCount": null,
+                    "hasNoneOfTheAbove": false,
+                    "multipleSelect": true,
+                    "numCorrect": 2,
+                    "randomize": false
+                  },
+                  "static": false,
+                  "type": "radio",
+                  "version": {
+                    "major": 2,
+                    "minor": 0
+                  }
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "Think about where the sunflower gets its initial energy and in what form. How do living things like plants capture energy?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Plants are producers; they convert light energy into chemical energy through photosynthesis. Animals are consumers; they obtain chemical energy by eating other organisms, which they then convert into other forms like mechanical energy for movement or heat.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Consider the journey of energy: The sun provides light energy, which the sunflower captures. The bee then consumes the sunflower's nectar, which is a form of stored chemical energy. What does the bee do with that chemical energy to fly?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_3c019aaccbb7f162",
+            "dash_metadata": {
+              "dash_question_id": "pool_3c019aaccbb7f162",
+              "skill_ids": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "difficulty": 0.98,
+              "skill_names": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "next": {
+          "code": 200,
+          "elapsed_s": 1.0368421077728271,
+          "completed_early": false,
+          "has_next_question": true,
+          "body": {
+            "completed": false,
+            "question_number": 2,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Read about [[\u2603 definition 1]]. Based on the definition and your understanding of water resources, why is it crucial for communities to manage their use of groundwater carefully? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "definition 1": {
+                    "alignment": "default",
+                    "graded": false,
+                    "options": {
+                      "definition": "Water that is found beneath the Earth's surface, filling the spaces between soil particles and cracks in rocks. It is a vital source of drinking water for many communities, stored in underground layers called aquifers.",
+                      "togglePrompt": "Groundwater",
+                      "static": false
+                    },
+                    "static": false,
+                    "type": "definition",
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    }
+                  },
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "clue": "Groundwater is a renewable resource, but its replenishment can be very slow. If it's used too quickly, the supply will diminish.",
+                          "content": "Groundwater supplies can be used up much faster than they are naturally refilled, leading to water shortages and land subsidence.",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null
+                        },
+                        {
+                          "clue": "While some groundwater can be contaminated, it is not always the case, and this is not the primary reason for careful management of the overall supply.",
+                          "content": "Groundwater is always too contaminated with pollutants to be safe for human use without extensive treatment.",
+                          "isNoneOfTheAbove": false,
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "clue": "Groundwater is found in many places and can be accessed through wells, making it a common water source.",
+                          "content": "Groundwater is only found in remote, hard-to-reach locations, making it difficult to access for most populations.",
+                          "isNoneOfTheAbove": false,
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "clue": "The opposite is true: removing too much groundwater can cause the ground to sink (subsidence), not cause flooding by leaving it.",
+                          "content": "Groundwater causes significant flooding if too much is left underground without being pumped out.",
+                          "isNoneOfTheAbove": false,
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what happens when a natural resource is consumed at a rate faster than nature can replace it. What are the long-term consequences?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Groundwater is replenished when precipitation (rain and snow) seeps into the ground. However, this process, known as recharge, can be very slow, sometimes taking hundreds or even thousands of years for deep aquifers to fully refill.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "If communities extract groundwater for drinking, irrigation, and industry faster than the natural recharge rate, the water table (the upper level of groundwater) will drop. This can lead to wells drying up and the ground above the aquifer sinking, a process called land subsidence. What does this mean for future water availability?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_4d2b48805dd9",
+                "skill_ids": [
+                  "ai_gen_science_us_middle-school-earth-space-science_unit_water-on-earth"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Water on Earth"
+                ],
+                "unit_name": "Water on Earth",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991e298430fe72df0ecf972"
+              }
+            },
+            "current_difficulty": 0.65
+          }
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 25.0
+      }
+    },
+    "websocket": {
+      "session_start": {
+        "code": 200,
+        "elapsed_s": 0.9230849742889404,
+        "body": {
+          "prompt": "",
+          "session_info": {
+            "session_id": "sess_cb8f979ed7f34270",
+            "user_id": "dev_91f5ca5b9e04",
+            "session_active": true,
+            "duration_minutes": 0.0,
+            "questions_answered": 0,
+            "questions_correct": 0,
+            "websocket_connected": false,
+            "sse_connected": false
+          }
+        }
+      },
+      "probe": {
+        "ok": true,
+        "elapsed_s": 0.7071080207824707,
+        "response": {
+          "type": "pong"
+        }
+      },
+      "session_end": {
+        "code": 200,
+        "elapsed_s": 1.6190338134765625,
+        "body": {
+          "prompt": "[SYSTEM PROMPT FOR ADAM]\nThe tutoring session is ending now.\nSession stats: 0.1 minutes, 0 questions attempted.\nPlease give the student a warm closing message, acknowledge their hard work,\nand encourage them for next session.",
+          "session_info": {
+            "session_id": "sess_cb8f979ed7f34270",
+            "duration_minutes": 0.05,
+            "minutes_deducted": 1,
+            "questions_answered": 0,
+            "questions_correct": 0
+          }
+        }
+      },
+      "ok": true
+    }
+  },
+  "ok": true,
+  "errors": []
+}

@@ -1,0 +1,50 @@
+{
+  "created_at": "2026-02-15T16:01:12.515347+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": false,
+      "code": 0,
+      "elapsed_s": 90.13633894920349,
+      "polls": 45,
+      "body": {
+        "error": "dash not ready within timeout"
+      }
+    },
+    "auth": {
+      "ok": false,
+      "actual_ok": false,
+      "optional": false,
+      "code": 0,
+      "elapsed_s": 0.0,
+      "body": {
+        "error": "<urlopen error [Errno 1] Operation not permitted>"
+      }
+    },
+    "teaching_assistant": {
+      "ok": false,
+      "actual_ok": false,
+      "optional": false,
+      "code": 0,
+      "elapsed_s": 0.0,
+      "body": {
+        "error": "<urlopen error [Errno 1] Operation not permitted>"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": false,
+      "code": 0,
+      "elapsed_s": 0.0,
+      "body": {
+        "error": "<urlopen error [Errno 1] Operation not permitted>"
+      }
+    }
+  },
+  "ok": false,
+  "errors": [
+    "service health checks failed",
+    "dev-login failed"
+  ]
+}

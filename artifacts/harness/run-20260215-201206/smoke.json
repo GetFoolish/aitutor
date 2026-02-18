@@ -1,0 +1,3384 @@
+{
+  "created_at": "2026-02-15T20:12:06.637876+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.02502298355102539,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 116,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.005704164505004883,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.030704975128173828,
+      "body": {
+        "status": "healthy",
+        "service": "TeachingAssistant"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.08951616287231445,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": true,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 0.6963889598846436,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 110
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 1.0873298645019531,
+        "count": 5,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 12.0,
+        "min_question_count": 5
+      }
+    },
+    "learning_path_subject_validity": {
+      "ok": true,
+      "current_question_ids": [
+        "pool_fd6b506c0792950a",
+        "pool_0b233d8b6e22fa25",
+        "pool_6b03c973f6ef56b7"
+      ],
+      "recommend_next": {
+        "code": 200,
+        "elapsed_s": 0.3961310386657715,
+        "count": 4,
+        "overlap_with_current_ids": [],
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        },
+        "body": {
+          "sample_ids": [
+            "pool_7b90c4e5ed36d125",
+            "pool_5bdd5b5e6028a707",
+            "pool_dea50cbfc16d38f0",
+            "pool_b57f5239e1920ec8"
+          ]
+        }
+      }
+    },
+    "adaptive_start_all_subjects": {
+      "ok": true,
+      "adaptive_start_timeout_s": 4.0,
+      "adaptive_start_retry_timeout_s": 12.0,
+      "catalog_fetch": {
+        "code": 200,
+        "elapsed_s": 0.05572509765625,
+        "count": 55,
+        "fallback_used": false
+      },
+      "subjects_checked_count": 55,
+      "subjects_checked": [
+        "Science",
+        "History",
+        "English",
+        "Geography",
+        "Python",
+        "Music Theory",
+        "Cooking",
+        "Spanish",
+        "Art",
+        "Economics",
+        "Philosophy",
+        "Astronomy",
+        "World War 2",
+        "Russian",
+        "Korean",
+        "Ancient Greek",
+        "Swahili",
+        "Hindi",
+        "Architecture",
+        "Thai",
+        "Pottery",
+        "Farsi",
+        "Nutrition",
+        "Filmmaking",
+        "World War 1",
+        "Physics",
+        "Python Programming",
+        "Biology",
+        "Astrophysics And Cosmology Studies For Advanced Le",
+        "Geometry",
+        "Zzzz Recursion Probe 1771093263",
+        "Zzzz Pretest Probe 1771097854",
+        "Science Math History English Geography Python",
+        "Zzzz Pretest Probe 1771100688",
+        "Math",
+        "Zzzz Pretest Probe 1771160157",
+        "Zzzz Pretest Probe 1771165481",
+        "Zzzz Pretest Probe 1771166452",
+        "Zzzz Pretest Probe 1771168832",
+        "Zzzz Pretest Probe 1771169457",
+        "Zzzz Pretest Probe 1771170539",
+        "Zzzz Pretest Probe 1771170669",
+        "Zzzz Pretest Probe 1771172484",
+        "Zzzz Pretest Probe 1771172888",
+        "Zzzz Pretest Probe 1771173119",
+        "Zzzz Pretest Probe 1771175663",
+        "Zzzz Pretest Probe 1771176204",
+        "Zzzz Pretest Probe 1771177239",
+        "Zzzz Pretest Probe 1771180187",
+        "Zzzz Pretest Probe 1771180466",
+        "Zzzz Pretest Probe 1771181093",
+        "Zzzz Pretest Probe 1771182375",
+        "Zzzz Pretest Probe 1771182903",
+        "Zzzz Pretest Probe 1771183378",
+        "Zzzz Pretest Probe 1771183747"
+      ],
+      "timeout_retryable_count": 30,
+      "concrete_result_count": 25,
+      "results": [
+        {
+          "subject": "Science",
+          "code": 200,
+          "elapsed_s": 1.0092530250549316,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_b220a99336af",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A plant uses light energy to make its own food through a process called photosynthesis. During this process, some light energy is converted into chemical energy stored in the plant's food (like glucose), and some energy is released as heat into the environment.\n\nIf $C$ represents the chemical energy stored in the plant's food and $H$ represents the energy released as heat, write an expression that shows the total amount of light energy absorbed by the plant, assuming no other forms of energy are involved.\n\nTotal light energy absorbed = [[\u2603 expression 1]]",
+                "images": {},
+                "widgets": {
+                  "expression 1": {
+                    "type": "expression",
+                    "options": {
+                      "buttonsVisible": "never",
+                      "functions": [
+                        "f",
+                        "g",
+                        "h"
+                      ],
+                      "times": false,
+                      "answerForms": [
+                        {
+                          "value": "C+H",
+                          "form": true,
+                          "simplify": false,
+                          "considered": "correct"
+                        },
+                        {
+                          "value": "H+C",
+                          "form": true,
+                          "simplify": false,
+                          "considered": "correct"
+                        }
+                      ],
+                      "buttonSets": [
+                        "basic"
+                      ]
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the Law of Conservation of Energy. If energy goes into the plant, where does it all end up?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The Law of Conservation of Energy states that energy cannot be created or destroyed, only transformed from one form to another. This means the total energy absorbed by the plant must be equal to the sum of all the energy forms it produces or releases.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The plant absorbs light energy. This absorbed light energy is transformed into two main forms: chemical energy (represented by $C$) and heat energy (represented by $H$). To find the total light energy absorbed, you need to combine these two forms of energy.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "question_id": "pool_7f6cbc0abcbff881",
+              "dash_metadata": {
+                "dash_question_id": "pool_7f6cbc0abcbff881",
+                "skill_ids": [
+                  "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+                ],
+                "difficulty": 0.3291666666666666,
+                "skill_names": [
+                  "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+                ],
+                "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+                "lesson_name": "Practice",
+                "ai_generated": true
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "History",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "English",
+          "code": 200,
+          "elapsed_s": 1.1316239833831787,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_c82d3c82ec2b",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Read the sentence below. Which verb correctly completes the sentence?\n\nThe team of scientists, who have been working for months on the project, [[\u2603 radio 1]] ready to present their findings.",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "is",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "are",
+                          "correct": false,
+                          "misconception": "Agrees with the plural noun 'scientists' instead of the singular subject 'team'.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "were",
+                          "correct": false,
+                          "misconception": "Agrees with 'scientists' and uses an incorrect tense for the context.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "be",
+                          "correct": false,
+                          "misconception": "Uses an incorrect verb form that does not fit the sentence structure.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "To choose the correct verb, you need to identify the main subject of the sentence. What noun is performing the action or being described?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The verb must agree in number with the subject of the sentence. In the sentence, \"The team of scientists...\", the main subject is \"team,\" which is a singular collective noun. The phrase \"of scientists\" describes the team but is not the subject itself.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Since \"team\" is singular, the verb that completes the sentence must also be singular. Think about the singular present tense forms of the verb \"to be.\" Which one matches a singular subject like \"team\"?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "question_id": "pool_5bb1a65d526851c1",
+              "dash_metadata": {
+                "dash_question_id": "pool_5bb1a65d526851c1",
+                "skill_ids": [
+                  "ai_gen_english_us_6th-8th-grade-ela_unit_grammar-sentence-structure"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Grammar and Sentence Structure"
+                ],
+                "unit_name": "Grammar and Sentence Structure",
+                "lesson_name": "Practice",
+                "ai_generated": true
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Geography",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Python",
+          "code": 200,
+          "elapsed_s": 1.8327417373657227,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_445093dca443",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A Python program is designed to calculate the total cost of items. It first asks the user for the number of items and stores their input as a string in a variable called `items_count_str`. Next, it asks for the price of a single item and stores that input as a string in `item_price_str`.\n\nWrite a Python expression that correctly calculates the total cost by converting these string inputs into numbers and then multiplying them. The result should be a number.\n\nFor example, if `items_count_str` is \"3\" and `item_price_str` is \"4.99\", the total cost should be 14.97.\n\nType your Python expression below: [[\u2603 expression 1]]",
+                "images": {},
+                "widgets": {
+                  "expression 1": {
+                    "type": "expression",
+                    "options": {
+                      "buttonsVisible": "never",
+                      "functions": [
+                        "f",
+                        "g",
+                        "h"
+                      ],
+                      "times": false,
+                      "answerForms": [
+                        {
+                          "value": "int(items_count_str) * float(item_price_str)",
+                          "form": true,
+                          "simplify": false,
+                          "considered": "correct"
+                        }
+                      ],
+                      "buttonSets": [
+                        "basic"
+                      ]
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What happens when you try to multiply two strings in Python? What do you need to do to `items_count_str` and `item_price_str` before you can perform multiplication?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Remember, the `input()` function always gives you a string. To do math with these string values, you must convert them to a numeric type. Use `int()` to convert a string to a whole number, and `float()` to convert a string to a decimal number.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "You need to convert `items_count_str` to an integer using `int(items_count_str)`. You need to convert `item_price_str` to a decimal number using `float(item_price_str)`. Once both are numbers, you can multiply them. Put these converted values into a multiplication expression.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_622dbd2a58d3",
+                "skill_ids": [
+                  "ai_gen_python_us_6th-8th-grade-python-core-syntax-data-types_unit_user-input-type-conversion"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "User Input and Type Conversion"
+                ],
+                "unit_name": "User Input and Type Conversion",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921d5da830bcbc10a6d0b9"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Music Theory",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Cooking",
+          "code": 200,
+          "elapsed_s": 1.6562700271606445,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_c5504a45efc8",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nWhen you cook an egg, the clear liquid egg white turns solid and white. This change happens because the heat causes the proteins in the egg to unfold and coagulate. What is the scientific term for this process in food science?\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Denaturation",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Melting",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Confuses solidification with changing from solid to liquid.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Fermentation",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Confuses heat-induced change with microbial chemical processes.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Dissolving",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Confuses solidification with a substance mixing into a liquid.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/5b819b48ab263a98.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Food Science Fundamentals",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about how the structure of the proteins in the egg white changes when exposed to high heat. What is the specific word for proteins losing their original structure?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "In food science, when heat or acid causes proteins to unfold and change their physical properties, often becoming solid, this process is called denaturation. It's a key concept in how many foods cook.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The egg white changes from a clear liquid to a solid white because its proteins are being altered by the heat. This is not melting (which is solid to liquid), dissolving (which is mixing into a liquid), or fermentation (which involves microorganisms). The scientific term for this specific protein change is what you are looking for.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_fc6b186cec48",
+                "skill_ids": [
+                  "ai_gen_cooking_us_middle-school-culinary-science-safety_unit_food-science-fundamentals"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Food Science Fundamentals"
+                ],
+                "unit_name": "Food Science Fundamentals",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921ac7a830bcbc10a6c41a"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Spanish",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Art",
+          "code": 200,
+          "elapsed_s": 1.743272066116333,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_2413235d7cd2",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Read about [[\u2603 definition 1]]. Based on the definition, answer: Who was primarily responsible for creating illuminated manuscripts during the Middle Ages, and what was their main purpose? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "definition 1": {
+                    "alignment": "default",
+                    "graded": false,
+                    "options": {
+                      "definition": "A handwritten book decorated with intricate designs, gold, and vibrant colors, often created in monasteries during the Middle Ages. These books usually contained religious texts, such as the Bible or prayer books.",
+                      "togglePrompt": "illuminated manuscript",
+                      "static": false
+                    },
+                    "static": false,
+                    "type": "definition",
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    }
+                  },
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "clue": "Consider who was educated and dedicated to religious work in the Middle Ages, and the types of texts mentioned in the definition.",
+                          "content": "Monks and nuns in monasteries, to preserve religious texts and spread Christian faith.",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "clue": "While wealthy people might have commissioned these books, they were not typically the primary creators, nor was their main purpose solely to display personal wealth.",
+                          "content": "Wealthy merchants in their homes, to display their personal wealth and status.",
+                          "isNoneOfTheAbove": false,
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-1"
+                        },
+                        {
+                          "clue": "Royal artists existed, but illuminated manuscripts were primarily religious in nature, not mainly for recording secular history or portraits.",
+                          "content": "Royal artists commissioned by kings, to record historical events and royal genealogies.",
+                          "isNoneOfTheAbove": false,
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "clue": "While urban workshops and universities developed later, the early and primary creation of religious illuminated manuscripts was centered in monasteries, not for mass-produced textbooks.",
+                          "content": "Urban scribes and artists in workshops, to produce educational textbooks for universities.",
+                          "isNoneOfTheAbove": false,
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the definition of an illuminated manuscript. What kind of texts did they usually contain, and where were they often created?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "During the Middle Ages, monasteries were important centers of learning and scholarship. Monks and nuns were often the most educated people and dedicated their lives to religious devotion, which included copying and decorating sacred texts.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The careful creation of these beautiful books by monks and nuns ensured that religious knowledge and stories were preserved and shared. This process was a form of worship and helped to spread Christian teachings throughout society, connecting directly to 'faith and power' in the Middle Ages.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_3e4f226f3bc4",
+                "skill_ids": [
+                  "ai_gen_art_us_middle-school-art-history-culture_unit_faith-power-middle-ages"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Faith and Power: Art of the Middle Ages"
+                ],
+                "unit_name": "Faith and Power: Art of the Middle Ages",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921c99a830bcbc10a6cd77"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Economics",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Philosophy",
+          "code": 200,
+          "elapsed_s": 1.8425378799438477,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_fe5140fff89f",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "In philosophy, what is the study of right and wrong called? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Biology",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Ethics",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Physics",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "History",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What area of study deals with moral principles?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Ethics explores what is considered good or bad behavior.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider which of the choices directly addresses questions of morality and conduct.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_1c823c163964",
+                "skill_ids": [
+                  "ai_gen_philosophy_us_6th-8th-grade-philosophy-exploring-big-questions_unit_right-and-wrong"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Right and Wrong: Making Ethical Choices"
+                ],
+                "unit_name": "Right and Wrong: Making Ethical Choices",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991ea5e430fe72df0ed082b"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Astronomy",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "World War 2",
+          "code": 200,
+          "elapsed_s": 1.7282309532165527,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_8b2df468cf79",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which major battle in North Africa marked a significant turning point for the Allies in World War II, stopping the Axis advance and beginning their retreat from the region?\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Battle of El Alamein",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Battle of Stalingrad",
+                          "correct": false,
+                          "misconception": "Confuses a turning point battle on the Eastern Front (Europe) with one in North Africa.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Battle of Britain",
+                          "correct": false,
+                          "misconception": "Confuses an early air battle over the UK with a ground turning point in North Africa.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Attack on Pearl Harbor",
+                          "correct": false,
+                          "misconception": "Confuses a Pacific theater event with a turning point battle in North Africa.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "During World War II, the Allies and Axis powers fought important campaigns in North Africa. Which of the listed battles took place in that region and shifted the momentum?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The Battle of El Alamein, fought in Egypt, was a decisive victory for the British Commonwealth forces. It prevented the Axis powers from seizing the Suez Canal and vital oil fields, forcing them to retreat across North Africa.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "This battle is often remembered for the leadership of British General Bernard Montgomery and his Eighth Army. Their victory here was crucial in turning the tide against Field Marshal Rommel's Afrika Korps.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_1186b4493ca1",
+                "skill_ids": [
+                  "ai_gen_world-war-2_us_middle-school-history-ww2-events_unit_turning-tide-battles-europe-north-africa"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Turning the Tide: Key Battles in Europe and North Africa"
+                ],
+                "unit_name": "Turning the Tide: Key Battles in Europe and North Africa",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921d6ea830bcbc10a6d168"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Russian",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Korean",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Ancient Greek",
+          "code": 200,
+          "elapsed_s": 1.680344820022583,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_30097413ae44",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following Ancient Greek verbs is a form of the verb \"to be\" (\u03b5\u1f30\u03bc\u03af)? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "\u03b3\u03c1\u03ac\u03c6\u03c9 (graph\u014d)",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "\u1f10\u03c3\u03c4\u03af (esti)",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "\u03bb\u03ad\u03b3\u03c9 (leg\u014d)",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "\u03c0\u03b1\u03af\u03b6\u03c9 (paiz\u014d)",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the common forms of the verb \"to be\" in Ancient Greek.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The verb \"to be\" (\u03b5\u1f30\u03bc\u03af) has forms like \u1f10\u03c3\u03c4\u03af (esti - he/she/it is).",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The correct answer is \u1f10\u03c3\u03c4\u03af (esti), which means \"he/she/it is.\"",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_5382fed0504e",
+                "skill_ids": [
+                  "ai_gen_ancient-greek_us_middle-school-ancient-greek-1_unit_verbs-actions-being"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Verbs: Actions and Being"
+                ],
+                "unit_name": "Verbs: Actions and Being",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699213dea830bcbc10a6ac5e"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Swahili",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Hindi",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Architecture",
+          "code": 200,
+          "elapsed_s": 1.7429919242858887,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_5db088c11074",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nWhen designing a tall skyscraper, engineers need a material for the main structural frame that can withstand immense weight, strong winds, and even earthquakes. Which of the following materials is most commonly chosen for its exceptional strength, durability, and ability to be shaped into complex structural components? [[\u2603 dropdown 1]]",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "Steel",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Glass",
+                          "correct": false,
+                          "misconception": "Focuses on aesthetics/transparency rather than structural integrity.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Wood",
+                          "correct": false,
+                          "misconception": "Believes wood is universally strong enough for any structure, overlooking scale and specific forces.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Brick",
+                          "correct": false,
+                          "misconception": "Confuses material suitable for walls and compression with material for primary structural frames that resist tension and bending.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/5716b6c17e1bc975.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Building Blocks: Materials and Structures",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What kind of forces (like weight, wind, shaking) does a very tall building need to resist? Which material property helps most with these forces, especially when a material needs to be both strong and a little flexible?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Think about materials that are both very strong and can bend a little without breaking. Materials like steel are known for their high tensile strength (resistance to pulling apart) and compressive strength (resistance to being pushed together), making them ideal for large, flexible structures.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Wood and brick are strong for many buildings, but they have limits for extreme height and forces. Glass is mostly for windows and decorative elements. Steel is often used because it can handle both pushing and pulling forces very well, and it's flexible enough to absorb some movement from wind or earthquakes.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_956875f4405a",
+                "skill_ids": [
+                  "ai_gen_architecture_us_6th-8th-grade-architecture-foundations-built-environment_unit_building-materials-structures"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Building Blocks: Materials and Structures"
+                ],
+                "unit_name": "Building Blocks: Materials and Structures",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699218f2a830bcbc10a6b9b0"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Thai",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Pottery",
+          "code": 200,
+          "elapsed_s": 1.6521310806274414,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_202867d04825",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "In pottery, what does 'pulling walls' refer to? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Creating a decorative pattern on the outside of the pot.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Raising the clay upwards to create the height and shape of the pot.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Adding handles or other attachments to the pot.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Smoothing the surface of the pot with a sponge.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what you are trying to achieve when making a pot on the wheel.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Pulling walls involves using your hands to thin and raise the clay, making the pot taller.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The correct answer describes the process of making the pot taller by manipulating the clay upwards.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_adb9e5fdc06b",
+                "skill_ids": [
+                  "ai_gen_pottery_us_6th-8th-grade-pottery-introduction-to-the-wheel_unit_opening-pulling-walls"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Opening and Pulling Walls"
+                ],
+                "unit_name": "Opening and Pulling Walls",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921a49a830bcbc10a6c17d"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Farsi",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Nutrition",
+          "code": 200,
+          "elapsed_s": 1.9815130233764648,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_01b2505f374f",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of these is the MAIN purpose of digestion in your body? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "To make food taste better.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "To break down food into smaller pieces that your body can use.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "To get rid of food waste.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "To store food for later.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what your body needs to get from the food you eat.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Digestion is the process of breaking down food. Nutrients are released during this process.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The correct answer describes how digestion helps your body use the food you eat for energy and growth.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_c24d84110c34",
+                "skill_ids": [
+                  "ai_gen_nutrition_us_6th-8th-grade-nutrition-science-food-body_unit_digestion-metabolism-food-to-fuel"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Digestion and Metabolism: From Food to Fuel"
+                ],
+                "unit_name": "Digestion and Metabolism: From Food to Fuel",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921d02a830bcbc10a6cea5"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Filmmaking",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "World War 1",
+          "code": 200,
+          "elapsed_s": 1.6893670558929443,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_5bd449ac5bb5",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Before World War I, several factors created a dangerous situation in Europe. Order the following developments to show the chain of causes that led to increased tension and the arms race among European powers. [[\u2603 sorter 1]]",
+                "images": {},
+                "widgets": {
+                  "sorter 1": {
+                    "type": "sorter",
+                    "options": {
+                      "correct": [
+                        "Strong feelings of national pride and a desire for global influence grew across Europe.",
+                        "European governments began to spend much more money on their armies and navies.",
+                        "Each country tried to build more powerful weapons and larger military forces than its rivals.",
+                        "Nations became increasingly distrustful and fearful of each other's growing military strength.",
+                        "The risk of a major war between European powers became much higher."
+                      ],
+                      "layout": "vertical",
+                      "padding": true
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the initial emotions or ideologies that would drive countries to compete and build up their power. What feeling makes a nation want to be superior or defend its interests aggressively?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Recall that nationalism is intense loyalty and pride in one's nation. Militarism is the belief in having a strong military. The arms race is the competition to build the most weapons. Consider which of these concepts would naturally spark the next in a cause-and-effect sequence of events leading to conflict.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Strong nationalistic feelings often led countries to believe they were superior and deserved more power. This desire then pushed governments to invest heavily in their military (militarism). When multiple nations do this, trying to outdo each other, what kind of competition begins, and what effect does that have on their relationships and the overall risk of war?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_6a26a078144c",
+                "skill_ids": [
+                  "ai_gen_world-war-1_us_6-8th-grade-history-road-to-ww1_unit_nationalism-militarism-arms-race"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Nationalism, Militarism, and the Arms Race"
+                ],
+                "unit_name": "Nationalism, Militarism, and the Arms Race",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699218fea830bcbc10a6b9ef"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Physics",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Python Programming",
+          "code": 200,
+          "elapsed_s": 1.6857600212097168,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_0bda462ca87b",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "In Python, if you want to perform the same action multiple times without writing the code over and over again, you would use a [[\u2603 dropdown 1]].",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "variable",
+                          "correct": false,
+                          "misconception": "Confuses storing data with repeating instructions.",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "loop",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "function",
+                          "correct": false,
+                          "misconception": "Confuses defining reusable code blocks with repeating actions directly.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "conditional statement",
+                          "correct": false,
+                          "misconception": "Confuses making decisions with repeating actions.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what programming structure helps you avoid typing the same lines of code many times when you need an action to happen repeatedly.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "When you need a computer to do something like 'print \"Hello!\" five times' or 'check every item in a list,' you're asking it to repeat an action. A special kind of code block is designed specifically for this repetitive task.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Imagine you're writing code to count from 1 to 10 and print each number. Instead of writing `print(1)`, `print(2)`, ..., `print(10)`, you can use a structure that tells the computer to `print(number)` for each number from 1 to 10. This structure is called a...",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_36fa9f8321ff",
+                "skill_ids": [
+                  "ai_gen_python-programming_us_6th-8th-grade-python-core-programming-concepts_unit_loops-repeating-actions"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Loops: Repeating Actions"
+                ],
+                "unit_name": "Loops: Repeating Actions",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921c3aa830bcbc10a6cbc8"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Biology",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Astrophysics And Cosmology Studies For Advanced Le",
+          "code": 200,
+          "elapsed_s": 1.763793706893921,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_e76c8b3acbc7",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Our Sun is a main-sequence star, meaning it fuses hydrogen into helium in its core. However, some stars, like supergiants, are much larger and brighter than the Sun. Despite their enormous size and mass, these supergiants typically have a much shorter lifespan than our Sun. This is because supergiant stars [[\u2603 dropdown 1]].",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "burn through their nuclear fuel much faster",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "are less dense than smaller stars",
+                          "correct": false,
+                          "misconception": "Confuses density with fuel consumption rate; assumes larger means less active.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "are located farther away from Earth",
+                          "correct": false,
+                          "misconception": "Confuses a star's intrinsic properties with its observable distance.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "have a different chemical composition",
+                          "correct": false,
+                          "misconception": "Assumes composition is the primary factor, rather than mass and fusion rate.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Stars generate energy through a process called nuclear fusion. How might a star's extreme mass and size affect how quickly it performs this process?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "More massive stars have much stronger gravitational forces in their cores. This leads to significantly higher temperatures and pressures, which in turn dramatically increases the rate of nuclear fusion.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Even though supergiant stars have a huge amount of hydrogen fuel, their extremely rapid rate of fusion means they consume this fuel at an accelerated pace. This faster consumption rate directly shortens their overall lifespan compared to less massive stars like our Sun.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_5a453c2429ad",
+                "skill_ids": [
+                  "ai_gen_astrophysics-and-cosmology-studies-for-advanced-le_us_6th-8th-grade-middle-school-astronomy-and-space-science_unit_the-sun-and-other-stars"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "The Sun and Other Stars"
+                ],
+                "unit_name": "The Sun and Other Stars",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921c32a830bcbc10a6cba8"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Geometry",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Recursion Probe 1771093263",
+          "code": 200,
+          "elapsed_s": 1.7421669960021973,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_e4680a06880b",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "According to the Zzzz Recursion Probe 1771093263, what is the MOST important thing to remember when thinking about the Fibonacci sequence and its presence in nature? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "That every single flower and shell perfectly follows the Fibonacci sequence.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "That the Fibonacci sequence appears frequently in nature, but it's not a perfect or universal rule.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "That the Fibonacci sequence only applies to spirals found in galaxies.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "That the Fibonacci sequence was invented by aliens and has no real-world applications.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about how common the Fibonacci sequence is in nature, but also consider if it's a perfect match every time.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The Fibonacci sequence is a pattern that appears often, but nature is complex and has variations.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The correct answer acknowledges the presence of the Fibonacci sequence while also recognizing that it's not a strict rule that everything must follow perfectly.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_29daa8b1f41b",
+                "skill_ids": [
+                  "ai_gen_zzzz-recursion-probe-1771093263_us_6th-8th-grade-math-intro-recursive-patterns-fractals_unit_fibonacci-sequence-wonders"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "The Fibonacci Sequence and Its Wonders"
+                ],
+                "unit_name": "The Fibonacci Sequence and Its Wonders",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921882a830bcbc10a6b7a0"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771097854",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Science Math History English Geography Python",
+          "code": 200,
+          "elapsed_s": 1.694159746170044,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_a94083d93333",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Read about [[\u2603 definition 1]]. Based on the definition, what happens if the condition in an `if` statement is true? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "definition 1": {
+                    "type": "definition",
+                    "graded": false,
+                    "options": {
+                      "definition": "In Python, an `if` statement is used to make decisions. It checks if a specific condition is true. If the condition is true, the code inside the `if` block runs. If the condition is false, the code inside the `if` block is skipped.",
+                      "togglePrompt": "`if` statement",
+                      "static": false
+                    },
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  },
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "The code inside the `if` block runs.",
+                          "correct": true,
+                          "clue": "Correct! An `if` statement executes its code block only when its condition is true.",
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "The program stops.",
+                          "correct": false,
+                          "clue": "Not quite. An `if` statement doesn't stop the program; it just decides whether to run a specific part of the code.",
+                          "misconception": "Common student error",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "The code inside the `if` block is skipped.",
+                          "correct": false,
+                          "clue": "This happens if the condition is false, not if it's true. Re-read the definition carefully.",
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "The program asks the user for input.",
+                          "correct": false,
+                          "clue": "An `if` statement makes a decision based on a condition; it doesn't automatically ask for user input.",
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "multipleSelect": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "An `if` statement helps a program make a choice. What is that choice based on?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The definition states: 'If the condition is true, the code inside the `if` block runs.' This is the core purpose of the `if` statement when its condition is met.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Imagine the `if` statement as a gatekeeper. If the condition is true, the gatekeeper says 'Go ahead!' and the code inside the `if` block gets executed. If the condition is false, the gatekeeper says 'Stop!' and the code is skipped. So, if the condition IS true, what happens?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_38c0ef8fd711",
+                "skill_ids": [
+                  "ai_gen_science-math-history-english-geography-python_us_intro-python-computational-thinking_unit_making-decisions-conditionals"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Making Decisions with Conditionals"
+                ],
+                "unit_name": "Making Decisions with Conditionals",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f36f21c9df089c4830bb"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771100688",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Math",
+          "code": 200,
+          "elapsed_s": 1.747913122177124,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_4286705f03bc",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following statements best describes a proportional relationship? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "A relationship where one quantity increases while the other quantity decreases.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "A relationship between two quantities where their ratio is constant.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "A relationship where the two quantities are always equal.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "A relationship where the quantities change randomly.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what makes two things 'proportional' to each other.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A proportional relationship means that as one quantity changes, the other changes by a consistent factor. This consistent factor is the constant ratio.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider an example: If 1 apple costs $0.50, then 2 apples cost $1.00. The ratio of cost to apples (0.50/1) remains constant.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_dd4acdf689f9",
+                "skill_ids": [
+                  "ai_gen_math_us_7th-grade-math_unit_ratios-proportional-relationships"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Ratios and Proportional Relationships"
+                ],
+                "unit_name": "Ratios and Proportional Relationships",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921a6fa830bcbc10a6c25d"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771160157",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771165481",
+          "code": 200,
+          "elapsed_s": 1.8231592178344727,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_3a22af29e18e",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Zzzz Pretest Probe 1771165481 likely covers which of the following concepts related to rational numbers and scientific notation? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "The history of the number zero.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Converting between fractions, decimals, and scientific notation.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "The best way to memorize prime numbers.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Solving complex algebraic equations.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what topics are usually covered when learning about rational numbers and scientific notation.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Rational numbers can be expressed as fractions or decimals. Scientific notation is a way to write very large or very small numbers.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The most common tasks involve converting between these different representations of numbers.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_2d4c05b1ec61",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771165481_us_7th-grade-math-science_unit_rational-numbers-scientific-notation"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Rational Numbers and Scientific Notation"
+                ],
+                "unit_name": "Rational Numbers and Scientific Notation",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6992136ca830bcbc10a6aa53"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771166452",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771168832",
+          "code": 200,
+          "elapsed_s": 1.7617700099945068,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_ff2113b57194",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Maria has some stickers. She buys 7 more stickers and now has 15 stickers in total. Which of the following equations can be used to find out how many stickers Maria had to start with? Select all that apply.\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "$s + 7 = 15$",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "$s - 7 = 15$",
+                          "correct": false,
+                          "misconception": "Confuses addition with subtraction when setting up the equation.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "$s = 15 - 7$",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "$7s = 15$",
+                          "correct": false,
+                          "misconception": "Confuses addition with multiplication when translating the problem.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": true,
+                      "randomize": false,
+                      "numCorrect": 2
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Let 's' represent the unknown number of stickers Maria had to start. When Maria buys more stickers, what mathematical operation does that suggest?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "If you have an unknown quantity and add a known amount to it, reaching a total, you can set up an addition equation. For example, if you start with $x$ and add 5 to get 10, the equation is $x + 5 = 10$. You can also think about how to find $x$ by using the inverse operation.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Maria started with $s$ stickers. She added 7, so you have $s + 7$. The total she ended up with was 15. So, one equation is $s + 7 = 15$. How can you rearrange this equation to solve for $s$?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_170ceed41d8a",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771168832_us_6th-8th-grade-math-pre-algebra-algebra-foundations_unit_solving-equations"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Solving Equations"
+                ],
+                "unit_name": "Solving Equations",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921a85a830bcbc10a6c2d5"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771169457",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771170539",
+          "code": 200,
+          "elapsed_s": 1.7516028881072998,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_8d5f8aba3a0a",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on your work with Zzzz Pretest Probe 1771170539, which of the following BEST describes the primary goal when solving equations and inequalities? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "To find the largest possible number that satisfies the equation or inequality.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "To isolate the variable on one side of the equation or inequality.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "To make sure both sides of the equation or inequality are equal to zero.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "To simplify the equation or inequality as much as possible, even if the variable is not isolated.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What does it mean to 'solve' for a variable?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Solving an equation/inequality involves manipulating it to get the variable by itself.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Think about the steps you take to solve for 'x' in an equation like x + 3 = 5. What are you trying to achieve?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_0fa579d0c4c3",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771170539_us_6th-8th-grade-math_unit_equations-inequalities"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Equations & Inequalities"
+                ],
+                "unit_name": "Equations & Inequalities",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6992137ca830bcbc10a6aaab"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771170669",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771172484",
+          "code": 200,
+          "elapsed_s": 3.2556190490722656,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_720b0b8dcf7f",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on the information presented in Zzzz Pretest Probe 1771172484, which of the following best describes the relationship between the area of a square and its side length? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "The area is equal to the side length.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "The area is equal to the side length multiplied by itself.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "The area is equal to the side length divided by two.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "The area is equal to the side length plus four.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What does 'area' measure?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The area of a square is found by multiplying the length of one side by the length of another side. Since it's a square, all sides are equal.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "If a square has a side length of 5, what is 5 multiplied by 5?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_cd3da1645aec",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771172484_us_6th-8th-grade-math_unit_geometry-area-volume-angles"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Geometry: Area, Volume, and Angles"
+                ],
+                "unit_name": "Geometry: Area, Volume, and Angles",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699204854818c0c70209501f"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771172888",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771173119",
+          "code": 200,
+          "elapsed_s": 1.7903878688812256,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_2a45a84f4a46",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "According to Zzzz Pretest Probe 1771173119, which of the following is the primary driver of Earth's dynamic systems, such as plate tectonics and the water cycle? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Solar energy from the sun.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Heat from Earth's interior.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "The gravitational pull of the moon.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Atmospheric pressure differences.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What internal process generates a lot of heat within the Earth?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Earth's internal heat drives convection currents in the mantle, which move the plates.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The correct answer is the one that describes a source of energy originating from within the Earth itself.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_1656b62e2974",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771173119_us_6th-8th-grade-middle-school-science_unit_earths-dynamic-systems"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Earth's Dynamic Systems"
+                ],
+                "unit_name": "Earth's Dynamic Systems",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699204974818c0c70209505d"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771175663",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771176204",
+          "code": 200,
+          "elapsed_s": 1.6801788806915283,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_4b22bbc37ef9",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on the information presented in Zzzz Pretest Probe 1771176204, which of the following BEST describes the primary focus of the questions? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Calculating the exact numerical value of specific ratios.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Understanding and applying the concepts of ratios, rates, and proportional relationships.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Memorizing different types of formulas related to proportions.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Graphing linear equations involving rates of change.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the overall goal of learning about ratios, rates, and proportions.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Ratios, rates, and proportions are about understanding relationships between quantities.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The probe likely assesses your ability to use these concepts, not just perform calculations.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_b7b98081f152",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771176204_us_6th-8th-grade-math-foundations_unit_ratios-rates-proportional-relationships"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Ratios, Rates, and Proportional Relationships"
+                ],
+                "unit_name": "Ratios, Rates, and Proportional Relationships",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921a97a830bcbc10a6c31e"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771177239",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771180187",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771180466",
+          "code": 200,
+          "elapsed_s": 1.7356879711151123,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_66138f44d672",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on your understanding of ratios and proportional relationships, as assessed by Zzzz Pretest Probe 1771180466, which statement best describes the core concept being evaluated? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "It focuses on the memorization of multiplication tables and basic arithmetic operations.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "It explores the relationship between two quantities and how they change together, often involving scaling or comparing.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "It primarily tests knowledge of geometric shapes and their properties, such as area and perimeter.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "It mainly assesses the ability to solve complex algebraic equations with multiple variables.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What is the fundamental idea behind ratios and proportional relationships?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Ratios and proportional relationships deal with comparing quantities and understanding how they relate to each other. Think about scaling recipes or map distances.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The correct answer focuses on the relationship between two quantities and how they change together, which is the core of ratios and proportions.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_7d015499a0e0",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771180466_us_7th-grade-math_unit_ratios-proportional-relationships"
+                ],
+                "difficulty": 0.57,
+                "skill_names": [
+                  "Ratios and Proportional Relationships"
+                ],
+                "unit_name": "Ratios and Proportional Relationships",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699213aaa830bcbc10a6abb2"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771181093",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771182375",
+          "code": 200,
+          "elapsed_s": 2.1635420322418213,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_af3ac4f0b2cd",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Read about [[\u2603 definition 1]]. Based on the definition, a rectangular playground has an area of $108 \text{ square meters}$. If its width is $9 \text{ meters}$, what is the perimeter of the playground? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "definition 1": {
+                    "type": "definition",
+                    "graded": false,
+                    "options": {
+                      "definition": "The area of a two-dimensional shape is the amount of surface it covers, measured in square units. For a rectangle, the area is calculated by multiplying its length by its width ($A = L \\times W$).",
+                      "togglePrompt": "area",
+                      "static": false
+                    },
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  },
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "$42 \text{ meters}$",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "$12 \text{ meters}$",
+                          "clue": "This is the length of the playground, not its perimeter.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Common student error",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "$21 \text{ meters}$",
+                          "clue": "You found the sum of the length and width. Remember that the perimeter includes all four sides of the rectangle.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "$30 \text{ meters}$",
+                          "clue": "Double-check your calculations for the length and then the perimeter. Make sure you are using the correct formula for perimeter.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "multipleSelect": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "To find the perimeter of a rectangle, you need to know both its length and its width. You are given the area and the width. What is the first step you need to take?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The area of a rectangle is found using the formula $A = L \\times W$ (Length $\\times$ Width). The perimeter of a rectangle is found using the formula $P = 2(L + W)$ or $P = 2L + 2W$.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "You know the area ($A = 108 \text{ m}^2$) and the width ($W = 9 \text{ m}$). Use the area formula to find the length: $108 = L \\times 9$. Once you find $L$, substitute both $L$ and $W$ into the perimeter formula: $P = 2(L + W)$.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_426d13b64472",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771182375_us_6th-8th-grade-math_unit_geometry-area-volume-angles"
+                ],
+                "difficulty": 0.42,
+                "skill_names": [
+                  "Geometry: Area, Volume, and Angles"
+                ],
+                "unit_name": "Geometry: Area, Volume, and Angles",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921df7a830bcbc10a6d749"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771182903",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771183378",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771183747",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        }
+      ]
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "subject_used": "Science",
+        "start_code": 200,
+        "start_elapsed_s": 1.0092530250549316,
+        "start_body": {
+          "assessment_id": "assess_b220a99336af",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "A plant uses light energy to make its own food through a process called photosynthesis. During this process, some light energy is converted into chemical energy stored in the plant's food (like glucose), and some energy is released as heat into the environment.\n\nIf $C$ represents the chemical energy stored in the plant's food and $H$ represents the energy released as heat, write an expression that shows the total amount of light energy absorbed by the plant, assuming no other forms of energy are involved.\n\nTotal light energy absorbed = [[\u2603 expression 1]]",
+              "images": {},
+              "widgets": {
+                "expression 1": {
+                  "type": "expression",
+                  "options": {
+                    "buttonsVisible": "never",
+                    "functions": [
+                      "f",
+                      "g",
+                      "h"
+                    ],
+                    "times": false,
+                    "answerForms": [
+                      {
+                        "value": "C+H",
+                        "form": true,
+                        "simplify": false,
+                        "considered": "correct"
+                      },
+                      {
+                        "value": "H+C",
+                        "form": true,
+                        "simplify": false,
+                        "considered": "correct"
+                      }
+                    ],
+                    "buttonSets": [
+                      "basic"
+                    ]
+                  },
+                  "graded": true,
+                  "version": {
+                    "major": 2,
+                    "minor": 0
+                  },
+                  "alignment": "default",
+                  "static": false
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "Think about the Law of Conservation of Energy. If energy goes into the plant, where does it all end up?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "The Law of Conservation of Energy states that energy cannot be created or destroyed, only transformed from one form to another. This means the total energy absorbed by the plant must be equal to the sum of all the energy forms it produces or releases.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "The plant absorbs light energy. This absorbed light energy is transformed into two main forms: chemical energy (represented by $C$) and heat energy (represented by $H$). To find the total light energy absorbed, you need to combine these two forms of energy.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_7f6cbc0abcbff881",
+            "dash_metadata": {
+              "dash_question_id": "pool_7f6cbc0abcbff881",
+              "skill_ids": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "difficulty": 0.3291666666666666,
+              "skill_names": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "required_stable_transitions": 3,
+        "stable_transitions": 3,
+        "transitions": [
+          {
+            "step": 1,
+            "code": 200,
+            "elapsed_s": 2.7662999629974365,
+            "attempts_used": 2,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 2,
+            "code": 200,
+            "elapsed_s": 1.37689208984375,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 3,
+            "code": 200,
+            "elapsed_s": 0.4011569023132324,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          }
+        ],
+        "next": {
+          "code": 200,
+          "elapsed_s": 2.7662999629974365,
+          "completed_early": false,
+          "has_next_question": true,
+          "attempts_used": 2
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 25.0
+      }
+    },
+    "loading_latency": {
+      "ok": true,
+      "initial_question_fetch_elapsed_s": 1.0873298645019531,
+      "learning_recommend_next_elapsed_s": 0.3961310386657715,
+      "adaptive_start_elapsed_s": 1.0092530250549316,
+      "next_question_elapsed_s": 2.7662999629974365,
+      "adaptive_next_transition_elapsed_s": [
+        2.7662999629974365,
+        1.37689208984375,
+        0.4011569023132324
+      ],
+      "budgets": {
+        "initial_question_fetch_budget_s": 12.0,
+        "learning_recommend_next_budget_s": 25.0,
+        "adaptive_start_budget_s": 12.0,
+        "next_question_budget_s": 25.0
+      }
+    },
+    "websocket": {
+      "session_start": {
+        "code": 200,
+        "elapsed_s": 1.5277440547943115,
+        "body": {
+          "prompt": "",
+          "session_info": {
+            "session_id": "sess_a6033aad45794d23",
+            "user_id": "dev_2ad5ce808c60",
+            "session_active": true,
+            "duration_minutes": 0.0,
+            "questions_answered": 0,
+            "questions_correct": 0,
+            "websocket_connected": false,
+            "sse_connected": false
+          }
+        }
+      },
+      "probe": {
+        "ok": true,
+        "elapsed_s": 1.1479859352111816,
+        "response": {
+          "type": "pong"
+        }
+      },
+      "session_end": {
+        "code": 200,
+        "elapsed_s": 1.8609650135040283,
+        "body": {
+          "prompt": "[SYSTEM PROMPT FOR ADAM]\nThe tutoring session is ending now.\nSession stats: 0.1 minutes, 0 questions attempted.\nPlease give the student a warm closing message, acknowledge their hard work,\nand encourage them for next session.",
+          "session_info": {
+            "session_id": "sess_a6033aad45794d23",
+            "duration_minutes": 0.07,
+            "minutes_deducted": 1,
+            "questions_answered": 0,
+            "questions_correct": 0
+          }
+        }
+      },
+      "ok": true
+    }
+  },
+  "ok": true,
+  "errors": []
+}

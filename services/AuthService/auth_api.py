@@ -4,11 +4,13 @@ Auth Service - Google OAuth authentication API
 import os
 import sys
 import logging
+import secrets
+import threading
 from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, JSONResponse
 from pydantic import BaseModel, EmailStr
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from datetime import date, datetime
 
 # Add project root to path
@@ -53,6 +55,42 @@ class _RateLimiter:
 _login_limiter = _RateLimiter(max_requests=10, window_seconds=60)
 _signup_limiter = _RateLimiter(max_requests=5, window_seconds=300)
 _dev_login_limiter = _RateLimiter(max_requests=20, window_seconds=60)
+
+
+AUTH_EXCHANGE_CODE_TTL_SECONDS = int(os.getenv("AUTH_EXCHANGE_CODE_TTL_SECONDS", "300"))
+_auth_exchange_codes: Dict[str, Dict[str, Any]] = {}
+_auth_exchange_lock = threading.Lock()
+
+
+def _prune_auth_exchange_codes(now: Optional[float] = None) -> None:
+    ts = now if now is not None else _time.time()
+    expired_codes = [code for code, entry in _auth_exchange_codes.items() if entry["expires_at"] <= ts]
+    for code in expired_codes:
+        _auth_exchange_codes.pop(code, None)
+
+
+def _issue_auth_exchange_code(payload: Dict[str, Any]) -> str:
+    code = secrets.token_urlsafe(32)
+    now = _time.time()
+    with _auth_exchange_lock:
+        _prune_auth_exchange_codes(now)
+        _auth_exchange_codes[code] = {
+            "payload": payload,
+            "expires_at": now + AUTH_EXCHANGE_CODE_TTL_SECONDS,
+        }
+    return code
+
+
+def _consume_auth_exchange_code(code: str) -> Optional[Dict[str, Any]]:
+    now = _time.time()
+    with _auth_exchange_lock:
+        _prune_auth_exchange_codes(now)
+        entry = _auth_exchange_codes.pop(code, None)
+    if not entry:
+        return None
+    if entry.get("expires_at", 0) <= now:
+        return None
+    return entry.get("payload")
 
 
 def _client_ip(request: Request) -> str:
@@ -130,6 +168,9 @@ class CompleteSetupRequest(BaseModel):
     interests: Optional[List[str]] = []
     learning_style: Optional[str] = None
 
+class AuthCodeExchangeRequest(BaseModel):
+    code: str
+
 class UpdateAccountRequest(BaseModel):
     name: Optional[str] = None
     date_of_birth: Optional[date] = None
@@ -202,24 +243,42 @@ async def google_callback(code: Optional[str] = Query(None), state: Optional[str
                 "google_id": google_user["id"]
             })
             
-            # Redirect to frontend with token
+            # Redirect with one-time auth code (never send JWT in URL)
+            auth_code = _issue_auth_exchange_code({
+                "token": jwt_token,
+                "is_new_user": False
+            })
             frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
             return RedirectResponse(
-                url=f"{frontend_url}/app/login?token={jwt_token}&is_new_user=false"
+                url=f"{frontend_url}/app/login?auth_code={auth_code}"
             )
         else:
             # New user - need to complete setup
             setup_token = create_setup_token(google_user)
             
-            # Redirect to frontend setup page
+            # Redirect with one-time auth code (never send setup token in URL)
+            auth_code = _issue_auth_exchange_code({
+                "setup_token": setup_token,
+                "requires_setup": True,
+                "is_new_user": True
+            })
             frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
             return RedirectResponse(
-                url=f"{frontend_url}/app/login?setup_token={setup_token}"
+                url=f"{frontend_url}/app/login?auth_code={auth_code}"
             )
             
     except Exception as e:
         logger.error(f"Error in OAuth callback: {e}")
         raise HTTPException(status_code=500, detail=f"OAuth callback failed: {str(e)}")
+
+
+@app.post("/auth/exchange-code")
+async def exchange_auth_code(request: AuthCodeExchangeRequest):
+    """Exchange one-time OAuth redirect code for auth payload."""
+    payload = _consume_auth_exchange_code(request.code)
+    if not payload:
+        raise HTTPException(status_code=400, detail="Invalid or expired auth code")
+    return payload
 
 
 @app.post("/auth/complete-setup")
@@ -1010,8 +1069,6 @@ async def get_gemini_token(request: Request):
         )
 
         logger.info(f"Created ephemeral token for user {user_id}")
-        logger.info(f"Token name: {token.name}")
-        logger.info(f"Token object: {token}")
 
         return {
             "token": token.name,
@@ -1033,4 +1090,3 @@ if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8003))
     uvicorn.run(app, host="0.0.0.0", port=port)
-

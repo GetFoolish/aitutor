@@ -1,0 +1,2981 @@
+{
+  "created_at": "2026-02-15T19:01:20.758849+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.024621009826660156,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 116,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.009036064147949219,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.00928497314453125,
+      "body": {
+        "status": "healthy",
+        "service": "TeachingAssistant"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.07375216484069824,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": true,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 0.6502339839935303,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 110
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 1.8552148342132568,
+        "count": 5,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 12.0,
+        "min_question_count": 5
+      }
+    },
+    "learning_path_subject_validity": {
+      "ok": true,
+      "current_question_ids": [
+        "pool_c996b22ec57eed6c",
+        "pool_d704f3bf684a30fc",
+        "pool_b2d07d547834792c"
+      ],
+      "recommend_next": {
+        "code": 200,
+        "elapsed_s": 0.3563051223754883,
+        "count": 4,
+        "overlap_with_current_ids": [],
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        },
+        "body": {
+          "sample_ids": [
+            "pool_ac97d9a3896f67c0",
+            "pool_b7a37ae1489f4c1f",
+            "pool_5ffe5e98e15a2127",
+            "pool_cc201a3bb25a6fb2"
+          ]
+        }
+      }
+    },
+    "adaptive_start_all_subjects": {
+      "ok": true,
+      "adaptive_start_timeout_s": 4.0,
+      "adaptive_start_retry_timeout_s": 12.0,
+      "catalog_fetch": {
+        "code": 200,
+        "elapsed_s": 0.05273699760437012,
+        "count": 51,
+        "fallback_used": false
+      },
+      "subjects_checked_count": 51,
+      "subjects_checked": [
+        "Science",
+        "History",
+        "English",
+        "Geography",
+        "Python",
+        "Music Theory",
+        "Cooking",
+        "Spanish",
+        "Art",
+        "Economics",
+        "Philosophy",
+        "Astronomy",
+        "World War 2",
+        "Russian",
+        "Korean",
+        "Ancient Greek",
+        "Swahili",
+        "Hindi",
+        "Architecture",
+        "Thai",
+        "Pottery",
+        "Farsi",
+        "Nutrition",
+        "Filmmaking",
+        "World War 1",
+        "Physics",
+        "Python Programming",
+        "Biology",
+        "Astrophysics And Cosmology Studies For Advanced Le",
+        "Geometry",
+        "Zzzz Recursion Probe 1771093263",
+        "Zzzz Pretest Probe 1771097854",
+        "Science Math History English Geography Python",
+        "Zzzz Pretest Probe 1771100688",
+        "Math",
+        "Zzzz Pretest Probe 1771160157",
+        "Zzzz Pretest Probe 1771165481",
+        "Zzzz Pretest Probe 1771166452",
+        "Zzzz Pretest Probe 1771168832",
+        "Zzzz Pretest Probe 1771169457",
+        "Zzzz Pretest Probe 1771170539",
+        "Zzzz Pretest Probe 1771170669",
+        "Zzzz Pretest Probe 1771172484",
+        "Zzzz Pretest Probe 1771172888",
+        "Zzzz Pretest Probe 1771173119",
+        "Zzzz Pretest Probe 1771175663",
+        "Zzzz Pretest Probe 1771176204",
+        "Zzzz Pretest Probe 1771177239",
+        "Zzzz Pretest Probe 1771180187",
+        "Zzzz Pretest Probe 1771180466",
+        "Zzzz Pretest Probe 1771181093"
+      ],
+      "timeout_retryable_count": 29,
+      "concrete_result_count": 22,
+      "results": [
+        {
+          "subject": "Science",
+          "code": 200,
+          "elapsed_s": 0.8936121463775635,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_930dc4231356",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A deer eats plants, converting the plant's stored energy into energy for its own movement and growth. When a wolf eats the deer, the wolf obtains energy that originally came from the sun. This process shows that energy in living systems is always [[\u2603 dropdown 1]].",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "created and destroyed",
+                          "correct": false,
+                          "misconception": "Students might think energy can appear and disappear, ignoring the law of conservation.",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "recycled and reused",
+                          "correct": false,
+                          "misconception": "Students often confuse energy flow with matter cycles, thinking energy is fully reused.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "transformed and transferred",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "stored as heat",
+                          "correct": false,
+                          "misconception": "Students might only focus on heat as an output, not the primary storage or transfer mechanism.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "placeholder": "select one",
+                      "static": false
+                    },
+                    "static": false,
+                    "type": "dropdown",
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what happens to the form of energy as it moves from one living thing to another, or when an organism uses it for different activities. Does it stay the same, or does it change?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Remember that energy cannot be created or destroyed. Instead, it changes from one form to another (like light to chemical, or chemical to kinetic) and moves from one organism to another in an ecosystem.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The sun's light energy is captured by plants and converted into chemical energy. When a deer eats the plant, that chemical energy is moved to the deer and used for its life processes, often changing into kinetic energy or heat. The wolf then gets this chemical energy from the deer. So, the energy is continuously changing forms and moving between organisms.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "question_id": "pool_3fde75b17975531a",
+              "dash_metadata": {
+                "dash_question_id": "pool_3fde75b17975531a",
+                "skill_ids": [
+                  "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+                ],
+                "difficulty": 0.9866666666666667,
+                "skill_names": [
+                  "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+                ],
+                "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+                "lesson_name": "Practice",
+                "ai_generated": true
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "History",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "English",
+          "code": 200,
+          "elapsed_s": 0.9882760047912598,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_c64ca07093c3",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Drag and drop the phrases below to form a complete and grammatically correct sentence. [[\u2603 sorter 1]]",
+                "images": {},
+                "widgets": {
+                  "sorter 1": {
+                    "type": "sorter",
+                    "options": {
+                      "correct": [
+                        "Yesterday,",
+                        "the students",
+                        "learned about",
+                        "different types",
+                        "of sentences."
+                      ],
+                      "layout": "vertical",
+                      "padding": true
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the typical order of elements in an English sentence. What kind of phrase often comes at the very beginning to set the scene or time?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A common sentence structure is: Time/Introductory Phrase + Subject + Verb + Object/Complement. First, identify the subject (who or what the sentence is about), then the verb (what they did), and finally what received the action or was involved.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The sentence starts with 'Yesterday,'. Next, we need the subject: 'the students'. What did they do? They 'learned about'. What did they learn about? 'different types' of what? 'of sentences.' Arrange these pieces in that sequence to complete the sentence.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "question_id": "pool_22f92c2b6e5ca9ff",
+              "dash_metadata": {
+                "dash_question_id": "pool_22f92c2b6e5ca9ff",
+                "skill_ids": [
+                  "ai_gen_english_us_6th-8th-grade-ela_unit_grammar-sentence-structure"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Grammar and Sentence Structure"
+                ],
+                "unit_name": "Grammar and Sentence Structure",
+                "lesson_name": "Practice",
+                "ai_generated": true
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Geography",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Python",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Music Theory",
+          "code": 200,
+          "elapsed_s": 0.9243259429931641,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_93e5d3fbef68",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A school talent show is scheduled to begin at 6:30 PM. The first act performs for 25 minutes. After the first act, there is a 10-minute intermission. The second act then performs for 30 minutes. What time will the second act finish?\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "7:25 PM",
+                          "correct": false,
+                          "misconception": "Forgot to include the 10-minute intermission.",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "7:05 PM",
+                          "correct": false,
+                          "misconception": "Identified the end of the intermission as the final answer.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "7:15 PM",
+                          "correct": false,
+                          "misconception": "Miscalculated the duration of the second act or made an addition error.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "7:35 PM",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-3"
+                        }
+                      ],
+                      "multipleSelect": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "multipleSelect": false,
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "To find the final finishing time, you need to consider each event in the schedule in the correct order. What is the first step to figure out the total time that passes?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "You need to add the duration of each part of the talent show to the current time, step by step. Start with the beginning time, then add the first act's duration, then the intermission's duration, and finally the second act's duration.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The talent show starts at 6:30 PM. The first act lasts 25 minutes, so it ends at 6:30 PM + 25 minutes = 6:55 PM. After that, there's a 10-minute intermission. So, the intermission ends at 6:55 PM + 10 minutes = 7:05 PM. Now, what time will the second act finish if it starts at 7:05 PM and lasts for 30 minutes?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "question_id": "pool_78d6b439724e976b",
+              "dash_metadata": {
+                "dash_question_id": "pool_78d6b439724e976b",
+                "skill_ids": [
+                  "ai_gen_music-theory_us_middle-school-music-theory-scales-chords-ear-training_unit_understanding-intervals"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Understanding Intervals"
+                ],
+                "unit_name": "Understanding Intervals",
+                "lesson_name": "Practice",
+                "ai_generated": true
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Cooking",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Spanish",
+          "code": 200,
+          "elapsed_s": 1.428339958190918,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_12322215610c",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Ana is introducing her family and friends. She says: 'Tengo un hermano, Miguel. Mi padre tiene dos hermanas, Elena y Sof\u00eda. Elena tiene un un hijo, Pablo, que es mi amigo. Tambi\u00e9n tengo una amiga, Laura, que es la hija de mi t\u00eda Sof\u00eda.'\n\nBased on Ana's description, which of the following statements are true? Select all that apply.\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Miguel es el hermano de Ana.",
+                          "correct": true,
+                          "misconception": null,
+                          "isNoneOfTheAbove": false,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Elena es la prima de Ana.",
+                          "correct": false,
+                          "misconception": "Confusing 'aunt' (t\u00eda) with 'cousin' (prima), or not correctly tracing the paternal lineage.",
+                          "isNoneOfTheAbove": false,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Pablo es el primo de Ana.",
+                          "correct": true,
+                          "misconception": null,
+                          "isNoneOfTheAbove": false,
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Laura es la hermana de Ana.",
+                          "correct": false,
+                          "misconception": "Confusing 'cousin' (prima) with 'sister' (hermana), or not connecting 'hija de mi t\u00eda' to the family relationship.",
+                          "isNoneOfTheAbove": false,
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": true,
+                      "randomize": false,
+                      "numCorrect": 2
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "First, identify each person mentioned in Ana's description. Then, for each person, think about their exact relationship to Ana based on the Spanish words used.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Remember these key family vocabulary words: `hermano` (brother), `padre` (father), `hermana` (sister), `t\u00eda` (aunt), `hijo` (son), `hija` (daughter), `primo` (male cousin), and `prima` (female cousin).",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Let's break down Ana's description: 'Tengo un hermano, Miguel' means Miguel is her brother. 'Mi padre tiene dos hermanas, Elena y Sof\u00eda' means Elena and Sof\u00eda are Ana's aunts. 'Elena tiene un hijo, Pablo' means Pablo is the son of Ana's aunt, making him Ana's cousin. 'Laura, que es la hija de mi t\u00eda Sof\u00eda' means Laura is the daughter of Ana's aunt, making her Ana's cousin.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_baf7ee177029",
+                "skill_ids": [
+                  "ai_gen_spanish_us_middle-school-spanish-novice-foundations_unit_mi-familia-y-mis-amigos"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Mi Familia y Mis Amigos"
+                ],
+                "unit_name": "Mi Familia y Mis Amigos",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699204b94818c0c7020950fc"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Art",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Economics",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Philosophy",
+          "code": 200,
+          "elapsed_s": 1.409668207168579,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_dc672427ff01",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nImagine you are walking home from school and find a wallet on the sidewalk. It has a driver's license inside with a name and address. What is generally considered the most ethical action to take in this situation? The most ethical action is to [[\u2603 dropdown 1]].",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "try to return the wallet to its owner.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "keep the money for yourself.",
+                          "correct": false,
+                          "misconception": "Focuses on self-gain rather than the owner's rights and loss.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "leave the wallet exactly where you found it.",
+                          "correct": false,
+                          "misconception": "Avoids taking responsibility or helping the owner recover their lost item.",
+                          "id": "choice-2"
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/0f6da1b48fabff79.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Right and Wrong: Making Ethical Choices",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "When making an ethical choice, it's helpful to think about how your actions might affect others, especially when something valuable is involved.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Ethical actions often involve principles like honesty, fairness, and responsibility. What would the owner of the wallet hope someone would do if they found it?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Keeping the wallet or leaving it means the owner will most likely never get it back. The most responsible and honest thing to do when you find something valuable with identifying information is to try and get it back to its rightful owner.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_24a87bfbd1ca",
+                "skill_ids": [
+                  "ai_gen_philosophy_us_6th-8th-grade-philosophy-exploring-big-questions_unit_right-and-wrong"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Right and Wrong: Making Ethical Choices"
+                ],
+                "unit_name": "Right and Wrong: Making Ethical Choices",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699204cc4818c0c70209512c"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Astronomy",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "World War 2",
+          "code": 200,
+          "elapsed_s": 1.3408639430999756,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_47df21905415",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "The Allies began to turn the tide against the Axis powers in Europe and North Africa with several key victories. Place these important events in the correct chronological order, from earliest to latest. [[\u2603 sorter 1]]",
+                "images": {},
+                "widgets": {
+                  "sorter 1": {
+                    "type": "sorter",
+                    "options": {
+                      "correct": [
+                        "Second Battle of El Alamein",
+                        "Operation Torch",
+                        "Battle of Stalingrad ends",
+                        "Allied invasion of Sicily"
+                      ],
+                      "layout": "horizontal",
+                      "padding": true
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about which of these events happened first in North Africa, then consider the major battle on the Eastern Front, and finally the Allied push into Italy.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Remember that the turning points in North Africa generally occurred in late 1942, before the major Allied invasions of Italy in 1943. The Battle of Stalingrad was a key event on the Eastern Front that concluded in early 1943.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The Second Battle of El Alamein took place in October-November 1942, followed closely by Operation Torch in North Africa in November 1942. The Battle of Stalingrad, though it began earlier, saw its conclusion in February 1943. The Allied invasion of Sicily (Operation Husky) came later in the summer of 1943.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_dc26f933bd73",
+                "skill_ids": [
+                  "ai_gen_world-war-2_us_middle-school-history-ww2-events_unit_turning-tide-battles-europe-north-africa"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Turning the Tide: Key Battles in Europe and North Africa"
+                ],
+                "unit_name": "Turning the Tide: Key Battles in Europe and North Africa",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921171a830bcbc10a69c01"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Russian",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Korean",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Ancient Greek",
+          "code": 200,
+          "elapsed_s": 1.4908769130706787,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_43e4c348f82b",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following Ancient Greek verbs most commonly expresses the idea of 'to be'? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "\u03b3\u03c1\u03ac\u03c6\u03c9 (graph\u014d)",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "\u03b5\u1f30\u03bc\u03af (eimi)",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "\u03bb\u03ad\u03b3\u03c9 (leg\u014d)",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "\u03c4\u03c1\u03ad\u03c7\u03c9 (trech\u014d)",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What does each verb mean in English?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The verb 'to be' is essential for describing existence and states of being.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "\u03b5\u1f30\u03bc\u03af (eimi) translates to 'I am', which is a form of the verb 'to be'.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_4aff6d6e4746",
+                "skill_ids": [
+                  "ai_gen_ancient-greek_us_middle-school-ancient-greek-1_unit_verbs-actions-being"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Verbs: Actions and Being"
+                ],
+                "unit_name": "Verbs: Actions and Being",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921054a830bcbc10a69253"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Swahili",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Hindi",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Architecture",
+          "code": 200,
+          "elapsed_s": 1.6278657913208008,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_84143c18ae9f",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Architects carefully select building materials based on how they will withstand different forces. Arrange these common building materials from the one primarily known for resisting strong pushing forces (compression) to the one best suited for resisting pulling or bending forces (tension/flexibility). [[\u2603 sorter 1]]",
+                "images": {},
+                "widgets": {
+                  "sorter 1": {
+                    "type": "sorter",
+                    "options": {
+                      "correct": [
+                        "Stone: Known for resisting heavy crushing forces in walls and foundations.",
+                        "Unreinforced Concrete: Very good at resisting pushing forces in columns and slabs.",
+                        "Wood: Often used in frames and beams because it can resist both pushing and pulling forces.",
+                        "Steel: Excellent for long spans and tall structures due to its ability to resist strong pulling and bending forces."
+                      ],
+                      "layout": "vertical",
+                      "padding": true
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the main types of forces materials in a building need to resist: compression (pushing/crushing) and tension (pulling/stretching). Which materials are famous for being super strong when pushed, but not so much when pulled?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Stone and unreinforced concrete are excellent at handling compression, making them ideal for foundations and load-bearing walls. Wood can handle both compression and tension reasonably well. Steel is exceptionally strong in both compression and tension, and it's also very ductile, meaning it can stretch and bend without breaking, making it great for beams and structures that need to span long distances.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Start by identifying the material best known for pure compressive strength. That would be **Stone**. Next, consider another material that is also very strong in compression but can be used in more complex shapes like columns and slabs - **Unreinforced Concrete**. Then, think about a material that offers a good balance of both compressive and tensile strength, commonly used in framing - **Wood**. Finally, place the material renowned for its incredible tensile strength and ability to span long distances - **Steel**.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_af339cb29d5e",
+                "skill_ids": [
+                  "ai_gen_architecture_us_6th-8th-grade-architecture-foundations-built-environment_unit_building-materials-structures"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Building Blocks: Materials and Structures"
+                ],
+                "unit_name": "Building Blocks: Materials and Structures",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699210e5a830bcbc10a69523"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Thai",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Pottery",
+          "code": 200,
+          "elapsed_s": 1.4700098037719727,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_710fd1f09559",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "In pottery, what does 'pulling walls' refer to? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Creating a decorative pattern on the outside of the pot.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Raising and shaping the clay upwards to form the walls of the pot.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Adding extra clay to the base of the pot for stability.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Smoothing the surface of the pot with a sponge.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what you're doing to the clay when you're trying to make it taller.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Pulling walls involves using your hands to thin and raise the clay from the base upwards.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The correct answer describes the process of making the walls of the pot taller and thinner.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_2d3a3425bae0",
+                "skill_ids": [
+                  "ai_gen_pottery_us_6th-8th-grade-pottery-introduction-to-the-wheel_unit_opening-pulling-walls"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Opening and Pulling Walls"
+                ],
+                "unit_name": "Opening and Pulling Walls",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6992106aa830bcbc10a6927b"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Farsi",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Nutrition",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Filmmaking",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "World War 1",
+          "code": 200,
+          "elapsed_s": 1.4422290325164795,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_63bdcba9c73c",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nBefore World War I, a strong sense of **nationalism** grew in many European countries. What does nationalism mean? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "A strong feeling of pride and loyalty toward one's own country.",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "The belief that a country should have a powerful military and be prepared for war.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Confuses nationalism with militarism, a related but distinct concept.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "The idea that countries should form alliances to help each other in times of conflict.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Confuses nationalism with the system of alliances, another cause of WWI.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "A desire for countries to share resources and cooperate peacefully with each other.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Confuses nationalism with international cooperation, which is often the opposite.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/8f75a861bcf68f55.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Nationalism, Militarism, and the Arms Race",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "When people feel a deep connection and loyalty to their country, what kind of strong emotion are they experiencing?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Nationalism is essentially an intense feeling of pride, loyalty, and devotion to one's own nation, often accompanied by a belief in its unique importance or superiority.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Think about which choice describes a powerful sense of national identity and allegiance, rather than military strength, alliances, or global cooperation.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_62fef6b28ff9",
+                "skill_ids": [
+                  "ai_gen_world-war-1_us_6-8th-grade-history-road-to-ww1_unit_nationalism-militarism-arms-race"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Nationalism, Militarism, and the Arms Race"
+                ],
+                "unit_name": "Nationalism, Militarism, and the Arms Race",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69920fa3a830bcbc10a6903a"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Physics",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Python Programming",
+          "code": 200,
+          "elapsed_s": 1.4961092472076416,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_6bfea2a573b8",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following Python keywords is used to create a loop that repeats a block of code as long as a condition is true? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "if",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "while",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "def",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "print",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What keyword is used for making decisions in Python?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A 'while' loop continues to run as long as its condition remains true.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The 'while' keyword is specifically designed for creating loops that repeat based on a condition.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_951ec23578e3",
+                "skill_ids": [
+                  "ai_gen_python-programming_us_6th-8th-grade-python-core-programming-concepts_unit_loops-repeating-actions"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Loops: Repeating Actions"
+                ],
+                "unit_name": "Loops: Repeating Actions",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921352a830bcbc10a6a9d6"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Biology",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Astrophysics And Cosmology Studies For Advanced Le",
+          "code": 200,
+          "elapsed_s": 1.419421911239624,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_5415493dcc05",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "For advanced learning in astrophysics, which of the following is MOST important to understand when comparing the Sun to other stars? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "The specific names given to different constellations.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "The differences in their mass, temperature, and luminosity and how these relate to their life cycle.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "The number of planets orbiting each star.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "The color of the star as perceived from Earth's atmosphere.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what properties make stars different from each other.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Mass, temperature, and luminosity are key factors in determining a star's characteristics and evolution.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Understanding how these properties influence a star's life cycle is crucial for advanced astrophysics studies.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_7b9f0d98cc64",
+                "skill_ids": [
+                  "ai_gen_astrophysics-and-cosmology-studies-for-advanced-le_us_6th-8th-grade-middle-school-astronomy-and-space-science_unit_the-sun-and-other-stars"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "The Sun and Other Stars"
+                ],
+                "unit_name": "The Sun and Other Stars",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921121a830bcbc10a69813"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Geometry",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Recursion Probe 1771093263",
+          "code": 200,
+          "elapsed_s": 1.4651620388031006,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_5965ed2b8297",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Zzzz Recursion Probe 1771093263 detected a pattern in a distant galaxy that seems to follow the Fibonacci sequence. What is the MOST likely reason scientists are excited about this discovery? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "It proves that all galaxies are exactly the same size.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "It suggests a fundamental mathematical relationship exists throughout the universe.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "It means we can instantly travel to that galaxy.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "It indicates the galaxy is made entirely of gold.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What does the Fibonacci sequence represent in nature and mathematics?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The Fibonacci sequence is a pattern found in many natural phenomena. Finding it in a distant galaxy could mean something important.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Think about what the discovery says about the universe, not just the galaxy itself.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_a6f432b215ac",
+                "skill_ids": [
+                  "ai_gen_zzzz-recursion-probe-1771093263_us_6th-8th-grade-math-intro-recursive-patterns-fractals_unit_fibonacci-sequence-wonders"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "The Fibonacci Sequence and Its Wonders"
+                ],
+                "unit_name": "The Fibonacci Sequence and Its Wonders",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69920fd0a830bcbc10a690aa"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771097854",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Science Math History English Geography Python",
+          "code": 200,
+          "elapsed_s": 1.569683313369751,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_2af363dd7b60",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "In Python, which keyword is used to start a conditional statement that checks if a condition is true? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "while",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "if",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "for",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "else",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the words used to express conditions in everyday language.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A conditional statement allows a program to execute different code based on whether a condition is true or false. The 'if' keyword is the foundation of these statements.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The 'if' keyword is used to begin a conditional statement. For example: `if x > 5:`",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_b8724b5452f8",
+                "skill_ids": [
+                  "ai_gen_science-math-history-english-geography-python_us_intro-python-computational-thinking_unit_making-decisions-conditionals"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Making Decisions with Conditionals"
+                ],
+                "unit_name": "Making Decisions with Conditionals",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f36c21c9df089c4830a5"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771100688",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Math",
+          "code": 200,
+          "elapsed_s": 1.4696457386016846,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_69cf8d2a910e",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following describes a proportional relationship? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "A relationship where one quantity increases while the other stays the same.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "A relationship where two quantities change at a constant rate with each other.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "A relationship where one quantity decreases while the other also decreases, but not at a constant rate.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "A relationship where the quantities change randomly.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What does it mean for two things to be 'proportional' to each other?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A proportional relationship means that as one quantity changes, the other changes in a predictable way, maintaining a constant ratio.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Think about examples like the cost of apples: if one apple costs $1, then two apples cost $2, three apples cost $3, and so on. This is a proportional relationship because the cost increases at a constant rate.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_69660279b22a",
+                "skill_ids": [
+                  "ai_gen_math_us_7th-grade-math_unit_ratios-proportional-relationships"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Ratios and Proportional Relationships"
+                ],
+                "unit_name": "Ratios and Proportional Relationships",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6990dd812e1ba724e2e25d42"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771160157",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771165481",
+          "code": 200,
+          "elapsed_s": 1.590090036392212,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_fd8f4af4d0cf",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A scientist is categorizing different types of numbers for a report. Which of the following numbers should be classified as a rational number? [[\u2603 dropdown 1]]",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "$\\sqrt{15}$",
+                          "correct": false,
+                          "misconception": "Thinks all square roots are rational, or confuses with perfect squares.",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "$0.1010010001...$",
+                          "correct": false,
+                          "misconception": "Thinks all decimals are rational, even non-repeating, non-terminating ones.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "$2.5 \\times 10^{-3}$",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "$\\pi$",
+                          "correct": false,
+                          "misconception": "Confuses the irrational constant $\\pi$ with a rational approximation like $22/7$.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "A rational number is any number that can be expressed as a fraction $\\frac{p}{q}$, where $p$ and $q$ are integers and $q \\neq 0$. Which of the given options fits this definition?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Remember, terminating decimals and repeating decimals can always be written as fractions. Numbers like $\\pi$ or square roots of non-perfect squares are irrational because they cannot be written as simple fractions.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Let's look at $2.5 \\times 10^{-3}$. When you convert this from scientific notation to standard form, you move the decimal point 3 places to the left. This gives you $0.0025$. Can $0.0025$ be expressed as a fraction?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_1d5ff692866f",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771165481_us_7th-grade-math-science_unit_rational-numbers-scientific-notation"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Rational Numbers and Scientific Notation"
+                ],
+                "unit_name": "Rational Numbers and Scientific Notation",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f2b321c9df089c482aa4"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771166452",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771168832",
+          "code": 200,
+          "elapsed_s": 1.555190086364746,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_31d0dbecb0c8",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Consider the equation $3x - 4 = 11$. Which of the following statements are true? Select all that apply.\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "An equivalent equation is $3x = 15$.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "The solution to the equation is $x = 5$.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "The first step to solve for $x$ is to subtract 4 from both sides.",
+                          "correct": false,
+                          "misconception": "Confuses inverse operations; subtracts instead of adds.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "The value of $x$ is greater than 6.",
+                          "correct": false,
+                          "misconception": "Miscalculates the solution or misunderstands its value.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": true,
+                      "randomize": false,
+                      "numCorrect": 2
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "When solving an equation, your goal is to isolate the variable $x$. Think about what operations are being applied to $x$ and how you can undo them.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "To undo operations and isolate $x$, you should use inverse operations. For example, the inverse of subtraction is addition, and the inverse of multiplication is division. Remember to apply the same operation to both sides of the equation to keep it balanced.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "First, undo the subtraction of 4 by adding 4 to both sides of the equation: $3x - 4 + 4 = 11 + 4$. This simplifies to $3x = 15$. Now, consider what operation is being performed on $x$ and how to undo it to find the value of $x$.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_c513238514fe",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771168832_us_6th-8th-grade-math-pre-algebra-algebra-foundations_unit_solving-equations"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Solving Equations"
+                ],
+                "unit_name": "Solving Equations",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699204534818c0c702094f9f"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771169457",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771170539",
+          "code": 200,
+          "elapsed_s": 1.6603353023529053,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_888611f10b0f",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on your understanding of the topic covered in Zzzz Pretest Probe 1771170539, which of the following best describes the primary goal when solving equations and inequalities? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "To make the equation or inequality look as complicated as possible.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "To isolate the variable and find its value or range of values.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "To eliminate all numbers from the equation or inequality.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "To guess a solution without using any mathematical steps.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What are you trying to find when you solve an equation or inequality?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Solving means finding the value(s) that make the equation or inequality true. This usually involves getting the variable by itself.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Think about the steps you take to solve an equation, like adding or subtracting from both sides. What is the overall purpose of those steps?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_eee34206d79b",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771170539_us_6th-8th-grade-math_unit_equations-inequalities"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Equations & Inequalities"
+                ],
+                "unit_name": "Equations & Inequalities",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f20721c9df089c4827dc"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771170669",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771172484",
+          "code": 200,
+          "elapsed_s": 1.4786949157714844,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_4862754e4524",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nA rectangular garden measures 10 meters in length and 6 meters in width. Inside this garden, a square patio is built with sides of 3 meters. The area of the garden that is NOT covered by the patio is [[\u2603 dropdown 1]] square meters.",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "51",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "60",
+                          "correct": false,
+                          "misconception": "Calculated only the total area of the garden.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "9",
+                          "correct": false,
+                          "misconception": "Calculated only the area of the patio.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "69",
+                          "correct": false,
+                          "misconception": "Added the two areas instead of subtracting.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/4f27047d8b89b249.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Geometry: Area, Volume, and Angles",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "To find the area of the garden not covered by the patio, what two areas do you need to calculate first?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Remember that the area of a rectangle is calculated by multiplying its length by its width ($A = l \\times w$). The area of a square is found by multiplying its side length by itself ($A = s \\times s$). ",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "First, calculate the area of the entire rectangular garden: $10 \\text{ m} \\times 6 \\text{ m}$. Then, calculate the area of the square patio: $3 \\text{ m} \\times 3 \\text{ m}$. Finally, subtract the patio's area from the garden's area to find the uncovered space.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_a903a66d5c54",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771172484_us_6th-8th-grade-math_unit_geometry-area-volume-angles"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Geometry: Area, Volume, and Angles"
+                ],
+                "unit_name": "Geometry: Area, Volume, and Angles",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699204794818c0c702094fff"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771172888",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771173119",
+          "code": 200,
+          "elapsed_s": 1.5732858180999756,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_13a51115b8ab",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "According to Zzzz Pretest Probe 1771173119, which of these is the MOST significant driving force behind Earth's dynamic systems like plate tectonics and volcanic activity? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "The gravitational pull of the moon.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Heat from Earth's interior.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "The sun's radiation.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Erosion caused by wind and water.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What energy source is located deep within the Earth?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Earth's internal heat, generated from radioactive decay and residual heat from its formation, drives convection currents in the mantle.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider the source of energy that powers volcanoes and plate movement. Is it primarily from the sun, moon, or something within the Earth itself?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_d679a3611430",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771173119_us_6th-8th-grade-middle-school-science_unit_earths-dynamic-systems"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Earth's Dynamic Systems"
+                ],
+                "unit_name": "Earth's Dynamic Systems",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699204814818c0c702095012"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771175663",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771176204",
+          "code": 200,
+          "elapsed_s": 1.4553208351135254,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_d2b694741f90",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on the information provided in Zzzz Pretest Probe 1771176204, which of the following best describes the primary focus of the probe? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Calculating the exact numerical value of a specific ratio.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Understanding the relationship between ratios, rates, and proportional relationships in real-world scenarios.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Memorizing the formulas for calculating different types of rates.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Practicing simple addition and subtraction problems.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What are ratios, rates, and proportional relationships used for in general?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Ratios, rates, and proportional relationships help us compare quantities and understand how they change together.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Think about the overall goal of learning about these concepts. Is it just about numbers, or about understanding the connections between them?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_b5734f0e4451",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771176204_us_6th-8th-grade-math-foundations_unit_ratios-rates-proportional-relationships"
+                ],
+                "difficulty": 0.57,
+                "skill_names": [
+                  "Ratios, Rates, and Proportional Relationships"
+                ],
+                "unit_name": "Ratios, Rates, and Proportional Relationships",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6992115da830bcbc10a69b01"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771177239",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771180187",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771180466",
+          "code": 200,
+          "elapsed_s": 1.5592377185821533,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_3b6888d502f8",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "To make a certain shade of purple paint, you mix red paint and blue paint in a ratio of $2:3$. If you use 8 cups of red paint, how many cups of blue paint do you need?\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "5 cups",
+                          "correct": false,
+                          "misconception": "Subtracts the second ratio part from the given quantity.",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "11 cups",
+                          "correct": false,
+                          "misconception": "Adds the second ratio part to the given quantity.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "12 cups",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "16 cups",
+                          "correct": false,
+                          "misconception": "Multiplies the given quantity by the first ratio part instead of finding the unit value.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "The ratio $2:3$ tells you that for every 2 parts of red paint, you need 3 parts of blue paint. How can you use this information to find out how much one 'part' represents?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "You can think of the ratio $2:3$ as meaning that the amount of red paint is 2 'units' and the amount of blue paint is 3 'units'. If 2 units of red paint equal 8 cups, you can find the value of 1 unit.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Since 2 parts of red paint correspond to 8 cups, each part is $8 \\div 2 = 4$ cups. If blue paint is 3 parts, how many cups would that be?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_6f7146d39862",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771180466_us_7th-grade-math_unit_ratios-proportional-relationships"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Ratios and Proportional Relationships"
+                ],
+                "unit_name": "Ratios and Proportional Relationships",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699213aaa830bcbc10a6aba3"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771181093",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        }
+      ]
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "subject_used": "Science",
+        "start_code": 200,
+        "start_elapsed_s": 0.8936121463775635,
+        "start_body": {
+          "assessment_id": "assess_930dc4231356",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "A deer eats plants, converting the plant's stored energy into energy for its own movement and growth. When a wolf eats the deer, the wolf obtains energy that originally came from the sun. This process shows that energy in living systems is always [[\u2603 dropdown 1]].",
+              "images": {},
+              "widgets": {
+                "dropdown 1": {
+                  "alignment": "default",
+                  "graded": true,
+                  "options": {
+                    "choices": [
+                      {
+                        "content": "created and destroyed",
+                        "correct": false,
+                        "misconception": "Students might think energy can appear and disappear, ignoring the law of conservation.",
+                        "id": "choice-0"
+                      },
+                      {
+                        "content": "recycled and reused",
+                        "correct": false,
+                        "misconception": "Students often confuse energy flow with matter cycles, thinking energy is fully reused.",
+                        "id": "choice-1"
+                      },
+                      {
+                        "content": "transformed and transferred",
+                        "correct": true,
+                        "misconception": null,
+                        "id": "choice-2"
+                      },
+                      {
+                        "content": "stored as heat",
+                        "correct": false,
+                        "misconception": "Students might only focus on heat as an output, not the primary storage or transfer mechanism.",
+                        "id": "choice-3"
+                      }
+                    ],
+                    "placeholder": "select one",
+                    "static": false
+                  },
+                  "static": false,
+                  "type": "dropdown",
+                  "version": {
+                    "major": 0,
+                    "minor": 0
+                  }
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "Think about what happens to the form of energy as it moves from one living thing to another, or when an organism uses it for different activities. Does it stay the same, or does it change?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Remember that energy cannot be created or destroyed. Instead, it changes from one form to another (like light to chemical, or chemical to kinetic) and moves from one organism to another in an ecosystem.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "The sun's light energy is captured by plants and converted into chemical energy. When a deer eats the plant, that chemical energy is moved to the deer and used for its life processes, often changing into kinetic energy or heat. The wolf then gets this chemical energy from the deer. So, the energy is continuously changing forms and moving between organisms.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_3fde75b17975531a",
+            "dash_metadata": {
+              "dash_question_id": "pool_3fde75b17975531a",
+              "skill_ids": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "difficulty": 0.9866666666666667,
+              "skill_names": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "required_stable_transitions": 3,
+        "stable_transitions": 3,
+        "transitions": [
+          {
+            "step": 1,
+            "code": 200,
+            "elapsed_s": 1.029081106185913,
+            "attempts_used": 2,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 2,
+            "code": 200,
+            "elapsed_s": 0.3831639289855957,
+            "attempts_used": 2,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 3,
+            "code": 200,
+            "elapsed_s": 1.1634979248046875,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          }
+        ],
+        "next": {
+          "code": 200,
+          "elapsed_s": 1.029081106185913,
+          "completed_early": false,
+          "has_next_question": true,
+          "attempts_used": 2
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 25.0
+      }
+    },
+    "loading_latency": {
+      "ok": true,
+      "initial_question_fetch_elapsed_s": 1.8552148342132568,
+      "learning_recommend_next_elapsed_s": 0.3563051223754883,
+      "adaptive_start_elapsed_s": 0.8936121463775635,
+      "next_question_elapsed_s": 1.1634979248046875,
+      "adaptive_next_transition_elapsed_s": [
+        1.029081106185913,
+        0.3831639289855957,
+        1.1634979248046875
+      ],
+      "budgets": {
+        "initial_question_fetch_budget_s": 12.0,
+        "learning_recommend_next_budget_s": 25.0,
+        "adaptive_start_budget_s": 12.0,
+        "next_question_budget_s": 25.0
+      }
+    },
+    "websocket": {
+      "session_start": {
+        "code": 200,
+        "elapsed_s": 0.5014910697937012,
+        "body": {
+          "prompt": "",
+          "session_info": {
+            "session_id": "sess_e3b4a43c09d34e10",
+            "user_id": "dev_266602a20eae",
+            "session_active": true,
+            "duration_minutes": 0.0,
+            "questions_answered": 0,
+            "questions_correct": 0,
+            "websocket_connected": false,
+            "sse_connected": false
+          }
+        }
+      },
+      "probe": {
+        "ok": true,
+        "elapsed_s": 0.5064699649810791,
+        "response": {
+          "type": "pong"
+        }
+      },
+      "session_end": {
+        "code": 200,
+        "elapsed_s": 1.5779008865356445,
+        "body": {
+          "prompt": "[SYSTEM PROMPT FOR ADAM]\nThe tutoring session is ending now.\nSession stats: 0.0 minutes, 0 questions attempted.\nPlease give the student a warm closing message, acknowledge their hard work,\nand encourage them for next session.",
+          "session_info": {
+            "session_id": "sess_e3b4a43c09d34e10",
+            "duration_minutes": 0.04,
+            "minutes_deducted": 1,
+            "questions_answered": 0,
+            "questions_correct": 0
+          }
+        }
+      },
+      "ok": true
+    }
+  },
+  "ok": true,
+  "errors": []
+}

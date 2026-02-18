@@ -1,0 +1,3939 @@
+{
+  "created_at": "2026-02-16T16:40:36.878049+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.49875402450561523,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 110,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.06708359718322754,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.10730409622192383,
+      "body": {
+        "status": "healthy",
+        "service": "TeachingAssistant"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.10954999923706055,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": true,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 0.10071706771850586,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 110
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 2.135254144668579,
+        "count": 5,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 12.0,
+        "min_question_count": 5
+      }
+    },
+    "learning_path_subject_validity": {
+      "ok": true,
+      "current_question_ids": [
+        "pool_281c192f63ef13ef",
+        "pool_96adb7612d6e7e2b",
+        "pool_90e8c3f2f85a8a49"
+      ],
+      "recommend_next": {
+        "code": 200,
+        "elapsed_s": 0.6258690357208252,
+        "count": 5,
+        "overlap_with_current_ids": [],
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        },
+        "body": {
+          "sample_ids": [
+            "pool_9a830ace7a85f31e",
+            "pool_576848e62fd82c69",
+            "pool_750e7f882ddacaa4",
+            "pool_d704f3bf684a30fc",
+            "pool_21b98e0ec932849e"
+          ]
+        }
+      }
+    },
+    "adaptive_start_all_subjects": {
+      "ok": true,
+      "adaptive_start_timeout_s": 4.0,
+      "adaptive_start_retry_timeout_s": 12.0,
+      "catalog_fetch": {
+        "code": 200,
+        "elapsed_s": 0.06266474723815918,
+        "count": 63,
+        "fallback_used": false
+      },
+      "subjects_checked_count": 63,
+      "subjects_checked": [
+        "Science",
+        "History",
+        "English",
+        "Geography",
+        "Python",
+        "Music Theory",
+        "Cooking",
+        "Spanish",
+        "Art",
+        "Economics",
+        "Philosophy",
+        "Astronomy",
+        "World War 2",
+        "Russian",
+        "Korean",
+        "Ancient Greek",
+        "Swahili",
+        "Hindi",
+        "Architecture",
+        "Thai",
+        "Pottery",
+        "Farsi",
+        "Nutrition",
+        "Filmmaking",
+        "World War 1",
+        "Physics",
+        "Python Programming",
+        "Biology",
+        "Astrophysics And Cosmology Studies For Advanced Le",
+        "Geometry",
+        "Zzzz Recursion Probe 1771093263",
+        "Zzzz Pretest Probe 1771097854",
+        "Science Math History English Geography Python",
+        "Zzzz Pretest Probe 1771100688",
+        "Math",
+        "Zzzz Pretest Probe 1771160157",
+        "Zzzz Pretest Probe 1771165481",
+        "Zzzz Pretest Probe 1771166452",
+        "Zzzz Pretest Probe 1771168832",
+        "Zzzz Pretest Probe 1771169457",
+        "Zzzz Pretest Probe 1771170539",
+        "Zzzz Pretest Probe 1771170669",
+        "Zzzz Pretest Probe 1771172484",
+        "Zzzz Pretest Probe 1771172888",
+        "Zzzz Pretest Probe 1771173119",
+        "Zzzz Pretest Probe 1771175663",
+        "Zzzz Pretest Probe 1771176204",
+        "Zzzz Pretest Probe 1771177239",
+        "Zzzz Pretest Probe 1771180187",
+        "Zzzz Pretest Probe 1771180466",
+        "Zzzz Pretest Probe 1771181093",
+        "Zzzz Pretest Probe 1771182375",
+        "Zzzz Pretest Probe 1771182903",
+        "Zzzz Pretest Probe 1771183378",
+        "Zzzz Pretest Probe 1771183747",
+        "Zzzz Pretest Probe 1771186680",
+        "Zzzz Pretest Probe 1771194668",
+        "Zzzz Pretest Probe 1771253517",
+        "Zzzz Pretest Probe 1771254273",
+        "Zzzz Pretest Probe 1771256768",
+        "Zzzz Pretest Probe 1771257809",
+        "Zzzz Pretest Probe 1771258625",
+        "Zzzz Pretest Probe 1771259375"
+      ],
+      "timeout_retryable_count": 32,
+      "concrete_result_count": 31,
+      "results": [
+        {
+          "subject": "Science",
+          "code": 200,
+          "elapsed_s": 1.3730888366699219,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_9c896219a94d",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Sunlight is the primary source of energy for almost all living things on Earth. In a forest ecosystem, how is this solar energy transformed and utilized by different organisms to sustain life? Select TWO correct answers.\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Plants capture light energy from the sun and convert it into chemical energy stored in sugars through photosynthesis.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Animals consume plants or other animals, breaking down the stored chemical energy in food to power their body functions.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Decomposers generate new energy from decaying matter, which then directly fuels plant growth.",
+                          "correct": false,
+                          "misconception": "Confuses energy recycling with matter recycling; implies energy creation from decay.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "All organisms directly absorb sunlight through their skin or leaves to generate the heat they need to survive.",
+                          "correct": false,
+                          "misconception": "Misunderstands which organisms absorb sunlight directly for energy, and confuses energy for heat with energy for life processes.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": true,
+                      "numCorrect": 2,
+                      "randomize": false
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the different roles organisms play in an ecosystem. Which organisms are responsible for capturing energy directly from the sun, and which ones get their energy by eating others?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Remember that plants are producers; they make their own food using sunlight through photosynthesis. Animals are consumers; they get energy by eating other organisms. Both then use cellular respiration to release energy from food.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider how energy first enters the ecosystem from the sun. What process do plants use to transform this energy? Then, think about how that energy moves to animals and how they use the chemical energy stored in the food they eat.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "question_id": "pool_e6d7d85705e60b4f",
+              "dash_metadata": {
+                "dash_question_id": "pool_e6d7d85705e60b4f",
+                "skill_ids": [
+                  "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+                ],
+                "difficulty": 0.98,
+                "skill_names": [
+                  "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+                ],
+                "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+                "lesson_name": "Practice",
+                "ai_generated": true
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "History",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "English",
+          "code": 200,
+          "elapsed_s": 1.2163939476013184,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_7f9b99e9361c",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Read the sentences below. Which sentence demonstrates correct subject-verb agreement?\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Each of the musicians performs a solo piece during the concert.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "The collection of rare stamps were recently appraised for a high value.",
+                          "correct": false,
+                          "misconception": "Verb agrees with the object of the preposition, not the true subject.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Neither the coach nor the players is ready for the upcoming championship game.",
+                          "correct": false,
+                          "misconception": "Verb agrees with the closer singular subject, not the plural one.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Many of the new software updates has improved the system's speed.",
+                          "correct": false,
+                          "misconception": "Indefinite pronoun 'Many' is incorrectly treated as singular.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "To determine correct subject-verb agreement, first identify the true subject of each sentence. Remember that words inside prepositional phrases (like \"of the musicians\" or \"of rare stamps\") are generally not the subject.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider the rules for different types of subjects: Indefinite pronouns like 'each' are singular, while 'many' is plural. For collective nouns like 'collection,' the verb is usually singular. In 'neither...nor' constructions, the verb agrees with the noun closest to it.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Let's break down each option:\n1. \"Each of the musicians performs...\": 'Each' is singular, so 'performs' (singular verb) is correct.\n2. \"The collection of rare stamps were...\": 'Collection' is the singular subject, so the verb should be 'was'.\n3. \"Neither the coach nor the players is...\": 'Players' is plural and closer to the verb, so the verb should be 'are'.\n4. \"Many of the new software updates has...\": 'Many' is plural, so the verb should be 'have'.\nWhich sentence follows these rules?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "question_id": "pool_8405c6020c13c4ed",
+              "dash_metadata": {
+                "dash_question_id": "pool_8405c6020c13c4ed",
+                "skill_ids": [
+                  "ai_gen_english_us_6th-8th-grade-ela_unit_grammar-sentence-structure"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Grammar and Sentence Structure"
+                ],
+                "unit_name": "Grammar and Sentence Structure",
+                "lesson_name": "Practice",
+                "ai_generated": true
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Geography",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Python",
+          "code": 200,
+          "elapsed_s": 1.9668669700622559,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_ba9dff6abc70",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "You are writing a Python program to ask a user for their favorite whole number and store it as an integer. Which of the following code snippets will correctly get the user's input and convert it into an integer variable? Select all that apply.\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "`favorite_num = int(input(\"What is your favorite whole number? \"))`",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "`favorite_num = input(\"What is your favorite whole number? \")`",
+                          "correct": false,
+                          "misconception": "Forgets to convert the string input to an integer.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "`num_str = input(\"Enter your favorite number: \")\nfavorite_num = int(num_str)`",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "`favorite_num = int(\"What is your favorite whole number? \")`",
+                          "correct": false,
+                          "misconception": "Tries to convert the prompt string, not user input, to an integer.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": true,
+                      "randomize": false,
+                      "numCorrect": 2
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what type of data the `input()` function always returns when it gets information from the user.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The `input()` function always returns a string. To work with the user's input as a whole number, you need to use the `int()` function to convert that string into an integer.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "You need to make sure that the `int()` function is applied to the *result* of the `input()` function (the actual text the user typed), not to the prompt message itself. Both single-line and two-line approaches can be correct if done properly.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_843d2f7bd0a3",
+                "skill_ids": [
+                  "ai_gen_python_us_6th-8th-grade-python-core-syntax-data-types_unit_user-input-type-conversion"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "User Input and Type Conversion"
+                ],
+                "unit_name": "User Input and Type Conversion",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699342d81347d892d59f5729"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Music Theory",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Cooking",
+          "code": 200,
+          "elapsed_s": 1.5847642421722412,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_6dd028769003",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nWhich of these cooking methods involves cooking food in hot fat or oil? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Steaming",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Frying",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Baking",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Boiling",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/f3576e4ba7262091.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Food Science Fundamentals",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about how the food is heated in each method.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Frying uses fat or oil to transfer heat to the food.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider which method uses a large amount of hot oil to cook the food.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_6ce7d4928f3e",
+                "skill_ids": [
+                  "ai_gen_cooking_us_middle-school-culinary-science-safety_unit_food-science-fundamentals"
+                ],
+                "difficulty": 0.55,
+                "skill_names": [
+                  "Food Science Fundamentals"
+                ],
+                "unit_name": "Food Science Fundamentals",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699342281347d892d59f53fa"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Spanish",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Art",
+          "code": 200,
+          "elapsed_s": 1.9498400688171387,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_3dbead33bba9",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "During the Middle Ages, a major purpose of art, especially in churches, was to [[\u2603 dropdown 1]] for people who couldn't read.",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "teach religious stories and inspire faith",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "show accurate portraits of kings and queens",
+                          "correct": false,
+                          "misconception": "Students might confuse the focus on power with accurate secular portraiture, which wasn't the main purpose.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "decorate private homes with abstract designs",
+                          "correct": false,
+                          "misconception": "Students might think art was primarily for private, secular use or abstract decoration, not religious instruction.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "document important historical battles",
+                          "correct": false,
+                          "misconception": "Students might focus on art as historical record-keeping, rather than its primary religious didactic function.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the most powerful institution in Europe during the Middle Ages. How did this institution use art to communicate with a population where many people could not read?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "In a time before widespread literacy, visual art was a powerful way to share important messages. Consider what kind of messages would have been most vital to convey in a deeply religious society.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Medieval churches and cathedrals were filled with stained-glass windows, sculptures, and paintings that depicted scenes from the Bible, the lives of saints, and other religious narratives. These artworks served as 'picture books' to educate and guide the faithful.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_b8cdf41498f7",
+                "skill_ids": [
+                  "ai_gen_art_us_middle-school-art-history-culture_unit_faith-power-middle-ages"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Faith and Power: Art of the Middle Ages"
+                ],
+                "unit_name": "Faith and Power: Art of the Middle Ages",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699342b81347d892d59f5683"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Economics",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Philosophy",
+          "code": 200,
+          "elapsed_s": 1.6602118015289307,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_78a9f22153cd",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Read about [[\u2603 definition 1]]. Based on the definition, consider this situation: Maya's best friend, Liam, is struggling in math. During a test, Maya sees Liam secretly looking at notes. Maya knows cheating is wrong, but she also values her friendship with Liam and doesn't want to get him in trouble. Based on the definition, what makes Maya's situation an ethical dilemma? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "definition 1": {
+                    "type": "definition",
+                    "graded": false,
+                    "options": {
+                      "definition": "A situation where a person has to choose between two or more actions, all of which seem morally acceptable or unacceptable, but cannot choose all of them without sacrificing something important.",
+                      "togglePrompt": "an ethical dilemma",
+                      "static": false
+                    },
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  },
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Maya has to choose between two actions (reporting Liam or staying silent), and both choices involve conflicting moral principles: fairness versus loyalty.",
+                          "correct": true,
+                          "clue": "An ethical dilemma arises when different moral values or principles conflict, making it hard to choose a single 'right' path.",
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Maya is simply worried about getting her friend in trouble, which is a common problem, not an ethical dilemma.",
+                          "correct": false,
+                          "clue": "While worrying about a friend is part of the situation, an ethical dilemma specifically involves a conflict between moral duties or values, not just personal concern.",
+                          "misconception": "Common student error",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Maya knows cheating is wrong, so there is only one clear right choice, which is to report Liam.",
+                          "correct": false,
+                          "clue": "If there was only one clear right choice without any conflicting moral values, it wouldn't be a dilemma. Maya's loyalty to Liam complicates the decision.",
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "The situation is an ethical dilemma because Maya might get into trouble if she doesn't report Liam.",
+                          "correct": false,
+                          "clue": "An ethical dilemma focuses on the conflict of moral principles in the choice itself, not primarily on the personal consequences Maya might face.",
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "multipleSelect": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the two main actions Maya is considering. What moral value or principle is connected to each of those actions?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "An ethical dilemma isn't just a tough choice. It's when you have two or more choices, and each choice seems to go against or support different important moral ideas, making it hard to pick one without compromising another.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Maya's choices are to report Liam (which upholds fairness and honesty in school) or to stay silent (which upholds loyalty to her friend). The dilemma comes from these two important values clashing. Which answer choice explains this conflict?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_66701a2ad8b9",
+                "skill_ids": [
+                  "ai_gen_philosophy_us_6th-8th-grade-philosophy-exploring-big-questions_unit_right-and-wrong"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Right and Wrong: Making Ethical Choices"
+                ],
+                "unit_name": "Right and Wrong: Making Ethical Choices",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699342bc1347d892d59f56a1"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Astronomy",
+          "code": 503,
+          "elapsed_s": 3.920673131942749,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "World War 2",
+          "code": 200,
+          "elapsed_s": 2.5361390113830566,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_b8e011975ec5",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which battle is widely considered a turning point in World War II on the Eastern Front, halting the German advance into the Soviet Union? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "The Battle of the Bulge",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "The Battle of Stalingrad",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "The Battle of Normandy (D-Day)",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "The Battle of El Alamein",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the major battles fought on the Eastern Front between Germany and the Soviet Union.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A turning point is a battle that significantly shifts the momentum of the war in favor of one side.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The Battle of Stalingrad resulted in a major defeat for the German army and marked the beginning of the Soviet Union's advance westward.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_586aed26c6fb",
+                "skill_ids": [
+                  "ai_gen_world-war-2_us_middle-school-history-ww2-events_unit_turning-tide-battles-europe-north-africa"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Turning the Tide: Key Battles in Europe and North Africa"
+                ],
+                "unit_name": "Turning the Tide: Key Battles in Europe and North Africa",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6993448f1347d892d59f5f1f"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Russian",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Korean",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Ancient Greek",
+          "code": 200,
+          "elapsed_s": 1.5797090530395508,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_af509ff2c1da",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "In the Ancient Greek sentence '\u039f\u1f57\u03c4\u03bf\u03c2 \u03bc\u03b1\u03b8\u03b7\u03c4\u03ae\u03c2 \u1f10\u03c3\u03c4\u03b9\u03bd' (pronounced: Ho\u00fatos math\u0113t\u1e17s estin), which translates to 'He is a student,' which word is the verb? [[\u2603 dropdown 1]]",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "\u039f\u1f57\u03c4\u03bf\u03c2 (Ho\u00fatos)",
+                          "correct": false,
+                          "misconception": "Confuses the subject pronoun 'He' with the verb.",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "\u03bc\u03b1\u03b8\u03b7\u03c4\u03ae\u03c2 (math\u0113t\u1e17s)",
+                          "correct": false,
+                          "misconception": "Confuses the noun 'student' with the verb.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "\u1f10\u03c3\u03c4\u03b9\u03bd (estin)",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-2"
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "A verb is a word that describes an action or a state of being. In the English sentence 'He is a student,' which word tells you about his state of being?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "In Ancient Greek, just like in English, the verb often tells you what someone *does* or what someone *is*. We are looking for the word that means 'is' in the Greek sentence.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The word '\u1f10\u03c3\u03c4\u03b9\u03bd' (estin) means 'is' in Ancient Greek. It connects the subject 'He' (\u039f\u1f57\u03c4\u03bf\u03c2) to the description 'a student' (\u03bc\u03b1\u03b8\u03b7\u03c4\u03ae\u03c2), showing his state of being.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_638b2276d100",
+                "skill_ids": [
+                  "ai_gen_ancient-greek_us_middle-school-ancient-greek-1_unit_verbs-actions-being"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Verbs: Actions and Being"
+                ],
+                "unit_name": "Verbs: Actions and Being",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69933fba1347d892d59f505f"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Swahili",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Hindi",
+          "code": 200,
+          "elapsed_s": 2.0160181522369385,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_47ad54e7a17c",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "You are at a vegetable market in India. You have just asked the vendor the price of potatoes, and the vendor has told you the price. Which of the following phrases could the vendor say next to continue the shopping transaction? Select all that apply.\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "\u0915\u093f\u0924\u0928\u093e \u091a\u093e\u0939\u093f\u090f? (Kitna chahiye?)",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "\u092f\u0939 \u0915\u094d\u092f\u093e \u0939\u0948? (Yeh kya hai?)",
+                          "correct": false,
+                          "misconception": "Confuses similar-sounding phrases or misunderstands conversational flow.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "\u0914\u0930 \u0915\u0941\u091b? (Aur kuch?)",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "\u0906\u092a \u0915\u0939\u093e\u0901 \u0938\u0947 \u0939\u0948\u0902? (Aap kahaan se hain?)",
+                          "correct": false,
+                          "misconception": "Translates correctly but doesn't fit the immediate transaction context.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": true,
+                      "randomize": false,
+                      "numCorrect": 2
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what a shopkeeper usually asks a customer after telling them the price of an item. What information would they need to complete the sale or offer more items?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider the purpose of the conversation. The vendor wants to know if you want to buy the item, how much of it, and if you need anything else. Translate each option and see if it fits this purpose.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Let's look at the options. '\u0915\u093f\u0924\u0928\u093e \u091a\u093e\u0939\u093f\u090f?' (Kitna chahiye?) means 'How much do you want?'. This is a direct question about quantity. '\u092f\u0939 \u0915\u094d\u092f\u093e \u0939\u0948?' (Yeh kya hai?) means 'What is this?'. This doesn't make sense after you've already discussed potatoes. '\u0914\u0930 \u0915\u0941\u091b?' (Aur kuch?) means 'Anything else?'. This is a common way to offer more items. '\u0906\u092a \u0915\u0939\u093e\u0901 \u0938\u0947 \u0939\u0948\u0902?' (Aap kahaan se hain?) means 'Where are you from?'. This is a general social question, not directly related to completing the purchase.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_2d0af8cb9a83",
+                "skill_ids": [
+                  "ai_gen_hindi_us_middle-school-hindi-intermediate-communication_unit_navigating-daily-life-food-shopping-and-errands"
+                ],
+                "difficulty": 0.57,
+                "skill_names": [
+                  "Navigating Daily Life: Food, Shopping, and Errands"
+                ],
+                "unit_name": "Navigating Daily Life: Food, Shopping, and Errands",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699201074818c0c702094874"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Architecture",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Thai",
+          "code": 200,
+          "elapsed_s": 2.4129910469055176,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_798841420bda",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "When designing a shopping mall, which architectural element is MOST important for creating a positive and inviting experience for shoppers, encouraging them to spend more time and money? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "The height of the security cameras.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "The flow and layout of the stores and common areas.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "The material used for the roof.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "The number of emergency exits.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what makes you want to stay longer in a store or mall.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A good layout makes it easy to find things and move around, while a confusing layout can be frustrating.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider how the arrangement of stores and open spaces affects the overall shopping experience.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_ea0df6fa4891",
+                "skill_ids": [
+                  "ai_gen_thai_us_middle-school-thai-intermediate-foundations_unit_shopping-transactions"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Shopping and Transactions"
+                ],
+                "unit_name": "Shopping and Transactions",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6993310a1347d892d59f38e8"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Pottery",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Farsi",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Nutrition",
+          "code": 200,
+          "elapsed_s": 1.5233001708984375,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_ecc4922498d9",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nWhen you eat a meal, your body breaks down the food to get energy. Which of the following statements correctly describe how the body processes nutrients to provide fuel? Select all that apply.\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Carbohydrates are broken down into simple sugars, like glucose, which the body uses as its main source of quick energy.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Fats are broken down into fatty acids and glycerol, which can be used for energy or stored for later use.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Proteins are primarily broken down into amino acids to be used as the body's main source of immediate energy.",
+                          "correct": false,
+                          "misconception": "Students might confuse the role of proteins as energy sources with their primary role as building blocks.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Vitamins are broken down into smaller molecules to release energy for the body's activities.",
+                          "correct": false,
+                          "misconception": "Students might incorrectly think vitamins provide energy, similar to macronutrients.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": true,
+                      "randomize": false,
+                      "numCorrect": 2
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/86bc0d67e606c34b.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Digestion and Metabolism: From Food to Fuel",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the three main types of macronutrients: carbohydrates, fats, and proteins. What is each one primarily used for in the body when it comes to energy?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Your body's preferred source of quick energy comes from carbohydrates. Fats also provide a lot of energy, especially for longer-term needs or storage. Proteins are mostly used for building and repairing tissues, not as the first choice for fuel.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Simple sugars like glucose are easily absorbed and used for immediate energy. Fatty acids and glycerol are also energy-rich. Consider if vitamins are broken down for energy or if they help other processes. What is the primary role of proteins after digestion?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_8afa32b9342a",
+                "skill_ids": [
+                  "ai_gen_nutrition_us_6th-8th-grade-nutrition-science-food-body_unit_digestion-metabolism-food-to-fuel"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Digestion and Metabolism: From Food to Fuel"
+                ],
+                "unit_name": "Digestion and Metabolism: From Food to Fuel",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699229d8a830bcbc10a6e50b"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Filmmaking",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "World War 1",
+          "code": 200,
+          "elapsed_s": 1.5982940196990967,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_abd9406ffeee",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "The build-up of military power and competition between European nations before World War I led to increased tensions. Place the following events in the correct order to show how militarism contributed to the outbreak of war. [[\u2603 sorter 1]]",
+                "images": {},
+                "widgets": {
+                  "sorter 1": {
+                    "type": "sorter",
+                    "options": {
+                      "correct": [
+                        "Countries increase their military spending and size of their armies.",
+                        "Nations feel threatened by their neighbors' growing military power.",
+                        "An arms race begins as countries compete to have the strongest military.",
+                        "Tensions rise significantly, making a large-scale war more likely."
+                      ],
+                      "layout": "vertical",
+                      "padding": true
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what action countries would take first if they wanted to protect themselves or show their strength. What is the starting point of a military build-up?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Militarism is the idea that a country needs a strong military to be powerful and secure. When one country builds up its army, other countries often feel threatened and start building up their own militaries in response. This competition is known as an arms race.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The sequence usually begins with nations deciding to strengthen their own military forces. This then causes other nations to feel insecure and respond by doing the same, leading to a competition. What is the final outcome of this growing competition and fear among nations?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_8a94a07a6cf0",
+                "skill_ids": [
+                  "ai_gen_world-war-1_us_6-8th-grade-history-road-to-ww1_unit_nationalism-militarism-arms-race"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Nationalism, Militarism, and the Arms Race"
+                ],
+                "unit_name": "Nationalism, Militarism, and the Arms Race",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69933fd31347d892d59f5105"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Physics",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Python Programming",
+          "code": 200,
+          "elapsed_s": 1.7588050365447998,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_d750db64d4d5",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following Python keywords is used to create a loop that repeats a block of code until a condition is false? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "if",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "while",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "def",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "print",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What keyword is specifically designed for repeating actions?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A 'while' loop continues as long as its condition remains true.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The 'while' keyword is used to create a loop that repeats as long as a condition is met. The other options have different purposes in Python.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_626d9f18c82e",
+                "skill_ids": [
+                  "ai_gen_python-programming_us_6th-8th-grade-python-core-programming-concepts_unit_loops-repeating-actions"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Loops: Repeating Actions"
+                ],
+                "unit_name": "Loops: Repeating Actions",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699344bd1347d892d59f5fde"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Biology",
+          "code": 200,
+          "elapsed_s": 1.6076200008392334,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_aa76becb78fb",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Read about [[\u2603 definition 1]]. Based on the definition, answer: What is the main purpose of cellular respiration for living organisms? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "definition 1": {
+                    "type": "definition",
+                    "graded": false,
+                    "options": {
+                      "definition": "The process by which cells break down glucose (a type of sugar) and oxygen to release energy, carbon dioxide, and water. This energy is used for all life activities.",
+                      "togglePrompt": "cellular respiration",
+                      "static": false
+                    },
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  },
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "To release energy for cell functions.",
+                          "correct": true,
+                          "clue": "The definition clearly states that cellular respiration 'release[s] energy' which is 'used for all life activities'.",
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "To produce glucose and oxygen.",
+                          "correct": false,
+                          "clue": "Producing glucose and oxygen is the main goal of photosynthesis, not cellular respiration.",
+                          "misconception": "Common student error",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "To absorb sunlight.",
+                          "correct": false,
+                          "clue": "Sunlight is used in photosynthesis to create food, but cellular respiration does not directly absorb sunlight.",
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "To get rid of carbon dioxide.",
+                          "correct": false,
+                          "clue": "Carbon dioxide is a byproduct released during cellular respiration, but the main purpose is to produce energy, not simply to expel carbon dioxide.",
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "multipleSelect": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Look closely at the definition of cellular respiration. What does it say is produced or released by the process, and what is that product used for?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Remember that all living things need a constant supply of energy to survive, grow, and carry out their daily activities. Cellular respiration is the process that provides this essential energy.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The definition states that cells 'break down glucose (a type of sugar) and oxygen to release energy'. It then says, 'This energy is used for all life activities'. This tells you the primary goal of the process.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_6e509f4f3890",
+                "skill_ids": [
+                  "ai_gen_biology_us_middle-school-biology_unit_energy-photosynthesis-respiration"
+                ],
+                "difficulty": 0.42,
+                "skill_names": [
+                  "Energy for Life: Photosynthesis and Respiration"
+                ],
+                "unit_name": "Energy for Life: Photosynthesis and Respiration",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991da03a2036970498b9d51"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Astrophysics And Cosmology Studies For Advanced Le",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Geometry",
+          "code": 200,
+          "elapsed_s": 1.8652198314666748,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_49d83895f0e1",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following is a fundamental undefined term in geometry? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Square",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Point",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Angle",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Rectangle",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the basic building blocks of geometry. What can't be defined using other geometric terms?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Undefined terms are the starting points for defining other geometric concepts. They are accepted without formal definition.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A point, a line, and a plane are the three undefined terms in geometry. The other options are defined using these terms.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_af5899a39af5",
+                "skill_ids": [
+                  "ai_gen_geometry_us_7th-grade-geometry-drawing-angles-scale_unit_geometric-foundations-drawing-tools"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Geometric Foundations and Drawing Tools"
+                ],
+                "unit_name": "Geometric Foundations and Drawing Tools",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69933f2f1347d892d59f4db5"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Recursion Probe 1771093263",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771097854",
+          "code": 200,
+          "elapsed_s": 1.3271167278289795,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_f304e4743363",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A baker makes $x$ batches of cookies. Each batch contains 12 chocolate chip cookies and 8 oatmeal cookies. The baker also makes 5 extra sugar cookies. Which of the following expressions represent the total number of cookies the baker makes? Select all that apply.\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "$20x + 5$",
+                          "correct": true,
+                          "misconception": null,
+                          "isNoneOfTheAbove": false,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "$12x + 8x + 5$",
+                          "correct": true,
+                          "misconception": null,
+                          "isNoneOfTheAbove": false,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "$12x + 8 + 5$",
+                          "correct": false,
+                          "misconception": "Forgets to multiply all cookies in a batch by the number of batches.",
+                          "isNoneOfTheAbove": false,
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "$20(x+5)$",
+                          "correct": false,
+                          "misconception": "Incorrectly groups the extra cookies with the batches before multiplying.",
+                          "isNoneOfTheAbove": false,
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": true,
+                      "randomize": false,
+                      "numCorrect": 2
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "First, think about how many cookies are in a single batch. How would you write an expression for the total number of cookies in one batch?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Each batch has 12 chocolate chip cookies and 8 oatmeal cookies, so that's $12 + 8 = 20$ cookies per batch. If the baker makes $x$ batches, the total number of cookies from batches is $20x$. Don't forget to add the extra sugar cookies.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The total number of cookies from $x$ batches is $20x$. The baker also makes 5 extra sugar cookies. So, the total number of cookies is $20x + 5$. Now, look for expressions among the choices that are equivalent to this one.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_a9830843aec6",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771097854_us_middle-school-math-6-8_unit_algebraic-expressions-equations"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Algebraic Expressions and Equations"
+                ],
+                "unit_name": "Algebraic Expressions and Equations",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921da2a830bcbc10a6d391"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Science Math History English Geography Python",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771100688",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Math",
+          "code": 200,
+          "elapsed_s": 1.7281231880187988,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_8f17f9a7eeb4",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following describes a proportional relationship? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "As one quantity increases, the other quantity decreases.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "As one quantity increases, the other quantity increases at a constant rate.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "As one quantity increases, the other quantity stays the same.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "The quantities change randomly with no predictable pattern.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What happens to one quantity when the other quantity changes in a proportional relationship?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A proportional relationship means that the ratio between two quantities remains constant. This implies a constant rate of change.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider each option and determine if the relationship described maintains a constant ratio.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_34e9629f1274",
+                "skill_ids": [
+                  "ai_gen_math_us_7th-grade-math_unit_ratios-proportional-relationships"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Ratios and Proportional Relationships"
+                ],
+                "unit_name": "Ratios and Proportional Relationships",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6993426c1347d892d59f5535"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771160157",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771165481",
+          "code": 200,
+          "elapsed_s": 2.4119679927825928,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_7a4b9a9d5971",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "According to Zzzz Pretest Probe 1771165481, which of the following BEST describes a rational number? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "A number that can only be represented as a decimal.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "A number that can be expressed as a fraction p/q, where p and q are integers and q is not zero.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "A number that is always positive.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "A number that cannot be written as a fraction.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What is the basic definition of a rational number?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Rational numbers are numbers that can be written as a ratio of two integers. Think about what 'ratio' means.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The correct answer is the one that accurately describes a rational number as a fraction.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_f8ac186c3b8a",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771165481_us_7th-grade-math-science_unit_rational-numbers-scientific-notation"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Rational Numbers and Scientific Notation"
+                ],
+                "unit_name": "Rational Numbers and Scientific Notation",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699331331347d892d59f39a4"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771166452",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771168832",
+          "code": 200,
+          "elapsed_s": 1.8553650379180908,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_c6a69d75201b",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on your understanding of the topic covered in Zzzz Pretest Probe 1771168832, which of the following best describes the primary goal when solving equations? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "To find the largest possible value for the variable.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "To isolate the variable on one side of the equation.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "To make both sides of the equation equal to zero.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "To eliminate all variables from the equation.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What are you trying to find when you solve an equation?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Solving an equation involves performing operations to simplify it and get the variable by itself.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Think about what the ultimate result of solving an equation looks like: variable = some number.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_50d3b92ea963",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771168832_us_6th-8th-grade-math-pre-algebra-algebra-foundations_unit_solving-equations"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Solving Equations"
+                ],
+                "unit_name": "Solving Equations",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699331321347d892d59f399d"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771169457",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771170539",
+          "code": 200,
+          "elapsed_s": 2.126271963119507,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_b1959484bc76",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A coach is trying to figure out how many points each player scored. He knows that 3 players each scored the same number of points, $x$, and the team also got 5 extra points from free throws. In total, the team scored 20 points. Put the steps in the correct order to solve for $x$.\n\n[[\u2603 sorter 1]]",
+                "images": {},
+                "widgets": {
+                  "sorter 1": {
+                    "type": "sorter",
+                    "options": {
+                      "correct": [
+                        "Write the equation: $3x + 5 = 20$.",
+                        "Subtract 5 from both sides.",
+                        "Simplify the equation to $3x = 15$.",
+                        "Divide both sides by 3.",
+                        "The value of $x$ is 5."
+                      ],
+                      "layout": "vertical",
+                      "padding": true
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "To solve an equation, you want to get the variable, $x$, by itself on one side of the equation. What is the first operation you should 'undo'?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "When solving two-step equations, you generally work backward from the order of operations. This means you should undo any addition or subtraction first, then undo any multiplication or division.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The equation is $3x + 5 = 20$. To undo the addition of 5, you should subtract 5 from both sides: $3x + 5 - 5 = 20 - 5$. This simplifies to $3x = 15$. Now you need to isolate $x$ from the multiplication by 3.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_0f344bedec01",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771170539_us_6th-8th-grade-math_unit_equations-inequalities"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Equations & Inequalities"
+                ],
+                "unit_name": "Equations & Inequalities",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69932e7c1347d892d59f2eca"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771170669",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771172484",
+          "code": 200,
+          "elapsed_s": 1.9510760307312012,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_b6bb5e12bdca",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nBased on the general concepts covered in Zzzz Pretest Probe 1771172484, which of the following is MOST likely a focus area? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Analyzing the migration patterns of birds.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Calculating the area, volume, and angles of geometric shapes.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Understanding the chemical reactions in a volcano.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Describing the plot of a historical novel.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/deb1834c50aa045f.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Geometry: Area, Volume, and Angles",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What topics are typically covered under the umbrella of 'Geometry'?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Area involves measuring the surface of a 2D shape. Volume involves measuring the space inside a 3D shape. Angles are formed by intersecting lines.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The question mentions 'Area, Volume, and Angles', which are all core concepts in Geometry.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_53c805f1db38",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771172484_us_6th-8th-grade-math_unit_geometry-area-volume-angles"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Geometry: Area, Volume, and Angles"
+                ],
+                "unit_name": "Geometry: Area, Volume, and Angles",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699331461347d892d59f39cf"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771172888",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771173119",
+          "code": 200,
+          "elapsed_s": 1.423346996307373,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_33c835051ecd",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "According to Zzzz Pretest Probe 1771173119, which of the following is the PRIMARY driving force behind Earth's dynamic systems, such as plate tectonics and the water cycle? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Wind and solar energy",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Internal heat from Earth's core",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "The gravitational pull of the moon",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Human activities and pollution",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What powers the movement and changes within Earth?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Earth's internal heat, generated from radioactive decay and residual heat from its formation, drives many geological processes.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider the options. Which one provides a continuous source of energy from within the Earth itself?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_46040d68b6c3",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771173119_us_6th-8th-grade-middle-school-science_unit_earths-dynamic-systems"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Earth's Dynamic Systems"
+                ],
+                "unit_name": "Earth's Dynamic Systems",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6993313b1347d892d59f39b4"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771175663",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771176204",
+          "code": 200,
+          "elapsed_s": 1.5826590061187744,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_6d5aa317654c",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on the title \"Zzzz Pretest Probe 1771176204,\" which of the following BEST describes what the pretest probe is likely designed to assess related to ratios, rates, and proportional relationships? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "The student's ability to memorize specific formulas for calculating ratios and rates.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "The student's understanding of the relationships between ratios, rates, and proportions, and their ability to apply them to different scenarios.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "The student's proficiency in performing complex calculations involving large numbers related to ratios and rates.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "The student's knowledge of the history of ratios, rates, and proportional relationships.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What is the general purpose of a 'pretest probe'?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Ratios, rates, and proportional relationships involve understanding connections and applying them, not just memorizing.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Think about what skills are needed to solve problems involving ratios, rates, and proportions.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_024c75c2e22b",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771176204_us_6th-8th-grade-math-foundations_unit_ratios-rates-proportional-relationships"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Ratios, Rates, and Proportional Relationships"
+                ],
+                "unit_name": "Ratios, Rates, and Proportional Relationships",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699331611347d892d59f3a7f"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771177239",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771180187",
+          "code": 200,
+          "elapsed_s": 2.746345043182373,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_6b97c586580f",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on the information provided in Zzzz Pretest Probe 1771180187, which of the following best describes the main goal of vocabulary development exercises? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "To memorize a list of words without understanding their context.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "To understand the meaning of words and use them effectively in different situations.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "To learn how to spell words perfectly, regardless of their meaning.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "To identify the longest words in a text.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What is the ultimate purpose of learning new words?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Vocabulary development focuses on both understanding and applying words.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider which option emphasizes both comprehension and practical use of vocabulary.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_c2d0273dd2d9",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771180187_us_6th-8th-grade-ela_unit_language-vocabulary-development"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Language and Vocabulary Development"
+                ],
+                "unit_name": "Language and Vocabulary Development",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921a98a830bcbc10a6c322"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771180466",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771181093",
+          "code": 200,
+          "elapsed_s": 1.6419999599456787,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_429caaee4081",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A rectangular living room is 7 meters long and 4 meters wide. What is the area of the living room floor?\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "$28 \\text{ square meters}$",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "$22 \\text{ meters}$",
+                          "correct": false,
+                          "misconception": "Confuses area with perimeter calculation",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "$11 \\text{ square meters}$",
+                          "correct": false,
+                          "misconception": "Adds dimensions instead of multiplying",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "$28 \\text{ meters}$",
+                          "correct": false,
+                          "misconception": "Uses incorrect units for area",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "To find the area of a rectangular shape, you need to consider both its length and its width. What mathematical operation relates these two dimensions to the area?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The formula for the area of a rectangle is length multiplied by width. So, Area = length $\\times$ width. Remember that area is measured in square units.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The living room is 7 meters long and 4 meters wide. To find the area, you should multiply these two values: $7 \\text{ meters} \\times 4 \\text{ meters}$. What is the result of this multiplication, and what are the correct units?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_22c5299b6bc1",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771181093_us_middle-school-math-6-8_unit_geometry-area-volume-angles"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Geometry: Area, Volume, and Angles"
+                ],
+                "unit_name": "Geometry: Area, Volume, and Angles",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921ab6a830bcbc10a6c3c6"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771182375",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771182903",
+          "code": 200,
+          "elapsed_s": 1.5791127681732178,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_57938e19cadf",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nA student pushes a heavy box across a smooth floor. The student applies a steady force of 50 N to the right. The force of friction acting on the box is 30 N to the left.\n\nWhich of the following statements are true about the box's motion and the forces acting on it? Select all that apply.\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "The net force on the box is 20 N to the right.",
+                          "correct": true,
+                          "misconception": null,
+                          "isNoneOfTheAbove": false,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "The box is accelerating to the right.",
+                          "correct": true,
+                          "misconception": null,
+                          "isNoneOfTheAbove": false,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "The box is moving at a constant speed.",
+                          "correct": false,
+                          "misconception": "Believing that any movement implies constant speed, or confusing net force with balanced forces.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "The total upward force on the box is 20 N.",
+                          "correct": false,
+                          "misconception": "Confusing the net horizontal force with the vertical forces (gravity/normal force).",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": true,
+                      "randomize": false,
+                      "numCorrect": 2
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/87913db6a81417be.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Forces and Motion",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "When multiple forces act on an object, especially in opposite directions, how do you determine the overall or \"net\" effect of these forces?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "To find the net force when forces act in opposite directions, subtract the smaller force from the larger force. If there is a net force (meaning the forces are unbalanced), the object will accelerate in the direction of the net force. If the forces are balanced, the object will either stay still or move at a constant speed.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The student applies a force of $50 \\text{ N}$ to the right, and friction applies a force of $30 \\text{ N}$ to the left. The net force is $50 \\text{ N} - 30 \\text{ N} = 20 \\text{ N}$ to the right. Since there is an unbalanced net force, the box's speed will change.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_35ed21bae7a7",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771182903_us_middle-school-science-6th-8th-grade_unit_forces-motion"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Forces and Motion"
+                ],
+                "unit_name": "Forces and Motion",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69932ea21347d892d59f2f84"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771183378",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771183747",
+          "code": 200,
+          "elapsed_s": 1.3014791011810303,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_9ca5816b86cc",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A baker uses the expression $3x + 5$ to calculate the total number of cookies needed for an event, where $x$ is the number of guests. If there are 4 guests, put the steps in the correct order to find the total number of cookies needed. [[\u2603 sorter 1]]",
+                "images": {},
+                "widgets": {
+                  "sorter 1": {
+                    "type": "sorter",
+                    "options": {
+                      "correct": [
+                        "Substitute $x=4$ into the expression: $3(4) + 5$",
+                        "Perform the multiplication: $12 + 5$",
+                        "Perform the addition: $17$",
+                        "The total number of cookies needed is 17."
+                      ],
+                      "layout": "vertical",
+                      "padding": true
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "When you are given an algebraic expression and a value for the variable, what is the very first step you should take to evaluate it?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Remember the order of operations. First, substitute the given value for the variable. Then, perform any multiplication or division before performing any addition or subtraction.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The expression is $3x + 5$ and we are given that $x=4$. The first step is to substitute $4$ for $x$, which gives us $3(4) + 5$. Next, perform the multiplication $3 \\times 4$. What is the result of that multiplication? Then, add that number to $5$.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_08d6808f25df",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771183747_us_6th-8th-grade-math_unit_algebraic-expressions-equations"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Algebraic Expressions and Equations"
+                ],
+                "unit_name": "Algebraic Expressions and Equations",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69932ea81347d892d59f2fa2"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771186680",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771194668",
+          "code": 200,
+          "elapsed_s": 2.1696741580963135,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_a174d5d59109",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on the information presented in Zzzz Pretest Probe 1771194668, which of the following shapes is used as an example when discussing surface area? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Triangle",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Cube",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Circle",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Rectangle",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What geometric shapes are commonly associated with surface area calculations?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Surface area is the total area of all the surfaces of a 3D object. Think about which of the options is a 3D shape.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The probe likely uses a cube as an example because it's a common and easily understandable 3D shape for demonstrating surface area.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_4dec2071a622",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771194668_us_6th-8th-grade-middle-school-math_unit_geometry-area-surface-area-volume"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Geometry: Area, Surface Area, and Volume"
+                ],
+                "unit_name": "Geometry: Area, Surface Area, and Volume",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69932ece1347d892d59f3060"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771253517",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771254273",
+          "code": 200,
+          "elapsed_s": 1.6351048946380615,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_2824437142fc",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on your understanding of solving equations, which of the following best describes the purpose of Zzzz Pretest Probe 1771254273 in a learning context? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "To provide a fun and engaging puzzle unrelated to equation solving.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "To assess a student's existing knowledge and skills related to solving equations before instruction.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "To teach students the complete process of solving equations from scratch.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "To offer a comprehensive review of previously learned equation-solving techniques.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What is the primary goal of a 'pretest'?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A pretest is designed to measure prior knowledge before new material is introduced.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The probe aims to identify areas where the student may need extra support or where they already excel.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_dbb04e9bd85d",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771254273_us_6th-8th-grade-math-pre-algebra-algebra-foundations_unit_solving-equations"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Solving Equations"
+                ],
+                "unit_name": "Solving Equations",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69933f901347d892d59f4fc3"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771256768",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771257809",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771258625",
+          "code": 200,
+          "elapsed_s": 1.4772210121154785,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_b0408c7757f5",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nA rectangular community garden is 8 meters long and 5 meters wide. Which of the following statements about the garden are true? Select all that apply.\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Its perimeter is 26 meters.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Its area is 40 square meters.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Its perimeter is 13 meters.",
+                          "correct": false,
+                          "misconception": "Student only added length and width, forgetting to multiply by 2 for all sides of the rectangle.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Its area is 26 square meters.",
+                          "correct": false,
+                          "misconception": "Student confused the area calculation with the perimeter value or formula.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "multipleSelect": true,
+                      "randomize": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "numCorrect": 2
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/6eea57a078b217ec.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Geometry and Measurement",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "When describing the size of a rectangular space like a garden, what two common measurements are typically used, and what do they represent?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Remember, the perimeter of a rectangle is the total distance around its outside, calculated as $2 \\times (\\text{length} + \\text{width})$. The area of a rectangle is the amount of space it covers inside, calculated as $\\text{length} \\times \\text{width}$.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "For a rectangular garden that is 8 meters long and 5 meters wide:\n*   Perimeter = $2 \\times (8 + 5) = 2 \\times 13 = 26$ meters.\n*   Area = $8 \\times 5 = 40$ square meters.\nCompare these calculated values with the given statements to find the true ones.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_28d5f4fffaba",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771258625_us_middle-school-math-6-8_unit_geometry-and-measurement"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Geometry and Measurement"
+                ],
+                "unit_name": "Geometry and Measurement",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699345381347d892d59f623c"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771259375",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        }
+      ]
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "subject_used": "Science",
+        "start_code": 200,
+        "start_elapsed_s": 1.3730888366699219,
+        "start_body": {
+          "assessment_id": "assess_9c896219a94d",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "Sunlight is the primary source of energy for almost all living things on Earth. In a forest ecosystem, how is this solar energy transformed and utilized by different organisms to sustain life? Select TWO correct answers.\n\n[[\u2603 radio 1]]",
+              "images": {},
+              "widgets": {
+                "radio 1": {
+                  "alignment": "default",
+                  "graded": true,
+                  "options": {
+                    "choices": [
+                      {
+                        "content": "Plants capture light energy from the sun and convert it into chemical energy stored in sugars through photosynthesis.",
+                        "correct": true,
+                        "misconception": null,
+                        "id": "choice-0"
+                      },
+                      {
+                        "content": "Animals consume plants or other animals, breaking down the stored chemical energy in food to power their body functions.",
+                        "correct": true,
+                        "misconception": null,
+                        "id": "choice-1"
+                      },
+                      {
+                        "content": "Decomposers generate new energy from decaying matter, which then directly fuels plant growth.",
+                        "correct": false,
+                        "misconception": "Confuses energy recycling with matter recycling; implies energy creation from decay.",
+                        "id": "choice-2"
+                      },
+                      {
+                        "content": "All organisms directly absorb sunlight through their skin or leaves to generate the heat they need to survive.",
+                        "correct": false,
+                        "misconception": "Misunderstands which organisms absorb sunlight directly for energy, and confuses energy for heat with energy for life processes.",
+                        "id": "choice-3"
+                      }
+                    ],
+                    "countChoices": false,
+                    "deselectEnabled": false,
+                    "displayCount": null,
+                    "hasNoneOfTheAbove": false,
+                    "multipleSelect": true,
+                    "numCorrect": 2,
+                    "randomize": false
+                  },
+                  "static": false,
+                  "type": "radio",
+                  "version": {
+                    "major": 2,
+                    "minor": 0
+                  }
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "Think about the different roles organisms play in an ecosystem. Which organisms are responsible for capturing energy directly from the sun, and which ones get their energy by eating others?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Remember that plants are producers; they make their own food using sunlight through photosynthesis. Animals are consumers; they get energy by eating other organisms. Both then use cellular respiration to release energy from food.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Consider how energy first enters the ecosystem from the sun. What process do plants use to transform this energy? Then, think about how that energy moves to animals and how they use the chemical energy stored in the food they eat.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_e6d7d85705e60b4f",
+            "dash_metadata": {
+              "dash_question_id": "pool_e6d7d85705e60b4f",
+              "skill_ids": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "difficulty": 0.98,
+              "skill_names": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "required_stable_transitions": 3,
+        "stable_transitions": 3,
+        "transitions": [
+          {
+            "step": 1,
+            "code": 200,
+            "elapsed_s": 0.6495201587677002,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 2,
+            "code": 200,
+            "elapsed_s": 1.29705810546875,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 3,
+            "code": 200,
+            "elapsed_s": 0.6578269004821777,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          }
+        ],
+        "next": {
+          "code": 200,
+          "elapsed_s": 0.6495201587677002,
+          "completed_early": false,
+          "has_next_question": true,
+          "attempts_used": 1
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 25.0
+      }
+    },
+    "loading_latency": {
+      "ok": true,
+      "initial_question_fetch_elapsed_s": 2.135254144668579,
+      "learning_recommend_next_elapsed_s": 0.6258690357208252,
+      "adaptive_start_elapsed_s": 1.3730888366699219,
+      "next_question_elapsed_s": 1.29705810546875,
+      "adaptive_next_transition_elapsed_s": [
+        0.6495201587677002,
+        1.29705810546875,
+        0.6578269004821777
+      ],
+      "budgets": {
+        "initial_question_fetch_budget_s": 12.0,
+        "learning_recommend_next_budget_s": 25.0,
+        "adaptive_start_budget_s": 12.0,
+        "next_question_budget_s": 25.0
+      }
+    },
+    "websocket": {
+      "session_start": {
+        "code": 500,
+        "elapsed_s": 0.2770731449127197,
+        "body": {
+          "detail": "Executing this update would put you over your space quota, full error: {'ok': 0, 'errmsg': 'Executing this update would put you over your space quota', 'code': 8000, 'codeName': 'AtlasError'}"
+        }
+      },
+      "probe": null,
+      "session_end": null,
+      "ok": false
+    }
+  },
+  "ok": false,
+  "errors": [
+    "websocket probe failed"
+  ]
+}

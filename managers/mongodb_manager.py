@@ -4,10 +4,11 @@ Centralized MongoDB connection and collection access
 """
 
 from pymongo import MongoClient
-from typing import Optional
+from typing import List
 import os
 import logging
 from dotenv import load_dotenv
+from urllib.parse import urlparse
 
 from shared.logging_config import get_logger
 
@@ -38,31 +39,103 @@ class MongoDBManager:
     
     def _connect(self):
         """Establish MongoDB connection"""
-        try:
-            # Get connection string from environment variable
-            mongo_uri = os.getenv('MONGODB_URI')
-            if not mongo_uri:
-                raise ValueError(
-                    "MONGODB_URI not found in environment variables. "
-                    "Please create a .env file with MONGODB_URI. "
-                    "See .env.example for template."
+        # Get connection string from environment variable
+        mongo_uri = os.getenv('MONGODB_URI')
+        if not mongo_uri:
+            raise ValueError(
+                "MONGODB_URI not found in environment variables. "
+                "Please create a .env file with MONGODB_URI. "
+                "See setup-local-env.sh for template values."
+            )
+
+        db_name = os.getenv('MONGODB_DB_NAME', 'ai_tutor')
+        questions_db_name = os.getenv('MONGODB_QUESTIONS_DB_NAME', 'questions_db')
+        server_selection_timeout_ms = int(os.getenv('MONGODB_SERVER_SELECTION_TIMEOUT_MS', '5000'))
+        connect_timeout_ms = int(os.getenv('MONGODB_CONNECT_TIMEOUT_MS', '5000'))
+
+        errors = []
+        for candidate_uri in self._candidate_uris(mongo_uri, db_name):
+            redacted_uri = self._redact_mongo_uri(candidate_uri)
+            try:
+                logger.info(f"[MONGODB] Attempting connection using {redacted_uri}")
+                client = MongoClient(
+                    candidate_uri,
+                    serverSelectionTimeoutMS=server_selection_timeout_ms,
+                    connectTimeoutMS=connect_timeout_ms,
                 )
-            
-            db_name = os.getenv('MONGODB_DB_NAME', 'ai_tutor')
-            questions_db_name = os.getenv('MONGODB_QUESTIONS_DB_NAME', 'questions_db')
-            
-            self._client = MongoClient(mongo_uri)
-            self._db = self._client[db_name]
-            self._questions_db = self._client[questions_db_name]
-            
-            # Test connection
-            self._client.admin.command('ping')
-            logger.info(f"[MONGODB] Connected to database: {db_name}")
-            logger.info(f"[MONGODB] Connected to questions database: {questions_db_name}")
-            
-        except Exception as e:
-            logger.error(f"[MONGODB] Connection failed: {e}")
-            raise
+                client.admin.command('ping')
+
+                self._client = client
+                self._db = self._client[db_name]
+                self._questions_db = self._client[questions_db_name]
+                logger.info(f"[MONGODB] Connected to database: {db_name}")
+                logger.info(f"[MONGODB] Connected to questions database: {questions_db_name}")
+                return
+            except Exception as e:
+                errors.append((redacted_uri, e))
+                logger.warning(f"[MONGODB] Connection attempt failed for {redacted_uri}: {e}")
+
+        if errors:
+            summary = "; ".join([f"{uri}: {err}" for uri, err in errors])
+            logger.error(f"[MONGODB] Connection failed for all candidates. {summary}")
+            raise RuntimeError(f"MongoDB connection failed for all configured URIs. {summary}")
+
+    def _candidate_uris(self, primary_uri: str, db_name: str) -> List[str]:
+        """Build ordered MongoDB connection candidates."""
+        candidates: List[str] = []
+
+        # SRV resolution can fail in restricted local environments.
+        # In non-production, try local Mongo automatically as a final fallback.
+        is_production = (os.getenv('ENVIRONMENT') or os.getenv('APP_ENV') or os.getenv('NODE_ENV') or '').lower() in {
+            'prod',
+            'production',
+        }
+        local_fallback_enabled = os.getenv('MONGODB_ENABLE_LOCAL_FALLBACK', 'true').lower() == 'true'
+        prefer_local = os.getenv('MONGODB_PREFER_LOCAL', 'true').lower() == 'true'
+        local_uri = None
+        if primary_uri.startswith('mongodb+srv://') and local_fallback_enabled and not is_production:
+            local_uri = os.getenv('MONGODB_LOCAL_URI', f'mongodb://localhost:27017/{db_name}')
+            if local_uri.endswith('/'):
+                local_uri = f"{local_uri}{db_name}"
+            elif self._uri_has_no_database(local_uri):
+                local_uri = f"{local_uri}/{db_name}"
+
+        fallback_uri = os.getenv('MONGODB_URI_FALLBACK')
+
+        if prefer_local and local_uri:
+            candidates.append(local_uri)
+            candidates.append(primary_uri)
+        else:
+            candidates.append(primary_uri)
+            if local_uri:
+                candidates.append(local_uri)
+
+        if fallback_uri:
+            candidates.append(fallback_uri)
+
+        deduped: List[str] = []
+        seen = set()
+        for candidate in candidates:
+            if candidate and candidate not in seen:
+                deduped.append(candidate)
+                seen.add(candidate)
+        return deduped
+
+    @staticmethod
+    def _uri_has_no_database(uri: str) -> bool:
+        parsed = urlparse(uri)
+        path = (parsed.path or '').strip()
+        return path in ('', '/')
+
+    @staticmethod
+    def _redact_mongo_uri(uri: str) -> str:
+        parsed = urlparse(uri)
+        if parsed.username or parsed.password:
+            netloc = parsed.hostname or ''
+            if parsed.port:
+                netloc = f"{netloc}:{parsed.port}"
+            return parsed._replace(netloc=f"***:***@{netloc}").geturl()
+        return uri
     
     @property
     def db(self):

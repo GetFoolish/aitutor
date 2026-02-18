@@ -349,8 +349,8 @@
                 <input type="text" id="apiUrl" value="http://localhost:8002">
             </div>
             <div>
-                <label>Observer API Key:</label>
-                <input type="text" id="apiKey" value="dev-observer-key-12345">
+                <label>Admin JWT Token:</label>
+                <input type="text" id="authToken" value="" placeholder="Paste admin Bearer token value">
             </div>
         </div>
         <div style="margin-top: 10px;">
@@ -479,12 +479,14 @@
 
         async function fetchActiveSessions() {
             const apiUrl = document.getElementById('apiUrl').value.trim();
-            const apiKey = document.getElementById('apiKey').value.trim();
+            const authToken = document.getElementById('authToken').value.trim();
 
             debugLog('Fetching active sessions...', 'info');
 
             try {
-                const response = await fetch(`${apiUrl}/sessions/active?api_key=${encodeURIComponent(apiKey)}`);
+                const response = await fetch(`${apiUrl}/sessions/active`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
 
                 if (!response.ok) {
                     const error = await response.text();
@@ -540,7 +542,7 @@
             connect();
         }
 
-        function connect() {
+        async function connect() {
             if (!selectedSessionId) {
                 debugLog('No session selected', 'error');
                 return;
@@ -551,13 +553,34 @@
             }
 
             const apiUrl = document.getElementById('apiUrl').value.trim();
-            const apiKey = document.getElementById('apiKey').value.trim();
+            const authToken = document.getElementById('authToken').value.trim();
             const wsUrl = apiUrl.replace('http', 'ws');
 
             setStatus('connecting');
             debugLog(`Connecting to observe session ${selectedSessionId}...`, 'info');
 
-            const url = `${wsUrl}/ws/feed/observe?api_key=${encodeURIComponent(apiKey)}&session_id=${encodeURIComponent(selectedSessionId)}`;
+            let observerCode = '';
+            try {
+                const streamCodeResponse = await fetch(`${apiUrl}/auth/stream-code?purpose=observe`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (!streamCodeResponse.ok) {
+                    const errText = await streamCodeResponse.text();
+                    throw new Error(`Failed to fetch observer code: ${streamCodeResponse.status} ${errText}`);
+                }
+                const streamCodeData = await streamCodeResponse.json();
+                observerCode = streamCodeData.code;
+                if (!observerCode) {
+                    throw new Error('Missing observer auth code');
+                }
+            } catch (e) {
+                debugLog(`Failed to issue observer auth code: ${e.message}`, 'error');
+                setStatus('disconnected');
+                return;
+            }
+
+            const url = `${wsUrl}/ws/feed/observe?code=${encodeURIComponent(observerCode)}&session_id=${encodeURIComponent(selectedSessionId)}`;
 
             try {
                 ws = new WebSocket(url);
@@ -860,7 +883,7 @@
             }
 
             const apiUrl = document.getElementById('apiUrl').value.trim();
-            const apiKey = document.getElementById('apiKey').value.trim();
+            const authToken = document.getElementById('authToken').value.trim();
 
             btn.disabled = true;
             statusEl.className = 'instruction-status';
@@ -868,10 +891,13 @@
 
             try {
                 const response = await fetch(
-                    `${apiUrl}/session/instruction/admin?api_key=${encodeURIComponent(apiKey)}`,
+                    `${apiUrl}/session/instruction/admin`,
                     {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${authToken}`
+                        },
                         body: JSON.stringify({
                             instruction: instructionText,
                             session_id: selectedSessionId
@@ -947,7 +973,7 @@
 
         // Initial setup
         debugLog('Observer page loaded. Click "Refresh Sessions" to see active sessions.', 'info');
-        debugLog('Default API key: dev-observer-key-12345', 'info');
+        debugLog('Paste an admin JWT in "Admin JWT Token" before connecting.', 'info');
         debugLog('Channel 2: Use the instruction panel to send commands to the tutor.', 'info');
     </script>
 </body>

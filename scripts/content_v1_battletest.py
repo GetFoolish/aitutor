@@ -5,7 +5,8 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timezone
+from uuid import uuid4
 
 AUTH_BASE = os.environ.get("AUTH_BASE", "http://localhost:8003")
 DASH_BASE = os.environ.get("DASH_BASE", "http://localhost:8000")
@@ -54,17 +55,32 @@ def _signup_or_login(email, password):
         "location": "US",
         "user_type": "student",
     }
-    code, body = _post(f"{AUTH_BASE}/auth/signup", signup_payload, timeout=20)
-    if code == 200:
-        return json.loads(body)
+    signup_code, signup_body = _post(f"{AUTH_BASE}/auth/signup", signup_payload, timeout=20)
+    if signup_code == 200:
+        return json.loads(signup_body)
 
-    code, body = _post(
+    login_code, login_body = _post(
         f"{AUTH_BASE}/auth/login",
         {"email": email, "password": password},
         timeout=20,
     )
+    if login_code != 200:
+        raise RuntimeError(
+            "auth failed "
+            f"signup={signup_code} signup_body={signup_body[:220]} "
+            f"login={login_code} login_body={login_body[:220]}"
+        )
+    return json.loads(login_body)
+
+
+def _dev_login(age=12, name="Content V1 QA"):
+    code, body = _post(
+        f"{AUTH_BASE}/auth/dev-login",
+        {"age": age, "name": name},
+        timeout=20,
+    )
     if code != 200:
-        raise RuntimeError(f"auth failed signup={code} login={code} body={body[:300]}")
+        raise RuntimeError(f"dev-login failed {code}: {body[:260]}")
     return json.loads(body)
 
 
@@ -202,14 +218,15 @@ def _run_topic(token, topic):
 
 
 def main():
-    stamp = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
     out_dir = os.path.join("artifacts", "proof")
     os.makedirs(out_dir, exist_ok=True)
     out_path = os.path.join(out_dir, f"content-v1-battletest-{stamp}.json")
 
-    email = os.environ.get("CONTENT_V1_QA_EMAIL") or f"qa.contentv1.{int(time.time())}@example.com"
+    email = os.environ.get("CONTENT_V1_QA_EMAIL") or f"qa.contentv1.{uuid4().hex[:12]}@example.com"
     password = os.environ.get("CONTENT_V1_QA_PASSWORD") or "TestPass123!"
-    auth = _signup_or_login(email, password)
+    use_dev_login = os.environ.get("CONTENT_V1_USE_DEV_LOGIN", "false").lower() in {"1", "true", "yes"}
+    auth = _dev_login(age=12) if use_dev_login else _signup_or_login(email, password)
     token = auth["token"]
 
     results = []
@@ -217,8 +234,9 @@ def main():
         results.append(_run_topic(token, topic))
 
     summary = {
-        "created_at": datetime.utcnow().isoformat() + "Z",
+        "created_at": datetime.now(timezone.utc).isoformat(),
         "auth_email": email,
+        "auth_mode": "dev-login" if use_dev_login else "signup-or-login",
         "topics": TOPICS,
         "pass_count": sum(1 for r in results if r.get("ok")),
         "total": len(results),

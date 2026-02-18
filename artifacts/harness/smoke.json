@@ -1,0 +1,696 @@
+{
+  "created_at": "2026-02-17T21:52:41.784665+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.30173683166503906,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 80,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.062471866607666016,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.09192419052124023,
+      "body": {
+        "status": "healthy",
+        "service": "TeachingAssistant"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.8799512386322021,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": true,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 0.3844139575958252,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 80
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 2.1604857444763184,
+        "count": 5,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 8.0,
+        "min_question_count": 5
+      }
+    },
+    "learning_path_subject_validity": {
+      "ok": true,
+      "current_question_ids": [
+        "pool_c153282ac331a089",
+        "pool_fad624791ed942c8",
+        "ai_q_4ecbce5ab07b"
+      ],
+      "recommend_next": {
+        "code": 200,
+        "elapsed_s": 0.07860612869262695,
+        "count": 5,
+        "overlap_with_current_ids": [],
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        },
+        "body": {
+          "sample_ids": [
+            "pool_03ccb364d5e5c753",
+            "pool_02447e05afccb721",
+            "pool_bfa119da00ac4295",
+            "ai_q_799c3a053d2e",
+            "ai_q_53d930116b4c"
+          ]
+        }
+      }
+    },
+    "adaptive_start_all_subjects": {
+      "ok": true,
+      "adaptive_start_timeout_s": 4.0,
+      "adaptive_start_retry_timeout_s": 12.0,
+      "catalog_fetch": {
+        "code": 200,
+        "elapsed_s": 0.03194093704223633,
+        "count": 3,
+        "fallback_used": false
+      },
+      "subjects_checked_count": 3,
+      "subjects_checked": [
+        "Science",
+        "English",
+        "History"
+      ],
+      "timeout_retryable_count": 0,
+      "concrete_result_count": 3,
+      "results": [
+        {
+          "subject": "Science",
+          "code": 200,
+          "elapsed_s": 0.04744315147399902,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_bfa767eb8d21",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "When formulating a scientific hypothesis, which of the following are essential characteristics for it to be useful in scientific inquiry? Select all that apply.\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "It must be testable through observation or experimentation.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "It must be falsifiable, meaning there is a possible outcome that would prove it incorrect.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "It must always be proven correct by the experiment's results.",
+                          "correct": false,
+                          "misconception": "Confuses a hypothesis with a confirmed theory or desired outcome.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "It should be a statement of fact that is already widely known.",
+                          "correct": false,
+                          "misconception": "Confuses a hypothesis with established scientific knowledge or a conclusion.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": true,
+                      "numCorrect": 2,
+                      "randomize": false
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What makes a statement a good starting point for a scientific investigation? Think about what scientists *do* with a hypothesis after they've formed it.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A scientific hypothesis is a proposed explanation for an observation that can be tested. For a test to be meaningful and contribute to scientific knowledge, what qualities must the hypothesis possess? Consider if it's possible to gather evidence for or against it.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "For a hypothesis to be truly scientific, it needs to be something you can investigate. This means you must be able to design an experiment or make observations that could either support it or show it to be incorrect. If there's no way to test it, or no way for it to ever be wrong, it doesn't fit into the scientific method.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "question_id": "pool_c153282ac331a089",
+              "dash_metadata": {
+                "dash_question_id": "pool_c153282ac331a089",
+                "skill_ids": [
+                  "ai_gen_science_us_high-school-biology_unit_intro-biology-scientific-inquiry"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Introduction to Biology and Scientific Inquiry"
+                ],
+                "unit_name": "Introduction to Biology and Scientific Inquiry",
+                "lesson_name": "Practice",
+                "ai_generated": true
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "English",
+          "code": 200,
+          "elapsed_s": 0.1000361442565918,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_d2b709d4829f",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following is true about Crafting Narratives & Explanations?\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "displayCount": null,
+                      "choices": [
+                        {
+                          "content": "Crafting Narratives & Explanations involves learning and practicing specific skills",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Crafting Narratives & Explanations can only be learned by watching TV",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Crafting Narratives & Explanations has nothing to do with thinking or problem solving",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Nobody studies Crafting Narratives & Explanations in school",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple",
+                "options": {
+                  "content": "",
+                  "images": {},
+                  "widgets": {}
+                }
+              },
+              "hints": [
+                {
+                  "content": "Think about what studying Crafting Narratives & Explanations actually involves.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Does Crafting Narratives & Explanations require learning specific skills?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Crafting Narratives & Explanations involves learning and practicing \u2014 that's how all subjects work.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_3edeba4281f1",
+                "skill_ids": [
+                  "ai_gen_english_us_6th-8th-grade-english-language-arts_unit_crafting-narratives-explanations"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Crafting Narratives & Explanations"
+                ],
+                "unit_name": "Crafting Narratives & Explanations",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699499d54911da26d0207f26"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "History",
+          "code": 200,
+          "elapsed_s": 1.3870887756347656,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_1d79ebd4db3c",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following is true about History For Grade 7?\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "displayCount": null,
+                      "choices": [
+                        {
+                          "content": "History For Grade 7 involves learning and practicing specific skills",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "History For Grade 7 can only be learned by watching TV",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "History For Grade 7 has nothing to do with thinking or problem solving",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Nobody studies History For Grade 7 in school",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple",
+                "options": {
+                  "content": "",
+                  "images": {},
+                  "widgets": {}
+                }
+              },
+              "hints": [
+                {
+                  "content": "Think about what studying History For Grade 7 actually involves.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Does History For Grade 7 require learning specific skills?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "History For Grade 7 involves learning and practicing \u2014 that's how all subjects work.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_ec0e5330f617",
+                "skill_ids": [
+                  "assessment_history_grade_7_66015"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_ec0e5330f617",
+                "skill_names": [
+                  "History for Grade 7"
+                ],
+                "unit_id": "assessment_history_grade_7_66015",
+                "lesson_id": "assessment_history_grade_7_2_pf0_93096",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "699499db4911da26d0207f71",
+                "unit_name": "History for Grade 7",
+                "lesson_name": "History for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        }
+      ]
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "subject_used": "Science",
+        "start_code": 200,
+        "start_elapsed_s": 0.04744315147399902,
+        "start_body": {
+          "assessment_id": "assess_bfa767eb8d21",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "When formulating a scientific hypothesis, which of the following are essential characteristics for it to be useful in scientific inquiry? Select all that apply.\n\n[[\u2603 radio 1]]",
+              "images": {},
+              "widgets": {
+                "radio 1": {
+                  "alignment": "default",
+                  "graded": true,
+                  "options": {
+                    "choices": [
+                      {
+                        "content": "It must be testable through observation or experimentation.",
+                        "correct": true,
+                        "misconception": null,
+                        "id": "choice-0"
+                      },
+                      {
+                        "content": "It must be falsifiable, meaning there is a possible outcome that would prove it incorrect.",
+                        "correct": true,
+                        "misconception": null,
+                        "id": "choice-1"
+                      },
+                      {
+                        "content": "It must always be proven correct by the experiment's results.",
+                        "correct": false,
+                        "misconception": "Confuses a hypothesis with a confirmed theory or desired outcome.",
+                        "id": "choice-2"
+                      },
+                      {
+                        "content": "It should be a statement of fact that is already widely known.",
+                        "correct": false,
+                        "misconception": "Confuses a hypothesis with established scientific knowledge or a conclusion.",
+                        "id": "choice-3"
+                      }
+                    ],
+                    "countChoices": false,
+                    "deselectEnabled": false,
+                    "displayCount": null,
+                    "hasNoneOfTheAbove": false,
+                    "multipleSelect": true,
+                    "numCorrect": 2,
+                    "randomize": false
+                  },
+                  "static": false,
+                  "type": "radio",
+                  "version": {
+                    "major": 2,
+                    "minor": 0
+                  }
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "What makes a statement a good starting point for a scientific investigation? Think about what scientists *do* with a hypothesis after they've formed it.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "A scientific hypothesis is a proposed explanation for an observation that can be tested. For a test to be meaningful and contribute to scientific knowledge, what qualities must the hypothesis possess? Consider if it's possible to gather evidence for or against it.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "For a hypothesis to be truly scientific, it needs to be something you can investigate. This means you must be able to design an experiment or make observations that could either support it or show it to be incorrect. If there's no way to test it, or no way for it to ever be wrong, it doesn't fit into the scientific method.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_c153282ac331a089",
+            "dash_metadata": {
+              "dash_question_id": "pool_c153282ac331a089",
+              "skill_ids": [
+                "ai_gen_science_us_high-school-biology_unit_intro-biology-scientific-inquiry"
+              ],
+              "difficulty": 0.5,
+              "skill_names": [
+                "Introduction to Biology and Scientific Inquiry"
+              ],
+              "unit_name": "Introduction to Biology and Scientific Inquiry",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "required_stable_transitions": 5,
+        "stable_transitions": 5,
+        "transitions": [
+          {
+            "step": 1,
+            "code": 200,
+            "elapsed_s": 0.19369888305664062,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 2,
+            "code": 200,
+            "elapsed_s": 0.05036282539367676,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 3,
+            "code": 200,
+            "elapsed_s": 0.11410307884216309,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 4,
+            "code": 200,
+            "elapsed_s": 0.16747331619262695,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 5,
+            "code": 200,
+            "elapsed_s": 0.1009068489074707,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          }
+        ],
+        "next": {
+          "code": 200,
+          "elapsed_s": 0.19369888305664062,
+          "completed_early": false,
+          "has_next_question": true,
+          "attempts_used": 1
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 5.0
+      }
+    },
+    "loading_latency": {
+      "ok": true,
+      "initial_question_fetch_elapsed_s": 2.1604857444763184,
+      "learning_recommend_next_elapsed_s": 0.07860612869262695,
+      "adaptive_start_elapsed_s": 0.04744315147399902,
+      "next_question_elapsed_s": 0.19369888305664062,
+      "adaptive_next_transition_elapsed_s": [
+        0.19369888305664062,
+        0.05036282539367676,
+        0.11410307884216309,
+        0.16747331619262695,
+        0.1009068489074707
+      ],
+      "budgets": {
+        "initial_question_fetch_budget_s": 8.0,
+        "learning_recommend_next_budget_s": 5.0,
+        "adaptive_start_budget_s": 12.0,
+        "next_question_budget_s": 5.0
+      }
+    },
+    "websocket": {
+      "session_start": {
+        "code": 200,
+        "elapsed_s": 0.24851298332214355,
+        "body": {
+          "prompt": "",
+          "session_info": {
+            "session_id": "sess_84bca44044044b52",
+            "user_id": "dev_4e8fa3cd73dd",
+            "session_active": true,
+            "duration_minutes": 0.0,
+            "questions_answered": 0,
+            "questions_correct": 0,
+            "websocket_connected": false,
+            "sse_connected": false
+          }
+        }
+      },
+      "probe": {
+        "ok": true,
+        "elapsed_s": 0.0765998363494873,
+        "response": {
+          "type": "pong"
+        }
+      },
+      "session_end": {
+        "code": 200,
+        "elapsed_s": 0.01570415496826172,
+        "body": {
+          "prompt": "[SYSTEM PROMPT FOR ADAM]\nThe tutoring session is ending now.\nSession stats: 0.0 minutes, 0 questions attempted.\nPlease give the student a warm closing message, acknowledge their hard work,\nand encourage them for next session.",
+          "session_info": {
+            "session_id": "sess_84bca44044044b52",
+            "duration_minutes": 0.0,
+            "minutes_deducted": 1,
+            "questions_answered": 0,
+            "questions_correct": 0
+          }
+        }
+      },
+      "ok": true
+    }
+  },
+  "ok": true,
+  "errors": []
+}

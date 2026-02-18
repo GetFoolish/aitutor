@@ -12,6 +12,14 @@
     background-color: rgba(24, 101, 242, 0.08) !important;
 }
 
+/* Ensure selected radio highlight renders as a complete 4-sided box */
+#question-content-container .perseus-radio-selected,
+#question-content-container .perseus-radio-option.perseus-radio-selected {
+    outline: 2px solid #1f6feb !important;
+    outline-offset: -2px;
+    box-sizing: border-box;
+}
+
 /* Ensure hover only affects the hovered choice, not siblings */
 @media (hover: hover) {
     :global(.framework-perseus) .choice:hover:not(:has(> button[aria-pressed="true"])) {
@@ -23,6 +31,27 @@
 :global(.framework-perseus) .choice+.choice {
     /* Ensure each choice is independent */
     isolation: isolate;
+}
+
+/* Prevent stem/choice clipping: force natural wrapping for textual content inside question cards */
+#question-content-container .framework-perseus .perseus-renderer,
+#question-content-container .framework-perseus .paragraph,
+#question-content-container .framework-perseus .paragraph .paragraph,
+#question-content-container .framework-perseus p,
+#question-content-container .framework-perseus .choice,
+#question-content-container .framework-perseus .choice label,
+#question-content-container .framework-perseus .perseus-widget-radio-fieldset {
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    max-width: 100%;
+}
+
+/* Keep known intentional no-wrap UI elements stable */
+#question-content-container .framework-perseus .matrix-row,
+#question-content-container .framework-perseus .tooltip-content,
+#question-content-container .framework-perseus [class*="tooltip-content"] {
+    white-space: nowrap !important;
 }
 
 /* Dark mode text color fix for question content */
@@ -64,6 +93,31 @@ html.dark #question-content-container .framework-perseus code,
 .dark #question-content-container .framework-perseus pre,
 html.dark #question-content-container .framework-perseus pre {
     color: white !important;
+}
+
+/* Dark mode: force high-contrast instructional copy across Perseus widget variants */
+.dark #question-content-container .instructions,
+html.dark #question-content-container .instructions,
+.dark #question-content-container .perseus-widget-radio-fieldset .instructions,
+html.dark #question-content-container .perseus-widget-radio-fieldset .instructions,
+.dark #question-content-container [class*="instructions"],
+html.dark #question-content-container [class*="instructions"],
+.dark #question-content-container .framework-perseus .instructions,
+html.dark #question-content-container .framework-perseus .instructions,
+.dark #question-content-container legend,
+html.dark #question-content-container legend,
+.dark #question-content-container label {
+    color: #f8fafc !important;
+    opacity: 1 !important;
+}
+
+/* Dark mode: keep helper/meta text readable for prompts and answer guidance */
+.dark #question-content-container small,
+html.dark #question-content-container small,
+.dark #question-content-container [class*="helper"],
+html.dark #question-content-container [class*="helper"] {
+    color: #e5e7eb !important;
+    opacity: 1 !important;
 }
 
 /* Dark mode: orderer, sorter, matcher drag-and-drop widgets */
@@ -131,7 +185,8 @@ html.dark .matcher .column {
 #question-content-container [role="listbox"],
 .perseus-dropdown [role="listbox"] {
     z-index: 9999 !important;
-    position: fixed !important;
+    /* Do not force fixed positioning globally; it detaches dropdown options
+       from their trigger under zoom/compacted layouts and causes stray text. */
 }
 
 /* Ensure the dropdown opener button is clickable */
@@ -139,6 +194,38 @@ html.dark .matcher .column {
     position: relative;
     z-index: 1;
     overflow: visible !important;
+}
+
+/* Dropdown option geometry contract (all themes): keep option rows readable and not condensed. */
+[data-testid="dropdown-core-container"] {
+    border-radius: 6px !important;
+    min-width: 220px !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
+    padding: 4px 0 !important;
+}
+
+[data-testid="dropdown-core-container"] [role="option"] {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-height: 38px !important;
+    padding: 8px 12px !important;
+    box-sizing: border-box !important;
+    font-size: 14px !important;
+    line-height: 1.35 !important;
+    font-family: inherit !important;
+    font-weight: 500 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    text-align: left !important;
+}
+
+[data-testid="dropdown-core-container"] [role="option"] * {
+    font-size: inherit !important;
+    line-height: inherit !important;
+    font-family: inherit !important;
+    color: inherit !important;
+    opacity: 1 !important;
 }
 
 /* Dark mode: dropdown widget */
@@ -157,23 +244,37 @@ html.dark .framework-perseus .perseus-widget-dropdown button {
     border-color: #666 !important;
 }
 
-/* Dark mode: Wonder Blocks dropdown listbox */
-.dark [role="listbox"],
-html.dark [role="listbox"] {
-    background-color: #333 !important;
-    border-color: #666 !important;
+/* Dark mode: Wonder Blocks dropdown listbox/options.
+   Scope to dropdown containers only to avoid global role collisions. */
+.dark [data-testid="dropdown-core-container"],
+html.dark [data-testid="dropdown-core-container"] {
+    background-color: #1f2937 !important;
+    border-color: #4b5563 !important;
 }
 
-.dark [role="option"],
-html.dark [role="option"] {
-    color: white !important;
+.dark [data-testid="dropdown-core-container"] [role="option"],
+html.dark [data-testid="dropdown-core-container"] [role="option"] {
+    color: #f9fafb !important;
+    background-color: #1f2937 !important;
 }
 
-.dark [role="option"]:hover,
-html.dark [role="option"]:hover,
-.dark [role="option"][aria-selected="true"],
-html.dark [role="option"][aria-selected="true"] {
-    background-color: #555 !important;
+.dark [data-testid="dropdown-core-container"] [role="option"] *,
+html.dark [data-testid="dropdown-core-container"] [role="option"] * {
+    color: inherit !important;
+    opacity: 1 !important;
+}
+
+.dark [data-testid="dropdown-core-container"] [role="option"]:hover:not([aria-disabled="true"]),
+html.dark [data-testid="dropdown-core-container"] [role="option"]:hover:not([aria-disabled="true"]),
+.dark [data-testid="dropdown-core-container"] [role="option"][aria-selected="true"],
+html.dark [data-testid="dropdown-core-container"] [role="option"][aria-selected="true"] {
+    background-color: #374151 !important;
+}
+
+.dark [data-testid="dropdown-core-container"] [role="option"][aria-disabled="true"],
+html.dark [data-testid="dropdown-core-container"] [role="option"][aria-disabled="true"] {
+    color: #9ca3af !important;
+    background-color: #1f2937 !important;
 }
 
 /* Dark mode: numeric-input */
@@ -204,6 +305,27 @@ html.dark #question-content-container .framework-perseus .choice:has(> button[ar
     }
 }
 
+/* Hint/explanation readability contracts */
+[data-testid="assessment-inline-hint"],
+[data-testid="assessment-inline-hint"] *,
+[data-testid="assessment-explanation"],
+[data-testid="assessment-explanation"] * {
+    color: #1f2937 !important;
+    opacity: 1 !important;
+}
+
+.dark [data-testid="assessment-inline-hint"],
+html.dark [data-testid="assessment-inline-hint"],
+.dark [data-testid="assessment-inline-hint"] *,
+html.dark [data-testid="assessment-inline-hint"] *,
+.dark [data-testid="assessment-explanation"],
+html.dark [data-testid="assessment-explanation"],
+.dark [data-testid="assessment-explanation"] *,
+html.dark [data-testid="assessment-explanation"] * {
+    color: #f9fafb !important;
+    opacity: 1 !important;
+}
+
 /* Fix: Tiny numeric-input box (Bug #55) — make inputs large enough to be usable */
 #question-content-container .framework-perseus input[type="text"] {
     min-width: 140px !important;
@@ -211,6 +333,17 @@ html.dark #question-content-container .framework-perseus .choice:has(> button[ar
     padding: 6px 10px !important;
     font-size: 16px !important;
     box-sizing: border-box;
+}
+
+/* Keep visual-heavy prompts from forcing page scroll in assessment viewport */
+#question-content-container img,
+#question-content-container svg,
+#question-content-container canvas {
+    max-width: 100% !important;
+    max-height: min(28vh, 220px) !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain;
 }
 
 /* Definition widget popover: constrain z-index so it doesn't block action buttons */

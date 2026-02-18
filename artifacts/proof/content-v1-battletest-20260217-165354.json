@@ -1,0 +1,68 @@
+{
+  "created_at": "2026-02-17T16:54:01.416556+00:00",
+  "auth_email": "qa.contentv1.450c16a6c245@example.com",
+  "auth_mode": "dev-login",
+  "topics": [
+    "world history and civilizations",
+    "python programming fundamentals",
+    "climate science and weather systems",
+    "public speaking confidence"
+  ],
+  "pass_count": 0,
+  "total": 4,
+  "results": [
+    {
+      "topic": "world history and civilizations",
+      "onboarding": null,
+      "queue_poll": [],
+      "formats": [],
+      "sources": [],
+      "loops": [],
+      "progression": null,
+      "ok": false,
+      "errors": [
+        "onboarding failed 500: {\"detail\":\"Failed to generate first question for Content V1: Gemini generation failed for topic=World History And Civilizations, format=radio_single\"}"
+      ]
+    },
+    {
+      "topic": "python programming fundamentals",
+      "onboarding": null,
+      "queue_poll": [],
+      "formats": [],
+      "sources": [],
+      "loops": [],
+      "progression": null,
+      "ok": false,
+      "errors": [
+        "onboarding failed 500: {\"detail\":\"Failed to generate first question for Content V1: Gemini generation failed for topic=Python Programming Fundamentals, format=radio_single\"}"
+      ]
+    },
+    {
+      "topic": "climate science and weather systems",
+      "onboarding": null,
+      "queue_poll": [],
+      "formats": [],
+      "sources": [],
+      "loops": [],
+      "progression": null,
+      "ok": false,
+      "errors": [
+        "onboarding failed 500: {\"detail\":\"Failed to generate first question for Content V1: Gemini generation failed for topic=Climate Science And Weather Systems, format=radio_single\"}"
+      ]
+    },
+    {
+      "topic": "public speaking confidence",
+      "onboarding": null,
+      "queue_poll": [],
+      "formats": [],
+      "sources": [],
+      "loops": [],
+      "progression": null,
+      "ok": false,
+      "errors": [
+        "onboarding failed 500: {\"detail\":\"Failed to generate first question for Content V1: Gemini generation failed for topic=Public Speaking Confidence, format=radio_multi\"}"
+      ]
+    }
+  ],
+  "ok": false
+}

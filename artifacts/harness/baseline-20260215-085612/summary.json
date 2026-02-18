@@ -1,0 +1,66 @@
+{
+  "created_at": "2026-02-15T13:56:20.844123+00:00",
+  "mode": "local",
+  "require_greptile": false,
+  "ok": false,
+  "duration_s": 8.39,
+  "output_dir": "/Users/gaganarora/Desktop/my projects/aitutor/artifacts/harness/baseline-20260215-085612",
+  "gates": [
+    {
+      "name": "secret_scan",
+      "ok": true,
+      "required": true,
+      "skipped": false,
+      "timed_out": false,
+      "returncode": 0,
+      "elapsed_s": 0.08,
+      "command": "bash scripts/harness/secret_scan.sh artifacts/harness/baseline-20260215-085612/secret_scan.json",
+      "stdout": "artifacts/harness/baseline-20260215-085612/logs/secret_scan.stdout.log",
+      "stderr": "artifacts/harness/baseline-20260215-085612/logs/secret_scan.stderr.log"
+    },
+    {
+      "name": "smoke",
+      "ok": false,
+      "required": true,
+      "skipped": false,
+      "timed_out": false,
+      "returncode": 1,
+      "elapsed_s": 8.31,
+      "command": "python3 scripts/harness/smoke_test.py --output artifacts/harness/baseline-20260215-085612/smoke.json",
+      "stdout": "artifacts/harness/baseline-20260215-085612/logs/smoke.stdout.log",
+      "stderr": "artifacts/harness/baseline-20260215-085612/logs/smoke.stderr.log"
+    },
+    {
+      "name": "pretest_checklist",
+      "ok": true,
+      "required": true,
+      "skipped": true,
+      "skip_reason": "HARNESS_SKIP_PRETEST=true",
+      "command": "python3 scripts/pretest_checklist.py"
+    },
+    {
+      "name": "content_v1_battletest",
+      "ok": true,
+      "required": true,
+      "skipped": true,
+      "skip_reason": "HARNESS_SKIP_CONTENT_V1=true",
+      "command": "python3 scripts/content_v1_battletest.py"
+    },
+    {
+      "name": "playwright",
+      "ok": true,
+      "required": true,
+      "skipped": true,
+      "skip_reason": "HARNESS_SKIP_PLAYWRIGHT=true",
+      "command": "bash scripts/harness/run_playwright_capture.sh artifacts/harness/baseline-20260215-085612/screenshots"
+    },
+    {
+      "name": "greptile",
+      "ok": true,
+      "required": false,
+      "skipped": true,
+      "skip_reason": "HARNESS_SKIP_GREPTILE=true",
+      "command": "bash scripts/harness/greptile_gate.sh artifacts/harness/baseline-20260215-085612/greptile.json"
+    }
+  ]
+}

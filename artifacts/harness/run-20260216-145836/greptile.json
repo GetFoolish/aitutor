@@ -1,0 +1,9 @@
+{
+  "ok": true,
+  "skipped": false,
+  "required": true,
+  "command": "curl -fsS -H \"Authorization: Bearer $GREPTILE_API_KEY\" https://api.greptile.com/mcp >/dev/null",
+  "returncode": 0,
+  "stdout": "artifacts/harness/run-20260216-145836/greptile.stdout.log",
+  "stderr": "artifacts/harness/run-20260216-145836/greptile.stderr.log"
+}

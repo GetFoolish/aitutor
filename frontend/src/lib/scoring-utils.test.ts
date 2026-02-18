@@ -251,6 +251,35 @@ describe('scorePerseusQuestion', () => {
       expect(result.correct).toBe(false);
       expect(result.correctCount).toBe(0);
     });
+
+    it('scores correct choice when selectedChoiceIds uses explicit widget IDs', () => {
+      const withIds = {
+        'radio 1': {
+          type: 'radio',
+          options: {
+            choices: [
+              { id: '0-0-0-0-0', content: '"10"', correct: false },
+              { id: '1-1-1-1-1', content: '"4"', correct: true },
+            ],
+            multipleSelect: false,
+          },
+        },
+      };
+      const result = scorePerseusQuestion(withIds, {
+        'radio 1': { selectedChoiceIds: ['1-1-1-1-1'] },
+      });
+      expect(result.correct).toBe(true);
+      expect(result.selectedAnswerText).toBe('4');
+      expect(result.selectedAnswerIndex).toBe(1);
+    });
+
+    it('accepts quoted selectedChoiceId tokens', () => {
+      const result = scorePerseusQuestion(widgets, {
+        'radio 1': { selectedChoiceIds: ['"choice-1"'] },
+      });
+      expect(result.correct).toBe(true);
+      expect(result.selectedAnswerIndex).toBe(1);
+    });
   });
 
   // ---------- radio multi-select ----------
@@ -296,6 +325,26 @@ describe('scorePerseusQuestion', () => {
         'radio 1': { selectedChoiceIds: ['choice-1', 'choice-3'] },
       });
       expect(result.correct).toBe(false);
+    });
+
+    it('multi-select supports explicit choice IDs', () => {
+      const withIds = {
+        'radio 1': {
+          type: 'radio',
+          options: {
+            choices: [
+              { id: 'a-id', content: 'A', correct: true },
+              { id: 'b-id', content: 'B', correct: false },
+              { id: 'c-id', content: 'C', correct: true },
+            ],
+            multipleSelect: true,
+          },
+        },
+      };
+      const result = scorePerseusQuestion(withIds, {
+        'radio 1': { selectedChoiceIds: ['a-id', 'c-id'] },
+      });
+      expect(result.correct).toBe(true);
     });
   });
 

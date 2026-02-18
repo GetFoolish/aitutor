@@ -22,7 +22,7 @@ const QuestionDisplay: React.FC<QuestionDisplayProps> = ({
   watchedVideoIds,
   onAnswerSubmitted,
   assessmentMode = false,
-  assessmentQuestions = [],
+  assessmentQuestions,
   onAssessmentAnswer,
   currentQuestionIndex = 0
 }) => {

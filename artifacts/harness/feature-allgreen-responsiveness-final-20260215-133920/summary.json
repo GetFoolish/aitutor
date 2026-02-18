@@ -1,0 +1,82 @@
+{
+  "created_at": "2026-02-15T18:46:23.848673+00:00",
+  "mode": "local",
+  "require_greptile": true,
+  "ok": true,
+  "duration_s": 423.36,
+  "output_dir": "/Users/gaganarora/Desktop/my projects/aitutor/artifacts/harness/feature-allgreen-responsiveness-final-20260215-133920",
+  "gates": [
+    {
+      "name": "secret_scan",
+      "ok": true,
+      "required": true,
+      "skipped": false,
+      "timed_out": false,
+      "returncode": 0,
+      "elapsed_s": 0.17,
+      "command": "bash scripts/harness/secret_scan.sh artifacts/harness/feature-allgreen-responsiveness-final-20260215-133920/secret_scan.json",
+      "stdout": "artifacts/harness/feature-allgreen-responsiveness-final-20260215-133920/logs/secret_scan.stdout.log",
+      "stderr": "artifacts/harness/feature-allgreen-responsiveness-final-20260215-133920/logs/secret_scan.stderr.log"
+    },
+    {
+      "name": "smoke",
+      "ok": true,
+      "required": true,
+      "skipped": false,
+      "timed_out": false,
+      "returncode": 0,
+      "elapsed_s": 156.97,
+      "command": "'/Users/gaganarora/Desktop/my projects/aitutor/venv/bin/python3' scripts/harness/smoke_test.py --output artifacts/harness/feature-allgreen-responsiveness-final-20260215-133920/smoke.json",
+      "stdout": "artifacts/harness/feature-allgreen-responsiveness-final-20260215-133920/logs/smoke.stdout.log",
+      "stderr": "artifacts/harness/feature-allgreen-responsiveness-final-20260215-133920/logs/smoke.stderr.log"
+    },
+    {
+      "name": "pretest_checklist",
+      "ok": true,
+      "required": true,
+      "skipped": false,
+      "timed_out": false,
+      "returncode": 0,
+      "elapsed_s": 180.98,
+      "command": "'/Users/gaganarora/Desktop/my projects/aitutor/venv/bin/python3' scripts/pretest_checklist.py",
+      "stdout": "artifacts/harness/feature-allgreen-responsiveness-final-20260215-133920/logs/pretest_checklist.stdout.log",
+      "stderr": "artifacts/harness/feature-allgreen-responsiveness-final-20260215-133920/logs/pretest_checklist.stderr.log"
+    },
+    {
+      "name": "content_v1_battletest",
+      "ok": true,
+      "required": true,
+      "skipped": false,
+      "timed_out": false,
+      "returncode": 0,
+      "elapsed_s": 65.6,
+      "command": "'/Users/gaganarora/Desktop/my projects/aitutor/venv/bin/python3' scripts/content_v1_battletest.py",
+      "stdout": "artifacts/harness/feature-allgreen-responsiveness-final-20260215-133920/logs/content_v1_battletest.stdout.log",
+      "stderr": "artifacts/harness/feature-allgreen-responsiveness-final-20260215-133920/logs/content_v1_battletest.stderr.log"
+    },
+    {
+      "name": "playwright",
+      "ok": true,
+      "required": true,
+      "skipped": false,
+      "timed_out": false,
+      "returncode": 0,
+      "elapsed_s": 19.23,
+      "command": "bash scripts/harness/run_playwright_capture.sh artifacts/harness/feature-allgreen-responsiveness-final-20260215-133920/screenshots",
+      "stdout": "artifacts/harness/feature-allgreen-responsiveness-final-20260215-133920/logs/playwright.stdout.log",
+      "stderr": "artifacts/harness/feature-allgreen-responsiveness-final-20260215-133920/logs/playwright.stderr.log"
+    },
+    {
+      "name": "greptile",
+      "ok": true,
+      "required": true,
+      "skipped": false,
+      "timed_out": false,
+      "returncode": 0,
+      "elapsed_s": 0.4,
+      "command": "bash scripts/harness/greptile_gate.sh artifacts/harness/feature-allgreen-responsiveness-final-20260215-133920/greptile.json",
+      "stdout": "artifacts/harness/feature-allgreen-responsiveness-final-20260215-133920/logs/greptile.stdout.log",
+      "stderr": "artifacts/harness/feature-allgreen-responsiveness-final-20260215-133920/logs/greptile.stderr.log"
+    }
+  ]
+}

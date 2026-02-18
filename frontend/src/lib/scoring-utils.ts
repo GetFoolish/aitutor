@@ -58,6 +58,66 @@ export function deepNormalize(s: string): string {
     return n;
 }
 
+function stripWrappingQuotes(value: string): string {
+    const trimmed = value.trim();
+    if (trimmed.length < 2) return trimmed;
+    const first = trimmed[0];
+    const last = trimmed[trimmed.length - 1];
+    if ((first === '"' && last === '"') || (first === "'" && last === "'")) {
+        return trimmed.slice(1, -1).trim();
+    }
+    return trimmed;
+}
+
+function normalizeChoiceToken(value: unknown): string {
+    if (value == null) return '';
+    return stripWrappingQuotes(String(value)).trim();
+}
+
+function normalizeChoiceContent(value: unknown): string {
+    if (typeof value !== 'string') return value == null ? '' : String(value);
+    return stripWrappingQuotes(value);
+}
+
+function buildChoiceIndexMap(choices: any[]): Map<string, number> {
+    const index = new Map<string, number>();
+    choices.forEach((choice: any, i: number) => {
+        const explicitId = normalizeChoiceToken(choice?.id);
+        if (explicitId) index.set(explicitId, i);
+        index.set(`choice-${i}`, i);
+        index.set(String(i), i);
+    });
+    return index;
+}
+
+function resolveSelectedChoiceIndex(rawChoiceId: unknown, choices: any[], choiceIndexMap: Map<string, number>): number {
+    const token = normalizeChoiceToken(rawChoiceId);
+    if (!token) return -1;
+
+    const fromMap = choiceIndexMap.get(token);
+    if (fromMap != null) return fromMap;
+
+    const choicePatternMatch = token.match(/^choice-(\d+)(?:-|$)/);
+    if (choicePatternMatch) {
+        const idx = parseInt(choicePatternMatch[1], 10);
+        return Number.isInteger(idx) && idx >= 0 && idx < choices.length ? idx : -1;
+    }
+
+    // Perseus may emit IDs in forms like "1-1-1-1-1" in some state snapshots.
+    const repeatedIndexMatch = token.match(/^(\d+)(?:-\d+){1,}$/);
+    if (repeatedIndexMatch) {
+        const idx = parseInt(repeatedIndexMatch[1], 10);
+        return Number.isInteger(idx) && idx >= 0 && idx < choices.length ? idx : -1;
+    }
+
+    const plainIndex = parseInt(token, 10);
+    if (Number.isInteger(plainIndex) && plainIndex >= 0 && plainIndex < choices.length) {
+        return plainIndex;
+    }
+
+    return -1;
+}
+
 // ---------------------------------------------------------------------------
 // Per-widget scoring
 // ---------------------------------------------------------------------------
@@ -99,27 +159,30 @@ export function scorePerseusQuestion(
             const choices = widgetDef.options?.choices || [];
             const selectedIds = (widgetInput as any).selectedChoiceIds || [];
             const isMultiSelect = widgetDef.options?.multipleSelect || false;
+            const choiceIndexMap = buildChoiceIndexMap(choices);
 
             if (isMultiSelect) {
                 const correctIndices = choices
                     .map((c: any, i: number) => c.correct ? i : -1)
                     .filter((i: number) => i >= 0);
-                const selectedIndices = selectedIds.map((id: string) => {
-                    const match = id.match(/choice-(\d+)/);
-                    return match ? parseInt(match[1]) : -1;
-                }).filter((i: number) => i >= 0);
+                const selectedIndices = Array.from(
+                    new Set(
+                        selectedIds
+                            .map((id: string) => resolveSelectedChoiceIndex(id, choices, choiceIndexMap))
+                            .filter((i: number) => i >= 0)
+                    )
+                );
                 // Bidirectional check: selected must match correct exactly (no over-selecting)
                 widgetCorrect = correctIndices.length === selectedIndices.length &&
                     correctIndices.every((idx: number) => selectedIndices.includes(idx)) &&
                     selectedIndices.every((idx: number) => correctIndices.includes(idx));
             } else {
                 if (selectedIds.length === 1) {
-                    const match = selectedIds[0].match(/choice-(\d+)/);
-                    if (match) {
-                        const idx = parseInt(match[1]);
+                    const idx = resolveSelectedChoiceIndex(selectedIds[0], choices, choiceIndexMap);
+                    if (idx >= 0) {
                         widgetCorrect = !!choices[idx]?.correct;
                         if (!selectedAnswerText) {
-                            selectedAnswerText = choices[idx]?.content || '';
+                            selectedAnswerText = normalizeChoiceContent(choices[idx]?.content || '');
                             selectedAnswerIndex = idx;
                         }
                     }
@@ -174,14 +237,11 @@ export function scorePerseusQuestion(
         } else if (widgetDef.type === 'dropdown') {
             const choices = widgetDef.options?.choices || [];
             const selectedIdx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
-            // Perseus dropdown uses index 0 for the placeholder ("Select an answer"),
-            // so real choices start at index 1. Subtract 1 to map to 0-based choices array.
-            const choiceIdx = (selectedIdx != null && selectedIdx >= 1) ? selectedIdx - 1 : -1;
-            if (choiceIdx >= 0 && choiceIdx < choices.length) {
-                widgetCorrect = !!choices[choiceIdx]?.correct;
+            if (selectedIdx != null && selectedIdx >= 0 && selectedIdx < choices.length) {
+                widgetCorrect = !!choices[selectedIdx]?.correct;
                 if (!selectedAnswerText) {
-                    selectedAnswerText = choices[choiceIdx]?.content || '';
-                    selectedAnswerIndex = choiceIdx;
+                    selectedAnswerText = normalizeChoiceContent(choices[selectedIdx]?.content || '');
+                    selectedAnswerIndex = selectedIdx;
                 }
             }
             scoreableCount++;
@@ -334,8 +394,7 @@ export function hasUserInput(
             if (val && val.trim()) return true;
         } else if (widgetDef.type === 'dropdown') {
             const idx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
-            // Index 0 is the placeholder ("Select an answer"), real choices start at 1
-            if (idx != null && idx >= 1) return true;
+            if (idx != null && idx >= 0) return true;
         } else if (widgetDef.type === 'orderer') {
             const curr = (widgetInput as any)?.current || (widgetInput as any)?.options || [];
             if (curr.length > 0) return true;

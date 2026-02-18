@@ -1,0 +1,30 @@
+{"subject":"Science","status":"ready","start_code":200,"questions_code":200,"skills_count":101,"questions_count":5,"start_seconds":0,"questions_seconds":10}
+{"subject":"History","status":"ready","start_code":200,"questions_code":200,"skills_count":98,"questions_count":4,"start_seconds":1,"questions_seconds":1}
+{"subject":"English","status":"ready","start_code":200,"questions_code":200,"skills_count":74,"questions_count":5,"start_seconds":1,"questions_seconds":1}
+{"subject":"Geography","status":"ready","start_code":200,"questions_code":200,"skills_count":83,"questions_count":5,"start_seconds":1,"questions_seconds":2}
+{"subject":"python","status":"ready","start_code":200,"questions_code":200,"skills_count":90,"questions_count":4,"start_seconds":0,"questions_seconds":2}
+{"subject":"music theory","status":"ready","start_code":200,"questions_code":200,"skills_count":78,"questions_count":5,"start_seconds":1,"questions_seconds":1}
+{"subject":"Cooking","status":"ready","start_code":200,"questions_code":200,"skills_count":78,"questions_count":4,"start_seconds":0,"questions_seconds":29}
+{"subject":"Spanish","status":"ready","start_code":200,"questions_code":200,"skills_count":91,"questions_count":5,"start_seconds":1,"questions_seconds":43}
+{"subject":"Art","status":"ready","start_code":200,"questions_code":200,"skills_count":82,"questions_count":3,"start_seconds":0,"questions_seconds":2}
+{"subject":"Economics","status":"ready","start_code":200,"questions_code":200,"skills_count":88,"questions_count":3,"start_seconds":1,"questions_seconds":1}
+{"subject":"Philosophy","status":"ready","start_code":200,"questions_code":200,"skills_count":63,"questions_count":5,"start_seconds":1,"questions_seconds":59}
+{"subject":"Astronomy","status":"ready","start_code":200,"questions_code":200,"skills_count":68,"questions_count":4,"start_seconds":1,"questions_seconds":1}
+{"subject":"world war 2","status":"ready","start_code":200,"questions_code":200,"skills_count":89,"questions_count":4,"start_seconds":1,"questions_seconds":73}
+{"subject":"russian","status":"ready","start_code":200,"questions_code":200,"skills_count":70,"questions_count":5,"start_seconds":2,"questions_seconds":45}
+{"subject":"korean","status":"ready","start_code":200,"questions_code":200,"skills_count":91,"questions_count":4,"start_seconds":1,"questions_seconds":54}
+{"subject":"Ancient Greek","status":"ready","start_code":200,"questions_code":200,"skills_count":97,"questions_count":3,"start_seconds":0,"questions_seconds":54}
+{"subject":"Swahili","status":"ready","start_code":200,"questions_code":200,"skills_count":72,"questions_count":4,"start_seconds":0,"questions_seconds":63}
+{"subject":"Hindi","status":"ready","start_code":200,"questions_code":200,"skills_count":71,"questions_count":3,"start_seconds":1,"questions_seconds":99}
+{"subject":"Architecture","status":"ready","start_code":200,"questions_code":200,"skills_count":79,"questions_count":5,"start_seconds":1,"questions_seconds":39}
+{"subject":"Thai","status":"ready","start_code":200,"questions_code":200,"skills_count":92,"questions_count":4,"start_seconds":1,"questions_seconds":68}
+{"subject":"Pottery","status":"ready","start_code":200,"questions_code":200,"skills_count":73,"questions_count":5,"start_seconds":0,"questions_seconds":47}
+{"subject":"Farsi","status":"ready","start_code":200,"questions_code":200,"skills_count":62,"questions_count":4,"start_seconds":0,"questions_seconds":53}
+{"subject":"Nutrition","status":"ready","start_code":200,"questions_code":200,"skills_count":79,"questions_count":5,"start_seconds":1,"questions_seconds":44}
+{"subject":"Filmmaking","status":"ready","start_code":200,"questions_code":200,"skills_count":63,"questions_count":5,"start_seconds":0,"questions_seconds":51}
+{"subject":"world war 1","status":"generating","start_code":200,"questions_code":500,"skills_count":0,"questions_count":0,"start_seconds":1,"questions_seconds":1}
+{"subject":"Physics","status":"ready","start_code":200,"questions_code":200,"skills_count":84,"questions_count":4,"start_seconds":1,"questions_seconds":71}
+{"subject":"Python Programming","status":"ready","start_code":200,"questions_code":200,"skills_count":99,"questions_count":5,"start_seconds":1,"questions_seconds":1}
+{"subject":"Biology","status":"ready","start_code":200,"questions_code":200,"skills_count":60,"questions_count":5,"start_seconds":1,"questions_seconds":59}
+{"subject":"Astrophysics And Cosmology Studies For Advanced Le","status":"ready","start_code":200,"questions_code":200,"skills_count":80,"questions_count":4,"start_seconds":1,"questions_seconds":39}
+{"subject":"Geometry","status":"ready","start_code":200,"questions_code":200,"skills_count":104,"questions_count":4,"start_seconds":1,"questions_seconds":1}

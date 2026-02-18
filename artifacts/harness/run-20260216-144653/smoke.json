@@ -1,0 +1,3667 @@
+{
+  "created_at": "2026-02-16T14:46:53.674201+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.018024206161499023,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 110,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.0022928714752197266,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.05554795265197754,
+      "body": {
+        "status": "healthy",
+        "service": "TeachingAssistant"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.05470728874206543,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": true,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 0.05903196334838867,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 110
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 1.0400283336639404,
+        "count": 5,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 12.0,
+        "min_question_count": 5
+      }
+    },
+    "learning_path_subject_validity": {
+      "ok": true,
+      "current_question_ids": [
+        "pool_dea50cbfc16d38f0",
+        "pool_9a830ace7a85f31e",
+        "pool_561a68ccd0ada5cc"
+      ],
+      "recommend_next": {
+        "code": 200,
+        "elapsed_s": 0.433121919631958,
+        "count": 4,
+        "overlap_with_current_ids": [],
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        },
+        "body": {
+          "sample_ids": [
+            "pool_81c756fc3ac46931",
+            "pool_6b03c973f6ef56b7",
+            "pool_5725f69ffaed6094",
+            "pool_de7562dfbd7e8c2b"
+          ]
+        }
+      }
+    },
+    "adaptive_start_all_subjects": {
+      "ok": true,
+      "adaptive_start_timeout_s": 4.0,
+      "adaptive_start_retry_timeout_s": 12.0,
+      "catalog_fetch": {
+        "code": 200,
+        "elapsed_s": 0.05656099319458008,
+        "count": 57,
+        "fallback_used": false
+      },
+      "subjects_checked_count": 57,
+      "subjects_checked": [
+        "Science",
+        "History",
+        "English",
+        "Geography",
+        "Python",
+        "Music Theory",
+        "Cooking",
+        "Spanish",
+        "Art",
+        "Economics",
+        "Philosophy",
+        "Astronomy",
+        "World War 2",
+        "Russian",
+        "Korean",
+        "Ancient Greek",
+        "Swahili",
+        "Hindi",
+        "Architecture",
+        "Thai",
+        "Pottery",
+        "Farsi",
+        "Nutrition",
+        "Filmmaking",
+        "World War 1",
+        "Physics",
+        "Python Programming",
+        "Biology",
+        "Astrophysics And Cosmology Studies For Advanced Le",
+        "Geometry",
+        "Zzzz Recursion Probe 1771093263",
+        "Zzzz Pretest Probe 1771097854",
+        "Science Math History English Geography Python",
+        "Zzzz Pretest Probe 1771100688",
+        "Math",
+        "Zzzz Pretest Probe 1771160157",
+        "Zzzz Pretest Probe 1771165481",
+        "Zzzz Pretest Probe 1771166452",
+        "Zzzz Pretest Probe 1771168832",
+        "Zzzz Pretest Probe 1771169457",
+        "Zzzz Pretest Probe 1771170539",
+        "Zzzz Pretest Probe 1771170669",
+        "Zzzz Pretest Probe 1771172484",
+        "Zzzz Pretest Probe 1771172888",
+        "Zzzz Pretest Probe 1771173119",
+        "Zzzz Pretest Probe 1771175663",
+        "Zzzz Pretest Probe 1771176204",
+        "Zzzz Pretest Probe 1771177239",
+        "Zzzz Pretest Probe 1771180187",
+        "Zzzz Pretest Probe 1771180466",
+        "Zzzz Pretest Probe 1771181093",
+        "Zzzz Pretest Probe 1771182375",
+        "Zzzz Pretest Probe 1771182903",
+        "Zzzz Pretest Probe 1771183378",
+        "Zzzz Pretest Probe 1771183747",
+        "Zzzz Pretest Probe 1771186680",
+        "Zzzz Pretest Probe 1771194668"
+      ],
+      "timeout_retryable_count": 29,
+      "concrete_result_count": 28,
+      "results": [
+        {
+          "subject": "Science",
+          "code": 200,
+          "elapsed_s": 1.1122558116912842,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_3d407047c96a",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Living organisms need energy to grow, move, and reproduce. What is the original source of almost all energy for life on Earth?\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "The Sun",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Water",
+                          "correct": false,
+                          "misconception": "Confuses essential resources for life with the primary energy source.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Soil",
+                          "correct": false,
+                          "misconception": "Confuses nutrient sources for plants with the ultimate energy source.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Rocks",
+                          "correct": false,
+                          "misconception": "Mistakes non-living geological features for a source of biological energy.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "numCorrect": 1,
+                      "randomize": false
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about where plants get the energy they need to make their own food. What powers their food-making process?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Plants use a process called photosynthesis to convert light energy into chemical energy. This chemical energy then moves through food chains to other organisms.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The light energy required for photosynthesis comes from the largest and brightest celestial body in our solar system. Which one provides this essential energy?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "question_id": "pool_8f3bc3a56bbcf4b1",
+              "dash_metadata": {
+                "dash_question_id": "pool_8f3bc3a56bbcf4b1",
+                "skill_ids": [
+                  "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+                ],
+                "difficulty": 0.1625,
+                "skill_names": [
+                  "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+                ],
+                "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+                "lesson_name": "Practice",
+                "ai_generated": true
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "History",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "English",
+          "code": 200,
+          "elapsed_s": 1.5266098976135254,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_945ac704fcbc",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following options is a complete sentence? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Running quickly through the park.",
+                          "correct": false,
+                          "misconception": "Believes a participle phrase can act as the main verb of a sentence.",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "The dog running quickly through the park.",
+                          "correct": false,
+                          "misconception": "Thinks a subject and a participle are enough for a complete sentence without a main verb.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Running quickly through the park, the dog wagged its tail.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Through the park, running quickly.",
+                          "correct": false,
+                          "misconception": "Does not recognize the absence of both a subject and a main verb.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what two essential parts every complete sentence needs to express a full, independent thought.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A complete sentence must contain a subject (who or what the sentence is about) and a predicate (which includes a main verb that describes the subject's action or state of being).",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Look at each option and identify the subject and the main verb. Options A, B, and D are missing either a clear subject, a main verb, or both. For example, 'running' on its own is often a descriptive word, not a main verb. Only one option contains both a subject and a main verb that forms a complete thought.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "question_id": "pool_e26e03f0d3ce4009",
+              "dash_metadata": {
+                "dash_question_id": "pool_e26e03f0d3ce4009",
+                "skill_ids": [
+                  "ai_gen_english_us_6th-8th-grade-ela_unit_grammar-sentence-structure"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Grammar and Sentence Structure"
+                ],
+                "unit_name": "Grammar and Sentence Structure",
+                "lesson_name": "Practice",
+                "ai_generated": true
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Geography",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Python",
+          "code": 200,
+          "elapsed_s": 1.8993690013885498,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_2b3f10918e33",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "You are writing a Python program that needs to ask the user for the number of pets they have and store it as a whole number. Which line of Python code correctly does this?\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "`pets = int(input(\"How many pets do you have? \"))`",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "`pets = input(\"How many pets do you have? \")`",
+                          "correct": false,
+                          "misconception": "Forgets to convert the string input to an integer.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "`pets = input(int(\"How many pets do you have? \"))`",
+                          "correct": false,
+                          "misconception": "Tries to convert the prompt string to an integer instead of the user's input.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "`pets = \"How many pets do you have? \"(int)`",
+                          "correct": false,
+                          "misconception": "Uses incorrect syntax for both getting input and type conversion.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "First, think about how Python gets text input from the user. Then, consider how you change that text into a whole number.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The `input()` function is used to get text from the user. The `int()` function is used to convert something into a whole number (an integer).",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "To get input and convert it immediately, you need to use the `input()` function inside the `int()` function. This means the value returned by `input()` will be passed directly to `int()` for conversion.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_db2d2b5e062b",
+                "skill_ids": [
+                  "ai_gen_python_us_6th-8th-grade-python-core-syntax-data-types_unit_user-input-type-conversion"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "User Input and Type Conversion"
+                ],
+                "unit_name": "User Input and Type Conversion",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69922960a830bcbc10a6e2fd"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Music Theory",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Cooking",
+          "code": 200,
+          "elapsed_s": 1.9563450813293457,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_380a49fa19c1",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nWhen cooking, adding an acidic ingredient like lemon juice or vinegar can cause several changes to food. Which of the following are common effects of adding acid? Select TWO correct answers.\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "It helps tenderize tough cuts of meat.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "It prevents sliced fruits, like apples, from turning brown.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "It makes baked goods, like cakes, rise much higher.",
+                          "correct": false,
+                          "misconception": "Confuses acid's role in leavening with acid alone causing rise.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "It makes the food taste sweeter.",
+                          "correct": false,
+                          "misconception": "Misunderstands the primary taste profile of acid.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": true,
+                      "randomize": false,
+                      "numCorrect": 2
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/488637656448945c.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Food Science Fundamentals",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what happens when you marinate meat in a lemon juice mixture, or when you put lemon juice on sliced apples. What changes do you observe?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Acids have a low pH and can react with certain molecules in food. For example, acids can help break down proteins and slow down the chemical reactions that cause browning in fruits.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider how acid affects proteins in meat: it helps to break them down, making the meat more tender. Also, think about how acid is often used to keep cut fruit looking fresh by preventing oxidation. Now, review the choices with these ideas in mind.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_87a7974d48b1",
+                "skill_ids": [
+                  "ai_gen_cooking_us_middle-school-culinary-science-safety_unit_food-science-fundamentals"
+                ],
+                "difficulty": 0.45,
+                "skill_names": [
+                  "Food Science Fundamentals"
+                ],
+                "unit_name": "Food Science Fundamentals",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921adaa830bcbc10a6c455"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Spanish",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Art",
+          "code": 200,
+          "elapsed_s": 2.127464771270752,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_b7f9e82629e3",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "During the Middle Ages, many people could not read. How did the Catholic Church primarily use grand artworks, such as large frescoes and stained-glass windows in cathedrals, to interact with and instruct its followers? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "By visually illustrating Bible stories and the lives of saints, making religious teachings clear.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "To show off the wealth and artistic skill of the local communities and leaders.",
+                          "correct": false,
+                          "misconception": "Focuses only on power/wealth display, missing the didactic purpose for the illiterate.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "To make the interiors of the churches more colorful and appealing to everyone.",
+                          "correct": false,
+                          "misconception": "Views art primarily as decoration, overlooking its instructional role.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "To provide a place for artists to practice their skills and create new styles.",
+                          "correct": false,
+                          "misconception": "Confuses the artists' motivation/opportunity with the Church's primary purpose for the art.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "multipleSelect": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what was difficult for people who couldn't read. How could art help them understand important ideas about faith and the Church?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "In the Middle Ages, written texts were rare and most people couldn't read. Art became a powerful tool, often called a 'visual bible,' used by the Church to communicate religious stories and teachings to everyone.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The Church needed a way to teach its followers about Christianity and the Bible. Since words on a page weren't an option for most, grand artworks like frescoes and stained-glass windows served to depict these stories and lessons in a way that was easily understood by all who saw them. Which choice best describes this function?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_faa7e9a123d7",
+                "skill_ids": [
+                  "ai_gen_art_us_middle-school-art-history-culture_unit_faith-power-middle-ages"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Faith and Power: Art of the Middle Ages"
+                ],
+                "unit_name": "Faith and Power: Art of the Middle Ages",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6992131ca830bcbc10a6a89d"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Economics",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Philosophy",
+          "code": 200,
+          "elapsed_s": 2.559981107711792,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_9be2ab2f3385",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "In philosophy, what is the study of right and wrong behavior called? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Biology",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Ethics",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Mathematics",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "History",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What area of study focuses on moral principles?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Ethics explores concepts like good, bad, right, and wrong.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The answer is the field of study that specifically deals with moral principles and values.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_6373b347d5ea",
+                "skill_ids": [
+                  "ai_gen_philosophy_us_6th-8th-grade-philosophy-exploring-big-questions_unit_right-and-wrong"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Right and Wrong: Making Ethical Choices"
+                ],
+                "unit_name": "Right and Wrong: Making Ethical Choices",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699249191347d892d59f20dd"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Astronomy",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "World War 2",
+          "code": 200,
+          "elapsed_s": 2.38645076751709,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_f7f151c0fd77",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of these battles is considered a major turning point in World War II in North Africa? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "The Battle of Stalingrad",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "The Second Battle of El Alamein",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "The Battle of the Bulge",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "The Battle of Britain",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about which continent the question is asking about.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A turning point in a war is a battle that significantly changes the course of the conflict.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The Second Battle of El Alamein led to the Allied forces pushing the Axis powers out of North Africa.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_20bd990c1804",
+                "skill_ids": [
+                  "ai_gen_world-war-2_us_middle-school-history-ww2-events_unit_turning-tide-battles-europe-north-africa"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Turning the Tide: Key Battles in Europe and North Africa"
+                ],
+                "unit_name": "Turning the Tide: Key Battles in Europe and North Africa",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6992485b1347d892d59f1df5"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Russian",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Korean",
+          "code": 200,
+          "elapsed_s": 1.9638309478759766,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_048fde6fec13",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "\ud55c\uad6d\uc5b4\ub85c \"\uc5b4\uba38\ub2c8\"\ub294 \ub204\uad6c\ub97c \uc758\ubbf8\ud569\ub2c8\uae4c? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "\uc544\ubc84\uc9c0\uc758 \uc544\ubc84\uc9c0",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "\uc5ec\uc131 \ubd80\ubaa8",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "\ub0a8\uc131 \ubd80\ubaa8",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "\ud615\uc81c",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "\uc5b4\uba38\ub2c8\ub294 \uac00\uc871 \uad6c\uc131\uc6d0 \uc911 \ub204\uad6c\uc785\ub2c8\uae4c?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "\"\uc5b4\uba38\ub2c8\"\ub294 \ub2f9\uc2e0\uc744 \ub0b3\uace0 \ud0a4\uc6b4 \uc5ec\uc131 \ubd80\ubaa8\uc785\ub2c8\ub2e4.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "\uc815\ub2f5\uc740 \uc5ec\uc131 \ubd80\ubaa8\uc785\ub2c8\ub2e4.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_045374255f72",
+                "skill_ids": [
+                  "ai_gen_korean_us_6-8th-grade-korean-novice-low-proficiency_unit_my-family-and-friends"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "My Family and Friends"
+                ],
+                "unit_name": "My Family and Friends",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921e3ba830bcbc10a6d890"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Ancient Greek",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Swahili",
+          "code": 200,
+          "elapsed_s": 1.8065381050109863,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_3b181e59a225",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Ni ipi kati ya hizi ni njia sahihi ya kusema \"The red car\" kwa Kiswahili? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Gari nyekundu",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Gari jekundu",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Nyekundu gari",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Mekundu gari",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Je, unakumbuka jinsi vivumishi vinafuata nomino katika Kiswahili?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Katika Kiswahili, kivumishi (kama vile rangi) huja baada ya nomino (kama vile gari).",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Jibu sahihi ni 'Gari jekundu' kwa sababu 'jekundu' (nyekundu) inafuata 'gari' (gari).",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_23475272fe35",
+                "skill_ids": [
+                  "ai_gen_swahili_us_6th-8th-grade-swahili-communicating-confidence_unit_kuelezea-vitu-describing-people-objects"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Kuelezea Vitu: Describing People and Objects"
+                ],
+                "unit_name": "Kuelezea Vitu: Describing People and Objects",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921da5a830bcbc10a6d3ad"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Hindi",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Architecture",
+          "code": 200,
+          "elapsed_s": 1.960602045059204,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_bd8c2c98139e",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A strong vertical support that holds up the weight of a building is called a [[\u2603 dropdown 1]].",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "column",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "beam",
+                          "correct": false,
+                          "misconception": "Confuses a vertical support with a horizontal structural element.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "roof",
+                          "correct": false,
+                          "misconception": "Mistakes a major building component for a specific load-bearing support.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "window",
+                          "correct": false,
+                          "misconception": "Confuses a structural element with a non-load-bearing opening.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the main parts of a building that stand upright and carry weight from above. What is their purpose?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Buildings need strong supports to keep them from collapsing. Vertical supports are designed to transfer weight downwards to the foundation, preventing the structure from falling.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A beam is typically a horizontal support. A roof covers the top of a building. A window is an opening, not a primary support. What is the specific term for a strong, upright support?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_8c6e08fb010e",
+                "skill_ids": [
+                  "ai_gen_architecture_us_6th-8th-grade-architecture-foundations-built-environment_unit_building-materials-structures"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Building Blocks: Materials and Structures"
+                ],
+                "unit_name": "Building Blocks: Materials and Structures",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6992490a1347d892d59f20aa"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Thai",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Pottery",
+          "code": 200,
+          "elapsed_s": 2.024592161178589,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_fd788091dd49",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "In traditional Thai temple murals, artists often use a special technique called 'opening and pulling walls.' When depicting a large story or scene on a flat wall, what is the main goal of using this technique? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "To make the painted figures appear three-dimensional, like statues.",
+                          "correct": false,
+                          "misconception": "Confuses creating depth illusion with actual 3D sculpting or relief art.",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "To create a sense of expanded space and depth, making the wall seem larger than it is.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "To ensure all the paint colors dry evenly and prevent cracking over time.",
+                          "correct": false,
+                          "misconception": "Confuses an artistic technique with a material preparation or preservation method.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "To divide the wall into smaller, separate sections for different parts of a story.",
+                          "correct": false,
+                          "misconception": "Confuses spatial manipulation with narrative segmentation or framing.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "When an artist paints a vast landscape or a crowded scene on a flat surface, how can they make it feel like there's a lot of room or that you can see far into the distance?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The 'opening and pulling walls' technique is all about manipulating the viewer's perception of space. It's used to create an illusion, making a two-dimensional surface appear to have greater depth and expansiveness.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Imagine a mural that tells a long story or shows a grand event. The artists want to transport you into that scene, making the temple wall feel less like a solid barrier and more like a window into a larger world. This technique helps achieve that feeling of a wider, deeper space.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_54b23323ef84",
+                "skill_ids": [
+                  "ai_gen_pottery_us_6th-8th-grade-pottery-introduction-to-the-wheel_unit_opening-pulling-walls"
+                ],
+                "difficulty": 0.57,
+                "skill_names": [
+                  "Opening and Pulling Walls"
+                ],
+                "unit_name": "Opening and Pulling Walls",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921c46a830bcbc10a6cbf4"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Farsi",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Nutrition",
+          "code": 200,
+          "elapsed_s": 1.5922949314117432,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_a901e940e23d",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "What is the primary purpose of your digestive system when you eat food? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "To break down food into smaller nutrients for energy and growth.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "To make you feel full and satisfied after eating.",
+                          "correct": false,
+                          "misconception": "Confuses a feeling (satiety) with the system's biological function.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "To store food until you are ready to use it for a long time.",
+                          "correct": false,
+                          "misconception": "Focuses on temporary storage by one organ, not the system's main purpose.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "To get rid of waste products from your body.",
+                          "correct": false,
+                          "misconception": "Focuses on waste removal, which is secondary to nutrient extraction.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what your body needs from the food you eat. Why do we eat in the first place?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The digestive system is like a factory that takes the raw materials (food) and processes them. Its main job is to turn large pieces of food into tiny building blocks that your body can use.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Your body needs energy to move, think, and grow. Food provides this energy. The digestive system breaks food down into small molecules like sugars, amino acids, and fatty acids, which are then absorbed into your bloodstream. This allows your body to get the fuel it needs.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_6cb7ca9db6a4",
+                "skill_ids": [
+                  "ai_gen_nutrition_us_6th-8th-grade-nutrition-science-food-body_unit_digestion-metabolism-food-to-fuel"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Digestion and Metabolism: From Food to Fuel"
+                ],
+                "unit_name": "Digestion and Metabolism: From Food to Fuel",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699229c2a830bcbc10a6e4a4"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Filmmaking",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "World War 1",
+          "code": 200,
+          "elapsed_s": 1.6316499710083008,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_8266ad91cb32",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following best describes nationalism as a cause of World War I?\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "A strong feeling of pride and loyalty that people had for their own country.",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "The rapid building up of armies and navies by European countries.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Confuses nationalism with militarism or the arms race.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Agreements between countries to defend each other if attacked.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Confuses nationalism with the system of alliances.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "The competition among countries to control more land and resources.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Confuses nationalism with imperialism or economic rivalry.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what it means when people feel very strongly about their country and its interests, sometimes believing it is better than other countries.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Nationalism is a deep devotion to one's own nation. It often involves believing that your country is superior to others and being willing to defend its interests fiercely, sometimes at the expense of other nations.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider how this intense feeling of national pride and loyalty could lead to tensions and conflicts between different countries, especially if each nation believed it was the best and deserved more power or territory.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_26af83da2c86",
+                "skill_ids": [
+                  "ai_gen_world-war-1_us_6-8th-grade-history-road-to-ww1_unit_nationalism-militarism-arms-race"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Nationalism, Militarism, and the Arms Race"
+                ],
+                "unit_name": "Nationalism, Militarism, and the Arms Race",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921e5ea830bcbc10a6d8dc"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Physics",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Python Programming",
+          "code": 200,
+          "elapsed_s": 2.3539509773254395,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_46dcaa167b25",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A Python program needs to calculate the sum of all whole numbers starting from 1 up to, but not including, a value stored in `max_value`. For example, if `max_value` is 5, the program should sum 1 + 2 + 3 + 4. If `total` starts at 0, which `for` loop correctly adds each number to `total`? [[\u2603 dropdown 1]]",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "```python\nfor i in range(1, max_value):\n    total = total + i\n```",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "```python\nfor i in range(max_value):\n    total = total + i\n```",
+                          "correct": false,
+                          "misconception": "Forgetting `range()` starts at 0 by default, leading to incorrect sum.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "```python\nfor i in range(1, max_value + 1):\n    total = total + i\n```",
+                          "correct": false,
+                          "misconception": "Misunderstanding that `range()`'s end value is exclusive, summing one number too many.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "```python\nfor i in range(1, max_value):\n    total = max_value + i\n```",
+                          "correct": false,
+                          "misconception": "Confusing the loop counter variable with the fixed `max_value` in the sum.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the specific numbers you need to add together. What is the first number, and what is the last number you want to include in the sum before `max_value`?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "In Python, the `range(start, stop)` function generates a sequence of numbers starting from `start` (inclusive) up to, but *not including*, `stop` (exclusive). To include 1 and go up to the number just before `max_value`, consider what `start` and `stop` should be.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "You need the loop to start counting from 1, so the `start` value for `range()` should be `1`. Since you want to sum numbers *up to, but not including*, `max_value`, the `stop` value for `range()` should simply be `max_value`. Inside the loop, each number `i` should be added to the `total` variable.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_ad215a5c5693",
+                "skill_ids": [
+                  "ai_gen_python-programming_us_6th-8th-grade-python-core-programming-concepts_unit_loops-repeating-actions"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Loops: Repeating Actions"
+                ],
+                "unit_name": "Loops: Repeating Actions",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6992492c1347d892d59f2169"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Biology",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Astrophysics And Cosmology Studies For Advanced Le",
+          "code": 200,
+          "elapsed_s": 1.494339942932129,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_143c0d9d60d7",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "For advanced learners studying astrophysics, which of the following is the MOST important reason for studying the Sun in detail? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "The Sun is the closest star, so it's the brightest in the sky.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "The Sun is a relatively typical star, allowing us to understand other stars by studying it closely.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "The Sun is the biggest star in the Milky Way galaxy.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "The Sun is the only star with planets orbiting it.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what makes the Sun a good model for understanding other stars.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The Sun's characteristics, like its size, temperature, and composition, are common among many stars.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "While the Sun is important for many reasons, its typical nature makes it a valuable benchmark for stellar studies.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_e9a0d9cff9d3",
+                "skill_ids": [
+                  "ai_gen_astrophysics-and-cosmology-studies-for-advanced-le_us_6th-8th-grade-middle-school-astronomy-and-space-science_unit_the-sun-and-other-stars"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "The Sun and Other Stars"
+                ],
+                "unit_name": "The Sun and Other Stars",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699229e3a830bcbc10a6e54c"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Geometry",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Recursion Probe 1771093263",
+          "code": 200,
+          "elapsed_s": 1.4258129596710205,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_27b691b81f10",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "The Fibonacci sequence starts with $1, 1, 2, 3, 5, \\dots$ Each number after the first two is the sum of the two numbers before it. What is the 10th number in this sequence? The 10th number is [[\u2603 dropdown 1]].",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "34",
+                          "correct": false,
+                          "misconception": "Stopped calculating at the 9th term instead of the 10th.",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "54",
+                          "correct": false,
+                          "misconception": "Made a small arithmetic error when adding the previous two terms.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "55",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "89",
+                          "correct": false,
+                          "misconception": "Calculated one term too far, reaching the 11th term.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Remember the rule for the Fibonacci sequence: each number is the sum of the two numbers that come before it. What are the first few terms you can list based on this rule?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Let's list the terms starting from the first: $F_1=1, F_2=1$. Then $F_3 = F_1 + F_2$, $F_4 = F_2 + F_3$, and so on. Continue this pattern until you reach the 10th term.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Let's list the first nine terms: $F_1=1, F_2=1, F_3=2, F_4=3, F_5=5, F_6=8, F_7=13, F_8=21, F_9=34$. To find the 10th term, you need to add the 9th term ($F_9$) and the 8th term ($F_8$). What is $34 + 21$?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_531210fe4c83",
+                "skill_ids": [
+                  "ai_gen_zzzz-recursion-probe-1771093263_us_6th-8th-grade-math-intro-recursive-patterns-fractals_unit_fibonacci-sequence-wonders"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "The Fibonacci Sequence and Its Wonders"
+                ],
+                "unit_name": "The Fibonacci Sequence and Its Wonders",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921c2fa830bcbc10a6cba6"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771097854",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Science Math History English Geography Python",
+          "code": 200,
+          "elapsed_s": 1.5460779666900635,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_4d0940368d24",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "In Python, which keyword is used to start a conditional statement that checks if a condition is true? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "while",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "if",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "for",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "print",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about how you would say 'if' something is true in everyday language.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Conditional statements use keywords to control the flow of a program based on whether a condition is true or false. The 'if' keyword is the most basic way to start such a statement.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The correct keyword initiates a block of code that executes only if the specified condition evaluates to True. The other options serve different purposes in Python programming.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_9bc8a66655dc",
+                "skill_ids": [
+                  "ai_gen_science-math-history-english-geography-python_us_intro-python-computational-thinking_unit_making-decisions-conditionals"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Making Decisions with Conditionals"
+                ],
+                "unit_name": "Making Decisions with Conditionals",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f37021c9df089c4830c3"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771100688",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Math",
+          "code": 200,
+          "elapsed_s": 1.7052028179168701,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_dc448760432b",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A chef is making a fruit salad. The recipe calls for apples, bananas, and grapes in a ratio of 2:3:5 by weight. If the chef uses $x$ pounds of apples, write an expression for the total weight of the fruit salad in terms of $x$. [[\u2603 expression 1]]",
+                "images": {},
+                "widgets": {
+                  "expression 1": {
+                    "type": "expression",
+                    "options": {
+                      "buttonsVisible": "never",
+                      "functions": [
+                        "f",
+                        "g",
+                        "h"
+                      ],
+                      "times": false,
+                      "answerForms": [
+                        {
+                          "value": "5x",
+                          "form": true,
+                          "simplify": false,
+                          "considered": "correct"
+                        }
+                      ],
+                      "buttonSets": [
+                        "basic"
+                      ]
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "The ratio 2:3:5 means that for every 2 parts of apples, there are 3 parts of bananas and 5 parts of grapes. What does this tell you about the total number of parts in the fruit salad?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "First, figure out how many pounds each 'part' of the ratio represents. If 2 parts of apples weigh $x$ pounds, then 1 part weighs $\\frac{x}{2}$ pounds. You can use this to find the weight of the other fruits.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Since apples are 2 parts and weigh $x$ pounds, each part is $\\frac{x}{2}$ pounds. Bananas are 3 parts, so they weigh $3 \\cdot \\frac{x}{2}$ pounds. Grapes are 5 parts, so they weigh $5 \\cdot \\frac{x}{2}$ pounds. Now, add the weights of all three fruits together to find the total weight.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_122d5dc8bf53",
+                "skill_ids": [
+                  "ai_gen_math_us_7th-grade-math_unit_ratios-proportional-relationships"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Ratios and Proportional Relationships"
+                ],
+                "unit_name": "Ratios and Proportional Relationships",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69932c7f1347d892d59f2c35"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771160157",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771165481",
+          "code": 200,
+          "elapsed_s": 2.5040040016174316,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_7298521de078",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on the information provided in Zzzz Pretest Probe 1771165481, which of the following best describes the relationship between rational numbers and scientific notation? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Rational numbers can never be expressed in scientific notation.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Many rational numbers can be expressed in scientific notation, especially very large or very small numbers.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Scientific notation is only used for irrational numbers, not rational numbers.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Rational numbers and scientific notation are completely unrelated concepts.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what scientific notation is used for.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Scientific notation is a way to express very large or very small numbers in a compact form. Rational numbers can be very large or very small.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider examples of rational numbers that could be written in scientific notation, like 0.00002 or 2,000,000.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_c5dab208858b",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771165481_us_7th-grade-math-science_unit_rational-numbers-scientific-notation"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Rational Numbers and Scientific Notation"
+                ],
+                "unit_name": "Rational Numbers and Scientific Notation",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921a85a830bcbc10a6c2d6"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771166452",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771168832",
+          "code": 200,
+          "elapsed_s": 1.9278621673583984,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_beab18638df4",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on your understanding of the strategies used in Zzzz Pretest Probe 1771168832, which of the following is the MOST important first step when trying to solve an equation? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Guessing a random number and checking if it works.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Identifying the variable you are trying to isolate.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Asking a friend for the answer.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Ignoring the equation and doing something else.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What are you trying to find when you solve an equation?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Solving an equation means finding the value of the unknown variable.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Before you can solve, you need to know what the variable is!",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_7665e242c97e",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771168832_us_6th-8th-grade-math-pre-algebra-algebra-foundations_unit_solving-equations"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Solving Equations"
+                ],
+                "unit_name": "Solving Equations",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921a86a830bcbc10a6c2e0"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771169457",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771170539",
+          "code": 200,
+          "elapsed_s": 1.756408929824829,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_b0eb461943be",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on the general concepts covered in Zzzz Pretest Probe 1771170539, which of the following BEST describes the primary goal when solving equations and inequalities? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "To make the equation or inequality look as complicated as possible.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "To isolate the variable on one side of the equation or inequality.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "To eliminate all numbers from the equation or inequality.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "To guess the answer without showing any work.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What are you trying to find when you solve an equation or inequality?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Solving an equation or inequality means finding the value(s) of the variable that make the statement true.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Think about what you do to both sides of an equation to get the variable by itself.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_ff30e6ae4d37",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771170539_us_6th-8th-grade-math_unit_equations-inequalities"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Equations & Inequalities"
+                ],
+                "unit_name": "Equations & Inequalities",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921c63a830bcbc10a6ccb2"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771170669",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771172484",
+          "code": 200,
+          "elapsed_s": 1.7160382270812988,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_ee86bc6911aa",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on the information presented in Zzzz Pretest Probe 1771172484, which of the following geometric concepts is MOST emphasized? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Properties of parallel lines and transversals.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Calculating the area and volume of various 3D shapes.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Congruence and similarity of triangles.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Coordinate geometry and graphing linear equations.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What specific shapes and measurements are discussed in the pretest probe?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Area is the space inside a 2D shape, while volume is the space inside a 3D shape. Angles are formed where lines or surfaces meet.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Review the content of Zzzz Pretest Probe 1771172484 to identify the primary focus: is it lines, shapes, or coordinates?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_8d624fcc0e25",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771172484_us_6th-8th-grade-math_unit_geometry-area-volume-angles"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Geometry: Area, Volume, and Angles"
+                ],
+                "unit_name": "Geometry: Area, Volume, and Angles",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921c60a830bcbc10a6cc76"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771172888",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771173119",
+          "code": 200,
+          "elapsed_s": 1.6584949493408203,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_9174318b8963",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "According to Zzzz Pretest Probe 1771173119, which of the following is the MOST significant driving force behind Earth's dynamic systems, such as plate tectonics and the water cycle? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "The gravitational pull of the moon.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Heat from Earth's interior.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "The impact of asteroids.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Wind and weather patterns.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What is the primary source of energy within the Earth itself?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Earth's internal heat powers processes like mantle convection, which drives plate tectonics.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The heat from Earth's core causes the mantle to move, leading to earthquakes, volcanoes, and the movement of continents.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_cc7a8a0093ed",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771173119_us_6th-8th-grade-middle-school-science_unit_earths-dynamic-systems"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Earth's Dynamic Systems"
+                ],
+                "unit_name": "Earth's Dynamic Systems",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921c70a830bcbc10a6cccd"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771175663",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771176204",
+          "code": 200,
+          "elapsed_s": 2.304076910018921,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_05d056f5ab69",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nA recipe for fruit punch uses a ratio of $3$ parts cranberry juice to $2$ parts orange juice. Which of the following statements are true about this recipe? Select all that apply. [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "$3$ cups of cranberry juice are mixed with $2$ cups of orange juice.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Cranberry juice makes up $\\frac{3}{5}$ of the total punch.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Orange juice makes up $\\frac{2}{3}$ of the total punch.",
+                          "correct": false,
+                          "misconception": "Confuses part-to-part ratio with part-to-whole ratio for orange juice.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "For every $2$ cups of cranberry juice, there are $3$ cups of orange juice.",
+                          "correct": false,
+                          "misconception": "Reverses the order of the components in the given ratio.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "multipleSelect": true,
+                      "randomize": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "numCorrect": 2
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/15aba6e03ade52fa.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Ratios, Rates, and Proportional Relationships",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What does a ratio like $3:2$ tell you about the relationship between the quantities of cranberry juice and orange juice? How can you use this to think about the total amount of punch?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A ratio of $A:B$ means that for every $A$ units of one item, there are $B$ units of another. The total number of parts in the mixture is $A+B$. To find the fraction of the total for item A, you use $\\frac{A}{A+B}$.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The ratio of cranberry juice to orange juice is $3:2$. This directly means for every $3$ parts of cranberry juice, there are $2$ parts of orange juice. The total number of parts in the punch is $3$ (cranberry) $+ 2$ (orange) $= 5$ parts. Cranberry juice therefore makes up $3$ out of these $5$ total parts.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_44c216a09660",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771176204_us_6th-8th-grade-math-foundations_unit_ratios-rates-proportional-relationships"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Ratios, Rates, and Proportional Relationships"
+                ],
+                "unit_name": "Ratios, Rates, and Proportional Relationships",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6992294ba830bcbc10a6e2ba"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771177239",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771180187",
+          "code": 200,
+          "elapsed_s": 1.884448766708374,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_954b7076ae14",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which sentence uses the word 'elated' most accurately? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "The tired hikers were elated to finally reach the top of the steep mountain.",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "The chef was elated to add more salt to the bland soup.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Confuses 'elated' with simply 'adding' something.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Because it rained all day, we were elated to stay inside.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Associates 'elated' with being content, but not extreme joy.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "The student was elated after failing the important test.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Thinks 'elated' means disappointed or upset.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What does 'elated' mean? Think about situations where you might feel extremely happy or joyful.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "'Elated' means feeling or expressing great happiness or triumph. Which situation would cause the strongest positive emotion?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider each sentence and determine which scenario would cause someone to feel the most joy. Is it failing a test, adding salt, staying inside on a rainy day, or reaching the summit of a mountain?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_f71c451ee292",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771180187_us_6th-8th-grade-ela_unit_language-vocabulary-development"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Language and Vocabulary Development"
+                ],
+                "unit_name": "Language and Vocabulary Development",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699248a41347d892d59f1f09"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771180466",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771181093",
+          "code": 200,
+          "elapsed_s": 1.7138049602508545,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_fc7e18977698",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "According to Zzzz Pretest Probe 1771181093, which of the following is MOST important to understand before calculating the volume of a rectangular prism? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Knowing the color of the prism.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Knowing the length, width, and height of the prism.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Knowing the current temperature.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Knowing the name of the person who created the prism.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What information do you need to find the volume of a rectangular prism?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Volume is the amount of space inside a 3D shape. For a rectangular prism, it's found using length, width, and height.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The formula for the volume of a rectangular prism is length x width x height. Therefore, you need to know these dimensions.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_e95740afee85",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771181093_us_middle-school-math-6-8_unit_geometry-area-volume-angles"
+                ],
+                "difficulty": 0.42,
+                "skill_names": [
+                  "Geometry: Area, Volume, and Angles"
+                ],
+                "unit_name": "Geometry: Area, Volume, and Angles",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921aada830bcbc10a6c384"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771182375",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771182903",
+          "code": 200,
+          "elapsed_s": 1.8784339427947998,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_6d2fe401ff34",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A car is traveling at a constant speed of 60 miles per hour on a straight highway. In this situation, the forces acting on the car are [[\u2603 dropdown 1]].",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "balanced, causing it to continue moving at a constant speed.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "unbalanced, causing it to accelerate forward.",
+                          "correct": false,
+                          "misconception": "Confuses constant velocity with acceleration; assumes motion always means unbalanced force.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "unbalanced, causing it to slow down.",
+                          "correct": false,
+                          "misconception": "Focuses only on resistive forces (like friction) and ignores propulsive forces.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "non-existent, because it is not changing its speed.",
+                          "correct": false,
+                          "misconception": "Confuses a net force of zero with no forces acting on the object at all.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what happens to an object's motion when the forces acting on it are balanced. What happens when the forces are unbalanced?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "An object only changes its speed or direction (meaning it accelerates) if there is an *unbalanced* net force acting on it. If the net force is zero (meaning the forces are balanced), the object will either stay at rest or continue moving at a constant velocity.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The car is moving at a *constant speed* on a *straight highway*. This means its velocity is not changing, so its acceleration is zero. For an object's acceleration to be zero, the net force acting on it must be...",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_a6ab7e8357b7",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771182903_us_middle-school-science-6th-8th-grade_unit_forces-motion"
+                ],
+                "difficulty": 0.42,
+                "skill_names": [
+                  "Forces and Motion"
+                ],
+                "unit_name": "Forces and Motion",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921dffa830bcbc10a6d77f"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771183378",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771183747",
+          "code": 200,
+          "elapsed_s": 1.484602689743042,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_5aede4ba4c53",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on the information presented in Zzzz Pretest Probe 1771183747, which of the following BEST describes the primary focus of the algebraic expressions and equations section? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Simplifying numerical calculations.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Understanding and manipulating symbolic representations of mathematical relationships.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Memorizing specific formulas without understanding their application.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Graphing geometric shapes.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What does 'algebraic' generally refer to?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Algebraic expressions and equations use letters and symbols to represent numbers and relationships.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The section focuses on understanding how to work with these symbols to solve problems and represent mathematical ideas.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_161e6f4db869",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771183747_us_6th-8th-grade-math_unit_algebraic-expressions-equations"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Algebraic Expressions and Equations"
+                ],
+                "unit_name": "Algebraic Expressions and Equations",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69922969a830bcbc10a6e327"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771186680",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771194668",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        }
+      ]
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "subject_used": "Science",
+        "start_code": 200,
+        "start_elapsed_s": 1.1122558116912842,
+        "start_body": {
+          "assessment_id": "assess_3d407047c96a",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "Living organisms need energy to grow, move, and reproduce. What is the original source of almost all energy for life on Earth?\n\n[[\u2603 radio 1]]",
+              "images": {},
+              "widgets": {
+                "radio 1": {
+                  "alignment": "default",
+                  "graded": true,
+                  "options": {
+                    "choices": [
+                      {
+                        "content": "The Sun",
+                        "correct": true,
+                        "misconception": null,
+                        "id": "choice-0"
+                      },
+                      {
+                        "content": "Water",
+                        "correct": false,
+                        "misconception": "Confuses essential resources for life with the primary energy source.",
+                        "id": "choice-1"
+                      },
+                      {
+                        "content": "Soil",
+                        "correct": false,
+                        "misconception": "Confuses nutrient sources for plants with the ultimate energy source.",
+                        "id": "choice-2"
+                      },
+                      {
+                        "content": "Rocks",
+                        "correct": false,
+                        "misconception": "Mistakes non-living geological features for a source of biological energy.",
+                        "id": "choice-3"
+                      }
+                    ],
+                    "countChoices": false,
+                    "deselectEnabled": false,
+                    "displayCount": null,
+                    "hasNoneOfTheAbove": false,
+                    "multipleSelect": false,
+                    "numCorrect": 1,
+                    "randomize": false
+                  },
+                  "static": false,
+                  "type": "radio",
+                  "version": {
+                    "major": 2,
+                    "minor": 0
+                  }
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "Think about where plants get the energy they need to make their own food. What powers their food-making process?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Plants use a process called photosynthesis to convert light energy into chemical energy. This chemical energy then moves through food chains to other organisms.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "The light energy required for photosynthesis comes from the largest and brightest celestial body in our solar system. Which one provides this essential energy?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_8f3bc3a56bbcf4b1",
+            "dash_metadata": {
+              "dash_question_id": "pool_8f3bc3a56bbcf4b1",
+              "skill_ids": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "difficulty": 0.1625,
+              "skill_names": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "required_stable_transitions": 3,
+        "stable_transitions": 3,
+        "transitions": [
+          {
+            "step": 1,
+            "code": 200,
+            "elapsed_s": 0.6199250221252441,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 2,
+            "code": 200,
+            "elapsed_s": 1.4450669288635254,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 3,
+            "code": 200,
+            "elapsed_s": 5.550302982330322,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          }
+        ],
+        "next": {
+          "code": 200,
+          "elapsed_s": 0.6199250221252441,
+          "completed_early": false,
+          "has_next_question": true,
+          "attempts_used": 1
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 25.0
+      }
+    },
+    "loading_latency": {
+      "ok": true,
+      "initial_question_fetch_elapsed_s": 1.0400283336639404,
+      "learning_recommend_next_elapsed_s": 0.433121919631958,
+      "adaptive_start_elapsed_s": 1.1122558116912842,
+      "next_question_elapsed_s": 5.550302982330322,
+      "adaptive_next_transition_elapsed_s": [
+        0.6199250221252441,
+        1.4450669288635254,
+        5.550302982330322
+      ],
+      "budgets": {
+        "initial_question_fetch_budget_s": 12.0,
+        "learning_recommend_next_budget_s": 25.0,
+        "adaptive_start_budget_s": 12.0,
+        "next_question_budget_s": 25.0
+      }
+    },
+    "websocket": {
+      "session_start": {
+        "code": 200,
+        "elapsed_s": 0.5236589908599854,
+        "body": {
+          "prompt": "",
+          "session_info": {
+            "session_id": "sess_a796630ffcf043b9",
+            "user_id": "dev_84ea5acc02a3",
+            "session_active": true,
+            "duration_minutes": 0.0,
+            "questions_answered": 0,
+            "questions_correct": 0,
+            "websocket_connected": false,
+            "sse_connected": false
+          }
+        }
+      },
+      "probe": {
+        "ok": true,
+        "elapsed_s": 0.8362760543823242,
+        "response": {
+          "type": "pong"
+        }
+      },
+      "session_end": {
+        "code": 200,
+        "elapsed_s": 1.3998191356658936,
+        "body": {
+          "prompt": "[SYSTEM PROMPT FOR ADAM]\nThe tutoring session is ending now.\nSession stats: 0.0 minutes, 0 questions attempted.\nPlease give the student a warm closing message, acknowledge their hard work,\nand encourage them for next session.",
+          "session_info": {
+            "session_id": "sess_a796630ffcf043b9",
+            "duration_minutes": 0.04,
+            "minutes_deducted": 1,
+            "questions_answered": 0,
+            "questions_correct": 0
+          }
+        }
+      },
+      "ok": true
+    }
+  },
+  "ok": true,
+  "errors": []
+}

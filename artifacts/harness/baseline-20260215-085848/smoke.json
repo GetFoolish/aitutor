@@ -1,0 +1,277 @@
+{
+  "created_at": "2026-02-15T13:58:48.829098+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.015848159790039062,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 101,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.008630037307739258,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": true,
+      "actual_ok": false,
+      "optional": true,
+      "code": 0,
+      "elapsed_s": 0.0,
+      "body": {
+        "error": "<urlopen error [Errno 61] Connection refused>"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.05849099159240723,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": false,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 0.067108154296875,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 101
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 0.9703161716461182,
+        "count": 3,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 12.0,
+        "min_question_count": 4
+      }
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "start_code": 200,
+        "start_elapsed_s": 1.580793857574463,
+        "start_body": {
+          "assessment_id": "assess_54861282b1e0",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "A hawk uses energy to fly and hunt for its prey. To power its flight, muscle contractions, and body warmth, the hawk's body uses chemical energy. Ultimately, almost all the energy for the hawk's life processes comes from [[\u2603 dropdown 1]].",
+              "images": {},
+              "widgets": {
+                "dropdown 1": {
+                  "alignment": "default",
+                  "graded": true,
+                  "options": {
+                    "choices": [
+                      {
+                        "content": "the small animals it eats",
+                        "correct": false,
+                        "misconception": "Confuses the immediate food source with the ultimate origin of energy in the ecosystem."
+                      },
+                      {
+                        "content": "the sun",
+                        "correct": true,
+                        "misconception": null
+                      },
+                      {
+                        "content": "the hawk's own muscles",
+                        "correct": false,
+                        "misconception": "Confuses where energy is used in the body with its original source."
+                      },
+                      {
+                        "content": "the plants that grow in the field",
+                        "correct": false,
+                        "misconception": "Identifies producers as a source but fails to trace the energy back to the primary energy source for those producers."
+                      }
+                    ],
+                    "placeholder": "select one",
+                    "static": false
+                  },
+                  "static": false,
+                  "type": "dropdown",
+                  "version": {
+                    "major": 0,
+                    "minor": 0
+                  }
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "Think about how energy moves through an ecosystem. What is the starting point for almost all food chains on Earth?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Remember that producers, like plants, are the first step in most food chains. They make their own food using a specific type of energy. What is that primary energy source?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Plants capture light energy from the sun and convert it into chemical energy through photosynthesis. This chemical energy is then passed on to the animals that eat the plants, and then to the animals that eat those animals, and so on. So, the ultimate source for the hawk's energy, tracing it back through its prey and the plants its prey consumed, is the sun.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_32e928d87b5751bf",
+            "dash_metadata": {
+              "dash_question_id": "pool_32e928d87b5751bf",
+              "skill_ids": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "difficulty": 0.988,
+              "skill_names": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "next": {
+          "code": 200,
+          "elapsed_s": 1.2857751846313477,
+          "completed_early": false,
+          "has_next_question": true,
+          "body": {
+            "completed": false,
+            "question_number": 2,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A large freshwater system initially contains $L$ million liters of water in its surface reservoirs (lakes and rivers). Due to glacial melt, $M$ million liters of water are added to the region's overall freshwater supply *each year*. However, only $P$ percent of this added meltwater actually flows into the surface reservoirs; the rest infiltrates groundwater or evaporates. At the same time, $E$ million liters of water evaporate directly from the surface reservoirs *each year*.\n\nWrite an expression representing the total amount of water (in million liters) in the surface reservoirs after $Y$ years.\n[[\u2603 expression 1]]",
+                "images": {},
+                "widgets": {
+                  "expression 1": {
+                    "type": "expression",
+                    "options": {
+                      "buttonsVisible": "never",
+                      "functions": [
+                        "f",
+                        "g",
+                        "h"
+                      ],
+                      "times": false,
+                      "answerForms": [
+                        {
+                          "value": "L + \\frac{MPY}{100} - EY",
+                          "form": true,
+                          "simplify": false,
+                          "considered": "correct"
+                        }
+                      ],
+                      "buttonSets": [
+                        "basic"
+                      ]
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Consider the initial amount of water. How does the water in the surface reservoirs change each year due to new water flowing in and water evaporating out? What mathematical operations represent these changes?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "First, identify the initial amount of water. Then, calculate the amount of water added to the reservoirs annually from glacial melt, remembering that only $P$ percent of $M$ reaches them. Next, determine the amount of water lost from the reservoirs annually due to evaporation. Finally, combine these annual changes and multiply by the number of years, $Y$, to find the total change over time.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The initial amount of water in the surface reservoirs is $L$. Each year, $M$ million liters are added to the region's supply, but only $P$ percent of this flows into the reservoirs. So, the amount added to reservoirs annually is $M \\times \\frac{P}{100}$. Each year, $E$ million liters evaporate directly from the reservoirs. Therefore, the net change in water per year is $(M \\times \\frac{P}{100}) - E$. To find the total amount of water after $Y$ years, you will add this annual net change multiplied by $Y$ to the initial amount $L$. This gives $L + Y \\times (M \\times \\frac{P}{100} - E)$.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_03423d7cfbb4",
+                "skill_ids": [
+                  "ai_gen_science_us_middle-school-earth-space-science_unit_water-on-earth"
+                ],
+                "difficulty": 0.8,
+                "skill_names": [
+                  "Water on Earth"
+                ],
+                "unit_name": "Water on Earth",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991d092a4789515daff5867"
+              }
+            },
+            "current_difficulty": 0.65
+          }
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 25.0
+      }
+    },
+    "websocket": {
+      "ok": true,
+      "skipped": true,
+      "reason": "HARNESS_SKIP_WEBSOCKET=true"
+    }
+  },
+  "ok": false,
+  "errors": [
+    "question fetch/contract/scope checks failed"
+  ]
+}

@@ -1,0 +1,297 @@
+{
+  "created_at": "2026-02-15T14:04:33.568332+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.020641088485717773,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 62,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.007622957229614258,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": true,
+      "actual_ok": false,
+      "optional": true,
+      "code": 0,
+      "elapsed_s": 0.0,
+      "body": {
+        "error": "<urlopen error [Errno 61] Connection refused>"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.05137205123901367,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": false,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 0.6811919212341309,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 101
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 0.8397488594055176,
+        "count": 2,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 12.0,
+        "min_question_count": 5
+      }
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "start_code": 200,
+        "start_elapsed_s": 1.0213720798492432,
+        "start_body": {
+          "assessment_id": "assess_b9291580762b",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "Living organisms need energy to grow, move, and reproduce. What is the original source of almost all energy for life on Earth?\n\n[[\u2603 radio 1]]",
+              "images": {},
+              "widgets": {
+                "radio 1": {
+                  "alignment": "default",
+                  "graded": true,
+                  "options": {
+                    "choices": [
+                      {
+                        "content": "The Sun",
+                        "correct": true,
+                        "misconception": null
+                      },
+                      {
+                        "content": "Water",
+                        "correct": false,
+                        "misconception": "Confuses essential resources for life with the primary energy source."
+                      },
+                      {
+                        "content": "Soil",
+                        "correct": false,
+                        "misconception": "Confuses nutrient sources for plants with the ultimate energy source."
+                      },
+                      {
+                        "content": "Rocks",
+                        "correct": false,
+                        "misconception": "Mistakes non-living geological features for a source of biological energy."
+                      }
+                    ],
+                    "countChoices": false,
+                    "deselectEnabled": false,
+                    "displayCount": null,
+                    "hasNoneOfTheAbove": false,
+                    "multipleSelect": false,
+                    "numCorrect": 1,
+                    "randomize": false
+                  },
+                  "static": false,
+                  "type": "radio",
+                  "version": {
+                    "major": 2,
+                    "minor": 0
+                  }
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "Think about where plants get the energy they need to make their own food. What powers their food-making process?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Plants use a process called photosynthesis to convert light energy into chemical energy. This chemical energy then moves through food chains to other organisms.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "The light energy required for photosynthesis comes from the largest and brightest celestial body in our solar system. Which one provides this essential energy?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_8f3bc3a56bbcf4b1",
+            "dash_metadata": {
+              "dash_question_id": "pool_8f3bc3a56bbcf4b1",
+              "skill_ids": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "difficulty": 0.1625,
+              "skill_names": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "next": {
+          "code": 200,
+          "elapsed_s": 1.0876541137695312,
+          "completed_early": false,
+          "has_next_question": true,
+          "body": {
+            "completed": false,
+            "question_number": 2,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Water is essential for life, but most of Earth's water is saltwater. Of the freshwater available, only a small portion is easily accessible for human needs. Which two of the following statements accurately describe major sources of *liquid freshwater* that are relatively accessible for human use? Select two correct answers.\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Rivers and lakes provide a significant portion of the freshwater used by humans.",
+                          "correct": true,
+                          "misconception": null,
+                          "isNoneOfTheAbove": false
+                        },
+                        {
+                          "content": "Glaciers and ice caps contain the largest percentage of Earth's total freshwater.",
+                          "correct": false,
+                          "misconception": "Confuses total freshwater storage with readily accessible liquid freshwater.",
+                          "isNoneOfTheAbove": false
+                        },
+                        {
+                          "content": "Groundwater stored in aquifers is a major source of accessible liquid freshwater.",
+                          "correct": true,
+                          "misconception": null,
+                          "isNoneOfTheAbove": false
+                        },
+                        {
+                          "content": "The oceans contain most of the Earth's liquid freshwater.",
+                          "correct": false,
+                          "misconception": "Confuses saltwater in oceans with freshwater sources.",
+                          "isNoneOfTheAbove": false
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": true,
+                      "randomize": false,
+                      "numCorrect": 2
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about where freshwater is found on Earth. Is all freshwater in a liquid state? Is all liquid freshwater easily available for us to drink or use?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Freshwater exists in different forms: solid (ice caps, glaciers), liquid (rivers, lakes, groundwater), and gas (water vapor). While glaciers hold a lot of freshwater, it's mostly frozen and hard to access. We rely heavily on liquid sources that are easier to reach.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider the options. Oceans are vast, but their water is salty. Glaciers and ice caps hold a lot of freshwater, but it's frozen. That leaves liquid freshwater sources like rivers, lakes, and underground aquifers as the primary accessible options.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_53fe9cbc1ba1",
+                "skill_ids": [
+                  "ai_gen_science_us_middle-school-earth-space-science_unit_water-on-earth"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Water on Earth"
+                ],
+                "unit_name": "Water on Earth",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991d13ca4789515daff58a4"
+              }
+            },
+            "current_difficulty": 0.65
+          }
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 25.0
+      }
+    },
+    "websocket": {
+      "ok": true,
+      "skipped": true,
+      "reason": "HARNESS_SKIP_WEBSOCKET=true"
+    }
+  },
+  "ok": false,
+  "errors": [
+    "question fetch/contract/scope checks failed"
+  ]
+}

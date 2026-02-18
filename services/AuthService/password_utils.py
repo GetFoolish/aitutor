@@ -1,26 +1,27 @@
 """
 Password hashing and validation utilities
 """
-from passlib.context import CryptContext
+import bcrypt
 
-# Create password context with bcrypt
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(password: str) -> str:
     """
-    Hash a plain password using bcrypt
+    Hash a plain password using bcrypt.
 
     Args:
         password: Plain text password
 
     Returns:
-        Hashed password
+        Bcrypt hash string.
     """
-    return pwd_context.hash(password)
+    password_bytes = password.encode("utf-8")
+    hashed = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
+    return hashed.decode("utf-8")
+
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
-    Verify a plain password against its hash
+    Verify a plain password against its hash.
 
     Args:
         plain_password: Plain text password
@@ -29,7 +30,14 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     Returns:
         True if password matches, False otherwise
     """
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        return bcrypt.checkpw(
+            plain_password.encode("utf-8"),
+            hashed_password.encode("utf-8"),
+        )
+    except (ValueError, TypeError):
+        return False
+
 
 def validate_password_strength(password: str) -> tuple[bool, str]:
     """
@@ -47,6 +55,10 @@ def validate_password_strength(password: str) -> tuple[bool, str]:
     """
     if len(password) < 8:
         return False, "Password must be at least 8 characters"
+
+    # bcrypt truncates beyond 72 bytes; reject explicitly to avoid silent weakness.
+    if len(password.encode("utf-8")) > 72:
+        return False, "Password must be at most 72 bytes"
 
     if not any(c.isupper() for c in password):
         return False, "Password must contain at least one uppercase letter"

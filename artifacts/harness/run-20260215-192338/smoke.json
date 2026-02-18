@@ -1,0 +1,3297 @@
+{
+  "created_at": "2026-02-15T19:23:38.555411+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.015671730041503906,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 0,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.01141500473022461,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.004769086837768555,
+      "body": {
+        "status": "healthy",
+        "service": "TeachingAssistant"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.0471959114074707,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": true,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 0.5808238983154297,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 110
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 1.7386372089385986,
+        "count": 5,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 12.0,
+        "min_question_count": 5
+      }
+    },
+    "learning_path_subject_validity": {
+      "ok": true,
+      "current_question_ids": [
+        "pool_d45182e349c215b1",
+        "pool_1b8bb24a71117a7c",
+        "pool_96bf42de7b765deb"
+      ],
+      "recommend_next": {
+        "code": 200,
+        "elapsed_s": 0.325380802154541,
+        "count": 4,
+        "overlap_with_current_ids": [],
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        },
+        "body": {
+          "sample_ids": [
+            "pool_82b8d6d103f7d16e",
+            "pool_7482fdf68fbf469f",
+            "pool_81c756fc3ac46931",
+            "pool_21b98e0ec932849e"
+          ]
+        }
+      }
+    },
+    "adaptive_start_all_subjects": {
+      "ok": true,
+      "adaptive_start_timeout_s": 4.0,
+      "adaptive_start_retry_timeout_s": 12.0,
+      "catalog_fetch": {
+        "code": 200,
+        "elapsed_s": 0.044300079345703125,
+        "count": 53,
+        "fallback_used": false
+      },
+      "subjects_checked_count": 53,
+      "subjects_checked": [
+        "Science",
+        "History",
+        "English",
+        "Geography",
+        "Python",
+        "Music Theory",
+        "Cooking",
+        "Spanish",
+        "Art",
+        "Economics",
+        "Philosophy",
+        "Astronomy",
+        "World War 2",
+        "Russian",
+        "Korean",
+        "Ancient Greek",
+        "Swahili",
+        "Hindi",
+        "Architecture",
+        "Thai",
+        "Pottery",
+        "Farsi",
+        "Nutrition",
+        "Filmmaking",
+        "World War 1",
+        "Physics",
+        "Python Programming",
+        "Biology",
+        "Astrophysics And Cosmology Studies For Advanced Le",
+        "Geometry",
+        "Zzzz Recursion Probe 1771093263",
+        "Zzzz Pretest Probe 1771097854",
+        "Science Math History English Geography Python",
+        "Zzzz Pretest Probe 1771100688",
+        "Math",
+        "Zzzz Pretest Probe 1771160157",
+        "Zzzz Pretest Probe 1771165481",
+        "Zzzz Pretest Probe 1771166452",
+        "Zzzz Pretest Probe 1771168832",
+        "Zzzz Pretest Probe 1771169457",
+        "Zzzz Pretest Probe 1771170539",
+        "Zzzz Pretest Probe 1771170669",
+        "Zzzz Pretest Probe 1771172484",
+        "Zzzz Pretest Probe 1771172888",
+        "Zzzz Pretest Probe 1771173119",
+        "Zzzz Pretest Probe 1771175663",
+        "Zzzz Pretest Probe 1771176204",
+        "Zzzz Pretest Probe 1771177239",
+        "Zzzz Pretest Probe 1771180187",
+        "Zzzz Pretest Probe 1771180466",
+        "Zzzz Pretest Probe 1771181093",
+        "Zzzz Pretest Probe 1771182375",
+        "Zzzz Pretest Probe 1771182903"
+      ],
+      "timeout_retryable_count": 26,
+      "concrete_result_count": 27,
+      "results": [
+        {
+          "subject": "Science",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "History",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "English",
+          "code": 200,
+          "elapsed_s": 0.9011039733886719,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_d7f8151d4615",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Read the sentence below. Which verb correctly completes the sentence?\n\nThe team of scientists, who have been working for months on the project, [[\u2603 radio 1]] ready to present their findings.",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "is",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "are",
+                          "correct": false,
+                          "misconception": "Agrees with the plural noun 'scientists' instead of the singular subject 'team'.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "were",
+                          "correct": false,
+                          "misconception": "Agrees with 'scientists' and uses an incorrect tense for the context.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "be",
+                          "correct": false,
+                          "misconception": "Uses an incorrect verb form that does not fit the sentence structure.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "To choose the correct verb, you need to identify the main subject of the sentence. What noun is performing the action or being described?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The verb must agree in number with the subject of the sentence. In the sentence, \"The team of scientists...\", the main subject is \"team,\" which is a singular collective noun. The phrase \"of scientists\" describes the team but is not the subject itself.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Since \"team\" is singular, the verb that completes the sentence must also be singular. Think about the singular present tense forms of the verb \"to be.\" Which one matches a singular subject like \"team\"?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "question_id": "pool_5bb1a65d526851c1",
+              "dash_metadata": {
+                "dash_question_id": "pool_5bb1a65d526851c1",
+                "skill_ids": [
+                  "ai_gen_english_us_6th-8th-grade-ela_unit_grammar-sentence-structure"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Grammar and Sentence Structure"
+                ],
+                "unit_name": "Grammar and Sentence Structure",
+                "lesson_name": "Practice",
+                "ai_generated": true
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Geography",
+          "code": 503,
+          "elapsed_s": 3.8758201599121094,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Python",
+          "code": 200,
+          "elapsed_s": 1.434290885925293,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_f0cc36622223",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Read about [[\u2603 definition 1]]. Based on the definition, if a Python program gets a user's age using `age_str = input('How old are you? ')` and then tries to calculate `age_str + 5`, what will happen? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "definition 1": {
+                    "alignment": "default",
+                    "graded": false,
+                    "options": {
+                      "definition": "In Python, the `input()` function is used to get information from the user while a program is running. Whatever the user types is always returned as a string of text, even if they type numbers.",
+                      "togglePrompt": "the `input()` function",
+                      "static": false
+                    },
+                    "static": false,
+                    "type": "definition",
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    }
+                  },
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "The program will stop and show an error because you cannot add a number to a string.",
+                          "correct": true,
+                          "clue": "The `input()` function always returns a string. Python cannot perform arithmetic operations like addition directly between a string and an integer, which causes a TypeError.",
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "The program will correctly calculate the age plus 5.",
+                          "correct": false,
+                          "clue": "Python does not automatically convert the string returned by `input()` into a number for arithmetic. You need to use functions like `int()` or `float()` for that.",
+                          "misconception": "Common student error",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "The program will combine the age and '5' as text, like '125' if the age was 12.",
+                          "correct": false,
+                          "clue": "While the `+` operator can concatenate two strings (e.g., `'12' + '5'` would be `'125'`), it cannot concatenate a string and an integer. Trying to add a string and an integer will result in an error.",
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "The program will ask the user to input their age again, but as a number.",
+                          "correct": false,
+                          "clue": "When an error occurs due to incompatible types, the program usually stops executing unless specific error handling is built in. It won't automatically ask for input again.",
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "multipleSelect": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What data type does the `input()` function always return, according to the definition? Think about how Python handles operations with different data types.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "In Python, you can't directly perform mathematical operations like addition on a string of text and an integer (a whole number). You need to make sure both values are numbers first if you want to do math.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The `input()` function returns a string. So, if a user types '12', `age_str` will be the string `'12'`. Trying to calculate `'12' + 5` is like trying to add text and a number, which Python doesn't allow for arithmetic operations. This will cause a `TypeError`.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_7e9ca31118bb",
+                "skill_ids": [
+                  "ai_gen_python_us_6th-8th-grade-python-core-syntax-data-types_unit_user-input-type-conversion"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "User Input and Type Conversion"
+                ],
+                "unit_name": "User Input and Type Conversion",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921abfa830bcbc10a6c3f9"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Music Theory",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Cooking",
+          "code": 200,
+          "elapsed_s": 1.2495989799499512,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_b8ede7934ea6",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "When baking a loaf of yeast bread, several important food science processes happen in a specific order. Arrange the following steps in the correct scientific sequence from first to last:\n\n[[\u2603 sorter 1]]",
+                "images": {},
+                "widgets": {
+                  "sorter 1": {
+                    "type": "sorter",
+                    "options": {
+                      "correct": [
+                        "Combining flour, water, yeast, and salt",
+                        "Kneading the dough to develop gluten",
+                        "Allowing the dough to rise as yeast ferments sugars",
+                        "Baking the dough in a hot oven to set its structure"
+                      ],
+                      "layout": "horizontal",
+                      "padding": true
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the very first step in making bread. What do you need to do to bring all the ingredients together and start the yeast's activity?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Remember that yeast needs moisture and warmth to become active and produce gas. Also, flour contains proteins that need to be worked to form a strong network that can trap that gas. Finally, heat is essential for the dough to transform into baked bread.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "You start by mixing the ingredients. After that, the dough needs to be worked to build its structure. What happens next when the yeast starts to produce gas? And what is the final step that uses heat to cook the bread?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_9bb45358490c",
+                "skill_ids": [
+                  "ai_gen_cooking_us_middle-school-culinary-science-safety_unit_food-science-fundamentals"
+                ],
+                "difficulty": 0.55,
+                "skill_names": [
+                  "Food Science Fundamentals"
+                ],
+                "unit_name": "Food Science Fundamentals",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921ac6a830bcbc10a6c40a"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Spanish",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Art",
+          "code": 200,
+          "elapsed_s": 2.1853010654449463,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_75b3a7ca853c",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "During the Middle Ages, Gothic cathedrals became known for their soaring heights, vast stained-glass windows, and abundant light. What was the main reason medieval builders and artists emphasized these features in their designs? \n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "To create a heavenly atmosphere that inspired worshippers and brought them closer to God.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "To demonstrate the advanced engineering skills of the time to rival other cities.",
+                          "correct": false,
+                          "misconception": "Focuses on technical skill and competition over spiritual purpose.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "To make the interiors bright enough for people to read religious texts during services.",
+                          "correct": false,
+                          "misconception": "Overlooks symbolic meaning, focusing on practical literacy.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "To provide large, open spaces for market fairs and community celebrations.",
+                          "correct": false,
+                          "misconception": "Confuses the church's spiritual role with secular community functions.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the central role of the Church and faith in people's lives during the Middle Ages. What kind of emotional or spiritual experience would they want to create in their most important religious buildings?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Gothic cathedrals were not just buildings; they were designed to be symbolic representations of heaven on Earth. Features like extreme height and luminous stained glass were intended to elevate the spirit and connect people to the divine.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The immense scale, combined with the dazzling, colored light filtering through the windows, was meant to overwhelm the senses. This experience was crucial for inspiring awe, reverence, and deep religious devotion among worshippers, helping them feel closer to God.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_9615343b1169",
+                "skill_ids": [
+                  "ai_gen_art_us_middle-school-art-history-culture_unit_faith-power-middle-ages"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Faith and Power: Art of the Middle Ages"
+                ],
+                "unit_name": "Faith and Power: Art of the Middle Ages",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921ad9a830bcbc10a6c44f"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Economics",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Philosophy",
+          "code": 200,
+          "elapsed_s": 1.3735311031341553,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_8b3a84145694",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nIn philosophy, what is the study of moral principles and values called? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Astrology",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Ethics",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Biology",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Geometry",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/329136294700da33.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Right and Wrong: Making Ethical Choices",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What area of philosophy deals with questions of right and wrong?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Ethics explores what is considered good or bad, right or wrong, in human actions and character.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The answer is the branch of philosophy that is concerned with moral principles. Astrology is about stars, Biology is about living things, and Geometry is about shapes.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_a5967df0f91a",
+                "skill_ids": [
+                  "ai_gen_philosophy_us_6th-8th-grade-philosophy-exploring-big-questions_unit_right-and-wrong"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Right and Wrong: Making Ethical Choices"
+                ],
+                "unit_name": "Right and Wrong: Making Ethical Choices",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699204d34818c0c702095151"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Astronomy",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "World War 2",
+          "code": 200,
+          "elapsed_s": 2.1763620376586914,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_a81a3963ab13",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "The tide of World War II began to turn in favor of the Allies with several key battles. Place the following major battles in Europe and North Africa in the correct chronological order, from earliest to latest. [[\u2603 sorter 1]]",
+                "images": {},
+                "widgets": {
+                  "sorter 1": {
+                    "type": "sorter",
+                    "options": {
+                      "correct": [
+                        "Battle of Stalingrad",
+                        "Battle of El Alamein",
+                        "D-Day",
+                        "Battle of the Bulge"
+                      ],
+                      "layout": "vertical",
+                      "padding": true
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "To place these battles in order, think about when each one happened during World War II. Which battle marked an early turning point for the Allies?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Remember that the early turning points in 1942 included major battles on the Eastern Front and in North Africa. D-Day and the Battle of the Bulge happened much later, closer to the end of the war in Europe.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The Battle of Stalingrad, a brutal fight on the Eastern Front, began in August 1942. Shortly after, the Battle of El Alamein in North Africa began in October 1942. Now, consider which of the remaining battles happened next.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_8841681a0eb5",
+                "skill_ids": [
+                  "ai_gen_world-war-2_us_middle-school-history-ww2-events_unit_turning-tide-battles-europe-north-africa"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Turning the Tide: Key Battles in Europe and North Africa"
+                ],
+                "unit_name": "Turning the Tide: Key Battles in Europe and North Africa",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921bf5a830bcbc10a6ca94"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Russian",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Korean",
+          "code": 200,
+          "elapsed_s": 1.4091460704803467,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_5a49958b8369",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "In Korean, what is the most common way to say \"older sister\" if you are female? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "\uc624\ube60 (oppa)",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "\uc5b8\ub2c8 (eonni)",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "\ud615 (hyeong)",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "\ub204\ub098 (nuna)",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Are you male or female? This affects which word you use.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "\uc5b8\ub2c8 (eonni) is used by females to refer to an older sister or female friend.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The correct answer is \uc5b8\ub2c8 (eonni).",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_df8f9754e7c5",
+                "skill_ids": [
+                  "ai_gen_korean_us_6-8th-grade-korean-novice-low-proficiency_unit_my-family-and-friends"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "My Family and Friends"
+                ],
+                "unit_name": "My Family and Friends",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921b06a830bcbc10a6c4c1"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Ancient Greek",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Swahili",
+          "code": 200,
+          "elapsed_s": 1.3885540962219238,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_d9fa6dc410b8",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Ni ipi kati ya hizi ni njia sahihi ya kusema \"gari jipya\" kwa Kiswahili? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Gari mzee",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Gari jipya",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Jipya gari",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Gari kubwa",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Je, unakumbuka jinsi kivumishi kinavyoenda baada ya nomino kwa Kiswahili?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Kwa Kiswahili, kivumishi (neno linaloelezea) huja baada ya nomino (neno la kitu).",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Neno 'jipya' ni kivumishi na 'gari' ni nomino. Kwa hivyo, 'gari jipya' ndio jibu sahihi.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_6de35e9efba4",
+                "skill_ids": [
+                  "ai_gen_swahili_us_6th-8th-grade-swahili-communicating-confidence_unit_kuelezea-vitu-describing-people-objects"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Kuelezea Vitu: Describing People and Objects"
+                ],
+                "unit_name": "Kuelezea Vitu: Describing People and Objects",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921c1ca830bcbc10a6cb38"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Hindi",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Architecture",
+          "code": 200,
+          "elapsed_s": 1.5592617988586426,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_79e414954f70",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "In construction, a common material known for its strength and versatility, often used to build furniture, doors, and roof supports, is wood.\n\nWhat is the Hindi word for 'wood'?\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "'\u0932\u0915\u0921\u093c\u0940' (lak\u1e5b\u012b)",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "'\u092a\u0924\u094d\u0925\u0930' (patthar)",
+                          "correct": false,
+                          "misconception": "Confuses wood with another strong, but differently used, building material like stone.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "'\u0908\u0902\u091f' (\u012b\u00f1\u1e6d)",
+                          "correct": false,
+                          "misconception": "Confuses wood with brick, a common material for walls, not typically for furniture or roof supports.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "'\u0930\u0947\u0924' (ret)",
+                          "correct": false,
+                          "misconception": "Confuses wood with sand, which is a raw aggregate material, not a structural material itself.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what kind of natural material is commonly cut and shaped to make many things inside and outside a house, like tables, chairs, or parts of a roof frame. What is that material called in English?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The question asks for the Hindi word for 'wood'. Wood is a fundamental material in building and crafting due to its workability and strength. Consider the options provided and recall their meanings.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Wood is a versatile material used for many purposes, including furniture and structural supports. The Hindi word for 'wood' is '\u0932\u0915\u0921\u093c\u0940'. Now, identify the choice that matches this translation.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_af6e40a5ba24",
+                "skill_ids": [
+                  "ai_gen_architecture_us_6th-8th-grade-architecture-foundations-built-environment_unit_building-materials-structures"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Building Blocks: Materials and Structures"
+                ],
+                "unit_name": "Building Blocks: Materials and Structures",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921a64a830bcbc10a6c1fe"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Thai",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Pottery",
+          "code": 200,
+          "elapsed_s": 1.4990918636322021,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_056a49cc149c",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "In pottery, what does 'pulling walls' refer to? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Creating a decorative pattern on the outside of the pot.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Raising the clay upwards to make the walls of the pot taller and thinner.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Smoothing the base of the pot on the pottery wheel.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Adding handles or other attachments to the pot.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what you are physically doing to the clay when you are trying to make the walls taller.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Pulling walls involves using your fingers to draw the clay upwards, making the pot taller and thinner.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The correct answer describes the process of making the walls of the pot taller by pulling the clay upwards.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_e8a6d2f88ca7",
+                "skill_ids": [
+                  "ai_gen_pottery_us_6th-8th-grade-pottery-introduction-to-the-wheel_unit_opening-pulling-walls"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Opening and Pulling Walls"
+                ],
+                "unit_name": "Opening and Pulling Walls",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699218fea830bcbc10a6b9f9"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Farsi",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Nutrition",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Filmmaking",
+          "code": 200,
+          "elapsed_s": 1.393132209777832,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_e272a92220f2",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nA director is filming a scene where the audience needs to clearly see a character's facial expression and also understand their body language as they react to something in their immediate space. Which two types of camera shots would be most effective for this purpose? Select all that apply.\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Medium Close-up",
+                          "correct": true,
+                          "misconception": null,
+                          "isNoneOfTheAbove": false,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Extreme Close-up",
+                          "correct": false,
+                          "misconception": "Focuses too tightly on a small detail, losing body language and immediate surroundings.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Medium Shot",
+                          "correct": true,
+                          "misconception": null,
+                          "isNoneOfTheAbove": false,
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Wide Shot",
+                          "correct": false,
+                          "misconception": "Shows too much of the environment, making facial expressions and subtle body language hard to see clearly.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": true,
+                      "randomize": false,
+                      "numCorrect": 2
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/923d2ba30a1dd672.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Camera & Cinematography Basics",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what each shot type emphasizes. Does it focus on a small detail, a person's face, their whole body, or the entire environment? How does each choice help tell the story or show character feelings?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A close-up highlights emotion and facial detail, while a wider shot shows more of the setting and full body. The challenge here is to find shots that balance both, showing enough detail for facial expression and enough space for body language and immediate surroundings.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The director needs to capture both strong emotion (facial expression) and context (body language, immediate space). Shots like the Extreme Close-up are too tight to show body language, and shots like the Wide Shot are too broad to clearly see facial expressions. You need something in the middle that offers a good balance.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_c8cf7df8a483",
+                "skill_ids": [
+                  "ai_gen_filmmaking_us_6th-8th-grade-filmmaking-introduction-to-production_unit_camera-cinematography-basics"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Camera & Cinematography Basics"
+                ],
+                "unit_name": "Camera & Cinematography Basics",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921c3da830bcbc10a6cbdc"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "World War 1",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Physics",
+          "code": 200,
+          "elapsed_s": 1.320274829864502,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_820727c83a97",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following best describes what a simple machine does? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "It eliminates the need for any force to do work.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "It makes work easier by changing the amount of force needed or the distance over which the force is applied.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "It increases the amount of energy used to do work.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "It creates energy from nothing.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about how tools like ramps or levers help you move things.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Simple machines don't reduce the amount of work, but they can change how you apply the force.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider whether a simple machine changes the force needed, the distance, or both.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_47b4ef8fa3d6",
+                "skill_ids": [
+                  "ai_gen_physics_us_6th-8th-grade-physics-motion-energy-interactions_unit_work-power-and-simple-machines"
+                ],
+                "difficulty": 0.55,
+                "skill_names": [
+                  "Work, Power, and Simple Machines"
+                ],
+                "unit_name": "Work, Power, and Simple Machines",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6992190ba830bcbc10a6ba32"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Python Programming",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Biology",
+          "code": 200,
+          "elapsed_s": 1.313432216644287,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_0b3e7e4693b5",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Read about [[\u2603 definition 1]]. Based on the definition, what is the primary *purpose* of cellular respiration, and what essential *energy molecule* does it produce for the cell? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "definition 1": {
+                    "alignment": "default",
+                    "graded": false,
+                    "options": {
+                      "definition": "The biological process where cells break down glucose (sugar) and other organic molecules to release stored chemical energy. This energy is then captured in a molecule called ATP, which powers most cellular activities.",
+                      "togglePrompt": "Cellular respiration",
+                      "static": false
+                    },
+                    "static": false,
+                    "type": "definition",
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    }
+                  },
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "clue": "While glucose is involved, cellular respiration breaks it down, it doesn't produce it. ATP is the correct energy molecule, but the purpose is wrong.",
+                          "content": "To produce food for the cell; Glucose",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "clue": "That's exactly right! Cellular respiration releases energy from food and stores it in ATP for the cell to use.",
+                          "content": "To release energy from food; ATP",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "clue": "This describes the process of photosynthesis, which is how plants make food, not cellular respiration.",
+                          "content": "To convert light into sugar; Oxygen",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "clue": "While carbon dioxide is a waste product of cellular respiration, building structures is a result of using the energy produced, not the primary purpose of releasing the energy itself. Also, carbon dioxide is not the energy molecule.",
+                          "content": "To build new cell structures; Carbon dioxide",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "The definition explains what cellular respiration *does* with glucose. What is the main outcome or goal of this process?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The definition states that the released energy is \"captured in a molecule.\" The name of this special energy-carrying molecule is provided in the definition.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Cellular respiration breaks down glucose to *release stored chemical energy*. This energy is then put into a specific molecule so the cell can use it. This molecule is called ATP.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_1b5463e5b9a8",
+                "skill_ids": [
+                  "ai_gen_biology_us_middle-school-biology_unit_energy-photosynthesis-respiration"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Energy for Life: Photosynthesis and Respiration"
+                ],
+                "unit_name": "Energy for Life: Photosynthesis and Respiration",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991d9faa2036970498b9cd7"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Astrophysics And Cosmology Studies For Advanced Le",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Geometry",
+          "code": 200,
+          "elapsed_s": 1.4261407852172852,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_2375086fceb4",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nWhich of the following is a fundamental, undefined term in geometry, meaning it is accepted without a formal definition? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Rectangle",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Point",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Square",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Triangle",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/b22ccd04e5ce3a12.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Geometric Foundations and Drawing Tools",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the most basic building blocks of geometric shapes.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Undefined terms are the starting points from which all other geometric concepts are built. They are so basic that they cannot be defined using other geometric terms.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A point is a location in space, and its existence is accepted without a formal definition. The other options are shapes that can be defined using points, lines, and planes.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_2ffb493e9825",
+                "skill_ids": [
+                  "ai_gen_geometry_us_7th-grade-geometry-drawing-angles-scale_unit_geometric-foundations-drawing-tools"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Geometric Foundations and Drawing Tools"
+                ],
+                "unit_name": "Geometric Foundations and Drawing Tools",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921094a830bcbc10a692f0"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Recursion Probe 1771093263",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771097854",
+          "code": 200,
+          "elapsed_s": 1.5176658630371094,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_2b1dc84bc30a",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A baker uses $2.5$ cups of flour for each cake she bakes. She also uses $0.5$ cups of flour for a batch of muffins, regardless of how many cakes she bakes. If $c$ represents the number of cakes she bakes, the total amount of flour she uses can be represented by the expression $2.5c + 0.5$. If the baker bakes 4 cakes, how many cups of flour does she use in total? [[\u2603 dropdown 1]]",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "$10.5$ cups",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "$10$ cups",
+                          "correct": false,
+                          "misconception": "Forgot to add the constant amount of flour for muffins.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "$7$ cups",
+                          "correct": false,
+                          "misconception": "Added all numbers in the expression without multiplication.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "$11.25$ cups",
+                          "correct": false,
+                          "misconception": "Incorrect order of operations; added before multiplying.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "The question asks for the total amount of flour used when the baker bakes 4 cakes. What does the variable $c$ represent in the given expression $2.5c + 0.5$?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The variable $c$ represents the number of cakes. To find the total flour, you need to substitute $c=4$ into the expression $2.5c + 0.5$ and then evaluate it.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Substitute $c=4$ into the expression: $2.5(4) + 0.5$. First, perform the multiplication: $2.5 \\times 4 = 10$. Then, add the remaining term: $10 + 0.5$. What is the final total?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_09ac9c67142a",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771097854_us_middle-school-math-6-8_unit_algebraic-expressions-equations"
+                ],
+                "difficulty": 0.57,
+                "skill_names": [
+                  "Algebraic Expressions and Equations"
+                ],
+                "unit_name": "Algebraic Expressions and Equations",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f1d221c9df089c4826d5"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Science Math History English Geography Python",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771100688",
+          "code": 200,
+          "elapsed_s": 1.3742799758911133,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_9345ca0d2833",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "According to Zzzz Pretest Probe 1771100688, which of the following applications relies on the properties of electromagnetic waves to transmit information wirelessly? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Boiling water in a kettle.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Using a mobile phone to make a call.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Cutting wood with a saw.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Baking a cake in an oven.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What type of waves are used for wireless communication?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Electromagnetic waves, like radio waves and microwaves, can travel through the air without wires. Devices like phones use these waves to send and receive information.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider which of the options involves sending information without a physical connection. A mobile phone uses electromagnetic waves to communicate wirelessly.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_6e7534283439",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771100688_us_middle-school-science-6-8_unit_waves-applications"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Waves and Their Applications"
+                ],
+                "unit_name": "Waves and Their Applications",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f1e421c9df089c48270d"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Math",
+          "code": 503,
+          "elapsed_s": 3.9747958183288574,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771160157",
+          "code": 200,
+          "elapsed_s": 1.4238300323486328,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_73c1e8e99056",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on your understanding of the topics covered in Zzzz Pretest Probe 1771160157, which of the following best describes how angles relate to calculating the area of a triangle? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Angles are not used in any way to find the area of a triangle.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Knowing an angle and the lengths of two sides allows you to calculate the area using trigonometric functions.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Angles are only used to determine if a triangle is equilateral.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "The area of a triangle is found by multiplying the three angles together.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the different formulas you learned for the area of a triangle.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider how trigonometric functions like sine, cosine, and tangent relate angles to side lengths.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Recall the formula: Area = (1/2) * a * b * sin(C), where a and b are side lengths and C is the angle between them.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_d3e529f46f60",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771160157_us_6th-8th-grade-middle-school-math_unit_geometry-area-volume-angles"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Geometry: Area, Volume, and Angles"
+                ],
+                "unit_name": "Geometry: Area, Volume, and Angles",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f1f421c9df089c482776"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771165481",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771166452",
+          "code": 200,
+          "elapsed_s": 1.5518641471862793,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_aec56a33176b",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Regarding Zzzz Pretest Probe 1771166452, which of the following is MOST likely to be assessed in the Geometry and Measurement section? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Vocabulary related to historical events.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "The ability to calculate the area of a rectangle.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Knowledge of different types of literary devices.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Understanding of chemical reactions.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What topics are typically covered in Geometry and Measurement?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Geometry and Measurement focuses on shapes, sizes, positions of figures, and their properties.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider which option directly relates to shapes, sizes, or positions.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_8284b8b2af0d",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771166452_us_6th-8th-grade-middle-school-math_unit_geometry-and-measurement"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Geometry and Measurement"
+                ],
+                "unit_name": "Geometry and Measurement",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f37321c9df089c4830e5"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771168832",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771169457",
+          "code": 200,
+          "elapsed_s": 1.5008959770202637,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_e15f3ee16065",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on your understanding of Geometry: Area, Volume, and Angles, what is the PRIMARY purpose of Zzzz Pretest Probe 1771169457? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "To provide a comprehensive history of geometric discoveries.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "To assess your current knowledge of area, volume, and angles in geometry.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "To teach you advanced calculus concepts related to geometry.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "To entertain you with interesting facts about famous mathematicians.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What do pretests usually aim to accomplish?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Pretests are designed to gauge your existing knowledge before instruction.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The probe is named a pretest, which implies it is given before instruction to see what you already know.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_b249675f730f",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771169457_us_middle-school-math-6-8_unit_geometry-area-volume-angles"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Geometry: Area, Volume, and Angles"
+                ],
+                "unit_name": "Geometry: Area, Volume, and Angles",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991fe804818c0c702093cb4"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771170539",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771170669",
+          "code": 200,
+          "elapsed_s": 1.369391918182373,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_9dae9fdd2486",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on your understanding of Geometry: Area, Volume, and Angles, which of the following best describes the PRIMARY focus of Zzzz Pretest Probe 1771170669? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Calculating the precise area of irregular polygons using advanced calculus.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Assessing foundational knowledge of area, volume, and angle relationships in basic geometric shapes.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Exploring the applications of non-Euclidean geometry in theoretical physics.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Designing complex 3D models using computer-aided design software.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what kind of geometry problems you typically see at your grade level.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Area, volume, and angles are fundamental concepts in geometry. Pretests often assess these basics.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider which option focuses on the most basic and essential aspects of geometry for your age group.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_e0c7487ba7da",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771170669_us_6th-8th-grade-middle-school-math_unit_geometry-area-volume-angles"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Geometry: Area, Volume, and Angles"
+                ],
+                "unit_name": "Geometry: Area, Volume, and Angles",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f48b21c9df089c4836f5"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771172484",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771172888",
+          "code": 200,
+          "elapsed_s": 1.4652910232543945,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_71e5c067b056",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "According to Zzzz Pretest Probe 1771172888, which of the following best describes the relationship between potential and kinetic energy in a bouncing ball? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Potential energy remains constant throughout the ball's motion.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Potential energy decreases as kinetic energy increases during the ball's descent.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Kinetic energy is always greater than potential energy.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Potential energy and kinetic energy are unrelated.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What happens to the ball's speed as it falls?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Potential energy is stored energy due to position, while kinetic energy is the energy of motion. As an object falls, its height decreases (decreasing potential energy) and its speed increases (increasing kinetic energy).",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Think about when the ball has the most potential energy (highest point) and the most kinetic energy (right before it hits the ground). What happens in between?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_038ce626c1fa",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771172888_us_6th-12th-grade-science_unit_energy-forces-motion"
+                ],
+                "difficulty": 0.57,
+                "skill_names": [
+                  "Energy, Forces, and Motion"
+                ],
+                "unit_name": "Energy, Forces, and Motion",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991fe994818c0c702093d1d"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771173119",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771175663",
+          "code": 200,
+          "elapsed_s": 2.347774028778076,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_ceaf2baeb876",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nAccording to the Zzzz Pretest Probe 1771175663, which of the following is the most accurate definition of 'perimeter'? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "The area enclosed within a two-dimensional shape.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "The total distance around the outside of a two-dimensional shape.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "The space occupied by a three-dimensional object.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "The point where two lines intersect.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/c2d4e52bd4bf83f3.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Geometry and Measurement",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What are we trying to find when we calculate perimeter?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Perimeter is the distance around a shape. Think about walking around the edge of a park.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The correct answer describes measuring the length of each side and adding them together.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_170880fd4dc8",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771175663_us_6th-8th-grade-math_unit_geometry-and-measurement"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Geometry and Measurement"
+                ],
+                "unit_name": "Geometry and Measurement",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "69921011a830bcbc10a69135"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771176204",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771177239",
+          "code": 200,
+          "elapsed_s": 1.4249792098999023,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_2040d3ff6d8b",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "According to Zzzz Pretest Probe 1771177239, which statement BEST describes the purpose of understanding operations with rational numbers? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "To memorize complicated formulas for fractions and decimals.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "To solve real-world problems involving fractions, decimals, and percentages effectively.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "To impress your friends with your knowledge of advanced mathematics.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "To avoid having to learn about other types of numbers.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about why we learn to add, subtract, multiply, and divide fractions and decimals.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Rational numbers are used in everyday situations like cooking, measuring, and calculating discounts.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The goal is to be able to use these skills to solve practical problems.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_010199a9505a",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771177239_us_7th-grade-math_unit_operations-with-rational-numbers"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Operations with Rational Numbers"
+                ],
+                "unit_name": "Operations with Rational Numbers",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6992115ea830bcbc10a69b16"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771180187",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771180466",
+          "code": 200,
+          "elapsed_s": 1.5518450736999512,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_531798f15422",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on your understanding of ratios and proportional relationships, which of the following BEST describes the primary focus of Zzzz Pretest Probe 1771180466? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Analyzing the relationship between the number of Z's and the perceived quality of sleep.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Determining if the number of Z's is proportionally related to the duration of sleep.",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Calculating the average number of Z's produced by different age groups.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Comparing the ratio of Z's to other sleep sounds like snoring.",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What does it mean for two quantities to be proportionally related?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A proportional relationship means that as one quantity changes, the other changes by a constant factor. Think about how Z's might relate to sleep time.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The probe likely aims to see if more Z's proportionally relate to more sleep time.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_dcbac4fa3a2c",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771180466_us_7th-grade-math_unit_ratios-proportional-relationships"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Ratios and Proportional Relationships"
+                ],
+                "unit_name": "Ratios and Proportional Relationships",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699213aaa830bcbc10a6abaf"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771181093",
+          "code": 503,
+          "elapsed_s": 3.8534889221191406,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771182375",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771182903",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "timeout-retryable",
+          "body": {
+            "error": "timed out"
+          }
+        }
+      ]
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "subject_used": "English",
+        "start_code": 200,
+        "start_elapsed_s": 0.9011039733886719,
+        "start_body": {
+          "assessment_id": "assess_d7f8151d4615",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "Read the sentence below. Which verb correctly completes the sentence?\n\nThe team of scientists, who have been working for months on the project, [[\u2603 radio 1]] ready to present their findings.",
+              "images": {},
+              "widgets": {
+                "radio 1": {
+                  "alignment": "default",
+                  "graded": true,
+                  "options": {
+                    "choices": [
+                      {
+                        "content": "is",
+                        "correct": true,
+                        "misconception": null,
+                        "id": "choice-0"
+                      },
+                      {
+                        "content": "are",
+                        "correct": false,
+                        "misconception": "Agrees with the plural noun 'scientists' instead of the singular subject 'team'.",
+                        "id": "choice-1"
+                      },
+                      {
+                        "content": "were",
+                        "correct": false,
+                        "misconception": "Agrees with 'scientists' and uses an incorrect tense for the context.",
+                        "id": "choice-2"
+                      },
+                      {
+                        "content": "be",
+                        "correct": false,
+                        "misconception": "Uses an incorrect verb form that does not fit the sentence structure.",
+                        "id": "choice-3"
+                      }
+                    ],
+                    "countChoices": false,
+                    "deselectEnabled": false,
+                    "displayCount": null,
+                    "hasNoneOfTheAbove": false,
+                    "multipleSelect": false,
+                    "randomize": false,
+                    "numCorrect": 1
+                  },
+                  "static": false,
+                  "type": "radio",
+                  "version": {
+                    "major": 1,
+                    "minor": 0
+                  }
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "To choose the correct verb, you need to identify the main subject of the sentence. What noun is performing the action or being described?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "The verb must agree in number with the subject of the sentence. In the sentence, \"The team of scientists...\", the main subject is \"team,\" which is a singular collective noun. The phrase \"of scientists\" describes the team but is not the subject itself.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Since \"team\" is singular, the verb that completes the sentence must also be singular. Think about the singular present tense forms of the verb \"to be.\" Which one matches a singular subject like \"team\"?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_5bb1a65d526851c1",
+            "dash_metadata": {
+              "dash_question_id": "pool_5bb1a65d526851c1",
+              "skill_ids": [
+                "ai_gen_english_us_6th-8th-grade-ela_unit_grammar-sentence-structure"
+              ],
+              "difficulty": 0.5,
+              "skill_names": [
+                "Grammar and Sentence Structure"
+              ],
+              "unit_name": "Grammar and Sentence Structure",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "required_stable_transitions": 3,
+        "stable_transitions": 3,
+        "transitions": [
+          {
+            "step": 1,
+            "code": 200,
+            "elapsed_s": 0.2692077159881592,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 2,
+            "code": 200,
+            "elapsed_s": 2.0005910396575928,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 3,
+            "code": 200,
+            "elapsed_s": 0.9963510036468506,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          }
+        ],
+        "next": {
+          "code": 200,
+          "elapsed_s": 0.2692077159881592,
+          "completed_early": false,
+          "has_next_question": true,
+          "attempts_used": 1
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 25.0
+      }
+    },
+    "loading_latency": {
+      "ok": true,
+      "initial_question_fetch_elapsed_s": 1.7386372089385986,
+      "learning_recommend_next_elapsed_s": 0.325380802154541,
+      "adaptive_start_elapsed_s": 0.9011039733886719,
+      "next_question_elapsed_s": 2.0005910396575928,
+      "adaptive_next_transition_elapsed_s": [
+        0.2692077159881592,
+        2.0005910396575928,
+        0.9963510036468506
+      ],
+      "budgets": {
+        "initial_question_fetch_budget_s": 12.0,
+        "learning_recommend_next_budget_s": 25.0,
+        "adaptive_start_budget_s": 12.0,
+        "next_question_budget_s": 25.0
+      }
+    },
+    "websocket": {
+      "session_start": {
+        "code": 200,
+        "elapsed_s": 1.2302868366241455,
+        "body": {
+          "prompt": "",
+          "session_info": {
+            "session_id": "sess_dd4e59da6ad54fcd",
+            "user_id": "dev_44a9435e2406",
+            "session_active": true,
+            "duration_minutes": 0.0,
+            "questions_answered": 0,
+            "questions_correct": 0,
+            "websocket_connected": false,
+            "sse_connected": false
+          }
+        }
+      },
+      "probe": {
+        "ok": true,
+        "elapsed_s": 0.7907676696777344,
+        "response": {
+          "type": "pong"
+        }
+      },
+      "session_end": {
+        "code": 200,
+        "elapsed_s": 1.5999906063079834,
+        "body": {
+          "prompt": "[SYSTEM PROMPT FOR ADAM]\nThe tutoring session is ending now.\nSession stats: 0.1 minutes, 0 questions attempted.\nPlease give the student a warm closing message, acknowledge their hard work,\nand encourage them for next session.",
+          "session_info": {
+            "session_id": "sess_dd4e59da6ad54fcd",
+            "duration_minutes": 0.05,
+            "minutes_deducted": 1,
+            "questions_answered": 0,
+            "questions_correct": 0
+          }
+        }
+      },
+      "ok": true
+    }
+  },
+  "ok": true,
+  "errors": []
+}

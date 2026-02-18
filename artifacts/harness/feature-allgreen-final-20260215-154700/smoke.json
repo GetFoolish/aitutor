@@ -1,0 +1,333 @@
+{
+  "created_at": "2026-02-15T15:47:00.356050+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.016566991806030273,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 70,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.008240938186645508,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.004507780075073242,
+      "body": {
+        "status": "healthy",
+        "service": "TeachingAssistant"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.05860710144042969,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": true,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 1.2177588939666748,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 101
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 1.2229418754577637,
+        "count": 5,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 12.0,
+        "min_question_count": 5
+      }
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "subject_used": "Science",
+        "start_code": 200,
+        "start_elapsed_s": 1.4512550830841064,
+        "start_body": {
+          "assessment_id": "assess_b06179a2e2f3",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "Living organisms need energy to grow, move, and reproduce. What is the original source of almost all energy for life on Earth?\n\n[[\u2603 radio 1]]",
+              "images": {},
+              "widgets": {
+                "radio 1": {
+                  "alignment": "default",
+                  "graded": true,
+                  "options": {
+                    "choices": [
+                      {
+                        "content": "The Sun",
+                        "correct": true,
+                        "misconception": null
+                      },
+                      {
+                        "content": "Water",
+                        "correct": false,
+                        "misconception": "Confuses essential resources for life with the primary energy source."
+                      },
+                      {
+                        "content": "Soil",
+                        "correct": false,
+                        "misconception": "Confuses nutrient sources for plants with the ultimate energy source."
+                      },
+                      {
+                        "content": "Rocks",
+                        "correct": false,
+                        "misconception": "Mistakes non-living geological features for a source of biological energy."
+                      }
+                    ],
+                    "countChoices": false,
+                    "deselectEnabled": false,
+                    "displayCount": null,
+                    "hasNoneOfTheAbove": false,
+                    "multipleSelect": false,
+                    "numCorrect": 1,
+                    "randomize": false
+                  },
+                  "static": false,
+                  "type": "radio",
+                  "version": {
+                    "major": 2,
+                    "minor": 0
+                  }
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "Think about where plants get the energy they need to make their own food. What powers their food-making process?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Plants use a process called photosynthesis to convert light energy into chemical energy. This chemical energy then moves through food chains to other organisms.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "The light energy required for photosynthesis comes from the largest and brightest celestial body in our solar system. Which one provides this essential energy?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_8f3bc3a56bbcf4b1",
+            "dash_metadata": {
+              "dash_question_id": "pool_8f3bc3a56bbcf4b1",
+              "skill_ids": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "difficulty": 0.1625,
+              "skill_names": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "next": {
+          "code": 200,
+          "elapsed_s": 7.674829959869385,
+          "completed_early": false,
+          "has_next_question": true,
+          "body": {
+            "completed": false,
+            "question_number": 2,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A scientist is studying a group of cells under a microscope. She wants to know if the cells are plant cells or animal cells. Which of these observations would BEST indicate that the cells are plant cells? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "The cells have a cell wall.",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null
+                        },
+                        {
+                          "content": "The cells have a nucleus.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Both cell types have a nucleus."
+                        },
+                        {
+                          "content": "The cells have a cell membrane.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Both cell types have a membrane."
+                        },
+                        {
+                          "content": "The cells are irregularly shaped.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Animal cells are irregularly shaped."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What is a key structural difference between plant and animal cells?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Plant cells have a rigid cell wall surrounding the cell membrane, while animal cells do not.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The presence of a cell wall is a strong indicator that the cells are plant cells. Nuclei and cell membranes are found in both plant and animal cells.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_09918703cb70",
+                "skill_ids": [
+                  "assessment_science_grade_7_2_r0_31568"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Science for Grade 7"
+                ],
+                "unit_name": "Science for Grade 7",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991ea85430fe72df0ed088d"
+              }
+            },
+            "current_difficulty": 0.65
+          }
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 25.0
+      }
+    },
+    "websocket": {
+      "session_start": {
+        "code": 200,
+        "elapsed_s": 0.5200366973876953,
+        "body": {
+          "prompt": "",
+          "session_info": {
+            "session_id": "sess_f12cb41e25924424",
+            "user_id": "dev_b1766fdc2706",
+            "session_active": true,
+            "duration_minutes": 0.0,
+            "questions_answered": 0,
+            "questions_correct": 0,
+            "websocket_connected": false,
+            "sse_connected": false
+          }
+        }
+      },
+      "probe": {
+        "ok": true,
+        "elapsed_s": 0.2699723243713379,
+        "response": {
+          "type": "pong"
+        }
+      },
+      "session_end": {
+        "code": 200,
+        "elapsed_s": 1.1582400798797607,
+        "body": {
+          "prompt": "[SYSTEM PROMPT FOR ADAM]\nThe tutoring session is ending now.\nSession stats: 0.0 minutes, 0 questions attempted.\nPlease give the student a warm closing message, acknowledge their hard work,\nand encourage them for next session.",
+          "session_info": {
+            "session_id": "sess_f12cb41e25924424",
+            "duration_minutes": 0.02,
+            "minutes_deducted": 1,
+            "questions_answered": 0,
+            "questions_correct": 0
+          }
+        }
+      },
+      "ok": true
+    }
+  },
+  "ok": true,
+  "errors": []
+}

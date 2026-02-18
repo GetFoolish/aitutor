@@ -1,0 +1,277 @@
+{
+  "created_at": "2026-02-15T14:02:49.476877+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.01641082763671875,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 101,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.0015170574188232422,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": true,
+      "actual_ok": false,
+      "optional": true,
+      "code": 0,
+      "elapsed_s": 0.0,
+      "body": {
+        "error": "<urlopen error [Errno 61] Connection refused>"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.06613874435424805,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": false,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 0.0625300407409668,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 101
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 0.7843358516693115,
+        "count": 4,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 12.0,
+        "min_question_count": 5
+      }
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "start_code": 200,
+        "start_elapsed_s": 0.9059579372406006,
+        "start_body": {
+          "assessment_id": "assess_0c6a2f9cf47a",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "In an ecosystem, producers convert sunlight into 'E' units of chemical energy. When primary consumers eat the producers, only about 10% of that energy is transferred to them. Similarly, when secondary consumers eat the primary consumers, only 10% of the primary consumers' energy is transferred. Write an expression representing the energy available to the secondary consumers, in terms of 'E'. [[\u2603 expression 1]]",
+              "images": {},
+              "widgets": {
+                "expression 1": {
+                  "type": "expression",
+                  "options": {
+                    "buttonsVisible": "never",
+                    "functions": [
+                      "f",
+                      "g",
+                      "h"
+                    ],
+                    "times": false,
+                    "answerForms": [
+                      {
+                        "value": "0.01E",
+                        "form": true,
+                        "simplify": false,
+                        "considered": "correct"
+                      }
+                    ],
+                    "buttonSets": [
+                      "basic"
+                    ]
+                  },
+                  "graded": true,
+                  "version": {
+                    "major": 2,
+                    "minor": 0
+                  },
+                  "alignment": "default",
+                  "static": false
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "Think about how the amount of energy changes as it moves from one level of the food chain to the next. What mathematical operation represents taking '10% of' a value?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "The 10% rule states that only about 10% of the energy from one trophic level is transferred to the next. To calculate 10% of a quantity, you can multiply that quantity by 0.10 (or $\\frac{1}{10}$). You'll need to apply this rule for each transfer.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Start with 'E' units of energy from the producers. The primary consumers receive $0.10 \\times E$ energy. The secondary consumers then receive 10% of *that* amount. So, you'll calculate $0.10 \\times (0.10 \\times E)$. Simplify this expression to find the final answer.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_edb9e24c9a219e80",
+            "dash_metadata": {
+              "dash_question_id": "pool_edb9e24c9a219e80",
+              "skill_ids": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "difficulty": 0.9955555555555555,
+              "skill_names": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "next": {
+          "code": 200,
+          "elapsed_s": 1.0190458297729492,
+          "completed_early": false,
+          "has_next_question": true,
+          "body": {
+            "completed": false,
+            "question_number": 2,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "While oceans hold most of Earth's water, only a small percentage is freshwater. Of all the freshwater on Earth, the largest portion is stored as [[\u2603 dropdown 1]].",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "rivers and lakes",
+                          "correct": false,
+                          "misconception": "Students often only consider visible surface water, overlooking vast frozen reserves."
+                        },
+                        {
+                          "content": "groundwater",
+                          "correct": false,
+                          "misconception": "Students may know groundwater is important but underestimate frozen water."
+                        },
+                        {
+                          "content": "ice caps and glaciers",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "water vapor in the atmosphere",
+                          "correct": false,
+                          "misconception": "Confuses atmospheric water with major long-term freshwater storage."
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about where the vast majority of Earth's freshwater is physically located, not just the sources we see and use every day.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Remember that freshwater is found in many different places, including surface water (like rivers and lakes), underground (as groundwater), and in frozen forms.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Over two-thirds of Earth's freshwater is frozen. Consider which of the options represents the largest frozen reservoir on the planet.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_bfa53ccece19",
+                "skill_ids": [
+                  "ai_gen_science_us_middle-school-earth-space-science_unit_water-on-earth"
+                ],
+                "difficulty": 0.57,
+                "skill_names": [
+                  "Water on Earth"
+                ],
+                "unit_name": "Water on Earth",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991d13ca4789515daff58a0"
+              }
+            },
+            "current_difficulty": 0.65
+          }
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 25.0
+      }
+    },
+    "websocket": {
+      "ok": true,
+      "skipped": true,
+      "reason": "HARNESS_SKIP_WEBSOCKET=true"
+    }
+  },
+  "ok": false,
+  "errors": [
+    "question fetch/contract/scope checks failed"
+  ]
+}

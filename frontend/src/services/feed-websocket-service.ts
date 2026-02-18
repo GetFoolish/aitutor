@@ -10,6 +10,8 @@ import { jwtUtils } from '../lib/jwt-utils';
 const TEACHING_ASSISTANT_WS_URL =
   import.meta.env.VITE_TEACHING_ASSISTANT_WS_URL ||
   (import.meta.env.VITE_TEACHING_ASSISTANT_API_URL?.replace('http', 'ws') || 'ws://localhost:8002');
+const TEACHING_ASSISTANT_API_URL =
+  import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
 
 type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
 type StatusCallback = (status: ConnectionStatus) => void;
@@ -51,8 +53,25 @@ class FeedWebSocketService {
       throw new Error('No authentication token available');
     }
 
+    const streamCodeResponse = await fetch(`${TEACHING_ASSISTANT_API_URL}/auth/stream-code?purpose=feed`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!streamCodeResponse.ok) {
+      this.status = 'error';
+      throw new Error('Failed to issue feed stream auth code');
+    }
+    const streamCodeData = await streamCodeResponse.json();
+    const streamCode = streamCodeData?.code;
+    if (!streamCode) {
+      this.status = 'error';
+      throw new Error('Missing feed stream auth code');
+    }
+
     return new Promise((resolve, reject) => {
-      const url = `${TEACHING_ASSISTANT_WS_URL}/ws/feed?token=${encodeURIComponent(token)}`;
+      const url = `${TEACHING_ASSISTANT_WS_URL}/ws/feed?code=${encodeURIComponent(streamCode)}`;
       this.socket = new WebSocket(url);
 
       this.socket.onopen = () => {

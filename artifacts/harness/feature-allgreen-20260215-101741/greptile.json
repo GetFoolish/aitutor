@@ -1,0 +1,9 @@
+{
+  "ok": true,
+  "skipped": false,
+  "required": true,
+  "command": "curl -fsS -H \"Authorization: Bearer ***REDACTED***\" https://api.greptile.com/mcp >/dev/null",
+  "returncode": 0,
+  "stdout": "artifacts/harness/feature-allgreen-20260215-101741/greptile.stdout.log",
+  "stderr": "artifacts/harness/feature-allgreen-20260215-101741/greptile.stderr.log"
+}

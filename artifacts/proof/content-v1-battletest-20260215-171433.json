@@ -1,0 +1,312 @@
+{
+  "created_at": "2026-02-15T17:15:39.545334+00:00",
+  "auth_email": "qa.contentv1.bf6d8de81bee@example.com",
+  "auth_mode": "dev-login",
+  "topics": [
+    "world history and civilizations",
+    "python programming fundamentals",
+    "climate science and weather systems",
+    "public speaking confidence"
+  ],
+  "pass_count": 4,
+  "total": 4,
+  "results": [
+    {
+      "topic": "world history and civilizations",
+      "onboarding": {
+        "profile": "c1p_20260215171441_2fa1b7",
+        "steps": 6,
+        "first_source": "gemini_derived",
+        "first_topic": "Ancient Civilizations"
+      },
+      "queue_poll": [
+        {
+          "t": 0,
+          "ready": 5
+        }
+      ],
+      "formats": [
+        "radio_single",
+        "radio_single",
+        "radio_multi",
+        "orderer",
+        "numeric_input",
+        "dropdown"
+      ],
+      "sources": [
+        "gemini_derived",
+        "gemini_derived",
+        "gemini_derived",
+        "gemini_derived",
+        "gemini_derived",
+        "gemini_derived"
+      ],
+      "loops": [
+        {
+          "i": 1,
+          "step": 0,
+          "ready": 5
+        },
+        {
+          "i": 2,
+          "step": 0,
+          "ready": 4
+        },
+        {
+          "i": 3,
+          "step": 1,
+          "ready": 5
+        },
+        {
+          "i": 4,
+          "step": 1,
+          "ready": 6
+        },
+        {
+          "i": 5,
+          "step": 1,
+          "ready": 5
+        },
+        {
+          "i": 6,
+          "step": 1,
+          "ready": 5
+        }
+      ],
+      "progression": 1,
+      "ok": true,
+      "errors": [],
+      "gates": {
+        "plan_ok": true,
+        "queue_ok": true,
+        "gemini_only_ok": true,
+        "loop_ok": true,
+        "progression_ok": true,
+        "variety_ok": true
+      }
+    },
+    {
+      "topic": "python programming fundamentals",
+      "onboarding": {
+        "profile": "c1p_20260215171452_2fa1b7",
+        "steps": 5,
+        "first_source": "gemini_derived",
+        "first_topic": "Introduction & Setup"
+      },
+      "queue_poll": [
+        {
+          "t": 0,
+          "ready": 5
+        }
+      ],
+      "formats": [
+        "radio_multi",
+        "radio_single",
+        "radio_multi",
+        "orderer",
+        "numeric_input",
+        "dropdown"
+      ],
+      "sources": [
+        "gemini_derived",
+        "gemini_derived",
+        "gemini_derived",
+        "gemini_derived",
+        "gemini_derived",
+        "gemini_derived"
+      ],
+      "loops": [
+        {
+          "i": 1,
+          "step": 0,
+          "ready": 5
+        },
+        {
+          "i": 2,
+          "step": 0,
+          "ready": 5
+        },
+        {
+          "i": 3,
+          "step": 1,
+          "ready": 4
+        },
+        {
+          "i": 4,
+          "step": 1,
+          "ready": 4
+        },
+        {
+          "i": 5,
+          "step": 1,
+          "ready": 3
+        },
+        {
+          "i": 6,
+          "step": 1,
+          "ready": 2
+        }
+      ],
+      "progression": 1,
+      "ok": true,
+      "errors": [],
+      "gates": {
+        "plan_ok": true,
+        "queue_ok": true,
+        "gemini_only_ok": true,
+        "loop_ok": true,
+        "progression_ok": true,
+        "variety_ok": true
+      }
+    },
+    {
+      "topic": "climate science and weather systems",
+      "onboarding": {
+        "profile": "c1p_20260215171504_2fa1b7",
+        "steps": 5,
+        "first_source": "gemini_derived",
+        "first_topic": "Weather Fundamentals"
+      },
+      "queue_poll": [
+        {
+          "t": 0,
+          "ready": 5
+        }
+      ],
+      "formats": [
+        "radio_single",
+        "radio_single",
+        "radio_multi",
+        "orderer",
+        "numeric_input",
+        "dropdown"
+      ],
+      "sources": [
+        "gemini_derived",
+        "gemini_derived",
+        "gemini_derived",
+        "gemini_derived",
+        "gemini_derived",
+        "gemini_derived"
+      ],
+      "loops": [
+        {
+          "i": 1,
+          "step": 0,
+          "ready": 5
+        },
+        {
+          "i": 2,
+          "step": 0,
+          "ready": 5
+        },
+        {
+          "i": 3,
+          "step": 1,
+          "ready": 5
+        },
+        {
+          "i": 4,
+          "step": 1,
+          "ready": 4
+        },
+        {
+          "i": 5,
+          "step": 1,
+          "ready": 4
+        },
+        {
+          "i": 6,
+          "step": 1,
+          "ready": 3
+        }
+      ],
+      "progression": 1,
+      "ok": true,
+      "errors": [],
+      "gates": {
+        "plan_ok": true,
+        "queue_ok": true,
+        "gemini_only_ok": true,
+        "loop_ok": true,
+        "progression_ok": true,
+        "variety_ok": true
+      }
+    },
+    {
+      "topic": "public speaking confidence",
+      "onboarding": {
+        "profile": "c1p_20260215171514_2fa1b7",
+        "steps": 5,
+        "first_source": "gemini",
+        "first_topic": "Self-Discovery & Comfort"
+      },
+      "queue_poll": [
+        {
+          "t": 0,
+          "ready": 5
+        }
+      ],
+      "formats": [
+        "radio_multi",
+        "radio_single",
+        "radio_multi",
+        "orderer",
+        "numeric_input",
+        "dropdown"
+      ],
+      "sources": [
+        "gemini",
+        "gemini_derived",
+        "gemini_derived",
+        "gemini_derived",
+        "gemini_derived",
+        "gemini_derived"
+      ],
+      "loops": [
+        {
+          "i": 1,
+          "step": 0,
+          "ready": 5
+        },
+        {
+          "i": 2,
+          "step": 0,
+          "ready": 4
+        },
+        {
+          "i": 3,
+          "step": 1,
+          "ready": 3
+        },
+        {
+          "i": 4,
+          "step": 1,
+          "ready": 2
+        },
+        {
+          "i": 5,
+          "step": 1,
+          "ready": 1
+        },
+        {
+          "i": 6,
+          "step": 1,
+          "ready": 0
+        }
+      ],
+      "progression": 1,
+      "ok": true,
+      "errors": [],
+      "gates": {
+        "plan_ok": true,
+        "queue_ok": true,
+        "gemini_only_ok": true,
+        "loop_ok": true,
+        "progression_ok": true,
+        "variety_ok": true
+      }
+    }
+  ],
+  "ok": true
+}

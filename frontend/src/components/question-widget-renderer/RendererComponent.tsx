@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState, useRef, useLayoutEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,9 +28,119 @@ import { jwtUtils } from "../../lib/jwt-utils";
 import HintDisplay from "../hint-display/HintDisplay";
 import HintButton from "../hint-button/HintButton";
 import AudioPlayButton, { extractAudioWord } from "../AudioPlayButton";
+import '../question-display/mcq-fix.css';
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
+const EMPTY_ASSESSMENT_QUESTIONS: PerseusItem[] = [];
+const INITIAL_QUESTION_TIMEOUT_MS = 6000;
+const INITIAL_QUESTION_BATCH_SIZE = 1;
+const PREFETCH_BATCH_SIZE = 6;
+const RECOMMEND_NEXT_TIMEOUT_MS = 1800;
+
+const stripWrappingQuotes = (value: unknown): string => {
+    const text = typeof value === 'string' ? value.trim() : String(value ?? '').trim();
+    if (text.length >= 2) {
+        const first = text[0];
+        const last = text[text.length - 1];
+        if ((first === '"' && last === '"') || (first === "'" && last === "'")) {
+            return text.slice(1, -1).trim();
+        }
+    }
+    return text;
+};
+
+const sanitizeChoicesArray = (choices: any[]): any[] => {
+    return (choices || []).map((choice: any, index: number) => {
+        if (typeof choice === 'string') {
+            return { id: `choice-${index}`, content: stripWrappingQuotes(choice), correct: false };
+        }
+        if (!choice || typeof choice !== 'object') {
+            return { id: `choice-${index}`, content: stripWrappingQuotes(choice), correct: false };
+        }
+        return {
+            ...choice,
+            id: typeof choice.id === 'string' && choice.id.trim() ? choice.id : `choice-${index}`,
+            content: stripWrappingQuotes(choice.content),
+            correct: Boolean(choice.correct),
+        };
+    });
+};
+
+const questionKey = (item: any): string => {
+    const dashId = item?.dash_metadata?.dash_question_id;
+    if (dashId && typeof dashId === "string") {
+        return `id:${dashId}`;
+    }
+    const content = String(item?.question?.content ?? "");
+    const widgets = JSON.stringify(item?.question?.widgets ?? {});
+    return `content:${content}|widgets:${widgets}`;
+};
+
+const mergeUniqueQuestions = (existing: PerseusItem[], incoming: any[]): PerseusItem[] => {
+    const seen = new Set(existing.map((q) => questionKey(q)));
+    const dedupedIncoming = (incoming || []).filter((q) => {
+        const key = questionKey(q);
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+    });
+    if (!dedupedIncoming.length) return existing;
+    return [...existing, ...dedupedIncoming];
+};
+
+const normalizeInlineWidgetLayout = (container: HTMLElement) => {
+    const inlineContainers = container.querySelectorAll<HTMLElement>('.perseus-widget-container.widget-inline-block');
+    inlineContainers.forEach((el) => {
+        el.style.setProperty('display', 'inline-flex', 'important');
+        el.style.setProperty('vertical-align', 'baseline', 'important');
+        el.style.setProperty('align-items', 'baseline', 'important');
+        el.style.setProperty('width', 'auto', 'important');
+        el.style.setProperty('max-width', 'min(52vw, 320px)', 'important');
+    });
+
+    const inlineDropdowns = container.querySelectorAll<HTMLElement>('.perseus-widget-container.widget-inline-block .perseus-dropdown');
+    inlineDropdowns.forEach((el) => {
+        el.style.setProperty('display', 'inline-flex', 'important');
+        el.style.setProperty('max-width', 'min(52vw, 320px)', 'important');
+        el.style.setProperty('width', 'auto', 'important');
+    });
+
+    const inlineComboboxButtons = container.querySelectorAll<HTMLElement>(
+        '.perseus-widget-container.widget-inline-block .perseus-dropdown > button[role="combobox"]'
+    );
+    inlineComboboxButtons.forEach((btn) => {
+        btn.style.setProperty('min-width', 'clamp(120px, 18vw, 220px)', 'important');
+        btn.style.setProperty('max-width', 'min(52vw, 320px)', 'important');
+        btn.style.setProperty('width', 'auto', 'important');
+        btn.style.setProperty('min-height', '38px', 'important');
+        btn.style.setProperty('height', 'auto', 'important');
+        btn.style.setProperty('padding', '6px 10px', 'important');
+        btn.style.setProperty('line-height', '1.2', 'important');
+        btn.style.setProperty('font-size', '14px', 'important');
+        btn.style.setProperty('align-items', 'flex-start', 'important');
+    });
+
+    const inlineValueSpans = container.querySelectorAll<HTMLElement>(
+        '.perseus-widget-container.widget-inline-block .perseus-dropdown > button[role="combobox"] > span:first-child'
+    );
+    inlineValueSpans.forEach((span) => {
+        span.style.setProperty('white-space', 'normal', 'important');
+        span.style.setProperty('overflow', 'visible', 'important');
+        span.style.setProperty('text-overflow', 'clip', 'important');
+        span.style.setProperty('word-break', 'break-word', 'important');
+    });
+
+    const inlineTextInputs = container.querySelectorAll<HTMLInputElement>(
+        '.perseus-widget-container.widget-inline-block input[type="text"]'
+    );
+    inlineTextInputs.forEach((input) => {
+        input.style.setProperty('min-width', 'clamp(120px, 16vw, 220px)', 'important');
+        input.style.setProperty('max-width', 'min(52vw, 320px)', 'important');
+        input.style.setProperty('width', 'auto', 'important');
+        input.style.setProperty('font-size', '14px', 'important');
+    });
+};
 
 interface RendererComponentProps {
     onSkillChange?: (skill: string) => void;
@@ -50,7 +160,7 @@ const RendererComponent = ({
     watchedVideoIds = [],
     onAnswerSubmitted,
     assessmentMode = false,
-    assessmentQuestions = [],
+    assessmentQuestions,
     onAssessmentAnswer,
     currentQuestionIndex = 0
 }: RendererComponentProps) => {
@@ -68,24 +178,74 @@ const RendererComponent = ({
     const [isError, setIsError] = useState(false);
     const [error, setError] = useState<Error | null>(null);
     const [isLoadingNextBatch, setIsLoadingNextBatch] = useState(false);
+    const [viewportHeight, setViewportHeight] = useState<number>(() =>
+        typeof window !== "undefined" ? window.innerHeight : 900
+    );
+    const [fitContentZoom, setFitContentZoom] = useState<number>(1);
     const rendererRef = useRef<ServerItemRenderer>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const questionStackRef = useRef<HTMLDivElement>(null);
     const currentItemRef = useRef(0);
     const mountedRef = useRef(true);
+    const fetchRequestRef = useRef(0);
+    const safeAssessmentQuestions = assessmentQuestions ?? EMPTY_ASSESSMENT_QUESTIONS;
+    const compactViewport = viewportHeight <= 900;
+    const contentZoom =
+        viewportHeight <= 700 ? 0.74 :
+        viewportHeight <= 760 ? 0.8 :
+        viewportHeight <= 840 ? 0.88 :
+        viewportHeight <= 920 ? 0.94 :
+        1;
 
     // Get user_id from auth context
     const user_id = user?.user_id || 'mongodb_test_user';
+
+    const fetchRecommendNext = async (
+        currentQuestionIds: string[],
+        count: number,
+        timeoutMs: number = RECOMMEND_NEXT_TIMEOUT_MS,
+    ): Promise<any[]> => {
+        if (!currentQuestionIds.length) return [];
+        const controller = new AbortController();
+        const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+        try {
+            const response = await apiUtils.post(
+                `${DASH_API_URL}/api/questions/recommend-next`,
+                {
+                    current_question_ids: currentQuestionIds,
+                    count,
+                },
+                { signal: controller.signal },
+            );
+            if (!response.ok) return [];
+            const payload = await response.json();
+            return Array.isArray(payload) ? payload : [];
+        } catch (err) {
+            if ((err as any)?.name !== 'AbortError') {
+                console.error('Error fetching recommend-next batch:', err);
+            }
+            return [];
+        } finally {
+            window.clearTimeout(timeoutId);
+        }
+    };
 
     // Fetch questions using apiUtils with JWT authentication
     useEffect(() => {
         // In assessment mode, use provided questions instead of fetching
         if (assessmentMode) {
-            setPerseusItems(assessmentQuestions);
+            setPerseusItems(safeAssessmentQuestions);
             setItem(currentQuestionIndex);
             setIsLoading(false);
             setIsAnswered(false);
             setShowFeedback(false);
             setStartTime(Date.now());
+            return;
+        }
+
+        // If we already have questions rendered, don't bounce back to global loading.
+        if (perseusItems.length > 0) {
+            setIsLoading(false);
             return;
         }
 
@@ -95,19 +255,58 @@ const RendererComponent = ({
                 return;
             }
 
+            const requestId = ++fetchRequestRef.current;
             setIsLoading(true);
             setIsError(false);
             setError(null);
 
+            const selectedSubject = (
+                sessionStorage.getItem("selected_subject") ||
+                localStorage.getItem("selected_subject") ||
+                ""
+            ).trim();
+            if (selectedSubject) {
+                // Best-effort warm-up to reduce first-question cold start latency.
+                void apiUtils.post(`${DASH_API_URL}/api/start-subject`, {
+                    subject: selectedSubject,
+                    region: "US",
+                }).catch(() => null);
+            }
+
+            const prefetchFollowUps = async (seedQuestions: any[]) => {
+                const currentQuestionIds = (seedQuestions || [])
+                    .map((q: any) => q?.dash_metadata?.dash_question_id || "")
+                    .filter(Boolean);
+                if (!currentQuestionIds.length) {
+                    return;
+                }
+                try {
+                    const nextQuestions = await fetchRecommendNext(
+                        currentQuestionIds,
+                        PREFETCH_BATCH_SIZE,
+                        1400,
+                    );
+                    if (nextQuestions.length === 0) {
+                        return;
+                    }
+                    if (mountedRef.current && requestId === fetchRequestRef.current) {
+                        setPerseusItems((prev) => mergeUniqueQuestions(prev, nextQuestions));
+                    }
+                } catch {
+                    // Best-effort prefetch; keep first-question path fast.
+                }
+            };
+
             // Retry logic for connection errors with exponential backoff
-            const maxRetries = 3;
+            const maxRetries = 1;
             let retryCount = 0;
             
             const attemptFetch = async (): Promise<void> => {
                 try {
                     // Load questions directly — parallel preloaded + fresh fetch
                     // Race: whichever returns valid questions first wins
-                    const freshPromise = apiUtils.get(`${DASH_API_URL}/api/questions/5`);
+                    // Load a smaller first batch for faster first paint; next batch is prefetched as user advances.
+                    const freshPromise = apiUtils.get(`${DASH_API_URL}/api/questions/${INITIAL_QUESTION_BATCH_SIZE}`);
                     const preloadedPromise = apiUtils.get(`${DASH_API_URL}/api/questions/preloaded`)
                         .then(async (r) => {
                             if (!r.ok) return null;
@@ -122,19 +321,20 @@ const RendererComponent = ({
                         new Promise<null>(resolve => setTimeout(() => resolve(null), 300)), // 300ms max wait
                     ]);
 
-                    if (preloadedData) {
+                    if (preloadedData && mountedRef.current && requestId === fetchRequestRef.current) {
                         setPerseusItems(preloadedData);
                         setItem(0);
                         setEndOfTest(false);
                         setIsAnswered(false);
                         setStartTime(Date.now());
                         setIsLoading(false);
+                        void prefetchFollowUps(preloadedData);
                         return;
                     }
 
-                    // Use the already-started fresh fetch with a 30s timeout
+                    // Use the already-started fresh fetch with a timeout for cold starts.
                     const timeoutPromise = new Promise<never>((_, reject) =>
-                        setTimeout(() => reject(new Error('Question generation is taking longer than expected')), 30000)
+                        setTimeout(() => reject(new Error('Question generation is still in progress. Please retry in a moment.')), INITIAL_QUESTION_TIMEOUT_MS)
                     );
                     const response = await Promise.race([freshPromise, timeoutPromise]);
 
@@ -146,11 +346,14 @@ const RendererComponent = ({
                     if (!data || data.length === 0) {
                         throw new Error('No questions available yet — the system may still be generating content for this subject');
                     }
-                    setPerseusItems(data);
-                    setItem(0);
-                    setEndOfTest(false);
-                    setIsAnswered(false);
-                    setStartTime(Date.now());
+                    if (mountedRef.current && requestId === fetchRequestRef.current) {
+                        setPerseusItems(data);
+                        setItem(0);
+                        setEndOfTest(false);
+                        setIsAnswered(false);
+                        setStartTime(Date.now());
+                        void prefetchFollowUps(data);
+                    }
                 } catch (err) {
                     // Check if it's a network/connection error that we should retry
                     const isNetworkError = err instanceof TypeError && 
@@ -160,7 +363,7 @@ const RendererComponent = ({
                     
                     if (isNetworkError && retryCount < maxRetries) {
                         retryCount++;
-                        const backoffDelay = Math.pow(2, retryCount) * 1000; // Exponential backoff: 2s, 4s, 8s
+                        const backoffDelay = retryCount * 1000; // 1s
                         console.log(`Retrying fetch (attempt ${retryCount}/${maxRetries}) after ${backoffDelay}ms...`);
                         await new Promise(resolve => setTimeout(resolve, backoffDelay));
                         return attemptFetch(); // Retry
@@ -175,15 +378,19 @@ const RendererComponent = ({
                 await attemptFetch();
             } catch (err) {
                 console.error('Error fetching questions:', err);
-                setIsError(true);
-                setError(err instanceof Error ? err : new Error('Unknown error'));
+                if (mountedRef.current && requestId === fetchRequestRef.current) {
+                    setIsError(true);
+                    setError(err instanceof Error ? err : new Error('Unknown error'));
+                }
             } finally {
-                setIsLoading(false);
+                if (mountedRef.current && requestId === fetchRequestRef.current) {
+                    setIsLoading(false);
+                }
             }
         };
 
         fetchQuestions();
-    }, [user_id, assessmentMode, assessmentQuestions, currentQuestionIndex]);
+    }, [user_id, assessmentMode, currentQuestionIndex, assessmentQuestions, perseusItems.length]);
 
     // Fetch questions using apiUtils with JWT authentication
     useEffect(() => {
@@ -199,6 +406,44 @@ const RendererComponent = ({
     useEffect(() => {
         return () => { mountedRef.current = false; };
     }, []);
+
+    useEffect(() => {
+        const onResize = () => setViewportHeight(window.innerHeight);
+        window.addEventListener("resize", onResize);
+        return () => window.removeEventListener("resize", onResize);
+    }, []);
+
+    // Enforce compact inline widget geometry for sentence-embedded dropdown/text widgets.
+    // This runs after each question render to override widget-internal style drift.
+    useEffect(() => {
+        const container = document.getElementById("question-content-container");
+        if (!container) return;
+
+        let cancelled = false;
+        const applyLayout = () => {
+            if (cancelled) return;
+            normalizeInlineWidgetLayout(container);
+        };
+
+        const raf1 = requestAnimationFrame(applyLayout);
+        const raf2 = requestAnimationFrame(applyLayout);
+        const timeoutId = window.setTimeout(applyLayout, 40);
+        const observer = new MutationObserver(() => applyLayout());
+        observer.observe(container, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['class', 'style', 'aria-expanded'],
+        });
+
+        return () => {
+            cancelled = true;
+            cancelAnimationFrame(raf1);
+            cancelAnimationFrame(raf2);
+            window.clearTimeout(timeoutId);
+            observer.disconnect();
+        };
+    }, [perseusItems, item, isAnswered, isLoading, compactViewport, contentZoom]);
 
     // Log when question is displayed (once per item change) and emit question ID
     useEffect(() => {
@@ -288,23 +533,20 @@ const RendererComponent = ({
                 return; // No valid question IDs
             }
             
-            // Request next 5 questions
-            const response = await apiUtils.post(`${DASH_API_URL}/api/questions/recommend-next`, {
-                current_question_ids: currentQuestionIds,
-                count: 5
-            });
-            
-            if (!response.ok) {
-                console.warn('Failed to fetch next batch:', response.status);
-                setIsLoadingNextBatch(false);
-                return;
+            // Request next questions with a strict timeout to avoid long UI stalls.
+            let newQuestions = await fetchRecommendNext(
+                currentQuestionIds,
+                PREFETCH_BATCH_SIZE,
+                RECOMMEND_NEXT_TIMEOUT_MS,
+            );
+            if (newQuestions.length === 0) {
+                // Quick fallback: ask for a smaller batch to settle faster.
+                newQuestions = await fetchRecommendNext(currentQuestionIds, 3, 1200);
             }
-            
-            const newQuestions = await response.json();
             
             // Only update if we got new questions (non-empty response means questions changed)
             if (newQuestions.length > 0) {
-                setPerseusItems(prev => [...prev, ...newQuestions]);
+                setPerseusItems(prev => mergeUniqueQuestions(prev, newQuestions));
             }
         } catch (err) {
             console.error('Error loading next batch:', err);
@@ -318,12 +560,16 @@ const RendererComponent = ({
             const index = prev + 1;
 
             if (index >= perseusItems.length) {
+                if (!assessmentMode) {
+                    loadNextBatch();
+                    return prev;
+                }
                 setEndOfTest(true);
                 return prev; // stay at last valid index
             }
 
-            // Load next batch when 2 questions remaining
-            if (index === perseusItems.length - 2) {
+            // Load next batch earlier so user doesn't hit the end and wait.
+            if (index >= perseusItems.length - 4) {
                 loadNextBatch();
             }
 
@@ -463,11 +709,23 @@ const RendererComponent = ({
                             const choices = widgetDef.options?.choices || [];
                             const selectedIds = (widgetInput as any).selectedChoiceIds || [];
                             if (selectedIds.length > 0) {
-                                const match = selectedIds[0].match(/choice-(\d+)-/);
-                                if (match) selectedText = choices[parseInt(match[1])]?.content || '';
+                                const choiceIndexMap = new Map<string, number>();
+                                choices.forEach((c: any, idx: number) => {
+                                    const key = typeof c?.id === 'string' ? c.id.trim() : '';
+                                    if (key) choiceIndexMap.set(key, idx);
+                                    choiceIndexMap.set(`choice-${idx}`, idx);
+                                });
+                                const rawId = stripWrappingQuotes(selectedIds[0]);
+                                const mapped = choiceIndexMap.get(rawId);
+                                if (mapped != null) {
+                                    selectedText = stripWrappingQuotes(choices[mapped]?.content || '');
+                                } else {
+                                    const match = rawId.match(/^choice-(\d+)(?:-|$)/);
+                                    if (match) selectedText = stripWrappingQuotes(choices[parseInt(match[1], 10)]?.content || '');
+                                }
                             }
                             const correct = choices.find((c: any) => c.correct);
-                            if (correct) correctText = correct.content || '';
+                            if (correct) correctText = stripWrappingQuotes(correct.content || '');
                         } else if (widgetDef.type === 'numeric-input') {
                             selectedText = (widgetInput as any)?.currentValue || '';
                             const answers = widgetDef.options?.answers || [];
@@ -554,6 +812,14 @@ const RendererComponent = ({
                 .replace(/\b(?:the (?:picture|image|diagram|illustration) (?:below|above|shows?))[^.!?\n]*[.!?]?\s*/gi, '')
                 .trim();
         }
+        const hasRadioWidget = Object.values(itemCopy.question?.widgets || {}).some((w: any) => w?.type === 'radio');
+        if (hasRadioWidget && typeof itemCopy.question?.content === 'string') {
+            itemCopy.question.content = itemCopy.question.content
+                .replace(/^\s*choose\s+\d+\s+answers?:\s*$/gim, '')
+                .replace(/^\s*choose\s+one\s+answer:\s*$/gim, '')
+                .replace(/\n{3,}/g, '\n\n')
+                .trim();
+        }
         // Ensure every widget has a placeholder in content (definition+radio combo fix)
         if (itemCopy.question?.widgets && typeof itemCopy.question.content === 'string') {
             for (const wname of Object.keys(itemCopy.question.widgets)) {
@@ -577,7 +843,15 @@ const RendererComponent = ({
                     const { multipleSelect: _ms, randomize: _rz, ...rest } = w;
                     itemCopy.question.widgets[key] = {
                         ...rest,
-                        options: { choices: w.options, multipleSelect, randomize },
+                        options: { choices: sanitizeChoicesArray(w.options), multipleSelect, randomize },
+                    };
+                } else if (w?.type === 'radio' && w.options && Array.isArray(w.options.choices)) {
+                    itemCopy.question.widgets[key] = {
+                        ...w,
+                        options: {
+                            ...w.options,
+                            choices: sanitizeChoicesArray(w.options.choices),
+                        },
                     };
                 }
                 if (w?.type === 'numeric-input' && w.options) {
@@ -662,6 +936,7 @@ const RendererComponent = ({
                             placeholder: 'Select an answer',
                             static: false,
                             ...w.options,
+                            choices: sanitizeChoicesArray(w.options.choices || []),
                         },
                     };
                 }
@@ -727,6 +1002,54 @@ const RendererComponent = ({
         }
         return itemCopy;
     })();
+    const hasOverlaySensitiveWidget = useMemo(() => {
+        const widgets = ((perseusItem as any)?.question?.widgets || {}) as Record<string, any>;
+        return Object.values(widgets).some((w: any) =>
+            w?.type === "dropdown" || w?.type === "definition"
+        );
+    }, [perseusItem]);
+    const baseContentZoom = hasOverlaySensitiveWidget ? 1 : contentZoom;
+    const effectiveContentZoom = Math.min(baseContentZoom, fitContentZoom || baseContentZoom);
+    const contentZoomWrapperStyle: React.CSSProperties | undefined =
+        effectiveContentZoom < 1
+            ? ({
+                zoom: effectiveContentZoom,
+                width: "100%",
+                maxWidth: "100%",
+                boxSizing: "border-box",
+            } as React.CSSProperties)
+            : undefined;
+
+    useEffect(() => {
+        setFitContentZoom(baseContentZoom);
+    }, [baseContentZoom, item, isAnswered, isLoading, perseusItems.length]);
+
+    useLayoutEffect(() => {
+        const viewportEl = scrollContainerRef.current;
+        const stackEl = questionStackRef.current;
+        if (!viewportEl || !stackEl) return;
+
+        const MIN_ZOOM = 0.62;
+        const STEP = 0.04;
+        const runFit = () => {
+            let nextZoom = baseContentZoom;
+            stackEl.style.zoom = String(nextZoom);
+            let overflow = viewportEl.scrollHeight - viewportEl.clientHeight;
+            let attempts = 0;
+
+            while (overflow > 2 && nextZoom > MIN_ZOOM && attempts < 10) {
+                nextZoom = Math.max(MIN_ZOOM, Number((nextZoom - STEP).toFixed(3)));
+                stackEl.style.zoom = String(nextZoom);
+                overflow = viewportEl.scrollHeight - viewportEl.clientHeight;
+                attempts += 1;
+            }
+
+            setFitContentZoom((prev) => (Math.abs(prev - nextZoom) < 0.005 ? prev : nextZoom));
+        };
+
+        const raf = requestAnimationFrame(runFit);
+        return () => cancelAnimationFrame(raf);
+    }, [baseContentZoom, viewportHeight, item, isAnswered, showFeedback, perseusItems.length, isLoading, assessmentMode]);
     const progressPercentage = perseusItems.length > 0
         ? Math.min(100, ((item + 1) / perseusItems.length) * 100)
         : 0;
@@ -749,9 +1072,9 @@ const RendererComponent = ({
     }, [item, setCurrentHintIndex, setShowHints, setResponsiveHint]);
 
     return (
-        <div className="framework-perseus relative flex w-full h-full items-start justify-center px-3 md:px-4">
+        <div className="framework-perseus relative flex w-full h-full min-h-0 items-stretch justify-center px-2 md:px-3 py-1 overflow-hidden">
             {/* Neo-Brutalism Card */}
-            <Card className="relative flex w-full max-w-4xl md:max-w-5xl my-4 md:my-6 flex-col border-[4px] md:border-[5px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-200">
+            <Card className="relative flex h-full min-h-0 w-full max-w-4xl md:max-w-5xl flex-col border-[4px] md:border-[5px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-200 overflow-hidden">
                 {/* Progress bar at top */}
                 <div className="absolute top-0 left-0 right-0 h-2 md:h-3 bg-[#FFFDF5] dark:bg-[#000000] border-b-[2px] md:border-b-[3px] border-black dark:border-white">
                     <div
@@ -760,7 +1083,7 @@ const RendererComponent = ({
                     />
                 </div>
 
-                <CardHeader className="space-y-2 pt-6 md:pt-7 px-4 md:px-6 border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#FFD93D]">
+                <CardHeader className={`${compactViewport ? "space-y-1.5 pt-5 px-3.5" : "space-y-2 pt-6 md:pt-7 px-4 md:px-6"} border-b-[3px] md:border-b-[4px] border-black dark:border-white bg-[#FFD93D] flex-shrink-0`}>
                     <div className="flex items-start justify-between gap-3 md:gap-4 flex-wrap">
                         <div className="space-y-1.5 flex-1">
                             {/* Breadcrumb Navigation */}
@@ -815,10 +1138,10 @@ const RendererComponent = ({
                     </div>
                 </CardHeader>
 
-                <CardContent className="px-4 md:px-6 py-4 md:py-6 bg-[#FFFDF5] dark:bg-[#000000]">
+                <CardContent className={`${compactViewport ? "px-3 py-2.5" : "px-4 md:px-6 py-4 md:py-6"} bg-[#FFFDF5] dark:bg-[#000000] flex-1 min-h-0 overflow-hidden`}>
                     <div
                         ref={scrollContainerRef}
-                        className="relative w-full max-w-4xl mx-auto"
+                        className="relative w-full max-w-4xl mx-auto h-full min-h-0 overflow-y-auto overflow-x-hidden pr-1"
                     >
                         {endOfTest ? (
                             <div className="flex h-full items-center justify-center px-3 md:px-4 py-4 md:py-6 text-center">
@@ -862,7 +1185,7 @@ const RendererComponent = ({
                                     </div>
                                 </div>
                             </div>
-                        ) : isLoading ? (
+                        ) : (isLoading && perseusItems.length === 0) ? (
                             <div className="flex h-full flex-col items-center justify-center gap-3 md:gap-4">
                                 <div className="relative w-12 h-12 md:w-16 md:h-16">
                                     <div className="absolute inset-0 border-[3px] md:border-[4px] border-black dark:border-white"></div>
@@ -873,7 +1196,11 @@ const RendererComponent = ({
                                 </p>
                             </div>
                         ) : perseusItems.length > 0 && Object.keys(perseusItem?.question?.widgets || {}).length > 0 ? (
-                            <div className="space-y-4 md:space-y-6">
+                            <div
+                                ref={questionStackRef}
+                                className={`${compactViewport ? "space-y-2.5" : "space-y-4 md:space-y-6"} h-full`}
+                                style={contentZoomWrapperStyle}
+                            >
                                 {/* Audio play button for phonics/listening questions */}
                                 {audioWord && (
                                     <div style={{ marginBottom: '16px' }}>
@@ -881,7 +1208,11 @@ const RendererComponent = ({
                                     </div>
                                 )}
 
-                                <div id="question-content-container" className="border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white p-4 md:p-5 lg:p-6 shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]">
+                                <div
+                                    id="question-content-container"
+                                    className={`border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white ${compactViewport ? "p-3" : "p-4 md:p-5 lg:p-6"} shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]`}
+                                    style={{ overflowX: "clip", overflowY: "visible", maxHeight: "none", flexShrink: 0 }}
+                                >
                                     <PerseusI18nContextProvider locale="en" strings={mockStrings}>
                                         <RenderStateRoot>
                                             <ServerItemRenderer
@@ -962,7 +1293,7 @@ const RendererComponent = ({
                                             // Re-trigger question fetch
                                             const refetch = async () => {
                                                 try {
-                                                    const resp = await apiUtils.get(`${DASH_API_URL}/api/questions/5`);
+                                                    const resp = await apiUtils.get(`${DASH_API_URL}/api/questions/${INITIAL_QUESTION_BATCH_SIZE}`);
                                                     if (resp.ok) {
                                                         const d = await resp.json();
                                                         if (d && d.length > 0) {
@@ -989,7 +1320,7 @@ const RendererComponent = ({
                     </div>
                 </CardContent>
 
-                <CardFooter className="flex justify-between items-center gap-2 md:gap-3 px-4 md:px-6 pb-4 md:pb-5 pt-3 md:pt-4 border-t-[3px] md:border-t-[4px] border-black dark:border-white bg-white dark:bg-neutral-900">
+                <CardFooter className={`${compactViewport ? "gap-2 px-3 py-2.5" : "gap-2 md:gap-3 px-4 md:px-6 pb-4 md:pb-5 pt-3 md:pt-4"} flex justify-between items-center border-t-[3px] md:border-t-[4px] border-black dark:border-white bg-white dark:bg-neutral-900 flex-shrink-0`}>
                     {hints.length > 0 ? <HintButton inline={true} /> : <div />}
                     <div className="flex gap-2 md:gap-3">
                         <Button

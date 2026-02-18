@@ -41,6 +41,13 @@ const formatTime = (timestamp: number | null) => {
     );
 };
 
+const normalizeSubjectKey = (value: string | null | undefined) =>
+    (value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/[_-]+/g, " ")
+        .replace(/\s+/g, " ");
+
 export default function GradingSidebar({ open, onToggle, currentSkill }: GradingSidebarProps) {
     const contentV1Enabled = import.meta.env.VITE_CONTENT_V1_ENABLED === "true";
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -121,7 +128,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
     const v1ReadyCount = Number(gradingData?.next_ready_count || 0);
     const v1ProgressPct = v1Steps.length > 0 ? Math.max(0, Math.min(100, Math.round((v1CurrentStep / v1Steps.length) * 100))) : 0;
 
-    const subjects = isContentV1
+    const rawSubjects = isContentV1
         ? {
               "Content V1 Journey": {
                   grade_levels: {
@@ -139,6 +146,22 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
               },
           }
         : gradingData?.subjects || {};
+
+    const selectedSubjectKey = normalizeSubjectKey(currentSubject);
+    const filteredSubjectEntries = Object.entries(rawSubjects).filter(([subjectName]) => {
+        if (!selectedSubjectKey) return true;
+        const normalizedName = normalizeSubjectKey(subjectName);
+        return (
+            normalizedName === selectedSubjectKey ||
+            normalizedName.includes(selectedSubjectKey) ||
+            selectedSubjectKey.includes(normalizedName)
+        );
+    });
+
+    const subjects =
+        isContentV1 || !selectedSubjectKey
+            ? rawSubjects
+            : Object.fromEntries(filteredSubjectEntries);
 
     const overallGrade = isContentV1
         ? (v1Steps.length ? `${Math.min(v1CurrentStep + 1, v1Steps.length)}/${v1Steps.length}` : "N/A")
@@ -277,11 +300,15 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
     return (
         <div
             className={cn(
-                "fixed top-[44px] lg:top-[48px] left-0 flex flex-col border-r-[3px] lg:border-r-[4px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) z-50 will-change-transform shadow-[2px_0_0_0_rgba(0,0,0,1)] lg:shadow-[2px_0_0_0_rgba(0,0,0,1)] dark:shadow-[2px_0_0_0_rgba(255,255,255,0.3)]",
+                "grading-sidebar-shell fixed top-[44px] lg:top-[48px] left-0 flex flex-col border-r-[3px] lg:border-r-[4px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) z-50 will-change-transform shadow-[2px_0_0_0_rgba(0,0,0,1)] lg:shadow-[2px_0_0_0_rgba(0,0,0,1)] dark:shadow-[2px_0_0_0_rgba(255,255,255,0.3)]",
                 "h-[calc(100vh-44px)] lg:h-[calc(100vh-48px)]",
                 open ? "w-[240px] lg:w-[260px]" : "w-[40px]",
                 "max-md:hidden" // Hide on mobile
             )}
+            style={{
+                background: "var(--neo-bg, #FFFDF5)",
+                backgroundImage: "none",
+            }}
         >
             <header className={cn(
                 "flex items-center h-[44px] lg:h-[48px] border-b-[3px] border-black dark:border-white shrink-0 overflow-hidden transition-all duration-300 bg-[#FF6B6B]",
@@ -323,12 +350,19 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                 {open ? (
                     <div
                         ref={scrollContainerRef}
-                        className="h-full overflow-y-auto overflow-x-hidden animate-in fade-in duration-500 px-4 py-4"
+                        className="grading-sidebar-scroll h-full overflow-y-auto overflow-x-hidden animate-in fade-in duration-500 px-4 py-4"
+                        style={{
+                            background: "var(--neo-bg, #FFFDF5)",
+                            backgroundImage: "none",
+                        }}
                         onClick={handleContainerClick}
                     >
                         {/* Overall Grade Display */}
                         {!isLoading && overallGrade && (
-                            <div className="mb-4 border-[4px] border-black dark:border-white bg-[#FFD93D] dark:bg-[#FFD93D] p-4 shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+                            <div
+                                className="grading-card-surface mb-4 border-[4px] border-black dark:border-white bg-[#FFD93D] dark:bg-[#FFD93D] p-4 shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
+                                style={{ backgroundImage: "none" }}
+                            >
                                 <div className="text-center">
                                     <div className="text-[10px] font-black tracking-wide text-black mb-1">Overall Grade</div>
                                     <div className="text-5xl font-black text-black">{overallGrade}</div>
@@ -405,13 +439,16 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                                         id={`skill-${unit.id}`}
                                         className="border-none"
                                     >
-                                        <div className={cn(
-                                            "border-[4px] border-black dark:border-white transition-all duration-200 shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.2)]",
-                                            isCurrentSkill && "bg-[#FFE500] dark:bg-[#FFD93D] shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(0,0,0,1)] scale-[1.02]",
-                                            !isCurrentSkill && hasPractice && "bg-[#FFFDF5] dark:bg-[#000000]",
-                                            !isCurrentSkill && !hasPractice && "bg-[#FFFDF5] dark:bg-[#000000] opacity-60",
-                                            hasPractice && "hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
-                                        )}>
+                                        <div
+                                            className={cn(
+                                                "grading-card-surface border-[4px] border-black dark:border-white transition-all duration-200 shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.2)]",
+                                                isCurrentSkill && "bg-[#FFE500] dark:bg-[#FFD93D] shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(0,0,0,1)] scale-[1.02]",
+                                                !isCurrentSkill && hasPractice && "bg-[#FFFDF5] dark:bg-[#000000]",
+                                                !isCurrentSkill && !hasPractice && "grading-card-muted",
+                                                hasPractice && "hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
+                                            )}
+                                            style={{ backgroundImage: "none" }}
+                                        >
                                             <AccordionTrigger className="hover:no-underline px-4 py-3 [&>svg]:hidden cursor-pointer group">
                                                 <div className="flex flex-col gap-2 w-full">
                                                     <div className="flex items-center justify-between w-full">
@@ -443,7 +480,10 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                                                     </div>
 
                                                     {/* Progress bar */}
-                                                    <div className="w-full bg-[#FFFDF5] dark:bg-[#000000] border-[2px] border-black dark:border-white h-3 overflow-hidden">
+                                                    <div
+                                                        className="grading-card-surface w-full bg-[#FFFDF5] dark:bg-[#000000] border-[2px] border-black dark:border-white h-3 overflow-hidden"
+                                                        style={{ backgroundImage: "none" }}
+                                                    >
                                                         <div
                                                             className={cn(
                                                                 "h-full transition-all duration-300",
@@ -463,12 +503,15 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                                                 <div className="px-4 pb-4 pt-2">
                                                     <div className="grid grid-cols-2 gap-3">
                                                         {/* Accuracy Card */}
-                                                        <div className={cn(
-                                                            "aspect-square p-2.5 border-[3px] border-black dark:border-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.2)] flex flex-col",
-                                                            hasPractice
-                                                                ? "bg-[#FF6B6B] dark:bg-[#FF6B6B]"
-                                                                : "bg-[#FFFDF5] dark:bg-[#000000] opacity-60"
-                                                        )}>
+                                                        <div
+                                                            className={cn(
+                                                                "grading-card-surface aspect-square p-2.5 border-[3px] border-black dark:border-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.2)] flex flex-col",
+                                                                hasPractice
+                                                                    ? "bg-[#FF6B6B] dark:bg-[#FF6B6B]"
+                                                                    : "grading-card-muted"
+                                                            )}
+                                                            style={{ backgroundImage: "none" }}
+                                                        >
                                                             <div className="flex items-center gap-1.5 mb-1">
                                                                 <Target className={cn(
                                                                     "w-3.5 h-3.5 font-bold flex-shrink-0",
@@ -496,12 +539,15 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                                                         </div>
 
                                                         {/* Practice Count Card */}
-                                                        <div className={cn(
-                                                            "aspect-square p-2.5 border-[3px] border-black dark:border-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.2)] flex flex-col",
-                                                            hasPractice
-                                                                ? "bg-[#C4B5FD] dark:bg-[#C4B5FD]"
-                                                                : "bg-[#FFFDF5] dark:bg-[#000000] opacity-60"
-                                                        )}>
+                                                        <div
+                                                            className={cn(
+                                                                "grading-card-surface aspect-square p-2.5 border-[3px] border-black dark:border-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.2)] flex flex-col",
+                                                                hasPractice
+                                                                    ? "bg-[#C4B5FD] dark:bg-[#C4B5FD]"
+                                                                    : "grading-card-muted"
+                                                            )}
+                                                            style={{ backgroundImage: "none" }}
+                                                        >
                                                             <div className="flex items-center gap-1.5 mb-1">
                                                                 <TrendingUp className={cn(
                                                                     "w-3.5 h-3.5 font-bold flex-shrink-0",
@@ -531,7 +577,10 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
 
                                                     {/* Sub-skills (Lessons) */}
                                                     {unit.sub_skills && unit.sub_skills.length > 0 && (
-                                                        <div className="mt-3 bg-[#FFFDF5] dark:bg-[#000000] p-2.5 border-[3px] border-black dark:border-white">
+                                                        <div
+                                                            className="grading-card-surface mt-3 bg-[#FFFDF5] dark:bg-[#000000] p-2.5 border-[3px] border-black dark:border-white"
+                                                            style={{ backgroundImage: "none" }}
+                                                        >
                                                             <div className="text-[9px] font-black tracking-wide text-black dark:text-white mb-2">Sub-Skills (Lessons)</div>
                                                             <div className="space-y-1.5">
                                                                 {unit.sub_skills.slice(0, 5).map((subSkill: any) => (

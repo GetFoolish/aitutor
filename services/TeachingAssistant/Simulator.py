@@ -142,7 +142,23 @@ class AutomatedSimulator:
     async def connect_websocket(self) -> bool:
         """Connect to TeachingAssistant WebSocket"""
         try:
-            ws_url = f"{self.ws_url}/ws/feed?token={self.jwt_token}"
+            async with aiohttp.ClientSession() as session:
+                headers = {"Authorization": f"Bearer {self.jwt_token}"}
+                async with session.post(
+                    f"{self.api_url}/auth/stream-code?purpose=feed",
+                    headers=headers
+                ) as response:
+                    if response.status != 200:
+                        error_text = await response.text()
+                        print(f"❌ Failed to issue stream code: {error_text}")
+                        return False
+                    code_response = await response.json()
+                    stream_code = code_response.get("code")
+                    if not stream_code:
+                        print("❌ Stream code missing in response")
+                        return False
+
+            ws_url = f"{self.ws_url}/ws/feed?code={stream_code}"
             print(f"🌐 Connecting to WebSocket: {ws_url}")
             self.websocket = await websockets.connect(ws_url)
             print("✅ WebSocket connected")

@@ -33,6 +33,13 @@ export interface SetupResponse {
   setup_token: string;
 }
 
+export interface AuthCodeExchangeResponse {
+  token?: string;
+  setup_token?: string;
+  requires_setup?: boolean;
+  is_new_user?: boolean;
+}
+
 export interface AccountInfo {
   user_id: string;
   email: string;
@@ -100,6 +107,23 @@ class AuthAPI {
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.detail || 'Setup failed');
+    }
+
+    return response.json();
+  }
+
+  async exchangeAuthCode(code: string): Promise<AuthCodeExchangeResponse> {
+    const response = await fetch(`${AUTH_SERVICE_URL}/auth/exchange-code`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.detail || 'Auth code exchange failed');
     }
 
     return response.json();
@@ -246,4 +270,3 @@ class AuthAPI {
 }
 
 export const authAPI = new AuthAPI();
-

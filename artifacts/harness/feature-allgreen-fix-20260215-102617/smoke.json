@@ -1,0 +1,318 @@
+{
+  "created_at": "2026-02-15T15:26:17.757371+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.02036142349243164,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 101,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.0020890235900878906,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.003077983856201172,
+      "body": {
+        "status": "healthy",
+        "service": "TeachingAssistant"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.0602269172668457,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": true,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 0.05630207061767578,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 101
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 1.374948263168335,
+        "count": 5,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 12.0,
+        "min_question_count": 5
+      }
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "subject_used": "Math",
+        "start_code": 200,
+        "start_elapsed_s": 1.0700008869171143,
+        "start_body": {
+          "assessment_id": "assess_7fbbd0be24ed",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "For a school field trip, the ratio of students to chaperones is $10:1$. The ratio of chaperones to teachers is $3:1$. If there are $x$ teachers on the trip, write an expression that represents the total number of students. [[\u2603 expression 1]]",
+              "images": {},
+              "widgets": {
+                "expression 1": {
+                  "type": "expression",
+                  "options": {
+                    "buttonsVisible": "never",
+                    "functions": [
+                      "f",
+                      "g",
+                      "h"
+                    ],
+                    "times": false,
+                    "answerForms": [
+                      {
+                        "value": "30x",
+                        "form": true,
+                        "simplify": false,
+                        "considered": "correct"
+                      }
+                    ],
+                    "buttonSets": [
+                      "basic"
+                    ]
+                  },
+                  "graded": true,
+                  "version": {
+                    "major": 2,
+                    "minor": 0
+                  },
+                  "alignment": "default",
+                  "static": false
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "You have two ratios that connect students, chaperones, and teachers. How can you use these ratios to find a relationship between the number of students and the number of teachers?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "First, use the ratio of chaperones to teachers to find an expression for the number of chaperones in terms of $x$ (the number of teachers). Then, use the ratio of students to chaperones to find an expression for the number of students using your previous expression for chaperones.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "The ratio of chaperones to teachers is $3:1$. If there are $x$ teachers, then the number of chaperones is $3 \\times x$, or $3x$. Now, the ratio of students to chaperones is $10:1$. If there are $3x$ chaperones, how many students are there?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_9cc8ddef8d1920c7",
+            "dash_metadata": {
+              "dash_question_id": "pool_9cc8ddef8d1920c7",
+              "skill_ids": [
+                "ai_gen_math_us_7th-grade-math_unit_ratios-proportional-relationships"
+              ],
+              "difficulty": 0.605,
+              "skill_names": [
+                "ai_gen_math_us_7th-grade-math_unit_ratios-proportional-relationships"
+              ],
+              "unit_name": "ai_gen_math_us_7th-grade-math_unit_ratios-proportional-relationships",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "next": {
+          "code": 200,
+          "elapsed_s": 1.3743841648101807,
+          "completed_early": false,
+          "has_next_question": true,
+          "body": {
+            "completed": false,
+            "question_number": 2,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following statements is ALWAYS true when performing operations with rational numbers? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Adding two negative rational numbers always results in a positive rational number.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "The result of any arithmetic operation (addition, subtraction, multiplication, or division) on two rational numbers is always another rational number (excluding division by zero).",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Multiplying two rational numbers always results in a whole number.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Subtracting a rational number from another always results in a positive rational number.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What defines a rational number?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Rational numbers can be expressed as a fraction p/q, where p and q are integers and q is not zero. Consider how different operations affect this form.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Think about examples of adding, subtracting, multiplying, and dividing rational numbers. Do the results always fit the definition of a rational number?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_8c95a612cd6f",
+                "skill_ids": [
+                  "ai_gen_math_us_7th-grade-math_unit_operations-rational-numbers"
+                ],
+                "difficulty": 0.95,
+                "skill_names": [
+                  "Operations with Rational Numbers"
+                ],
+                "unit_name": "Operations with Rational Numbers",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991c298a4789515daff545c"
+              }
+            },
+            "current_difficulty": 0.65
+          }
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 25.0
+      }
+    },
+    "websocket": {
+      "session_start": {
+        "code": 200,
+        "elapsed_s": 1.1890599727630615,
+        "body": {
+          "prompt": "",
+          "session_info": {
+            "session_id": "sess_3403f328f765405d",
+            "user_id": "dev_a5f3178d2ba2",
+            "session_active": true,
+            "duration_minutes": 0.0,
+            "questions_answered": 0,
+            "questions_correct": 0,
+            "websocket_connected": false,
+            "sse_connected": false
+          }
+        }
+      },
+      "probe": {
+        "ok": true,
+        "elapsed_s": 0.9142401218414307,
+        "response": {
+          "type": "pong"
+        }
+      },
+      "session_end": {
+        "code": 200,
+        "elapsed_s": 2.2782750129699707,
+        "body": {
+          "prompt": "[SYSTEM PROMPT FOR ADAM]\nThe tutoring session is ending now.\nSession stats: 0.1 minutes, 0 questions attempted.\nPlease give the student a warm closing message, acknowledge their hard work,\nand encourage them for next session.",
+          "session_info": {
+            "session_id": "sess_3403f328f765405d",
+            "duration_minutes": 0.06,
+            "minutes_deducted": 1,
+            "questions_answered": 0,
+            "questions_correct": 0
+          }
+        }
+      },
+      "ok": true
+    }
+  },
+  "ok": true,
+  "errors": []
+}

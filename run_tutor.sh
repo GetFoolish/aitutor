@@ -126,7 +126,8 @@ echo "Starting Auth Service API server... Logs -> logs/auth_service.log"
 pids+=($!)
 
 # Extract ports dynamically from configuration files
-FRONTEND_PORT=$(grep -o '"port":[[:space:]]*[0-9]*' "$SCRIPT_DIR/frontend/vite.config.ts" 2>/dev/null | grep -o '[0-9]*' || echo "3000")
+# Support both JSON-style (`"port": 3000`) and TS-style (`port: 5173`) config.
+FRONTEND_PORT=$(grep -Eo '("port"[[:space:]]*:|port[[:space:]]*:)[[:space:]]*[0-9]+' "$SCRIPT_DIR/frontend/vite.config.ts" 2>/dev/null | head -n 1 | grep -Eo '[0-9]+' || echo "3000")
 DASH_API_PORT=$(grep -o 'PORT", [0-9]*' "$SCRIPT_DIR/services/DashSystem/dash_api.py" 2>/dev/null | grep -o '[0-9]*' || echo "8000")
 
 # Give the backend servers a moment to start
@@ -183,7 +184,7 @@ echo "  🕵️  SherlockED API:     http://localhost:$SHERLOCKED_API_PORT"
 echo "  👨‍🏫 TeachingAssistant:  http://localhost:$TEACHING_ASSISTANT_PORT"
 echo "  🎓 Tutor Service:      (integrated in frontend)"
 echo "  🎓 Cost Tracking Service:  http://localhost:$COST_TRACKING_PORT"
-echo "     Cost tracking interface: http://localhost:3000/app/admin/cost-tracking"
+echo "     Cost tracking interface: http://localhost:$FRONTEND_PORT/app/admin/cost-tracking"
 echo "     Two way channel interface: file://$SCRIPT_DIR/services/TeachingAssistant/scripts/test_channel1_viewer.html"
 echo "Press Ctrl+C to stop."
 echo "You can view the logs for each service in the 'logs' directory."

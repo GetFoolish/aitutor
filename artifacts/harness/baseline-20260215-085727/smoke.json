@@ -1,0 +1,297 @@
+{
+  "created_at": "2026-02-15T13:57:28.128997+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.018414020538330078,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 101,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.003998994827270508,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": false,
+      "code": 0,
+      "elapsed_s": 0.0,
+      "body": {
+        "error": "<urlopen error [Errno 61] Connection refused>"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.06868100166320801,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": true,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 0.06969809532165527,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 101
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 0.9685890674591064,
+        "count": 4,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 12.0,
+        "min_question_count": 4
+      }
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "start_code": 200,
+        "start_elapsed_s": 1.6216821670532227,
+        "start_body": {
+          "assessment_id": "assess_f4a9ae09e303",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "Imagine a meadow ecosystem with grass, rabbits eating the grass, and hawks hunting the rabbits. If the grass captures 10,000 units of energy from the sun, which statement *best* explains how energy flows through this ecosystem to the hawk, and why the hawk receives much less energy than the initial amount captured by the grass? [[\u2603 radio 1]]",
+              "images": {},
+              "widgets": {
+                "radio 1": {
+                  "alignment": "default",
+                  "graded": true,
+                  "options": {
+                    "choices": [
+                      {
+                        "content": "Energy flows from the sun to grass (photosynthesis), then to rabbits, and finally to hawks. A large amount of energy is lost as heat and used for life processes at each step, so the hawk gets only a small fraction of the original energy.",
+                        "correct": true,
+                        "misconception": null
+                      },
+                      {
+                        "content": "Energy is directly absorbed by rabbits from the sun, then transferred to hawks. Most energy is lost because rabbits don't eat enough grass to sustain the hawk.",
+                        "correct": false,
+                        "misconception": "Believes consumers can directly absorb solar energy; misunderstands primary energy source and loss mechanisms."
+                      },
+                      {
+                        "content": "Hawks get energy directly from the sun, and the grass and rabbits are just part of the environment. Energy is mostly lost when animals hunt each other.",
+                        "correct": false,
+                        "misconception": "Thinks top predators get energy directly from the sun; misunderstands trophic levels and energy transfer."
+                      },
+                      {
+                        "content": "Energy is transferred efficiently from grass to rabbits and then to hawks, with only a small amount lost. The hawk receives almost all the energy the grass initially captured.",
+                        "correct": false,
+                        "misconception": "Underestimates the significant energy loss that occurs between each trophic level in a food chain."
+                      }
+                    ],
+                    "countChoices": false,
+                    "deselectEnabled": false,
+                    "displayCount": null,
+                    "hasNoneOfTheAbove": false,
+                    "multipleSelect": false,
+                    "numCorrect": 1,
+                    "randomize": false
+                  },
+                  "static": false,
+                  "type": "radio",
+                  "version": {
+                    "major": 2,
+                    "minor": 0
+                  }
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "Think about where the energy for all living things in an ecosystem originally comes from. How do plants get this energy, and what happens to it as it moves through a food chain?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Remember that energy moves through a food chain, from producers to consumers. At each step, organisms use some of that energy for their own life processes, like moving, growing, and keeping warm. What happens to the energy that is used for these processes, and what form does it often take?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "The sun's energy is captured by the grass through photosynthesis. When a rabbit eats grass, it gets some of that energy, but a lot is used by the rabbit for metabolism or lost as heat. When a hawk eats a rabbit, it gets only a fraction of the energy the rabbit consumed. So, with each transfer, the amount of available energy decreases significantly.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_9c8875c051bb68e8",
+            "dash_metadata": {
+              "dash_question_id": "pool_9c8875c051bb68e8",
+              "skill_ids": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "difficulty": 0.9511111111111111,
+              "skill_names": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "next": {
+          "code": 200,
+          "elapsed_s": 1.3210699558258057,
+          "completed_early": false,
+          "has_next_question": true,
+          "body": {
+            "completed": false,
+            "question_number": 2,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A large coastal city is experiencing its worst drought in decades, leading to critically low levels in its freshwater reservoirs and rivers. The city council needs to invest in a long-term, sustainable solution to provide drinking water for its growing population. Considering that over 97% of Earth's water is salt water, and the city is right on the ocean, which approach would be the most effective and sustainable for their situation?\n\n[[\u2603 radio 1]]\n",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Invest in a large-scale desalination plant to convert ocean water into fresh water.",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Drill deeper wells into underground aquifers to find new freshwater sources.",
+                          "correct": false,
+                          "misconception": "Assumes unlimited underground freshwater; ignores drought impact on groundwater."
+                        },
+                        {
+                          "content": "Implement strict water conservation policies and educate citizens on reducing water use.",
+                          "correct": false,
+                          "misconception": "Focuses on reducing demand, not creating a new source; insufficient for severe drought."
+                        },
+                        {
+                          "content": "Build pipelines to transport freshwater from distant mountain lakes and rivers.",
+                          "correct": false,
+                          "misconception": "Ignores high cost/energy of long-distance transport; distant sources also affected by drought."
+                        }
+                      ],
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the different types of water found on Earth and where they are located. Which type is most abundant, and how accessible is it to a city right on the ocean?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "While freshwater sources like rivers and aquifers are vital, they can be severely impacted by droughts. The ocean, however, holds vast amounts of salt water. Technology exists to remove salt from ocean water, making it drinkable.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Conservation is important, and drilling deeper might provide temporary relief, but these don't create new water sources for a growing population during a severe drought. Transporting water from far away is costly and complex. Given the city's location and the abundance of ocean water, a method that converts this readily available resource into freshwater is a strong long-term solution.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_2dbedd79ae2a",
+                "skill_ids": [
+                  "ai_gen_science_us_middle-school-earth-space-science_unit_water-on-earth"
+                ],
+                "difficulty": 0.95,
+                "skill_names": [
+                  "Water on Earth"
+                ],
+                "unit_name": "Water on Earth",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991d092a4789515daff5863"
+              }
+            },
+            "current_difficulty": 0.65
+          }
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 25.0
+      }
+    },
+    "websocket": {
+      "session_start": {
+        "code": 0,
+        "elapsed_s": 0.0,
+        "body": {
+          "error": "<urlopen error [Errno 61] Connection refused>"
+        }
+      },
+      "probe": null,
+      "session_end": null,
+      "ok": false
+    }
+  },
+  "ok": false,
+  "errors": [
+    "service health checks failed",
+    "websocket probe failed"
+  ]
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "subject": "Math",
+    "start_code": 200,
+    "questions_code": 500,
+    "questions_count": 0
+  },
+  {
+    "subject": "Science",
+    "start_code": 200,
+    "questions_code": 500,
+    "questions_count": 0
+  },
+  {
+    "subject": "English",
+    "start_code": 200,
+    "questions_code": 200,
+    "questions_count": 6
+  },
+  {
+    "subject": "History",
+    "start_code": 200,
+    "questions_code": 200,
+    "questions_count": 9
+  },
+  {
+    "subject": "Geometry",
+    "start_code": 200,
+    "questions_code": 0,
+    "questions_count": 0
+  },
+  {
+    "subject": "Python Programming",
+    "start_code": 200,
+    "questions_code": 0,
+    "questions_count": 0
+  }
+]

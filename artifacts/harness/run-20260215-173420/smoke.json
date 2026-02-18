@@ -1,0 +1,4098 @@
+{
+  "created_at": "2026-02-15T17:34:20.392699+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.02340984344482422,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 110,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.0070040225982666016,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.008010149002075195,
+      "body": {
+        "status": "healthy",
+        "service": "TeachingAssistant"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.06711888313293457,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": true,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 0.05598306655883789,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 110
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 2.004143714904785,
+        "count": 5,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 12.0,
+        "min_question_count": 5
+      }
+    },
+    "learning_path_subject_validity": {
+      "ok": true,
+      "current_question_ids": [
+        "pool_a2a27ab902e9bb5b",
+        "ai_q_84e2fe706a55",
+        "ai_q_10170353cdd8"
+      ],
+      "recommend_next": {
+        "code": 200,
+        "elapsed_s": 0.7205679416656494,
+        "count": 4,
+        "overlap_with_current_ids": [],
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        },
+        "body": {
+          "sample_ids": [
+            "pool_5725f69ffaed6094",
+            "pool_43c59b71a0d111ae",
+            "ai_q_942924f5b456",
+            "ai_q_8487ce26d422"
+          ]
+        }
+      }
+    },
+    "adaptive_start_all_subjects": {
+      "ok": true,
+      "adaptive_start_timeout_s": 12.0,
+      "adaptive_start_retry_timeout_s": 35.0,
+      "catalog_fetch": {
+        "code": 200,
+        "elapsed_s": 0.05597496032714844,
+        "count": 47,
+        "fallback_used": false
+      },
+      "subjects_checked_count": 47,
+      "subjects_checked": [
+        "Science",
+        "History",
+        "English",
+        "Geography",
+        "Python",
+        "Music Theory",
+        "Cooking",
+        "Spanish",
+        "Art",
+        "Economics",
+        "Philosophy",
+        "Astronomy",
+        "World War 2",
+        "Russian",
+        "Korean",
+        "Ancient Greek",
+        "Swahili",
+        "Hindi",
+        "Architecture",
+        "Thai",
+        "Pottery",
+        "Farsi",
+        "Nutrition",
+        "Filmmaking",
+        "World War 1",
+        "Physics",
+        "Python Programming",
+        "Biology",
+        "Astrophysics And Cosmology Studies For Advanced Le",
+        "Geometry",
+        "Zzzz Recursion Probe 1771093263",
+        "Zzzz Pretest Probe 1771097854",
+        "Science Math History English Geography Python",
+        "Zzzz Pretest Probe 1771100688",
+        "Math",
+        "Zzzz Pretest Probe 1771160157",
+        "Zzzz Pretest Probe 1771165481",
+        "Zzzz Pretest Probe 1771166452",
+        "Zzzz Pretest Probe 1771168832",
+        "Zzzz Pretest Probe 1771169457",
+        "Zzzz Pretest Probe 1771170539",
+        "Zzzz Pretest Probe 1771170669",
+        "Zzzz Pretest Probe 1771172484",
+        "Zzzz Pretest Probe 1771172888",
+        "Zzzz Pretest Probe 1771173119",
+        "Zzzz Pretest Probe 1771175663",
+        "Zzzz Pretest Probe 1771176204"
+      ],
+      "results": [
+        {
+          "subject": "Science",
+          "code": 200,
+          "elapsed_s": 0.8998730182647705,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_6922e8cee7af",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Read about [[\u2603 definition 1]]. Based on the definition, answer: Which of the following statements best describes why photosynthesis is essential for most life on Earth? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "definition 1": {
+                    "type": "definition",
+                    "graded": false,
+                    "options": {
+                      "definition": "The process used by green plants, algae, and some bacteria to convert light energy into chemical energy, storing it in glucose (sugar) molecules. This process uses carbon dioxide and water and releases oxygen.",
+                      "togglePrompt": "photosynthesis",
+                      "static": false
+                    },
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  },
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "It produces oxygen for breathing and food (glucose) that forms the base of most food webs.",
+                          "correct": true,
+                          "clue": "Photosynthesis produces glucose, which is food, and oxygen, which is needed for respiration by many organisms. These two products are fundamental for most life on Earth.",
+                          "misconception": null
+                        },
+                        {
+                          "content": "It primarily helps plants grow taller and stronger.",
+                          "correct": false,
+                          "clue": "While photosynthesis helps plants grow, its role as the foundation of food webs and producer of oxygen makes it essential for *most life on Earth*, not just for plant growth.",
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "It converts chemical energy into light energy, releasing carbon dioxide.",
+                          "correct": false,
+                          "clue": "Photosynthesis converts light energy into chemical energy (glucose). It *uses* carbon dioxide and *releases* oxygen, not the other way around.",
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "It only occurs in animals that eat plants.",
+                          "correct": false,
+                          "clue": "Photosynthesis occurs in producers like plants, algae, and some bacteria. Animals obtain energy by consuming other organisms, they do not perform photosynthesis.",
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "multipleSelect": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "According to the definition, what are the two main products created during photosynthesis? Think about how these products affect other living things on Earth.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Remember that photosynthesis takes in carbon dioxide and water, then uses light energy to create glucose (a type of sugar) and releases oxygen. Consider why glucose and oxygen are so important for life beyond just the organism performing photosynthesis.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Glucose provides energy and building blocks for plants, and also for organisms that eat plants. Oxygen is released into the atmosphere and is crucial for the respiration of many organisms, including animals and humans. Which answer choice highlights both of these critical roles?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "question_id": "pool_ae0646789527de9b",
+              "dash_metadata": {
+                "dash_question_id": "pool_ae0646789527de9b",
+                "skill_ids": [
+                  "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+                ],
+                "difficulty": 0.6725,
+                "skill_names": [
+                  "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+                ],
+                "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+                "lesson_name": "Practice",
+                "ai_generated": true
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "History",
+          "code": 503,
+          "elapsed_s": 4.246760845184326,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "English",
+          "code": 200,
+          "elapsed_s": 0.900338888168335,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_c7b716c24222",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Read the sentence below. Which verb correctly completes the sentence?\n\nThe team of scientists, who have been working for months on the project, [[\u2603 radio 1]] ready to present their findings.",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "is",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "are",
+                          "correct": false,
+                          "misconception": "Agrees with the plural noun 'scientists' instead of the singular subject 'team'."
+                        },
+                        {
+                          "content": "were",
+                          "correct": false,
+                          "misconception": "Agrees with 'scientists' and uses an incorrect tense for the context."
+                        },
+                        {
+                          "content": "be",
+                          "correct": false,
+                          "misconception": "Uses an incorrect verb form that does not fit the sentence structure."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "To choose the correct verb, you need to identify the main subject of the sentence. What noun is performing the action or being described?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The verb must agree in number with the subject of the sentence. In the sentence, \"The team of scientists...\", the main subject is \"team,\" which is a singular collective noun. The phrase \"of scientists\" describes the team but is not the subject itself.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Since \"team\" is singular, the verb that completes the sentence must also be singular. Think about the singular present tense forms of the verb \"to be.\" Which one matches a singular subject like \"team\"?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "question_id": "pool_5bb1a65d526851c1",
+              "dash_metadata": {
+                "dash_question_id": "pool_5bb1a65d526851c1",
+                "skill_ids": [
+                  "ai_gen_english_us_6th-8th-grade-ela_unit_grammar-sentence-structure"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Grammar and Sentence Structure"
+                ],
+                "unit_name": "Grammar and Sentence Structure",
+                "lesson_name": "Practice",
+                "ai_generated": true
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Geography",
+          "code": 503,
+          "elapsed_s": 4.286110162734985,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Python",
+          "code": 200,
+          "elapsed_s": 1.4833359718322754,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_0d9f5e34a6cf",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "In Python, which function is used to read input from the user as a string? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "print()",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "input()",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "str()",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "read()",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about how you get data *into* your Python program from the outside world.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The `input()` function specifically pauses the program and waits for the user to type something and press Enter.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The `input()` function returns the user's typed text as a string, even if the user types a number.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_c84d8ffd3503",
+                "skill_ids": [
+                  "ai_gen_python_us_6th-8th-grade-python-core-syntax-data-types_unit_user-input-type-conversion"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "User Input and Type Conversion"
+                ],
+                "unit_name": "User Input and Type Conversion",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991ffb44818c0c7020944d0"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Music Theory",
+          "code": 200,
+          "elapsed_s": 4.628471612930298,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_9cb68638110f",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "In music, what does 'tempo' refer to? Choose the best definition from the options below. [[\u2603 dropdown 1]]",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "The loudness or softness of a sound.",
+                          "correct": false,
+                          "misconception": "This describes 'dynamics', not tempo. Students confuse loudness with speed."
+                        },
+                        {
+                          "content": "The speed or pace of the music.",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "The highness or lowness of a sound.",
+                          "correct": false,
+                          "misconception": "This describes 'pitch', not tempo. Students may confuse the register of the music with its speed."
+                        },
+                        {
+                          "content": "The quality of a sound that distinguishes it from others.",
+                          "correct": false,
+                          "misconception": "This describes 'timbre', not tempo. Students often mix up musical terms."
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about how you might describe whether a song is fast or slow. Which of the options relates to the speed of the music?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Tempo indicates how quickly or slowly a piece of music is performed. It's the speed of the music's beat.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The correct answer is 'The speed or pace of the music.' The other options refer to different musical elements: loudness (dynamics), highness/lowness (pitch), and sound quality (timbre).",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_fde922e80aa8",
+                "skill_ids": [
+                  "assessment_music_theory_grade_7_75956"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_fde922e80aa8",
+                "skill_names": [
+                  "Music Theory for Grade 7"
+                ],
+                "unit_id": "assessment_music_theory_grade_7_75956",
+                "lesson_id": "assessment_music_theory_grade_7_75956",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "699203af4818c0c702094e12",
+                "unit_name": "Music Theory for Grade 7",
+                "lesson_name": "Music Theory for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Cooking",
+          "code": 503,
+          "elapsed_s": 6.842400074005127,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Spanish",
+          "code": 200,
+          "elapsed_s": 1.5963809490203857,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_828cf8fe9b08",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "\u00bfCu\u00e1l de las siguientes opciones significa 'my parents' en espa\u00f1ol? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Mis hermanos",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Mis padres",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Mis abuelos",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Mis t\u00edos",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "\u00bfQu\u00e9 palabra en espa\u00f1ol se usa para 'father' y 'mother'?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "'Padre' significa 'father' y 'madre' significa 'mother'. Juntos, son 'parents'.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "La respuesta correcta es 'Mis padres'.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_141dba9a56d2",
+                "skill_ids": [
+                  "ai_gen_spanish_us_middle-school-spanish-novice-foundations_unit_mi-familia-y-mis-amigos"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Mi Familia y Mis Amigos"
+                ],
+                "unit_name": "Mi Familia y Mis Amigos",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991fdf94818c0c702093b5d"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Art",
+          "code": 200,
+          "elapsed_s": 5.063029050827026,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_701cb747a8f8",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "When an artist uses different values of the same color to create a sense of depth and form in their artwork, this is called [[\u2603 dropdown 1]].",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "color mixing",
+                          "correct": false,
+                          "misconception": "This refers to physically blending colors, not using values."
+                        },
+                        {
+                          "content": "monochromatic color scheme",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "complementary colors",
+                          "correct": false,
+                          "misconception": "This involves using colors opposite each other on the color wheel."
+                        },
+                        {
+                          "content": "analogous colors",
+                          "correct": false,
+                          "misconception": "This involves using colors that are next to each other on the color wheel."
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Does the question describe using multiple colors, or just one color in different shades?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A monochromatic color scheme uses only one color and its tints and shades to create an artwork. Tints are lighter versions of the color and shades are darker.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The artwork uses different values (lightness and darkness) of a single color. Which term best describes using a single color in this way?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_5614734e2217",
+                "skill_ids": [
+                  "assessment_art_grade_7_89983"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_5614734e2217",
+                "skill_names": [
+                  "Art for Grade 7"
+                ],
+                "unit_id": "assessment_art_grade_7_89983",
+                "lesson_id": "assessment_art_grade_7_89983",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "699203bd4818c0c702094e26",
+                "unit_name": "Art for Grade 7",
+                "lesson_name": "Art for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Economics",
+          "code": 200,
+          "elapsed_s": 5.321447134017944,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_8172f8f65ff3",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Maria wants to buy a new bicycle that costs $200. She earns $10 per week doing chores and saves all of it. Which of these is the MOST important economic question for Maria to consider before buying the bicycle? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Is the bicycle the color she likes?",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Focuses on personal preference, not economic factors."
+                        },
+                        {
+                          "content": "Can she afford the bicycle with her current savings and income?",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Which store sells the bicycle?",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Considers the location, but not affordability."
+                        },
+                        {
+                          "content": "Does the bicycle have a bell?",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Focuses on a minor feature, not overall cost."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What is the most important thing to consider when making a purchase like this?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Economics is about making choices with limited resources. Think about whether Maria has enough money to buy the bicycle.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Maria earns $10 per week. To afford the $200 bicycle, she needs to save for several weeks. The key question is whether she can wait that long and still afford it.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_f1ee51498cd5",
+                "skill_ids": [
+                  "assessment_economics_grade_7_93887"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_f1ee51498cd5",
+                "skill_names": [
+                  "Economics for Grade 7"
+                ],
+                "unit_id": "assessment_economics_grade_7_93887",
+                "lesson_id": "assessment_economics_grade_7_93887",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "699203c24818c0c702094e28",
+                "unit_name": "Economics for Grade 7",
+                "lesson_name": "Economics for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Philosophy",
+          "code": 503,
+          "elapsed_s": 4.431090831756592,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Astronomy",
+          "code": 200,
+          "elapsed_s": 1.3531279563903809,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_bdcee9506a39",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nThe inner planets (Mercury, Venus, Earth, Mars) are mostly rocky, while the outer planets (Jupiter, Saturn, Uranus, Neptune) are gas giants. This significant difference in composition is primarily because, during the formation of our solar system, [[\u2603 dropdown 1]].",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "only rocky materials could condense and survive the intense heat closer to the Sun, allowing volatile gases to condense into planets further away where it was much colder",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "the Sun's powerful gravity pulled all the heavier, rocky materials towards its center, leaving only lighter gases to form planets in the outer regions",
+                          "correct": false,
+                          "misconception": "Gravity's role confused with compositional differences."
+                        },
+                        {
+                          "content": "lighter gaseous materials were pushed outwards by the Sun's solar wind, while heavier rocky materials remained close to form planets",
+                          "correct": false,
+                          "misconception": "Solar wind's effect on initial planetary composition."
+                        },
+                        {
+                          "content": "frequent collisions in the inner solar system shattered early gas planets into rocky fragments, while outer planets remained intact",
+                          "correct": false,
+                          "misconception": "Confuses formation with destruction/collisions."
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/83d4e849aa8cf369.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Our Solar System",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What kinds of materials (rocky versus gaseous) can exist in different states (solid, liquid, gas) at very high versus very low temperatures? Think about what happens to water when it gets very hot or very cold.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "In the early solar system, the region close to the Sun was extremely hot, while regions further out were very cold. Different materials condense (turn from gas to solid or liquid) at different temperatures. Rocky and metallic materials can condense at high temperatures, but volatile gases (like water, methane, ammonia) only condense at very low temperatures.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Since the inner solar system was hot, only materials with high condensation temperatures, like rock and metal, could solidify and form planetesimals. Volatile gases remained in gaseous form or were pushed further out. In the colder outer solar system, these volatile gases could then condense into ice and gas, forming the cores of the gas giants. So, the key is what could solidify where.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_1c7f3a587676",
+                "skill_ids": [
+                  "ai_gen_astronomy_us_middle-school-astronomy-earth-moon-beyond_unit_our-solar-system"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Our Solar System"
+                ],
+                "unit_name": "Our Solar System",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f77921c9df089c484536"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "World War 2",
+          "code": 200,
+          "elapsed_s": 5.086315631866455,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_333d8a56af43",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of these events is considered the start of World War II in Europe? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "The attack on Pearl Harbor.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Pearl Harbor brought the US into the war, but it didn't start the war in Europe."
+                        },
+                        {
+                          "content": "Germany's invasion of Poland.",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null
+                        },
+                        {
+                          "content": "The Battle of Stalingrad.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Stalingrad was a major battle, but it happened later in the war."
+                        },
+                        {
+                          "content": "The bombing of Hiroshima.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Hiroshima ended the war in the Pacific, but not the start of the war in Europe."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about which country's aggressive actions first led to declarations of war by other nations in Europe.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "World War II began with a major act of aggression by Germany against one of its neighbors. This act prompted France and Britain to declare war.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Germany invaded Poland on September 1, 1939. This event led to declarations of war by France and the United Kingdom, marking the start of World War II in Europe.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_76aadadca482",
+                "skill_ids": [
+                  "assessment_world_war_2_grade_7_5270"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_76aadadca482",
+                "skill_names": [
+                  "World War 2 for Grade 7"
+                ],
+                "unit_id": "assessment_world_war_2_grade_7_5270",
+                "lesson_id": "assessment_world_war_2_grade_7_5270",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "699203cd4818c0c702094e3f",
+                "unit_name": "World War 2 for Grade 7",
+                "lesson_name": "World War 2 for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Russian",
+          "code": 200,
+          "elapsed_s": 5.9136457443237305,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_655b2ef58c8b",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following words is the correct Russian translation for the English word 'hello'? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "\u0414\u043e \u0441\u0432\u0438\u0434\u0430\u043d\u0438\u044f",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "\u0417\u0434\u0440\u0430\u0432\u0441\u0442\u0432\u0443\u0439\u0442\u0435",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "\u0421\u043f\u0430\u0441\u0438\u0431\u043e",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "\u041f\u043e\u0436\u0430\u043b\u0443\u0439\u0441\u0442\u0430",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the different ways you can greet someone in Russian.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "'\u0417\u0434\u0440\u0430\u0432\u0441\u0442\u0432\u0443\u0439\u0442\u0435' is a formal greeting, while '\u041f\u0440\u0438\u0432\u0435\u0442' is informal.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "'\u0417\u0434\u0440\u0430\u0432\u0441\u0442\u0432\u0443\u0439\u0442\u0435' is the most appropriate translation for 'hello' in most situations.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_f3e17df80ed8",
+                "skill_ids": [
+                  "assessment_russian_grade_7_10109"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_f3e17df80ed8",
+                "skill_names": [
+                  "Russian for Grade 7"
+                ],
+                "unit_id": "assessment_russian_grade_7_10109",
+                "lesson_id": "assessment_russian_grade_7_10109",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "699203d34818c0c702094e45",
+                "unit_name": "Russian for Grade 7",
+                "lesson_name": "Russian for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Korean",
+          "code": 200,
+          "elapsed_s": 8.35719609260559,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_7a81a890e365",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following is the correct way to say 'Hello' in Korean (formal)? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Annyeong",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Annyeonghaseyo",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Bogo shipeoyo",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Kamsahamnida",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the level of politeness needed when greeting someone formally.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "'Annyeonghaseyo' is a polite and formal greeting in Korean.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "'Annyeong' is informal, 'Bogo shipeoyo' means 'I miss you', and 'Kamsahamnida' means 'Thank you'.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_a255ae831156",
+                "skill_ids": [
+                  "assessment_korean_grade_7_17141"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_a255ae831156",
+                "skill_names": [
+                  "Korean for Grade 7"
+                ],
+                "unit_id": "assessment_korean_grade_7_17141",
+                "lesson_id": "assessment_korean_grade_7_17141",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "699203db4818c0c702094e5f",
+                "unit_name": "Korean for Grade 7",
+                "lesson_name": "Korean for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Ancient Greek",
+          "code": 200,
+          "elapsed_s": 6.621495962142944,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_a00e04e642af",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of these is the closest meaning to the Ancient Greek word \"\u03c6\u03b9\u03bb\u03af\u03b1\" (philia)? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Anger",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Friendship",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Fear",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Hate",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about words you know that start with 'philo-'.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The Ancient Greeks valued different kinds of love and friendship. 'Philia' represents one of them.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "'Philia' is a type of love or bond, often associated with loyalty and shared interests.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_bb81aa77a898",
+                "skill_ids": [
+                  "assessment_ancient_greek_grade_7_24483"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_bb81aa77a898",
+                "skill_names": [
+                  "Ancient Greek for Grade 7"
+                ],
+                "unit_id": "assessment_ancient_greek_grade_7_24483",
+                "lesson_id": "assessment_ancient_greek_grade_7_24483",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "699203e24818c0c702094e74",
+                "unit_name": "Ancient Greek for Grade 7",
+                "lesson_name": "Ancient Greek for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Swahili",
+          "code": 200,
+          "elapsed_s": 4.229764223098755,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_a1c91c4b7e54",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Complete the following Swahili sentence with the correct word: Mimi [[\u2603 dropdown 1]] mwanafunzi.\n\nThis sentence is used to express that 'I am a student'.",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "ni",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "na",
+                          "correct": false,
+                          "misconception": "Chooses 'na' which means 'and', confusing it with the verb 'to be'."
+                        },
+                        {
+                          "content": "u",
+                          "correct": false,
+                          "misconception": "Chooses 'u', which is a pronoun and doesn't fit grammatically."
+                        },
+                        {
+                          "content": "wa",
+                          "correct": false,
+                          "misconception": "Chooses 'wa', which is a plural marker and doesn't fit grammatically with 'mimi'."
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What is the correct form of the verb 'to be' in Swahili to use with 'mimi' (I)?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "In Swahili, the verb 'to be' changes depending on the subject pronoun. For 'mimi' (I), the correct form of 'to be' is 'ni'.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The correct sentence is: Mimi ni mwanafunzi, which translates to 'I am a student'. Therefore, the correct word to fill in the blank is 'ni'.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_c52fbbf6b11d",
+                "skill_ids": [
+                  "assessment_swahili_grade_7_31020"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_c52fbbf6b11d",
+                "skill_names": [
+                  "Swahili for Grade 7"
+                ],
+                "unit_id": "assessment_swahili_grade_7_31020",
+                "lesson_id": "assessment_swahili_grade_7_31020",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "699203e64818c0c702094e84",
+                "unit_name": "Swahili for Grade 7",
+                "lesson_name": "Swahili for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Hindi",
+          "code": 200,
+          "elapsed_s": 4.889037132263184,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_a8e4d509aae8",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following is the correct Hindi translation of the English sentence, 'My name is Rohan'? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "\u092e\u0947\u0930\u093e \u0928\u093e\u092e \u0930\u094b\u0939\u0928 \u0939\u0948\u0964",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null
+                        },
+                        {
+                          "content": "\u0935\u0939 \u0930\u094b\u0939\u0928 \u0939\u0948\u0964",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "This translates to 'He is Rohan', confusing possessive pronouns."
+                        },
+                        {
+                          "content": "\u092f\u0939 \u0930\u094b\u0939\u0928 \u0939\u0948\u0964",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "This translates to 'This is Rohan', confusing pronouns."
+                        },
+                        {
+                          "content": "\u0924\u0941\u092e \u0930\u094b\u0939\u0928 \u0939\u094b\u0964",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "This translates to 'You are Rohan', using the wrong pronoun."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Do you remember the Hindi word for 'my' and how to form a simple sentence stating your name?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The Hindi word for 'my' is 'mera' (\u092e\u0947\u0930\u093e), and the structure for stating your name is 'Mera naam [name] hai' (\u092e\u0947\u0930\u093e \u0928\u093e\u092e [name] \u0939\u0948\u0964).",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The correct translation is 'Mera naam Rohan hai' (\u092e\u0947\u0930\u093e \u0928\u093e\u092e \u0930\u094b\u0939\u0928 \u0939\u0948\u0964), which literally means 'My name Rohan is.'",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_a3dfbdefea25",
+                "skill_ids": [
+                  "assessment_hindi_grade_7_35180"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_a3dfbdefea25",
+                "skill_names": [
+                  "Hindi for Grade 7"
+                ],
+                "unit_id": "assessment_hindi_grade_7_35180",
+                "lesson_id": "assessment_hindi_grade_7_35180",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "699203eb4818c0c702094e95",
+                "unit_name": "Hindi for Grade 7",
+                "lesson_name": "Hindi for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Architecture",
+          "code": 200,
+          "elapsed_s": 4.534765720367432,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_ec797b020601",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "An architect is designing a new community center. They are considering different styles that reflect specific historical periods. Which style is known for its use of pointed arches and ribbed vaults? [[\u2603 dropdown 1]]",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "Gothic",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Classical",
+                          "correct": false,
+                          "misconception": "Classical architecture uses rounded arches and columns, not pointed arches."
+                        },
+                        {
+                          "content": "Renaissance",
+                          "correct": false,
+                          "misconception": "Renaissance architecture focuses on symmetry and domes, not pointed arches."
+                        },
+                        {
+                          "content": "Modern",
+                          "correct": false,
+                          "misconception": "Modern architecture often uses simpler geometric forms and new materials."
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about which architectural style is associated with grand cathedrals built in Europe during the Middle Ages.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Gothic architecture is characterized by its emphasis on vertical lines, pointed arches, ribbed vaults, and flying buttresses, which allowed for taller and more open spaces.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The pointed arches and ribbed vaults are key features that distinguish the Gothic style from other architectural styles like Classical or Renaissance. Therefore, the answer is Gothic.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_d43a0d5ae80e",
+                "skill_ids": [
+                  "assessment_architecture_grade_7_40212"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_d43a0d5ae80e",
+                "skill_names": [
+                  "Architecture for Grade 7"
+                ],
+                "unit_id": "assessment_architecture_grade_7_40212",
+                "lesson_id": "assessment_architecture_grade_7_40212",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "699203ef4818c0c702094eab",
+                "unit_name": "Architecture for Grade 7",
+                "lesson_name": "Architecture for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Thai",
+          "code": 200,
+          "elapsed_s": 7.023585081100464,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_5ea0e647b65c",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "\u0e04\u0e33\u0e43\u0e14\u0e15\u0e48\u0e2d\u0e44\u0e1b\u0e19\u0e35\u0e49\u0e40\u0e1b\u0e47\u0e19\u0e2a\u0e23\u0e30\u0e40\u0e2a\u0e35\u0e22\u0e07\u0e2a\u0e31\u0e49\u0e19 [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "\u0e2d\u0e32",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "\u0e2d\u0e34",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "\u0e2d\u0e39",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "\u0e40\u0e2d",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "\u0e2a\u0e23\u0e30\u0e40\u0e2a\u0e35\u0e22\u0e07\u0e2a\u0e31\u0e49\u0e19\u0e04\u0e37\u0e2d\u0e2a\u0e23\u0e30\u0e17\u0e35\u0e48\u0e2d\u0e2d\u0e01\u0e40\u0e2a\u0e35\u0e22\u0e07\u0e2a\u0e31\u0e49\u0e19\u0e46",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "\u0e25\u0e2d\u0e07\u0e2d\u0e2d\u0e01\u0e40\u0e2a\u0e35\u0e22\u0e07\u0e41\u0e15\u0e48\u0e25\u0e30\u0e04\u0e33\u0e14\u0e39 \u0e41\u0e25\u0e49\u0e27\u0e2a\u0e31\u0e07\u0e40\u0e01\u0e15\u0e27\u0e48\u0e32\u0e04\u0e33\u0e44\u0e2b\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e2a\u0e35\u0e22\u0e07\u0e2a\u0e31\u0e49\u0e19\u0e17\u0e35\u0e48\u0e2a\u0e38\u0e14",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "\u0e04\u0e33\u0e27\u0e48\u0e32 \"\u0e2d\u0e34\" \u0e2d\u0e2d\u0e01\u0e40\u0e2a\u0e35\u0e22\u0e07\u0e2a\u0e31\u0e49\u0e19\u0e01\u0e27\u0e48\u0e32\u0e04\u0e33\u0e2d\u0e37\u0e48\u0e19\u0e46",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_0cb30e142638",
+                "skill_ids": [
+                  "assessment_thai_grade_7_45725"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_0cb30e142638",
+                "skill_names": [
+                  "Thai for Grade 7"
+                ],
+                "unit_id": "assessment_thai_grade_7_45725",
+                "lesson_id": "assessment_thai_grade_7_warmstart",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "6991f06621c9df089c482263",
+                "unit_name": "Thai for Grade 7",
+                "lesson_name": "Thai for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Pottery",
+          "code": 200,
+          "elapsed_s": 4.101546049118042,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_7992d3696ff0",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "When creating pottery, which of the following actions is most important for removing air bubbles from the clay and making it more workable? [[\u2603 dropdown 1]]",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "Firing",
+                          "correct": false,
+                          "misconception": "Firing hardens the clay, but it doesn't remove air bubbles before shaping."
+                        },
+                        {
+                          "content": "Glazing",
+                          "correct": false,
+                          "misconception": "Glazing adds a decorative coating, but it's done after the clay is already shaped."
+                        },
+                        {
+                          "content": "Wedging",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Centering",
+                          "correct": false,
+                          "misconception": "Centering is important for throwing on the wheel, but it doesn't directly remove air bubbles."
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What process involves kneading and compressing the clay to prepare it for shaping?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Wedging is the process of kneading clay to remove air bubbles and create a uniform consistency. Air bubbles can cause pottery to crack or explode during firing.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The correct answer is wedging. Firing hardens the clay, glazing adds a decorative coating, and centering is important for throwing on the wheel, but only wedging removes air bubbles.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_42ffe2dc4cb6",
+                "skill_ids": [
+                  "assessment_pottery_grade_7_51915"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_42ffe2dc4cb6",
+                "skill_names": [
+                  "Pottery for Grade 7"
+                ],
+                "unit_id": "assessment_pottery_grade_7_51915",
+                "lesson_id": "assessment_pottery_grade_7_51915",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "699203fb4818c0c702094ebf",
+                "unit_name": "Pottery for Grade 7",
+                "lesson_name": "Pottery for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Farsi",
+          "code": 200,
+          "elapsed_s": 5.8696160316467285,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_7cf84358746b",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of these words is a common greeting in Farsi, meaning 'Hello'? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Khodafez",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Salam",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Baleh",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Na",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what you say when you first meet someone.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The word 'Salam' is widely used in many cultures, including Farsi-speaking ones, as a greeting.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "'Khodafez' means goodbye, 'Baleh' means yes, and 'Na' means no.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_317addaa038e",
+                "skill_ids": [
+                  "assessment_farsi_grade_7_55841"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_317addaa038e",
+                "skill_names": [
+                  "Farsi for Grade 7"
+                ],
+                "unit_id": "assessment_farsi_grade_7_55841",
+                "lesson_id": "assessment_farsi_grade_7_11217",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "6991ffed4818c0c702094563",
+                "unit_name": "Farsi for Grade 7",
+                "lesson_name": "Farsi for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Nutrition",
+          "code": 200,
+          "elapsed_s": 5.27736496925354,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_906b61c879f3",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Maria is planning a healthy lunch. Which of the following food combinations would provide the MOST balanced nutrition? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "A large bag of potato chips and a sugary soda.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Focuses on convenience, not nutritional value or balance."
+                        },
+                        {
+                          "content": "A grilled chicken salad with mixed greens, vegetables, and a light vinaigrette.",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null
+                        },
+                        {
+                          "content": "A chocolate bar and a handful of gummy candies.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Prioritizes sugary snacks without considering other nutrients."
+                        },
+                        {
+                          "content": "A plain white bread sandwich with only mayonnaise.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Includes carbohydrates but lacks protein, vitamins, and fiber."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What food groups should be included in a balanced meal?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A balanced meal should include a source of protein, carbohydrates, vitamins, and minerals.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider which option provides protein, vegetables, and a healthy source of fat, rather than just sugar and processed carbohydrates.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_efb904f30511",
+                "skill_ids": [
+                  "assessment_nutrition_grade_7_62014"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_efb904f30511",
+                "skill_names": [
+                  "Nutrition for Grade 7"
+                ],
+                "unit_id": "assessment_nutrition_grade_7_62014",
+                "lesson_id": "assessment_nutrition_grade_7_62014",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "699204064818c0c702094ee5",
+                "unit_name": "Nutrition for Grade 7",
+                "lesson_name": "Nutrition for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Filmmaking",
+          "code": 200,
+          "elapsed_s": 5.058710813522339,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_adf497306e3f",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "When planning a film, what is the purpose of creating a storyboard? A storyboard helps to [[\u2603 dropdown 1]].",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "decide which actors to cast in the film",
+                          "correct": false,
+                          "misconception": "Students might think it's about casting, confusing pre-production tasks."
+                        },
+                        {
+                          "content": "visually plan the shots and scenes of the film",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "write the script for the film",
+                          "correct": false,
+                          "misconception": "Students may confuse storyboarding with scriptwriting, which are separate processes."
+                        },
+                        {
+                          "content": "edit the film after it's been shot",
+                          "correct": false,
+                          "misconception": "Students may think it's related to editing, which happens post-production."
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Does a storyboard help with planning before filming, or with tasks done after filming?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A storyboard uses drawings to show what each scene will look like. It's a visual plan.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Think about how filmmakers plan out the visuals of their film. A storyboard uses drawings to represent each shot, helping to plan the visual aspects of the film before shooting begins.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_54ae77e1f0da",
+                "skill_ids": [
+                  "assessment_filmmaking_grade_7_67156"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_54ae77e1f0da",
+                "skill_names": [
+                  "Filmmaking for Grade 7"
+                ],
+                "unit_id": "assessment_filmmaking_grade_7_67156",
+                "lesson_id": "assessment_filmmaking_grade_7_67156",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "6992040b4818c0c702094ee7",
+                "unit_name": "Filmmaking for Grade 7",
+                "lesson_name": "Filmmaking for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "World War 1",
+          "code": 200,
+          "elapsed_s": 4.219099044799805,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_f994e9f7a1c5",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following was a major cause of World War I?  Choose the best answer from the list. [[\u2603 dropdown 1]]",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "The assassination of Archduke Franz Ferdinand",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "The rise of communism in Russia",
+                          "correct": false,
+                          "misconception": "Communism rose to power *during* WWI, not as a cause."
+                        },
+                        {
+                          "content": "The invention of the printing press",
+                          "correct": false,
+                          "misconception": "The printing press was invented long before World War I."
+                        },
+                        {
+                          "content": "The American Civil War",
+                          "correct": false,
+                          "misconception": "The American Civil War ended long before WWI began."
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the event that triggered the chain reaction leading to the war. Was it a political event?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The assassination of a leader from Austria-Hungary is considered the spark that ignited World War I due to the complex web of alliances.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Archduke Franz Ferdinand was assassinated in Sarajevo. This event led Austria-Hungary to declare war on Serbia, triggering a series of alliances that pulled many nations into the conflict. Therefore, the correct answer is the assassination of Archduke Franz Ferdinand.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_a60c15d75a1a",
+                "skill_ids": [
+                  "assessment_world_war_1_grade_7_72191"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_a60c15d75a1a",
+                "skill_names": [
+                  "World War 1 for Grade 7"
+                ],
+                "unit_id": "assessment_world_war_1_grade_7_72191",
+                "lesson_id": "assessment_world_war_1_grade_7_72191",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "6992040f4818c0c702094ee9",
+                "unit_name": "World War 1 for Grade 7",
+                "lesson_name": "World War 1 for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Physics",
+          "code": 503,
+          "elapsed_s": 4.2374961376190186,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Python Programming",
+          "code": 200,
+          "elapsed_s": 1.577420949935913,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_36bbd8348256",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "In Python, which keyword is used to start a 'for' loop, allowing you to repeat a block of code for each item in a sequence? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "while",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "for",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "if",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "repeat",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the keywords used to create different types of loops in Python.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A 'for' loop is specifically designed to iterate over a sequence (like a list or string).",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The correct keyword directly introduces the loop and specifies the variable to use for each item in the sequence.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_8551838c63ad",
+                "skill_ids": [
+                  "ai_gen_python-programming_us_6th-8th-grade-python-core-programming-concepts_unit_loops-repeating-actions"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Loops: Repeating Actions"
+                ],
+                "unit_name": "Loops: Repeating Actions",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991fe4a4818c0c702093c1f"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Biology",
+          "code": 503,
+          "elapsed_s": 5.895010709762573,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Astrophysics And Cosmology Studies For Advanced Le",
+          "code": 200,
+          "elapsed_s": 1.473261833190918,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_87b5120b9590",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "For advanced learners studying astrophysics, what is the MOST important reason for studying the Sun in detail, even though there are billions of other stars? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "The Sun is the biggest and brightest star in the entire universe.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "The Sun is the closest star to Earth, allowing for detailed observation and understanding of stellar processes.",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "The Sun is made of completely different elements than other stars, making it unique.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Studying the Sun helps us predict when other stars will explode.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what makes the Sun special from our perspective on Earth.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Proximity allows for much more detailed observation.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "While other stars are important, the Sun's nearness provides unparalleled data for understanding stellar physics.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_4bddfbdfab52",
+                "skill_ids": [
+                  "ai_gen_astrophysics-and-cosmology-studies-for-advanced-le_us_6th-8th-grade-middle-school-astronomy-and-space-science_unit_the-sun-and-other-stars"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "The Sun and Other Stars"
+                ],
+                "unit_name": "The Sun and Other Stars",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991fe5a4818c0c702093c63"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Geometry",
+          "code": 503,
+          "elapsed_s": 4.304196119308472,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Zzzz Recursion Probe 1771093263",
+          "code": 200,
+          "elapsed_s": 1.567148208618164,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_2d35ee6a88f5",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Zzzz Recursion Probe 1771093263 has detected a pattern similar to the Fibonacci sequence in a distant nebula. Which of the following is the BEST description of what the Fibonacci sequence is? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "A sequence where each number is the square of the previous number.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "A sequence where each number is the sum of the two numbers before it.",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "A sequence where each number is half of the previous number.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "A sequence where each number is randomly generated.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What is the relationship between consecutive numbers in the Fibonacci sequence?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The Fibonacci sequence starts with 0 and 1. Each subsequent number is found by adding up the two numbers before it. So, 0, 1, 1, 2, 3, 5, 8, and so on.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider the definition of the Fibonacci sequence and see which answer choice best matches that definition.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_f795cff5f8a5",
+                "skill_ids": [
+                  "ai_gen_zzzz-recursion-probe-1771093263_us_6th-8th-grade-math-intro-recursive-patterns-fractals_unit_fibonacci-sequence-wonders"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "The Fibonacci Sequence and Its Wonders"
+                ],
+                "unit_name": "The Fibonacci Sequence and Its Wonders",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f72121c9df089c4843cc"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771097854",
+          "code": 200,
+          "elapsed_s": 5.5670387744903564,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_5e7566f3d35f",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "What is the purpose of the Zzzz Pretest Probe 1771097854 for Grade 7? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "To provide students with extra credit opportunities.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "To assess students' prior knowledge and identify areas for improvement before instruction.",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "To determine students' final grades in the subject.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "To replace the need for regular classroom instruction.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what 'pretest' and 'probe' suggest about the timing and intention of the assessment.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A pretest is given before learning new material to see what students already know.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The Zzzz Pretest Probe 1771097854 helps teachers understand what students already know so they can tailor their teaching.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_fb70a63eadfd",
+                "skill_ids": [
+                  "assessment_zzzz_pretest_probe_1771097854_grade_7_95320"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_fb70a63eadfd",
+                "skill_names": [
+                  "Zzzz Pretest Probe 1771097854 for Grade 7"
+                ],
+                "unit_id": "assessment_zzzz_pretest_probe_1771097854_grade_7_95320",
+                "lesson_id": "assessment_zzzz_pretest_probe_1771097854_grade_7_95320",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "699204284818c0c702094f15",
+                "unit_name": "Zzzz Pretest Probe 1771097854 for Grade 7",
+                "lesson_name": "Zzzz Pretest Probe 1771097854 for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Science Math History English Geography Python",
+          "code": 503,
+          "elapsed_s": 6.6870880126953125,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771100688",
+          "code": 200,
+          "elapsed_s": 2.409152030944824,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_0251e60ee6ed",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Read about [[\u2603 definition 1]]. Based on the definition, if a wave has crests that are 5 meters apart, what is its [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "definition 1": {
+                    "type": "definition",
+                    "graded": false,
+                    "options": {
+                      "definition": "The distance between two consecutive corresponding points on a wave, such as from one crest to the next crest, or from one trough to the next trough. It is often represented by the Greek letter lambda ($\\lambda$).",
+                      "togglePrompt": "wavelength",
+                      "static": false
+                    },
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  },
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "5 meters",
+                          "correct": true,
+                          "clue": "The definition of wavelength is the distance between two consecutive crests. If the crests are 5 meters apart, that is the wavelength.",
+                          "misconception": null
+                        },
+                        {
+                          "content": "2.5 meters",
+                          "correct": false,
+                          "clue": "Wavelength is the full distance between two consecutive crests, not half of it.",
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "10 meters",
+                          "correct": false,
+                          "clue": "Wavelength is the distance from one crest to the *next* crest, not twice that distance.",
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "The height of the wave",
+                          "correct": false,
+                          "clue": "The height of the wave is its amplitude, not its wavelength. Wavelength is a horizontal distance.",
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "multipleSelect": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what 'consecutive corresponding points' means in the definition of wavelength. Where are the crests located on a wave?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The definition states that wavelength is the distance between two consecutive crests (or troughs). If you identify two crests, the distance between them is the wavelength.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The problem tells you that the crests of the wave are 5 meters apart. This distance directly matches the definition of wavelength as the distance from one crest to the next. What does that tell you about the wavelength?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_d37d1ca2a32e",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771100688_us_middle-school-science-6-8_unit_waves-applications"
+                ],
+                "difficulty": 0.57,
+                "skill_names": [
+                  "Waves and Their Applications"
+                ],
+                "unit_name": "Waves and Their Applications",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f1e421c9df089c482708"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Math",
+          "code": 503,
+          "elapsed_s": 4.984686851501465,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771160157",
+          "code": 200,
+          "elapsed_s": 1.467303991317749,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_c7941ff47825",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on your understanding of area, volume, and angles, which of the following BEST describes the primary focus of Zzzz Pretest Probe 1771160157? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "It focuses on advanced calculus and differential equations.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "It assesses foundational knowledge of area, volume, and angles in geometry.",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "It explores the principles of physics and mechanics.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "It is a comprehensive exam covering all areas of mathematics.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What topics are typically covered when learning about area, volume, and angles?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Area, volume, and angles are fundamental concepts in geometry. Consider what a pretest on this topic would likely assess.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Since it's a pretest, it's designed to gauge your existing understanding of the basics, not to test advanced concepts.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_eb5c793cb7af",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771160157_us_6th-8th-grade-middle-school-math_unit_geometry-area-volume-angles"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Geometry: Area, Volume, and Angles"
+                ],
+                "unit_name": "Geometry: Area, Volume, and Angles",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f1f421c9df089c482772"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771165481",
+          "code": 200,
+          "elapsed_s": 6.505048990249634,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_218559de7331",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "The Zzzz Pretest Probe 1771165481 is designed to be used for which grade level? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Grade 6",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Grade 7",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Grade 8",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Grade 9",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Read the description of the probe carefully.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The description specifically mentions the intended grade level.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The title states 'Zzzz Pretest Probe 1771165481 for Grade 7'.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_6d24b0b7fb8b",
+                "skill_ids": [
+                  "assessment_zzzz_pretest_probe_1771165481_grade_7_16815"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_6d24b0b7fb8b",
+                "skill_names": [
+                  "Zzzz Pretest Probe 1771165481 for Grade 7"
+                ],
+                "unit_id": "assessment_zzzz_pretest_probe_1771165481_grade_7_16815",
+                "lesson_id": "assessment_zzzz_pretest_probe_1771165481_grade_7_16815",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "6992043e4818c0c702094f7c",
+                "unit_name": "Zzzz Pretest Probe 1771165481 for Grade 7",
+                "lesson_name": "Zzzz Pretest Probe 1771165481 for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771166452",
+          "code": 503,
+          "elapsed_s": 5.113526821136475,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771168832",
+          "code": 200,
+          "elapsed_s": 1.466378927230835,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_60944879cfdf",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on the context of Zzzz Pretest Probe 1771168832, what is the primary goal when solving equations? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "To find the largest possible number.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "To isolate the variable on one side of the equation.",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "To make both sides of the equation equal to zero.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "To memorize all the steps involved.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What does it mean to 'solve' for a variable?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Solving an equation involves manipulating it to get the variable alone.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Think about what you're trying to achieve when you're working through the steps of solving an equation.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_f4da5b389ca6",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771168832_us_6th-8th-grade-math-pre-algebra-algebra-foundations_unit_solving-equations"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Solving Equations"
+                ],
+                "unit_name": "Solving Equations",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f1f021c9df089c48274d"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771169457",
+          "code": 503,
+          "elapsed_s": 4.656197786331177,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771170539",
+          "code": 200,
+          "elapsed_s": 1.5717501640319824,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_5e50c2c7fa5f",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on the topics covered in Zzzz Pretest Probe 1771170539, which of the following best describes the main focus of the questions? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Analyzing historical events and timelines.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Solving for unknown variables in equations and inequalities.",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Identifying different types of plants and animals.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Understanding the principles of musical composition.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What mathematical concepts are typically associated with equations and inequalities?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Equations and inequalities involve finding values that make a statement true, often using variables.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The probe likely focuses on the skills needed to manipulate and solve equations or inequalities to find the value of a variable.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_d2b7bcab01bf",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771170539_us_6th-8th-grade-math_unit_equations-inequalities"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Equations & Inequalities"
+                ],
+                "unit_name": "Equations & Inequalities",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f20421c9df089c4827c3"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771170669",
+          "code": 503,
+          "elapsed_s": 5.430474042892456,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771172484",
+          "code": 200,
+          "elapsed_s": 6.521232843399048,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_69ad312fc958",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on the information presented in Zzzz Pretest Probe 1771172484, which of the following shapes is MOST likely being discussed in relation to calculating its volume? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "A flat, two-dimensional circle.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "A three-dimensional rectangular prism.",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "A straight line segment.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "A single point in space.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What does volume measure?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Volume measures the amount of space a three-dimensional object occupies.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Consider which of the shapes listed has three dimensions and therefore a volume that can be calculated.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_e03cd0907458",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771172484_us_6th-8th-grade-math_unit_geometry-area-volume-angles"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Geometry: Area, Volume, and Angles"
+                ],
+                "unit_name": "Geometry: Area, Volume, and Angles",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699204564818c0c702094fa1"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771172888",
+          "code": 503,
+          "elapsed_s": 4.495326042175293,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771173119",
+          "code": 200,
+          "elapsed_s": 6.2205588817596436,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_d50f681c6e69",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "The Earth's crust is made up of large pieces called tectonic plates. What generally happens when two tectonic plates collide? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "The plates slide past each other, causing earthquakes.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "This describes transform boundaries, not all collisions."
+                        },
+                        {
+                          "content": "One plate may slide under the other, or they may both push upwards, forming mountains.",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null
+                        },
+                        {
+                          "content": "The plates move farther apart, creating large gaps.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "This describes divergent boundaries, not collisions."
+                        },
+                        {
+                          "content": "The plates dissolve and disappear into the Earth's mantle.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Plates don't dissolve; they interact mechanically."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": true,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what happens when two cars collide. Do they always just slide past each other, or can other things happen?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "When tectonic plates collide (convergent boundaries), the denser plate can subduct (sink) under the less dense plate. Alternatively, both plates can buckle and fold upwards.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "If one plate slides under the other, volcanoes can form. If both plates push upwards, mountains can form. Which of the answer choices describes these possibilities?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_dbe93ef43963",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771173119_us_6th-8th-grade-middle-school-science_unit_earths-dynamic-systems"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Earth's Dynamic Systems"
+                ],
+                "unit_name": "Earth's Dynamic Systems",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699204614818c0c702094fb1"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771175663",
+          "code": 200,
+          "elapsed_s": 7.438159227371216,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_d55e25e27c08",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Based on the name, what is the MOST LIKELY purpose of the Zzzz Pretest Probe 1771175663 for Grade 7? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "To provide a comprehensive review of all Grade 7 material at the end of the year.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "To assess a student's existing knowledge of Grade 7 material before instruction begins.",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "To serve as a final exam for Grade 7 students.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "To provide extra credit opportunities for students struggling in Grade 7.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What does 'pretest' suggest about when the test is given?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A 'probe' is often used to investigate or assess something. Think about what is being assessed in this case.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The name indicates it's a 'pretest', meaning it's given *before* learning new material to see what students already know.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_0c83e26d210b",
+                "skill_ids": [
+                  "assessment_zzzz_pretest_probe_1771175663_grade_7_58442"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_0c83e26d210b",
+                "skill_names": [
+                  "Zzzz Pretest Probe 1771175663 for Grade 7"
+                ],
+                "unit_id": "assessment_zzzz_pretest_probe_1771175663_grade_7_58442",
+                "lesson_id": "assessment_zzzz_pretest_probe_1771175663_grade_7_58442",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "699204694818c0c702094fd5",
+                "unit_name": "Zzzz Pretest Probe 1771175663 for Grade 7",
+                "lesson_name": "Zzzz Pretest Probe 1771175663 for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771176204",
+          "code": 503,
+          "elapsed_s": 4.638199090957642,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        }
+      ]
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "subject_used": "Science",
+        "start_code": 200,
+        "start_elapsed_s": 0.8998730182647705,
+        "start_body": {
+          "assessment_id": "assess_6922e8cee7af",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "Read about [[\u2603 definition 1]]. Based on the definition, answer: Which of the following statements best describes why photosynthesis is essential for most life on Earth? [[\u2603 radio 1]]",
+              "images": {},
+              "widgets": {
+                "definition 1": {
+                  "type": "definition",
+                  "graded": false,
+                  "options": {
+                    "definition": "The process used by green plants, algae, and some bacteria to convert light energy into chemical energy, storing it in glucose (sugar) molecules. This process uses carbon dioxide and water and releases oxygen.",
+                    "togglePrompt": "photosynthesis",
+                    "static": false
+                  },
+                  "version": {
+                    "major": 0,
+                    "minor": 0
+                  },
+                  "alignment": "default",
+                  "static": false
+                },
+                "radio 1": {
+                  "type": "radio",
+                  "graded": true,
+                  "options": {
+                    "choices": [
+                      {
+                        "content": "It produces oxygen for breathing and food (glucose) that forms the base of most food webs.",
+                        "correct": true,
+                        "clue": "Photosynthesis produces glucose, which is food, and oxygen, which is needed for respiration by many organisms. These two products are fundamental for most life on Earth.",
+                        "misconception": null
+                      },
+                      {
+                        "content": "It primarily helps plants grow taller and stronger.",
+                        "correct": false,
+                        "clue": "While photosynthesis helps plants grow, its role as the foundation of food webs and producer of oxygen makes it essential for *most life on Earth*, not just for plant growth.",
+                        "misconception": "Common student error"
+                      },
+                      {
+                        "content": "It converts chemical energy into light energy, releasing carbon dioxide.",
+                        "correct": false,
+                        "clue": "Photosynthesis converts light energy into chemical energy (glucose). It *uses* carbon dioxide and *releases* oxygen, not the other way around.",
+                        "misconception": "Common student error"
+                      },
+                      {
+                        "content": "It only occurs in animals that eat plants.",
+                        "correct": false,
+                        "clue": "Photosynthesis occurs in producers like plants, algae, and some bacteria. Animals obtain energy by consuming other organisms, they do not perform photosynthesis.",
+                        "misconception": "Common student error"
+                      }
+                    ],
+                    "multipleSelect": false,
+                    "countChoices": false,
+                    "deselectEnabled": false,
+                    "displayCount": null,
+                    "hasNoneOfTheAbove": false,
+                    "randomize": false,
+                    "numCorrect": 1
+                  },
+                  "version": {
+                    "major": 2,
+                    "minor": 0
+                  },
+                  "alignment": "default",
+                  "static": false
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "According to the definition, what are the two main products created during photosynthesis? Think about how these products affect other living things on Earth.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Remember that photosynthesis takes in carbon dioxide and water, then uses light energy to create glucose (a type of sugar) and releases oxygen. Consider why glucose and oxygen are so important for life beyond just the organism performing photosynthesis.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Glucose provides energy and building blocks for plants, and also for organisms that eat plants. Oxygen is released into the atmosphere and is crucial for the respiration of many organisms, including animals and humans. Which answer choice highlights both of these critical roles?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_ae0646789527de9b",
+            "dash_metadata": {
+              "dash_question_id": "pool_ae0646789527de9b",
+              "skill_ids": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "difficulty": 0.6725,
+              "skill_names": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "next": {
+          "code": 200,
+          "elapsed_s": 5.31312370300293,
+          "completed_early": false,
+          "has_next_question": true,
+          "body": {
+            "completed": false,
+            "question_number": 2,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A scientist is studying the growth of a bacterial colony in a petri dish. At the start of the experiment, there are 500 bacteria. After one hour, the population doubles. After another hour, it doubles again. Assuming the bacteria continue to double every hour, how many bacteria will there be after 5 hours? [[\u2603 numeric-input 1]]",
+                "images": {},
+                "widgets": {
+                  "numeric-input 1": {
+                    "graded": true,
+                    "options": {
+                      "answers": [
+                        {
+                          "status": "correct",
+                          "value": 16000,
+                          "maxError": 0.01,
+                          "simplify": "optional",
+                          "strict": false,
+                          "message": ""
+                        }
+                      ],
+                      "coefficient": false,
+                      "static": false,
+                      "labelText": "",
+                      "size": "normal"
+                    },
+                    "type": "numeric-input",
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "How does the bacteria population change each hour?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Since the population doubles each hour, we can multiply the current population by 2 to find the population after the next hour. After 1 hour: 500 * 2 = 1000. After 2 hours: 1000 * 2 = 2000.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Continue doubling the population each hour for a total of 5 hours. After 3 hours: 2000 * 2 = 4000. After 4 hours: 4000 * 2 = 8000. After 5 hours: 8000 * 2 = [[\u2603 numeric-input 1]].",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_06eccd860a1e",
+                "skill_ids": [
+                  "ai_gen_science_us_middle-school-life-science_unit_introduction-life-science"
+                ],
+                "difficulty": 0.8,
+                "skill_names": [
+                  "Introduction to Life Science"
+                ],
+                "unit_name": "Introduction to Life Science",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699204744818c0c702094feb"
+              }
+            },
+            "current_difficulty": 0.65
+          }
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 25.0
+      }
+    },
+    "loading_latency": {
+      "ok": true,
+      "initial_question_fetch_elapsed_s": 2.004143714904785,
+      "learning_recommend_next_elapsed_s": 0.7205679416656494,
+      "adaptive_start_elapsed_s": 0.8998730182647705,
+      "next_question_elapsed_s": 5.31312370300293,
+      "budgets": {
+        "initial_question_fetch_budget_s": 12.0,
+        "learning_recommend_next_budget_s": 25.0,
+        "adaptive_start_budget_s": 12.0,
+        "next_question_budget_s": 25.0
+      }
+    },
+    "websocket": {
+      "session_start": {
+        "code": 200,
+        "elapsed_s": 0.46633028984069824,
+        "body": {
+          "prompt": "",
+          "session_info": {
+            "session_id": "sess_ec7f8f69ad4d441c",
+            "user_id": "dev_181321706bcc",
+            "session_active": true,
+            "duration_minutes": 0.0,
+            "questions_answered": 0,
+            "questions_correct": 0,
+            "websocket_connected": false,
+            "sse_connected": false
+          }
+        }
+      },
+      "probe": {
+        "ok": true,
+        "elapsed_s": 0.532581090927124,
+        "response": {
+          "type": "pong"
+        }
+      },
+      "session_end": {
+        "code": 200,
+        "elapsed_s": 1.5982749462127686,
+        "body": {
+          "prompt": "[SYSTEM PROMPT FOR ADAM]\nThe tutoring session is ending now.\nSession stats: 0.0 minutes, 0 questions attempted.\nPlease give the student a warm closing message, acknowledge their hard work,\nand encourage them for next session.",
+          "session_info": {
+            "session_id": "sess_ec7f8f69ad4d441c",
+            "duration_minutes": 0.03,
+            "minutes_deducted": 1,
+            "questions_answered": 0,
+            "questions_correct": 0
+          }
+        }
+      },
+      "ok": true
+    }
+  },
+  "ok": true,
+  "errors": []
+}

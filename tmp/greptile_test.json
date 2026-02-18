@@ -1,0 +1,5 @@
+{
+  "ok": true,
+  "skipped": false,
+  "required": true,
+  "command": "echo greptile-pass

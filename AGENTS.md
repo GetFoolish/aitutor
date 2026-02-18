@@ -1,0 +1,162 @@
+# AGENTS Brain File
+
+Use this file as the first reference before making code changes. The issues below are known obvious mistakes and must be actively prevented.
+
+## Known Mistakes To Avoid
+
+- Duplicate questions are being generated.
+- Widget rendering issues occur in the frontend.
+- Assessment flow breaks when transitioning to learning paths.
+- Assessment sometimes gives only 1 or 2 questions.
+- Invalid questions are being generated.
+- Science assessments include math questions (cross-subject contamination).
+- Next question load time is too slow.
+- Grading can be invalid and skills-path mapping can be wrong.
+- WebSocket issues affect real-time assessment behavior.
+- Some questions render without an answer input space.
+- Correct radio answers can be marked incorrect when `selectedChoiceIds` do not match `choice-<index>` format.
+- Multiple-choice options can leak raw wrapped quotes (e.g., `"4"` shown literally) and confuse grading/rendering.
+- Duplicate `Choose 1 answer:` prompt text can appear when question content repeats the widget's built-in instruction label.
+- Adaptive assessment can break mid-run (commonly around Q4-Q5) when `/assessment/next` returns transient 503 and the frontend treats it as a fatal page error.
+- Primary assessment actions (`Submit Answer` / `Next Question`) can fall below the fold and force manual scrolling, breaking flow and usability.
+- Assessment question screens can still allow browser/page scrolling and dock overlap, causing hints/options/actions to require manual scrolling on laptop viewports.
+- Responsive layout regressions (overflow, clipped controls, hard-coded paddings) can make key actions inaccessible on common laptop/mobile viewports.
+- Assessment can degrade into a dead-end "Still preparing your next question..." state; transient generation delays must recover automatically before showing a hard retry/error state.
+- Browser-level UI regressions (panel clipping, extra inner gutter spacing, partially off-screen controls) can pass if screenshot gates only check element existence.
+- Floating panel can appear as a partially off-screen sliver or be absent on deep app routes (e.g., `/app/:id`) if viewport clamping/routing checks are incomplete.
+- Floating control entrypoint/button can be missing on assessment routes (`/app/assessment/:subject`) when only learning/app shells mount the panel.
+- Harness regressions can hide behind timeouts: all-subject adaptive checks must stay runtime-bounded so required gates do not silently fail or get skipped under larger subject catalogs.
+- Assessment question viewport can still require internal scrolling when question/options/hints exceed the content box height; this is a blocking UX regression.
+- Selected MCQ option highlight can render with incomplete/clipped blue borders (partial edges) and must be treated as a visual correctness failure.
+- Post-assessment continuation can fall back to generic home/app shell instead of entering subject-scoped learning state with the learning widget ready.
+- Assessment pages can reintroduce browser-level scrolling after hint expansion even when initial load appears viewport-fit; this must fail QA.
+- Adaptive assessment can dead-end on repeated `/assessment/next` 503 responses and never reach completion unless continuity fallback is enforced.
+- `#question-content-container` can silently compute to `overflow-y: auto` when mixed-axis overflow is set (`overflow-x: hidden` + `overflow-y: visible`), causing clipped options/hints and internal scroll.
+- Synthetic fallback question IDs (`fallback_*` / `fallback_repeat_*`) can break next-question continuity if backend reloads them directly from Mongo instead of resolving to the source question ID.
+- Visual-heavy questions (large images/diagrams/place-value charts) can still force vertical page scroll and push `Submit/Next` below fold if assessment content is not compacted to current viewport height.
+- Learning mode can still reintroduce page scroll when app-shell (`streaming-console`/`question-panel`) heights and inner card heights are mismatched (`100vh` in nested containers, auto overflow).
+- Dropdown/listbox widgets can detach from their combobox anchor and render stray option text outside the question card when global `position: fixed` overrides interact with viewport compaction.
+- Widget rendering quality can regress silently when only one widget type is validated; dropdown, radio, and text/numeric widgets must all be explicitly smoke-validated in browser gates.
+- Dot-pattern background can regress to partial coverage when only the question panel is styled; the main learning/assessment canvas must stay consistently dotted.
+- Dot-pattern styling must not be applied to grading sidebar rails/cards; sidebar surfaces must remain solid and readable in both themes.
+- Dot continuity checks must explicitly enforce this split: dotted main canvas + solid grading sidebar, with no bleed-through.
+- Dot texture must stay on background layers only; never bleed into grading cards/content surfaces where it hurts readability.
+- Dot-theme regressions can reappear via inherited/utility class collisions; grading card surfaces need an explicit `background-image: none` guard.
+- Dot bleed can still happen when the app-shell (`.streaming-console`) owns the dot texture; dots must be rendered only on question-canvas layers, never on global shell/sidebar layers.
+- If dot bleed persists after a patch, apply a high-specificity sidebar-subtree guard (`.grading-sidebar-shell, .grading-sidebar-shell *`) and require fresh screenshot proof before marking complete.
+- Dot bleed can still leak via paint-layer stacking (even with `background-image:none`); enforce paint containment/isolation on grading sidebar shell/cards and floating panel before accepting screenshots.
+- Floating panel controls can still show dot bleed when nested controls use transparent backgrounds; panel/container and bordered control rows must be explicitly opaque in both themes.
+- Floating-panel evidence can be misleading if route-to-route panel transform/position persists; harness must normalize panel to canonical top-right (`right/top` with `transform:none`) before every screenshot route.
+- Harness reporting can falsely show Greptile/pass when the gate actually self-reports `skipped`; PR checklist must treat skipped gates as not passed.
+- Theme regressions can produce mixed-mode rendering (e.g., dark question card in light view) and low-contrast text if light/dark mode isn’t explicitly validated in-browser.
+- Dark-mode legibility can still fail on nested instruction labels (e.g., `Choose 1 answer:` with `instructions_*` class) if selectors only target container/base paragraph text.
+- Over-broad dark-mode overrides can invert text on light widget surfaces (white-on-light), so dark fixes must be scoped to the specific failing sub-elements.
+- Hint controls can become unreadable in dark mode (button label low-contrast against hint button background), even when the rest of the question card passes contrast checks.
+- Services can hard-crash on startup when `MONGODB_URI` uses `mongodb+srv://` and local DNS/SRV resolution is blocked; this must not take down auth/assessment APIs in local dev.
+- Atlas can appear "connected" but reject writes at runtime (e.g., space-quota full), causing `/auth/dev-login` and assessment session writes to 500 unless local-first Mongo fallback is enforced in dev.
+- Fixes can be technically merged but still fail in-browser when backend services are not actually running; `FAILED TO FETCH` must be treated as a blocking release failure.
+- Assessment/learning stem text can render as a single clipped line (no wrapping) when compact zoom + width compensation overflows the question card; this is a blocking formatting defect.
+- Dropdown options can render with unreadable contrast (e.g., white text on light option rows) when dark-mode role overrides collide with global dropdown background rules.
+- Post-submit explanation/hint text can become unreadable or appear washed out when action-dock overlay/sticky behavior overlaps the explanation panel.
+- Assessment startup can remain on the "Creating personalized questions" loading state too long due slow warm-start waits/retries, even when a fast fallback path should fail/retry sooner.
+- Dropdown selected-answer text can be visibly cut/truncated in the combobox field when fixed widths are forced.
+- Inline cloze dropdowns can become oversized and break sentence flow when global combobox min-width rules are applied without inline-specific constraints.
+- Inline Perseus widget containers (`.perseus-widget-container.widget-inline-block`) can be unintentionally rendered as block-like elements, causing sentence breaks and oversized blanks unless explicitly constrained.
+- CSS-only inline widget fixes can be overridden by widget-internal runtime styles; both learning and assessment paths need post-render inline-widget normalization checks.
+- Post-submit explanation/hint panels can collapse to a single clipped line when the question block consumes the full fixed-height viewport.
+- Dropdown option rows can render with condensed/tiny text or collapsed spacing in dark mode when theme overrides only set color and skip typography/layout.
+- Incorrect-feedback blocks can visually take over the viewport on submit (especially Q10) and bury the primary CTA when explanation panels are unbounded.
+- Post-submit layout can push the `Next/Finish` CTA below fold on long prompts if answered-state compaction is not enforced.
+- Assessment results screen can render as a large empty/black slab with weak hierarchy if full-viewport background wrappers are used instead of compact content-first layout.
+- Learning-mode first paint can stall on `Loading questions...` when cold `/api/questions/5` waits the full backend parallel budget before returning.
+- Assessment transition can regress into a stacked state (`Loading next question...` banner + previous question/feedback) that expands page height and reintroduces scroll.
+- Next-question waits can feel unbounded when frontend retry/timeout budgets are too large; adaptive next must fail fast with clear retry UI instead of long blocking loops.
+- Post-submit progression can become blocked when `Next Question` renders below long question/feedback content; on submit the primary next CTA must remain visible above-the-fold.
+- Adaptive-next backend can still regress into long blocking latency when pool miss -> long JIT timeout -> late-prefetch grace stack; prioritize fast subject fallback and strict retry budgets before JIT.
+- Timeout guards can be fake-fast if `ThreadPoolExecutor` is used via `with ...` and `future.result(timeout=...)`; context-manager shutdown waits for slow tasks and reintroduces long blocking latency.
+- PR acceptance reporting can mislabel latency as failed if it is tied to overall smoke status; latency criteria must read from the dedicated `loading_latency` gate payload.
+- Latency checks based on too few transitions can miss real-user slowdowns; enforce repeated adaptive-next transitions (not single-step timing) in smoke gates.
+- Static viewport breakpoints can still fail for extra-long stem + image + multi-select questions; assessment layout must use runtime height-fit scaling against actual rendered content.
+- Auto-fit transform + width-compensation can collapse assessment content into a tiny off-center/top-right block; do not use transform scaling that changes layout width for core question containers.
+- Floating toolbar can drift to the left rail as a collapsed sliver when stale transform offsets persist across routes; panel position must reset to canonical top-right on route/viewport changes.
+
+## Quality Gates
+
+- Test across subjects and topics to ensure content quality and correctness.
+- Ensure question quality is high and question types are appropriate.
+- Validate end-to-end assessment reliability before shipping.
+- DASH system must be verified end-to-end from frontend perspective (health, auth, subject start, question fetch).
+- Frontend UI/UX acceptance must confirm core flows are visible, usable, and free of blocking render issues.
+- Screenshot gates must prove target UI is actually visible in-frame.
+- Before saving widget/panel screenshots, assert the target element is inside viewport with meaningful visible area.
+- If a screenshot is part of acceptance criteria, fail the gate when the target element is missing from the image.
+- Treat visual formatting defects as failures, not polish: reject screenshots with obvious spacing, alignment, clipping, or overlap issues.
+- Floating panel layout checks are required: consistent left/right inner padding, no extra left gutter, no clipped controls, and uniform vertical spacing between rows.
+- Add explicit UI assertions for panel geometry: panel fully inside viewport, controls fully inside panel bounds, and stable spacing between control groups.
+- If a human can spot a formatting issue in the screenshot at a glance, the gate must fail and require fix + recapture.
+- Final readiness claims are forbidden when any required harness gate is skipped.
+- Baseline/partial runs must be explicitly labeled as non-final and cannot be reported as acceptance-complete.
+- For PR evidence screenshots, include only artifacts from the same final no-skip harness run.
+- Do not trust element existence alone for screenshot proof; require visible-area checks before capture.
+- Adaptive assessment start must not hard-fail with HTTP 400 for any valid subject; use subject warm-up + retry and return retryable 503 if content is still preparing.
+- Harness gate must call `/assessment/start-adaptive/{subject}` for every subject from `/api/subjects/available` (not just a sample) and fail the run if any valid subject returns 400/invalid payload.
+- For user-entered/new subjects not yet fully generated, adaptive start must still return a retryable/usable response path (503 with clear retry semantics or 200 with valid first question), never a terminal 400.
+- Question loading performance is a hard gate: initial question load, adaptive-start first question, and next-question load must each meet latency budgets before claiming readiness.
+- Learning mode (`/api/questions/recommend-next`) is a hard subject-validity gate: recommendations must stay scoped to the selected subject, remain renderable/answerable, and never mix science with math.
+- Radio grading must resolve selections by explicit choice IDs as well as index-based IDs; never assume only `choice-<index>`.
+- Reject/normalize question payloads that contain wrapped-quote choice text or inline `Choose 1 answer` prompt lines for radio widgets before serving.
+- Adaptive assessment continuity is a hard gate: at least 8 consecutive `next` transitions must succeed without a fatal error screen or forced restart.
+- Frontend action accessibility is a hard gate: primary actions must be visible/reachable in viewport without manual scrolling after answer submission.
+- Assessment viewport fit is a hard gate: no browser-level vertical scrolling is allowed during active question view at desktop baseline (1366x768); question, hints, and action controls must remain simultaneously usable.
+- Responsive UX is a hard gate: no horizontal overflow/clipping and no blocked core controls on desktop (1366x768) and mobile (390x844) viewports.
+- Floating panel route coverage is a hard gate: panel must be fully visible and usable on `/app` and `/app/:id` routes (not clipped, not off-screen, not reduced to a sliver).
+- Floating control route parity is a hard gate: floating button/panel entrypoint must be visible and functional on both assessment (`/app/assessment/:subject`) and learning routes.
+- Adaptive reliability is a hard gate: staged probes must show stable progression beyond the historical Q4 break zone (minimum 8 consecutive `next` transitions in pretest).
+- Loading-performance gates apply to both assessment and learning mode: budget checks must include initial fetch, learning recommend-next, adaptive start, and repeated adaptive next transitions.
+- Harness scalability is a hard gate: required verification across all available subjects must complete within configured gate timeout without downgrading required checks to skips.
+- Zero-scroll assessment fit is a hard gate: no browser scroll and no internal question-container scroll in active assessment view at 1366x768 while question/options/hints/actions remain usable.
+- MCQ selected-state visual integrity is a hard gate: selected option must show a complete 4-sided highlight (no clipped/incomplete blue border segments).
+- Assessment-to-learning routing is a hard gate: "Continue to Learning" must land in subject-scoped learning mode (`/app?subject=<subject>` or stronger subject route) with widget content visible, never generic homepage fallback.
+- Post-assessment continuation must deep-link to a subject route (`/app/learn/<subject>?subject=<subject>&fromAssessment=1` or equivalent) and preserve subject context before rendering the learning widget.
+- Hint expansion must not create new window scroll range at desktop baseline; re-run viewport checks after opening at least one hint.
+- Adaptive continuity is a hard gate: assessments must reach `completed=true` within 10 answered questions without requiring manual repeated retries on `/assessment/next`.
+- Assessment container overflow contract is a hard gate: `#question-content-container` must not compute to `overflow-y:auto` in active assessment view.
+- Fallback continuity is a hard gate: synthetic fallback question IDs must always resolve to a source question payload so adaptive flow cannot dead-end.
+- Visual-content fit is a hard gate: image/diagram-heavy prompts must render without forcing page scroll at desktop baseline and must keep `Submit`/`Next` in-view.
+- Learning-mode zero-scroll is a hard gate: `/app/learn/:subject` must not create browser-level vertical scroll at desktop baseline while keeping question + actions visible.
+- Widget-family render integrity is a hard gate: radio, dropdown, and text/numeric widgets must render inside the question container with no detached overlays, stray option text, or clipped answer controls.
+- Background continuity is a hard gate: the main content canvas must be consistently dotted in light/dark while grading sidebar surfaces remain solid (no dot bleed into cards/tiles).
+- Dot layer ownership is a hard gate: `.streaming-console` must remain solid; dot pattern belongs to `.question-panel` (or equivalent content canvas) only.
+- No-dot grading proof is a hard gate: final evidence must include a sidebar screenshot where unattempted cards are visibly solid with zero dot texture.
+- No-dot floating panel proof is a hard gate: `.floating-toolbar-panel` plus bordered controls must have `background-image:none` and opaque backgrounds in screenshot/e2e probes.
+- Paint-layer integrity is a hard gate: grading rail and floating panel must use paint containment/isolation so background texture layers cannot visually bleed through under any route/theme.
+- Floating-panel screenshot consistency is a hard gate: all required floating-panel screenshots must use the same normalized panel geometry (position, in-frame visibility, no transform drift) before capture.
+- Dropdown anchor integrity is a hard gate: opening a combobox must show a visible listbox anchored near the trigger and fully within viewport bounds in both assessment and learning routes.
+- Gate-truth integrity is a hard gate: PR packets must derive pass/fail from gate artifacts (including skip flags), never only process return code.
+- Theme integrity is a hard gate: both light and dark modes must render question containers with correct surface/text contrast and no mixed-mode styling in assessment and learning routes.
+- Dark-mode nested-text contrast is a hard gate: evaluate the worst visible nested text node inside `#question-content-container` (including hashed `instructions_*` classes), not just container color.
+- Dark-mode fixes must be selector-scoped: never apply global white-text overrides to all nested paragraph/content nodes unless background parity is enforced for those nodes.
+- Hint readability is a hard gate: `Show Hint` / `Hint` controls must meet contrast requirements in both light and dark themes on assessment and learning routes.
+- Mongo resilience is a hard gate: when primary Atlas SRV URI is unreachable in local/dev, backend must automatically fail over to configured/local Mongo and keep core APIs (`/auth/dev-login`, `/assessment/start-adaptive`) alive.
+- Mongo writeability is a hard gate in local/dev: `/auth/dev-login` must succeed (2xx) and create a user after startup, proving selected Mongo target is writable (not just pingable).
+- Service liveness is a hard handoff gate: before asking for user QA, verify `8000/8002/8003` health endpoints are up and complete one live frontend-equivalent flow (`/auth/dev-login` + `/assessment/start-adaptive/<subject>`).
+- Text layout integrity is a hard gate: long question stems/options must soft-wrap within `#question-content-container` in both light/dark and assessment/learning modes, with zero right-edge clipping.
+- Dropdown legibility is a hard gate: when a combobox is opened, every visible option label must meet contrast in both light/dark mode (no white-on-light or dark-on-dark option text) in assessment and learning routes.
+- Post-submit hint/explanation readability is a hard gate: explanation text must pass contrast in light/dark, and action docks must not visually overlap hint/explanation content.
+- Assessment startup latency is a hard gate: initial `/app/assessment/:subject` question must render within 25s end-to-end (including warm-start/retries) or fail with actionable retry UI.
+- Dropdown answer readability is a hard gate: selected answer text in combobox fields must be fully legible (no clipped/truncated value text) at desktop baseline.
+- Inline widget layout is a hard gate: dropdown blanks embedded in sentence stems must remain compact, baseline-aligned, and must not force awkward line breaks or oversized blanks.
+- Inline widget container contract is a hard gate: `.perseus-widget-container.widget-inline-block` must remain inline/baseline-aligned with width caps so sentence flow remains natural.
+- Explanation completeness is a hard gate: post-submit explanation/hint panel must render readable multi-line text (or explicit internal scroll), never a collapsed clipped strip.
+- Dropdown formatting integrity is a hard gate: opened option rows must preserve minimum readable typography/row height in both light and dark mode (no tiny text, compressed rows, or detached list styling).
+- Post-submit feedback balance is a hard gate: incorrect/correct feedback must stay compact enough to keep question context + primary CTA visible, with explanation constrained to a readable max-height + scroll.
+- Post-submit CTA visibility is a hard gate: `Next Question` / `Finish Assessment` must remain fully in viewport at 1366x768 for long-stem questions (no below-fold push).
+- Assessment results visual quality is a hard gate: completion screen must avoid oversized empty containers, preserve clear score/message hierarchy, and keep `Continue to Learning` prominent without wasted full-height blocks.
+- Learning startup latency is a hard gate: `/app` initial question render must use a fast first-batch strategy and must not block on full-size cold generation batches.
+- Assessment transition UX is a hard gate: while fetching next question, use an in-place overlay (no extra vertical card/banner insertion that changes layout height).
+- Adaptive-next latency budget is a hard gate: each next-question request path must settle quickly (success or retryable error) and avoid long multi-retry blocking loops.
+- Timeout correctness is a hard gate: timeout paths must be measured as wall-clock-fast (no hidden `executor.shutdown(wait=True)` blocking after timeout).
+- Post-submit CTA persistence is a hard gate: `Next Question` / `Finish Assessment` must stay visible and clickable in viewport even on image-heavy or long-stem questions.
+- Long-form visual benchmark is a hard gate: a question containing a large image, long stem paragraph, and multi-select options must render with no browser scroll at 1366x768 while keeping all options and `Submit` visible.
+- Assessment layout stability is a hard gate: question card must remain centered/in-flow (no tiny compressed or off-canvas rendering) at desktop baseline after submit/next transitions.
+- Floating toolbar anchoring is a hard gate: in both assessment and learning routes, panel must initialize at canonical top-right (`transform:none`, in-viewport), not persist stale drag/translate offsets.

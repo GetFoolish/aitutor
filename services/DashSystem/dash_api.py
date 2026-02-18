@@ -3,12 +3,13 @@ import time
 import sys
 import os
 import json
+import re
 import logging
 import random
 import threading
 import traceback
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import List, Dict, Optional
+from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED
+from typing import Any, List, Dict, Optional
 from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -49,13 +50,41 @@ content_service = None  # Initialize as None, will be set in startup event
 _subject_lock = threading.Lock()  # Mutex for subject switching on global dash_system
 _prefetch_cache: Dict[str, dict] = {}  # assessment_id → {"q_data": ..., "question_id": ..., ...}
 _prefetch_lock = threading.Lock()
-_learning_prefetch_cache: Dict[str, dict] = {}  # user_id → {"q_data": ..., "question_id": ..., "skill_id": ..., "ts": ...}
+_learning_prefetch_cache: Dict[str, dict] = {}  # f"{user_id}:{subject}" → {"q_data": ..., "question_id": ..., "skill_id": ..., "subject": ..., "ts": ...}
 _learning_prefetch_lock = threading.Lock()
 _warmstart_cache: Dict[str, dict] = {}  # f"{user_id}:{subject}" → {"q_data", "question_id", "skill_id", "ts"}
 _warmstart_events: Dict[str, threading.Event] = {}  # signals when warm-start finishes
 _warmstart_lock = threading.Lock()
 WARMSTART_TTL = 300  # 5 minutes
-WARMSTART_WAIT_TIMEOUT = 30  # seconds to wait for in-flight warm-start
+
+
+def _env_float(name: str, default: float) -> float:
+    """Read float config from env with safe fallback."""
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    try:
+        return float(raw)
+    except (TypeError, ValueError):
+        return default
+
+
+def _env_bool(name: str, default: bool) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return str(raw).strip().lower() in {"1", "true", "yes", "on"}
+
+
+WARMSTART_WAIT_TIMEOUT = _env_float("DASH_WARMSTART_WAIT_TIMEOUT_S", 2.5)
+QUESTION_PARALLEL_BUDGET_S = _env_float("DASH_QUESTION_PARALLEL_BUDGET_S", 3.5)
+RECOMMEND_PARALLEL_BUDGET_S = _env_float("DASH_RECOMMEND_PARALLEL_BUDGET_S", 3.5)
+ASSESSMENT_PARALLEL_BUDGET_S = _env_float("DASH_ASSESSMENT_PARALLEL_BUDGET_S", 5.0)
+ADAPTIVE_NEXT_TOTAL_BUDGET_S = _env_float("DASH_ADAPTIVE_NEXT_BUDGET_S", 1.8)
+ADAPTIVE_NEXT_POOL_LOOKUP_TIMEOUT_S = _env_float("DASH_ADAPTIVE_NEXT_POOL_LOOKUP_TIMEOUT_S", 0.55)
+ADAPTIVE_NEXT_LATE_PREFETCH_GRACE_S = _env_float("DASH_ADAPTIVE_NEXT_LATE_PREFETCH_GRACE_S", 0.25)
+ADAPTIVE_NEXT_LATE_PREFETCH_POLL_S = _env_float("DASH_ADAPTIVE_NEXT_LATE_PREFETCH_POLL_S", 0.08)
+ADAPTIVE_NEXT_SYNC_JIT = _env_bool("DASH_ADAPTIVE_NEXT_SYNC_JIT", False)
 
 
 def _snapshot_curriculum():
@@ -98,6 +127,46 @@ def _switch_subject_if_needed(subject: str, region: str = "US") -> bool:
             if len(dash_system.skills) == 0:
                 logger.warning(f"[SUBJECT_SWITCH] No skills loaded — assessment may fail")
         return True
+
+
+def _persist_user_subject_selection(user_id: str, subject: str, region: str) -> None:
+    """Persist the user's selected subject so later question requests can re-pin safely."""
+    try:
+        from managers.mongodb_manager import mongo_db
+        mongo_db.users.update_one(
+            {"user_id": user_id},
+            {
+                "$set": {
+                    "selected_subject": subject,
+                    "selected_region": region,
+                    "selected_subject_updated_at": datetime.now(),
+                }
+            },
+            upsert=True,
+        )
+    except Exception as e:
+        logger.warning(f"[SUBJECT_SWITCH] Failed to persist selected subject for {user_id}: {e}")
+
+
+def _get_user_subject_selection(user_id: str) -> tuple[Optional[str], Optional[str]]:
+    """Return (subject, region) selected by the user, if available."""
+    try:
+        from managers.mongodb_manager import mongo_db
+        doc = mongo_db.users.find_one(
+            {"user_id": user_id},
+            {"selected_subject": 1, "selected_region": 1, "_id": 0},
+        )
+        if not doc:
+            return None, None
+        subject = doc.get("selected_subject")
+        region = doc.get("selected_region")
+        if isinstance(subject, str) and subject.strip():
+            normalized_subject = subject.strip().title()
+            normalized_region = region.strip().upper() if isinstance(region, str) and region.strip() else "US"
+            return normalized_subject, normalized_region
+    except Exception as e:
+        logger.warning(f"[SUBJECT_SWITCH] Failed to read selected subject for {user_id}: {e}")
+    return None, None
 
 # Configure CORS with secure origins from environment
 app.add_middleware(
@@ -585,7 +654,8 @@ def _strip_objectids(obj):
 
 
 def load_perseus_items_for_dash_questions_from_mongodb(
-    dash_questions: List[Question]
+    dash_questions: List[Question],
+    subject: Optional[str] = None,
 ) -> List[Dict]:
     """Load Perseus items for DASH-selected questions.
 
@@ -622,6 +692,7 @@ def load_perseus_items_for_dash_questions_from_mongodb(
                 vr = validate_pre_serve(
                     r,
                     skill_id=skill_ids[0] if skill_ids else None,
+                    subject=subject,
                     db_collection=mongo_db.db["validation_failures"],
                 )
                 if vr.passed:
@@ -662,7 +733,7 @@ def load_perseus_items_for_dash_questions_from_mongodb(
             vr = validate_pre_serve(
                 r,
                 skill_id=skill_ids[0] if skill_ids else None,
-                subject=None,
+                subject=subject,
                 db_collection=mongo_db.db["validation_failures"],
             )
             if vr.passed:
@@ -860,9 +931,12 @@ def get_preloaded_questions(request: Request):
         logger.info(f"[PRELOADED] Converted {len(selected_questions)} question IDs to Question objects")
         
         # Load Perseus items for pre-loaded questions
-        perseus_items = load_perseus_items_for_dash_questions_from_mongodb(selected_questions)
-        # Filter out broken widget types (orderer/matcher)
-        perseus_items = [q for q in perseus_items if not _has_only_broken_widgets(q)]
+        active_subject, _ = _get_user_subject_selection(user_id)
+        perseus_items = load_perseus_items_for_dash_questions_from_mongodb(
+            selected_questions,
+            subject=active_subject or dash_system.subject,
+        )
+        perseus_items = _post_process_pipeline_items(perseus_items, active_subject or dash_system.subject)
         logger.info(f"[PRELOADED] Loaded {len(perseus_items)} Perseus questions from MongoDB (after widget filter)")
 
         # Validate perseus_items structure before returning
@@ -926,9 +1000,16 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
     jwt_payload = get_jwt_payload(request)
     user_id = jwt_payload.get("sub")
     jwt_age = jwt_payload.get("age")
+    selected_subject, selected_region = _get_user_subject_selection(user_id)
+    if selected_subject:
+        _switch_subject_if_needed(selected_subject, selected_region or "US")
+    active_subject = (selected_subject or dash_system.subject or "").strip()
+    active_subject_lower = active_subject.lower()
 
     logger.info(f"\n{'='*80}")
     logger.info(f"[NEW_SESSION] Requesting {sample_size} questions for user: {user_id}")
+    if active_subject:
+        logger.info(f"[NEW_SESSION] Subject pinned to {active_subject}/{selected_region or dash_system.region}")
     logger.info(f"{'='*80}\n")
 
     # Ensure the user exists and is loaded (age from JWT fallback if not in MongoDB)
@@ -941,7 +1022,7 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
     selected_content_hashes = set()  # Track content hashes to catch identical-content duplicates
     
     # --- Check warm-start cache for Q1 (pre-generated by start_subject) ---
-    warmstart_key = f"{user_id}:{dash_system.subject.lower()}"
+    warmstart_key = f"{user_id}:{active_subject_lower}"
     with _warmstart_lock:
         cached = _warmstart_cache.pop(warmstart_key, None)
         pending_evt = _warmstart_events.get(warmstart_key)
@@ -1008,7 +1089,7 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
                 if dash_system.content_service:
                     pool_q = dash_system.content_service.pop_question(
                         skill_id, skill.difficulty, exclude_ids=exclude_snapshot,
-                        subject=dash_system.subject or "")
+                        subject=active_subject)
                     if pool_q:
                         q_id = pool_q.get("question_id", pool_q.get("dash_metadata", {}).get("dash_question_id", f"pool_{skill_id}"))
                         if "dash_metadata" not in pool_q:
@@ -1040,7 +1121,7 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
                         age=user_profile.age if user_profile.age else 7,
                         exclude_question_ids=exclude_snapshot,
                         user_id=user_id,
-                        subject=dash_system.subject or "",
+                        subject=active_subject,
                     )
                     if ai_result:
                         q_id = ai_result["dash_metadata"]["dash_question_id"]
@@ -1058,23 +1139,48 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
                 return None
 
         if target_skill_ids:
-            with ThreadPoolExecutor(max_workers=min(len(target_skill_ids), 4)) as pool:
-                futures = [pool.submit(_fetch_for_skill, sid) for sid in target_skill_ids]
-                for future in as_completed(futures):
-                    if len(selected_questions) >= sample_size:
+            max_workers = min(len(target_skill_ids), 4)
+            executor = ThreadPoolExecutor(max_workers=max_workers)
+            pending = set()
+            deadline = time.time() + QUESTION_PARALLEL_BUDGET_S
+            try:
+                pending = {executor.submit(_fetch_for_skill, sid) for sid in target_skill_ids}
+                while pending and len(selected_questions) < sample_size:
+                    remaining = deadline - time.time()
+                    if remaining <= 0:
+                        logger.warning(
+                            f"[LEARNING_PATH] Parallel fetch timed out with {len(pending)} pending skill jobs"
+                        )
                         break
-                    result = future.result()
-                    if result and result.question_id not in selected_question_ids:
-                        # Content-hash dedup: check for identical content from different IDs
-                        q_data_check = getattr(result, "perseus_data", None)
-                        if q_data_check:
-                            ch = _compute_content_hash(q_data_check)
-                            if ch in selected_content_hashes:
-                                logger.info(f"[LEARNING_PATH] Content-hash dup: {result.question_id} — skipping")
-                                continue
-                            selected_content_hashes.add(ch)
-                        selected_questions.append(result)
-                        selected_question_ids.append(result.question_id)
+                    done, pending = wait(pending, timeout=remaining, return_when=FIRST_COMPLETED)
+                    if not done:
+                        logger.warning(
+                            f"[LEARNING_PATH] Parallel fetch made no progress before timeout with {len(pending)} pending"
+                        )
+                        break
+                    for future in done:
+                        try:
+                            result = future.result()
+                        except Exception as e:
+                            logger.warning(f"[PARALLEL_FETCH] Future failed: {e}")
+                            continue
+                        if result and result.question_id not in selected_question_ids:
+                            # Content-hash dedup: check for identical content from different IDs
+                            q_data_check = getattr(result, "perseus_data", None)
+                            if q_data_check:
+                                ch = _compute_content_hash(q_data_check)
+                                if ch in selected_content_hashes:
+                                    logger.info(f"[LEARNING_PATH] Content-hash dup: {result.question_id} — skipping")
+                                    continue
+                                selected_content_hashes.add(ch)
+                            selected_questions.append(result)
+                            selected_question_ids.append(result.question_id)
+                            if len(selected_questions) >= sample_size:
+                                break
+            finally:
+                for future in pending:
+                    future.cancel()
+                executor.shutdown(wait=False, cancel_futures=True)
         else:
             # No diverse skills found — fall back to serial DASH selection
             for i in range(remaining):
@@ -1092,41 +1198,176 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
         if len(selected_questions) < sample_size:
             logger.info(f"[SESSION_END] Selected {len(selected_questions)}/{sample_size} questions (no more available)")
     
-    # Development bypass: if no questions selected, just get random ones from DB
-    if not selected_questions and os.getenv("DEV_MODE", "true").lower() == "true":
-        logger.warning(f"[DEV_BYPASS] No DASH questions selected, fetching {sample_size} random questions from Perseus DB")
-        if dash_system.mongo:
-            random_perseus = list(dash_system.mongo.perseus_questions.aggregate([
-                {"$sample": {"size": sample_size * 2}}
+    # If no questions were selected, never serve cross-subject random content.
+    # Optionally allow a subject-scoped AI fallback in DEV_MODE.
+    if not selected_questions:
+        current_subject = active_subject
+        if os.getenv("DEV_MODE", "false").lower() == "true" and dash_system.mongo and current_subject:
+            logger.warning(
+                f"[DEV_BYPASS] No DASH questions selected, trying subject-scoped AI fallback for {current_subject}"
+            )
+            ai_docs = list(dash_system.mongo.ai_generated_questions.aggregate([
+                {"$match": {"subject": current_subject}},
+                {"$sample": {"size": sample_size * 3}},
             ]))
-            if random_perseus:
-                # Filter out broken widget types (orderer/matcher)
+            ai_questions = []
+            for doc in ai_docs:
+                qid = doc.get("question_id")
+                if not qid:
+                    continue
+                ai_questions.append(
+                    Question(
+                        question_id=qid,
+                        skill_ids=[doc.get("skill_id", "unknown")],
+                        content="",
+                        difficulty=float(doc.get("difficulty", 0.5)),
+                        expected_time_seconds=60.0,
+                    )
+                )
+            if ai_questions:
+                random_perseus = _load_ai_generated_perseus_items(ai_questions)
                 random_perseus = [q for q in random_perseus if not _has_only_broken_widgets(q)][:sample_size]
-                logger.info(f"[DEV_BYPASS] Found {len(random_perseus)} random Perseus questions")
-                return [_strip_objectids(q) for q in random_perseus]
+                if random_perseus:
+                    logger.info(
+                        f"[DEV_BYPASS] Served {len(random_perseus)} subject-scoped fallback questions for {current_subject}"
+                    )
+                    return [_strip_objectids(q) for q in random_perseus]
+
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                f"Questions are not ready for subject '{current_subject or 'unknown'}'. "
+                "Subject curriculum may still be generating."
+            ),
+        )
     
     # Load Perseus items from MongoDB for all DASH-selected questions
     try:
-        perseus_items = load_perseus_items_for_dash_questions_from_mongodb(selected_questions)
+        perseus_items = load_perseus_items_for_dash_questions_from_mongodb(
+            selected_questions,
+            subject=active_subject,
+        )
         logger.info(f"[MONGODB] Loaded {len(perseus_items)} Perseus questions from MongoDB with full metadata")
     except Exception as e:
         logger.error(f"[ERROR] MongoDB Perseus load failed: {e}. Local fallback disabled.")
         raise HTTPException(status_code=500, detail=f"Failed to load Perseus questions from MongoDB: {e}")
 
-    # Filter out questions with only broken widget types (orderer/matcher)
-    perseus_items = [q for q in perseus_items if not _has_only_broken_widgets(q)]
+    # Final content-pipeline safety gate: dedupe + scope + renderability.
+    perseus_items = _post_process_pipeline_items(perseus_items, active_subject)
+
+    # Refill loop: if validation/dedup drops count, attempt to top-up until sample_size.
+    # This prevents serving only 1-2 questions when enough generation paths exist.
+    refill_attempts = 0
+    max_refill_attempts = max(6, sample_size * 2)
+    while len(perseus_items) < sample_size and refill_attempts < max_refill_attempts:
+        refill_attempts += 1
+        q = dash_system.get_next_question_flexible(
+            user_id, current_time,
+            exclude_question_ids=selected_question_ids,
+            user_profile=user_profile,
+            fast_mode=True,
+        )
+        if not q:
+            break
+        if q.question_id in selected_question_ids:
+            continue
+
+        selected_questions.append(q)
+        selected_question_ids.append(q.question_id)
+        extra_items = load_perseus_items_for_dash_questions_from_mongodb([q], subject=active_subject)
+        if not extra_items:
+            continue
+        processed_extra = _post_process_pipeline_items(extra_items, active_subject)
+        if not processed_extra:
+            continue
+
+        # Preserve dedupe guarantees across the whole payload.
+        existing_hashes = {_compute_content_hash(i) for i in perseus_items}
+        existing_ids = {
+            str((i.get("dash_metadata") or {}).get("dash_question_id") or "")
+            for i in perseus_items
+        }
+        for item in processed_extra:
+            qid = str((item.get("dash_metadata") or {}).get("dash_question_id") or "")
+            ch = _compute_content_hash(item)
+            if (qid and qid in existing_ids) or ch in existing_hashes:
+                continue
+            perseus_items.append(item)
+            if qid:
+                existing_ids.add(qid)
+            existing_hashes.add(ch)
+            if len(perseus_items) >= sample_size:
+                break
+
+    # Subject-scoped Mongo fallback for sparse pools: keeps correctness while avoiding 1-2 question sessions.
+    if len(perseus_items) < sample_size and dash_system.mongo and active_subject:
+        deficit = sample_size - len(perseus_items)
+        try:
+            raw_docs = list(dash_system.mongo.ai_generated_questions.aggregate([
+                {"$match": {"subject": active_subject}},
+                {"$sample": {"size": max(deficit * 8, 8)}},
+            ]))
+            fallback_items = []
+            for doc in raw_docs:
+                raw = doc.get("perseus_json") or doc.get("perseus_data")
+                if not isinstance(raw, dict):
+                    continue
+                item = dict(raw)
+                skill_id = doc.get("skill_id", "")
+                skill_ids = doc.get("skill_ids", [skill_id])
+                item["dash_metadata"] = {
+                    "dash_question_id": doc.get("question_id", ""),
+                    "skill_ids": skill_ids,
+                    "difficulty": doc.get("difficulty", 0.5),
+                    "skill_names": [doc.get("skill_name", "AI Generated")],
+                    "unit_name": doc.get("skill_name", "AI Generated"),
+                    "lesson_name": doc.get("lesson_name", "Practice") or "Practice",
+                    "ai_generated": True,
+                    "mongodb_id": str(doc.get("_id", "")),
+                }
+                fallback_items.append(item)
+
+            processed_fallback = _post_process_pipeline_items(fallback_items, active_subject)
+            existing_hashes = {_compute_content_hash(i) for i in perseus_items}
+            existing_ids = {
+                str((i.get("dash_metadata") or {}).get("dash_question_id") or "")
+                for i in perseus_items
+            }
+            added = 0
+            for item in processed_fallback:
+                qid = str((item.get("dash_metadata") or {}).get("dash_question_id") or "")
+                ch = _compute_content_hash(item)
+                if (qid and qid in existing_ids) or ch in existing_hashes:
+                    continue
+                perseus_items.append(item)
+                if qid:
+                    existing_ids.add(qid)
+                existing_hashes.add(ch)
+                added += 1
+                if len(perseus_items) >= sample_size:
+                    break
+            if added:
+                logger.info(f"[CONTENT_PIPELINE] Mongo fallback added {added} subject-scoped questions")
+        except Exception as e:
+            logger.warning(f"[CONTENT_PIPELINE] Mongo fallback failed: {e}")
+
+    # Trim to requested size after all safeguards.
+    if len(perseus_items) > sample_size:
+        perseus_items = perseus_items[:sample_size]
 
     if not perseus_items:
-        logger.error(f"[ERROR] No Perseus questions found in MongoDB")
-        raise HTTPException(status_code=404, detail="No Perseus questions found in MongoDB")
-    
-    logger.info(f"[SESSION_READY] Loaded {len(perseus_items)} Perseus questions (all with DASH intelligence)\\n")
+        logger.error("[CONTENT_PIPELINE] No valid Perseus questions survived serving pipeline")
+        raise HTTPException(status_code=404, detail="No valid questions available right now")
+
+    logger.info(
+        f"[SESSION_READY] Returning {len(perseus_items)}/{sample_size} questions "
+        f"after pipeline validation (refill attempts: {refill_attempts})\\n"
+    )
 
     # Trigger learning-path prefetch for next question in background
     all_served_ids = list(selected_question_ids)
-    _trigger_learning_prefetch(user_id, all_served_ids, jwt_age if jwt_age else 10)
+    _trigger_learning_prefetch(user_id, active_subject, all_served_ids, jwt_age if jwt_age else 10)
 
-    # Return all questions (all selected by DASH with full intelligence)
     return perseus_items
 
 @app.post("/api/question-displayed")
@@ -1454,9 +1695,15 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
     jwt_payload = get_jwt_payload(request)
     user_id = jwt_payload.get("sub")
     jwt_age = jwt_payload.get("age")
+    selected_subject, selected_region = _get_user_subject_selection(user_id)
+    if selected_subject:
+        _switch_subject_if_needed(selected_subject, selected_region or "US")
+    active_subject = (selected_subject or dash_system.subject or "").strip()
 
     logger.info(f"\n{'='*80}")
     logger.info(f"[RECOMMEND_NEXT] User: {user_id}, Current questions: {len(req.current_question_ids)}, Requesting: {req.count}")
+    if active_subject:
+        logger.info(f"[RECOMMEND_NEXT] Subject pinned to {active_subject}/{selected_region or dash_system.region}")
     logger.info(f"{'='*80}\n")
 
     # Ensure the user exists and is loaded
@@ -1469,8 +1716,12 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
     collected_content_hashes: set = set()
 
     # --- Check learning-path prefetch cache for Q1 ---
+    learning_prefetch_key = f"{user_id}:{active_subject.lower()}" if active_subject else user_id
     with _learning_prefetch_lock:
-        cached = _learning_prefetch_cache.pop(user_id, None)
+        cached = _learning_prefetch_cache.pop(learning_prefetch_key, None)
+        # Best-effort cleanup for legacy cache entries keyed only by user_id
+        if active_subject:
+            _learning_prefetch_cache.pop(user_id, None)
 
     if cached and time.time() - cached.get("ts", 0) < LEARNING_PREFETCH_TTL:
         cached_qid = cached["question_id"]
@@ -1513,7 +1764,7 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
             if dash_system.content_service:
                 pool_q = dash_system.content_service.pop_question(
                     skill_id, skill.difficulty, exclude_ids=collected_ids,
-                    subject=dash_system.subject or "")
+                    subject=active_subject)
                 if pool_q:
                     q_id = pool_q.get("question_id", pool_q.get("dash_metadata", {}).get("dash_question_id", f"pool_{skill_id}"))
                     if "dash_metadata" not in pool_q:
@@ -1539,7 +1790,7 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
                     grade_level=skill.grade_level.name,
                     age=user_profile.age if user_profile.age else 7,
                     exclude_question_ids=collected_ids, user_id=user_id,
-                    subject=dash_system.subject or "",
+                    subject=active_subject,
                 )
                 if ai_result:
                     q_id = ai_result["dash_metadata"]["dash_question_id"]
@@ -1555,23 +1806,48 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
             return None
 
     if target_skill_ids:
-        with ThreadPoolExecutor(max_workers=min(len(target_skill_ids), 4)) as pool:
-            futures = [pool.submit(_fetch_for_skill_rec, sid) for sid in target_skill_ids]
-            for future in as_completed(futures):
-                if len(selected_questions) >= req.count:
+        max_workers = min(len(target_skill_ids), 4)
+        executor = ThreadPoolExecutor(max_workers=max_workers)
+        pending = set()
+        deadline = time.time() + RECOMMEND_PARALLEL_BUDGET_S
+        try:
+            pending = {executor.submit(_fetch_for_skill_rec, sid) for sid in target_skill_ids}
+            while pending and len(selected_questions) < req.count:
+                remaining = deadline - time.time()
+                if remaining <= 0:
+                    logger.warning(
+                        f"[RECOMMEND_NEXT] Parallel fetch timed out with {len(pending)} pending skill jobs"
+                    )
                     break
-                result = future.result()
-                if result and result.question_id not in collected_ids:
-                    # Content-hash dedup for identical content from different pools
-                    q_data_check = getattr(result, "perseus_data", None)
-                    if q_data_check:
-                        ch = _compute_content_hash(q_data_check)
-                        if ch in collected_content_hashes:
-                            logger.info(f"[RECOMMEND_NEXT] Content-hash dup: {result.question_id} — skipping")
-                            continue
-                        collected_content_hashes.add(ch)
-                    selected_questions.append(result)
-                    collected_ids.add(result.question_id)
+                done, pending = wait(pending, timeout=remaining, return_when=FIRST_COMPLETED)
+                if not done:
+                    logger.warning(
+                        f"[RECOMMEND_NEXT] Parallel fetch made no progress before timeout with {len(pending)} pending"
+                    )
+                    break
+                for future in done:
+                    try:
+                        result = future.result()
+                    except Exception as e:
+                        logger.warning(f"[RECOMMEND_NEXT] Future failed: {e}")
+                        continue
+                    if result and result.question_id not in collected_ids:
+                        # Content-hash dedup for identical content from different pools
+                        q_data_check = getattr(result, "perseus_data", None)
+                        if q_data_check:
+                            ch = _compute_content_hash(q_data_check)
+                            if ch in collected_content_hashes:
+                                logger.info(f"[RECOMMEND_NEXT] Content-hash dup: {result.question_id} — skipping")
+                                continue
+                            collected_content_hashes.add(ch)
+                        selected_questions.append(result)
+                        collected_ids.add(result.question_id)
+                        if len(selected_questions) >= req.count:
+                            break
+        finally:
+            for future in pending:
+                future.cancel()
+            executor.shutdown(wait=False, cancel_futures=True)
 
     if not selected_questions:
         logger.info("[RECOMMEND_NEXT] No new questions available")
@@ -1579,9 +1855,11 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
     
     # Load Perseus items for selected questions
     try:
-        perseus_items = load_perseus_items_for_dash_questions_from_mongodb(selected_questions)
-        # Filter out broken widget types (orderer/matcher)
-        perseus_items = [q for q in perseus_items if not _has_only_broken_widgets(q)]
+        perseus_items = load_perseus_items_for_dash_questions_from_mongodb(
+            selected_questions,
+            subject=active_subject,
+        )
+        perseus_items = _post_process_pipeline_items(perseus_items, active_subject)
         logger.info(f"[RECOMMEND_NEXT] Loaded {len(perseus_items)} new questions (after widget filter)")
 
         # Verify no overlap with current questions (should not happen due to exclusion, but check for safety)
@@ -1593,15 +1871,17 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
         if overlap:
             logger.warning(f"[RECOMMEND_NEXT] Warning: {len(overlap)} recommended questions overlap with current (should not happen)")
             # Filter out overlapping questions
-            perseus_items = [item for item in perseus_items 
-                           if item.get('dash_metadata', {}).get('dash_question_id') not in overlap]
+            perseus_items = [
+                item for item in perseus_items
+                if item.get('dash_metadata', {}).get('dash_question_id') not in overlap
+            ]
             if not perseus_items:
                 logger.info("[RECOMMEND_NEXT] All recommended questions were duplicates, returning empty")
                 return []
         
         # Trigger learning-path prefetch for the next batch in background
         all_served_ids = list(collected_ids)
-        _trigger_learning_prefetch(user_id, all_served_ids, jwt_age if jwt_age else 10)
+        _trigger_learning_prefetch(user_id, active_subject, all_served_ids, jwt_age if jwt_age else 10)
 
         return perseus_items
     except Exception as e:
@@ -1809,16 +2089,39 @@ def start_assessment(
                 logger.warning(f"[ASSESSMENT] Generation failed for {skill.name}: {e}")
                 return None
 
-        # Each thread gets a DIFFERENT skill — no competition
-        with ThreadPoolExecutor(max_workers=5) as pool:
-            futures = {pool.submit(_generate_for_skill, skill): skill for skill in target_skills}
-            for future in as_completed(futures):
-                if len(questions) >= 10:
+        # Each thread gets a DIFFERENT skill — no competition.
+        # Bound total wait so one stuck generation cannot freeze assessment start.
+        executor = ThreadPoolExecutor(max_workers=5)
+        pending = set()
+        deadline = time.time() + ASSESSMENT_PARALLEL_BUDGET_S
+        try:
+            pending = {executor.submit(_generate_for_skill, skill) for skill in target_skills}
+            while pending and len(questions) < 10:
+                remaining = deadline - time.time()
+                if remaining <= 0:
+                    logger.warning(f"[ASSESSMENT] Parallel generation timed out with {len(pending)} pending jobs")
                     break
-                result = future.result()
-                if result and result.question_id not in exclude_question_ids:
-                    questions.append(result)
-                    exclude_question_ids.add(result.question_id)
+                done, pending = wait(pending, timeout=remaining, return_when=FIRST_COMPLETED)
+                if not done:
+                    logger.warning(
+                        f"[ASSESSMENT] Parallel generation made no progress before timeout with {len(pending)} pending"
+                    )
+                    break
+                for future in done:
+                    try:
+                        result = future.result()
+                    except Exception as e:
+                        logger.warning(f"[ASSESSMENT] Future failed: {e}")
+                        continue
+                    if result and result.question_id not in exclude_question_ids:
+                        questions.append(result)
+                        exclude_question_ids.add(result.question_id)
+                        if len(questions) >= 10:
+                            break
+        finally:
+            for future in pending:
+                future.cancel()
+            executor.shutdown(wait=False, cancel_futures=True)
 
         logger.info(f"[ASSESSMENT] Parallel generation returned {len(questions)}/10 questions")
 
@@ -1831,7 +2134,8 @@ def start_assessment(
             logger.warning(f"[ASSESSMENT] Only {total_questions}/10 questions — proceeding with partial assessment")
 
         # Load Perseus items for the questions
-        perseus_items = load_perseus_items_for_dash_questions_from_mongodb(questions)
+        perseus_items = load_perseus_items_for_dash_questions_from_mongodb(questions, subject=subject)
+        perseus_items = _post_process_pipeline_items(perseus_items, subject)
 
         if not perseus_items:
             logger.error(f"[ASSESSMENT] Failed to load any Perseus items")
@@ -2067,6 +2371,53 @@ def start_adaptive_assessment(subject: str, request: Request):
 
         user_profile = dash_system.load_user_or_create(user_id, age=jwt_age if jwt_age else 5)
         current_time = time.time()
+        grade_name = user_profile.current_grade.replace("GRADE_", "Grade ").replace("K", "Kindergarten")
+
+        def _jit_first_question(
+            exclude_question_ids: Optional[List[str]] = None,
+            target_difficulty: float = 0.5,
+        ) -> tuple[Optional[Question], Optional[dict]]:
+            """Best-effort subject-scoped JIT question for adaptive start."""
+            if not dash_system.use_ai_questions or not dash_system.ai_provider:
+                return None, None
+            synthetic_id = (
+                f"assessment_{subject.lower().replace(' ', '_')}_"
+                f"{user_profile.current_grade.lower()}_{int(time.time()*1000) % 100000}"
+            )
+            try:
+                ai_result = dash_system.ai_provider.get_question_for_skill(
+                    skill_id=synthetic_id,
+                    skill_name=f"{subject} for {grade_name}",
+                    target_difficulty=target_difficulty,
+                    grade_level=user_profile.current_grade,
+                    age=user_profile.age if user_profile.age else 10,
+                    exclude_question_ids=exclude_question_ids or [],
+                    user_id=user_id,
+                    fast_mode=True,
+                    subject=subject,
+                )
+            except Exception as e:
+                logger.warning(f"[ADAPTIVE_ASSESSMENT] JIT generation failed: {e}")
+                return None, None
+
+            if not ai_result:
+                return None, None
+
+            dm = ai_result.get("dash_metadata", {})
+            qid = dm.get("dash_question_id")
+            if not qid:
+                return None, None
+            if exclude_question_ids and qid in exclude_question_ids:
+                return None, None
+
+            q = Question(
+                question_id=qid,
+                skill_ids=[synthetic_id],
+                content="",
+                difficulty=dm.get("difficulty", target_difficulty),
+                expected_time_seconds=60.0,
+            )
+            return q, ai_result
 
         # Create assessment session
         assessment_id = f"assess_{uuid.uuid4().hex[:12]}"
@@ -2125,42 +2476,24 @@ def start_adaptive_assessment(subject: str, request: Request):
                 force_grade_range=True,
             )
 
-        # JIT fallback: generate a question for new subjects without curriculum
-        if not first_q and dash_system.use_ai_questions and dash_system.ai_provider:
-            grade_name = user_profile.current_grade.replace("GRADE_", "Grade ").replace("K", "Kindergarten")
-            synthetic_id = f"assessment_{subject.lower().replace(' ', '_')}_{user_profile.current_grade.lower()}_0"
-            logger.info(f"[ADAPTIVE_ASSESSMENT] No curriculum questions — JIT generating for {subject}/{grade_name}")
-            try:
-                ai_result = dash_system.ai_provider.get_question_for_skill(
-                    skill_id=synthetic_id,
-                    skill_name=f"{subject} for {grade_name}",
-                    target_difficulty=0.5,
-                    grade_level=user_profile.current_grade,
-                    age=user_profile.age if user_profile.age else 10,
-                    exclude_question_ids=[],
-                    user_id=user_id,
-                    fast_mode=True,
-                    subject=subject,
-                )
-                if ai_result:
-                    first_q = Question(
-                        question_id=ai_result["dash_metadata"]["dash_question_id"],
-                        skill_ids=[synthetic_id],
-                        content="",
-                        difficulty=ai_result["dash_metadata"]["difficulty"],
-                        expected_time_seconds=60.0,
-                    )
-                    logger.info(f"[ADAPTIVE_ASSESSMENT] JIT generated Q:{first_q.question_id}")
-            except Exception as e:
-                logger.warning(f"[ADAPTIVE_ASSESSMENT] JIT generation failed: {e}")
-
         if not first_q:
             # Last resort: try any grade (no grade range restriction)
             first_q = dash_system.get_next_question_flexible(
                 user_id, current_time, user_profile=user_profile, fast_mode=True,
             )
+
+        # Final fallback: subject-scoped JIT question for sparse/new subjects.
         if not first_q:
-            raise HTTPException(status_code=400, detail="No questions available for assessment")
+            logger.info(f"[ADAPTIVE_ASSESSMENT] No pool question — JIT generating for {subject}/{grade_name}")
+            first_q, q_data = _jit_first_question(exclude_question_ids=[], target_difficulty=0.5)
+            if first_q:
+                logger.info(f"[ADAPTIVE_ASSESSMENT] JIT generated first question {first_q.question_id}")
+
+        if not first_q:
+            raise HTTPException(
+                status_code=503,
+                detail="First question is still being prepared. Please retry.",
+            )
 
         # Load Perseus data (warm-start already has it; pool/JIT need loading)
         if not q_data:
@@ -2168,9 +2501,13 @@ def start_adaptive_assessment(subject: str, request: Request):
         if not q_data:
             raise HTTPException(status_code=500, detail="Failed to load question data")
 
-        # Skip questions with only broken widget types (orderer/matcher — unsupported in React 18)
-        if _has_only_broken_widgets(q_data):
-            logger.info(f"[ADAPTIVE_ASSESSMENT] Skipping broken-widget-only question {first_q.question_id} — retrying")
+        # Skip questions that fail render/scope guards
+        if (
+            _has_only_broken_widgets(q_data)
+            or not _has_answer_space(q_data)
+            or not _is_subject_scoped_question(q_data, subject)
+        ):
+            logger.info(f"[ADAPTIVE_ASSESSMENT] Skipping invalid first question {first_q.question_id} — retrying")
             q_data = None
             user_profile = dash_system.load_user_or_create(user_id, age=jwt_age if jwt_age else 5)
             current_time = time.time()
@@ -2181,12 +2518,37 @@ def start_adaptive_assessment(subject: str, request: Request):
                 )
                 if alt_q:
                     alt_data = _load_question_perseus(alt_q.question_id, mongo_db)
-                    if alt_data and not _has_only_broken_widgets(alt_data):
+                    if (
+                        alt_data
+                        and not _has_only_broken_widgets(alt_data)
+                        and _has_answer_space(alt_data)
+                        and _is_subject_scoped_question(alt_data, subject)
+                    ):
                         first_q = alt_q
                         q_data = alt_data
                         break
+
+            # If pool retries still fail validation, do one explicit JIT fallback.
             if not q_data:
-                raise HTTPException(status_code=400, detail="No supported questions available")
+                fallback_q, fallback_data = _jit_first_question(
+                    exclude_question_ids=[first_q.question_id],
+                    target_difficulty=0.5,
+                )
+                if (
+                    fallback_q
+                    and fallback_data
+                    and not _has_only_broken_widgets(fallback_data)
+                    and _has_answer_space(fallback_data)
+                    and _is_subject_scoped_question(fallback_data, subject)
+                ):
+                    first_q = fallback_q
+                    q_data = fallback_data
+
+            if not q_data:
+                raise HTTPException(
+                    status_code=503,
+                    detail="First question is still being prepared. Please retry.",
+                )
 
         # Update session (track content hash alongside question ID for content-level dedup)
         first_content_hash = _compute_content_hash(q_data)
@@ -2205,6 +2567,10 @@ def start_adaptive_assessment(subject: str, request: Request):
 
         # Patch widget fields before returning (prefetch/pool data may lack defaults)
         _patch_numeric_input_widgets(q_data)
+        q_data = _post_process_pipeline_items([q_data], subject)
+        if not q_data:
+            raise HTTPException(status_code=503, detail="No valid first question available yet")
+        q_data = q_data[0]
 
         # ── Inject skill_ids from Question object into Perseus response (Bug #22) ──
         # _load_question_perseus builds dash_metadata from MongoDB docs which may
@@ -2249,6 +2615,68 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
     })
     if not session:
         raise HTTPException(status_code=404, detail="Assessment session not found")
+
+    def _resolve_source_question_id(raw_qid: Optional[str]) -> Optional[str]:
+        """
+        Resolve synthetic fallback IDs back to their source Mongo question_id.
+        This avoids dead-ends when emergency fallback tries to load a synthetic ID.
+        """
+        qid = str(raw_qid or "").strip()
+        if not qid:
+            return None
+
+        # Unwrap nested fallback IDs up to a few levels.
+        for _ in range(4):
+            prefix = None
+            if qid.startswith("fallback_repeat_"):
+                prefix = "fallback_repeat_"
+            elif qid.startswith("fallback_"):
+                prefix = "fallback_"
+            if not prefix:
+                break
+            tail = qid[len(prefix):]
+            parts = tail.rsplit("_", 2)
+            if len(parts) != 3:
+                break
+            source_part = parts[0].strip()
+            qid = source_part if source_part else qid
+            if not source_part:
+                break
+        return qid
+
+    # Idempotency guard: if this question was already answered, return the most
+    # recently served question instead of recording another attempt.
+    existing_answers = session.get("answers", [])
+    if isinstance(existing_answers, list) and any(
+        isinstance(a, dict) and a.get("question_id") == payload.question_id
+        for a in existing_answers
+    ):
+        logger.warning(
+            f"[ADAPTIVE_NEXT] Duplicate answer replay detected for {payload.assessment_id} q={payload.question_id}"
+        )
+        used_q_ids = session.get("used_question_ids", [])
+        latest_served_qid = used_q_ids[-1] if isinstance(used_q_ids, list) and used_q_ids else None
+        if latest_served_qid and latest_served_qid != payload.question_id:
+            source_qid = _resolve_source_question_id(latest_served_qid)
+            q_data = _load_question_perseus(source_qid, mongo_db) if source_qid else None
+            if q_data:
+                _patch_numeric_input_widgets(q_data)
+                subject = (session.get("subject") or "").strip().title()
+                cleaned = _post_process_pipeline_items([q_data], subject)
+                if cleaned:
+                    cleaned[0].setdefault("dash_metadata", {})["dash_question_id"] = latest_served_qid
+                    return {
+                        "completed": False,
+                        "question_number": session.get("questions_asked", 1),
+                        "total_questions": session.get("max_questions", 10),
+                        "question": cleaned[0],
+                        "current_difficulty": round(session.get("current_difficulty", 0.5), 3),
+                        "replayed": True,
+                    }
+        raise HTTPException(
+            status_code=503,
+            detail="Next question is still being prepared. Please retry.",
+        )
 
     # Record answer
     current_diff = session.get("current_difficulty", 0.5)
@@ -2352,9 +2780,84 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
         }
 
     # Check prefetch cache first — instant if available
+    subject = (session.get("subject") or "").strip().title()
     used_q_ids = session.get("used_question_ids", [])
     used_skill_ids = session.get("used_skill_ids", [])
     used_content_hashes = set(session.get("used_content_hashes", []))
+    allow_duplicate_content = False
+
+    def _try_assessment_fallback(allow_reuse: bool = False) -> tuple[Optional[Question], Optional[dict], bool]:
+        """
+        Last-resort subject-scoped fallback for adaptive assessment continuity.
+        Returns (next_question, perseus_data, content_reused).
+        """
+        if not subject:
+            return None, None, False
+        try:
+            sample_size = 48 if allow_reuse else 32
+            docs = list(mongo_db.ai_generated_questions.aggregate([
+                {"$match": {"subject": subject}},
+                {"$sample": {"size": sample_size}},
+                {"$project": {"question_id": 1, "skill_ids": 1, "skill_id": 1}},
+            ]))
+        except Exception as e:
+            logger.warning(f"[ADAPTIVE_NEXT] Fallback sample failed: {e}")
+            return None, None, False
+
+        for doc in docs:
+            source_qid = str(doc.get("question_id") or "").strip()
+            if not source_qid:
+                continue
+            if not allow_reuse and source_qid in used_q_ids:
+                continue
+
+            candidate_data = _load_question_perseus(source_qid, mongo_db)
+            if not candidate_data:
+                continue
+
+            candidate_hash = _compute_content_hash(candidate_data)
+            if not allow_reuse and candidate_hash in used_content_hashes:
+                continue
+            if (
+                _has_only_broken_widgets(candidate_data)
+                or not _has_answer_space(candidate_data)
+                or not _is_subject_scoped_question(candidate_data, subject)
+            ):
+                continue
+
+            dm = candidate_data.setdefault("dash_metadata", {})
+            dm["source_question_id"] = source_qid
+            raw_skill_ids = dm.get("skill_ids") or doc.get("skill_ids") or []
+            skill_id = ""
+            if isinstance(raw_skill_ids, list):
+                for sid in raw_skill_ids:
+                    sid_text = str(sid or "").strip()
+                    if sid_text:
+                        skill_id = sid_text
+                        break
+            elif isinstance(raw_skill_ids, str) and raw_skill_ids.strip():
+                skill_id = raw_skill_ids.strip()
+
+            # Ensure a unique served ID so idempotency guard doesn't deadlock on reused content.
+            served_qid = source_qid
+            reused = source_qid in used_q_ids or candidate_hash in used_content_hashes
+            if reused:
+                served_qid = f"fallback_{source_qid}_{questions_asked}_{int(time.time() * 1000) % 100000}"
+
+            dm["dash_question_id"] = served_qid
+            if not dm.get("skill_ids"):
+                dm["skill_ids"] = [skill_id] if skill_id else []
+
+            candidate_q = Question(
+                question_id=served_qid,
+                skill_ids=[skill_id] if skill_id else [],
+                content="",
+                difficulty=new_diff,
+                expected_time_seconds=60.0,
+            )
+            return candidate_q, candidate_data, reused
+
+        return None, None, False
 
     cached_result = None
     with _prefetch_lock:
@@ -2392,35 +2895,57 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
 
         user_profile = dash_system.load_user_or_create(user_id, age=jwt_age if jwt_age else 5)
         current_time = time.time()
-        subject = (session.get("subject") or "").strip().title()
-
         # Pin DASH system to the session's subject — prevents wrong-subject
         # questions when concurrent requests switch the global singleton
         if subject:
             _switch_subject_if_needed(subject, "US")
 
-        # Retry loop: try pool first, then force JIT with unique IDs on duplicate
-        # Total budget: 20 seconds to prevent frontend timeout
+        # Fast-settle retry loop: keep next-question transitions responsive.
+        # Heavy generation is moved to background prefetch; request path should stay near-instant.
         import concurrent.futures
-        JIT_TIMEOUT = 12  # seconds per JIT attempt
-        MAX_RETRIES = 2   # reduced from 3 to stay within budget
+        MAX_RETRIES = 1
         retry_start = time.time()
 
         for attempt in range(MAX_RETRIES):
             # Bail if we've spent too long already
-            if time.time() - retry_start > 20:
+            elapsed = time.time() - retry_start
+            if elapsed > ADAPTIVE_NEXT_TOTAL_BUDGET_S:
                 logger.warning(f"[ADAPTIVE_NEXT] Retry budget exhausted after {attempt} attempts")
                 break
 
             if attempt == 0:
-                # First attempt: try the pool via DASH
-                next_q = dash_system.get_next_question_flexible(
-                    user_id, current_time,
-                    exclude_question_ids=used_q_ids,
-                    user_profile=user_profile,
-                    exclude_skill_ids=used_skill_ids[-3:] if len(used_skill_ids) >= 3 else None,
-                    fast_mode=True,
+                # First attempt: bounded pool lookup via DASH.
+                # get_next_question_flexible can cascade into slow AI paths, so cap it hard.
+                pool_lookup_timeout = max(
+                    0.2,
+                    min(ADAPTIVE_NEXT_POOL_LOOKUP_TIMEOUT_S, ADAPTIVE_NEXT_TOTAL_BUDGET_S),
                 )
+                executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+                future = None
+                try:
+                    future = executor.submit(
+                        dash_system.get_next_question_flexible,
+                        user_id,
+                        current_time,
+                        used_q_ids,  # exclude_question_ids
+                        False,       # force_grade_range
+                        user_profile,
+                        used_skill_ids[-3:] if len(used_skill_ids) >= 3 else None,
+                        True,        # fast_mode
+                    )
+                    next_q = future.result(timeout=pool_lookup_timeout)
+                except concurrent.futures.TimeoutError:
+                    logger.warning(
+                        f"[ADAPTIVE_NEXT] Pool lookup timed out after {pool_lookup_timeout:.2f}s; using fast fallback path"
+                    )
+                    next_q = None
+                except Exception as e:
+                    logger.warning(f"[ADAPTIVE_NEXT] Pool lookup failed: {e}")
+                    next_q = None
+                finally:
+                    if future is not None:
+                        future.cancel()
+                    executor.shutdown(wait=False, cancel_futures=True)
 
             # Check if we got a duplicate (pool exhausted)
             if next_q and next_q.question_id in used_q_ids:
@@ -2431,14 +2956,33 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
             if next_q:
                 break
 
-            # Force JIT generation if pool returned None or duplicate
-            if dash_system.use_ai_questions and dash_system.ai_provider:
+            # Prefer a fast subject-scoped fallback before blocking on JIT.
+            fallback_q, fallback_data, reused_content = _try_assessment_fallback(allow_reuse=False)
+            if fallback_q and fallback_data:
+                next_q = fallback_q
+                q_data = fallback_data
+                allow_duplicate_content = reused_content
+                logger.info(
+                    f"[ADAPTIVE_NEXT] Fast subject fallback selected: {next_q.question_id} "
+                    f"(reused_content={reused_content})"
+                )
+                break
+
+            # Optional sync JIT fallback (off by default). Keeping this off preserves fast UX.
+            if ADAPTIVE_NEXT_SYNC_JIT and dash_system.use_ai_questions and dash_system.ai_provider:
                 grade_name = user_profile.current_grade.replace("GRADE_", "Grade ").replace("K", "Kindergarten")
                 # Unique synthetic ID per retry to force fresh generation
                 synthetic_id = f"assessment_{subject.lower().replace(' ', '_')}_{user_profile.current_grade.lower()}_{questions_asked}_r{attempt}_{int(time.time()*1000) % 100000}"
                 try:
+                    remaining_budget = ADAPTIVE_NEXT_TOTAL_BUDGET_S - (time.time() - retry_start)
+                    if remaining_budget <= 0.5:
+                        logger.warning("[ADAPTIVE_NEXT] No remaining retry budget for JIT")
+                        break
+                    jit_timeout = min(0.8, remaining_budget)
                     # Run JIT with a timeout to prevent hanging
-                    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                    executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+                    future = None
+                    try:
                         future = executor.submit(
                             dash_system.ai_provider.get_question_for_skill,
                             skill_id=synthetic_id,
@@ -2451,7 +2995,11 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
                             fast_mode=True,
                             subject=subject,
                         )
-                        ai_result = future.result(timeout=JIT_TIMEOUT)
+                        ai_result = future.result(timeout=jit_timeout)
+                    finally:
+                        if future is not None:
+                            future.cancel()
+                        executor.shutdown(wait=False, cancel_futures=True)
                     if ai_result:
                         jit_qid = ai_result["dash_metadata"]["dash_question_id"]
                         if jit_qid not in used_q_ids:
@@ -2468,86 +3016,153 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
                             logger.info(f"[ADAPTIVE_NEXT] JIT returned duplicate {jit_qid}, retrying")
                             next_q = None
                 except concurrent.futures.TimeoutError:
-                    logger.warning(f"[ADAPTIVE_NEXT] JIT attempt {attempt+1} timed out after {JIT_TIMEOUT}s")
+                    logger.warning(f"[ADAPTIVE_NEXT] JIT attempt {attempt+1} timed out after {jit_timeout:.2f}s")
                 except Exception as e:
                     logger.warning(f"[ADAPTIVE_NEXT] JIT attempt {attempt+1} failed: {e}")
             else:
-                break  # No AI provider available
+                break
 
     if not next_q:
-        # No more questions — auto-complete
-        all_answers = session.get("answers", []) + [answer_record]
-        correct_count = sum(1 for a in all_answers if a["is_correct"])
-        mongo_db.db["assessment_sessions"].update_one(
-            {"assessment_id": payload.assessment_id},
-            {"$set": {"status": "completed"}, "$push": {"answers": answer_record}}
-        )
-        with _prefetch_lock:
-            _prefetch_cache.pop(payload.assessment_id, None)
-        return {"completed": True, "score": correct_count, "total": len(all_answers), "final_difficulty": round(new_diff, 3)}
+        # Give background prefetch a very short grace window only.
+        # Keep UI snappy and promote fallback quickly if prefetch is not ready.
+        LATE_PREFETCH_GRACE_S = ADAPTIVE_NEXT_LATE_PREFETCH_GRACE_S
+        LATE_PREFETCH_POLL_S = ADAPTIVE_NEXT_LATE_PREFETCH_POLL_S
+        prefetch_wait_start = time.time()
+        while time.time() - prefetch_wait_start < LATE_PREFETCH_GRACE_S:
+            with _prefetch_lock:
+                late_cached = _prefetch_cache.pop(payload.assessment_id, None)
+            if not late_cached or not late_cached.get("q_data"):
+                time.sleep(LATE_PREFETCH_POLL_S)
+                continue
 
-    if not q_data:
-        q_data = getattr(next_q, "perseus_data", None) or _load_question_perseus(next_q.question_id, mongo_db)
-    if not q_data:
-        raise HTTPException(status_code=500, detail="Failed to load next question")
+            late_qid = late_cached.get("question_id")
+            late_q_data = late_cached.get("q_data")
+            late_hash = _compute_content_hash(late_q_data)
+            if not late_qid or late_qid in used_q_ids or late_hash in used_content_hashes:
+                logger.info(
+                    f"[ADAPTIVE_NEXT] Late prefetch stale (dup) {late_qid} — waiting for a fresh item"
+                )
+                time.sleep(LATE_PREFETCH_POLL_S)
+                continue
 
-    # Content-hash dedup: reject questions with identical content even if IDs differ
-    next_content_hash = _compute_content_hash(q_data)
-    if next_content_hash in used_content_hashes:
-        logger.warning(f"[ADAPTIVE_NEXT] Content-hash duplicate detected: {next_q.question_id} — skipping")
-        # Auto-complete rather than serve duplicate content
-        all_answers = session.get("answers", []) + [answer_record]
-        correct_count = sum(1 for a in all_answers if a["is_correct"])
-        mongo_db.db["assessment_sessions"].update_one(
-            {"assessment_id": payload.assessment_id},
-            {"$set": {"status": "completed"}, "$push": {"answers": answer_record}}
-        )
-        # Also mark in subject_assessments so status check returns completed
-        mongo_db.subject_assessments.update_one(
-            {"user_id": user_id, "subject": session["subject"]},
-            {"$set": {
-                "assessment_completed": True,
-                "assessment_date": datetime.now(),
-                "score": correct_count,
-                "total": len(all_answers),
-                "adaptive": True,
-                "final_difficulty": new_diff,
-            }},
-            upsert=True,
-        )
-        with _prefetch_lock:
-            _prefetch_cache.pop(payload.assessment_id, None)
-        return {"completed": True, "score": correct_count, "total": len(all_answers), "final_difficulty": round(new_diff, 3)}
+            next_skill_id = late_cached.get("skill_id", "")
+            q_data = late_q_data
+            next_q = Question(
+                question_id=late_qid,
+                skill_ids=[next_skill_id] if next_skill_id else [],
+                content="",
+                difficulty=new_diff,
+                expected_time_seconds=60.0,
+            )
+            logger.info(f"[ADAPTIVE_NEXT] Late prefetch HIT for {payload.assessment_id}: {late_qid}")
+            break
 
-    # Skip questions with only broken widget types (orderer/matcher — unsupported in React 18)
-    if _has_only_broken_widgets(q_data):
-        logger.info(f"[ADAPTIVE_NEXT] Skipping broken-widget-only question {next_q.question_id}")
-        # Auto-complete rather than serve unsupported question
-        all_answers = session.get("answers", []) + [answer_record]
-        correct_count = sum(1 for a in all_answers if a["is_correct"])
-        mongo_db.db["assessment_sessions"].update_one(
-            {"assessment_id": payload.assessment_id},
-            {"$set": {"status": "completed"}, "$push": {"answers": answer_record}}
-        )
-        # Also mark in subject_assessments so status check returns completed
-        mongo_db.subject_assessments.update_one(
-            {"user_id": user_id, "subject": session["subject"]},
-            {"$set": {
-                "assessment_completed": True,
-                "assessment_date": datetime.now(),
-                "score": correct_count,
-                "total": len(all_answers),
-                "adaptive": True,
-                "final_difficulty": new_diff,
-            }},
-            upsert=True,
-        )
-        with _prefetch_lock:
-            _prefetch_cache.pop(payload.assessment_id, None)
-        return {"completed": True, "score": correct_count, "total": len(all_answers), "final_difficulty": round(new_diff, 3)}
+    if not next_q:
+        # Last-resort fallback before surfacing a retry error to the frontend.
+        fallback_q, fallback_data, reused_content = _try_assessment_fallback(allow_reuse=False)
+        if not fallback_q:
+            fallback_q, fallback_data, reused_content = _try_assessment_fallback(allow_reuse=True)
 
-    # Patch widget fields before returning (prefetch/pool data may lack defaults)
-    _patch_numeric_input_widgets(q_data)
+        if fallback_q and fallback_data:
+            next_q = fallback_q
+            q_data = fallback_data
+            allow_duplicate_content = reused_content
+            logger.warning(
+                f"[ADAPTIVE_NEXT] Using subject fallback question {next_q.question_id} (reused_content={reused_content})"
+            )
+        else:
+            # Emergency continuity fallback: reuse latest served question content with a unique ID.
+            # This prevents hard stalls while still preserving answer progression.
+            latest_qid = used_q_ids[-1] if used_q_ids else None
+            source_latest_qid = _resolve_source_question_id(latest_qid)
+            emergency_data = _load_question_perseus(source_latest_qid, mongo_db) if source_latest_qid else None
+            if emergency_data and _has_answer_space(emergency_data):
+                emergency_qid = f"fallback_repeat_{source_latest_qid}_{questions_asked}_{int(time.time() * 1000) % 100000}"
+                dm = emergency_data.setdefault("dash_metadata", {})
+                dm["dash_question_id"] = emergency_qid
+                dm["source_question_id"] = source_latest_qid
+                skill_ids = dm.get("skill_ids") or []
+                skill_id = skill_ids[0] if isinstance(skill_ids, list) and skill_ids else ""
+                next_q = Question(
+                    question_id=emergency_qid,
+                    skill_ids=[skill_id] if skill_id else [],
+                    content="",
+                    difficulty=new_diff,
+                    expected_time_seconds=60.0,
+                )
+                q_data = emergency_data
+                allow_duplicate_content = True
+                logger.warning(f"[ADAPTIVE_NEXT] Emergency repeat fallback used: {emergency_qid}")
+            else:
+                # Do not auto-complete on generation depletion. Keep assessment in-progress and ask client to retry.
+                logger.warning(
+                    f"[ADAPTIVE_NEXT] No valid next question generated for {payload.assessment_id}; keeping session in progress"
+                )
+                raise HTTPException(
+                    status_code=503,
+                    detail="Next question is still being prepared. Please retry."
+                )
+
+    def _promote_fallback(reason: str) -> bool:
+        nonlocal next_q, q_data, allow_duplicate_content
+        fb_q, fb_data, reused = _try_assessment_fallback(allow_reuse=False)
+        if not fb_q:
+            fb_q, fb_data, reused = _try_assessment_fallback(allow_reuse=True)
+        if not fb_q or not fb_data:
+            return False
+        next_q = fb_q
+        q_data = fb_data
+        allow_duplicate_content = allow_duplicate_content or reused
+        logger.warning(
+            f"[ADAPTIVE_NEXT] Fallback promoted ({reason}) -> {next_q.question_id} reused={reused}"
+        )
+        return True
+
+    next_content_hash = ""
+    for validation_pass in range(2):
+        if not q_data:
+            q_data = getattr(next_q, "perseus_data", None) or _load_question_perseus(next_q.question_id, mongo_db)
+        if not q_data:
+            logger.warning(f"[ADAPTIVE_NEXT] Failed to load Perseus data for {getattr(next_q, 'question_id', 'unknown')}")
+            if validation_pass == 0 and _promote_fallback("missing_perseus_data"):
+                continue
+            raise HTTPException(status_code=503, detail="Next question is still being prepared. Please retry.")
+
+        # Content-hash dedup: reject identical content unless fallback explicitly allows reuse.
+        next_content_hash = _compute_content_hash(q_data)
+        if next_content_hash in used_content_hashes and not allow_duplicate_content:
+            logger.warning(f"[ADAPTIVE_NEXT] Content-hash duplicate detected: {next_q.question_id} — skipping")
+            if validation_pass == 0 and _promote_fallback("duplicate_content_hash"):
+                continue
+            raise HTTPException(
+                status_code=503,
+                detail="Next question is still being prepared. Please retry."
+            )
+
+        if (
+            _has_only_broken_widgets(q_data)
+            or not _has_answer_space(q_data)
+            or not _is_subject_scoped_question(q_data, subject)
+        ):
+            logger.info(f"[ADAPTIVE_NEXT] Skipping invalid next question {next_q.question_id}")
+            if validation_pass == 0 and _promote_fallback("invalid_question_contract"):
+                continue
+            raise HTTPException(
+                status_code=503,
+                detail="Next question is still being prepared. Please retry."
+            )
+
+        # Patch widget fields before returning (prefetch/pool data may lack defaults)
+        _patch_numeric_input_widgets(q_data)
+        cleaned_next = _post_process_pipeline_items([q_data], subject)
+        if cleaned_next:
+            q_data = cleaned_next[0]
+            next_content_hash = _compute_content_hash(q_data)
+            break
+
+        if validation_pass == 0 and _promote_fallback("post_process_empty"):
+            continue
+        raise HTTPException(status_code=503, detail="Next question is still being prepared. Please retry.")
 
     # ── Inject skill_ids from Question object into Perseus response (Bug #22) ──
     if next_q.skill_ids and q_data:
@@ -2736,16 +3351,21 @@ def assessment_prefetch(request: Request, payload: AssessmentPrefetchRequest):
 LEARNING_PREFETCH_TTL = 120  # 2 minutes — learning path questions stay valid shorter than warm-start
 
 
-def _learning_prefetch_worker(user_id: str, exclude_question_ids: list, jwt_age: int):
+def _learning_prefetch_worker(user_id: str, subject: str, exclude_question_ids: list, jwt_age: int):
     """Background worker that pre-generates the next learning-path question and caches it."""
     try:
         ensure_dash_system()
         from managers.mongodb_manager import mongo_db as _mongo
 
-        # Skip if we already have a cached question for this user
+        active_subject = (subject or dash_system.subject or "").strip().title()
+        if active_subject:
+            _switch_subject_if_needed(active_subject, "US")
+        cache_key = f"{user_id}:{active_subject.lower()}" if active_subject else user_id
+
+        # Skip if we already have a cached question for this user+subject
         with _learning_prefetch_lock:
-            if user_id in _learning_prefetch_cache:
-                logger.info(f"[LEARNING_PREFETCH] Already cached for {user_id}, skipping")
+            if cache_key in _learning_prefetch_cache:
+                logger.info(f"[LEARNING_PREFETCH] Already cached for {cache_key}, skipping")
                 return
 
         user_profile = dash_system.load_user_or_create(user_id, age=jwt_age if jwt_age else 5)
@@ -2768,14 +3388,19 @@ def _learning_prefetch_worker(user_id: str, exclude_question_ids: list, jwt_age:
             logger.info(f"[LEARNING_PREFETCH] No Perseus data for {q.question_id}")
             return
 
+        if active_subject and not _is_subject_scoped_question(q_data, active_subject):
+            logger.info(f"[LEARNING_PREFETCH] Dropping cross-subject cache candidate {q.question_id} for {active_subject}")
+            return
+
         with _learning_prefetch_lock:
-            _learning_prefetch_cache[user_id] = {
+            _learning_prefetch_cache[cache_key] = {
                 "q_data": q_data,
                 "question_id": q.question_id,
                 "skill_id": q.skill_ids[0] if q.skill_ids else "",
+                "subject": active_subject,
                 "ts": time.time(),
             }
-        logger.info(f"[LEARNING_PREFETCH] Cached question {q.question_id} for user {user_id}")
+        logger.info(f"[LEARNING_PREFETCH] Cached question {q.question_id} for {cache_key}")
 
     except Exception as e:
         logger.warning(f"[LEARNING_PREFETCH] Background prefetch failed (non-blocking): {e}")
@@ -2790,42 +3415,153 @@ def learning_prefetch(request: Request, payload: LearningPrefetchRequest):
     jwt_payload = get_jwt_payload(request)
     user_id = jwt_payload.get("sub")
     jwt_age = jwt_payload.get("age", 10)
+    selected_subject, selected_region = _get_user_subject_selection(user_id)
+    active_subject = (selected_subject or dash_system.subject or "").strip().title()
+    if active_subject:
+        _switch_subject_if_needed(active_subject, selected_region or "US")
 
     exclude_ids = list(payload.current_question_ids)
 
     def _do_learning_prefetch():
-        _learning_prefetch_worker(user_id, exclude_ids, jwt_age)
+        _learning_prefetch_worker(user_id, active_subject, exclude_ids, jwt_age)
 
     threading.Thread(target=_do_learning_prefetch, daemon=True).start()
     return {"status": "prefetching"}
 
 
-def _trigger_learning_prefetch(user_id: str, served_question_ids: list, jwt_age: int):
+def _trigger_learning_prefetch(user_id: str, subject: str, served_question_ids: list, jwt_age: int):
     """Fire-and-forget helper to trigger learning path prefetch after serving questions."""
     def _do():
-        _learning_prefetch_worker(user_id, served_question_ids, jwt_age)
+        _learning_prefetch_worker(user_id, subject, served_question_ids, jwt_age)
     threading.Thread(target=_do, daemon=True).start()
 
 
 def _compute_content_hash(q_data: dict) -> str:
-    """Compute SHA-256 hash of question content + widgets for duplicate detection.
+    """Compute semantic content hash used by serving-pipeline dedupe.
 
-    Two questions with different IDs but identical content will produce the same hash.
+    This intentionally mirrors the strict pretest fingerprint behavior:
+    - strip Perseus widget markers from content
+    - normalize whitespace/casing
+    - include answerArea shape
     """
-    content_str = json.dumps(
-        q_data.get("question", {}).get("content", ""),
-        sort_keys=True, ensure_ascii=True,
-    )
-    widgets_str = json.dumps(
-        q_data.get("question", {}).get("widgets", {}),
-        sort_keys=True, ensure_ascii=True,
-    )
-    # Include answerArea so different-answer variants aren't treated as same question
-    answer_str = json.dumps(
-        q_data.get("answerArea", {}),
-        sort_keys=True, ensure_ascii=True,
-    )
-    return hashlib.sha256((content_str + widgets_str + answer_str).encode()).hexdigest()
+    content = str((q_data.get("question", {}) or {}).get("content", ""))
+    content = re.sub(r"\[\[☃[^\]]+\]\]", " ", content)
+    content = re.sub(r"\s+", " ", content).strip().lower()
+    answer_str = json.dumps(q_data.get("answerArea", {}), sort_keys=True, ensure_ascii=True)
+    return hashlib.sha256(f"{content}|{answer_str}".encode("utf-8")).hexdigest()
+
+
+_SUBJECT_ALIAS = {
+    "science": {"science", "biology", "chemistry", "physics", "earth", "astronomy"},
+    "math": {"math", "algebra", "geometry", "arithmetic", "calculus", "statistics"},
+    "english": {"english", "ela", "language", "grammar", "reading", "writing", "literature"},
+    "history": {"history", "civilization", "historical"},
+    "geography": {"geography", "map", "geology"},
+}
+
+
+def _normalize_subject_token(subject: Optional[str]) -> str:
+    if not subject:
+        return ""
+    return subject.strip().lower().replace("_", " ").replace("-", " ")
+
+
+def _is_subject_scoped_question(perseus: dict, subject: Optional[str]) -> bool:
+    """Guard against cross-subject contamination in served questions."""
+    normalized_subject = _normalize_subject_token(subject)
+    if not normalized_subject:
+        return True
+
+    aliases = _SUBJECT_ALIAS.get(normalized_subject, {normalized_subject})
+    aliases = {a.lower() for a in aliases}
+    forbidden = {
+        "science": {"math"},
+        "math": {"science"},
+    }.get(normalized_subject, set())
+
+    dm = perseus.get("dash_metadata", {}) if isinstance(perseus, dict) else {}
+    skill_ids = dm.get("skill_ids", []) if isinstance(dm, dict) else []
+    skill_blob = " ".join(str(s).lower() for s in (skill_ids or []))
+    if skill_blob:
+        if any(f in skill_blob for f in forbidden):
+            return False
+        if any(a in skill_blob for a in aliases):
+            return True
+
+    # Fallback to question content when skill metadata is sparse
+    content = str(((perseus.get("question") or {}).get("content") or "")).lower()
+    if not content.strip():
+        return True
+    if any(f in content for f in forbidden):
+        return False
+    return True
+
+
+def _has_answer_space(perseus: dict) -> bool:
+    """Ensure frontend has an answer area + at least one scoreable widget."""
+    if not isinstance(perseus, dict):
+        return False
+    answer_area = perseus.get("answerArea")
+    if not isinstance(answer_area, dict):
+        return False
+    answer_type = answer_area.get("type")
+    if not isinstance(answer_type, str) or not answer_type.strip():
+        return False
+
+    widgets = ((perseus.get("question") or {}).get("widgets") or {})
+    if not isinstance(widgets, dict) or not widgets:
+        return False
+
+    for w in widgets.values():
+        if not isinstance(w, dict):
+            continue
+        wtype = w.get("type")
+        if isinstance(wtype, str) and wtype not in {"image", "definition"}:
+            return True
+    return False
+
+
+def _post_process_pipeline_items(perseus_items: List[Dict], subject: Optional[str]) -> List[Dict]:
+    """Final safety gate before returning questions to frontend.
+
+    Enforces:
+    - render contract patching
+    - no broken-widget-only payloads
+    - answer-space presence
+    - subject scoping
+    - duplicate question/content removal
+    """
+    seen_ids = set()
+    seen_hashes = set()
+    cleaned: List[Dict] = []
+
+    for item in perseus_items:
+        if not isinstance(item, dict):
+            continue
+        _patch_numeric_input_widgets(item)
+        if _has_only_broken_widgets(item):
+            continue
+        if not _has_answer_space(item):
+            continue
+        if not _is_subject_scoped_question(item, subject):
+            logger.warning("[CONTENT_PIPELINE] Rejected cross-subject question")
+            continue
+
+        dm = item.get("dash_metadata", {}) if isinstance(item.get("dash_metadata"), dict) else {}
+        qid = str(dm.get("dash_question_id") or "")
+        if qid and qid in seen_ids:
+            continue
+
+        ch = _compute_content_hash(item)
+        if ch in seen_hashes:
+            continue
+
+        if qid:
+            seen_ids.add(qid)
+        seen_hashes.add(ch)
+        cleaned.append(_strip_objectids(item))
+
+    return cleaned
 
 
 def _load_question_perseus(question_id: str, mongo_db) -> Optional[dict]:
@@ -2864,7 +3600,7 @@ def _load_question_perseus(question_id: str, mongo_db) -> Optional[dict]:
     # Fallback: search content_pool collection (pool-served questions)
     if not doc:
         pool_col = mongo_db.db.get_collection("content_pool") if hasattr(mongo_db, "db") else None
-        if pool_col:
+        if pool_col is not None:
             pool_doc = pool_col.find_one(
                 {"question_data.dash_metadata.dash_question_id": question_id}
             )
@@ -2957,14 +3693,85 @@ def _has_only_broken_widgets(perseus: dict) -> bool:
     return all(w.get("type") in _BROKEN_WIDGET_TYPES for w in scoreable)
 
 
+def _strip_wrapping_quotes(value: Any) -> str:
+    text = str(value if value is not None else "").strip()
+    if len(text) >= 2:
+        first = text[0]
+        last = text[-1]
+        if (first == '"' and last == '"') or (first == "'" and last == "'"):
+            return text[1:-1].strip()
+    return text
+
+
+def _sanitize_choice_list(raw_choices: Any) -> List[Dict[str, Any]]:
+    if not isinstance(raw_choices, list):
+        return []
+
+    cleaned: List[Dict[str, Any]] = []
+    for i, choice in enumerate(raw_choices):
+        if isinstance(choice, str):
+            cleaned.append(
+                {
+                    "id": f"choice-{i}",
+                    "content": _strip_wrapping_quotes(choice),
+                    "correct": False,
+                }
+            )
+            continue
+
+        if isinstance(choice, dict):
+            normalized = dict(choice)
+            cid = normalized.get("id")
+            if not isinstance(cid, str) or not cid.strip():
+                cid = f"choice-{i}"
+            normalized["id"] = cid.strip()
+            normalized["content"] = _strip_wrapping_quotes(normalized.get("content", ""))
+            normalized["correct"] = bool(normalized.get("correct", False))
+            cleaned.append(normalized)
+            continue
+
+        cleaned.append(
+            {
+                "id": f"choice-{i}",
+                "content": _strip_wrapping_quotes(choice),
+                "correct": False,
+            }
+        )
+
+    return cleaned
+
+
+def _strip_duplicate_radio_instruction(content: str) -> str:
+    stripped = re.sub(
+        r"^\s*choose\s+(?:\d+|one)\s+answers?:\s*$",
+        "",
+        content,
+        flags=re.IGNORECASE | re.MULTILINE,
+    )
+    stripped = re.sub(r"\n{3,}", "\n\n", stripped)
+    return stripped.strip()
+
+
 def _patch_numeric_input_widgets(perseus: dict) -> None:
     """Patch missing required fields on all widget types and validate answer presence."""
     widgets = perseus.get("question", {}).get("widgets", {})
+    has_radio_widget = False
     for wkey, wval in widgets.items():
         if not isinstance(wval, dict):
             continue
         wtype = wval.get("type")
-        opts = wval.setdefault("options", {})
+        raw_opts = wval.get("options")
+        opts = raw_opts if isinstance(raw_opts, dict) else {}
+        if not isinstance(raw_opts, dict):
+            wval["options"] = opts
+        if wtype == "radio":
+            has_radio_widget = True
+            if isinstance(raw_opts, list):
+                opts["choices"] = _sanitize_choice_list(raw_opts)
+            else:
+                opts["choices"] = _sanitize_choice_list(opts.get("choices", []))
+            opts.setdefault("multipleSelect", bool(wval.get("multipleSelect", False)))
+            opts.setdefault("randomize", bool(wval.get("randomize", False)))
         if wtype == "numeric-input":
             opts.setdefault("coefficient", False)
             opts.setdefault("static", False)
@@ -2978,6 +3785,7 @@ def _patch_numeric_input_widgets(perseus: dict) -> None:
         elif wtype == "dropdown":
             opts.setdefault("placeholder", "Select an answer")
             opts.setdefault("static", False)
+            opts["choices"] = _sanitize_choice_list(opts.get("choices", []))
         elif wtype == "matcher":
             opts.setdefault("labels", ["Left", "Right"])
             opts.setdefault("orderMatters", False)
@@ -3033,6 +3841,8 @@ def _patch_numeric_input_widgets(perseus: dict) -> None:
     q = perseus.get("question", {})
     if isinstance(q, dict):
         q.setdefault("images", {})
+        if has_radio_widget and isinstance(q.get("content"), str):
+            q["content"] = _strip_duplicate_radio_instruction(q["content"])
 
 
 # ===== VIDEO TRACKING ENDPOINTS (PHASE 3) =====
@@ -3103,9 +3913,9 @@ def approve_video(
     """
     from managers.mongodb_manager import mongo_db
 
-    user_id = get_current_user(request)
+    admin_user_id = require_admin(request)
 
-    logger.info(f"[VIDEO_APPROVAL] Approving video {video_id} for question {question_id}")
+    logger.info(f"[VIDEO_APPROVAL] Admin {admin_user_id} approving video {video_id} for question {question_id}")
 
     try:
         # Find the suggested video
@@ -3164,9 +3974,9 @@ def reject_video(
     """
     from managers.mongodb_manager import mongo_db
 
-    user_id = get_current_user(request)
+    admin_user_id = require_admin(request)
 
-    logger.info(f"[VIDEO_REJECTION] Rejecting video {video_id} for question {question_id}")
+    logger.info(f"[VIDEO_REJECTION] Admin {admin_user_id} rejecting video {video_id} for question {question_id}")
 
     try:
         mongo_db.scraped_questions.update_one(
@@ -3416,6 +4226,7 @@ def start_subject(request: Request, payload: StartSubjectRequest):
     region = payload.region.strip().upper()
 
     logger.info(f"[START_SUBJECT] User {user_id} requested {subject}/{region}")
+    _persist_user_subject_selection(user_id, subject, region)
 
     # Step 1: Try loading DASH with the requested subject/region (thread-safe)
     _switch_subject_if_needed(subject, region)
@@ -3607,6 +4418,7 @@ async def get_quality_report(request: Request):
 @app.post("/api/ensure-pool/{skill_id}")
 async def ensure_pool(skill_id: str, request: Request):
     """Trigger pool fill for a skill (admin/debug)."""
+    require_admin(request)
     if not content_service:
         raise HTTPException(status_code=503, detail="Content service not initialized")
     body = {}
@@ -3637,8 +4449,9 @@ async def ensure_pool(skill_id: str, request: Request):
 
 
 @app.get("/api/pool-stats/{skill_id}")
-async def get_pool_stats(skill_id: str):
+async def get_pool_stats(skill_id: str, request: Request):
     """Get pool statistics for a skill."""
+    require_admin(request)
     if not content_service:
         raise HTTPException(status_code=503, detail="Content service not initialized")
     stats = content_service.get_pool_stats(skill_id)

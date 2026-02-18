@@ -56,7 +56,8 @@ Description: Automatically processes all conversation files sequentially.
 How It Works:
 1. For each conversation file:
    a. Starts a new session via HTTP POST /session/start
-   b. Connects to WebSocket /ws/feed?token=<jwt_token>
+   b. Exchanges JWT for one-time stream code via /auth/stream-code?purpose=feed
+   c. Connects to WebSocket /ws/feed?code=<one_time_code>
    c. Processes all turns from the file
    d. Sends user and tutor transcripts via WebSocket
    e. Ends the session via HTTP POST /session/end
@@ -87,7 +88,8 @@ Description: Interactive/manual mode where you control user responses.
 How It Works:
 1. For each conversation file:
    a. Starts a new session via HTTP POST /session/start
-   b. Connects to WebSocket /ws/feed?token=<jwt_token>
+   b. Exchanges JWT for one-time stream code via /auth/stream-code?purpose=feed
+   c. Connects to WebSocket /ws/feed?code=<one_time_code>
    c. For each turn:
       - Shows Adam's response (from JSON file)
       - Shows suggested user text (from JSON file)
@@ -372,4 +374,3 @@ TIPS:
 - Each file = new session, so you can test multi-session memory continuity
 - Check logs for detailed memory operation information
 - Memory files are saved both to Pinecone (vector DB) and local JSON files
-

@@ -1,0 +1,270 @@
+{
+  "created_at": "2026-02-15T13:58:32.231019+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.018903732299804688,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 101,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.0067250728607177734,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": false,
+      "code": 0,
+      "elapsed_s": 0.0,
+      "body": {
+        "error": "<urlopen error [Errno 61] Connection refused>"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.07370519638061523,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": true,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 0.06314682960510254,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 101
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 0.9456560611724854,
+        "count": 4,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 12.0,
+        "min_question_count": 4
+      }
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "start_code": 200,
+        "start_elapsed_s": 1.0879039764404297,
+        "start_body": {
+          "assessment_id": "assess_a4eb1bd746e0",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "A sunflower plant uses sunlight to grow. A bee visits the sunflower to collect nectar. Later, the bee flies back to its hive, using energy to move its wings.\n\nWhich of the following statements accurately describe energy transformations occurring in this scenario? Select all that apply. [[\u2603 radio 1]]",
+              "images": {},
+              "widgets": {
+                "radio 1": {
+                  "alignment": "default",
+                  "graded": true,
+                  "options": {
+                    "choices": [
+                      {
+                        "content": "The sunflower converts light energy from the sun into chemical energy stored in its tissues.",
+                        "correct": true,
+                        "misconception": null
+                      },
+                      {
+                        "content": "The bee creates new energy when it flies, as it needs a lot of power for movement.",
+                        "correct": false,
+                        "misconception": "Believes living organisms can create energy, violating the law of conservation of energy."
+                      },
+                      {
+                        "content": "The bee transforms chemical energy from the nectar into mechanical energy for flight and heat energy.",
+                        "correct": true,
+                        "misconception": null
+                      },
+                      {
+                        "content": "The sunflower directly absorbs chemical energy from the soil to grow.",
+                        "correct": false,
+                        "misconception": "Confuses nutrient absorption from soil with the primary source of energy for plant growth (photosynthesis)."
+                      }
+                    ],
+                    "countChoices": false,
+                    "deselectEnabled": false,
+                    "displayCount": null,
+                    "hasNoneOfTheAbove": false,
+                    "multipleSelect": true,
+                    "numCorrect": 2,
+                    "randomize": false
+                  },
+                  "static": false,
+                  "type": "radio",
+                  "version": {
+                    "major": 2,
+                    "minor": 0
+                  }
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "Think about where the sunflower gets its initial energy and in what form. How do living things like plants capture energy?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Plants are producers; they convert light energy into chemical energy through photosynthesis. Animals are consumers; they obtain chemical energy by eating other organisms, which they then convert into other forms like mechanical energy for movement or heat.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Consider the journey of energy: The sun provides light energy, which the sunflower captures. The bee then consumes the sunflower's nectar, which is a form of stored chemical energy. What does the bee do with that chemical energy to fly?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_3c019aaccbb7f162",
+            "dash_metadata": {
+              "dash_question_id": "pool_3c019aaccbb7f162",
+              "skill_ids": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "difficulty": 0.98,
+              "skill_names": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "next": {
+          "code": 200,
+          "elapsed_s": 1.2530949115753174,
+          "completed_early": false,
+          "has_next_question": true,
+          "body": {
+            "completed": false,
+            "question_number": 2,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Imagine a single water molecule's journey through Earth's water cycle. Place the following events in the correct order, starting from its time in the ocean. [[\u2603 sorter 1]]",
+                "images": {},
+                "widgets": {
+                  "sorter 1": {
+                    "type": "sorter",
+                    "options": {
+                      "correct": [
+                        "A water molecule is part of a vast ocean, slowly warmed by the sun.",
+                        "It changes into an invisible gas and rises into the atmosphere.",
+                        "High in the sky, it cools and gathers with other molecules to form a cloud.",
+                        "The molecule falls back to Earth as a liquid droplet, landing on a mountain.",
+                        "It flows down the mountain, joining a stream that feeds into a river.",
+                        "The molecule eventually reaches and becomes part of a large freshwater lake."
+                      ],
+                      "layout": "vertical",
+                      "padding": true
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Consider the initial state described: the molecule is in the ocean. What process allows water to leave a large body of water and enter the atmosphere?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The water cycle involves continuous movement of water. After evaporation (turning into gas) and condensation (forming clouds), what is the next major step where water returns to Earth's surface?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Once the water molecule has fallen as precipitation, it will typically flow over land (runoff) until it collects in a body of water. Think about the path from a mountain to a large, contained freshwater body.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_6b3ad0b79275",
+                "skill_ids": [
+                  "ai_gen_science_us_middle-school-earth-space-science_unit_water-on-earth"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Water on Earth"
+                ],
+                "unit_name": "Water on Earth",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991d092a4789515daff5865"
+              }
+            },
+            "current_difficulty": 0.65
+          }
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 25.0
+      }
+    },
+    "websocket": {
+      "ok": true,
+      "skipped": true,
+      "reason": "HARNESS_SKIP_WEBSOCKET=true"
+    }
+  },
+  "ok": false,
+  "errors": [
+    "service health checks failed"
+  ]
+}

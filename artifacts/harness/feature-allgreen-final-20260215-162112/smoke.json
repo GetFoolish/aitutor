@@ -1,0 +1,3243 @@
+{
+  "created_at": "2026-02-15T16:21:12.548743+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.01981067657470703,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 0,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.010543107986450195,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.010504007339477539,
+      "body": {
+        "status": "healthy",
+        "service": "TeachingAssistant"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.06441617012023926,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": true,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 29.663657903671265,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 110,
+          "stats": {
+            "courses": 13,
+            "units": 101,
+            "lessons": 512
+          }
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 1.5813250541687012,
+        "count": 5,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 12.0,
+        "min_question_count": 5
+      }
+    },
+    "adaptive_start_all_subjects": {
+      "ok": false,
+      "adaptive_start_timeout_s": 12.0,
+      "catalog_fetch": {
+        "code": 200,
+        "elapsed_s": 0.04771304130554199,
+        "count": 42,
+        "fallback_used": false
+      },
+      "subjects_checked_count": 42,
+      "subjects_checked": [
+        "Science",
+        "History",
+        "English",
+        "Geography",
+        "Python",
+        "Music Theory",
+        "Cooking",
+        "Spanish",
+        "Art",
+        "Economics",
+        "Philosophy",
+        "Astronomy",
+        "World War 2",
+        "Russian",
+        "Korean",
+        "Ancient Greek",
+        "Swahili",
+        "Hindi",
+        "Architecture",
+        "Thai",
+        "Pottery",
+        "Farsi",
+        "Nutrition",
+        "Filmmaking",
+        "World War 1",
+        "Physics",
+        "Python Programming",
+        "Biology",
+        "Astrophysics And Cosmology Studies For Advanced Le",
+        "Geometry",
+        "Zzzz Recursion Probe 1771093263",
+        "Zzzz Pretest Probe 1771097854",
+        "Science Math History English Geography Python",
+        "Zzzz Pretest Probe 1771100688",
+        "Math",
+        "Zzzz Pretest Probe 1771160157",
+        "Zzzz Pretest Probe 1771165481",
+        "Zzzz Pretest Probe 1771166452",
+        "Zzzz Pretest Probe 1771168832",
+        "Zzzz Pretest Probe 1771169457",
+        "Zzzz Pretest Probe 1771170539",
+        "Zzzz Pretest Probe 1771170669"
+      ],
+      "results": [
+        {
+          "subject": "Science",
+          "code": 200,
+          "elapsed_s": 0.986746072769165,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_31341e11f0b6",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A plant uses light energy to make its own food through a process called photosynthesis. During this process, some light energy is converted into chemical energy stored in the plant's food (like glucose), and some energy is released as heat into the environment.\n\nIf $C$ represents the chemical energy stored in the plant's food and $H$ represents the energy released as heat, write an expression that shows the total amount of light energy absorbed by the plant, assuming no other forms of energy are involved.\n\nTotal light energy absorbed = [[\u2603 expression 1]]",
+                "images": {},
+                "widgets": {
+                  "expression 1": {
+                    "type": "expression",
+                    "options": {
+                      "buttonsVisible": "never",
+                      "functions": [
+                        "f",
+                        "g",
+                        "h"
+                      ],
+                      "times": false,
+                      "answerForms": [
+                        {
+                          "value": "C+H",
+                          "form": true,
+                          "simplify": false,
+                          "considered": "correct"
+                        },
+                        {
+                          "value": "H+C",
+                          "form": true,
+                          "simplify": false,
+                          "considered": "correct"
+                        }
+                      ],
+                      "buttonSets": [
+                        "basic"
+                      ]
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the Law of Conservation of Energy. If energy goes into the plant, where does it all end up?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The Law of Conservation of Energy states that energy cannot be created or destroyed, only transformed from one form to another. This means the total energy absorbed by the plant must be equal to the sum of all the energy forms it produces or releases.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The plant absorbs light energy. This absorbed light energy is transformed into two main forms: chemical energy (represented by $C$) and heat energy (represented by $H$). To find the total light energy absorbed, you need to combine these two forms of energy.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "question_id": "pool_7f6cbc0abcbff881",
+              "dash_metadata": {
+                "dash_question_id": "pool_7f6cbc0abcbff881",
+                "skill_ids": [
+                  "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+                ],
+                "difficulty": 0.3291666666666666,
+                "skill_names": [
+                  "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+                ],
+                "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+                "lesson_name": "Practice",
+                "ai_generated": true
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "History",
+          "code": 503,
+          "elapsed_s": 5.859508991241455,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "English",
+          "code": 200,
+          "elapsed_s": 1.0995447635650635,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_31638c737fcd",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Read the sentence below. Which verb correctly completes the sentence?\n\nThe team of scientists, who have been working for months on the project, [[\u2603 radio 1]] ready to present their findings.",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "is",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "are",
+                          "correct": false,
+                          "misconception": "Agrees with the plural noun 'scientists' instead of the singular subject 'team'."
+                        },
+                        {
+                          "content": "were",
+                          "correct": false,
+                          "misconception": "Agrees with 'scientists' and uses an incorrect tense for the context."
+                        },
+                        {
+                          "content": "be",
+                          "correct": false,
+                          "misconception": "Uses an incorrect verb form that does not fit the sentence structure."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "To choose the correct verb, you need to identify the main subject of the sentence. What noun is performing the action or being described?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The verb must agree in number with the subject of the sentence. In the sentence, \"The team of scientists...\", the main subject is \"team,\" which is a singular collective noun. The phrase \"of scientists\" describes the team but is not the subject itself.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Since \"team\" is singular, the verb that completes the sentence must also be singular. Think about the singular present tense forms of the verb \"to be.\" Which one matches a singular subject like \"team\"?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "question_id": "pool_5bb1a65d526851c1",
+              "dash_metadata": {
+                "dash_question_id": "pool_5bb1a65d526851c1",
+                "skill_ids": [
+                  "ai_gen_english_us_6th-8th-grade-ela_unit_grammar-sentence-structure"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Grammar and Sentence Structure"
+                ],
+                "unit_name": "Grammar and Sentence Structure",
+                "lesson_name": "Practice",
+                "ai_generated": true
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Geography",
+          "code": 503,
+          "elapsed_s": 5.931122779846191,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Python",
+          "code": 200,
+          "elapsed_s": 2.3998310565948486,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_08040dee2722",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nA Python program needs to ask a user how many apples they want. The user types '5'. Which line of code correctly stores this input as a **number** that can be used for mathematical calculations, like adding 2 to it? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "`num_apples = int(input(\"How many apples? \"))`",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "`num_apples = input(\"How many apples? \")`",
+                          "correct": false,
+                          "misconception": "Forgets to convert the string input from `input()` into a number type."
+                        },
+                        {
+                          "content": "`int(num_apples) = input(\"How many apples? \")`",
+                          "correct": false,
+                          "misconception": "Incorrect syntax for assigning the result of type conversion to a variable."
+                        },
+                        {
+                          "content": "`num_apples = str(input(\"How many apples? \"))`",
+                          "correct": false,
+                          "misconception": "Converts the input (already a string) back to a string, not a number."
+                        }
+                      ],
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/13aa5cfd37d8fa25.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for User Input and Type Conversion",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Remember, the `input()` function in Python always returns data as a specific type. What type is that, and how does it behave with mathematical operations?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The `input()` function always returns a string. To perform mathematical calculations, you must convert this string into an integer (using `int()`) or a floating-point number (using `float()`).",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "To get the user's input, you'll use `input(\"How many apples? \")`. Since this returns a string, you need to wrap it with `int()` to convert it to an integer before assigning it to the `num_apples` variable.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_43363009631a",
+                "skill_ids": [
+                  "ai_gen_python_us_6th-8th-grade-python-core-syntax-data-types_unit_user-input-type-conversion"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "User Input and Type Conversion"
+                ],
+                "unit_name": "User Input and Type Conversion",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991eab5430fe72df0ed091b"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Music Theory",
+          "code": 200,
+          "elapsed_s": 4.6855621337890625,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_9bda19c00251",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "In music, the distance between two notes is called an interval. Which of the following describes the interval between the notes C and G? [[\u2603 dropdown 1]]",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "Perfect Fifth",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Major Third",
+                          "correct": false,
+                          "misconception": "Students may confuse intervals; a major third is C to E."
+                        },
+                        {
+                          "content": "Minor Second",
+                          "correct": false,
+                          "misconception": "Students may miscount the notes; a minor second is C to C# or D\u266d."
+                        },
+                        {
+                          "content": "Major Seventh",
+                          "correct": false,
+                          "misconception": "Students may miscount the notes; a major seventh is C to B."
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "How many notes are between C and G when counting up the musical alphabet (C, D, E, F, G)? Remember to include both C and G in your count.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The interval between C and G is a fifth because there are five notes between them. Now, consider whether it's a perfect, major, or minor fifth. A perfect fifth is a very stable and consonant-sounding interval.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Counting from C to G, we have C, D, E, F, G, which is five notes. This makes it a fifth. Furthermore, the interval from C to G is a 'Perfect Fifth'.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_8c0560076ba2",
+                "skill_ids": [
+                  "assessment_music_theory_grade_7_20998"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_8c0560076ba2",
+                "skill_names": [
+                  "Music Theory for Grade 7"
+                ],
+                "unit_id": "assessment_music_theory_grade_7_20998",
+                "lesson_id": "assessment_music_theory_grade_7_20998",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "6991f2ac21c9df089c482a7d",
+                "unit_name": "Music Theory for Grade 7",
+                "lesson_name": "Music Theory for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Cooking",
+          "code": 503,
+          "elapsed_s": 5.841179132461548,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Spanish",
+          "code": 200,
+          "elapsed_s": 2.5079901218414307,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_6e50650cb676",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "My name is Ana. I have a brother named Luis. Our mother is named Elena. Elena has a sister whose name is Laura. Laura has a son named Miguel. In Spanish, what is Miguel's relationship to Ana? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "primo",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "hermano",
+                          "correct": false,
+                          "misconception": "Confusing a cousin with a sibling, or misunderstanding the word 'son'."
+                        },
+                        {
+                          "content": "t\u00edo",
+                          "correct": false,
+                          "misconception": "Confusing the aunt's son with the aunt herself or a male relative of the parental generation."
+                        },
+                        {
+                          "content": "sobrino",
+                          "correct": false,
+                          "misconception": "Incorrectly assuming Miguel is the son of Ana's sibling, or confusing generations."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "First, consider Laura's relationship to Ana. Once you know that, think about the relationship between children of sisters.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "In Spanish, your mother's sister is your `t\u00eda` (aunt). The son of your `t\u00eda` (aunt) is your `primo` (male cousin) or `prima` (female cousin).",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Ana's mother is Elena. Elena's sister is Laura, which means Laura is Ana's aunt (`t\u00eda`). Miguel is Laura's son. Therefore, Miguel is Ana's...",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_cc9000f56d23",
+                "skill_ids": [
+                  "ai_gen_spanish_us_middle-school-spanish-novice-foundations_unit_mi-familia-y-mis-amigos"
+                ],
+                "difficulty": 0.42,
+                "skill_names": [
+                  "Mi Familia y Mis Amigos"
+                ],
+                "unit_name": "Mi Familia y Mis Amigos",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991ea70430fe72df0ed0853"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Art",
+          "code": 200,
+          "elapsed_s": 5.001315116882324,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_26f8da59b376",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Maya wants to create a symmetrical design. Which of the following is the BEST technique to ensure her artwork has symmetry? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Using a ruler to measure equal distances from a central line.",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Mixing many different colors to make the artwork visually interesting.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Focuses on color mixing, not symmetry."
+                        },
+                        {
+                          "content": "Drawing different shapes randomly across the page.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Random shapes do not create symmetry."
+                        },
+                        {
+                          "content": "Using only one type of art material, like paint or crayons.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Material choice does not guarantee symmetry."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What does 'symmetry' mean in art? Think about how things are arranged on either side of a central point or line.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Symmetry means that one side mirrors the other. Measuring ensures that both sides are balanced and equal.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Using a ruler to measure equal distances from a central line will create a mirror image on both sides, which is the definition of symmetry.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_e2ccc7075531",
+                "skill_ids": [
+                  "assessment_art_grade_7_34046"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_e2ccc7075531",
+                "skill_names": [
+                  "Art for Grade 7"
+                ],
+                "unit_id": "assessment_art_grade_7_34046",
+                "lesson_id": "assessment_art_grade_7_34046",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "6991f2ba21c9df089c482ab9",
+                "unit_name": "Art for Grade 7",
+                "lesson_name": "Art for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Economics",
+          "code": 503,
+          "elapsed_s": 5.0850231647491455,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Philosophy",
+          "code": 200,
+          "elapsed_s": 1.8373167514801025,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_9c5c55718f0a",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Maria sees a classmate cheating on a test. She knows it's wrong, but the classmate is her friend. Which action shows Maria prioritizing what is generally considered the ethically correct choice? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Ignoring the cheating to avoid hurting her friend's feelings.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Prioritizes personal feelings over ethical principles."
+                        },
+                        {
+                          "content": "Telling the teacher about the cheating, even though it might upset her friend.",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Helping her friend cheat so they both get a good grade.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Actively participates in the unethical behavior."
+                        },
+                        {
+                          "content": "Asking other students what they think she should do.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Defers responsibility instead of making a moral decision."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What action focuses on fairness and honesty, even if it's difficult?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Ethical choices often involve doing what is right, even when it's uncomfortable or goes against personal relationships. Consider which action upholds the rules and values of honesty.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Telling the teacher is the most ethical choice because it upholds the principle of academic honesty, even though it might be hard on the friendship.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_8af863271e3c",
+                "skill_ids": [
+                  "ai_gen_philosophy_us_6th-8th-grade-philosophy-exploring-big-questions_unit_right-and-wrong"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Right and Wrong: Making Ethical Choices"
+                ],
+                "unit_name": "Right and Wrong: Making Ethical Choices",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f21421c9df089c48280e"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Astronomy",
+          "code": 503,
+          "elapsed_s": 4.33759617805481,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "World War 2",
+          "code": 200,
+          "elapsed_s": 3.673466920852661,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_79d8de458972",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "The Allied forces began to turn the tide against the Axis powers in World War II through a series of important battles and operations. Place the following events in the correct chronological order, from earliest to latest. \n\n[[\u2603 sorter 1]]",
+                "images": {},
+                "widgets": {
+                  "sorter 1": {
+                    "type": "sorter",
+                    "options": {
+                      "correct": [
+                        "Battle of El Alamein",
+                        "Operation Torch",
+                        "Soviet counter-offensive at Stalingrad",
+                        "Invasion of Sicily"
+                      ],
+                      "layout": "vertical",
+                      "padding": true
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about which parts of the world saw major Allied victories first. Did the Allies start winning in North Africa, on the Eastern Front, or in Southern Europe earlier?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The Allies first gained a strong foothold and pushed back the Axis in North Africa. Two key events there were the Battle of El Alamein and Operation Torch. Which of these happened first, and when did the major Soviet push at Stalingrad begin?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The Battle of El Alamein was a major British victory in Egypt in October-November 1942. Operation Torch, the Allied landings in Morocco and Algeria, happened in November 1942. Around the same time, the Soviet counter-offensive at Stalingrad began in November 1942. After these successes, the Allies invaded Sicily in July 1943 to begin their push into Italy.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_5a3cc4b0d859",
+                "skill_ids": [
+                  "ai_gen_world-war-2_us_middle-school-history-ww2-events_unit_turning-tide-battles-europe-north-africa"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Turning the Tide: Key Battles in Europe and North Africa"
+                ],
+                "unit_name": "Turning the Tide: Key Battles in Europe and North Africa",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f14821c9df089c482585"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Russian",
+          "code": 200,
+          "elapsed_s": 5.1589789390563965,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_4ce8615c172c",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following sentences uses the correct form of the Russian word for 'to be' (\u0431\u044b\u0442\u044c) in the past tense, when referring to a female student?\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "\u041e\u043d\u0430 \u0431\u044b\u043b \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043a\u0430.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Uses the masculine past tense form '\u0431\u044b\u043b' instead of the feminine form."
+                        },
+                        {
+                          "content": "\u041e\u043d\u0430 \u0431\u044b\u043b\u0430 \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043a\u0430.",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null
+                        },
+                        {
+                          "content": "\u041e\u043d\u0430 \u0431\u044b\u043b\u0438 \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043a\u0430.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Uses the plural past tense form '\u0431\u044b\u043b\u0438' instead of the singular feminine form."
+                        },
+                        {
+                          "content": "\u041e\u043d\u0430 \u0431\u0443\u0434\u0435\u0442 \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043a\u0430.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Uses the future tense form '\u0431\u0443\u0434\u0435\u0442' instead of the past tense."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Remember that in Russian, the past tense of 'to be' (\u0431\u044b\u0442\u044c) changes depending on the gender of the subject. Which form is used for female subjects?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The past tense forms of '\u0431\u044b\u0442\u044c' are: \u0431\u044b\u043b (masculine), \u0431\u044b\u043b\u0430 (feminine), \u0431\u044b\u043b\u043e (neuter), and \u0431\u044b\u043b\u0438 (plural). Consider the gender of the subject '\u043e\u043d\u0430' (she).",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Since '\u043e\u043d\u0430' (she) is feminine, the correct form of '\u0431\u044b\u0442\u044c' in the past tense is '\u0431\u044b\u043b\u0430'. The correct sentence is '\u041e\u043d\u0430 \u0431\u044b\u043b\u0430 \u0441\u0442\u0443\u0434\u0435\u043d\u0442\u043a\u0430.'",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_f2ad67313491",
+                "skill_ids": [
+                  "assessment_russian_grade_7_53935"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_f2ad67313491",
+                "skill_names": [
+                  "Russian for Grade 7"
+                ],
+                "unit_id": "assessment_russian_grade_7_53935",
+                "lesson_id": "assessment_russian_grade_7_53935",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "6991f2ce21c9df089c482b2b",
+                "unit_name": "Russian for Grade 7",
+                "lesson_name": "Russian for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Korean",
+          "code": 200,
+          "elapsed_s": 6.650418281555176,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_e4ea45dd95c8",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following is the correct way to say \"Hello\" in Korean (formal)? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Annyeong",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Annyeonghaseyo",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Yeoboseyo",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Bogo shipeo",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about different levels of politeness in Korean.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "\"Annyeonghaseyo\" is a common and polite greeting.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "\"Annyeong\" is informal, \"Yeoboseyo\" is for answering the phone, and \"Bogo shipeo\" means \"I miss you.\"",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_2e0e87d43fc7",
+                "skill_ids": [
+                  "assessment_korean_grade_7_59175"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_2e0e87d43fc7",
+                "skill_names": [
+                  "Korean for Grade 7"
+                ],
+                "unit_id": "assessment_korean_grade_7_59175",
+                "lesson_id": "assessment_korean_grade_7_59175",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "6991f2d421c9df089c482b73",
+                "unit_name": "Korean for Grade 7",
+                "lesson_name": "Korean for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Ancient Greek",
+          "code": 200,
+          "elapsed_s": 5.112009048461914,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_08e58d6db076",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "In Ancient Greek, the word '\u03c6\u03af\u03bb\u03bf\u03c2' (philos) means friend. Which of the following sentences correctly uses '\u03c6\u03af\u03bb\u03bf\u03c2' to describe someone as a friend? Choose the best option: [[\u2603 dropdown 1]]",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "\u1f49 \u1f00\u03bd\u03ae\u03c1 \u03c6\u03af\u03bb\u03bf\u03c2 \u1f10\u03c3\u03c4\u03af\u03bd. (The man is a friend.)",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "\u1f29 \u03b3\u03c5\u03bd\u03ae \u03c6\u03af\u03bb\u03bf\u03c2 \u1f10\u03c3\u03c4\u03af\u03bd. (The woman is friend.)",
+                          "correct": false,
+                          "misconception": "Incorrect gender agreement; \u03c6\u03af\u03bb\u03bf\u03c2 is masculine, but \u03b3\u03c5\u03bd\u03ae (woman) is feminine."
+                        },
+                        {
+                          "content": "\u03a4\u1f78 \u03c0\u03b1\u03b9\u03b4\u03af\u03bf\u03bd \u03c6\u03af\u03bb\u03bf\u03c2 \u1f10\u03c3\u03c4\u03af\u03bd. (The child is friend.)",
+                          "correct": false,
+                          "misconception": "Incorrect gender agreement; \u03c6\u03af\u03bb\u03bf\u03c2 is masculine, but \u03c0\u03b1\u03b9\u03b4\u03af\u03bf\u03bd (child) is neuter."
+                        },
+                        {
+                          "content": "\u039f\u1f31 \u1f04\u03bd\u03b8\u03c1\u03c9\u03c0\u03bf\u03b9 \u03c6\u03af\u03bb\u03bf\u03c2 \u03b5\u1f30\u03c3\u03af\u03bd. (The people are friend.)",
+                          "correct": false,
+                          "misconception": "Incorrect number agreement; \u03c6\u03af\u03bb\u03bf\u03c2 is singular, but \u1f04\u03bd\u03b8\u03c1\u03c9\u03c0\u03bf\u03b9 (people) is plural."
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Remember that in Ancient Greek, nouns and adjectives must agree in gender, number, and case. What gender is '\u03c6\u03af\u03bb\u03bf\u03c2'?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The word '\u03c6\u03af\u03bb\u03bf\u03c2' is masculine singular. To correctly describe someone as a friend, the subject must also be masculine and singular.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Look for the sentence where the subject is masculine singular, matching '\u03c6\u03af\u03bb\u03bf\u03c2'. The correct sentence is: \u1f49 \u1f00\u03bd\u03ae\u03c1 \u03c6\u03af\u03bb\u03bf\u03c2 \u1f10\u03c3\u03c4\u03af\u03bd. (The man is a friend.)",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_57e13d63b8ed",
+                "skill_ids": [
+                  "assessment_ancient_greek_grade_7_65825"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_57e13d63b8ed",
+                "skill_names": [
+                  "Ancient Greek for Grade 7"
+                ],
+                "unit_id": "assessment_ancient_greek_grade_7_65825",
+                "lesson_id": "assessment_ancient_greek_grade_7_65825",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "6991f2d921c9df089c482bb5",
+                "unit_name": "Ancient Greek for Grade 7",
+                "lesson_name": "Ancient Greek for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Swahili",
+          "code": 200,
+          "elapsed_s": 6.02095890045166,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_7151259d56eb",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following is a common Swahili greeting meaning 'How are you?' [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Samahani",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Habari?",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Asante",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Kwaheri",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about common greetings you might hear in Swahili.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "'Habari?' is a versatile greeting used to ask about someone's well-being.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "'Habari?' directly translates to 'News?' but is used as 'How are you?'",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_0e45a0b8604c",
+                "skill_ids": [
+                  "assessment_swahili_grade_7_70827"
+                ],
+                "difficulty": 0.57,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_0e45a0b8604c",
+                "skill_names": [
+                  "Swahili for Grade 7"
+                ],
+                "unit_id": "assessment_swahili_grade_7_70827",
+                "lesson_id": "assessment_swahili_grade_7_74257",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "6991f18c21c9df089c48262c",
+                "unit_name": "Swahili for Grade 7",
+                "lesson_name": "Swahili for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Hindi",
+          "code": 503,
+          "elapsed_s": 6.039202928543091,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Architecture",
+          "code": 200,
+          "elapsed_s": 1.563917875289917,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_4a6ac4fefd84",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A new community center needs a large hall for sports and events. The architects want to design a roof that spans a very wide area (over 50 meters) without any support columns in the middle of the hall. This allows for maximum open space.\n\nWhich combination of material and structural approach would be most effective for building this kind of roof? [[\u2603 radio 1]]\n\n",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Steel used in a truss system",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Stone blocks forming a series of arches",
+                          "correct": false,
+                          "misconception": "Believes heavy materials are always best for strength; overlooks tension and weight."
+                        },
+                        {
+                          "content": "Large wooden beams supported by columns along the edges",
+                          "correct": false,
+                          "misconception": "Overestimates wood's span capabilities; ignores need for advanced structural systems for wide spans."
+                        },
+                        {
+                          "content": "Unreinforced concrete in a flat slab design",
+                          "correct": false,
+                          "misconception": "Confuses unreinforced concrete's compressive strength with overall suitability for tension/span."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "When designing a roof for a very wide span without central supports, what main forces (pushing down or pulling apart) will the roof structure need to resist? Which material properties are most important for resisting these forces over a long distance?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "For long spans, materials need to be strong in both compression (resisting pushing forces) and tension (resisting pulling or stretching forces). They also need to be relatively light to avoid excessive self-weight. Structural systems like trusses are very efficient because they distribute forces through a network of connected elements, making the most of a material's strength.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Stone and unreinforced concrete are very heavy and weak in tension, making them unsuitable for such a wide, unsupported span without cracking or sagging significantly. Large solid wooden beams would also be extremely heavy and prone to sagging over 50 meters. Steel, however, has excellent strength in both compression and tension, and a truss system effectively utilizes these properties to create a strong, relatively lightweight structure that can span great distances.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_645f78473670",
+                "skill_ids": [
+                  "ai_gen_architecture_us_6th-8th-grade-architecture-foundations-built-environment_unit_building-materials-structures"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Building Blocks: Materials and Structures"
+                ],
+                "unit_name": "Building Blocks: Materials and Structures",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991e68a430fe72df0ed0337"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Thai",
+          "code": 200,
+          "elapsed_s": 7.33170485496521,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_6bfb98327ee3",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "\u0e04\u0e33\u0e43\u0e14\u0e15\u0e48\u0e2d\u0e44\u0e1b\u0e19\u0e35\u0e49\u0e40\u0e1b\u0e47\u0e19\u0e2a\u0e23\u0e30\u0e40\u0e2a\u0e35\u0e22\u0e07\u0e2a\u0e31\u0e49\u0e19 [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "\u0e2d\u0e32",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "\u0e2d\u0e34",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "\u0e2d\u0e39",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "\u0e40\u0e2d",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "\u0e2a\u0e23\u0e30\u0e40\u0e2a\u0e35\u0e22\u0e07\u0e2a\u0e31\u0e49\u0e19\u0e04\u0e37\u0e2d\u0e2a\u0e23\u0e30\u0e17\u0e35\u0e48\u0e2d\u0e2d\u0e01\u0e40\u0e2a\u0e35\u0e22\u0e07\u0e2a\u0e31\u0e49\u0e19\u0e46",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "\u0e25\u0e2d\u0e07\u0e2d\u0e2d\u0e01\u0e40\u0e2a\u0e35\u0e22\u0e07\u0e41\u0e15\u0e48\u0e25\u0e30\u0e04\u0e33\u0e14\u0e39 \u0e41\u0e25\u0e49\u0e27\u0e2a\u0e31\u0e07\u0e40\u0e01\u0e15\u0e27\u0e48\u0e32\u0e04\u0e33\u0e44\u0e2b\u0e19\u0e2d\u0e2d\u0e01\u0e40\u0e2a\u0e35\u0e22\u0e07\u0e2a\u0e31\u0e49\u0e19\u0e17\u0e35\u0e48\u0e2a\u0e38\u0e14",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "\u0e04\u0e33\u0e27\u0e48\u0e32 \"\u0e2d\u0e34\" \u0e2d\u0e2d\u0e01\u0e40\u0e2a\u0e35\u0e22\u0e07\u0e2a\u0e31\u0e49\u0e19\u0e01\u0e27\u0e48\u0e32\u0e04\u0e33\u0e2d\u0e37\u0e48\u0e19\u0e46",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_0cb30e142638",
+                "skill_ids": [
+                  "assessment_thai_grade_7_84550"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_0cb30e142638",
+                "skill_names": [
+                  "Thai for Grade 7"
+                ],
+                "unit_id": "assessment_thai_grade_7_84550",
+                "lesson_id": "assessment_thai_grade_7_warmstart",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "6991f06621c9df089c482263",
+                "unit_name": "Thai for Grade 7",
+                "lesson_name": "Thai for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Pottery",
+          "code": 200,
+          "elapsed_s": 5.028057098388672,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_35c67ea178d5",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Maria is making a ceramic bowl. She wants the bowl to have a smooth, even surface. Which of these pottery techniques is BEST for achieving a smooth surface? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Scoring and slipping",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "This joins clay, doesn't smooth it."
+                        },
+                        {
+                          "content": "Burnishing",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Pinching",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Pinching shapes, not smoothing."
+                        },
+                        {
+                          "content": "Coiling",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Coiling builds, doesn't smooth."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What technique focuses on polishing the clay surface to make it shiny and smooth?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Burnishing involves rubbing the surface of leather-hard clay with a smooth, hard object to compress the clay particles and create a polished surface.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Think about which method physically smooths the clay surface by compressing it. Scoring and slipping joins clay. Pinching and coiling build form, but don't focus on smoothness. Burnishing is the answer.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_c27c0fe06f99",
+                "skill_ids": [
+                  "assessment_pottery_grade_7_91796"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_c27c0fe06f99",
+                "skill_names": [
+                  "Pottery for Grade 7"
+                ],
+                "unit_id": "assessment_pottery_grade_7_91796",
+                "lesson_id": "assessment_pottery_grade_7_91796",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "6991f2f321c9df089c482ca0",
+                "unit_name": "Pottery for Grade 7",
+                "lesson_name": "Pottery for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Farsi",
+          "code": 200,
+          "elapsed_s": 6.2090160846710205,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_6d09bc90630c",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of these scripts is used to write the Farsi language? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "Cyrillic",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Perso-Arabic",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Greek",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Latin",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the writing systems used in the Middle East and Central Asia.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The Perso-Arabic script is an adaptation of the Arabic alphabet used for writing several languages, including Farsi.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The correct answer is Perso-Arabic.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_6b7e1b8d4561",
+                "skill_ids": [
+                  "assessment_farsi_grade_7_96736"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_6b7e1b8d4561",
+                "skill_names": [
+                  "Farsi for Grade 7"
+                ],
+                "unit_id": "assessment_farsi_grade_7_96736",
+                "lesson_id": "assessment_farsi_grade_7_96736",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "6991f2fa21c9df089c482cc1",
+                "unit_name": "Farsi for Grade 7",
+                "lesson_name": "Farsi for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Nutrition",
+          "code": 503,
+          "elapsed_s": 6.701330184936523,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Filmmaking",
+          "code": 200,
+          "elapsed_s": 2.6489038467407227,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_51b9b6e6e86d",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nA director wants to film a scene where a character discovers a tiny, important clue on a table. The director wants the audience to clearly see the clue and understand its significance, even if it's small. Which type of camera shot would be best to achieve this? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Close-up shot",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null,
+                          "clue": "A close-up shot focuses tightly on a subject, making small details clear and emphasizing their importance."
+                        },
+                        {
+                          "content": "Wide shot",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Believes wide shots emphasize small details.",
+                          "clue": "A wide shot shows a broad view of the scene and location, making small objects hard to see."
+                        },
+                        {
+                          "content": "Medium shot",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Thinks a medium shot can highlight tiny objects.",
+                          "clue": "A medium shot typically shows a character from the waist up, which would not make a tiny clue stand out."
+                        },
+                        {
+                          "content": "Long shot",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Confuses a long shot with a shot for small objects.",
+                          "clue": "A long shot captures the subject from a distance, showing the full body or a large area, which would make a tiny clue unnoticeable."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/f4c33f72fff22263.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Camera & Cinematography Basics",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What is the main goal of the director in this scene? Is it to show the entire room and setting, or to draw the audience's attention to something very specific and small?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Different camera shots are used for different purposes. A wide shot shows the overall environment, a medium shot focuses on a character from the waist up (good for dialogue), and a close-up shot frames a subject tightly, like a face or a small object, to show detail and emotion.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The director specifically wants the audience to clearly see a 'tiny, important clue' and understand its significance. To make a small object stand out and convey its importance, the camera needs to be positioned very close to it, making it fill a significant portion of the screen.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_1c91e4bc33d3",
+                "skill_ids": [
+                  "ai_gen_filmmaking_us_6th-8th-grade-filmmaking-introduction-to-production_unit_camera-cinematography-basics"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Camera & Cinematography Basics"
+                ],
+                "unit_name": "Camera & Cinematography Basics",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991e458430fe72df0ecfc0f"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "World War 1",
+          "code": 200,
+          "elapsed_s": 4.871808052062988,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_55f26ddece49",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of these was a major cause of World War I? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "The assassination of Archduke Franz Ferdinand of Austria-Hungary.",
+                          "correct": true,
+                          "isNoneOfTheAbove": false,
+                          "misconception": null
+                        },
+                        {
+                          "content": "The Boston Tea Party.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Confuses WWI with the American Revolution."
+                        },
+                        {
+                          "content": "The invention of the printing press.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Relates to the Renaissance, not WWI."
+                        },
+                        {
+                          "content": "The discovery of gold in California.",
+                          "correct": false,
+                          "isNoneOfTheAbove": false,
+                          "misconception": "Connects to westward expansion, not WWI."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the event that triggered the start of World War I. What specific action led to declarations of war?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The assassination of a key political figure created tension between countries. This event acted as the spark that ignited the war.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Archduke Franz Ferdinand's death led Austria-Hungary to declare war on Serbia, triggering alliances and escalating into a global conflict.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_a6a1d35bc25b",
+                "skill_ids": [
+                  "assessment_world_war_1_grade_7_12402"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_a6a1d35bc25b",
+                "skill_names": [
+                  "World War 1 for Grade 7"
+                ],
+                "unit_id": "assessment_world_war_1_grade_7_12402",
+                "lesson_id": "assessment_world_war_1_grade_7_12402",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "6991f30821c9df089c482d3e",
+                "unit_name": "World War 1 for Grade 7",
+                "lesson_name": "World War 1 for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Physics",
+          "code": 503,
+          "elapsed_s": 4.038954973220825,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Python Programming",
+          "code": 200,
+          "elapsed_s": 2.352185010910034,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_91886654e895",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Imagine you're writing a Python program and you need to display the message 'Hello!' on the screen exactly five times. Instead of writing `print('Hello!')` five separate times, you could use a programming structure that repeats the action for you. This structure is called a [[\u2603 dropdown 1]].",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "loop",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "variable",
+                          "correct": false,
+                          "misconception": "Variables store data, they don't repeat actions."
+                        },
+                        {
+                          "content": "function",
+                          "correct": false,
+                          "misconception": "Functions group code, but don't automatically repeat it."
+                        },
+                        {
+                          "content": "comment",
+                          "correct": false,
+                          "misconception": "Comments explain code, they don't execute or repeat anything."
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what a 'loop' means in everyday language. What does it imply about an action or a process?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "In programming, a 'loop' is a control structure that allows you to execute a block of code repeatedly until a certain condition is met or for a specified number of times. This helps avoid writing the same code many times.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "If you want to perform the same action, like printing a message, multiple times without manually typing it each time, you need a structure that will 'loop' through that action. For example, a `for` loop or a `while` loop are used for this purpose in Python.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_90583d63faef",
+                "skill_ids": [
+                  "ai_gen_python-programming_us_6th-8th-grade-python-core-programming-concepts_unit_loops-repeating-actions"
+                ],
+                "difficulty": 0.35,
+                "skill_names": [
+                  "Loops: Repeating Actions"
+                ],
+                "unit_name": "Loops: Repeating Actions",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991eb97430fe72df0ed1027"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Biology",
+          "code": 503,
+          "elapsed_s": 5.247505187988281,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Astrophysics And Cosmology Studies For Advanced Le",
+          "code": 200,
+          "elapsed_s": 1.7516911029815674,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_25503ef2779a",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "For advanced learners studying astrophysics, which of the following is the MOST accurate and comprehensive way to classify stars, going beyond just color or brightness? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "By their apparent magnitude as seen from Earth.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "Using the Hertzsprung-Russell (H-R) diagram, which plots luminosity against temperature and spectral class.",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Based solely on their surface temperature, from hottest to coolest.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "According to their distance from the Sun.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what properties of stars are most fundamental to understanding their evolution.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The H-R diagram relates a star's luminosity (energy output) to its temperature and spectral type, revealing patterns in stellar populations.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "While color and brightness are useful, the H-R diagram provides a far more complete picture, showing where stars are in their life cycle.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_16a255160483",
+                "skill_ids": [
+                  "ai_gen_astrophysics-and-cosmology-studies-for-advanced-le_us_6th-8th-grade-middle-school-astronomy-and-space-science_unit_the-sun-and-other-stars"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "The Sun and Other Stars"
+                ],
+                "unit_name": "The Sun and Other Stars",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991eb83430fe72df0ed0f44"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Geometry",
+          "code": 503,
+          "elapsed_s": 6.162057876586914,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Zzzz Recursion Probe 1771093263",
+          "code": 200,
+          "elapsed_s": 1.8123188018798828,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_46b7c52bbf77",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "The Fibonacci sequence is a special pattern of numbers where each number is the sum of the two preceding ones. It typically starts with $F_0 = 0$ and $F_1 = 1$. Which of the following statements about the standard Fibonacci sequence are true? Select all that apply.\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "The number $F_2$ (the third term) is $1$.",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "The number $F_5$ (the sixth term) is $5$.",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "The number $10$ is a Fibonacci number.",
+                          "correct": false,
+                          "misconception": "Assumes any integer is a Fibonacci number, or miscalculates terms."
+                        },
+                        {
+                          "content": "To find $F_4$, you add $F_1$ and $F_2$.",
+                          "correct": false,
+                          "misconception": "Misunderstands the recursive definition, using incorrect preceding terms."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": true,
+                      "randomize": false,
+                      "numCorrect": 2
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Remember the rule for generating the Fibonacci sequence. How do you find any number in the sequence if you know the two numbers immediately before it?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The standard Fibonacci sequence starts with $F_0 = 0$ and $F_1 = 1$. For any term $F_n$ where $n > 1$, the rule is $F_n = F_{n-1} + F_{n-2}$. This means the third term ($F_2$) is the sum of the second ($F_1$) and first ($F_0$) terms.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Let's list out the first few terms of the sequence: $F_0 = 0$, $F_1 = 1$. Then, $F_2 = 0+1=1$, $F_3 = 1+1=2$, $F_4 = 1+2=3$, $F_5 = 2+3=5$. Now, use these values and the definition $F_n = F_{n-1} + F_{n-2}$ to evaluate each statement.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_5cb058388c47",
+                "skill_ids": [
+                  "ai_gen_zzzz-recursion-probe-1771093263_us_6th-8th-grade-math-intro-recursive-patterns-fractals_unit_fibonacci-sequence-wonders"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "The Fibonacci Sequence and Its Wonders"
+                ],
+                "unit_name": "The Fibonacci Sequence and Its Wonders",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f1e621c9df089c48271c"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771097854",
+          "code": 503,
+          "elapsed_s": 4.330321788787842,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Science Math History English Geography Python",
+          "code": 200,
+          "elapsed_s": 9.531423807144165,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_ae4e7cdcbbcf",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A scientist is studying how temperature affects the growth of a certain type of bacteria. If the temperature is above 25\u00b0C, the bacteria grows rapidly. Otherwise, the bacteria grows slowly. At 28\u00b0C, the bacteria will grow [[\u2603 dropdown 1]].",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "rapidly",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "slowly",
+                          "correct": false,
+                          "misconception": "Some students may think that 28\u00b0C is not significantly above 25\u00b0C and thus choose 'slowly'."
+                        },
+                        {
+                          "content": "not at all",
+                          "correct": false,
+                          "misconception": "Some students may assume that the bacteria will not grow at all if the temperature isn't exactly optimal."
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What is the key temperature that determines the growth rate of the bacteria?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The bacteria grows rapidly if the temperature is above 25\u00b0C. Otherwise, it grows slowly. This is a conditional statement.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Since 28\u00b0C is greater than 25\u00b0C, the bacteria will grow rapidly.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_60fcb014e991",
+                "skill_ids": [
+                  "ai_gen_science-math-history-english-geography-python_us_intro-python-computational-thinking_unit_making-decisions-conditionals"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Making Decisions with Conditionals"
+                ],
+                "unit_name": "Making Decisions with Conditionals",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f32b21c9df089c482eb3"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771100688",
+          "code": 503,
+          "elapsed_s": 4.410182952880859,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Math",
+          "code": 200,
+          "elapsed_s": 1.2154219150543213,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_8d31ca2fc687",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A baker uses 2 cups of flour and 3 cups of sugar for a cake recipe. Write the ratio of flour to sugar as a fraction.\n\n[[\u2603 expression 1]]",
+                "images": {},
+                "widgets": {
+                  "expression 1": {
+                    "type": "expression",
+                    "options": {
+                      "buttonsVisible": "never",
+                      "functions": [
+                        "f",
+                        "g",
+                        "h"
+                      ],
+                      "times": false,
+                      "answerForms": [
+                        {
+                          "value": "\\frac{2}{3}",
+                          "form": true,
+                          "simplify": false,
+                          "considered": "correct"
+                        }
+                      ],
+                      "buttonSets": [
+                        "basic"
+                      ]
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "A ratio compares two quantities. When you write a ratio as a fraction, which quantity goes in the numerator (top) and which goes in the denominator (bottom)?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "To write a ratio of quantity A to quantity B as a fraction, you place quantity A in the numerator and quantity B in the denominator. So, the fraction will be $\\frac{\\text{Quantity A}}{\\text{Quantity B}}$.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "In this problem, you need to write the ratio of flour to sugar. Flour is the first quantity mentioned, and sugar is the second. This means the number of cups of flour will be the numerator, and the number of cups of sugar will be the denominator.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "question_id": "pool_1d6ac3c2afa8db1f",
+              "dash_metadata": {
+                "dash_question_id": "pool_1d6ac3c2afa8db1f",
+                "skill_ids": [
+                  "ai_gen_math_us_7th-grade-math_unit_ratios-proportional-relationships"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Ratios and Proportional Relationships"
+                ],
+                "unit_name": "Ratios and Proportional Relationships",
+                "lesson_name": "Practice",
+                "ai_generated": true
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771160157",
+          "code": 200,
+          "elapsed_s": 6.323243856430054,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_39c5ee330bdd",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "If Zzzz Pretest Probe 1771160157 is designed for 7th grade students, what is its primary purpose? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "To assign a final grade for the 7th grade year.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "To assess students' current understanding of concepts typically taught in 7th grade.",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "To determine which students should skip 7th grade and move to 8th grade.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "To provide extra credit opportunities for students who are struggling.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what 'pretest' and 'probe' mean in an educational context.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A pretest is usually given before instruction to gauge prior knowledge.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The purpose is to find out what students already know before teaching them new material.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_6ec3d29e49ae",
+                "skill_ids": [
+                  "assessment_zzzz_pretest_probe_1771160157_grade_7_58113"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_6ec3d29e49ae",
+                "skill_names": [
+                  "Zzzz Pretest Probe 1771160157 for Grade 7"
+                ],
+                "unit_id": "assessment_zzzz_pretest_probe_1771160157_grade_7_58113",
+                "lesson_id": "assessment_zzzz_pretest_probe_1771160157_grade_7_58113",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "6991f33721c9df089c482f3c",
+                "unit_name": "Zzzz Pretest Probe 1771160157 for Grade 7",
+                "lesson_name": "Zzzz Pretest Probe 1771160157 for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771165481",
+          "code": 503,
+          "elapsed_s": 4.995139122009277,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771166452",
+          "code": 0,
+          "elapsed_s": 0.0,
+          "acceptable": false,
+          "verdict": "unexpected-0",
+          "body": {
+            "error": "timed out"
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771168832",
+          "code": 200,
+          "elapsed_s": 2.3889381885528564,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_72a432fec0cb",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Zzzz Pretest Probe 1771168832 asks about 'Solving Equations'. Which of the following best describes the primary goal when solving an equation? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "choices": [
+                        {
+                          "content": "To find the largest possible value for all the variables.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "To isolate the variable and determine its value.",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "To rewrite the equation in a more complex form.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        },
+                        {
+                          "content": "To eliminate all variables from the equation.",
+                          "correct": false,
+                          "misconception": "Common student error"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "What are you trying to find when you solve an equation?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Solving an equation means finding the value of the unknown variable that makes the equation true.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The goal is to get the variable by itself on one side of the equation, so you know what it equals.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_6b462f0079ce",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771168832_us_6th-8th-grade-math-pre-algebra-algebra-foundations_unit_solving-equations"
+                ],
+                "difficulty": 0.42,
+                "skill_names": [
+                  "Solving Equations"
+                ],
+                "unit_name": "Solving Equations",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f12721c9df089c482524"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771169457",
+          "code": 503,
+          "elapsed_s": 5.605846643447876,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771170539",
+          "code": 200,
+          "elapsed_s": 2.685007095336914,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_00168671f043",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A rectangular swimming pool has a perimeter of 60 meters. The length of the pool is 10 meters longer than its width. If $w$ represents the width of the pool in meters, which of the following equations can be used to find the width? Select ALL that apply.\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "$2w + 2(w+10) = 60$",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "$4w + 20 = 60$",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "$2w + 10 = 60$",
+                          "correct": false,
+                          "misconception": "Forgets to include both lengths and widths when calculating perimeter."
+                        },
+                        {
+                          "content": "$4w + 10 = 60$",
+                          "correct": false,
+                          "misconception": "Makes an error distributing the 2 to the length expression."
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": true,
+                      "randomize": false,
+                      "numCorrect": 2
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "First, think about the formula for the perimeter of a rectangle. How can you express the length of the pool in terms of its width, $w$?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The perimeter of a rectangle is given by the formula $P = 2l + 2w$. If the length $l$ is 10 meters longer than the width $w$, then we can write $l = w + 10$.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Now, substitute the expression for $l$ into the perimeter formula: $60 = 2(w+10) + 2w$. From here, you can distribute the 2 and combine like terms to find equivalent equations.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_3b62badd1496",
+                "skill_ids": [
+                  "ai_gen_zzzz-pretest-probe-1771170539_us_6th-8th-grade-math_unit_equations-inequalities"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Equations & Inequalities"
+                ],
+                "unit_name": "Equations & Inequalities",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991f20421c9df089c4827bd"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "Zzzz Pretest Probe 1771170669",
+          "code": 503,
+          "elapsed_s": 4.769949913024902,
+          "acceptable": true,
+          "verdict": "retryable-503",
+          "body": {
+            "detail": "First question is still being prepared. Please retry."
+          }
+        }
+      ]
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "subject_used": "Science",
+        "start_code": 200,
+        "start_elapsed_s": 0.986746072769165,
+        "start_body": {
+          "assessment_id": "assess_31341e11f0b6",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "A plant uses light energy to make its own food through a process called photosynthesis. During this process, some light energy is converted into chemical energy stored in the plant's food (like glucose), and some energy is released as heat into the environment.\n\nIf $C$ represents the chemical energy stored in the plant's food and $H$ represents the energy released as heat, write an expression that shows the total amount of light energy absorbed by the plant, assuming no other forms of energy are involved.\n\nTotal light energy absorbed = [[\u2603 expression 1]]",
+              "images": {},
+              "widgets": {
+                "expression 1": {
+                  "type": "expression",
+                  "options": {
+                    "buttonsVisible": "never",
+                    "functions": [
+                      "f",
+                      "g",
+                      "h"
+                    ],
+                    "times": false,
+                    "answerForms": [
+                      {
+                        "value": "C+H",
+                        "form": true,
+                        "simplify": false,
+                        "considered": "correct"
+                      },
+                      {
+                        "value": "H+C",
+                        "form": true,
+                        "simplify": false,
+                        "considered": "correct"
+                      }
+                    ],
+                    "buttonSets": [
+                      "basic"
+                    ]
+                  },
+                  "graded": true,
+                  "version": {
+                    "major": 2,
+                    "minor": 0
+                  },
+                  "alignment": "default",
+                  "static": false
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "Think about the Law of Conservation of Energy. If energy goes into the plant, where does it all end up?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "The Law of Conservation of Energy states that energy cannot be created or destroyed, only transformed from one form to another. This means the total energy absorbed by the plant must be equal to the sum of all the energy forms it produces or releases.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "The plant absorbs light energy. This absorbed light energy is transformed into two main forms: chemical energy (represented by $C$) and heat energy (represented by $H$). To find the total light energy absorbed, you need to combine these two forms of energy.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_7f6cbc0abcbff881",
+            "dash_metadata": {
+              "dash_question_id": "pool_7f6cbc0abcbff881",
+              "skill_ids": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "difficulty": 0.3291666666666666,
+              "skill_names": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "next": {
+          "code": 200,
+          "elapsed_s": 1.717104196548462,
+          "completed_early": false,
+          "has_next_question": true,
+          "body": {
+            "completed": false,
+            "question_number": 2,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "[[\u2603 image 1]]\n\nA tiny caterpillar hatches from an egg, eats many leaves to grow larger, and then transforms into a beautiful butterfly. This entire process, from hatching to becoming an adult butterfly, best demonstrates a key characteristic of life, which is [[\u2603 dropdown 1]].",
+                "images": {},
+                "widgets": {
+                  "dropdown 1": {
+                    "type": "dropdown",
+                    "options": {
+                      "placeholder": "select one",
+                      "choices": [
+                        {
+                          "content": "reproduction",
+                          "correct": false,
+                          "misconception": "Confuses the life cycle of an individual with the process of creating new offspring."
+                        },
+                        {
+                          "content": "response to stimuli",
+                          "correct": false,
+                          "misconception": "Mistakes the gradual changes over time for immediate reactions to environmental cues."
+                        },
+                        {
+                          "content": "growth and development",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "maintaining homeostasis",
+                          "correct": false,
+                          "misconception": "Focuses on internal balance rather than the changes in size and form over a lifespan."
+                        }
+                      ],
+                      "static": false
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  },
+                  "image 1": {
+                    "type": "image",
+                    "graded": false,
+                    "version": {
+                      "major": 0,
+                      "minor": 0
+                    },
+                    "alignment": "block",
+                    "static": false,
+                    "options": {
+                      "backgroundImage": {
+                        "url": "http://localhost:8000/static/images/8975bc2e0acec356.png",
+                        "width": 400,
+                        "height": 300
+                      },
+                      "alt": "Illustration for Introduction to Life Science",
+                      "caption": ""
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about what happens to the caterpillar over its lifetime. Does it just get bigger, or does it also undergo significant changes in its form and abilities?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Living things not only increase in size (growth) but also change in form and complexity, maturing over their lifespan. This continuous process of change is known as development.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "The caterpillar increases in size by eating (growth), and then it transforms into a completely different form, a butterfly (development). This entire journey is a perfect example of...",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_fed073a52630",
+                "skill_ids": [
+                  "ai_gen_science_us_middle-school-life-science_unit_introduction-life-science"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Introduction to Life Science"
+                ],
+                "unit_name": "Introduction to Life Science",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6990dc251525d7df02ccd139"
+              }
+            },
+            "current_difficulty": 0.65
+          }
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 25.0
+      }
+    },
+    "websocket": {
+      "session_start": {
+        "code": 200,
+        "elapsed_s": 1.0078649520874023,
+        "body": {
+          "prompt": "",
+          "session_info": {
+            "session_id": "sess_f7d0c42d951849ad",
+            "user_id": "dev_053f14217db9",
+            "session_active": true,
+            "duration_minutes": 0.0,
+            "questions_answered": 0,
+            "questions_correct": 0,
+            "websocket_connected": false,
+            "sse_connected": false
+          }
+        }
+      },
+      "probe": {
+        "ok": true,
+        "elapsed_s": 0.8199641704559326,
+        "response": {
+          "type": "pong"
+        }
+      },
+      "session_end": {
+        "code": 200,
+        "elapsed_s": 1.5688016414642334,
+        "body": {
+          "prompt": "[SYSTEM PROMPT FOR ADAM]\nThe tutoring session is ending now.\nSession stats: 0.1 minutes, 0 questions attempted.\nPlease give the student a warm closing message, acknowledge their hard work,\nand encourage them for next session.",
+          "session_info": {
+            "session_id": "sess_f7d0c42d951849ad",
+            "duration_minutes": 0.05,
+            "minutes_deducted": 1,
+            "questions_answered": 0,
+            "questions_correct": 0
+          }
+        }
+      },
+      "ok": true
+    }
+  },
+  "ok": false,
+  "errors": [
+    "adaptive start failed for one or more available subjects"
+  ]
+}

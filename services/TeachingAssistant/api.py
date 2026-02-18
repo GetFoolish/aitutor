@@ -4,6 +4,7 @@ import threading
 import requests
 import asyncio
 import time
+import secrets
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,7 +19,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 
 from services.TeachingAssistant.teaching_assistant import TeachingAssistant
 from services.TeachingAssistant.core.context import Event
-from shared.auth_middleware import get_current_user, get_user_from_token
+from shared.auth_middleware import get_current_user, require_admin
 from shared.cors_config import ALLOWED_ORIGINS, ALLOW_CREDENTIALS, ALLOWED_METHODS, ALLOWED_HEADERS
 from shared.timing_middleware import UnpluggedTimingMiddleware
 from shared.cache_middleware import CacheControlMiddleware
@@ -35,9 +36,78 @@ logger = get_logger(__name__)
 from typing import Dict, List
 active_observers: Dict[str, List[WebSocket]] = {}
 
-# Simple API key for observer authentication (backend devs only)
-# In production, use a more robust auth mechanism
-OBSERVER_API_KEY = os.getenv("OBSERVER_API_KEY", "dev-observer-key-12345")
+# One-time stream auth code registry
+STREAM_AUTH_CODE_TTL_SECONDS = int(os.getenv("STREAM_AUTH_CODE_TTL_SECONDS", "90"))
+_stream_auth_codes: Dict[str, Dict[str, Any]] = {}
+_stream_auth_lock = threading.Lock()
+
+
+def _is_non_dev_environment() -> bool:
+    env = (
+        os.getenv("APP_ENV")
+        or os.getenv("ENVIRONMENT")
+        or os.getenv("ENV")
+        or "development"
+    ).strip().lower()
+    return env not in {"dev", "development", "local", "test", "testing"}
+
+
+def _validate_observer_api_key() -> None:
+    """Fail startup in non-dev if OBSERVER_API_KEY is missing or weak."""
+    if not _is_non_dev_environment():
+        return
+
+    key = (os.getenv("OBSERVER_API_KEY") or "").strip()
+    weak_values = {
+        "",
+        "changeme",
+        "change-me",
+        "default",
+        "password",
+        "dev-observer-key-12345",
+    }
+    if len(key) < 24 or key.lower().startswith("dev-") or key.lower() in weak_values:
+        raise RuntimeError(
+            "OBSERVER_API_KEY is missing/weak in non-dev environment. "
+            "Set a strong value (>=24 chars, non-default)."
+        )
+
+
+def _prune_stream_auth_codes(now: Optional[float] = None) -> None:
+    ts = now if now is not None else time.time()
+    expired = [code for code, entry in _stream_auth_codes.items() if entry["expires_at"] <= ts]
+    for code in expired:
+        _stream_auth_codes.pop(code, None)
+
+
+def _issue_stream_auth_code(user_id: str, purpose: str, is_admin: bool = False) -> str:
+    code = secrets.token_urlsafe(32)
+    now = time.time()
+    with _stream_auth_lock:
+        _prune_stream_auth_codes(now)
+        _stream_auth_codes[code] = {
+            "user_id": user_id,
+            "purpose": purpose,
+            "is_admin": is_admin,
+            "expires_at": now + STREAM_AUTH_CODE_TTL_SECONDS,
+        }
+    return code
+
+
+def _consume_stream_auth_code(code: Optional[str], expected_purpose: str) -> Optional[Dict[str, Any]]:
+    if not code:
+        return None
+    now = time.time()
+    with _stream_auth_lock:
+        _prune_stream_auth_codes(now)
+        entry = _stream_auth_codes.pop(code, None)
+    if not entry:
+        return None
+    if entry.get("purpose") != expected_purpose:
+        return None
+    if entry.get("expires_at", 0) <= now:
+        return None
+    return entry
 
 
 # ============================================================================
@@ -48,6 +118,7 @@ OBSERVER_API_KEY = os.getenv("OBSERVER_API_KEY", "dev-observer-key-12345")
 async def lifespan(app: FastAPI):
     """Start and stop event processing loop AND session monitor"""
     global ta, event_processing_task, session_monitor_task
+    _validate_observer_api_key()
     
     # Start event processing loop
     ta.running = True
@@ -835,20 +906,16 @@ def check_inactivity(http_request: Request):
 @app.websocket("/ws/feed")
 async def websocket_feed(websocket: WebSocket):
     """WebSocket endpoint for streaming audio/video/transcript from frontend"""
-    # 1. Extract and validate JWT from query parameter
+    # 1. Extract one-time code from query string (JWT is exchanged server-side)
     query_params = parse_qs(websocket.scope["query_string"].decode())
-    token = query_params.get("token", [None])[0]
+    code = query_params.get("code", [None])[0]
 
-    if not token:
-        await websocket.close(code=4001, reason="Missing token")
+    auth_context = _consume_stream_auth_code(code, expected_purpose="feed")
+    if not auth_context:
+        await websocket.close(code=4001, reason="Missing/invalid auth code")
         return
 
-    user_info = get_user_from_token(token)
-    if not user_info:
-        await websocket.close(code=4001, reason="Invalid token")
-        return
-
-    user_id = user_info["user_id"]
+    user_id = auth_context["user_id"]
 
     # 2. Get active session and check if it's still active
     session = ta.get_active_session(user_id)
@@ -1058,17 +1125,14 @@ async def process_transcript(session_id: str, transcript: str, timestamp: str, s
 # ============================================================================
 
 @app.get("/sse/instructions")
-async def sse_instructions(request: Request, token: str = None):
+async def sse_instructions(request: Request, code: str = None):
     """SSE endpoint for pushing instructions to frontend"""
-    # Validate token (passed as query param for SSE)
-    if not token:
-        raise HTTPException(status_code=401, detail="Missing token")
+    # Validate one-time stream auth code
+    auth_context = _consume_stream_auth_code(code, expected_purpose="instruction_sse")
+    if not auth_context:
+        raise HTTPException(status_code=401, detail="Missing/invalid auth code")
 
-    user_info = get_user_from_token(token)
-    if not user_info:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-    user_id = user_info["user_id"]
+    user_id = auth_context["user_id"]
 
     # Get active session
     session = ta.get_active_session(user_id)
@@ -1149,6 +1213,28 @@ class InstructionRequest(BaseModel):
     session_id: Optional[str] = None  # Optional - if not provided, uses user's active session
 
 
+@app.post("/auth/stream-code")
+def issue_stream_code(http_request: Request, purpose: str = "feed"):
+    """Issue short-lived one-time code for WS/SSE auth (no JWT in URL)."""
+    allowed_purposes = {"feed", "instruction_sse", "observe"}
+    if purpose not in allowed_purposes:
+        raise HTTPException(status_code=400, detail=f"Invalid purpose. Must be one of {sorted(allowed_purposes)}")
+
+    if purpose == "observe":
+        user_id = require_admin(http_request)
+        is_admin = True
+    else:
+        user_id = get_current_user(http_request)
+        is_admin = False
+
+    code = _issue_stream_auth_code(user_id=user_id, purpose=purpose, is_admin=is_admin)
+    return {
+        "code": code,
+        "purpose": purpose,
+        "expires_in_seconds": STREAM_AUTH_CODE_TTL_SECONDS,
+    }
+
+
 @app.post("/session/instruction")
 def push_instruction(request: InstructionRequest, http_request: Request):
     """
@@ -1165,6 +1251,8 @@ def push_instruction(request: InstructionRequest, http_request: Request):
         # Get session - either from request or user's active session
         if request.session_id:
             session = ta.session_manager.get_session_by_id(request.session_id)
+            if session and session.get("user_id") != user_id:
+                require_admin(http_request)
         else:
             session = ta.get_active_session(user_id)
 
@@ -1199,14 +1287,13 @@ def push_instruction(request: InstructionRequest, http_request: Request):
 
 
 @app.post("/session/instruction/admin")
-def push_instruction_admin(request: InstructionRequest, api_key: str = None):
+def push_instruction_admin(request: InstructionRequest, http_request: Request):
     """
     Admin endpoint to push instruction to any session.
-    Requires observer API key authentication.
+    Requires JWT auth and admin role.
     session_id is required for this endpoint.
     """
-    if api_key != OBSERVER_API_KEY:
-        raise HTTPException(status_code=401, detail="Invalid API key")
+    require_admin(http_request)
 
     if not request.session_id:
         raise HTTPException(status_code=400, detail="session_id is required for admin endpoint")
@@ -1246,13 +1333,12 @@ def push_instruction_admin(request: InstructionRequest, api_key: str = None):
 # ============================================================================
 
 @app.get("/sessions/active")
-def list_active_sessions(api_key: str = None):
+def list_active_sessions(http_request: Request):
     """
     List all active sessions (for backend devs to choose which to observe)
-    Requires API key authentication
+    Requires JWT auth and admin role
     """
-    if api_key != OBSERVER_API_KEY:
-        raise HTTPException(status_code=401, detail="Invalid API key")
+    require_admin(http_request)
 
     sessions = ta.session_manager.list_active_sessions()
     return {
@@ -1276,19 +1362,20 @@ async def websocket_observe(websocket: WebSocket):
     Observer WebSocket endpoint for backend devs to monitor live sessions.
 
     Query params:
-        - api_key: Observer API key for authentication
+        - code: One-time observer stream auth code
         - session_id: The session to observe (required)
 
     Receives: audio, media, transcript messages as they flow through the producer
     """
     # 1. Extract query parameters
     query_params = parse_qs(websocket.scope["query_string"].decode())
-    api_key = query_params.get("api_key", [None])[0]
+    code = query_params.get("code", [None])[0]
     session_id = query_params.get("session_id", [None])[0]
 
-    # 2. Validate API key
-    if api_key != OBSERVER_API_KEY:
-        await websocket.close(code=4001, reason="Invalid API key")
+    # 2. Validate one-time code and admin role
+    auth_context = _consume_stream_auth_code(code, expected_purpose="observe")
+    if not auth_context or not auth_context.get("is_admin"):
+        await websocket.close(code=4001, reason="Invalid auth code")
         return
 
     # 3. Validate session_id

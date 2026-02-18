@@ -1,0 +1,51 @@
+{
+  "files": [
+    "artifacts/pretest/questions_long_english.json",
+    "artifacts/pretest/questions_long_geometry.json",
+    "artifacts/pretest/questions_long_history.json",
+    "artifacts/pretest/questions_long_math.json",
+    "artifacts/pretest/questions_long_python_programming.json",
+    "artifacts/pretest/questions_long_science.json"
+  ],
+  "subjects": {
+    "english": {
+      "count": 5,
+      "failures": []
+    },
+    "geometry": {
+      "count": 5,
+      "failures": []
+    },
+    "history": {
+      "count": 4,
+      "failures": []
+    },
+    "math": {
+      "count": 4,
+      "failures": []
+    },
+    "python_programming": {
+      "count": 4,
+      "failures": []
+    },
+    "science": {
+      "count": 4,
+      "failures": []
+    }
+  },
+  "totals": {
+    "questions": 26,
+    "pre_serve_failed": 0,
+    "placeholder_failed": 0,
+    "unsupported_widget_types": 0
+  },
+  "widget_types": {
+    "sorter": 4,
+    "definition": 8,
+    "radio": 20,
+    "numeric-input": 1,
+    "image": 2,
+    "dropdown": 1
+  },
+  "ok": true
+}

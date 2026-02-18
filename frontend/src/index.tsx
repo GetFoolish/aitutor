@@ -288,7 +288,9 @@ root.render(
                 <Route path="/app/admin/videos" component={AdminVideoPanel} />
                 <Route path="/app/admin/cost-tracking" component={CostTrackingPage} />
                 <Route path="/app/assessment/:subject" component={AssessmentFlow} />
+                <Route path="/app/learn/:subject" component={LandingPageOrApp} />
                 <Route path="/landing/:id" component={LandingPageWrapper} /> {/* Dynamic landing page routes */}
+                <Route path="/app/:profileId" component={LandingPageOrApp} />
                 <Route path="/app" exact component={LandingPageOrApp} />
                 <Route path="/" exact render={() => <Redirect to="/comingsoon" />} />
                 <Route component={NotFound} /> {/* 404 catch-all (Bug #42) */}

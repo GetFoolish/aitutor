@@ -2034,7 +2034,16 @@ class DASHSystem:
 
         # First try normal DASH selection (recommended skills only)
         if not force_grade_range:
-            question = self.get_next_question(student_id, current_time, is_retry=False, exclude_question_ids=exclude_question_ids, user_profile=user_profile, fast_mode=fast_mode)
+            # Prevent recursion loop: get_next_question() may fallback to flexible mode
+            # when no skills are recommended. Mark this as retry so it can return None.
+            question = self.get_next_question(
+                student_id,
+                current_time,
+                is_retry=True,
+                exclude_question_ids=exclude_question_ids,
+                user_profile=user_profile,
+                fast_mode=fast_mode,
+            )
             if question:
                 return question
         
@@ -2294,8 +2303,11 @@ class DASHSystem:
         
         if not recommended_skills:
             log_print(f"[GET_NEXT_QUESTION] No recommended skills — trying flexible selection")
+            if is_retry:
+                return None
             return self.get_next_question_flexible(
                 student_id, current_time, exclude_question_ids,
+                force_grade_range=True,
                 user_profile=user_profile, fast_mode=fast_mode,
             )
         

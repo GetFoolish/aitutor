@@ -1,0 +1,297 @@
+{
+  "created_at": "2026-02-15T13:56:12.639727+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.056726932525634766,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 0,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.014541864395141602,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": false,
+      "code": 0,
+      "elapsed_s": 0.0,
+      "body": {
+        "error": "<urlopen error [Errno 61] Connection refused>"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.686406135559082,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": false,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 1.231398344039917,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 101
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 1.7073359489440918,
+        "count": 4,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 12.0
+      }
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "start_code": 200,
+        "start_elapsed_s": 1.0364620685577393,
+        "start_body": {
+          "assessment_id": "assess_4ff5cd5bd9c6",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "A small island ecosystem contains only grass, rabbits, and eagles. If a sudden disease eliminated all the rabbits from the island, what would be the most likely long-term impact on the eagles and the grass?\n\n[[\u2603 radio 1]]",
+              "images": {},
+              "widgets": {
+                "radio 1": {
+                  "alignment": "default",
+                  "graded": true,
+                  "options": {
+                    "choices": [
+                      {
+                        "content": "The eagle population would decrease significantly, and the grass population would increase.",
+                        "correct": true,
+                        "misconception": null
+                      },
+                      {
+                        "content": "Both the eagle and grass populations would decrease significantly.",
+                        "correct": false,
+                        "misconception": "Believes eagles eat grass or that rabbits are essential for grass survival."
+                      },
+                      {
+                        "content": "The eagle population would increase due to less competition, and the grass population would decrease.",
+                        "correct": false,
+                        "misconception": "Confuses competition among predators with lack of prey, or assumes eagles eat grass."
+                      },
+                      {
+                        "content": "The eagle population would decrease, but the grass population would remain unchanged.",
+                        "correct": false,
+                        "misconception": "Understands impact on eagles but forgets rabbits eat grass."
+                      }
+                    ],
+                    "countChoices": false,
+                    "deselectEnabled": false,
+                    "displayCount": null,
+                    "hasNoneOfTheAbove": false,
+                    "multipleSelect": false,
+                    "numCorrect": 1,
+                    "randomize": false
+                  },
+                  "static": false,
+                  "type": "radio",
+                  "version": {
+                    "major": 2,
+                    "minor": 0
+                  }
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "Think about the role each organism plays in the ecosystem. How does energy flow from the grass to the rabbits, and then to the eagles?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Remember that grass is a producer, rabbits are primary consumers (herbivores) that eat grass, and eagles are secondary consumers (carnivores) that eat rabbits. If the rabbits disappear, consider what happens to their food source and their predators.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "Without rabbits, the eagles lose their main food source and will likely starve, causing their population to drop. With no rabbits left to eat the grass, what do you think will happen to the amount of grass on the island?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_79780721bc53660a",
+            "dash_metadata": {
+              "dash_question_id": "pool_79780721bc53660a",
+              "skill_ids": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "difficulty": 0.9560000000000001,
+              "skill_names": [
+                "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems"
+              ],
+              "unit_name": "ai_gen_science_us_middle-school-life-science_unit_energy-living-systems",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "next": {
+          "code": 200,
+          "elapsed_s": 1.4014530181884766,
+          "completed_early": false,
+          "has_next_question": true,
+          "body": {
+            "completed": false,
+            "question_number": 2,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A growing town in a dry region is facing a severe water shortage. They need to find a new, sustainable source of fresh water for their community. Considering the Earth's total water supply, which of the following options represents the most practical and significant source for them to investigate?\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Deep underground aquifers, which hold a large percentage of Earth's liquid fresh water.",
+                          "correct": true,
+                          "misconception": null
+                        },
+                        {
+                          "content": "Large freshwater lakes and rivers nearby, as they are visible and easy to access.",
+                          "correct": false,
+                          "misconception": "Overestimates the volume and reliability of surface fresh water."
+                        },
+                        {
+                          "content": "Melting water from distant polar ice caps and glaciers, since they contain most of the world's fresh water.",
+                          "correct": false,
+                          "misconception": "Confuses total volume with practical accessibility and geographical location."
+                        },
+                        {
+                          "content": "Desalination plants to convert ocean water into fresh water, as oceans hold most of Earth's water.",
+                          "correct": false,
+                          "misconception": "Ignores the high cost and energy requirements of desalination for large-scale supply."
+                        }
+                      ],
+                      "multipleSelect": false,
+                      "randomize": false,
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "numCorrect": 1
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 1,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Think about the different forms and locations of fresh water on Earth. Which of these forms is most readily available for human use, even if it's not always visible?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Most of Earth's fresh water is frozen in glaciers and ice caps, making it difficult to access directly. Of the *liquid* fresh water, a significant portion is found underground in aquifers, rather than in surface lakes and rivers.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "While surface water sources like rivers and lakes are important, they represent a very small fraction of Earth's total fresh water and can be unreliable in droughts. Desalination is possible but very expensive and energy-intensive. Polar ice caps hold a lot of water but are geographically inaccessible for direct use by a town. Therefore, exploring underground aquifers is often the most practical option for a large, sustainable supply of liquid fresh water.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_d2ab265bb922",
+                "skill_ids": [
+                  "ai_gen_science_us_middle-school-earth-space-science_unit_water-on-earth"
+                ],
+                "difficulty": 0.65,
+                "skill_names": [
+                  "Water on Earth"
+                ],
+                "unit_name": "Water on Earth",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "6991c1e7a4789515daff521a"
+              }
+            },
+            "current_difficulty": 0.65
+          }
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 25.0
+      }
+    },
+    "websocket": {
+      "session_start": {
+        "code": 0,
+        "elapsed_s": 0.0,
+        "body": {
+          "error": "<urlopen error [Errno 61] Connection refused>"
+        }
+      },
+      "probe": null,
+      "session_end": null,
+      "ok": false
+    }
+  },
+  "ok": false,
+  "errors": [
+    "service health checks failed",
+    "question fetch/contract/scope checks failed",
+    "websocket probe failed"
+  ]
+}

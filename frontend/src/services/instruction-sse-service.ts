@@ -51,34 +51,59 @@ class InstructionSSEService {
       return;
     }
 
-    const url = `${TEACHING_ASSISTANT_API_URL}/sse/instructions?token=${encodeURIComponent(token)}`;
-    this.eventSource = new EventSource(url);
+    const connectWithCode = async () => {
+      try {
+        const streamCodeResponse = await fetch(`${TEACHING_ASSISTANT_API_URL}/auth/stream-code?purpose=instruction_sse`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        if (!streamCodeResponse.ok) {
+          throw new Error('Failed to issue instruction SSE auth code');
+        }
+        const streamCodeData = await streamCodeResponse.json();
+        const streamCode = streamCodeData?.code;
+        if (!streamCode) {
+          throw new Error('Missing instruction SSE auth code');
+        }
 
-    this.eventSource.onopen = () => {
-      console.log('[InstructionSSE] Connected');
-      this.status = 'connected';
-      this.reconnectAttempts = 0;
+        const url = `${TEACHING_ASSISTANT_API_URL}/sse/instructions?code=${encodeURIComponent(streamCode)}`;
+        this.eventSource = new EventSource(url);
+
+        this.eventSource.onopen = () => {
+          console.log('[InstructionSSE] Connected');
+          this.status = 'connected';
+          this.reconnectAttempts = 0;
+        };
+
+        this.eventSource.onerror = (error) => {
+          console.error('[InstructionSSE] Error:', error);
+          this.status = 'error';
+          this.eventSource?.close();
+          this.eventSource = null;
+          this.attemptReconnect();
+        };
+
+        // Listen for instruction events
+        this.eventSource.addEventListener('instruction', (event: MessageEvent) => {
+          const instruction = event.data;
+          console.log('[InstructionSSE] Received instruction:', instruction.substring(0, 100) + '...');
+          this.instructionCallbacks.forEach(cb => cb(instruction));
+        });
+
+        // Listen for keepalive (just to confirm connection is alive)
+        this.eventSource.addEventListener('keepalive', () => {
+          // Connection is alive - no action needed
+        });
+      } catch (error) {
+        console.error('[InstructionSSE] Failed to connect:', error);
+        this.status = 'error';
+        this.attemptReconnect();
+      }
     };
 
-    this.eventSource.onerror = (error) => {
-      console.error('[InstructionSSE] Error:', error);
-      this.status = 'error';
-      this.eventSource?.close();
-      this.eventSource = null;
-      this.attemptReconnect();
-    };
-
-    // Listen for instruction events
-    this.eventSource.addEventListener('instruction', (event: MessageEvent) => {
-      const instruction = event.data;
-      console.log('[InstructionSSE] Received instruction:', instruction.substring(0, 100) + '...');
-      this.instructionCallbacks.forEach(cb => cb(instruction));
-    });
-
-    // Listen for keepalive (just to confirm connection is alive)
-    this.eventSource.addEventListener('keepalive', () => {
-      // Connection is alive - no action needed
-    });
+    void connectWithCode();
   }
 
   disconnect(): void {
