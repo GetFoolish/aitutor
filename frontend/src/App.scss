@@ -6,7 +6,7 @@
   --neo-red: #FF6B6B; // Hot Red
   --neo-violet: #C4B5FD; // Soft Violet
   --neo-bg: #FFFDF5; // Cream background (aged paper)
-  --neo-dot-color: rgba(0, 0, 0, 0.5);
+  --neo-dot-color: rgba(0, 0, 0, 0.15);
 
   // Legacy color mappings for backward compatibility
   --neo-cyan: #C4B5FD; // Map cyan to violet
@@ -84,7 +84,7 @@ html.dark,
   --text: var(--neo-black); // Inherit white color
   --border-stroke: var(--neo-black); // White borders
   --Neutral-00: var(--neo-black); // White in dark mode
-  --neo-dot-color: rgba(255, 255, 255, 0.5);
+  --neo-dot-color: rgba(255, 255, 255, 0.15);
   
   // Update scrollbar colors for dark mode
   scrollbar-color: var(--neo-black) var(--neo-bg);
@@ -382,7 +382,7 @@ body {
       inset: 0;
       z-index: 0;
       pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23000000' opacity='0.50'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23000000' opacity='0.15'/%3E%3C/svg%3E");
       background-size: 20px 20px;
       background-repeat: repeat;
     }
@@ -399,7 +399,7 @@ body {
     background: var(--neo-bg); // Use CSS variable for consistency
 
     &::before {
-      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23FFFFFF' opacity='0.50'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23FFFFFF' opacity='0.15'/%3E%3C/svg%3E");
     }
   }
 

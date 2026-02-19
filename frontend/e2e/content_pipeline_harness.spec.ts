@@ -871,6 +871,8 @@ test('assessment and floating-panel rendering evidence', async ({ page, request 
 
   const assessmentQuestion = page.locator('#question-content-container').first();
   await expect(assessmentQuestion).toBeVisible({ timeout: 30_000 });
+  // Wait for Perseus widget to fully render answer options before taking screenshot
+  await assessmentQuestion.locator('.perseus-radio-option, input[type="text"], select, [role="combobox"], .orderer-widget, .categorizer-widget').first().waitFor({ state: 'visible', timeout: 30_000 });
   await assertNoHorizontalOverflow(page, 'assessment-main');
   await saveShot(page, '01-assessment-main');
 

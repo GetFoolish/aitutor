@@ -688,7 +688,7 @@ const AssessmentFlow: React.FC = () => {
                 </div>
               </div>
 
-              <div style={{
+              <div className="assessment-content-wrapper" style={{
                 padding: '0 12px 10px 12px',
                 maxWidth: 1180,
                 margin: '0 auto',

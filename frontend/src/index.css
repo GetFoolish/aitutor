@@ -52,6 +52,14 @@ code {
     source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
+/* When the floating control panel is expanded, add right padding so content clears the panel */
+html.floating-panel-expanded .assessment-content-wrapper {
+  padding-right: 300px !important;
+}
+html.floating-panel-expanded .question-panel {
+  padding-right: 280px;
+}
+
 /* ============================================
    SCRATCHPAD / EXCALIDRAW CANVAS STYLES
    ============================================ */

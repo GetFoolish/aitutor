@@ -877,6 +877,18 @@ function FloatingControlPanel({
     setMuted(!muted);
   }, [muted]);
 
+  // Signal panel expanded/collapsed to content layout via CSS class on <html>
+  useEffect(() => {
+    if (isCollapsed) {
+      document.documentElement.classList.remove('floating-panel-expanded');
+    } else {
+      document.documentElement.classList.add('floating-panel-expanded');
+    }
+    return () => {
+      document.documentElement.classList.remove('floating-panel-expanded');
+    };
+  }, [isCollapsed]);
+
   useEffect(() => {
     const clampNow = () => clampPanelIntoViewport();
     const timer = window.setTimeout(clampNow, 120);
