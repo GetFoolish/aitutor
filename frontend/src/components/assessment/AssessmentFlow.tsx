@@ -695,7 +695,8 @@ const AssessmentFlow: React.FC = () => {
                 width: '100%',
                 flex: 1,
                 minHeight: 0,
-                overflow: 'hidden',
+                overflowY: 'auto',
+                overflowX: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
               }}>

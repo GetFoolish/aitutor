@@ -362,10 +362,6 @@ const PersonalizationCards: React.FC<PersonalizationCardsProps> = ({ skills, onC
         minHeight: '600px',
         overflow: 'hidden',
         backgroundColor: 'var(--neo-bg)',
-        backgroundImage:
-          "url(\"data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23000000' opacity='0.15'/%3E%3C/svg%3E\")",
-        backgroundSize: '20px 20px',
-        backgroundRepeat: 'repeat',
         padding: '40px 20px',
       }}
     >

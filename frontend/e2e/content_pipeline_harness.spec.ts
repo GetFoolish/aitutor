@@ -873,6 +873,8 @@ test('assessment and floating-panel rendering evidence', async ({ page, request 
   await expect(assessmentQuestion).toBeVisible({ timeout: 30_000 });
   // Wait for Perseus widget to fully render answer options before taking screenshot
   await assessmentQuestion.locator('.perseus-radio-option, input[type="text"], select, [role="combobox"], .orderer-widget, .categorizer-widget').first().waitFor({ state: 'visible', timeout: 30_000 });
+  // Normalize panel position BEFORE first screenshot so it doesn't peek at bottom-left
+  await normalizeFloatingPanelPosition(page);
   await assertNoHorizontalOverflow(page, 'assessment-main');
   await saveShot(page, '01-assessment-main');
 
@@ -908,6 +910,8 @@ test('assessment and floating-panel rendering evidence', async ({ page, request 
   });
   const learningQuestion = page.locator('#question-content-container').first();
   await expect(learningQuestion).toBeVisible({ timeout: 120_000 });
+  // Normalize panel position for learning mode screenshots
+  await normalizeFloatingPanelPosition(page);
   await setThemeMode(page, 'light', 'learning-light');
   await assertNoHorizontalOverflow(page, 'learning-main');
   await saveShot(page, '07-learning-main');

@@ -375,18 +375,6 @@ body {
       padding-right: 0;
     }
 
-    // SVG dot pattern background
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23000000' opacity='0.15'/%3E%3C/svg%3E");
-      background-size: 20px 20px;
-      background-repeat: repeat;
-    }
-
     // Ensure content is above background
     > * {
       position: relative;
@@ -397,10 +385,6 @@ body {
   // Dark mode for question panel background
   .dark .question-panel {
     background: var(--neo-bg); // Use CSS variable for consistency
-
-    &::before {
-      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23FFFFFF' opacity='0.15'/%3E%3C/svg%3E");
-    }
   }
 
   .media-mixer-display {
