@@ -12,6 +12,7 @@ import os
 import shlex
 import subprocess
 import time
+import math
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -29,6 +30,104 @@ class Gate:
     required: bool = True
     env: Optional[Dict[str, str]] = None
     skip_when_env: Optional[str] = None
+
+
+REQUIRED_SCREENSHOT_FILES = [
+    "01-assessment-main.png",
+    "02-assessment-no-scroll-controls-visible.png",
+    "03-assessment-floating-panel-visible.png",
+    "04-assessment-zindex-pass.png",
+    "05-assessment-hint-legibility-light.png",
+    "06-assessment-hint-legibility-dark.png",
+    "07-learning-main.png",
+    "08-learning-no-scroll-controls-visible.png",
+    "09-learning-floating-panel-visible.png",
+    "10-learning-dots-mask-sidebar-panel.png",
+    "11-widget-inline-dropdown-layout.png",
+    "12-widget-image-question-layout.png",
+    "13-assessment-complete-screen.png",
+    "14-latency-overlay-or-metrics-visual.png",
+]
+
+
+def _is_truthy(raw: Optional[str]) -> bool:
+    if raw is None:
+        return False
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _active_skip_env() -> List[str]:
+    active: List[str] = []
+    for name, value in os.environ.items():
+        if name.startswith("HARNESS_SKIP_") and _is_truthy(value):
+            active.append(name)
+    return sorted(active)
+
+
+def _p95(values: List[float]) -> Optional[float]:
+    vals = [float(v) for v in values if isinstance(v, (int, float))]
+    if not vals:
+        return None
+    vals.sort()
+    idx = max(0, math.ceil(0.95 * len(vals)) - 1)
+    return vals[idx]
+
+
+def _derive_metrics(output_dir: Path) -> Dict:
+    smoke_path = output_dir / "smoke.json"
+    checks = {}
+    if smoke_path.exists():
+        try:
+            smoke_payload = json.loads(smoke_path.read_text(encoding="utf-8"))
+            checks = (smoke_payload.get("checks") or {})
+        except Exception:
+            checks = {}
+
+    loading = checks.get("loading_latency") or {}
+    adaptive = checks.get("adaptive_start_all_subjects") or {}
+    adaptive_payload = adaptive.get("payload") or {}
+    adaptive_rows = adaptive_payload.get("start_results") or []
+    start_latencies = [
+        float(r.get("elapsed_s"))
+        for r in adaptive_rows
+        if isinstance(r, dict) and isinstance(r.get("elapsed_s"), (int, float))
+    ]
+    if isinstance(loading.get("initial_question_fetch_elapsed_s"), (int, float)):
+        start_latencies.append(float(loading.get("initial_question_fetch_elapsed_s")))
+
+    next_latencies = loading.get("adaptive_next_transition_elapsed_s") or []
+    next_latencies = [float(v) for v in next_latencies if isinstance(v, (int, float))]
+    if isinstance(loading.get("next_question_elapsed_s"), (int, float)):
+        next_latencies.append(float(loading.get("next_question_elapsed_s")))
+
+    screenshots_dir = output_dir / "screenshots"
+    present = {p.name for p in screenshots_dir.glob("*.png")} if screenshots_dir.exists() else set()
+    missing_required = [name for name in REQUIRED_SCREENSHOT_FILES if name not in present]
+
+    floating_assessment_pass = all(
+        name in present
+        for name in ("03-assessment-floating-panel-visible.png", "04-assessment-zindex-pass.png")
+    )
+    floating_learning_pass = "09-learning-floating-panel-visible.png" in present
+    dot_mask_pass = "10-learning-dots-mask-sidebar-panel.png" in present
+
+    return {
+        "required_screenshots_present": len(missing_required) == 0,
+        "missing_required_screenshots": missing_required,
+        "initial_p95_ms": (
+            round(_p95(start_latencies) * 1000, 2)
+            if _p95(start_latencies) is not None
+            else None
+        ),
+        "next_p95_ms": (
+            round(_p95(next_latencies) * 1000, 2)
+            if _p95(next_latencies) is not None
+            else None
+        ),
+        "floating_panel_assessment_pass": floating_assessment_pass,
+        "floating_panel_learning_pass": floating_learning_pass,
+        "dot_mask_pass": dot_mask_pass,
+    }
 
 
 def _now_stamp() -> str:
@@ -150,12 +249,37 @@ def main() -> None:
     python_bin = _resolve_python_bin()
 
     env_require_greptile = _env_bool("HARNESS_REQUIRE_GREPTILE")
+    strict_no_skip = True
+
     if args.require_greptile:
         require_greptile = True
     elif env_require_greptile is not None:
         require_greptile = env_require_greptile
     else:
         require_greptile = args.mode == "ci"
+
+    if strict_no_skip:
+        require_greptile = True
+
+    active_skip_env = _active_skip_env()
+    if strict_no_skip and active_skip_env:
+        summary = {
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "mode": args.mode,
+            "require_greptile": require_greptile,
+            "strict_no_skip": True,
+            "ok": False,
+            "duration_s": 0.0,
+            "output_dir": str(output_dir.resolve()),
+            "gates": [],
+            "error": "strict_no_skip_violation",
+            "active_skip_env": active_skip_env,
+        }
+        summary_path = output_dir / "summary.json"
+        summary_path.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+        print(summary_path)
+        print(json.dumps({"ok": False, "reason": "skip env vars are not allowed in strict mode"}, indent=2))
+        raise SystemExit(1)
 
     gates = [
         Gate(
@@ -260,16 +384,23 @@ def main() -> None:
             status = "SKIP"
         print(f"[HARNESS] {gate.name}: {status}")
 
-    ok = all(g.get("ok") for g in gate_results if g.get("required", True))
+    has_required_skip = any(g.get("required", True) and g.get("skipped") for g in gate_results)
+    ok = all(g.get("ok") for g in gate_results if g.get("required", True)) and not has_required_skip
+
+    derived_metrics = _derive_metrics(output_dir)
+    if strict_no_skip and not derived_metrics.get("required_screenshots_present", False):
+        ok = False
 
     summary = {
         "created_at": datetime.now(timezone.utc).isoformat(),
         "mode": args.mode,
         "require_greptile": require_greptile,
+        "strict_no_skip": strict_no_skip,
         "ok": ok,
         "duration_s": round(time.time() - started, 2),
         "output_dir": str(output_dir.resolve()),
         "gates": gate_results,
+        **derived_metrics,
     }
 
     summary_path = output_dir / "summary.json"

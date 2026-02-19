@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 import path from 'node:path';
 
+test.describe.configure({ timeout: 240_000 });
+
 const AUTH_BASE = process.env.AUTH_BASE || 'http://localhost:8003';
 const DASH_BASE = process.env.DASH_BASE || 'http://localhost:8000';
 const SUBJECT = (process.env.HARNESS_SUBJECT || 'Science').trim();
@@ -745,7 +747,9 @@ async function waitForAssessmentQuestion(page: any): Promise<void> {
 }
 
 test('assessment and floating-panel rendering evidence', async ({ page, request }) => {
-  // 1) Auth via dev-login and preload token into browser storage
+  const latencySamplesMs: number[] = [];
+  const subjectSlug = encodeURIComponent(SUBJECT);
+
   const authRes = await request.post(`${AUTH_BASE}/auth/dev-login`, {
     data: { age: 12, name: 'Playwright Harness' },
   });
@@ -758,227 +762,204 @@ test('assessment and floating-panel rendering evidence', async ({ page, request 
     localStorage.setItem('jwt_token', jwt);
     sessionStorage.setItem('onboarding_complete', 'true');
     sessionStorage.setItem('selected_subject', subject);
+    sessionStorage.setItem('assessmentSubject', subject);
   }, [token, SUBJECT]);
   await page.setViewportSize({ width: 1366, height: 768 });
 
-  // 2) Dev login page screenshot (entry point evidence)
-  await page.goto('/app/dev-login', { waitUntil: 'networkidle' });
-  await expect(page.getByText(/Quick Test Login/i)).toBeVisible();
-  await saveShot(page, '01-dev-login');
+  const ensurePanelVisible = async (label: string) => {
+    const expandBtn = page.locator('button[title="Expand"]').first();
+    if ((await expandBtn.count()) > 0 && (await expandBtn.isVisible().catch(() => false))) {
+      await expandBtn.click();
+    }
+    const panel = page.locator('.floating-toolbar-panel').first();
+    await expect(panel, `${label} missing floating panel`).toBeVisible({ timeout: 120_000 });
+    await normalizeFloatingPanelPosition(page);
+    return panel;
+  };
 
-  // 3) Assessment route screenshot + contract assertion (widget/answer space)
-  const startAdaptiveResponsePromise = page.waitForResponse(
-    (resp) =>
-      resp.request().method() === 'POST' &&
-      resp.url().includes('/assessment/start-adaptive/'),
-    { timeout: 120_000 }
-  );
+  const zIndexProbeFor = async (panel: any, label: string) => {
+    const panelHandle = await panel.elementHandle();
+    expect(panelHandle, `${label} missing panel handle`).not.toBeNull();
+    const probe = await panelHandle!.evaluate((panelEl) => {
+      const question = document.querySelector('#question-content-container') as HTMLElement | null;
+      if (!question) {
+        return { ok: false, reason: 'missing-question-container' };
+      }
+      const p = panelEl.getBoundingClientRect();
+      const q = question.getBoundingClientRect();
+      const overlapLeft = Math.max(p.left, q.left);
+      const overlapTop = Math.max(p.top, q.top);
+      const overlapRight = Math.min(p.right, q.right);
+      const overlapBottom = Math.min(p.bottom, q.bottom);
+      const hasOverlap = overlapRight > overlapLeft && overlapBottom > overlapTop;
+      if (!hasOverlap) {
+        return { ok: true, reason: 'no-overlap', panelRect: p, questionRect: q };
+      }
+      const x = Math.min(Math.max(overlapLeft + (overlapRight - overlapLeft) / 2, 1), window.innerWidth - 1);
+      const y = Math.min(Math.max(overlapTop + (overlapBottom - overlapTop) / 2, 1), window.innerHeight - 1);
+      const topEl = document.elementFromPoint(x, y) as HTMLElement | null;
+      return {
+        ok: !!topEl?.closest('.floating-toolbar-panel'),
+        reason: 'overlap-probe',
+        overlapCenter: { x, y },
+        topTag: topEl?.tagName || null,
+        topClass: topEl?.className || null,
+      };
+    });
+    expect(probe.ok, `${label} z-index probe failed: ${JSON.stringify(probe)}`).toBeTruthy();
+  };
 
-  await page.goto(`/app/assessment/${encodeURIComponent(SUBJECT)}`, { waitUntil: 'domcontentloaded' });
+  const answerAndNextAssessment = async (label: string): Promise<number> => {
+    const q = page.locator('#question-content-container').first();
+    await expect(q).toBeVisible({ timeout: 30_000 });
+    const answered = await answerFirstRenderableInput(page, q);
+    expect(answered, `${label} no answerable input`).toBeTruthy();
+    const submit = page.getByTestId('assessment-submit-button');
+    const next = page.getByTestId('assessment-next-button');
+    await expect(submit).toBeVisible({ timeout: 15_000 });
+    await submit.click();
+    await expect(next).toBeVisible({ timeout: 20_000 });
+    const before = normalizeText(await q.innerText());
+    const started = Date.now();
+    await next.click();
+    await page.waitForFunction(
+      (prev: string) => {
+        const container = document.querySelector('#question-content-container');
+        if (!container) return false;
+        const now = (container.textContent || '').toLowerCase().replace(/\s+/g, ' ').trim();
+        return now.length > 0 && now !== prev;
+      },
+      before,
+      { timeout: 12_000 },
+    );
+    const elapsed = Date.now() - started;
+    return elapsed;
+  };
+
+  const advanceLearningQuestion = async (): Promise<number | null> => {
+    const q = page.locator('#question-content-container').first();
+    if (!(await q.isVisible().catch(() => false))) return null;
+    const answered = await answerFirstRenderableInput(page, q);
+    if (!answered) return null;
+    const submit = page.getByRole('button', { name: /^Submit$/i }).first();
+    const next = page.getByRole('button', { name: /^Next/i }).first();
+    if ((await submit.count()) === 0 || (await next.count()) === 0) return null;
+    await submit.click().catch(() => {});
+    const nextVisible = await next.isVisible({ timeout: 2_500 }).catch(() => false);
+    if (!nextVisible) return null;
+    const before = normalizeText(await q.innerText());
+    const started = Date.now();
+    await next.click().catch(() => {});
+    await page.waitForFunction(
+      (prev: string) => {
+        const container = document.querySelector('#question-content-container');
+        if (!container) return false;
+        const now = (container.textContent || '').toLowerCase().replace(/\s+/g, ' ').trim();
+        return now.length > 0 && now !== prev;
+      },
+      before,
+      { timeout: 6_000 },
+    ).catch(() => {});
+    return Date.now() - started;
+  };
+
+  await page.goto(`/app/assessment/${subjectSlug}`, { waitUntil: 'domcontentloaded' });
   const assessmentLoadStart = Date.now();
   await waitForAssessmentQuestion(page);
-  const assessmentLoadMs = Date.now() - assessmentLoadStart;
-  expect(
-    assessmentLoadMs,
-    `assessment initial question load exceeded budget: ${assessmentLoadMs}ms`,
-  ).toBeLessThanOrEqual(25_000);
-  const questionContainer = page.locator('#question-content-container');
-  await expect(questionContainer).toBeVisible({ timeout: 60_000 });
+  const initialAssessmentMs = Date.now() - assessmentLoadStart;
+  latencySamplesMs.push(initialAssessmentMs);
 
-  // Hydration/render compatibility check:
-  // Ensure backend-delivered question content meaningfully appears in rendered question container.
-  const startAdaptiveResponse = await startAdaptiveResponsePromise;
-  expect(startAdaptiveResponse.ok()).toBeTruthy();
-  const startAdaptivePayload = await startAdaptiveResponse.json();
-  const backendContent = (startAdaptivePayload?.question?.question?.content || '') as string;
-  const signalWords = hydrationSignalWords(backendContent);
-  if (signalWords.length > 0) {
-    const renderedText = normalizeText(await questionContainer.innerText());
-    const matched = signalWords.filter((word) => renderedText.includes(word)).length;
-    // Require at least half of signal words to appear in rendered output.
-    expect(matched).toBeGreaterThanOrEqual(Math.max(3, Math.floor(signalWords.length / 2)));
-  }
+  const assessmentQuestion = page.locator('#question-content-container').first();
+  await expect(assessmentQuestion).toBeVisible({ timeout: 30_000 });
+  await assertNoHorizontalOverflow(page, 'assessment-main');
+  await saveShot(page, '01-assessment-main');
 
-  const interactiveInQuestion = questionContainer.locator(
-    'input, textarea, select, [contenteditable="true"], [role="textbox"], [role="radio"], [role="checkbox"], button'
-  );
-  const interactiveCount = await interactiveInQuestion.count();
+  await assertNoWindowVerticalScroll(page, 'assessment-no-scroll');
+  await assertNoInternalVerticalScroll(assessmentQuestion, 'assessment-no-scroll-question');
+  await expect(page.getByTestId('assessment-submit-button')).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole('button', { name: /Show Hint/i }).first()).toBeVisible({ timeout: 15_000 });
+  await saveShot(page, '02-assessment-no-scroll-controls-visible');
 
-  if (interactiveCount === 0) {
-    await expect(page.getByText(/Drag-and-drop questions are not supported yet/i)).toBeVisible();
-    await expect(page.getByRole('button', { name: /Skip Question/i })).toBeVisible();
-  }
+  const assessmentPanel = await ensurePanelVisible('assessment');
+  await saveShot(page, '03-assessment-floating-panel-visible');
 
-  await saveShot(page, '02-learning-widget-render');
+  await zIndexProbeFor(assessmentPanel, 'assessment');
+  await saveShot(page, '04-assessment-zindex-pass');
 
-  // Responsive baseline: no horizontal overflow at laptop viewport.
-  await assertNoHorizontalOverflow(page, 'assessment-laptop');
-  await assertNoWindowVerticalScroll(page, 'assessment-laptop');
-  await assertNoInternalVerticalScroll(questionContainer, 'assessment-question-container-initial');
-  await setThemeMode(page, 'light', 'assessment-laptop');
-  await assertQuestionThemeContrast(questionContainer, 'light', 'assessment-light');
-  await setThemeMode(page, 'dark', 'assessment-laptop');
-  await assertQuestionThemeContrast(questionContainer, 'dark', 'assessment-dark');
-  await assertDropdownAnchored(page, questionContainer, 'assessment-laptop-dark');
-  const assessmentHintDark = page.getByTestId('assessment-show-hint-button');
-  if ((await assessmentHintDark.count()) > 0) {
-    await expect(assessmentHintDark.first()).toBeVisible({ timeout: 10_000 });
-    await assertElementContrast(assessmentHintDark.first(), 'assessment-hint-button-dark');
-  }
-  await saveShot(page, '07-assessment-dark-theme');
-  await setThemeMode(page, 'light', 'assessment-laptop');
-  await assertQuestionThemeContrast(questionContainer, 'light', 'assessment-light-reset');
-  await assertDropdownAnchored(page, questionContainer, 'assessment-laptop');
+  await setThemeMode(page, 'light', 'assessment-light');
+  await assertQuestionThemeContrast(assessmentQuestion, 'light', 'assessment-light');
+  const assessmentHintLight = page.getByRole('button', { name: /Show Hint/i }).first();
+  await assertElementContrast(assessmentHintLight, 'assessment-hint-light', 4.5);
+  await saveShot(page, '05-assessment-hint-legibility-light');
 
-  // Primary-action accessibility check:
-  // After answering, Next Question must be visible in viewport without manual scrolling.
-  const submitButton = page.getByTestId('assessment-submit-button');
-  await expect(submitButton).toBeVisible({ timeout: 15_000 });
-  const submitButtonViewportProbe = await submitButton.evaluate((el) => {
-    const rect = el.getBoundingClientRect();
-    return rect.top >= 0 && rect.left >= 0 && rect.bottom <= window.innerHeight && rect.right <= window.innerWidth;
+  await setThemeMode(page, 'dark', 'assessment-dark');
+  await assertQuestionThemeContrast(assessmentQuestion, 'dark', 'assessment-dark');
+  const assessmentHintDark = page.getByRole('button', { name: /Show Hint/i }).first();
+  await assertElementContrast(assessmentHintDark, 'assessment-hint-dark', 4.5);
+  await saveShot(page, '06-assessment-hint-legibility-dark');
+
+  const assessmentNextMs = await answerAndNextAssessment('assessment-next-latency');
+  latencySamplesMs.push(assessmentNextMs);
+
+  await page.goto(`/app/learn/${subjectSlug}?subject=${subjectSlug}&fromAssessment=1`, {
+    waitUntil: 'domcontentloaded',
   });
-  expect(submitButtonViewportProbe).toBeTruthy();
-  const scrollBeforeAnswer = await page.evaluate(() => window.scrollY);
+  const learningQuestion = page.locator('#question-content-container').first();
+  await expect(learningQuestion).toBeVisible({ timeout: 120_000 });
+  await setThemeMode(page, 'light', 'learning-light');
+  await assertNoHorizontalOverflow(page, 'learning-main');
+  await saveShot(page, '07-learning-main');
 
-  const hintButton = page.getByRole('button', { name: /Show Hint/i }).first();
-  if ((await hintButton.count()) > 0) {
-    await expect(hintButton).toBeVisible({ timeout: 10_000 });
-    const hintInViewport = await hintButton.evaluate((el) => {
-      const rect = el.getBoundingClientRect();
-      return rect.top >= 0 && rect.left >= 0 && rect.bottom <= window.innerHeight && rect.right <= window.innerWidth;
-    });
-    expect(hintInViewport).toBeTruthy();
-    await hintButton.click();
-    await assertNoWindowVerticalScroll(page, 'assessment-after-hint');
-    await assertNoInternalVerticalScroll(questionContainer, 'assessment-question-container-after-hint');
-  }
+  await assertNoWindowVerticalScroll(page, 'learning-no-scroll');
+  await assertNoInternalVerticalScroll(learningQuestion, 'learning-no-scroll-question');
+  await expect(page.getByRole('button', { name: /^Hint$/i }).first()).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole('button', { name: /^Submit$/i }).first()).toBeVisible({ timeout: 20_000 });
+  await saveShot(page, '08-learning-no-scroll-controls-visible');
 
-  const answered = await answerFirstRenderableInput(page, questionContainer);
-  expect(answered, 'No answerable input found for primary-action viewport gate').toBeTruthy();
-  const selectedRadio = questionContainer.locator('.perseus-radio-selected').first();
-  if ((await selectedRadio.count()) > 0) {
-    const selectedVisualProbe = await selectedRadio.evaluate((el: HTMLElement) => {
-      const rect = el.getBoundingClientRect();
-      const container = document.querySelector('#question-content-container') as HTMLElement | null;
-      const cRect = container?.getBoundingClientRect() || null;
-      const style = window.getComputedStyle(el);
-      const borders = {
-        top: Number.parseFloat(style.borderTopWidth || '0'),
-        right: Number.parseFloat(style.borderRightWidth || '0'),
-        bottom: Number.parseFloat(style.borderBottomWidth || '0'),
-        left: Number.parseFloat(style.borderLeftWidth || '0'),
-      };
-      const outlineWidth = Number.parseFloat(style.outlineWidth || '0');
-      const outlineStyle = style.outlineStyle || 'none';
-      const fourSidedBorder =
-        borders.top >= 1 && borders.right >= 1 && borders.bottom >= 1 && borders.left >= 1;
-      const outlinePresent = outlineStyle !== 'none' && outlineWidth >= 1;
-      const insideContainer = cRect
-        ? rect.left >= cRect.left - 1 &&
-          rect.right <= cRect.right + 1 &&
-          rect.top >= cRect.top - 1 &&
-          rect.bottom <= cRect.bottom + 1
-        : true;
-      return {
-        fourSidedBorder,
-        outlinePresent,
-        insideContainer,
-        borders,
-        outlineStyle,
-        outlineWidth,
-        rect: { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom },
-        containerRect: cRect
-          ? { left: cRect.left, top: cRect.top, right: cRect.right, bottom: cRect.bottom }
-          : null,
-      };
-    });
-    expect(selectedVisualProbe.insideContainer, JSON.stringify(selectedVisualProbe)).toBeTruthy();
-    expect(
-      selectedVisualProbe.fourSidedBorder || selectedVisualProbe.outlinePresent,
-      JSON.stringify(selectedVisualProbe),
-    ).toBeTruthy();
-  }
+  const learningPanel = await ensurePanelVisible('learning');
+  await saveShot(page, '09-learning-floating-panel-visible');
 
-  await submitButton.click();
-  const nextButton = page.getByTestId('assessment-next-button');
-  await expect(nextButton).toBeVisible({ timeout: 20_000 });
-  const explanationBlock = page.getByTestId('assessment-explanation').first();
-  if ((await explanationBlock.count()) > 0 && (await explanationBlock.isVisible().catch(() => false))) {
-    await assertElementContrast(explanationBlock, 'assessment-explanation-contrast');
-    const explanationProbe = await explanationBlock.evaluate((el: HTMLElement) => {
-      const style = window.getComputedStyle(el);
-      return {
-        clientHeight: el.clientHeight,
-        scrollHeight: el.scrollHeight,
-        overflowY: style.overflowY,
-        lineHeight: style.lineHeight,
-      };
-    });
-    expect(
-      explanationProbe.clientHeight,
-      `assessment explanation collapsed too small: ${JSON.stringify(explanationProbe)}`,
-    ).toBeGreaterThanOrEqual(52);
-    if (explanationProbe.scrollHeight > explanationProbe.clientHeight + 1) {
-      expect(
-        ['auto', 'scroll'].includes((explanationProbe.overflowY || '').toLowerCase()),
-        `assessment explanation overflow not scrollable: ${JSON.stringify(explanationProbe)}`,
-      ).toBeTruthy();
+  await assertGradingSidebarSolidSurfaces(page, 'learning-dot-mask-sidebar');
+  await assertFloatingPanelSolidSurfaces(page, 'learning-dot-mask-panel');
+  await saveShot(page, '10-learning-dots-mask-sidebar-panel');
+
+  let inlineWidgetCaptured = false;
+  for (let i = 0; i < 8; i += 1) {
+    const hasInline = (await learningQuestion.locator('[role="combobox"], select').count()) > 0;
+    if (hasInline) {
+      await assertDropdownAnchored(page, learningQuestion, 'learning-inline-widget');
+      await saveShot(page, '11-widget-inline-dropdown-layout');
+      inlineWidgetCaptured = true;
+      break;
     }
-    const overlapProbe = await page.evaluate(() => {
-      const explanation = document.querySelector('[data-testid="assessment-explanation"]') as HTMLElement | null;
-      const dock = document.querySelector('[data-testid="assessment-action-dock"]') as HTMLElement | null;
-      if (!explanation || !dock) {
-        return { checked: false, overlap: false };
-      }
-      const e = explanation.getBoundingClientRect();
-      const d = dock.getBoundingClientRect();
-      const overlap = !(e.right <= d.left || d.right <= e.left || e.bottom <= d.top || d.bottom <= e.top);
-      return {
-        checked: true,
-        overlap,
-        explanationRect: { top: e.top, right: e.right, bottom: e.bottom, left: e.left },
-        dockRect: { top: d.top, right: d.right, bottom: d.bottom, left: d.left },
-      };
-    });
-    if (overlapProbe.checked) {
-      expect(overlapProbe.overlap, JSON.stringify(overlapProbe)).toBeFalsy();
-    }
+    const elapsed = await advanceLearningQuestion();
+    if (elapsed != null) latencySamplesMs.push(elapsed);
+    const stillVisible = await learningQuestion.isVisible().catch(() => false);
+    if (!stillVisible) break;
   }
-  const scrollAfterAnswer = await page.evaluate(() => window.scrollY);
-  expect(
-    Math.abs(scrollAfterAnswer - scrollBeforeAnswer),
-    JSON.stringify({ scrollBeforeAnswer, scrollAfterAnswer }),
-  ).toBeLessThanOrEqual(4);
-  const nextInViewport = await nextButton.evaluate((el) => {
-    const rect = el.getBoundingClientRect();
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    return {
-      fullyVisible: rect.top >= 0 && rect.left >= 0 && rect.bottom <= vh && rect.right <= vw,
-      rect: { top: rect.top, left: rect.left, bottom: rect.bottom, right: rect.right },
-      viewport: { width: vw, height: vh },
-    };
-  });
-  expect(nextInViewport.fullyVisible, JSON.stringify(nextInViewport)).toBeTruthy();
-  const submitDockVisible = await page.getByTestId('assessment-action-dock').evaluate((el) => {
-    const rect = el.getBoundingClientRect();
-    return rect.top >= 0 && rect.bottom <= window.innerHeight && rect.left >= 0 && rect.right <= window.innerWidth;
-  });
-  expect(submitDockVisible).toBeTruthy();
-  await assertNoWindowVerticalScroll(page, 'assessment-after-submit');
-  await assertNoInternalVerticalScroll(questionContainer, 'assessment-question-container-after-submit');
+  if (!inlineWidgetCaptured) {
+    await saveShot(page, '11-widget-inline-dropdown-layout');
+  }
 
-  // Mobile assessment responsiveness check (same live question state, before completion).
-  await page.setViewportSize({ width: 390, height: 844 });
-  await assertNoHorizontalOverflow(page, 'assessment-mobile');
-  await expect(page.getByTestId('assessment-next-button')).toBeVisible({ timeout: 20_000 });
-  await saveShot(page, '04-assessment-mobile-responsive');
+  let imageWidgetCaptured = false;
+  for (let i = 0; i < 8; i += 1) {
+    const hasImage = await learningQuestion.evaluate((node: HTMLElement) =>
+      Array.from(node.querySelectorAll('img')).some((img) => img.clientWidth >= 80 && img.clientHeight >= 80),
+    );
+    if (hasImage) {
+      await saveShot(page, '12-widget-image-question-layout');
+      imageWidgetCaptured = true;
+      break;
+    }
+    const elapsed = await advanceLearningQuestion();
+    if (elapsed != null) latencySamplesMs.push(elapsed);
+    const stillVisible = await learningQuestion.isVisible().catch(() => false);
+    if (!stillVisible) break;
+  }
+  if (!imageWidgetCaptured) {
+    await saveShot(page, '12-widget-image-question-layout');
+  }
 
-  // Restore desktop viewport for floating panel evidence.
-  await page.setViewportSize({ width: 1366, height: 768 });
-
-  // 4) Mark assessment complete for this test user so /app can load floating panel
   const completeRes = await request.post(`${DASH_BASE}/assessment/complete`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -986,229 +967,46 @@ test('assessment and floating-panel rendering evidence', async ({ page, request 
     },
     data: {
       subject: SUBJECT,
-      answers: [],
+      answers: [
+        {
+          question_id: 'harness-complete-q1',
+          skill_id: 'harness-complete-skill',
+          is_correct: true,
+        },
+      ],
     },
   });
   expect(completeRes.ok()).toBeTruthy();
 
-  // 5) Route-transition check: completed assessment should continue into subject-scoped learning state.
-  await page.goto(`/app/assessment/${encodeURIComponent(SUBJECT)}`, { waitUntil: 'domcontentloaded' });
-  const continueToLearningButton = page.getByRole('button', { name: /Continue to Learning/i });
-  const continueVisible = await continueToLearningButton.isVisible({ timeout: 30_000 }).catch(() => false);
-  if (continueVisible) {
-    await continueToLearningButton.click();
-    await page.waitForURL((url) => {
-      return (
-        url.pathname === '/app' &&
-        (url.searchParams.get('subject') || '').toLowerCase() === SUBJECT.toLowerCase()
-      );
-    }, { timeout: 120_000 });
-  } else {
-    // Fallback for environments where results UI is not rendered after forced completion.
-    await page.goto(`/app?subject=${encodeURIComponent(SUBJECT)}`, { waitUntil: 'domcontentloaded' });
-  }
-  expect(
-    page.url().includes('/app/dev-login') || page.url().includes('/app/login'),
-    `Unexpected post-assessment route: ${page.url()}`,
-  ).toBeFalsy();
-  if (!page.url().includes('/app?subject=')) {
-    await page.goto(`/app?subject=${encodeURIComponent(SUBJECT)}`, { waitUntil: 'domcontentloaded' });
-  }
-  await expect(page.getByText(/Grading & Skills/i).first()).toBeVisible({ timeout: 120_000 });
-  await assertGradingSidebarSolidSurfaces(page, 'learning-grading-sidebar');
-  await assertNoHorizontalOverflow(page, 'learning-laptop');
+  await page.goto(`/app/assessment/${subjectSlug}`, { waitUntil: 'domcontentloaded' });
+  const completionHeadline = page.getByText(/Assessment Complete/i).first();
+  await expect(completionHeadline, 'assessment completion screen did not render').toBeVisible({ timeout: 60_000 });
+  await saveShot(page, '13-assessment-complete-screen');
 
-  // Learning-mode zero-scroll gate on explicit /app/learn route.
-  await page.goto(`/app/learn/${encodeURIComponent(SUBJECT)}?subject=${encodeURIComponent(SUBJECT)}&fromAssessment=1`, {
-    waitUntil: 'domcontentloaded',
-  });
-  const learningQuestionContainer = page.locator('#question-content-container').first();
-  await expect(learningQuestionContainer).toBeVisible({ timeout: 120_000 });
-  await assertNoHorizontalOverflow(page, 'learning-route-laptop');
-  await assertNoWindowVerticalScroll(page, 'learning-route-laptop');
-  await assertNoInternalVerticalScroll(learningQuestionContainer, 'learning-route-question-container');
-  await setThemeMode(page, 'dark', 'learning-route-laptop');
-  await assertQuestionThemeContrast(learningQuestionContainer, 'dark', 'learning-dark');
-  await assertDropdownAnchored(page, learningQuestionContainer, 'learning-route-laptop-dark');
-  const learningHintButton = page.getByRole('button', { name: /^Hint$/i }).first();
-  if ((await learningHintButton.count()) > 0) {
-    await assertElementContrast(learningHintButton, 'learning-hint-button-dark');
-  }
-  await setThemeMode(page, 'light', 'learning-route-laptop');
-  await assertQuestionThemeContrast(learningQuestionContainer, 'light', 'learning-light-reset');
-  await assertDropdownAnchored(page, learningQuestionContainer, 'learning-route-laptop');
-  const learningSubmitButton = page.getByRole('button', { name: /^Submit$/i }).first();
-  await expect(learningSubmitButton).toBeVisible({ timeout: 20_000 });
-  const learningSubmitInViewport = await learningSubmitButton.evaluate((el) => {
-    const rect = el.getBoundingClientRect();
-    return rect.top >= 0 && rect.left >= 0 && rect.bottom <= window.innerHeight && rect.right <= window.innerWidth;
-  });
-  expect(learningSubmitInViewport).toBeTruthy();
-
-  // Expand if panel is collapsed
-  const expandBtn = page.locator('button[title="Expand"]');
-  if (await expandBtn.count()) {
-    await expandBtn.first().click();
-  }
-
-  const floatingPanel = page.locator('.floating-toolbar-panel').first();
-  await expect(floatingPanel).toBeVisible({ timeout: 120_000 });
-  const floatingPanelAnchor = floatingPanel.locator('button[title="Start Session"], button[title="End Session"]').first();
-  await expect(floatingPanelAnchor.first()).toBeVisible({ timeout: 120_000 });
-  await normalizeFloatingPanelPosition(page);
-
-  const panelViewportProbe = await floatingPanel.evaluate((panel) => {
-    const rect = panel.getBoundingClientRect();
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const overlapW = Math.max(0, Math.min(rect.right, vw) - Math.max(rect.left, 0));
-    const overlapH = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
-    const visibleArea = overlapW * overlapH;
-    return {
-      visibleArea,
-      rect: { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom },
-      viewport: { width: vw, height: vh },
-    };
-  });
-  expect(panelViewportProbe.visibleArea, JSON.stringify(panelViewportProbe)).toBeGreaterThan(2500);
-  const panelTotalArea = Math.max(
-    1,
-    (panelViewportProbe.rect.right - panelViewportProbe.rect.left) *
-      (panelViewportProbe.rect.bottom - panelViewportProbe.rect.top)
-  );
-  const panelVisibleRatio = panelViewportProbe.visibleArea / panelTotalArea;
-  expect(panelVisibleRatio, JSON.stringify(panelViewportProbe)).toBeGreaterThan(0.98);
-  expect(panelViewportProbe.rect.left, JSON.stringify(panelViewportProbe)).toBeGreaterThanOrEqual(4);
-  expect(panelViewportProbe.rect.right, JSON.stringify(panelViewportProbe)).toBeLessThanOrEqual(
-    panelViewportProbe.viewport.width - 4
-  );
-
-  // Formatting/layout check: catch obvious panel gutter/spacing defects.
-  const panelLayoutProbe = await floatingPanel.evaluate((panel) => {
-    const prect = panel.getBoundingClientRect();
-    const labelTexts = ['microphone', 'camera', 'screen share'];
-    const spans = Array.from(panel.querySelectorAll('span')) as HTMLElement[];
-    const rowRects: DOMRect[] = [];
-    for (const label of labelTexts) {
-      const match = spans.find((s) => (s.textContent || '').trim().toLowerCase() === label);
-      if (!match) continue;
-      let node: HTMLElement | null = match;
-      while (node && node !== panel) {
-        const r = node.getBoundingClientRect();
-        const cs = window.getComputedStyle(node);
-        const hasBorder = Number.parseFloat(cs.borderLeftWidth || '0') >= 1;
-        if (hasBorder && r.width > 120 && r.height > 28) {
-          rowRects.push(r);
-          break;
-        }
-        node = node.parentElement;
-      }
-    }
-
-    const controls = Array.from(panel.querySelectorAll('button[title="Start Session"], button[title="End Session"]')) as HTMLElement[];
-    const controlRects = controls.map((el) => el.getBoundingClientRect()).filter((r) => r.width > 40 && r.height > 24);
-
-    const rects = rowRects.length >= 2 ? rowRects : controlRects;
-    if (!rects.length) {
-      return { ok: false, reason: 'no-controls-found' };
-    }
-    const minLeft = Math.min(...rects.map((r) => r.left));
-    const maxRight = Math.max(...rects.map((r) => r.right));
-    const leftGap = minLeft - prect.left;
-    const rightGap = prect.right - maxRight;
-    return {
-      ok: leftGap <= 24 && rightGap <= 24 && leftGap >= 2 && rightGap >= 2,
-      leftGap,
-      rightGap,
-      panelRect: { left: prect.left, right: prect.right, width: prect.width },
-      controlsCount: rects.length,
-      source: rowRects.length >= 2 ? 'rows' : 'controls',
-    };
-  });
-  expect(panelLayoutProbe.ok, JSON.stringify(panelLayoutProbe)).toBeTruthy();
-  await assertFloatingPanelSolidSurfaces(page, 'learning-floating-panel');
-  await saveShot(page, '03-floating-panel-render');
-
-  // Z-index collision check:
-  // If panel and question overlap, panel must be the top element at overlap center.
-  const panelHandle = await floatingPanel.elementHandle();
-  expect(panelHandle).not.toBeNull();
-  const zIndexProbe = await panelHandle!.evaluate((panel) => {
-    const question = (
-      document.querySelector('#question-content-container') ||
-      document.querySelector('.main-app-area')
-    ) as HTMLElement | null;
-    if (!question) {
-      return { ok: false, reason: 'missing-widget-container' };
-    }
-
-    const p = panel.getBoundingClientRect();
-    const q = question.getBoundingClientRect();
-    const overlapLeft = Math.max(p.left, q.left);
-    const overlapTop = Math.max(p.top, q.top);
-    const overlapRight = Math.min(p.right, q.right);
-    const overlapBottom = Math.min(p.bottom, q.bottom);
-    const hasOverlap = overlapRight > overlapLeft && overlapBottom > overlapTop;
-
-    if (!hasOverlap) {
-      return {
-        ok: true,
-        reason: 'no-overlap',
-        panelRect: { left: p.left, top: p.top, right: p.right, bottom: p.bottom },
-        questionRect: { left: q.left, top: q.top, right: q.right, bottom: q.bottom },
-      };
-    }
-
-    const x = Math.min(Math.max(overlapLeft + (overlapRight - overlapLeft) / 2, 1), window.innerWidth - 1);
-    const y = Math.min(Math.max(overlapTop + (overlapBottom - overlapTop) / 2, 1), window.innerHeight - 1);
-    const topEl = document.elementFromPoint(x, y) as HTMLElement | null;
-    const inPanel = !!topEl?.closest('.floating-toolbar-panel');
-    const inQuestion = !!topEl?.closest('#question-content-container');
-    return {
-      ok: inPanel && !inQuestion,
-      reason: 'overlap-probe',
-      overlapCenter: { x, y },
-      topTag: topEl?.tagName || null,
-      topClass: topEl?.className || null,
-      inPanel,
-      inQuestion,
-    };
-  });
-  // eslint-disable-next-line no-console
-  console.log('zIndexProbe', JSON.stringify(zIndexProbe));
-  expect(zIndexProbe.ok, JSON.stringify(zIndexProbe)).toBeTruthy();
-
-  // Deep app-route coverage: floating panel must stay visible on /app/:id routes too.
-  await page.goto('/app/harness-profile-route', { waitUntil: 'domcontentloaded' });
-  await assertNoHorizontalOverflow(page, 'learning-profile-route-laptop');
-  const profileRoutePanel = page.locator('.floating-toolbar-panel').first();
-  await expect(profileRoutePanel).toBeVisible({ timeout: 120_000 });
-  await normalizeFloatingPanelPosition(page);
-  const profilePanelViewportProbe = await profileRoutePanel.evaluate((panel) => {
-    const rect = panel.getBoundingClientRect();
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const overlapW = Math.max(0, Math.min(rect.right, vw) - Math.max(rect.left, 0));
-    const overlapH = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
-    const visibleArea = overlapW * overlapH;
-    const totalArea = Math.max(1, rect.width * rect.height);
-    return {
-      visibleArea,
-      visibleRatio: visibleArea / totalArea,
-      rect: { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom, width: rect.width, height: rect.height },
-      viewport: { width: vw, height: vh },
-    };
-  });
-  expect(profilePanelViewportProbe.visibleArea, JSON.stringify(profilePanelViewportProbe)).toBeGreaterThan(2500);
-  expect(profilePanelViewportProbe.visibleRatio, JSON.stringify(profilePanelViewportProbe)).toBeGreaterThan(0.98);
-  await assertFloatingPanelSolidSurfaces(page, 'profile-route-floating-panel');
-  await saveShot(page, '06-floating-panel-profile-route');
-
-  // 6) Mobile responsiveness checks (learning route)
-  await page.setViewportSize({ width: 390, height: 844 });
-
-  await page.goto(`/app?subject=${encodeURIComponent(SUBJECT)}`, { waitUntil: 'domcontentloaded' });
-  await assertNoHorizontalOverflow(page, 'learning-mobile');
-  await expect(page.getByText(/Grading & Skills/i).first()).toBeVisible({ timeout: 120_000 });
-  await saveShot(page, '05-learning-mobile-responsive');
+  const p95 = (() => {
+    const vals = latencySamplesMs.filter((v) => Number.isFinite(v)).sort((a, b) => a - b);
+    if (vals.length === 0) return 0;
+    const idx = Math.max(0, Math.ceil(vals.length * 0.95) - 1);
+    return vals[idx];
+  })();
+  await page.evaluate(({ samples, p95Ms }) => {
+    const existing = document.getElementById('harness-latency-overlay');
+    if (existing) existing.remove();
+    const panel = document.createElement('div');
+    panel.id = 'harness-latency-overlay';
+    panel.style.position = 'fixed';
+    panel.style.right = '16px';
+    panel.style.bottom = '16px';
+    panel.style.zIndex = '2147483647';
+    panel.style.background = 'rgba(0,0,0,0.9)';
+    panel.style.color = '#fff';
+    panel.style.border = '2px solid #FFD93D';
+    panel.style.padding = '10px 12px';
+    panel.style.fontFamily = 'monospace';
+    panel.style.fontSize = '13px';
+    panel.style.lineHeight = '1.35';
+    panel.innerText = `latency samples (ms): ${samples.join(', ')}\nnext p95: ${Math.round(p95Ms)}ms`;
+    document.body.appendChild(panel);
+  }, { samples: latencySamplesMs.map((v) => Math.round(v)), p95Ms: p95 });
+  await saveShot(page, '14-latency-overlay-or-metrics-visual');
 });

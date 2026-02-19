@@ -1748,11 +1748,16 @@ class ContentV1Engine:
             if self.gemini_only:
                 # Derive a valid question from previously Gemini-generated content.
                 seed = self._seed_from_existing_gemini(topic, age)
-                if not seed:
-                    raise RuntimeError(f"Gemini generation failed for topic={topic}, format={fmt}")
-                generated = self._build_seeded_item(topic, fmt, seed)
-                generated = self._repair_item(generated, fmt=fmt)
-                source = "gemini_derived"
+                if seed:
+                    generated = self._build_seeded_item(topic, fmt, seed)
+                    generated = self._repair_item(generated, fmt=fmt)
+                    source = "gemini_derived"
+                else:
+                    # Reliability fallback: never hard-fail first question creation when Gemini seed is unavailable.
+                    # Keep output subject-scoped and schema-valid via deterministic local generator + repair.
+                    generated = self._fallback_question(topic, age, fmt, difficulty)["item"]
+                    generated = self._repair_item(generated, fmt=fmt)
+                    source = "fallback_local"
             else:
                 generated = self._fallback_question(topic, age, fmt, difficulty)["item"]
                 generated = self._repair_item(generated, fmt=fmt)

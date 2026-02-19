@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef, useLayoutEffect } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
@@ -181,7 +181,7 @@ const RendererComponent = ({
     const [viewportHeight, setViewportHeight] = useState<number>(() =>
         typeof window !== "undefined" ? window.innerHeight : 900
     );
-    const [fitContentZoom, setFitContentZoom] = useState<number>(1);
+    const [autoFitZoom, setAutoFitZoom] = useState(1);
     const rendererRef = useRef<ServerItemRenderer>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const questionStackRef = useRef<HTMLDivElement>(null);
@@ -191,10 +191,10 @@ const RendererComponent = ({
     const safeAssessmentQuestions = assessmentQuestions ?? EMPTY_ASSESSMENT_QUESTIONS;
     const compactViewport = viewportHeight <= 900;
     const contentZoom =
-        viewportHeight <= 700 ? 0.74 :
-        viewportHeight <= 760 ? 0.8 :
-        viewportHeight <= 840 ? 0.88 :
-        viewportHeight <= 920 ? 0.94 :
+        viewportHeight <= 700 ? 0.9 :
+        viewportHeight <= 760 ? 0.94 :
+        viewportHeight <= 840 ? 0.96 :
+        viewportHeight <= 920 ? 0.98 :
         1;
 
     // Get user_id from auth context
@@ -1008,8 +1008,60 @@ const RendererComponent = ({
             w?.type === "dropdown" || w?.type === "definition"
         );
     }, [perseusItem]);
+
+    // Runtime fit scaling for long-stem/image/widget combinations so controls stay in viewport.
+    useEffect(() => {
+        const viewportEl = scrollContainerRef.current;
+        const contentEl = questionStackRef.current;
+        if (!viewportEl || !contentEl || endOfTest || isLoading || perseusItems.length === 0) {
+            setAutoFitZoom(1);
+            return;
+        }
+
+        let raf = 0;
+        let timeoutId: number | null = null;
+        const minFitZoom = hasOverlaySensitiveWidget ? 0.9 : 0.78;
+
+        const recompute = () => {
+            const viewportH = viewportEl.clientHeight;
+            const contentH = contentEl.scrollHeight;
+            if (!viewportH || !contentH) return;
+            const fitRatio = viewportH / contentH;
+            const nextZoom = fitRatio >= 0.995 ? 1 : Math.max(minFitZoom, Math.min(1, fitRatio));
+            setAutoFitZoom((prev) => (Math.abs(prev - nextZoom) > 0.01 ? nextZoom : prev));
+        };
+
+        const schedule = () => {
+            cancelAnimationFrame(raf);
+            raf = requestAnimationFrame(recompute);
+            if (timeoutId !== null) window.clearTimeout(timeoutId);
+            timeoutId = window.setTimeout(recompute, 45);
+        };
+
+        schedule();
+        const observer = new ResizeObserver(() => schedule());
+        observer.observe(viewportEl);
+        observer.observe(contentEl);
+        window.addEventListener("resize", schedule);
+
+        return () => {
+            cancelAnimationFrame(raf);
+            if (timeoutId !== null) window.clearTimeout(timeoutId);
+            observer.disconnect();
+            window.removeEventListener("resize", schedule);
+        };
+    }, [
+        perseusItems.length,
+        item,
+        isAnswered,
+        showFeedback,
+        isLoading,
+        endOfTest,
+        hasOverlaySensitiveWidget,
+    ]);
+
     const baseContentZoom = hasOverlaySensitiveWidget ? 1 : contentZoom;
-    const effectiveContentZoom = Math.min(baseContentZoom, fitContentZoom || baseContentZoom);
+    const effectiveContentZoom = Math.min(baseContentZoom, autoFitZoom);
     const contentZoomWrapperStyle: React.CSSProperties | undefined =
         effectiveContentZoom < 1
             ? ({
@@ -1020,36 +1072,6 @@ const RendererComponent = ({
             } as React.CSSProperties)
             : undefined;
 
-    useEffect(() => {
-        setFitContentZoom(baseContentZoom);
-    }, [baseContentZoom, item, isAnswered, isLoading, perseusItems.length]);
-
-    useLayoutEffect(() => {
-        const viewportEl = scrollContainerRef.current;
-        const stackEl = questionStackRef.current;
-        if (!viewportEl || !stackEl) return;
-
-        const MIN_ZOOM = 0.62;
-        const STEP = 0.04;
-        const runFit = () => {
-            let nextZoom = baseContentZoom;
-            stackEl.style.zoom = String(nextZoom);
-            let overflow = viewportEl.scrollHeight - viewportEl.clientHeight;
-            let attempts = 0;
-
-            while (overflow > 2 && nextZoom > MIN_ZOOM && attempts < 10) {
-                nextZoom = Math.max(MIN_ZOOM, Number((nextZoom - STEP).toFixed(3)));
-                stackEl.style.zoom = String(nextZoom);
-                overflow = viewportEl.scrollHeight - viewportEl.clientHeight;
-                attempts += 1;
-            }
-
-            setFitContentZoom((prev) => (Math.abs(prev - nextZoom) < 0.005 ? prev : nextZoom));
-        };
-
-        const raf = requestAnimationFrame(runFit);
-        return () => cancelAnimationFrame(raf);
-    }, [baseContentZoom, viewportHeight, item, isAnswered, showFeedback, perseusItems.length, isLoading, assessmentMode]);
     const progressPercentage = perseusItems.length > 0
         ? Math.min(100, ((item + 1) / perseusItems.length) * 100)
         : 0;

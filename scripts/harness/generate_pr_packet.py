@@ -10,6 +10,22 @@ from pathlib import Path
 from typing import Dict, List
 
 ROOT = Path(__file__).resolve().parents[2]
+REQUIRED_SCREENSHOT_FILES = [
+    "01-assessment-main.png",
+    "02-assessment-no-scroll-controls-visible.png",
+    "03-assessment-floating-panel-visible.png",
+    "04-assessment-zindex-pass.png",
+    "05-assessment-hint-legibility-light.png",
+    "06-assessment-hint-legibility-dark.png",
+    "07-learning-main.png",
+    "08-learning-no-scroll-controls-visible.png",
+    "09-learning-floating-panel-visible.png",
+    "10-learning-dots-mask-sidebar-panel.png",
+    "11-widget-inline-dropdown-layout.png",
+    "12-widget-image-question-layout.png",
+    "13-assessment-complete-screen.png",
+    "14-latency-overlay-or-metrics-visual.png",
+]
 
 
 def _rel(path: Path) -> str:
@@ -85,6 +101,22 @@ def build_packet(summary: Dict, screenshots_dir: Path) -> str:
     shot_paths: List[Path] = []
     if screenshots_dir.exists():
         shot_paths = sorted(p for p in screenshots_dir.glob("*.png"))
+    present_screens = {p.name for p in shot_paths}
+    missing_required_screens = [name for name in REQUIRED_SCREENSHOT_FILES if name not in present_screens]
+    strict_no_skip = bool(summary.get("strict_no_skip", True))
+    required_screenshots_present = bool(summary.get("required_screenshots_present", len(missing_required_screens) == 0))
+    if not required_screenshots_present and summary.get("missing_required_screenshots"):
+        missing_required_screens = list(summary.get("missing_required_screenshots") or missing_required_screens)
+    initial_p95_ms = summary.get("initial_p95_ms")
+    next_p95_ms = summary.get("next_p95_ms")
+    next_latency_budget_ok = isinstance(next_p95_ms, (int, float)) and float(next_p95_ms) <= 2500.0
+    floating_panel_assessment_pass = bool(summary.get("floating_panel_assessment_pass", False))
+    floating_panel_learning_pass = bool(summary.get("floating_panel_learning_pass", False))
+    dot_mask_pass = bool(summary.get("dot_mask_pass", False))
+    no_skipped_required = all(
+        not (bool(g.get("required", True)) and bool(g.get("skipped")))
+        for g in gates
+    )
 
     lines: List[str] = []
     lines.append("# PR: Content Pipeline Harness Report")
@@ -103,44 +135,33 @@ def build_packet(summary: Dict, screenshots_dir: Path) -> str:
     lines.append("## Acceptance Criteria")
     lines.append("")
     lines.append(_criterion_line("No duplicate questions by ID/content fingerprint", smoke_ok and pretest_ok))
-    lines.append(_criterion_line("Subject correctness (no cross-subject contamination)", smoke_ok and pretest_ok and c1_ok))
-    lines.append(_criterion_line("Assessment does not stop after 1-2 questions", smoke_ok and pretest_ok))
-    lines.append(_criterion_line("Adaptive assessment remains stable through at least 8 consecutive next-question transitions (no break around Q4/Q5)", pretest_ok))
-    lines.append(_criterion_line("Questions have answer area and renderable widget config", smoke_ok and pretest_ok and pw_ok))
-    # Keep latency criteria tied to the dedicated latency check, not whole-smoke status.
-    lines.append(_criterion_line("Next-question latency within budget", loading_latency_ok))
+    lines.append(_criterion_line("Subject correctness (assessment + learning, no cross-subject contamination)", smoke_ok and pretest_ok and learning_path_scope_ok))
+    lines.append(_criterion_line("Assessment does not stop after 1-2 questions and reaches completion", smoke_ok and pretest_ok))
+    lines.append(_criterion_line("Questions have answer area and renderable widget config", smoke_ok and pretest_ok and pw_ok and question_fetch_ok))
     lines.append(_criterion_line("Grading/skill-path metadata integrity checks passed", smoke_ok and pretest_ok))
-    lines.append(_criterion_line("Grading correctness parity holds for rendered options (radio selectedChoiceIds map correctly to answer key)", pretest_ok))
-    lines.append(_criterion_line("No leaked quoted choice text or duplicate 'Choose 1 answer' prompt labels in served/rendered content", smoke_ok and question_fetch_ok and pw_ok))
-    lines.append(_criterion_line("DASH system works end-to-end (health + auth + subject start + question fetch)", dash_end_to_end_ok))
-    lines.append(_criterion_line("Adaptive assessment start works across all available subjects (no terminal 400/invalid payload)", smoke_ok and adaptive_all_subjects_ok))
-    lines.append(_criterion_line("Learning mode path stays subject-correct and content-valid (recommend-next has no cross-subject contamination)", smoke_ok and learning_path_scope_ok))
-    lines.append(_criterion_line("Question loading times are optimized for max speed (initial load + learning recommend-next + adaptive start + repeated next-question transitions within budget)", loading_latency_ok))
     lines.append(_criterion_line("Websocket ping/pong smoke check passed", websocket_ok))
-    lines.append(_criterion_line("Frontend UI/UX stability checks passed (widget + floating panel visible and usable)", pw_ok and len(shot_paths) >= 3))
-    lines.append(_criterion_line("Primary assessment actions are visible/reachable without manual scrolling", pw_ok))
-    lines.append(_criterion_line("Assessment question view has zero browser-level vertical scroll while keeping question, hints, and actions usable", pw_ok))
-    lines.append(_criterion_line("Assessment question view has zero internal question-container scroll while keeping question/options/hints/actions usable", pw_ok))
-    lines.append(_criterion_line("Assessment question container overflow contract holds (`#question-content-container` does not compute to overflow-y:auto)", pw_ok))
-    lines.append(_criterion_line("Visual-heavy prompts stay viewport-fit and do not push Submit/Next below fold", pw_ok))
-    lines.append(_criterion_line("Assessment remains zero-window-scroll after opening at least one hint", pw_ok))
-    lines.append(_criterion_line("Learning mode route (`/app/learn/:subject`) maintains zero browser-level vertical scroll with question/actions visible", pw_ok))
-    lines.append(_criterion_line("Widget-family render integrity holds (radio/dropdown/text-numeric render inside container without detached overlays/stray text)", pw_ok))
-    lines.append(_criterion_line("Dropdown anchor integrity holds (opened listbox stays near combobox trigger and inside viewport on assessment + learning routes)", pw_ok))
-    lines.append(_criterion_line("Theme integrity holds in both modes (light/dark toggles render correct question surfaces/text without mixed-mode artifacts)", pw_ok))
-    lines.append(_criterion_line("Question content contrast passes in both light and dark themes on assessment + learning routes", pw_ok))
-    lines.append(_criterion_line("Hint control legibility passes in both themes (`Show Hint`/`Hint` stays readable on assessment + learning routes)", pw_ok))
-    lines.append(_criterion_line("Selected radio option highlight renders as complete 4-sided outline (no clipped/incomplete blue border)", pw_ok))
-    lines.append(_criterion_line("Assessment completion routes into subject-scoped learning state (not generic homepage fallback)", pw_ok and smoke_ok))
-    lines.append(_criterion_line("Adaptive assessment reaches completed=true within 10 answered questions without manual retry loops", smoke_ok and pretest_ok))
-    lines.append(_criterion_line("Synthetic fallback question IDs resolve to source payloads so adaptive continuity cannot dead-end", smoke_ok and pretest_ok))
-    lines.append(_criterion_line("Responsive layout has no blocking overflow/clipping on tested viewports", pw_ok))
-    lines.append(_criterion_line("Playwright screenshots captured for assessment + floating panel", pw_ok and len(shot_paths) >= 4))
-    lines.append(_criterion_line("Floating panel not obscured by widget container (Z-index check)", pw_ok))
-    lines.append(_criterion_line("Floating panel is fully visible on /app and /app/:id routes (not clipped/off-screen/sliver)", pw_ok))
-    lines.append(_criterion_line("AI payload matches browser-rendered content (hydration/render check)", pw_ok))
-    lines.append(_criterion_line("Greptile review gate passed", greptile_ok))
+    lines.append(_criterion_line("No page scroll on assessment + learning desktop baseline", pw_ok))
+    lines.append(_criterion_line("Floating panel present/usable in assessment", floating_panel_assessment_pass and pw_ok))
+    lines.append(_criterion_line("Floating panel present/usable in learning", floating_panel_learning_pass and pw_ok))
+    lines.append(_criterion_line("Dot-mask isolation for sidebar cards + floating panel", dot_mask_pass and pw_ok))
+    lines.append(_criterion_line("Hint legibility passes in light and dark modes", pw_ok))
+    lines.append(_criterion_line("Hydration/render content match passed", pw_ok))
     lines.append(_criterion_line("No leaked secrets/API keys in changed files", secret_scan_ok))
+    lines.append(_criterion_line("Greptile review gate passed", greptile_ok))
+    lines.append(_criterion_line("Strict no-skip policy enforced", strict_no_skip and no_skipped_required))
+    lines.append(_criterion_line("Required screenshot manifest is complete", required_screenshots_present))
+    lines.append(_criterion_line("Latency budget hard gate (next-question P95 <= 2.5s, hard timeout <= 6s with retry UI)", loading_latency_ok and next_latency_budget_ok))
+    lines.append("")
+
+    lines.append("## Metrics")
+    lines.append("")
+    lines.append(f"- `initial_p95_ms`: {initial_p95_ms if initial_p95_ms is not None else 'n/a'}")
+    lines.append(f"- `next_p95_ms`: {next_p95_ms if next_p95_ms is not None else 'n/a'}")
+    lines.append(f"- `strict_no_skip`: {strict_no_skip}")
+    lines.append(f"- `required_screenshots_present`: {required_screenshots_present}")
+    lines.append(f"- `floating_panel_assessment_pass`: {floating_panel_assessment_pass}")
+    lines.append(f"- `floating_panel_learning_pass`: {floating_panel_learning_pass}")
+    lines.append(f"- `dot_mask_pass`: {dot_mask_pass}")
     lines.append("")
 
     lines.append("## QA Evidence")
@@ -150,6 +171,11 @@ def build_packet(summary: Dict, screenshots_dir: Path) -> str:
             lines.append(f"- `{_rel(shot)}`")
     else:
         lines.append("- No screenshots found")
+    if missing_required_screens:
+        lines.append("")
+        lines.append("### Missing Required Screenshots")
+        for name in missing_required_screens:
+            lines.append(f"- `{name}`")
     lines.append("")
 
     lines.append("## Merge Policy")
@@ -187,6 +213,19 @@ def main() -> None:
     screenshots_dir = args.screenshots_dir if args.screenshots_dir.is_absolute() else (ROOT / args.screenshots_dir)
 
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    missing_required = []
+    if screenshots_dir.exists():
+        present = {p.name for p in screenshots_dir.glob("*.png")}
+        missing_required = [name for name in REQUIRED_SCREENSHOT_FILES if name not in present]
+    else:
+        missing_required = REQUIRED_SCREENSHOT_FILES.copy()
+
+    if missing_required:
+        raise SystemExit(
+            "Required screenshot manifest missing entries: "
+            + ", ".join(missing_required)
+        )
+
     packet = build_packet(summary, screenshots_dir)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)

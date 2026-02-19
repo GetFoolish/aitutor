@@ -160,3 +160,15 @@ Use this file as the first reference before making code changes. The issues belo
 - Long-form visual benchmark is a hard gate: a question containing a large image, long stem paragraph, and multi-select options must render with no browser scroll at 1366x768 while keeping all options and `Submit` visible.
 - Assessment layout stability is a hard gate: question card must remain centered/in-flow (no tiny compressed or off-canvas rendering) at desktop baseline after submit/next transitions.
 - Floating toolbar anchoring is a hard gate: in both assessment and learning routes, panel must initialize at canonical top-right (`transform:none`, in-viewport), not persist stale drag/translate offsets.
+
+## Production Closure Non-Negotiables (Final Harness)
+
+- No page scroll is allowed in assessment or learning question screens at desktop baseline.
+- Floating panel must be visible and usable in both assessment and learning routes.
+- Dot background must never bleed into grading sidebar cards or floating panel/control surfaces.
+- Hint text and hint controls must pass legibility/contrast in both light and dark themes.
+- Dropdown and inline widgets must stay attached to sentence flow and never overflow/detach from anchors.
+- Assessment must always complete to the completion screen and never route unexpectedly to homepage/dev-login.
+- Next-question latency is a hard gate: P95 <= 2.5s, hard timeout <= 6s with retry UX.
+- Final harness runs cannot use any `HARNESS_SKIP_*` flags; any skip env must fail the run.
+- Final PR evidence is invalid unless all required screenshot manifest files are present from the same strict run.

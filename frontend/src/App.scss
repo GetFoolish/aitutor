@@ -200,7 +200,7 @@ body {
 
 .grading-sidebar-shell,
 .grading-sidebar-scroll {
-  background-color: var(--neo-bg);
+  background-color: var(--neo-bg) !important;
   /* Keep grading rail surfaces solid; dot pattern belongs to main question canvas only. */
   background-image: none !important;
   background-repeat: no-repeat !important;
@@ -271,10 +271,12 @@ body {
 
 // Sidebar cards must remain solid surfaces; dots are page background only.
 .grading-card-surface {
+  background-color: var(--neo-bg);
   background-image: none !important;
   background-repeat: no-repeat !important;
   contain: paint;
   isolation: isolate;
+  background-clip: padding-box;
 }
 
 .grading-card-muted {
@@ -283,11 +285,19 @@ body {
   background-repeat: no-repeat !important;
   contain: paint;
   isolation: isolate;
+  background-clip: padding-box;
 }
 
 .dark .grading-card-muted {
   background-color: #121212 !important;
   background-image: none !important;
+}
+
+.grading-sidebar-shell .grading-card-surface,
+.grading-sidebar-shell .grading-card-muted,
+.floating-toolbar-panel,
+.floating-toolbar-panel * {
+  background-blend-mode: normal !important;
 }
 
   a,

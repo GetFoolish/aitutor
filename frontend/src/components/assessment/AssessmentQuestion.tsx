@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useMemo, useLayoutEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { ServerItemRenderer } from "../../package/perseus/src/server-item-renderer";
 import { storybookDependenciesV2 } from "../../package/perseus/testing/test-dependencies";
 import { RenderStateRoot } from "@khanacademy/wonder-blocks-core";
@@ -143,43 +143,41 @@ const AssessmentQuestion: React.FC<Props> = ({
   const [keScore, setKeScore] = useState<KEScore | null>(null);
   const [hintsShown, setHintsShown] = useState(0);
   const [pendingCorrect, setPendingCorrect] = useState<boolean | null>(null);
+  const [autoFitZoom, setAutoFitZoom] = useState(1);
   const startTimeRef = useRef<number>(Date.now());
   const [viewportHeight, setViewportHeight] = useState<number>(() =>
     typeof window !== 'undefined' ? window.innerHeight : 1024
   );
-  const [fitContentZoom, setFitContentZoom] = useState<number>(1);
   const compactViewport = viewportHeight <= 920;
   const ultraCompactViewport = viewportHeight <= 800;
   const contentZoom =
-    viewportHeight <= 700 ? 0.74 :
-    viewportHeight <= 760 ? 0.8 :
-    viewportHeight <= 840 ? 0.88 :
-    viewportHeight <= 920 ? 0.94 :
+    viewportHeight <= 700 ? 0.9 :
+    viewportHeight <= 760 ? 0.94 :
+    viewportHeight <= 840 ? 0.96 :
+    viewportHeight <= 920 ? 0.98 :
     1;
   const actionDockStyle: React.CSSProperties = {
-    position: 'sticky',
-    bottom: 'max(4px, env(safe-area-inset-bottom))',
+    position: 'relative',
     left: 0,
     width: '100%',
     zIndex: 60,
+    marginTop: compactViewport ? '4px' : '8px',
     padding: ultraCompactViewport ? '1px' : compactViewport ? '3px' : '6px',
     border: ultraCompactViewport ? '2px solid #000' : '3px solid #000',
     background: 'rgba(255,255,255,0.96)',
-    boxShadow: '3px 3px 0 #000',
-    backdropFilter: 'blur(2px)',
+    boxShadow: '2px 2px 0 #000',
     pointerEvents: 'auto',
   };
   const postAnswerActionDockStyle: React.CSSProperties = {
-    position: 'sticky',
-    bottom: 'max(4px, env(safe-area-inset-bottom))',
+    position: 'relative',
     left: 0,
     width: '100%',
     zIndex: 70,
+    marginTop: compactViewport ? '4px' : '8px',
     padding: ultraCompactViewport ? '1px' : compactViewport ? '3px' : '6px',
     border: ultraCompactViewport ? '2px solid #000' : '3px solid #000',
     background: 'rgba(255,255,255,0.96)',
-    boxShadow: '3px 3px 0 #000',
-    backdropFilter: 'blur(2px)',
+    boxShadow: '2px 2px 0 #000',
     pointerEvents: 'auto',
   };
 
@@ -190,6 +188,7 @@ const AssessmentQuestion: React.FC<Props> = ({
     setHintsShown(0);
     setKeScore(null);
     setPendingCorrect(null);
+    setAutoFitZoom(1);
     startTimeRef.current = Date.now();
   }, [question]);
 
@@ -454,11 +453,58 @@ const AssessmentQuestion: React.FC<Props> = ({
       (w: any) => w?.type === 'dropdown' || w?.type === 'definition'
     );
   }, [sanitizedQuestion]);
+
+  useEffect(() => {
+    const contentEl = contentBlockRef.current;
+    if (!contentEl) return;
+
+    let raf = 0;
+    let timeoutId: number | null = null;
+    const minFitZoom = hasOverlaySensitiveWidget ? 0.9 : 0.78;
+
+    const recompute = () => {
+      const clientHeight = contentEl.clientHeight;
+      const scrollHeight = contentEl.scrollHeight;
+      if (!clientHeight || !scrollHeight) return;
+
+      const fitRatio = clientHeight / scrollHeight;
+      const nextZoom = fitRatio >= 0.995 ? 1 : Math.max(minFitZoom, Math.min(1, fitRatio));
+      setAutoFitZoom((prev) => (Math.abs(prev - nextZoom) > 0.01 ? nextZoom : prev));
+    };
+
+    const schedule = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(recompute);
+      if (timeoutId !== null) window.clearTimeout(timeoutId);
+      timeoutId = window.setTimeout(recompute, 45);
+    };
+
+    schedule();
+    const observer = new ResizeObserver(() => schedule());
+    observer.observe(contentEl);
+    if (questionCardRef.current) observer.observe(questionCardRef.current);
+    if (headerBlockRef.current) observer.observe(headerBlockRef.current);
+    if (actionDockRef.current) observer.observe(actionDockRef.current);
+    if (feedbackRef.current) observer.observe(feedbackRef.current);
+    window.addEventListener('resize', schedule);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      if (timeoutId !== null) window.clearTimeout(timeoutId);
+      observer.disconnect();
+      window.removeEventListener('resize', schedule);
+    };
+  }, [
+    question,
+    questionNumber,
+    totalQuestions,
+    hintsShown,
+    isAnswered,
+    showFeedback,
+    hasOverlaySensitiveWidget,
+  ]);
   const baseContentZoom = hasOverlaySensitiveWidget ? 1 : contentZoom;
-  const answeredContentZoom = isAnswered
-    ? Math.min(baseContentZoom, viewportHeight <= 800 ? 0.72 : 0.78)
-    : baseContentZoom;
-  const resolvedContentZoom = Math.min(answeredContentZoom, fitContentZoom || answeredContentZoom);
+  const resolvedContentZoom = Math.min(baseContentZoom, autoFitZoom);
   const contentZoomWrapperStyle: React.CSSProperties | undefined =
     resolvedContentZoom < 1
       ? ({
@@ -476,46 +522,6 @@ const AssessmentQuestion: React.FC<Props> = ({
     overflowX: 'hidden',
     paddingRight: compactViewport ? '2px' : '4px',
   };
-
-  useEffect(() => {
-    setFitContentZoom(answeredContentZoom);
-  }, [answeredContentZoom, question?.dash_metadata?.dash_question_id, questionNumber, isAnswered]);
-
-  useLayoutEffect(() => {
-    const cardEl = questionCardRef.current;
-    const contentEl = contentBlockRef.current;
-    if (!cardEl || !contentEl) return;
-
-    const MIN_ZOOM = 0.62;
-    const STEP = 0.04;
-    const runFit = () => {
-      let nextZoom = answeredContentZoom;
-      contentEl.style.zoom = String(nextZoom);
-      let overflow = cardEl.scrollHeight - cardEl.clientHeight;
-      let attempts = 0;
-
-      while (overflow > 2 && nextZoom > MIN_ZOOM && attempts < 10) {
-        nextZoom = Math.max(MIN_ZOOM, Number((nextZoom - STEP).toFixed(3)));
-        contentEl.style.zoom = String(nextZoom);
-        overflow = cardEl.scrollHeight - cardEl.clientHeight;
-        attempts += 1;
-      }
-
-      setFitContentZoom((prev) => (Math.abs(prev - nextZoom) < 0.005 ? prev : nextZoom));
-    };
-
-    const raf = requestAnimationFrame(runFit);
-    return () => cancelAnimationFrame(raf);
-  }, [
-    answeredContentZoom,
-    viewportHeight,
-    question?.dash_metadata?.dash_question_id,
-    questionNumber,
-    hintsShown,
-    isAnswered,
-    showFeedback,
-    pendingCorrect,
-  ]);
   // Detect if question needs audio (phonics/listening questions)
   const audioWord = useMemo(() => {
     const content = question?.question?.content || '';
@@ -542,9 +548,6 @@ const AssessmentQuestion: React.FC<Props> = ({
     // Empty submission guard
     if (!hasUserInput(questionData.widgets || {}, userInput)) {
       setEmptyWarning(true);
-      setTimeout(() => {
-        document.getElementById('empty-submit-warning')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 50);
       setTimeout(() => setEmptyWarning(false), 3500);
       return;
     }
@@ -590,9 +593,6 @@ const AssessmentQuestion: React.FC<Props> = ({
       console.error('[AssessmentQuestion] Scoring error:', err);
       // Show visible error to user instead of silent failure
       setEmptyWarning(true);
-      setTimeout(() => {
-        document.getElementById('empty-submit-warning')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 50);
       setTimeout(() => setEmptyWarning(false), 4000);
       setIsAnswered(false);
     }

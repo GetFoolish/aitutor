@@ -78,6 +78,34 @@ Ship a fast and reliable generative content pipeline with correctness guards for
 - [ ] Pretest + content battletest pass across topics
 - [ ] No leaked secrets/API keys in changed files
 
+## Final Strict Contract (No-Skip)
+
+The final production-proof run must satisfy all of the following:
+
+- [ ] No `HARNESS_SKIP_*` env flags are enabled.
+- [ ] Greptile gate is required and passed.
+- [ ] Content-v1 battletest gate is required and passed.
+- [ ] Assessment and learning routes are both zero-page-scroll at desktop baseline viewport.
+- [ ] Floating panel is present/usable in both assessment and learning routes.
+- [ ] Dot-mask isolation passes for grading sidebar cards and floating panel surfaces.
+- [ ] Hint legibility passes in both light and dark mode.
+- [ ] Next-question performance hard gate: P95 <= 2.5s and hard timeout <= 6s with retry UI.
+- [ ] Required screenshot manifest is complete:
+  - [ ] `01-assessment-main.png`
+  - [ ] `02-assessment-no-scroll-controls-visible.png`
+  - [ ] `03-assessment-floating-panel-visible.png`
+  - [ ] `04-assessment-zindex-pass.png`
+  - [ ] `05-assessment-hint-legibility-light.png`
+  - [ ] `06-assessment-hint-legibility-dark.png`
+  - [ ] `07-learning-main.png`
+  - [ ] `08-learning-no-scroll-controls-visible.png`
+  - [ ] `09-learning-floating-panel-visible.png`
+  - [ ] `10-learning-dots-mask-sidebar-panel.png`
+  - [ ] `11-widget-inline-dropdown-layout.png`
+  - [ ] `12-widget-image-question-layout.png`
+  - [ ] `13-assessment-complete-screen.png`
+  - [ ] `14-latency-overlay-or-metrics-visual.png`
+
 ## Merge Policy
 
 Merge is allowed only when all are true:

@@ -8,9 +8,6 @@ import BackgroundShapes from '../background-shapes/BackgroundShapes';
 import FloatingControlPanel from '../floating-control-panel/FloatingControlPanel';
 import { TutorProvider } from '../../features/tutor';
 
-/* 🔥 COPY LOGIN BG STYLES */
-import '../auth/auth.scss';
-
 const DASH_API_URL =
   import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 
@@ -32,12 +29,7 @@ interface Params {
 const AssessmentFlow: React.FC = () => {
   const history = useHistory();
   const { subject } = useParams<Params>();
-  const [viewportHeight, setViewportHeight] = useState<number>(() =>
-    typeof window !== 'undefined' ? window.innerHeight : 900
-  );
-  const HEADER_OFFSET_PX = 52;
-  const rootHeight = `${viewportHeight}px`;
-  const contentPaneHeight = `${Math.max(320, viewportHeight - HEADER_OFFSET_PX)}px`;
+  const rootHeight = '100dvh';
 
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [assessmentId, setAssessmentId] = useState<string | null>(null);
@@ -130,12 +122,6 @@ const AssessmentFlow: React.FC = () => {
       }
     };
   }, [subject]);
-
-  useEffect(() => {
-    const onResize = () => setViewportHeight(window.innerHeight);
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
-  }, []);
 
   useEffect(() => {
     const prevBodyOverflow = document.body.style.overflow;
@@ -295,7 +281,7 @@ const AssessmentFlow: React.FC = () => {
     payload: { assessment_id: string; question_id: string; skill_id: string; is_correct: boolean },
   ): Promise<Response> => {
     // Fast-settle policy: avoid long blocking spinner loops on next-question fetch.
-    const NEXT_REQUEST_TIMEOUTS_MS = [1500, 1900];
+    const NEXT_REQUEST_TIMEOUTS_MS = [1200, 1500];
 
     for (let attempt = 0; attempt < NEXT_REQUEST_TIMEOUTS_MS.length; attempt += 1) {
       const timeoutMs = NEXT_REQUEST_TIMEOUTS_MS[attempt];
@@ -415,7 +401,7 @@ const AssessmentFlow: React.FC = () => {
   ---------------------------------------------------- */
   return (
     <div
-      className="auth-container"
+      className="assessment-container"
       style={{
         position: 'fixed',
         inset: 0,
@@ -423,8 +409,8 @@ const AssessmentFlow: React.FC = () => {
         overflowY: 'hidden',
         display: 'flex',
         flexDirection: 'column',
-        minHeight: rootHeight,
         height: rootHeight,
+        maxHeight: rootHeight,
         width: '100vw',
         padding: 0,
         alignItems: 'stretch',
@@ -441,7 +427,8 @@ const AssessmentFlow: React.FC = () => {
 
       {loading && (
         <div style={{
-          minHeight: rootHeight,
+          flex: 1,
+          minHeight: 0,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -539,7 +526,8 @@ const AssessmentFlow: React.FC = () => {
 
       {startError && (
         <div style={{
-          minHeight: rootHeight,
+          flex: 1,
+          minHeight: 0,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -623,7 +611,7 @@ const AssessmentFlow: React.FC = () => {
           )}
 
           {!completed && (
-            <div style={{ position: 'relative', marginTop: `${HEADER_OFFSET_PX}px`, height: contentPaneHeight, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div style={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
               {/* Assessment Mode Banner */}
               <div style={{
                 width: '100%',
@@ -702,7 +690,7 @@ const AssessmentFlow: React.FC = () => {
 
               <div style={{
                 padding: '0 12px 10px 12px',
-                maxWidth: 900,
+                maxWidth: 1180,
                 margin: '0 auto',
                 width: '100%',
                 flex: 1,

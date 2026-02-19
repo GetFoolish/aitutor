@@ -17,6 +17,7 @@ import argparse
 import asyncio
 import hashlib
 import json
+import math
 import os
 import re
 import time
@@ -38,8 +39,8 @@ DASH_BASE = os.environ.get("DASH_BASE", "http://localhost:8000")
 TA_BASE = os.environ.get("TA_BASE", "http://localhost:8002")
 SUBJECT = os.environ.get("HARNESS_SUBJECT", "Science").strip().title()
 QUESTIONS_LATENCY_BUDGET_S = float(os.environ.get("HARNESS_QUESTIONS_LATENCY_BUDGET_S", "8"))
-NEXT_LATENCY_BUDGET_S = float(os.environ.get("HARNESS_NEXT_LATENCY_BUDGET_S", "5"))
-ADAPTIVE_START_LATENCY_BUDGET_S = float(os.environ.get("HARNESS_ADAPTIVE_START_LATENCY_BUDGET_S", "12"))
+NEXT_LATENCY_BUDGET_S = float(os.environ.get("HARNESS_NEXT_LATENCY_BUDGET_S", "2.5"))
+ADAPTIVE_START_LATENCY_BUDGET_S = float(os.environ.get("HARNESS_ADAPTIVE_START_LATENCY_BUDGET_S", "8"))
 MIN_QUESTION_COUNT = int(os.environ.get("HARNESS_MIN_QUESTION_COUNT", "5"))
 ADAPTIVE_START_TIMEOUT_S = float(os.environ.get("HARNESS_ADAPTIVE_START_TIMEOUT_S", "4"))
 ADAPTIVE_START_RETRY_TIMEOUT_S = float(os.environ.get("HARNESS_ADAPTIVE_START_RETRY_TIMEOUT_S", "12"))
@@ -411,7 +412,7 @@ def run(output_path: Path) -> Dict[str, Any]:
     )
     qc, qp, q_elapsed = _req_json(
         "GET",
-        f"{DASH_BASE}/api/questions/5",
+        f"{DASH_BASE}/api/questions/10",
         token=token,
         timeout=120,
         retries=1,
@@ -635,7 +636,7 @@ def run(output_path: Path) -> Dict[str, Any]:
                 ),
                 "start_body": ready_start_payload,
             }
-            required_transitions = 5
+            required_transitions = 8
             stable_transitions = 0
             transition_rows: List[Dict[str, Any]] = []
             session_id = ready_start_payload.get("assessment_id")
@@ -670,12 +671,9 @@ def run(output_path: Path) -> Dict[str, Any]:
                     )
                     completed_early = isinstance(np, dict) and bool(np.get("completed"))
                     has_next_question = isinstance(np, dict) and isinstance(np.get("question"), dict)
-                    step_ok = (
-                        nc == 200
-                        and n_elapsed <= NEXT_LATENCY_BUDGET_S
-                        and not completed_early
-                        and has_next_question
-                    )
+                    # Stability = progression continuity.
+                    # Latency budget is enforced separately via percentile + hard-timeout checks.
+                    step_ok = (nc == 200 and not completed_early and has_next_question)
                     if step_ok:
                         break
                     if nc == 503 and attempt < 2:
@@ -729,6 +727,25 @@ def run(output_path: Path) -> Dict[str, Any]:
 
         adaptive_start_elapsed = progression_payload.get("start_elapsed_s")
         next_elapsed = max(next_transition_latencies) if next_transition_latencies else ((progression_payload.get("next") or {}).get("elapsed_s"))
+        p95_next_elapsed = None
+        next_timeout_budget_s = float(os.environ.get("HARNESS_NEXT_TIMEOUT_BUDGET_S", "6.0"))
+        if next_transition_latencies:
+            vals = sorted(float(v) for v in next_transition_latencies if isinstance(v, (int, float)))
+            if vals:
+                if len(vals) == 1:
+                    p95_next_elapsed = vals[0]
+                else:
+                    # Linear interpolation percentile (reduces sensitivity to single outliers).
+                    pos = 0.95 * (len(vals) - 1)
+                    lo = int(math.floor(pos))
+                    hi = int(math.ceil(pos))
+                    if lo == hi:
+                        p95_next_elapsed = vals[lo]
+                    else:
+                        frac = pos - lo
+                        p95_next_elapsed = vals[lo] + (vals[hi] - vals[lo]) * frac
+
+        hard_timeout_ok = all(float(v) <= next_timeout_budget_s for v in next_transition_latencies)
         loading_latency_ok = (
             isinstance(q_elapsed, (int, float))
             and q_elapsed <= QUESTIONS_LATENCY_BUDGET_S
@@ -736,8 +753,9 @@ def run(output_path: Path) -> Dict[str, Any]:
             and recommend_elapsed_s <= NEXT_LATENCY_BUDGET_S
             and isinstance(adaptive_start_elapsed, (int, float))
             and adaptive_start_elapsed <= ADAPTIVE_START_LATENCY_BUDGET_S
-            and isinstance(next_elapsed, (int, float))
-            and next_elapsed <= NEXT_LATENCY_BUDGET_S
+            and isinstance(p95_next_elapsed, (int, float))
+            and p95_next_elapsed <= NEXT_LATENCY_BUDGET_S
+            and hard_timeout_ok
         )
         result["checks"]["loading_latency"] = {
             "ok": loading_latency_ok,
@@ -745,12 +763,15 @@ def run(output_path: Path) -> Dict[str, Any]:
             "learning_recommend_next_elapsed_s": recommend_elapsed_s,
             "adaptive_start_elapsed_s": adaptive_start_elapsed,
             "next_question_elapsed_s": next_elapsed,
+            "next_question_p95_elapsed_s": p95_next_elapsed,
             "adaptive_next_transition_elapsed_s": next_transition_latencies,
+            "adaptive_next_hard_timeout_ok": hard_timeout_ok,
             "budgets": {
                 "initial_question_fetch_budget_s": QUESTIONS_LATENCY_BUDGET_S,
                 "learning_recommend_next_budget_s": NEXT_LATENCY_BUDGET_S,
                 "adaptive_start_budget_s": ADAPTIVE_START_LATENCY_BUDGET_S,
                 "next_question_budget_s": NEXT_LATENCY_BUDGET_S,
+                "next_question_timeout_budget_s": next_timeout_budget_s,
             },
         }
         if not loading_latency_ok:
