@@ -1,106 +1,127 @@
-# QA Bug Verification Report
+# QA Bug Verification Report — Round 4
 
-**Date:** February 20, 2026 (Round 3 — post design-system commit e1ca060c)
+**Date:** February 20, 2026
 **Tester:** Claude (automated browser + code review)
 **Environment:** localhost:5173 (dev-login, Math, Age 10/Grade 5)
-**Commits tested:** 90115db3 (backend fixes), aa138a29 (schemas/tests), e1ca060c (design system)
+**Commits tested:** 90115db3 (backend), aa138a29 (schemas), e1ca060c (design v1), latest (P0 fixes + design v2)
 
 ---
 
-## Summary: 7 Fixed / 1 Improved / 1 Partial
+## Bug Status Summary: 7 Fixed / 1 Improved / 1 Partial
 
-| # | Bug | Status | Verification |
-|---|-----|--------|-------------|
-| 1 | Generic meta-questions | **IMPROVED** | Round 1: meta-question served. Rounds 2-3: real math questions ("In the number 4.72…", "Maya is thinking of a decimal…", "A scientist recorded the mass…"). 3 consecutive real questions = validator working. |
-| 2 | Responsive layout | **FIXED** | Browser verified at 375px and 428px. |
-| 3 | "Continue to Learning" shows marketing | **FIXED** (code) | `fromAssessment=1` URL param check in index.tsx. |
-| 4 | Fraction 4/100 marked wrong | **FIXED** (code) | `parseFractionOrDecimal()` correctly handles "4/100" → 0.04. |
-| 5 | Assessment state doesn't reset | **FIXED** (code) | Exit handler clears all state before navigate. |
-| 6 | MCQ pre-selected wrong answer | **FIXED** | Browser: 0 checked radios on load. |
-| 7 | Perseus linter stack trace | **FIXED** | Browser: 0 lint elements in DOM. |
-| 8 | Explanation panel truncated | **FIXED** | Browser: full explanation text visible. |
-| 9 | Exit button non-functional | **PARTIAL** | Navigation now fires (URL changes to `/app?subject=Math`) but destination page hangs. See details below. |
-
----
-
-## FIXED: Question Content Invisible (CSS Collapse)
-
-**Previous status:** Critical blocker — question text invisible (height: 0px + overflow: hidden)
-**Current status:** **FIXED** as of commit e1ca060c
-
-Tested 2 consecutive assessment sessions. Both times question text was fully visible:
-- Session 1: "Maya is thinking of a decimal number. It has a 6 in the ones place…"
-- Session 2: "A scientist recorded the mass of a small sample. The mass has 1 in the tens place…"
-
-Both are real math questions with visible input fields and readable text. The CSS collapse that plagued all previous testing rounds is resolved.
+| # | Bug | Status | Notes |
+|---|-----|--------|-------|
+| 1 | Generic meta-questions | **FIXED** | 4 consecutive real math questions across rounds 2-4. Validator working. |
+| 2 | Responsive layout | **FIXED** | Tested at 375px and 428px. |
+| 3 | "Continue to Learning" shows marketing | **FIXED** | Code verified: `fromAssessment=1` param check. |
+| 4 | Fraction 4/100 marked wrong | **FIXED** | Code verified: `parseFractionOrDecimal()` handles "4/100" → 0.04. |
+| 5 | Assessment state doesn't reset | **FIXED** | Code verified: exit handler clears all state. |
+| 6 | MCQ pre-selected wrong answer | **FIXED** | Browser verified: 0 checked radios on load. |
+| 7 | Perseus linter stack trace | **FIXED** | Browser verified: 0 lint elements in DOM. |
+| 8 | Explanation panel truncated | **FIXED** | Browser verified: full explanation text visible. |
+| 9 | Exit button non-functional | **PARTIAL** | Navigation works (no more tab freeze), but `/app` destination page hangs. |
 
 ---
 
-## PARTIAL: Exit Button (Bug #9)
+## P0 Bug: CSS Collapse — IMPROVED but NOT FULLY FIXED
 
-**Previous status:** Clicking ✕ Exit froze the entire browser tab
-**Current status:** Navigation fires successfully (URL changes from `/app/assessment/Math` → `/app?subject=Math`) but the destination `/app` page hangs after loading.
+**Round 3 result:** Question content fully visible (2 sessions)
+**Round 4 result:** Question content partially visible — text in DOM but clipped by collapsed parent containers
 
-The `history.block()` race condition appears to be fixed — the exit handler now successfully navigates away. However, the `/app?subject=Math` page itself becomes unresponsive after the navigation completes. This may be a separate issue with the learning page component rather than the exit button logic.
+**What changed:** The fix changed `assessment-content-wrapper` to `flex: 1 1 auto` and `minHeight: auto`, which helped. The wrapper is now 126px (was 0px). But the nested containers BETWEEN the wrapper and the Perseus renderer still have collapse issues:
 
-**Root cause of remaining issue:** Likely the learning page (`/app`) encountering an error when loading with a subject parameter after an assessment was abandoned (incomplete assessment state in backend?).
+| Depth | Element | Height | Issue |
+|-------|---------|--------|-------|
+| 0 | perseus-renderer | 54px | Content exists ✅ |
+| 3 | question card (border-[4px]) | 130px | Card rendered ✅ |
+| 4 | unnamed flex wrapper | 32px | `flex: 1 1 0%`, `overflow: hidden auto` — crushes 130px card to 32px ❌ |
+| 5 | unnamed flex wrapper | 25px | `flex: 1 1 auto` — even smaller ❌ |
+| 6 | framework-perseus | 116px | `overflow: hidden` — content clipped ❌ |
+| 8 | assessment-content-wrapper | 126px | Fixed ✅ |
+
+**Root cause:** The fix addressed the outermost wrapper but didn't fix the inner containers at depths 4-7. These still have `flex: 1 1 0%` with `overflow: hidden`, creating a nested crush chain.
+
+**Note:** This bug is intermittent — Round 3 showed the content fully visible on 2 test sessions, while Round 4 shows it clipped. Could be related to question content length, viewport size, or render timing.
+
+**Fix needed:** Ensure containers at depths 4-7 use `flex: 0 0 auto` or `overflow: visible` so they don't crush their children. The key culprit is `flex: 1 1 0%` combined with `overflow: hidden` on parent flex containers.
 
 ---
 
-## Neo-Brutalism Design Compliance (commit e1ca060c)
+## P0 Bug: Exit Button — PARTIAL FIX (Navigation works, destination hangs)
 
-### Dev-Login Page — MOSTLY COMPLIANT
+**Previous:** Clicking ✕ Exit froze the entire browser tab (history.block race condition)
+**Current:** ✕ Exit successfully navigates from `/app/assessment/Math` → `/app?subject=Math` (confirmed via URL change). **No tab freeze.** The `unblockRef` fix resolved the `history.block()` race condition.
+
+**Remaining issue:** The destination page `/app?subject=Math` becomes unresponsive after loading. Tab times out on all interactions (screenshots, JS execution). This is a separate issue — likely the learning page component encountering an error when loading after an abandoned assessment.
+
+---
+
+## Neo-Brutalism Design Compliance
+
+### Tailwind Config — FULLY SET UP ✅
+
+All tokens defined in `tailwind.config.js`:
+- `shadow-neo` through `shadow-neo-2xl` (hard offset, zero blur)
+- `border-neo` (4px), `border-neo-thick` (5px)
+- Colors: `neo-bg` (#FFFDF5), `neo-red`, `neo-yellow`, `neo-violet`, `neo-blue`
+- Font: Space Grotesk as default sans
+- Font sizes: minimum 14px for `text-xs`, 16px for `text-sm`
+- Border radius: DEFAULT 0px (sharp corners everywhere)
+
+### shadcn/ui Components — FULLY COMPLIANT ✅
+
+| Component | Key Properties | Status |
+|-----------|---------------|--------|
+| button.tsx | `rounded-none`, `border-neo`, `h-12` (48px), `font-bold uppercase`, `shadow-neo`, press effect | ✅ PASS |
+| card.tsx | `rounded-none`, `border-neo`, `shadow-neo-md`, `font-black uppercase` title | ✅ PASS |
+| input.tsx | `rounded-none`, `border-neo`, `h-12` (48px), `text-base font-bold`, `shadow-neo` | ✅ PASS |
+
+### Dev-Login Page — MOSTLY COMPLIANT ✅
 
 | Element | Spec | Actual | Status |
 |---------|------|--------|--------|
-| Font family | Space Grotesk | Space Grotesk ✅ | PASS |
-| Body background | #FFFDF5 | rgb(255,253,245) ✅ | PASS |
-| Heading size | 36px+ | 36px, weight 900 ✅ | PASS |
-| Subject buttons | border-4, 0px radius | 4px border, 0px radius ✅ | PASS |
-| Subject button height | 48px+ | 72px ✅ | PASS |
-| Subject button shadow | hard offset, 0 blur | 6px 6px 0 #000 ✅ | PASS |
-| Age buttons | border-4, 0px radius | 4px border, 0px radius ✅ | PASS |
-| Age button height | 56px+ | 129px ✅ | PASS |
-| Input field | border-4, 0px radius | 4px border, 0px radius ✅ | PASS |
-| Input shadow | hard offset | 4px 4px 0 #000 ✅ | PASS |
-| Theme toggle | 48px, border-4 | 48px, 4px border ✅ | PASS |
-| Body font size | 14px+ | 12px ❌ | FAIL — still too small |
+| Font family | Space Grotesk | Space Grotesk | ✅ PASS |
+| Background | #FFFDF5 | rgb(255,253,245) | ✅ PASS |
+| Heading | 36px+ weight 900 | 36px, 900 | ✅ PASS |
+| Subject buttons | 4px border, 0px radius, 48px+ | 4px, 0px, 72px | ✅ PASS |
+| Subject shadows | hard offset | 6px 6px 0 #000 | ✅ PASS |
+| Age buttons | 4px border, 56px+ | 4px, 129px | ✅ PASS |
+| Input field | 4px border, 0px radius | 4px, 0px, shadow 4px 4px 0 | ✅ PASS |
+| Theme toggle | 48px, 4px border | 48px, 4px | ✅ PASS |
+| Body font size | 14px+ | **12px** | ❌ FAIL |
+| Button label font size | 16px+ | **12px** | ❌ FAIL |
 
-### Assessment Page — PARTIALLY COMPLIANT
+### Assessment Page — MOSTLY COMPLIANT ✅ (improved from last round)
 
 | Element | Spec | Actual | Status |
 |---------|------|--------|--------|
-| Exit button border | 4px | 3px ❌ | FAIL |
-| Exit button shadow | 4px+ offset | 2px 2px 0 ❌ | FAIL |
-| Exit button height | 48px+ | 37.5px ❌ | FAIL |
-| Exit button font size | 16px+ | 13px ❌ | FAIL |
-| Question header font | 14px+ bold | 12px, 700 ❌ | FAIL — too small |
-| Submit button | not captured (inline styles) | Visually OK from screenshot | NEEDS VERIFY |
-| Font family | Space Grotesk | Space Grotesk ✅ | PASS |
-
-### Remaining Design Issues
-
-1. **Body font size** still 12px (should be 14px minimum for readability)
-2. **Exit button** doesn't meet any neo-brutalism specs — too small, thin border, tiny shadow
-3. **Question header text** at 12px is too small for the QUESTION 1 OF 10 display
-4. **Assessment page elements** use inline styles that weren't updated in the design pass (commit e1ca060c only touched DevLogin and AssessmentQuestion, not AssessmentFlow inline styles)
+| Exit button border | 4px | 4px | ✅ PASS (was 3px) |
+| Exit button shadow | 4px+ | 4px 4px 0 | ✅ PASS (was 2px) |
+| Exit button height | 48px+ | 56px | ✅ PASS (was 37px) |
+| Exit button font | 16px+ bold | 16px, 900 | ✅ PASS (was 13px) |
+| Font family | Space Grotesk | Space Grotesk | ✅ PASS |
+| ASSESSMENT MODE bar | 16px+ | 16px, 900 | ✅ PASS |
+| Question header font | 14px+ | **12px** | ❌ FAIL |
 
 ---
 
-## Assessment Performance
+## Assessment Performance Trend
 
-| Metric | Target | Round 1 | Round 2 | Round 3 |
-|--------|--------|---------|---------|---------|
-| Time to first question | <25s | ~60-76s | 40.2s | ~35s |
-| Meta-questions | 0% | 100% (Q1 meta) | 0% | 0% |
-| Question visibility | 100% | 0% (collapsed) | 0% (collapsed) | **100%** ✅ |
-| Exit button works | Yes | No | No (freezes tab) | Partial (navigates but dest hangs) |
+| Metric | Target | Round 1 | Round 2 | Round 3 | Round 4 |
+|--------|--------|---------|---------|---------|---------|
+| First question load | <25s | ~60-76s | 40s | ~35s | ~35s |
+| Meta-questions | 0% | 100% | 0% | 0% | 0% |
+| Question visible | 100% | 0% | 0% | 100% | **Partial** |
+| Exit button | Works | No | Freeze | Nav+hang | Nav+hang |
 
 ---
 
-## Priority Fixes Remaining
+## Priority Fixes Still Needed
 
-1. **Exit button destination hang** — `/app?subject=Math` page hangs after exit navigation. Investigate learning page component error handling for abandoned assessments.
-2. **Assessment page design** — Exit button, question header, and other inline-styled elements in AssessmentFlow.tsx need neo-brutalism treatment (4px borders, larger sizes, hard shadows).
-3. **Body font size** — Bump from 12px to 14px minimum.
-4. **Global design audit** — Other pages (shadcn/ui components like button.tsx, card.tsx, input.tsx) still have rounded corners, blur shadows, thin borders from defaults. See FRONTEND_AUDIT.md for full list.
+1. **CSS collapse (P0)** — Inner flex containers (depths 4-7 from Perseus) still crush content. Need to fix `flex: 1 1 0%` + `overflow: hidden` on the divs between `assessment-content-wrapper` and the question card. This is intermittent — sometimes renders, sometimes clips.
+
+2. **Learning page hang** — `/app?subject=Math` crashes after exit navigation. This prevents the full exit flow from working. Separate from the exit button itself.
+
+3. **Font sizes** — Body font 12px and button labels 12px need to be bumped. The tailwind config has correct minimums (14px for xs, 16px for sm) but the inline styles and inherited CSS override them.
+
+4. **Question header** — "QUESTION 1 OF 10" renders at 12px. Should be at least 14px per the design system.

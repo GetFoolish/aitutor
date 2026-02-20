@@ -524,8 +524,8 @@ const AssessmentQuestion: React.FC<Props> = ({
     ...(contentZoomWrapperStyle || {}),
     display: 'flex',
     flexDirection: 'column',
-    minHeight: '400px', // Force minimum height so content can't collapse
-    overflowY: 'auto',
+    flex: '1 1 auto', // Take available space
+    overflowY: 'visible', // No scroll inside content block
     overflowX: 'hidden',
     paddingRight: compactViewport ? '2px' : '4px',
   };
@@ -612,7 +612,7 @@ const AssessmentQuestion: React.FC<Props> = ({
     <div
       ref={questionCardRef}
       className="framework-perseus mt-0"
-      style={{ display: 'flex', flexDirection: 'column', width: '100%' }}
+      style={{ display: 'flex', flexDirection: 'column', width: '100%', overflow: 'visible' }}
     >
       {/* Enhanced Question Header with Progress */}
       <div
@@ -647,17 +647,15 @@ const AssessmentQuestion: React.FC<Props> = ({
         </div>
       )}
 
-      <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+      <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', overflow: 'visible' }}>
         <div ref={contentBlockRef} style={contentBlockStyle}>
           <div
             id="question-content-container"
             className={`border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white ${ultraCompactViewport ? 'p-3 mb-2' : compactViewport ? 'p-4 mb-3' : 'p-5 md:p-6 lg:p-7 mb-4'} shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.4)]`}
             style={{
-              overflowX: 'clip',
-              overflowY: 'visible',
+              overflow: 'visible',
               maxHeight: 'none',
-              minHeight: '200px', // Ensure question content can't collapse
-              flexShrink: 0,
+              flex: '0 0 auto', // Don't shrink, natural size
             }}
           >
             <PerseusI18nContextProvider locale="en" strings={mockStrings}>
