@@ -120,7 +120,50 @@ const AssessmentFlow: React.FC = () => {
   }, [assessmentId, completed, history]);
 
   useEffect(() => {
-    startAssessment();
+    const attemptRecovery = async () => {
+      // Check if there's an active session to resume
+      const savedSession = localStorage.getItem('active_assessment');
+      if (savedSession && !assessmentId) {
+        try {
+          const session = JSON.parse(savedSession);
+          // Only resume if session is recent (< 1 hour old) and matches current subject
+          const isRecent = Date.now() - session.started_at < 3600000;
+          const matchesSubject = session.subject === subject;
+
+          if (isRecent && matchesSubject) {
+            console.log('[AssessmentFlow] Attempting to resume session:', session.assessment_id);
+            const response = await apiUtils.get(`/assessment/resume/${session.assessment_id}`);
+
+            if (response.ok) {
+              const data = await response.json();
+              console.log('[AssessmentFlow] Session resumed:', data);
+
+              // Restore state from resumed session
+              setAssessmentId(data.assessment_id);
+              assessmentIdRef.current = data.assessment_id;
+              setCurrentQuestion(data.question);
+              setQuestionNumber(data.question_number);
+              setTotalQuestions(data.total_questions);
+              setCurrentDifficulty(data.current_difficulty);
+              setLoading(false);
+              return; // Successfully resumed
+            }
+          }
+
+          // If resume failed or session too old, clear it
+          localStorage.removeItem('active_assessment');
+        } catch (error) {
+          console.error('[AssessmentFlow] Resume failed:', error);
+          localStorage.removeItem('active_assessment');
+        }
+      }
+
+      // No session to resume or resume failed - start fresh
+      startAssessment();
+    };
+
+    attemptRecovery();
+
     return () => {
       // Cleanup: abort in-flight request + clear timers on unmount
       abortRef.current?.abort();
@@ -255,6 +298,15 @@ const AssessmentFlow: React.FC = () => {
 
       setAssessmentId(data.assessment_id);
       assessmentIdRef.current = data.assessment_id;
+
+      // Save session to localStorage for recovery on page refresh
+      localStorage.setItem('active_assessment', JSON.stringify({
+        assessment_id: data.assessment_id,
+        subject,
+        started_at: Date.now(),
+        question_count: data.question_number || 1,
+      }));
+
       setCurrentQuestion(data.question);
       setQuestionNumber(data.question_number);
       setTotalQuestions(data.total_questions);
@@ -286,6 +338,8 @@ const AssessmentFlow: React.FC = () => {
       setScore(data.score ?? 0);
       setTotal(data.total ?? totalQuestions);
       setCompleted(true);
+      // Clear saved session on completion
+      localStorage.removeItem('active_assessment');
       return;
     }
 

@@ -2608,6 +2608,93 @@ def start_adaptive_assessment(subject: str, request: Request):
         raise HTTPException(status_code=500, detail=f"Assessment error: {str(e)}")
 
 
+@app.get("/assessment/resume/{assessment_id}")
+def resume_assessment(
+    request: Request,
+    assessment_id: str
+):
+    """
+    Resume an in-progress assessment session after page refresh.
+    Returns current question and progress info.
+    """
+    ensure_dash_system()
+    from managers.mongodb_manager import mongo_db
+
+    jwt_payload = get_jwt_payload(request)
+    user_id = jwt_payload.get("sub")
+
+    # Find the session
+    session = mongo_db.db["assessment_sessions"].find_one({
+        "assessment_id": assessment_id,
+        "user_id": user_id,
+        "status": "in_progress"
+    })
+
+    if not session:
+        logger.warning(f"[RESUME_ASSESSMENT] Session {assessment_id} not found or already completed for user {user_id}")
+        raise HTTPException(status_code=404, detail="Assessment session not found or already completed")
+
+    questions_asked = session.get("questions_asked", 0)
+    max_questions = session.get("max_questions", 10)
+    current_diff = session.get("current_difficulty", 0.5)
+    subject = session.get("subject", "")
+
+    # If no questions answered yet, they can just restart
+    if questions_asked == 0:
+        raise HTTPException(status_code=404, detail="No progress to resume. Please start a new assessment.")
+
+    # If already completed all questions
+    if questions_asked >= max_questions:
+        raise HTTPException(status_code=404, detail="Assessment already completed")
+
+    # Get the next question for them to answer
+    # Use the existing get_next_question_flexible logic
+    jwt_age = jwt_payload.get("age", 10)
+    try:
+        next_q = dash_system.get_next_question_flexible(
+            student_id=user_id,
+            difficulty=current_diff,
+            grade=jwt_age,
+            subject=subject,
+            used_skill_ids=session.get("used_skill_ids", []),
+            used_question_ids=session.get("used_question_ids", []),
+            used_content_hashes=set(session.get("used_content_hashes", [])),
+            fast_mode=True,
+        )
+
+        if not next_q:
+            raise HTTPException(status_code=503, detail="No questions available to resume")
+
+        # Load and patch the question
+        q_data = _load_question_perseus(next_q.question_id, mongo_db)
+        if not q_data:
+            raise HTTPException(status_code=500, detail="Failed to load question")
+
+        _patch_numeric_input_widgets(q_data)
+        cleaned = _post_process_pipeline_items([q_data], subject)
+        if not cleaned:
+            raise HTTPException(status_code=500, detail="Question processing failed")
+
+        q_data = cleaned[0]
+        q_data.setdefault("dash_metadata", {})["dash_question_id"] = next_q.question_id
+        if next_q.skill_ids:
+            q_data["dash_metadata"]["skill_ids"] = next_q.skill_ids
+
+        return {
+            "assessment_id": assessment_id,
+            "subject": subject,
+            "question_number": questions_asked + 1,
+            "total_questions": max_questions,
+            "current_difficulty": round(current_diff, 3),
+            "question": q_data,
+            "resumed": True,
+        }
+
+    except Exception as e:
+        logger.error(f"[RESUME_ASSESSMENT] Error getting next question: {e}")
+        raise HTTPException(status_code=500, detail=f"Resume failed: {str(e)}")
+
+
 @app.post("/assessment/next")
 def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer):
     """
