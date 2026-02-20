@@ -84,20 +84,32 @@ html.dark #question-content-container .framework-perseus pre {
 }
 
 /* ===== Post-answer feedback: highlight correct/incorrect choices ===== */
-/* Perseus radio options are <li class="perseus-radio-option">, target them directly */
-li.perseus-radio-option[data-feedback="correct"] {
+/* Perseus radio options are <li class="perseus-radio-option">, target them AND children */
+li.perseus-radio-option[data-feedback="correct"],
+li.perseus-radio-option[data-feedback="correct"] *,
+li.perseus-radio-option[data-feedback="correct"] button {
     background-color: #4ADE80 !important;
+}
+li.perseus-radio-option[data-feedback="correct"] {
     border: 5px solid #000 !important;
     box-shadow: 4px 4px 0 #000 !important;
     pointer-events: none !important;
+    border-radius: 0px !important;
+    margin-bottom: 8px !important;
 }
 
-li.perseus-radio-option[data-feedback="incorrect"] {
+li.perseus-radio-option[data-feedback="incorrect"],
+li.perseus-radio-option[data-feedback="incorrect"] *,
+li.perseus-radio-option[data-feedback="incorrect"] button {
     background-color: #FF6B6B !important;
+}
+li.perseus-radio-option[data-feedback="incorrect"] {
     border: 5px solid #000 !important;
     box-shadow: 4px 4px 0 #000 !important;
-    opacity: 0.7 !important;
+    opacity: 0.8 !important;
     pointer-events: none !important;
+    border-radius: 0px !important;
+    margin-bottom: 8px !important;
 }
 
 li.perseus-radio-option[data-feedback] {
@@ -107,15 +119,29 @@ li.perseus-radio-option[data-feedback] {
 
 /* Dark mode feedback */
 .dark li.perseus-radio-option[data-feedback="correct"],
-html.dark li.perseus-radio-option[data-feedback="correct"] {
+.dark li.perseus-radio-option[data-feedback="correct"] > *,
+.dark li.perseus-radio-option[data-feedback="correct"] > * > *,
+html.dark li.perseus-radio-option[data-feedback="correct"],
+html.dark li.perseus-radio-option[data-feedback="correct"] > *,
+html.dark li.perseus-radio-option[data-feedback="correct"] > * > * {
     background-color: #22C55E !important;
+}
+.dark li.perseus-radio-option[data-feedback="correct"],
+html.dark li.perseus-radio-option[data-feedback="correct"] {
     border-color: #fff !important;
     box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3) !important;
 }
 
 .dark li.perseus-radio-option[data-feedback="incorrect"],
-html.dark li.perseus-radio-option[data-feedback="incorrect"] {
+.dark li.perseus-radio-option[data-feedback="incorrect"] > *,
+.dark li.perseus-radio-option[data-feedback="incorrect"] > * > *,
+html.dark li.perseus-radio-option[data-feedback="incorrect"],
+html.dark li.perseus-radio-option[data-feedback="incorrect"] > *,
+html.dark li.perseus-radio-option[data-feedback="incorrect"] > * > * {
     background-color: #EF4444 !important;
+}
+.dark li.perseus-radio-option[data-feedback="incorrect"],
+html.dark li.perseus-radio-option[data-feedback="incorrect"] {
     border-color: #fff !important;
     box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3) !important;
 }

@@ -194,6 +194,17 @@ const AssessmentQuestion: React.FC<Props> = ({
     setPendingCorrect(null);
     setAutoFitZoom(1);
     startTimeRef.current = Date.now();
+
+    // Force compact choice heights after question loads
+    setTimeout(() => {
+      const choices = document.querySelectorAll<HTMLElement>('.choice, li.choice, [class*="choice"]');
+      choices.forEach(choice => {
+        choice.style.minHeight = '48px';
+        choice.style.maxHeight = '60px';
+        choice.style.padding = '10px 16px';
+        choice.style.lineHeight = '1.4';
+      });
+    }, 100);
   }, [question]);
 
   useEffect(() => {
@@ -591,27 +602,38 @@ const AssessmentQuestion: React.FC<Props> = ({
 
     // Mark choices with correct/incorrect feedback for visual highlighting
     setTimeout(() => {
-      const choiceElements = document.querySelectorAll('.choice');
+      // Perseus radio options are <li class="perseus-radio-option">
+      const choiceElements = document.querySelectorAll('li.perseus-radio-option');
       const widgets = questionData.widgets || {};
 
       // Find radio widget
       const radioWidgetKey = Object.keys(widgets).find(key => widgets[key]?.type === 'radio');
       if (radioWidgetKey && widgets[radioWidgetKey]?.options?.choices) {
         const choices = widgets[radioWidgetKey].options.choices;
-        // choicesSelected is boolean[] like [false, true, false, false]
-        const userSelection = (userInput[radioWidgetKey] as any)?.choicesSelected || [];
+        const rawInput = userInput[radioWidgetKey] as any;
+
+        // Detect user selection from DOM (most reliable) — look for selectedItem class
+        const domSelected: boolean[] = [];
+        choiceElements.forEach((el) => {
+          domSelected.push(el.className.includes('selectedItem') || el.className.includes('perseus-radio-selected'));
+        });
+
+        // Also try from userInput as fallback
+        const inputSelected = rawInput?.choicesSelected || rawInput?.values || [];
 
         console.log('[AssessmentQuestion] Highlighting:', {
           choiceCount: choices.length,
           domElements: choiceElements.length,
-          userSelection,
+          domSelected,
+          inputSelected,
+          rawInputKeys: rawInput ? Object.keys(rawInput) : 'null',
         });
 
         choiceElements.forEach((el, idx) => {
           if (idx < choices.length) {
             const choice = choices[idx];
-            // choicesSelected is booleans, check by index
-            const isUserSelected = userSelection[idx] === true;
+            // Use DOM-detected selection (most reliable)
+            const isUserSelected = domSelected[idx] || inputSelected[idx] === true;
 
             if (choice?.correct) {
               el.setAttribute('data-feedback', 'correct');
@@ -621,7 +643,7 @@ const AssessmentQuestion: React.FC<Props> = ({
           }
         });
       }
-    }, 100); // Delay to ensure DOM is ready after Perseus re-render
+    }, 150); // Delay to ensure DOM is ready after Perseus re-render
 
     // Fire-and-forget analytics reporting
     const questionId = question?.dash_metadata?.dash_question_id || `assessment_q_${questionNumber}`;

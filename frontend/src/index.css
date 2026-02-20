@@ -800,3 +800,19 @@ a[target="lint-help-window"] {
     background: rgba(255, 255, 255, 0.2);
   }
 }
+
+/* NUCLEAR FIX: Override Perseus choice height at global level */
+.framework-perseus .choice,
+.framework-perseus li.choice,
+.perseus-widget-radio .choice,
+#question-content-container .choice {
+    min-height: 48px !important;
+    max-height: 60px !important;
+    padding: 10px 16px !important;
+    line-height: 1.4 !important;
+}
+
+/* Override the spacing variable globally */
+:root {
+    --perseus-multiple-choice-spacing: 10px !important;
+}
