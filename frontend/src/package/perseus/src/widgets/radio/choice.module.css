@@ -27,8 +27,8 @@
      * TODO(LEMS-3301): When old radio widget is deleted, remove this !important.
      */
     margin-block-end: var(--perseus-multiple-choice-divider-space) !important;
-    min-height: calc(var(--perseus-multiple-choice-spacing) * 4);
-    padding: var(--perseus-multiple-choice-spacing);
+    min-height: 48px;
+    padding: 12px 16px;
     position: relative; /* Needed to enable the dividers (:before and :after pseudo-elements) to position correctly */
     width: 100%;
 }
