@@ -17,9 +17,9 @@
   // Neo-Brutalism Borders & Shadows
   --neo-border-width: 5px;
   --neo-border: 5px solid var(--neo-black);
-  --neo-shadow: 3px 3px 0 var(--neo-black);
-  --neo-shadow-hover: 4px 4px 0 var(--neo-black);
-  --neo-shadow-small: 2px 2px 0 var(--neo-black);
+  --neo-shadow: 6px 6px 0 var(--neo-black);
+  --neo-shadow-hover: 8px 8px 0 var(--neo-black);
+  --neo-shadow-small: 4px 4px 0 var(--neo-black);
 
   // Legacy variables (keeping for compatibility)
   --text: var(--neo-black);
@@ -48,7 +48,7 @@
   scrollbar-color: var(--neo-black) var(--neo-bg);
   scrollbar-width: thin;
 
-  --font-family: "Space Mono", monospace;
+  --font-family: "Space Grotesk", -apple-system, sans-serif;
 
   /* Neutral palette mapped to neo-brutalism */
   --Neutral-00: var(--neo-black);
@@ -97,7 +97,7 @@ html.dark body,
 }
 
 body {
-  font-family: "Space Mono", monospace;
+  font-family: "Space Grotesk", -apple-system, sans-serif;
   background-color: var(--neo-bg);
   background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23000000' opacity='0.50'/%3E%3C/svg%3E");
   background-size: 20px 20px;
@@ -138,28 +138,22 @@ body {
   }
 }
 
-.space-mono-regular {
-  font-family: "Space Mono", monospace;
+.space-grotesk-regular {
+  font-family: "Space Grotesk", sans-serif;
   font-weight: 400;
   font-style: normal;
 }
 
-.space-mono-bold {
-  font-family: "Space Mono", monospace;
+.space-grotesk-bold {
+  font-family: "Space Grotesk", sans-serif;
   font-weight: 700;
   font-style: normal;
 }
 
-.space-mono-regular-italic {
-  font-family: "Space Mono", monospace;
-  font-weight: 400;
-  font-style: italic;
-}
-
-.space-mono-bold-italic {
-  font-family: "Space Mono", monospace;
-  font-weight: 700;
-  font-style: italic;
+.space-grotesk-black {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 900;
+  font-style: normal;
 }
 
 .hidden {

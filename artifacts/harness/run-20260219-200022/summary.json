@@ -1,0 +1,101 @@
+{
+  "created_at": "2026-02-19T20:01:18.464569+00:00",
+  "mode": "local",
+  "require_greptile": true,
+  "strict_no_skip": true,
+  "ok": false,
+  "duration_s": 56.46,
+  "output_dir": "/Users/gaganarora/Desktop/my projects/aitutor/artifacts/harness/run-20260219-200022",
+  "gates": [
+    {
+      "name": "secret_scan",
+      "ok": true,
+      "required": true,
+      "skipped": false,
+      "timed_out": false,
+      "returncode": 0,
+      "elapsed_s": 0.12,
+      "command": "bash scripts/harness/secret_scan.sh artifacts/harness/run-20260219-200022/secret_scan.json",
+      "stdout": "artifacts/harness/run-20260219-200022/logs/secret_scan.stdout.log",
+      "stderr": "artifacts/harness/run-20260219-200022/logs/secret_scan.stderr.log"
+    },
+    {
+      "name": "smoke",
+      "ok": true,
+      "required": true,
+      "skipped": false,
+      "timed_out": false,
+      "returncode": 0,
+      "elapsed_s": 3.0,
+      "command": "'/Users/gaganarora/Desktop/my projects/aitutor/venv/bin/python3' scripts/harness/smoke_test.py --output artifacts/harness/run-20260219-200022/smoke.json",
+      "stdout": "artifacts/harness/run-20260219-200022/logs/smoke.stdout.log",
+      "stderr": "artifacts/harness/run-20260219-200022/logs/smoke.stderr.log"
+    },
+    {
+      "name": "pretest_checklist",
+      "ok": true,
+      "required": true,
+      "skipped": false,
+      "timed_out": false,
+      "returncode": 0,
+      "elapsed_s": 14.17,
+      "command": "'/Users/gaganarora/Desktop/my projects/aitutor/venv/bin/python3' scripts/pretest_checklist.py",
+      "stdout": "artifacts/harness/run-20260219-200022/logs/pretest_checklist.stdout.log",
+      "stderr": "artifacts/harness/run-20260219-200022/logs/pretest_checklist.stderr.log"
+    },
+    {
+      "name": "content_v1_battletest",
+      "ok": false,
+      "required": true,
+      "skipped": false,
+      "timed_out": false,
+      "returncode": 1,
+      "elapsed_s": 18.66,
+      "command": "'/Users/gaganarora/Desktop/my projects/aitutor/venv/bin/python3' scripts/content_v1_battletest.py",
+      "stdout": "artifacts/harness/run-20260219-200022/logs/content_v1_battletest.stdout.log",
+      "stderr": "artifacts/harness/run-20260219-200022/logs/content_v1_battletest.stderr.log"
+    },
+    {
+      "name": "playwright",
+      "ok": false,
+      "required": true,
+      "skipped": false,
+      "timed_out": false,
+      "returncode": 1,
+      "elapsed_s": 20.47,
+      "command": "bash scripts/harness/run_playwright_capture.sh artifacts/harness/run-20260219-200022/screenshots",
+      "stdout": "artifacts/harness/run-20260219-200022/logs/playwright.stdout.log",
+      "stderr": "artifacts/harness/run-20260219-200022/logs/playwright.stderr.log"
+    },
+    {
+      "name": "greptile",
+      "ok": false,
+      "required": true,
+      "skipped": true,
+      "timed_out": false,
+      "returncode": 1,
+      "elapsed_s": 0.04,
+      "command": "bash scripts/harness/greptile_gate.sh artifacts/harness/run-20260219-200022/greptile.json",
+      "stdout": "artifacts/harness/run-20260219-200022/logs/greptile.stdout.log",
+      "stderr": "artifacts/harness/run-20260219-200022/logs/greptile.stderr.log",
+      "artifact": "artifacts/harness/run-20260219-200022/greptile.json",
+      "skip_reason": "GREPTILE_REVIEW_COMMAND not set"
+    }
+  ],
+  "required_screenshots_present": false,
+  "missing_required_screenshots": [
+    "08-learning-no-scroll-controls-visible.png",
+    "09-learning-floating-panel-visible.png",
+    "10-learning-dots-mask-sidebar-panel.png",
+    "11-widget-inline-dropdown-layout.png",
+    "12-widget-image-question-layout.png",
+    "13-assessment-complete-screen.png",
+    "14-latency-overlay-or-metrics-visual.png"
+  ],
+  "initial_p95_ms": 482.72,
+  "next_p95_ms": 638.27,
+  "floating_panel_assessment_pass": true,
+  "floating_panel_learning_pass": false,
+  "dot_mask_pass": false,
+  "pr_packet_error": "generate_pr_packet.py exited 1"
+}

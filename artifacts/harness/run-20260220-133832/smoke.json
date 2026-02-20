@@ -1,0 +1,691 @@
+{
+  "created_at": "2026-02-20T13:38:32.505227+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.1354360580444336,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 80,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.02950596809387207,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.02795100212097168,
+      "body": {
+        "status": "healthy",
+        "service": "TeachingAssistant"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.03191804885864258,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": true,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 0.031109333038330078,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 80
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 0.4711911678314209,
+        "count": 10,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 8.0,
+        "min_question_count": 5
+      }
+    },
+    "learning_path_subject_validity": {
+      "ok": true,
+      "current_question_ids": [
+        "pool_03ccb364d5e5c753",
+        "pool_5699330b3f229a34",
+        "ai_q_ff3f6d021c56"
+      ],
+      "recommend_next": {
+        "code": 200,
+        "elapsed_s": 0.0333707332611084,
+        "count": 4,
+        "overlap_with_current_ids": [],
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        },
+        "body": {
+          "sample_ids": [
+            "pool_02447e05afccb721",
+            "pool_c153282ac331a089",
+            "pool_fad624791ed942c8",
+            "ai_q_53d930116b4c"
+          ]
+        }
+      }
+    },
+    "adaptive_start_all_subjects": {
+      "ok": true,
+      "adaptive_start_timeout_s": 4.0,
+      "adaptive_start_retry_timeout_s": 12.0,
+      "catalog_fetch": {
+        "code": 200,
+        "elapsed_s": 0.013595819473266602,
+        "count": 3,
+        "fallback_used": false
+      },
+      "subjects_checked_count": 3,
+      "subjects_checked": [
+        "Science",
+        "English",
+        "History"
+      ],
+      "timeout_retryable_count": 0,
+      "concrete_result_count": 3,
+      "results": [
+        {
+          "subject": "Science",
+          "code": 200,
+          "elapsed_s": 0.016292095184326172,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_ca4ce3b634b6",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A microbiologist is studying the growth of a specific bacterial strain in a nutrient-rich environment. They observe that the bacterial population doubles every hour. If the initial population at the start of the experiment ($t=0$ hours) is 100 bacteria, write an expression representing the total number of bacteria, $N$, after $t$ hours. Assume $t$ is a non-negative integer.\n\nYour expression should use $t$ as the variable.\n$N = $ [[\u2603 expression 1]]",
+                "images": {},
+                "widgets": {
+                  "expression 1": {
+                    "type": "expression",
+                    "options": {
+                      "buttonsVisible": "never",
+                      "functions": [
+                        "f",
+                        "g",
+                        "h"
+                      ],
+                      "times": false,
+                      "answerForms": [
+                        {
+                          "value": "100 \\cdot 2^t",
+                          "form": true,
+                          "simplify": false,
+                          "considered": "correct"
+                        }
+                      ],
+                      "buttonSets": [
+                        "basic"
+                      ]
+                    },
+                    "graded": true,
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "Consider how the bacterial population changes after each hour. If it starts at 100, what is the population after 1 hour? What about after 2 hours? Look for a consistent pattern in how the initial population is multiplied over time.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "When a quantity consistently doubles (or multiplies by the same factor) over equal time intervals, it indicates exponential growth. The general formula for exponential growth is $P(t) = P_0 \\cdot r^t$, where $P_0$ is the initial quantity, $r$ is the growth factor (the factor by which it multiplies each interval), and $t$ is the number of time intervals.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "In this problem, the initial population ($P_0$) is 100 bacteria. Since the population doubles every hour, the growth factor ($r$) is 2. Substitute these values into the exponential growth formula $P(t) = P_0 \\cdot r^t$ to find the expression for $N$ after $t$ hours.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "question_id": "pool_03ccb364d5e5c753",
+              "dash_metadata": {
+                "dash_question_id": "pool_03ccb364d5e5c753",
+                "skill_ids": [
+                  "ai_gen_science_us_high-school-biology_unit_intro-biology-scientific-inquiry"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Introduction to Biology and Scientific Inquiry"
+                ],
+                "unit_name": "Introduction to Biology and Scientific Inquiry",
+                "lesson_name": "Practice",
+                "ai_generated": true
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "English",
+          "code": 200,
+          "elapsed_s": 0.050073862075805664,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_82cea202ac90",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following is true about Crafting Narratives & Explanations?\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "displayCount": null,
+                      "choices": [
+                        {
+                          "content": "Crafting Narratives & Explanations involves learning and practicing specific skills",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Crafting Narratives & Explanations can only be learned by watching TV",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Crafting Narratives & Explanations has nothing to do with thinking or problem solving",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Nobody studies Crafting Narratives & Explanations in school",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple",
+                "options": {
+                  "content": "",
+                  "images": {},
+                  "widgets": {}
+                }
+              },
+              "hints": [
+                {
+                  "content": "Think about what studying Crafting Narratives & Explanations actually involves.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Does Crafting Narratives & Explanations require learning specific skills?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Crafting Narratives & Explanations involves learning and practicing \u2014 that's how all subjects work.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_3edeba4281f1",
+                "skill_ids": [
+                  "ai_gen_english_us_6th-8th-grade-english-language-arts_unit_crafting-narratives-explanations"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Crafting Narratives & Explanations"
+                ],
+                "unit_name": "Crafting Narratives & Explanations",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699499d54911da26d0207f26"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "History",
+          "code": 200,
+          "elapsed_s": 0.03415489196777344,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_23bb8e1bbdfe",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following is true about Early Civilizations Of Asia: Indus Valley And China?\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "displayCount": null,
+                      "choices": [
+                        {
+                          "content": "Early Civilizations Of Asia: Indus Valley And China involves learning and practicing specific skills",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Early Civilizations Of Asia: Indus Valley And China can only be learned by watching TV",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Early Civilizations Of Asia: Indus Valley And China has nothing to do with thinking or problem solving",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Nobody studies Early Civilizations Of Asia: Indus Valley And China in school",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple",
+                "options": {
+                  "content": "",
+                  "images": {},
+                  "widgets": {}
+                }
+              },
+              "hints": [
+                {
+                  "content": "Think about what studying Early Civilizations Of Asia: Indus Valley And China actually involves.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Does Early Civilizations Of Asia: Indus Valley And China require learning specific skills?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Early Civilizations Of Asia: Indus Valley And China involves learning and practicing \u2014 that's how all subjects work.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_233e57a9d9b6",
+                "skill_ids": [
+                  "ai_gen_history_us_6th-8th-grade-history-world-history-i-ancient-and-classical-eras_unit_early-civilizations-asia-indus-china"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Early Civilizations of Asia: Indus Valley and China"
+                ],
+                "unit_name": "Early Civilizations of Asia: Indus Valley and China",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699499d64911da26d0207f28"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        }
+      ]
+    },
+    "adaptive_progression": {
+      "ok": true,
+      "payload": {
+        "subject_used": "Science",
+        "start_code": 200,
+        "start_elapsed_s": 0.016292095184326172,
+        "start_body": {
+          "assessment_id": "assess_ca4ce3b634b6",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "A microbiologist is studying the growth of a specific bacterial strain in a nutrient-rich environment. They observe that the bacterial population doubles every hour. If the initial population at the start of the experiment ($t=0$ hours) is 100 bacteria, write an expression representing the total number of bacteria, $N$, after $t$ hours. Assume $t$ is a non-negative integer.\n\nYour expression should use $t$ as the variable.\n$N = $ [[\u2603 expression 1]]",
+              "images": {},
+              "widgets": {
+                "expression 1": {
+                  "type": "expression",
+                  "options": {
+                    "buttonsVisible": "never",
+                    "functions": [
+                      "f",
+                      "g",
+                      "h"
+                    ],
+                    "times": false,
+                    "answerForms": [
+                      {
+                        "value": "100 \\cdot 2^t",
+                        "form": true,
+                        "simplify": false,
+                        "considered": "correct"
+                      }
+                    ],
+                    "buttonSets": [
+                      "basic"
+                    ]
+                  },
+                  "graded": true,
+                  "version": {
+                    "major": 2,
+                    "minor": 0
+                  },
+                  "alignment": "default",
+                  "static": false
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "Consider how the bacterial population changes after each hour. If it starts at 100, what is the population after 1 hour? What about after 2 hours? Look for a consistent pattern in how the initial population is multiplied over time.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "When a quantity consistently doubles (or multiplies by the same factor) over equal time intervals, it indicates exponential growth. The general formula for exponential growth is $P(t) = P_0 \\cdot r^t$, where $P_0$ is the initial quantity, $r$ is the growth factor (the factor by which it multiplies each interval), and $t$ is the number of time intervals.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "In this problem, the initial population ($P_0$) is 100 bacteria. Since the population doubles every hour, the growth factor ($r$) is 2. Substitute these values into the exponential growth formula $P(t) = P_0 \\cdot r^t$ to find the expression for $N$ after $t$ hours.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_03ccb364d5e5c753",
+            "dash_metadata": {
+              "dash_question_id": "pool_03ccb364d5e5c753",
+              "skill_ids": [
+                "ai_gen_science_us_high-school-biology_unit_intro-biology-scientific-inquiry"
+              ],
+              "difficulty": 0.5,
+              "skill_names": [
+                "Introduction to Biology and Scientific Inquiry"
+              ],
+              "unit_name": "Introduction to Biology and Scientific Inquiry",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "required_stable_transitions": 8,
+        "stable_transitions": 8,
+        "transitions": [
+          {
+            "step": 1,
+            "code": 200,
+            "elapsed_s": 0.04206514358520508,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 2,
+            "code": 200,
+            "elapsed_s": 0.027431011199951172,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 3,
+            "code": 200,
+            "elapsed_s": 0.023595094680786133,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 4,
+            "code": 200,
+            "elapsed_s": 0.024586915969848633,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 5,
+            "code": 200,
+            "elapsed_s": 0.025392770767211914,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 6,
+            "code": 200,
+            "elapsed_s": 0.5731480121612549,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 7,
+            "code": 200,
+            "elapsed_s": 0.5789458751678467,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 8,
+            "code": 200,
+            "elapsed_s": 0.02969980239868164,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          }
+        ],
+        "next": {
+          "code": 200,
+          "elapsed_s": 0.04206514358520508,
+          "completed_early": false,
+          "has_next_question": true,
+          "attempts_used": 1
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 2.5
+      }
+    },
+    "loading_latency": {
+      "ok": true,
+      "initial_question_fetch_elapsed_s": 0.4711911678314209,
+      "learning_recommend_next_elapsed_s": 0.0333707332611084,
+      "adaptive_start_elapsed_s": 0.016292095184326172,
+      "next_question_elapsed_s": 0.5789458751678467,
+      "next_question_p95_elapsed_s": 0.5769166231155396,
+      "adaptive_next_transition_elapsed_s": [
+        0.04206514358520508,
+        0.027431011199951172,
+        0.023595094680786133,
+        0.024586915969848633,
+        0.025392770767211914,
+        0.5731480121612549,
+        0.5789458751678467,
+        0.02969980239868164
+      ],
+      "adaptive_next_hard_timeout_ok": true,
+      "budgets": {
+        "initial_question_fetch_budget_s": 8.0,
+        "learning_recommend_next_budget_s": 2.5,
+        "adaptive_start_budget_s": 8.0,
+        "next_question_budget_s": 2.5,
+        "next_question_timeout_budget_s": 6.0
+      }
+    },
+    "websocket": {
+      "session_start": {
+        "code": 200,
+        "elapsed_s": 0.026871204376220703,
+        "body": {
+          "prompt": "",
+          "session_info": {
+            "session_id": "sess_5de9c1fc98b84c97",
+            "user_id": "dev_41f061583ea0",
+            "session_active": true,
+            "duration_minutes": 0.0,
+            "questions_answered": 0,
+            "questions_correct": 0,
+            "websocket_connected": false,
+            "sse_connected": false
+          }
+        }
+      },
+      "probe": {
+        "ok": true,
+        "elapsed_s": 0.034240007400512695,
+        "response": {
+          "type": "pong"
+        }
+      },
+      "session_end": {
+        "code": 200,
+        "elapsed_s": 0.008852958679199219,
+        "body": {
+          "prompt": "[SYSTEM PROMPT FOR ADAM]\nThe tutoring session is ending now.\nSession stats: 0.0 minutes, 0 questions attempted.\nPlease give the student a warm closing message, acknowledge their hard work,\nand encourage them for next session.",
+          "session_info": {
+            "session_id": "sess_5de9c1fc98b84c97",
+            "duration_minutes": 0.0,
+            "minutes_deducted": 1,
+            "questions_answered": 0,
+            "questions_correct": 0
+          }
+        }
+      },
+      "ok": true
+    }
+  },
+  "ok": true,
+  "errors": []
+}

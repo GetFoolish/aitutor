@@ -107,7 +107,7 @@ const DevLogin: React.FC = () => {
       justifyContent: 'center',
       alignItems: 'center',
       background: bgColor,
-      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontFamily: "'Space Grotesk', -apple-system, sans-serif",
       overflow: 'auto',
       color: textColor,
       transition: 'background 200ms ease-out, color 200ms ease-out'
@@ -122,17 +122,18 @@ const DevLogin: React.FC = () => {
           top: '16px',
           right: '16px',
           zIndex: 10,
-          width: '36px',
-          height: '36px',
-          border: '3px solid currentColor',
+          width: '48px',
+          height: '48px',
+          border: '4px solid currentColor',
           borderRadius: '0',
           background: 'transparent',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '18px',
-          boxShadow: '2px 2px 0 currentColor'
+          fontSize: '20px',
+          fontWeight: 900,
+          boxShadow: '4px 4px 0 currentColor'
         }}
         title="Toggle dark mode"
       >
@@ -149,34 +150,35 @@ const DevLogin: React.FC = () => {
       }}>
         <div style={{
           display: 'inline-block',
-          padding: '6px 16px',
-          border: `3px solid ${borderColor}`,
+          padding: '8px 20px',
+          border: `4px solid ${borderColor}`,
           background: '#FF6B6B',
           color: '#fff',
           fontWeight: 900,
-          fontSize: '12px',
+          fontSize: '16px',
           textTransform: 'uppercase',
           letterSpacing: '0.1em',
-          marginBottom: '16px'
+          marginBottom: '20px',
+          boxShadow: `4px 4px 0 ${borderColor}`
         }}>
           Dev Mode
         </div>
 
         <h1 style={{
-          fontSize: '26px',
+          fontSize: '36px',
           fontWeight: 900,
           textTransform: 'uppercase',
           letterSpacing: '0.1em',
-          marginBottom: '8px',
+          marginBottom: '12px',
           color: textColor
         }}>
           Quick Test Login
         </h1>
         <p style={{
-          fontSize: '13px',
-          fontWeight: 600,
+          fontSize: '16px',
+          fontWeight: 700,
           color: isDark ? '#aaa' : '#666',
-          marginBottom: '20px'
+          marginBottom: '24px'
         }}>
           Select a subject, then choose your age to begin.
         </p>
@@ -194,14 +196,14 @@ const DevLogin: React.FC = () => {
             disabled={loading}
             onFocus={(e) => e.target.select()}
             style={{
-              padding: '10px 16px',
-              border: `3px solid ${borderColor}`,
+              padding: '14px 20px',
+              border: `4px solid ${borderColor}`,
               background: loading ? (isDark ? '#333' : '#eee') : inputBg,
               color: textColor,
-              boxShadow: `3px 3px 0 ${shadowColor}`,
-              fontSize: '14px',
+              boxShadow: `4px 4px 0 ${shadowColor}`,
+              fontSize: '16px',
               fontWeight: 700,
-              width: '240px',
+              width: '300px',
               textAlign: 'center',
               outline: 'none',
               opacity: loading ? 0.6 : 1,
@@ -212,12 +214,12 @@ const DevLogin: React.FC = () => {
 
         {/* Subject picker */}
         <p style={{
-          fontSize: '11px',
+          fontSize: '14px',
           fontWeight: 900,
           textTransform: 'uppercase',
-          letterSpacing: '0.1em',
+          letterSpacing: '0.15em',
           color: textColor,
-          marginBottom: '10px'
+          marginBottom: '12px'
         }}>
           1. Subject
         </p>
@@ -241,21 +243,21 @@ const DevLogin: React.FC = () => {
                 }}
                 disabled={loading}
                 style={{
-                  padding: '12px 20px',
-                  border: isActive ? `4px solid ${borderColor}` : `3px solid ${borderColor}`,
+                  padding: '14px 24px',
+                  border: `4px solid ${borderColor}`,
                   background: isActive ? subj.color : inputBg,
-                  boxShadow: isActive ? `4px 4px 0 ${shadowColor}` : `2px 2px 0 ${shadowColor}`,
+                  boxShadow: isActive ? `6px 6px 0 ${shadowColor}` : `4px 4px 0 ${shadowColor}`,
                   cursor: loading ? 'wait' : 'pointer',
-                  transition: 'all 100ms ease-out',
+                  transition: 'transform 100ms ease, box-shadow 100ms ease',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
                   transform: isActive ? 'translate(-1px, -1px)' : 'none',
                 }}
               >
-                <span style={{ fontSize: '20px' }}>{subj.icon}</span>
+                <span style={{ fontSize: '24px' }}>{subj.icon}</span>
                 <span style={{
-                  fontSize: '14px',
+                  fontSize: '16px',
                   fontWeight: 900,
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
@@ -276,17 +278,17 @@ const DevLogin: React.FC = () => {
           marginBottom: '12px',
           justifyContent: 'center'
         }}>
-          <div style={{ flex: '0 0 auto', height: '3px', width: '40px', background: borderColor }} />
+          <div style={{ flex: '0 0 auto', height: '4px', width: '50px', background: borderColor }} />
           <span style={{
-            fontSize: '11px',
+            fontSize: '14px',
             fontWeight: 900,
             textTransform: 'uppercase',
-            letterSpacing: '0.1em',
+            letterSpacing: '0.15em',
             color: textColor
           }}>
             or type any subject
           </span>
-          <div style={{ flex: '0 0 auto', height: '3px', width: '40px', background: borderColor }} />
+          <div style={{ flex: '0 0 auto', height: '4px', width: '50px', background: borderColor }} />
         </div>
         <div style={{
           display: 'flex',
@@ -312,17 +314,17 @@ const DevLogin: React.FC = () => {
             placeholder="e.g. Geography, Music Theory, Python..."
             disabled={loading}
             style={{
-              padding: '10px 16px',
-              border: customSubject ? `4px solid ${borderColor}` : `3px solid ${borderColor}`,
+              padding: '14px 20px',
+              border: `4px solid ${borderColor}`,
               background: customSubject ? '#C3ACD0' : inputBg,
               color: customSubject ? '#000' : textColor,
-              boxShadow: customSubject ? `4px 4px 0 ${shadowColor}` : `2px 2px 0 ${shadowColor}`,
-              fontSize: '14px',
+              boxShadow: customSubject ? `6px 6px 0 ${shadowColor}` : `4px 4px 0 ${shadowColor}`,
+              fontSize: '16px',
               fontWeight: 700,
-              width: '320px',
+              width: '360px',
               maxWidth: '90%',
               outline: 'none',
-              fontFamily: 'system-ui, -apple-system, sans-serif',
+              fontFamily: "'Space Grotesk', -apple-system, sans-serif",
               transition: 'all 100ms ease-out'
             }}
           />
@@ -330,16 +332,17 @@ const DevLogin: React.FC = () => {
 
         {/* Active subject indicator */}
         <div style={{
-          marginBottom: '16px',
-          padding: '8px 16px',
+          marginBottom: '20px',
+          padding: '10px 20px',
           background: activeColor,
-          border: `2px solid ${borderColor}`,
+          border: `4px solid ${borderColor}`,
           display: 'inline-block',
-          fontSize: '12px',
-          fontWeight: 700,
+          fontSize: '16px',
+          fontWeight: 900,
           textTransform: 'uppercase',
-          letterSpacing: '0.05em',
+          letterSpacing: '0.1em',
           color: '#000', // Always dark text on colored background
+          boxShadow: `4px 4px 0 ${borderColor}`,
           maxWidth: '90%',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
@@ -350,12 +353,12 @@ const DevLogin: React.FC = () => {
 
         {/* Age grid */}
         <p style={{
-          fontSize: '11px',
+          fontSize: '14px',
           fontWeight: 900,
           textTransform: 'uppercase',
-          letterSpacing: '0.1em',
+          letterSpacing: '0.15em',
           color: textColor,
-          marginBottom: '10px'
+          marginBottom: '12px'
         }}>
           2. Select your age
         </p>
@@ -373,49 +376,49 @@ const DevLogin: React.FC = () => {
                 onClick={() => !loading && handleLogin(age)}
                 disabled={loading}
                 style={{
-                  padding: '18px 8px',
-                  minHeight: '44px',
-                  minWidth: '44px',
-                  border: `3px solid ${borderColor}`,
+                  padding: '20px 10px',
+                  minHeight: '56px',
+                  minWidth: '56px',
+                  border: `4px solid ${borderColor}`,
                   background: isSelected ? (isDark ? '#333' : '#ddd') : activeColor,
-                  boxShadow: loading ? `1px 1px 0 ${shadowColor}` : `3px 3px 0 ${shadowColor}`,
+                  boxShadow: loading ? `2px 2px 0 ${shadowColor}` : `4px 4px 0 ${shadowColor}`,
                   cursor: loading ? 'wait' : 'pointer',
-                  transition: 'all 100ms ease-out',
+                  transition: 'transform 100ms ease, box-shadow 100ms ease',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '4px'
+                  gap: '6px'
                 }}
                 onMouseDown={(e) => {
                   if (!loading) {
                     (e.currentTarget).style.transform = 'translate(2px, 2px)';
-                    (e.currentTarget).style.boxShadow = `1px 1px 0 ${shadowColor}`;
+                    (e.currentTarget).style.boxShadow = `2px 2px 0 ${shadowColor}`;
                   }
                 }}
                 onMouseUp={(e) => {
                   (e.currentTarget).style.transform = 'none';
-                  (e.currentTarget).style.boxShadow = `3px 3px 0 ${shadowColor}`;
+                  (e.currentTarget).style.boxShadow = `4px 4px 0 ${shadowColor}`;
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget).style.transform = 'none';
-                  (e.currentTarget).style.boxShadow = `3px 3px 0 ${shadowColor}`;
+                  (e.currentTarget).style.boxShadow = `4px 4px 0 ${shadowColor}`;
                 }}
               >
                 <span style={{
-                  fontSize: '22px',
+                  fontSize: '26px',
                   fontWeight: 900,
                   color: '#fff',
-                  textShadow: '1px 1px 0 rgba(0,0,0,0.3)'
+                  textShadow: '2px 2px 0 rgba(0,0,0,0.4)'
                 }}>
                   {age}
                 </span>
                 <span style={{
-                  fontSize: '10px',
-                  fontWeight: 800,
-                  color: 'rgba(255,255,255,0.85)',
+                  fontSize: '12px',
+                  fontWeight: 900,
+                  color: 'rgba(255,255,255,0.9)',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  textShadow: '1px 1px 0 rgba(0,0,0,0.2)'
+                  letterSpacing: '0.08em',
+                  textShadow: '1px 1px 0 rgba(0,0,0,0.3)'
                 }}>
                   {gradeForAge(age)}
                 </span>
@@ -431,9 +434,9 @@ const DevLogin: React.FC = () => {
             background: activeColor,
             boxShadow: `4px 4px 0 ${shadowColor}`,
             fontWeight: 900,
-            fontSize: '14px',
+            fontSize: '16px',
             textTransform: 'uppercase',
-            letterSpacing: '0.05em',
+            letterSpacing: '0.1em',
             marginBottom: '12px',
             display: 'flex',
             alignItems: 'center',
@@ -443,9 +446,9 @@ const DevLogin: React.FC = () => {
           }}>
             <span style={{
               display: 'inline-block',
-              width: '18px',
-              height: '18px',
-              border: '3px solid #000',
+              width: '20px',
+              height: '20px',
+              border: '4px solid #000',
               borderTopColor: 'transparent',
               borderRadius: '50%',
               animation: 'spin 0.8s linear infinite'
@@ -457,8 +460,8 @@ const DevLogin: React.FC = () => {
 
         {error && (
           <div style={{
-            padding: '10px 16px',
-            border: `3px solid ${borderColor}`,
+            padding: '12px 20px',
+            border: `4px solid ${borderColor}`,
             background: '#FF6B6B',
             color: '#fff',
             fontWeight: 700,

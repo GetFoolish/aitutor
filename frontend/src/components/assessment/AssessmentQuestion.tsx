@@ -619,22 +619,22 @@ const AssessmentQuestion: React.FC<Props> = ({
         ref={headerBlockRef}
         className={`${ultraCompactViewport ? 'mb-1' : compactViewport ? 'mb-2' : 'mb-3'} border-[5px] border-black dark:border-white bg-[#FFD93D] shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] overflow-hidden`}
       >
-        <div className={`${ultraCompactViewport ? 'px-3 py-2' : compactViewport ? 'px-4 py-3' : 'px-6 py-5'} text-center border-b-[3px] border-black dark:border-white`}>
-          <div className={`${ultraCompactViewport ? 'text-base mb-0.5' : compactViewport ? 'text-lg mb-1' : 'text-xl mb-2'} font-black text-black uppercase tracking-widest font-sans`}>
+        <div className={`${ultraCompactViewport ? 'px-3 py-2' : compactViewport ? 'px-4 py-3' : 'px-6 py-5'} text-center border-b-[4px] border-black dark:border-white`}>
+          <div className={`${ultraCompactViewport ? 'text-lg mb-0.5' : compactViewport ? 'text-xl mb-1' : 'text-2xl mb-2'} font-black text-black uppercase tracking-widest font-sans`}>
             QUESTION {questionNumber || 1} OF {totalQuestions || '?'}
           </div>
-          <div className={`${ultraCompactViewport ? 'text-[11px]' : compactViewport ? 'text-xs' : 'text-sm'} font-bold text-black uppercase tracking-wide opacity-80`}>
+          <div className={`${ultraCompactViewport ? 'text-sm' : compactViewport ? 'text-base' : 'text-lg'} font-bold text-black uppercase tracking-wide opacity-80`}>
             Assessment in Progress
           </div>
         </div>
 
         {/* Progress Bar */}
-        <div className="h-3 bg-white dark:bg-neutral-800 border-t-[3px] border-black dark:border-white relative overflow-hidden">
+        <div className="h-4 bg-white dark:bg-neutral-800 border-t-[4px] border-black dark:border-white relative overflow-hidden">
           <div
-            className="h-full bg-[#FF6B6B] border-r-[3px] border-black dark:border-white transition-all duration-300 ease-out"
+            className="h-full bg-[#FF6B6B] border-r-[4px] border-black dark:border-white transition-all duration-300 ease-out"
             style={{ width: `${progressPercentage}%` }}
           />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] font-black text-black dark:text-white uppercase tracking-wide z-10">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xs font-black text-black dark:text-white uppercase tracking-wide z-10">
             {Math.round(progressPercentage)}%
           </div>
         </div>
@@ -651,7 +651,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         <div ref={contentBlockRef} style={contentBlockStyle}>
           <div
             id="question-content-container"
-            className={`border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white ${ultraCompactViewport ? 'p-2 mb-1' : compactViewport ? 'p-3 mb-2' : 'p-4 md:p-5 lg:p-6 mb-3'} shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]`}
+            className={`border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white ${ultraCompactViewport ? 'p-3 mb-2' : compactViewport ? 'p-4 mb-3' : 'p-5 md:p-6 lg:p-7 mb-4'} shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.4)]`}
             style={{
               overflowX: 'clip',
               overflowY: 'visible',
@@ -691,9 +691,9 @@ const AssessmentQuestion: React.FC<Props> = ({
                     <div
                       key={idx}
                       data-testid="assessment-inline-hint"
-                      className={`${ultraCompactViewport ? 'py-1.5 px-2.5 text-[12px]' : compactViewport ? 'py-2 px-3 text-[13px]' : 'py-3 px-4 text-sm'} mb-2 border-[3px] border-black dark:border-white bg-[#FFF9C4] dark:bg-amber-900/40 shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] leading-relaxed break-words text-[#111827] dark:text-[#F9FAFB]`}
+                      className={`${ultraCompactViewport ? 'py-2 px-3 text-sm' : compactViewport ? 'py-3 px-4 text-base' : 'py-4 px-5 text-lg'} mb-3 border-[4px] border-black dark:border-white bg-[#FFF9C4] dark:bg-amber-900/40 shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] leading-relaxed break-words text-[#111827] dark:text-[#F9FAFB]`}
                     >
-                      <strong className="text-[11px] uppercase tracking-wide">
+                      <strong className="text-sm font-black uppercase tracking-wide">
                         Hint {idx + 1}:
                       </strong>{' '}
                       <span>{renderTextWithLatex(hint.content)}</span>
@@ -705,7 +705,7 @@ const AssessmentQuestion: React.FC<Props> = ({
                 <button
                   data-testid="assessment-show-hint-button"
                   onClick={() => setHintsShown(h => h + 1)}
-                  className={`${ultraCompactViewport ? 'py-2 px-4 text-[12px]' : 'py-2.5 px-5 text-[13px]'} font-black uppercase tracking-wide bg-[#FFD93D] dark:bg-[#FFD93D] text-black dark:text-black border-[3px] border-black dark:border-white cursor-pointer shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] mb-2 hover:bg-[#FFE066] dark:hover:bg-[#FFE066] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none transition-all duration-100`}
+                  className={`${ultraCompactViewport ? 'py-3 px-5 text-sm' : 'py-4 px-6 text-base'} font-black uppercase tracking-wide bg-[#FFD93D] dark:bg-[#FFD93D] text-black dark:text-black border-[4px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] mb-3 hover:bg-[#FFE066] dark:hover:bg-[#FFE066] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition-all duration-100 active:translate-x-2 active:translate-y-2 active:shadow-none`}
                 >
                   Show Hint ({hintsShown + 1}/{(question.hints || []).length})
                 </button>
@@ -717,7 +717,7 @@ const AssessmentQuestion: React.FC<Props> = ({
 
       {!isAnswered && brokenWidgetOnly && (
         <div className={`${compactViewport ? 'mb-3' : 'mb-5'} relative z-10`}>
-          <div className="mb-3 py-3 px-5 border-[3px] border-black dark:border-white bg-[#FFF3E0] dark:bg-orange-900/30 text-sm font-bold text-center text-black dark:text-orange-200 uppercase tracking-wide">
+          <div className="mb-4 py-4 px-6 border-[4px] border-black dark:border-white bg-[#FFF3E0] dark:bg-orange-900/30 text-base font-black text-center text-black dark:text-orange-200 uppercase tracking-wide shadow-[4px_4px_0_0_rgba(0,0,0,1)]">
             Drag-and-drop questions are not supported yet
           </div>
           <button
@@ -780,7 +780,7 @@ const AssessmentQuestion: React.FC<Props> = ({
           className={`${compactViewport ? 'mb-2' : 'mb-4'} border-[5px] border-black dark:border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] overflow-hidden ${keScore.correct ? 'bg-[#E8F5E9]' : 'bg-[#FFEBEE]'}`}
           style={{ position: 'relative', zIndex: 20, isolation: 'isolate', backgroundColor: keScore.correct ? '#E8F5E9' : '#FFEBEE', flexShrink: 0 }}
         >
-          <div className={`px-5 py-4 flex items-center justify-center gap-4 ${!keScore.correct && question?.hints?.length ? 'border-b-[3px] border-black dark:border-white' : ''}`}>
+          <div className={`px-5 py-4 flex items-center justify-center gap-4 ${!keScore.correct && question?.hints?.length ? 'border-b-[4px] border-black dark:border-white' : ''}`}>
             {keScore.correct ? (
               <>
                 <CheckCircle2 size={32} className="text-[#2E7D32] dark:text-green-400 flex-shrink-0" />
@@ -801,7 +801,7 @@ const AssessmentQuestion: React.FC<Props> = ({
           {!keScore.correct && question?.hints?.length > 0 && (
             <div
               data-testid="assessment-explanation"
-              className="px-5 py-3.5 text-sm leading-relaxed text-[#1F2937] dark:text-[#F9FAFB] bg-[#FFF3E0] dark:bg-[#3B2A14]"
+              className="px-6 py-4 text-base leading-relaxed text-[#1F2937] dark:text-[#F9FAFB] bg-[#FFF3E0] dark:bg-[#3B2A14]"
               style={{
                 minHeight: ultraCompactViewport ? 56 : 72,
                 maxHeight: ultraCompactViewport ? 160 : compactViewport ? 200 : 260,
@@ -813,7 +813,7 @@ const AssessmentQuestion: React.FC<Props> = ({
                 flexShrink: 0,
               }}
             >
-              <strong className="uppercase text-xs tracking-wide">
+              <strong className="uppercase text-sm font-black tracking-wide">
                 Explanation:
               </strong>{' '}
               <span>{renderTextWithLatex(question.hints[question.hints.length - 1]?.content || question.hints[0]?.content || '')}</span>

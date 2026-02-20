@@ -1,0 +1,695 @@
+{
+  "created_at": "2026-02-19T18:43:15.177796+00:00",
+  "subject": "Science",
+  "services": {
+    "dash": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.32474493980407715,
+      "polls": 1,
+      "body": {
+        "status": "ready",
+        "ready": true,
+        "skills_count": 80,
+        "questions_count": 0,
+        "ai_questions_enabled": true
+      }
+    },
+    "auth": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.09366035461425781,
+      "body": {
+        "status": "healthy",
+        "service": "AuthService"
+      }
+    },
+    "teaching_assistant": {
+      "ok": true,
+      "actual_ok": true,
+      "optional": false,
+      "code": 200,
+      "elapsed_s": 0.1035618782043457,
+      "body": {
+        "status": "healthy",
+        "service": "TeachingAssistant"
+      }
+    }
+  },
+  "checks": {
+    "dev_login": {
+      "ok": true,
+      "code": 200,
+      "elapsed_s": 0.07039213180541992,
+      "body": {
+        "token_received": true
+      }
+    },
+    "question_fetch": {
+      "ok": true,
+      "start_subject": {
+        "code": 200,
+        "elapsed_s": 0.09645986557006836,
+        "body": {
+          "status": "ready",
+          "subject": "Science",
+          "region": "US",
+          "skills_count": 80
+        }
+      },
+      "questions": {
+        "code": 200,
+        "elapsed_s": 0.620593786239624,
+        "count": 5,
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        }
+      },
+      "budgets": {
+        "questions_latency_budget_s": 8.0,
+        "min_question_count": 5
+      }
+    },
+    "learning_path_subject_validity": {
+      "ok": true,
+      "current_question_ids": [
+        "pool_02447e05afccb721",
+        "pool_5341f3009a9ccb05",
+        "ai_q_ac0a47e22d61"
+      ],
+      "recommend_next": {
+        "code": 200,
+        "elapsed_s": 0.04157900810241699,
+        "count": 3,
+        "overlap_with_current_ids": [],
+        "duplicate_ids": 0,
+        "duplicate_content": 0,
+        "contract_failures": [],
+        "scope_check": {
+          "subject": "Science",
+          "missing_skill_ids": 0,
+          "contamination_count": 0,
+          "contamination_examples": [],
+          "ok": true
+        },
+        "body": {
+          "sample_ids": [
+            "pool_c153282ac331a089",
+            "pool_bc7842f65e70df3d",
+            "ai_q_c701e53355b6"
+          ]
+        }
+      }
+    },
+    "adaptive_start_all_subjects": {
+      "ok": true,
+      "adaptive_start_timeout_s": 4.0,
+      "adaptive_start_retry_timeout_s": 12.0,
+      "catalog_fetch": {
+        "code": 200,
+        "elapsed_s": 0.028086185455322266,
+        "count": 3,
+        "fallback_used": false
+      },
+      "subjects_checked_count": 3,
+      "subjects_checked": [
+        "Science",
+        "English",
+        "History"
+      ],
+      "timeout_retryable_count": 0,
+      "concrete_result_count": 3,
+      "results": [
+        {
+          "subject": "Science",
+          "code": 200,
+          "elapsed_s": 0.0519099235534668,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_b5f0fa817a48",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "A scientist is investigating whether a new organic fertilizer affects the growth rate of tomato plants. She sets up an experiment with three groups of identical tomato plants:\n*   **Group A:** Receives no fertilizer.\n*   **Group B:** Receives 50 mL of the new organic fertilizer weekly.\n*   **Group C:** Receives 100 mL of the new organic fertilizer weekly.\n\nAll plants are exposed to the same amount of sunlight, receive the same amount of water, and are kept at the same temperature. The scientist measures the height of each plant weekly.\n\nWhich group in this experiment functions as the **control group**? [[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "alignment": "default",
+                    "graded": true,
+                    "options": {
+                      "choices": [
+                        {
+                          "content": "Group A",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Group B",
+                          "correct": false,
+                          "misconception": "Confuses an experimental group with the control group.",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Group C",
+                          "correct": false,
+                          "misconception": "Confuses an experimental group with the control group.",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "All three groups combined",
+                          "correct": false,
+                          "misconception": "Misunderstands the specific role of a control group as a baseline.",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "displayCount": null,
+                      "hasNoneOfTheAbove": false,
+                      "multipleSelect": false,
+                      "numCorrect": 1,
+                      "randomize": false
+                    },
+                    "static": false,
+                    "type": "radio",
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    }
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple"
+              },
+              "hints": [
+                {
+                  "content": "In a scientific experiment, what is the primary purpose of a control group? How does it help researchers draw valid conclusions about the effect of a variable?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "A control group is crucial for comparison. It is treated identically to the experimental groups in every way, except that it does not receive the specific treatment or independent variable being tested. This allows scientists to see what happens when the variable is absent.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "In this experiment, the independent variable is the new organic fertilizer. To understand if the fertilizer has an effect, the scientist needs a group of plants that are not exposed to it. This group will show the natural growth rate without the experimental treatment. Which group in the setup fits this description?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "question_id": "pool_02447e05afccb721",
+              "dash_metadata": {
+                "dash_question_id": "pool_02447e05afccb721",
+                "skill_ids": [
+                  "ai_gen_science_us_high-school-biology_unit_intro-biology-scientific-inquiry"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Introduction to Biology and Scientific Inquiry"
+                ],
+                "unit_name": "Introduction to Biology and Scientific Inquiry",
+                "lesson_name": "Practice",
+                "ai_generated": true
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "English",
+          "code": 200,
+          "elapsed_s": 0.1571791172027588,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_b94972aed953",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following is true about Crafting Narratives & Explanations?\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "displayCount": null,
+                      "choices": [
+                        {
+                          "content": "Crafting Narratives & Explanations involves learning and practicing specific skills",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "Crafting Narratives & Explanations can only be learned by watching TV",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "Crafting Narratives & Explanations has nothing to do with thinking or problem solving",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Nobody studies Crafting Narratives & Explanations in school",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple",
+                "options": {
+                  "content": "",
+                  "images": {},
+                  "widgets": {}
+                }
+              },
+              "hints": [
+                {
+                  "content": "Think about what studying Crafting Narratives & Explanations actually involves.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Does Crafting Narratives & Explanations require learning specific skills?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Crafting Narratives & Explanations involves learning and practicing \u2014 that's how all subjects work.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_3edeba4281f1",
+                "skill_ids": [
+                  "ai_gen_english_us_6th-8th-grade-english-language-arts_unit_crafting-narratives-explanations"
+                ],
+                "difficulty": 0.5,
+                "skill_names": [
+                  "Crafting Narratives & Explanations"
+                ],
+                "unit_name": "Crafting Narratives & Explanations",
+                "lesson_name": "Practice",
+                "ai_generated": true,
+                "mongodb_id": "699499d54911da26d0207f26"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        },
+        {
+          "subject": "History",
+          "code": 200,
+          "elapsed_s": 1.1580190658569336,
+          "retried_after_timeout": false,
+          "acceptable": true,
+          "verdict": "ready",
+          "body": {
+            "assessment_id": "assess_ffa9b0de3947",
+            "question_number": 1,
+            "total_questions": 10,
+            "question": {
+              "question": {
+                "content": "Which of the following is true about History For Grade 7?\n\n[[\u2603 radio 1]]",
+                "images": {},
+                "widgets": {
+                  "radio 1": {
+                    "type": "radio",
+                    "graded": true,
+                    "options": {
+                      "multipleSelect": false,
+                      "displayCount": null,
+                      "choices": [
+                        {
+                          "content": "History For Grade 7 involves learning and practicing specific skills",
+                          "correct": true,
+                          "misconception": null,
+                          "id": "choice-0"
+                        },
+                        {
+                          "content": "History For Grade 7 can only be learned by watching TV",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-1"
+                        },
+                        {
+                          "content": "History For Grade 7 has nothing to do with thinking or problem solving",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-2"
+                        },
+                        {
+                          "content": "Nobody studies History For Grade 7 in school",
+                          "correct": false,
+                          "misconception": "Common student error",
+                          "id": "choice-3"
+                        }
+                      ],
+                      "countChoices": false,
+                      "deselectEnabled": false,
+                      "hasNoneOfTheAbove": false,
+                      "randomize": false,
+                      "numCorrect": 1
+                    },
+                    "version": {
+                      "major": 2,
+                      "minor": 0
+                    },
+                    "alignment": "default",
+                    "static": false
+                  }
+                }
+              },
+              "answerArea": {
+                "calculator": false,
+                "type": "multiple",
+                "options": {
+                  "content": "",
+                  "images": {},
+                  "widgets": {}
+                }
+              },
+              "hints": [
+                {
+                  "content": "Think about what studying History For Grade 7 actually involves.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "Does History For Grade 7 require learning specific skills?",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                },
+                {
+                  "content": "History For Grade 7 involves learning and practicing \u2014 that's how all subjects work.",
+                  "images": {},
+                  "replace": false,
+                  "widgets": {}
+                }
+              ],
+              "dash_metadata": {
+                "dash_question_id": "ai_q_ec0e5330f617",
+                "skill_ids": [
+                  "assessment_history_grade_7_96842"
+                ],
+                "difficulty": 0.5,
+                "expected_time_seconds": 60.0,
+                "slug": "ai_q_ec0e5330f617",
+                "skill_names": [
+                  "History for Grade 7"
+                ],
+                "unit_id": "assessment_history_grade_7_96842",
+                "lesson_id": "assessment_history_grade_7_2_pf0_93096",
+                "exercise_id": "ai_generated",
+                "mongodb_id": "699499db4911da26d0207f71",
+                "unit_name": "History for Grade 7",
+                "lesson_name": "History for Grade 7",
+                "exercise_name": "AI Generated Practice",
+                "ai_generated": true,
+                "source": "gemini"
+              }
+            },
+            "current_difficulty": 0.5
+          }
+        }
+      ]
+    },
+    "adaptive_progression": {
+      "ok": false,
+      "payload": {
+        "subject_used": "Science",
+        "start_code": 200,
+        "start_elapsed_s": 0.0519099235534668,
+        "start_body": {
+          "assessment_id": "assess_b5f0fa817a48",
+          "question_number": 1,
+          "total_questions": 10,
+          "question": {
+            "question": {
+              "content": "A scientist is investigating whether a new organic fertilizer affects the growth rate of tomato plants. She sets up an experiment with three groups of identical tomato plants:\n*   **Group A:** Receives no fertilizer.\n*   **Group B:** Receives 50 mL of the new organic fertilizer weekly.\n*   **Group C:** Receives 100 mL of the new organic fertilizer weekly.\n\nAll plants are exposed to the same amount of sunlight, receive the same amount of water, and are kept at the same temperature. The scientist measures the height of each plant weekly.\n\nWhich group in this experiment functions as the **control group**? [[\u2603 radio 1]]",
+              "images": {},
+              "widgets": {
+                "radio 1": {
+                  "alignment": "default",
+                  "graded": true,
+                  "options": {
+                    "choices": [
+                      {
+                        "content": "Group A",
+                        "correct": true,
+                        "misconception": null,
+                        "id": "choice-0"
+                      },
+                      {
+                        "content": "Group B",
+                        "correct": false,
+                        "misconception": "Confuses an experimental group with the control group.",
+                        "id": "choice-1"
+                      },
+                      {
+                        "content": "Group C",
+                        "correct": false,
+                        "misconception": "Confuses an experimental group with the control group.",
+                        "id": "choice-2"
+                      },
+                      {
+                        "content": "All three groups combined",
+                        "correct": false,
+                        "misconception": "Misunderstands the specific role of a control group as a baseline.",
+                        "id": "choice-3"
+                      }
+                    ],
+                    "countChoices": false,
+                    "deselectEnabled": false,
+                    "displayCount": null,
+                    "hasNoneOfTheAbove": false,
+                    "multipleSelect": false,
+                    "numCorrect": 1,
+                    "randomize": false
+                  },
+                  "static": false,
+                  "type": "radio",
+                  "version": {
+                    "major": 2,
+                    "minor": 0
+                  }
+                }
+              }
+            },
+            "answerArea": {
+              "calculator": false,
+              "type": "multiple"
+            },
+            "hints": [
+              {
+                "content": "In a scientific experiment, what is the primary purpose of a control group? How does it help researchers draw valid conclusions about the effect of a variable?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "A control group is crucial for comparison. It is treated identically to the experimental groups in every way, except that it does not receive the specific treatment or independent variable being tested. This allows scientists to see what happens when the variable is absent.",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              },
+              {
+                "content": "In this experiment, the independent variable is the new organic fertilizer. To understand if the fertilizer has an effect, the scientist needs a group of plants that are not exposed to it. This group will show the natural growth rate without the experimental treatment. Which group in the setup fits this description?",
+                "images": {},
+                "replace": false,
+                "widgets": {}
+              }
+            ],
+            "question_id": "pool_02447e05afccb721",
+            "dash_metadata": {
+              "dash_question_id": "pool_02447e05afccb721",
+              "skill_ids": [
+                "ai_gen_science_us_high-school-biology_unit_intro-biology-scientific-inquiry"
+              ],
+              "difficulty": 0.5,
+              "skill_names": [
+                "Introduction to Biology and Scientific Inquiry"
+              ],
+              "unit_name": "Introduction to Biology and Scientific Inquiry",
+              "lesson_name": "Practice",
+              "ai_generated": true
+            }
+          },
+          "current_difficulty": 0.5
+        },
+        "required_stable_transitions": 8,
+        "stable_transitions": 4,
+        "transitions": [
+          {
+            "step": 1,
+            "code": 200,
+            "elapsed_s": 0.59853196144104,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 2,
+            "code": 200,
+            "elapsed_s": 0.013247966766357422,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 3,
+            "code": 200,
+            "elapsed_s": 0.7809038162231445,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 4,
+            "code": 200,
+            "elapsed_s": 0.7341198921203613,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": true
+          },
+          {
+            "step": 5,
+            "code": 200,
+            "elapsed_s": 3.1182467937469482,
+            "attempts_used": 1,
+            "completed_early": false,
+            "has_next_question": true,
+            "ok": false
+          }
+        ],
+        "next": {
+          "code": 200,
+          "elapsed_s": 0.59853196144104,
+          "completed_early": false,
+          "has_next_question": true,
+          "attempts_used": 1
+        }
+      },
+      "budgets": {
+        "next_latency_budget_s": 2.5
+      }
+    },
+    "loading_latency": {
+      "ok": true,
+      "initial_question_fetch_elapsed_s": 0.620593786239624,
+      "learning_recommend_next_elapsed_s": 0.04157900810241699,
+      "adaptive_start_elapsed_s": 0.0519099235534668,
+      "next_question_elapsed_s": 0.7809038162231445,
+      "adaptive_next_transition_elapsed_s": [
+        0.59853196144104,
+        0.013247966766357422,
+        0.7809038162231445,
+        0.7341198921203613
+      ],
+      "budgets": {
+        "initial_question_fetch_budget_s": 8.0,
+        "learning_recommend_next_budget_s": 2.5,
+        "adaptive_start_budget_s": 8.0,
+        "next_question_budget_s": 2.5
+      }
+    },
+    "websocket": {
+      "session_start": {
+        "code": 200,
+        "elapsed_s": 0.16943693161010742,
+        "body": {
+          "prompt": "",
+          "session_info": {
+            "session_id": "sess_61e32feba1c84cfa",
+            "user_id": "dev_788b1e5f6be8",
+            "session_active": true,
+            "duration_minutes": 0.0,
+            "questions_answered": 0,
+            "questions_correct": 0,
+            "websocket_connected": false,
+            "sse_connected": false
+          }
+        }
+      },
+      "probe": {
+        "ok": true,
+        "elapsed_s": 0.1751871109008789,
+        "response": {
+          "type": "pong"
+        }
+      },
+      "session_end": {
+        "code": 200,
+        "elapsed_s": 0.09177184104919434,
+        "body": {
+          "prompt": "[SYSTEM PROMPT FOR ADAM]\nThe tutoring session is ending now.\nSession stats: 0.0 minutes, 0 questions attempted.\nPlease give the student a warm closing message, acknowledge their hard work,\nand encourage them for next session.",
+          "session_info": {
+            "session_id": "sess_61e32feba1c84cfa",
+            "duration_minutes": 0.01,
+            "minutes_deducted": 1,
+            "questions_answered": 0,
+            "questions_correct": 0
+          }
+        }
+      },
+      "ok": true
+    }
+  },
+  "ok": false,
+  "errors": [
+    "adaptive assessment progression check failed"
+  ]
+}
