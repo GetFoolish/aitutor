@@ -632,12 +632,14 @@ const AssessmentFlow: React.FC = () => {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      // Clear assessmentId FIRST so beforeunload handler won't fire a second dialog
+                      // Clear assessmentId FIRST so beforeunload handler won't fire
                       assessmentIdRef.current = null;
+                      setAssessmentId(null);
+                      setCurrentQuestion(null);
+                      setCompleted(false);
                       sessionStorage.removeItem('selected_subject');
                       sessionStorage.removeItem('onboarding_complete');
-                      // Full page navigation — reliable, avoids confirm() suppression issues
-                      window.location.replace('/app/dev-login');
+                      history.replace('/app/dev-login');
                     }}
                     style={{
                       flexShrink: 0,

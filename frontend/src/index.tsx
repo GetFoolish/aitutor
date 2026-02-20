@@ -148,6 +148,10 @@ if (import.meta.env.DEV) {
 const LandingPageOrApp: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
 
+  // If user just came from assessment, always show the App (not the landing page)
+  const params = new URLSearchParams(window.location.search);
+  const fromAssessment = params.get('fromAssessment') === '1';
+
   if (isLoading) {
     return (
       <div style={{
@@ -162,7 +166,7 @@ const LandingPageOrApp: React.FC = () => {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated && !fromAssessment) {
     return <LandingPageWrapper />;
   }
 

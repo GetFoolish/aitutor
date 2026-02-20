@@ -73,13 +73,13 @@ const normalizeInlineWidgetLayout = (container: HTMLElement) => {
     el.style.setProperty('vertical-align', 'baseline', 'important');
     el.style.setProperty('align-items', 'baseline', 'important');
     el.style.setProperty('width', 'auto', 'important');
-    el.style.setProperty('max-width', 'min(52vw, 320px)', 'important');
+    el.style.setProperty('max-width', 'min(80vw, 500px)', 'important');
   });
 
   const inlineDropdowns = container.querySelectorAll<HTMLElement>('.perseus-widget-container.widget-inline-block .perseus-dropdown');
   inlineDropdowns.forEach((el) => {
     el.style.setProperty('display', 'inline-flex', 'important');
-    el.style.setProperty('max-width', 'min(52vw, 320px)', 'important');
+    el.style.setProperty('max-width', 'min(80vw, 500px)', 'important');
     el.style.setProperty('width', 'auto', 'important');
   });
 
@@ -87,8 +87,8 @@ const normalizeInlineWidgetLayout = (container: HTMLElement) => {
     '.perseus-widget-container.widget-inline-block .perseus-dropdown > button[role="combobox"]'
   );
   inlineComboboxButtons.forEach((btn) => {
-    btn.style.setProperty('min-width', 'clamp(120px, 18vw, 220px)', 'important');
-    btn.style.setProperty('max-width', 'min(52vw, 320px)', 'important');
+    btn.style.setProperty('min-width', 'clamp(120px, 20vw, 280px)', 'important');
+    btn.style.setProperty('max-width', 'min(80vw, 500px)', 'important');
     btn.style.setProperty('width', 'auto', 'important');
     btn.style.setProperty('min-height', '38px', 'important');
     btn.style.setProperty('height', 'auto', 'important');
@@ -112,8 +112,8 @@ const normalizeInlineWidgetLayout = (container: HTMLElement) => {
     '.perseus-widget-container.widget-inline-block input[type="text"]'
   );
   inlineTextInputs.forEach((input) => {
-    input.style.setProperty('min-width', 'clamp(120px, 16vw, 220px)', 'important');
-    input.style.setProperty('max-width', 'min(52vw, 320px)', 'important');
+    input.style.setProperty('min-width', 'clamp(120px, 20vw, 280px)', 'important');
+    input.style.setProperty('max-width', 'min(80vw, 500px)', 'important');
     input.style.setProperty('width', 'auto', 'important');
     input.style.setProperty('font-size', '14px', 'important');
   });
@@ -288,13 +288,19 @@ const AssessmentQuestion: React.FC<Props> = ({
             options: {
               ...w.options,
               choices: sanitizeChoicesArray(w.options.choices),
+              noneOfTheAbove: false,
+              // Ensure no pre-selected state from AI generation
+              selectedChoiceIds: undefined,
+              deselectEnabled: false,
             },
           };
         }
         if (w?.type === 'numeric-input' && w.options) {
+          // Ensure answers is always an array (prevents Perseus linter "answers is not iterable" crash)
+          const answers = Array.isArray(w.options.answers) ? w.options.answers : [];
           q.question.widgets[key] = {
             ...w,
-            options: { coefficient: false, static: false, labelText: '', size: 'normal', ...w.options },
+            options: { coefficient: false, static: false, labelText: '', size: 'normal', ...w.options, answers },
           };
         }
         // Orderer: normalize string options to {content: string} objects
@@ -663,7 +669,7 @@ const AssessmentQuestion: React.FC<Props> = ({
                   apiOptions={{}}
                   linterContext={{
                     contentType: "",
-                    highlightLint: true,
+                    highlightLint: false,
                     paths: [],
                     stack: [],
                   }}
@@ -797,7 +803,7 @@ const AssessmentQuestion: React.FC<Props> = ({
               className="px-5 py-3.5 text-sm leading-relaxed text-[#1F2937] dark:text-[#F9FAFB] bg-[#FFF3E0] dark:bg-[#3B2A14]"
               style={{
                 minHeight: ultraCompactViewport ? 56 : 72,
-                maxHeight: ultraCompactViewport ? 104 : compactViewport ? 124 : 140,
+                maxHeight: ultraCompactViewport ? 160 : compactViewport ? 200 : 260,
                 overflowY: 'auto',
                 overflowX: 'hidden',
                 lineHeight: 1.5,

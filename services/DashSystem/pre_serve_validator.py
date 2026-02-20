@@ -604,6 +604,54 @@ def validate_relevance(question_data: dict, skill_id: str, subject: str) -> Chec
 
 
 # ---------------------------------------------------------------------------
+# 4. Meta-question detection
+# ---------------------------------------------------------------------------
+
+# Patterns that indicate a generic "about the topic" meta-question rather than
+# a question that actually tests subject knowledge.
+_META_QUESTION_PATTERNS = [
+    re.compile(r"which\s+(?:of\s+the\s+following\s+)?(?:is|are)\s+true\s+about", re.I),
+    re.compile(r"which\s+(?:of\s+the\s+following\s+)?(?:statement|description)s?\s+(?:is|are)\s+(?:most\s+)?(?:true|accurate|correct)\s+about", re.I),
+    re.compile(r"which\s+(?:best\s+)?describes?\s+(?:the\s+)?(?:study|field|subject|topic|area)\s+of", re.I),
+    re.compile(r"(?:can\s+only\s+be\s+learned\s+by\s+watching\s+tv)", re.I),
+    re.compile(r"(?:has\s+nothing\s+to\s+do\s+with\s+thinking)", re.I),
+    re.compile(r"(?:nobody\s+studies\s+.+\s+in\s+school)", re.I),
+    re.compile(r"involves\s+learning\s+and\s+practicing\s+specific\s+skills", re.I),
+]
+
+# Boilerplate distractor patterns that appear in meta-questions
+_META_DISTRACTOR_PATTERNS = [
+    re.compile(r"can\s+only\s+be\s+learned\s+by\s+watching", re.I),
+    re.compile(r"has\s+nothing\s+to\s+do\s+with", re.I),
+    re.compile(r"nobody\s+(?:studies|learns|teaches)", re.I),
+    re.compile(r"is\s+not\s+(?:a\s+)?(?:real|important|useful)\s+(?:subject|topic|field)", re.I),
+]
+
+
+def validate_not_meta_question(question_data: dict) -> CheckResult:
+    """Reject generic meta-questions that describe a topic instead of testing knowledge."""
+    text = _extract_text(question_data)
+
+    # Check question content for meta-question patterns
+    for pat in _META_QUESTION_PATTERNS:
+        if pat.search(text):
+            return CheckResult(
+                passed=False,
+                reasons=[f"meta-question detected: matches pattern '{pat.pattern[:60]}'"],
+            )
+
+    # Check if 2+ distractor choices match boilerplate meta-patterns
+    distractor_hits = sum(1 for pat in _META_DISTRACTOR_PATTERNS if pat.search(text))
+    if distractor_hits >= 2:
+        return CheckResult(
+            passed=False,
+            reasons=[f"meta-question detected: {distractor_hits} boilerplate distractor patterns found"],
+        )
+
+    return CheckResult(passed=True)
+
+
+# ---------------------------------------------------------------------------
 # Async failure logging
 # ---------------------------------------------------------------------------
 
@@ -684,6 +732,12 @@ def validate_pre_serve(
             result.checks_run.append("relevance")
             if not rel.passed:
                 result.failures.extend(f"[relevance] {r}" for r in rel.reasons)
+
+        # Check 4: Meta-question detection
+        meta = validate_not_meta_question(question_data)
+        result.checks_run.append("meta_question")
+        if not meta.passed:
+            result.failures.extend(f"[meta_question] {r}" for r in meta.reasons)
 
         result.passed = len(result.failures) == 0
 

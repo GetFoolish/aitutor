@@ -58,6 +58,26 @@ export function deepNormalize(s: string): string {
     return n;
 }
 
+/**
+ * Parse a string as either a fraction (e.g. "4/100") or a decimal number.
+ * Returns NaN if the string is not a valid number or fraction.
+ */
+function parseFractionOrDecimal(s: string): number {
+    const trimmed = s.trim();
+    if (trimmed.includes('/')) {
+        const parts = trimmed.split('/');
+        if (parts.length === 2) {
+            const num = parseFloat(parts[0]);
+            const den = parseFloat(parts[1]);
+            if (!isNaN(num) && !isNaN(den) && den !== 0) {
+                return num / den;
+            }
+        }
+        return NaN;
+    }
+    return parseFloat(trimmed);
+}
+
 function stripWrappingQuotes(value: string): string {
     const trimmed = value.trim();
     if (trimmed.length < 2) return trimmed;
@@ -211,9 +231,11 @@ export function scorePerseusQuestion(
 
         } else if (widgetDef.type === 'numeric-input') {
             const answers = widgetDef.options?.answers || [];
-            const userValue = parseFloat((widgetInput as any)?.currentValue || '');
+            const rawValue = (widgetInput as any)?.currentValue || '';
+            // Parse fractions like "4/100" → 0.04
+            const userValue = parseFractionOrDecimal(rawValue);
             if (!selectedAnswerText) {
-                selectedAnswerText = (widgetInput as any)?.currentValue || '';
+                selectedAnswerText = rawValue;
             }
             if (!isNaN(userValue) && answers.length > 0) {
                 const correctAnswer = answers.find((a: any) => a.status === 'correct');
