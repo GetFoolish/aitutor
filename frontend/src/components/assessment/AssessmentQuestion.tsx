@@ -770,7 +770,7 @@ const AssessmentQuestion: React.FC<Props> = ({
           <button
             data-testid="assessment-next-button"
             onClick={handleNext}
-            className={`${ultraCompactViewport ? 'py-2.5 px-4 text-sm' : compactViewport ? 'py-3 px-5 text-base' : 'py-5 px-8 text-lg'} w-full font-black uppercase tracking-widest bg-[#4FC3F7] text-black border-[4px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none`}
+            className={`${ultraCompactViewport ? 'py-2.5 px-4 text-sm' : compactViewport ? 'py-3 px-5 text-base' : 'py-5 px-8 text-lg'} w-full font-black uppercase tracking-widest bg-[#FFD93D] text-black border-[4px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:bg-[#FFE066] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none`}
           >
             {isFinalQuestion ? 'Finish Assessment' : 'Next Question'}
           </button>
