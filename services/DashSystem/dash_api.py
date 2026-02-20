@@ -680,8 +680,9 @@ def load_perseus_items_for_dash_questions_from_mongodb(
     if not need_loading:
         try:
             from pre_serve_validator import validate_pre_serve
-        except Exception:
+        except Exception as e:
             # Validator unavailable — pass through all results
+            logger.debug(f"[VALIDATOR] Pre-serve validator unavailable: {e}")
             return [_strip_objectids(r) for r in results]
         validated = []
         for r in results:
@@ -719,8 +720,9 @@ def load_perseus_items_for_dash_questions_from_mongodb(
     # Patch all widget types with required defaults, then validate
     try:
         from pre_serve_validator import validate_pre_serve
-    except Exception:
+    except Exception as e:
         # Validator unavailable — pass through all results
+        logger.debug(f"[VALIDATOR] Pre-serve validator unavailable: {e}")
         for r in results:
             _patch_numeric_input_widgets(r)
         return [_strip_objectids(r) for r in results]
@@ -1612,8 +1614,8 @@ def get_responsive_hint(request: Request, req: ResponsiveHintRequest):
                             misconception = c.get("misconception", "") or ""
                             break
                     break
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"[RESPONSIVE_HINT] Failed to extract misconception for question_id={req.question_id}: {e}")
 
     hint_text = content_v1_engine.generate_responsive_hint(
         skill_name=skill_name,

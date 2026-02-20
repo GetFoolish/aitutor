@@ -523,7 +523,8 @@ const AssessmentQuestion: React.FC<Props> = ({
   const contentBlockStyle: React.CSSProperties = {
     ...(contentZoomWrapperStyle || {}),
     flex: 1,
-    minHeight: 0,
+    display: 'flex',
+    flexDirection: 'column',
     overflowY: 'auto',
     overflowX: 'hidden',
     paddingRight: compactViewport ? '2px' : '4px',

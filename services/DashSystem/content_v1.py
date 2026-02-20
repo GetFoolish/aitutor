@@ -149,8 +149,8 @@ class ContentV1Engine:
             parsed = self._extract_json(response.text or "")
             if isinstance(parsed.get("steps"), list) and parsed["steps"]:
                 return parsed
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"[LEARNING_PLAN] Gemini learning plan failed for goal='{learning_goal[:50]}...': {e}")
         return self._build_fallback_plan(learning_goal)
 
     # ── Fallback helpers ────────────────────────────────────────────
@@ -524,10 +524,10 @@ class ContentV1Engine:
                 ],
             }
         else:
-            # radio_single (default)
+            # radio_single (default) - specific skill-based question, not meta
             item = {
                 "question": {
-                    "content": f"Which of the following is true about {topic_clean}?",
+                    "content": f"What happens when you use {topic_clean} in a real problem?",
                     "images": {},
                     "widgets": {
                         "radio 1": {
@@ -960,7 +960,8 @@ class ContentV1Engine:
                 return False
 
             return True
-        except Exception:
+        except Exception as e:
+            logger.warning(f"[VALIDATE_ITEM] Validation exception for fmt={fmt}: {e}")
             return False
 
     # ---- Subject-content cross-validation --------------------------------
@@ -1018,7 +1019,8 @@ class ContentV1Engine:
                     return False
 
             return True
-        except Exception:
+        except Exception as e:
+            logger.warning(f"[SUBJECT_VALIDATE] Subject validation exception for subject={subject}: {e}")
             return True  # Don't block on validation errors
 
     def _gemini_question(self, topic: str, age: int, fmt: str, difficulty: float, memory: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -1052,9 +1054,15 @@ class ContentV1Engine:
                     config={"temperature": 0.6},
                 )
 
-            with ThreadPoolExecutor(max_workers=1) as executor:
+            executor = ThreadPoolExecutor(max_workers=1)
+            future = None
+            try:
                 future = executor.submit(_call_gemini)
                 response = future.result(timeout=20)
+            finally:
+                if future:
+                    future.cancel()
+                executor.shutdown(wait=False, cancel_futures=True)
             parsed = self._extract_json(response.text or "")
             if not isinstance(parsed, dict) or not parsed:
                 logger.warning("[GENERATE] _extract_json returned non-dict or empty, falling through to fallback")
@@ -1063,9 +1071,10 @@ class ContentV1Engine:
                 if self._validate_item(parsed, fmt=fmt):
                     return parsed
         except FutureTimeoutError:
+            logger.warning(f"[GENERATE] Gemini timeout (20s) for topic='{topic[:50]}...', age={age}, fmt={fmt}")
             return None
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"[GENERATE] Gemini generation failed for topic='{topic[:50]}...', age={age}, fmt={fmt}: {e}")
 
         # Fallback path that is still Gemini-driven: get a short seed text, then
         # build a guaranteed-valid Perseus item structure in code.
@@ -1090,13 +1099,20 @@ class ContentV1Engine:
                     contents=prompt,
                     config={"temperature": 0.4},
                 )
-            with ThreadPoolExecutor(max_workers=1) as executor:
+            executor = ThreadPoolExecutor(max_workers=1)
+            future = None
+            try:
                 future = executor.submit(_call_gemini)
                 response = future.result(timeout=20)
+            finally:
+                if future:
+                    future.cancel()
+                executor.shutdown(wait=False, cancel_futures=True)
             text = (response.text or "").strip()
             if text:
                 return re.sub(r"\s+", " ", text)[:240]
-        except Exception:
+        except Exception as e:
+            logger.warning(f"[SEED_TEXT] Gemini seed text failed for topic='{topic[:50]}...', age={age}: {e}")
             return None
         return None
 
@@ -1333,7 +1349,7 @@ class ContentV1Engine:
             # radio_single — skill-specific, not meta-question
             item = {
                 "question": {
-                    "content": f"{seed} Which of the following is true about {topic_title}?",
+                    "content": f"{seed} How would you apply {topic_title} to solve this?",
                     "images": {},
                     "widgets": {
                         "radio 1": {
@@ -1397,9 +1413,15 @@ class ContentV1Engine:
                 return self.client.models.generate_content(
                     model=self.fast_model, contents=prompt, config={"temperature": 0.5},
                 )
-            with ThreadPoolExecutor(max_workers=1) as executor:
+            executor = ThreadPoolExecutor(max_workers=1)
+            future = None
+            try:
                 future = executor.submit(_call)
                 response = future.result(timeout=10)
+            finally:
+                if future:
+                    future.cancel()
+                executor.shutdown(wait=False, cancel_futures=True)
             parsed = self._extract_json(response.text or "")
             if isinstance(parsed, dict) and parsed:
                 parsed = self._repair_item(parsed, fmt="radio_single")
@@ -1441,9 +1463,15 @@ class ContentV1Engine:
                     ),
                 )
 
-            with ThreadPoolExecutor(max_workers=1) as executor:
+            executor = ThreadPoolExecutor(max_workers=1)
+            future = None
+            try:
                 future = executor.submit(_call_image)
                 response = future.result(timeout=30)
+            finally:
+                if future:
+                    future.cancel()
+                executor.shutdown(wait=False, cancel_futures=True)
 
             candidates = getattr(response, "candidates", None)
             if not candidates or not candidates[0]:
@@ -1597,10 +1625,16 @@ class ContentV1Engine:
                         config={"temperature": 0.6 + (attempt * 0.1)},
                     )
 
-                with ThreadPoolExecutor(max_workers=1) as executor:
+                executor = ThreadPoolExecutor(max_workers=1)
+                future = None
+                try:
                     future = executor.submit(_call_gemini)
                     timeout_s = 10 if fast_mode else 30
                     response = future.result(timeout=timeout_s)
+                finally:
+                    if future:
+                        future.cancel()
+                    executor.shutdown(wait=False, cancel_futures=True)
 
                 raw = response.text or ""
                 if not raw.strip():

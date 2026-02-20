@@ -608,10 +608,15 @@ class AIQuestionProvider:
 
         # Generate all questions in parallel (5 concurrent Gemini calls)
         results = []
-        with ThreadPoolExecutor(max_workers=min(count, 5)) as pool:
+        pool = ThreadPoolExecutor(max_workers=min(count, 5))
+        try:
             futures = [pool.submit(_generate_one, d, f, k) for d, f, k in slots]
             for future in as_completed(futures):
                 results.append(future.result())
+        finally:
+            for future in futures:
+                future.cancel()
+            pool.shutdown(wait=False, cancel_futures=True)
 
         inserted = 0
         for diff, fmt, perseus_json in results:
@@ -649,7 +654,8 @@ class AIQuestionProvider:
                 })
                 existing_ids.add(doc["question_id"])
                 inserted += 1
-            except Exception:
+            except Exception as e:
+                logger.warning(f"[AI_PROVIDER] Failed to insert question {doc.get('question_id', 'unknown')} for skill={skill_name}: {e}")
                 continue
 
         logger.info(f"[AI_PROVIDER] Refilled {inserted}/{count} questions for skill={skill_name}")

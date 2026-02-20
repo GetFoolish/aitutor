@@ -637,9 +637,11 @@ const AssessmentFlow: React.FC = () => {
                       setAssessmentId(null);
                       setCurrentQuestion(null);
                       setCompleted(false);
-                      sessionStorage.removeItem('selected_subject');
-                      sessionStorage.removeItem('onboarding_complete');
-                      history.replace('/app/dev-login');
+                      // Keep selected_subject in sessionStorage so learning page can load it
+                      // sessionStorage.removeItem('selected_subject'); // ← Don't clear subject!
+                      // Navigate to learning page with subject param
+                      const encodedSubject = encodeURIComponent(subject);
+                      history.replace(`/app?subject=${encodedSubject}`);
                     }}
                     style={{
                       flexShrink: 0,

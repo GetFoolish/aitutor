@@ -377,9 +377,15 @@ class ContentGenerationService:
                     config={"temperature": temperature},
                 )
 
-            with ThreadPoolExecutor(max_workers=1) as executor:
+            executor = ThreadPoolExecutor(max_workers=1)
+            future = None
+            try:
                 future = executor.submit(_call_gemini)
                 response = future.result(timeout=15)
+            finally:
+                if future:
+                    future.cancel()
+                executor.shutdown(wait=False, cancel_futures=True)
 
             raw = response.text or ""
             audit["temperature"] = temperature
@@ -565,9 +571,15 @@ class ContentGenerationService:
                     config={"temperature": temperature},
                 )
 
-            with ThreadPoolExecutor(max_workers=1) as executor:
+            executor = ThreadPoolExecutor(max_workers=1)
+            future = None
+            try:
                 future = executor.submit(_call_gemini)
                 response = future.result(timeout=15)
+            finally:
+                if future:
+                    future.cancel()
+                executor.shutdown(wait=False, cancel_futures=True)
 
             raw = response.text or ""
             if not raw.strip():

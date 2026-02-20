@@ -334,7 +334,8 @@ class CurriculumGenerator:
                 docs.append(doc)
             return docs
 
-        with ThreadPoolExecutor(max_workers=self._UNIT_WORKERS) as pool:
+        pool = ThreadPoolExecutor(max_workers=self._UNIT_WORKERS)
+        try:
             futures = {pool.submit(_gen_units_for_course, c): c for c in courses}
             for future in as_completed(futures):
                 try:
@@ -345,6 +346,10 @@ class CurriculumGenerator:
                 except Exception as exc:
                     course = futures[future]
                     logger.error(f"[CURRICULUM] Unit generation failed for {course['title']}: {exc}")
+        finally:
+            for future in futures:
+                future.cancel()
+            pool.shutdown(wait=False, cancel_futures=True)
 
         return all_units
 
@@ -409,7 +414,8 @@ class CurriculumGenerator:
 
             return lesson_docs, exercise_docs
 
-        with ThreadPoolExecutor(max_workers=self._LESSON_WORKERS) as pool:
+        pool = ThreadPoolExecutor(max_workers=self._LESSON_WORKERS)
+        try:
             futures = {pool.submit(_gen_lessons_for_unit, u): u for u in units}
             for future in as_completed(futures):
                 try:
@@ -423,6 +429,10 @@ class CurriculumGenerator:
                 except Exception as exc:
                     unit = futures[future]
                     logger.error(f"[CURRICULUM] Lesson generation failed for {unit['title']}: {exc}")
+        finally:
+            for future in futures:
+                future.cancel()
+            pool.shutdown(wait=False, cancel_futures=True)
 
         return all_lessons, all_exercises
 
@@ -509,7 +519,8 @@ class CurriculumGenerator:
                 })
             return lesson_docs, exercise_docs
 
-        with ThreadPoolExecutor(max_workers=self._LESSON_WORKERS) as pool:
+        pool = ThreadPoolExecutor(max_workers=self._LESSON_WORKERS)
+        try:
             futures = {pool.submit(_gen, u): u for u in units}
             for future in as_completed(futures):
                 try:
@@ -523,6 +534,10 @@ class CurriculumGenerator:
                 except Exception as exc:
                     unit = futures[future]
                     logger.error(f"[BACKFILL] Lesson gen failed for {unit['title']}: {exc}")
+        finally:
+            for future in futures:
+                future.cancel()
+            pool.shutdown(wait=False, cancel_futures=True)
 
         return all_lessons, all_exercises
 
