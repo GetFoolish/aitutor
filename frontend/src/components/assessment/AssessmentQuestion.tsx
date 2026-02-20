@@ -612,7 +612,7 @@ const AssessmentQuestion: React.FC<Props> = ({
     <div
       ref={questionCardRef}
       className="framework-perseus mt-0"
-      style={{ display: 'flex', flexDirection: 'column', minHeight: '100%', height: '100%', overflow: 'hidden' }}
+      style={{ display: 'flex', flexDirection: 'column', width: '100%' }}
     >
       {/* Enhanced Question Header with Progress */}
       <div
