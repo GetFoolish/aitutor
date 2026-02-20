@@ -783,18 +783,18 @@ const AssessmentQuestion: React.FC<Props> = ({
           className={`${compactViewport ? 'mb-2' : 'mb-4'} border-[5px] border-black dark:border-white shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] overflow-hidden ${keScore.correct ? 'bg-[#E8F5E9]' : 'bg-[#FFEBEE]'}`}
           style={{ position: 'relative', zIndex: 20, isolation: 'isolate', backgroundColor: keScore.correct ? '#E8F5E9' : '#FFEBEE', flexShrink: 0 }}
         >
-          <div className={`px-5 py-4 flex items-center justify-center gap-4 ${!keScore.correct && question?.hints?.length ? 'border-b-[4px] border-black dark:border-white' : ''}`}>
+          <div className={`${ultraCompactViewport ? 'px-4 py-2.5' : compactViewport ? 'px-5 py-3' : 'px-8 py-5'} flex items-center justify-center gap-4 ${!keScore.correct && question?.hints?.length ? 'border-b-[4px] border-black dark:border-white' : ''}`}>
             {keScore.correct ? (
               <>
-                <CheckCircle2 size={32} className="text-[#2E7D32] dark:text-green-400 flex-shrink-0" />
-                <span className="text-[#2E7D32] dark:text-green-400 font-bold text-lg uppercase tracking-wide">
+                <CheckCircle2 size={ultraCompactViewport ? 28 : 32} className="text-[#2E7D32] dark:text-green-400 flex-shrink-0" />
+                <span className={`text-[#2E7D32] dark:text-green-400 font-black ${ultraCompactViewport ? 'text-base' : compactViewport ? 'text-lg' : 'text-xl'} uppercase tracking-widest`}>
                   Correct!
                 </span>
               </>
             ) : (
               <>
-                <XCircle size={32} className="text-[#C62828] dark:text-red-400 flex-shrink-0" />
-                <span className="text-[#C62828] dark:text-red-400 font-bold text-lg uppercase tracking-wide">
+                <XCircle size={ultraCompactViewport ? 28 : 32} className="text-[#C62828] dark:text-red-400 flex-shrink-0" />
+                <span className={`text-[#C62828] dark:text-red-400 font-black ${ultraCompactViewport ? 'text-base' : compactViewport ? 'text-lg' : 'text-xl'} uppercase tracking-widest`}>
                   Incorrect
                 </span>
               </>
