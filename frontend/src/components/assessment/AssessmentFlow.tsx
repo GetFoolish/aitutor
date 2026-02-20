@@ -659,15 +659,29 @@ const AssessmentFlow: React.FC = () => {
                     style={{
                       flexShrink: 0,
                       background: '#FFFFFF',
-                      border: '3px solid #000000',
+                      border: '4px solid #000000',
                       color: '#000000',
-                      fontSize: '13px',
+                      fontSize: '16px',
                       fontWeight: 900,
-                      padding: '6px 14px',
+                      padding: '12px 20px',
                       cursor: 'pointer',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
-                      boxShadow: '2px 2px 0 #000',
+                      letterSpacing: '0.1em',
+                      boxShadow: '4px 4px 0 #000',
+                      minHeight: '48px',
+                      transition: 'transform 100ms ease, box-shadow 100ms ease',
+                    }}
+                    onMouseDown={(e) => {
+                      e.currentTarget.style.transform = 'translate(2px, 2px)';
+                      e.currentTarget.style.boxShadow = '2px 2px 0 #000';
+                    }}
+                    onMouseUp={(e) => {
+                      e.currentTarget.style.transform = 'translate(0, 0)';
+                      e.currentTarget.style.boxShadow = '4px 4px 0 #000';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translate(0, 0)';
+                      e.currentTarget.style.boxShadow = '4px 4px 0 #000';
                     }}
                   >
                     ✕ Exit
