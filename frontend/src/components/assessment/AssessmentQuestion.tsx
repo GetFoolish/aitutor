@@ -524,10 +524,11 @@ const AssessmentQuestion: React.FC<Props> = ({
     ...(contentZoomWrapperStyle || {}),
     display: 'flex',
     flexDirection: 'column',
-    flex: '1 1 auto', // Take available space
-    overflowY: 'visible', // No scroll inside content block
+    flex: '1 1 auto',
+    overflowY: 'auto', // Need this for scrollHeight measurement
     overflowX: 'hidden',
     paddingRight: compactViewport ? '2px' : '4px',
+    minHeight: '200px', // Minimum space for zoom calculation
   };
   // Detect if question needs audio (phonics/listening questions)
   const audioWord = useMemo(() => {
@@ -647,7 +648,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         </div>
       )}
 
-      <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', overflow: 'visible' }}>
+      <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
         <div ref={contentBlockRef} style={contentBlockStyle}>
           <div
             id="question-content-container"
