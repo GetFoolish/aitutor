@@ -22,9 +22,9 @@ logger = logging.getLogger(__name__)
 STATIC_IMAGES_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "static", "images")
 os.makedirs(STATIC_IMAGES_DIR, exist_ok=True)
 try:
-    IMAGE_PROBABILITY = float(os.getenv("IMAGE_PROBABILITY", "0.20"))
+    IMAGE_PROBABILITY = float(os.getenv("IMAGE_PROBABILITY", "0.10"))
 except (ValueError, TypeError):
-    IMAGE_PROBABILITY = 0.20
+    IMAGE_PROBABILITY = 0.10
 IMAGE_ELIGIBLE_FORMATS = {"radio_single", "radio_multi", "numeric_input", "dropdown"}
 # Base URL for serving images (frontend needs absolute URL since it's on a different port)
 IMAGE_BASE_URL = os.getenv("DASH_API_BASE_URL", "http://localhost:8000")
