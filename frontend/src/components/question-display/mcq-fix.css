@@ -5,10 +5,11 @@
     /* Reset any global hover states that might affect all choices */
     transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
     /* Neo-brutalism styling for radio buttons */
-    border: 3px solid #000 !important;
-    box-shadow: 2px 2px 0 #000 !important;
-    margin-bottom: 8px !important;
-    padding: 12px 16px !important;
+    border: 4px solid #000 !important;
+    box-shadow: 4px 4px 0 #000 !important;
+    margin-bottom: 10px !important;
+    padding: 14px 18px !important;
+    min-height: 48px !important;
     background-color: #fff !important;
 }
 
@@ -16,7 +17,7 @@
 :global(.dark) .framework-perseus .choice,
 html.dark .framework-perseus .choice {
     border-color: #fff !important;
-    box-shadow: 2px 2px 0 #fff !important;
+    box-shadow: 4px 4px 0 #fff !important;
     background-color: #000 !important;
 }
 
@@ -25,8 +26,8 @@ html.dark .framework-perseus .choice {
     /* Ensure selected state is visually distinct */
     background-color: #60A5FA !important;
     border-color: #000 !important;
-    transform: translate(1px, 1px);
-    box-shadow: 1px 1px 0 #000 !important;
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #000 !important;
 }
 
 /* Dark mode selected */
@@ -34,7 +35,7 @@ html.dark .framework-perseus .choice {
 html.dark .framework-perseus .choice:has(> button[aria-pressed="true"]) {
     background-color: #60A5FA !important;
     border-color: #fff !important;
-    box-shadow: 1px 1px 0 #fff !important;
+    box-shadow: 2px 2px 0 #fff !important;
 }
 
 /* Ensure selected radio highlight renders as a complete 4-sided box */
