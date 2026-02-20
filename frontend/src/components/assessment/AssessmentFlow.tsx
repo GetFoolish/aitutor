@@ -123,6 +123,8 @@ const AssessmentFlow: React.FC = () => {
     const attemptRecovery = async () => {
       // Check if there's an active session to resume
       const savedSession = localStorage.getItem('active_assessment');
+      console.log('[AssessmentFlow] Recovery check:', { savedSession, assessmentId, subject });
+
       if (savedSession && !assessmentId) {
         try {
           const session = JSON.parse(savedSession);
@@ -130,13 +132,22 @@ const AssessmentFlow: React.FC = () => {
           const isRecent = Date.now() - session.started_at < 3600000;
           const matchesSubject = session.subject === subject;
 
+          console.log('[AssessmentFlow] Session validation:', {
+            session_id: session.assessment_id,
+            isRecent,
+            matchesSubject,
+            age: Math.round((Date.now() - session.started_at) / 1000) + 's',
+          });
+
           if (isRecent && matchesSubject) {
             console.log('[AssessmentFlow] Attempting to resume session:', session.assessment_id);
             const response = await apiUtils.get(`/assessment/resume/${session.assessment_id}`);
 
+            console.log('[AssessmentFlow] Resume response:', response.status, response.ok);
+
             if (response.ok) {
               const data = await response.json();
-              console.log('[AssessmentFlow] Session resumed:', data);
+              console.log('[AssessmentFlow] Session resumed successfully:', data);
 
               // Restore state from resumed session
               setAssessmentId(data.assessment_id);
@@ -147,7 +158,12 @@ const AssessmentFlow: React.FC = () => {
               setCurrentDifficulty(data.current_difficulty);
               setLoading(false);
               return; // Successfully resumed
+            } else {
+              const errorText = await response.text();
+              console.warn('[AssessmentFlow] Resume failed with status', response.status, errorText);
             }
+          } else {
+            console.log('[AssessmentFlow] Session not valid for resume:', { isRecent, matchesSubject });
           }
 
           // If resume failed or session too old, clear it
@@ -156,6 +172,8 @@ const AssessmentFlow: React.FC = () => {
           console.error('[AssessmentFlow] Resume failed:', error);
           localStorage.removeItem('active_assessment');
         }
+      } else {
+        console.log('[AssessmentFlow] No session to resume or assessmentId already set');
       }
 
       // No session to resume or resume failed - start fresh

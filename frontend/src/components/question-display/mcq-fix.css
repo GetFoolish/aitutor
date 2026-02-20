@@ -393,37 +393,40 @@ html.dark [data-testid="assessment-explanation"] * {
 }
 
 /* Post-answer feedback: highlight correct and incorrect choices */
-.choice[data-feedback="correct"] {
+:global(.framework-perseus) .choice[data-feedback="correct"] {
     background-color: #4ADE80 !important;  /* Green */
     border-color: #000 !important;
     border-width: 5px !important;
     box-shadow: 4px 4px 0 #000 !important;
-    pointer-events: none;  /* Disable clicks after answer */
+    pointer-events: none !important;  /* Disable clicks after answer */
 }
 
-.choice[data-feedback="incorrect"] {
+:global(.framework-perseus) .choice[data-feedback="incorrect"] {
     background-color: #FF6B6B !important;  /* Red */
     border-color: #000 !important;
     border-width: 5px !important;
     box-shadow: 4px 4px 0 #000 !important;
-    opacity: 0.7;
-    pointer-events: none;  /* Disable clicks after answer */
+    opacity: 0.7 !important;
+    pointer-events: none !important;  /* Disable clicks after answer */
 }
 
 /* Dark mode variations */
-.dark .choice[data-feedback="correct"] {
+:global(.dark) .framework-perseus .choice[data-feedback="correct"],
+html.dark .framework-perseus .choice[data-feedback="correct"] {
     background-color: #22C55E !important;
     border-color: #fff !important;
     box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3) !important;
 }
 
-.dark .choice[data-feedback="incorrect"] {
+:global(.dark) .framework-perseus .choice[data-feedback="incorrect"],
+html.dark .framework-perseus .choice[data-feedback="incorrect"] {
     background-color: #EF4444 !important;
     border-color: #fff !important;
     box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3) !important;
 }
 
 /* Prevent re-selection after feedback */
-.choice[data-feedback] {
+:global(.framework-perseus) .choice[data-feedback] {
     cursor: default !important;
+    pointer-events: none !important;
 }
