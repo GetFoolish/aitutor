@@ -7,7 +7,7 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import { motion } from "framer-motion";
+import { motion, useDragControls } from "framer-motion";
 import { useTutorContext, AudioRecorder, TranscriptionData } from "../../features/tutor";
 import { jwtUtils } from "../../lib/jwt-utils";
 import { apiUtils } from "../../lib/api-utils";
@@ -50,6 +50,7 @@ import {
   PenTool,
   Image as ImageIcon,
   MoreHorizontal,
+  ChevronDown,
   ChevronUp,
   Home,
   X,
@@ -102,6 +103,7 @@ function FloatingControlPanel({
 }: FloatingControlPanelProps) {
   const { client, connected, connect, disconnect, interruptAudio } = useTutorContext();
   const { theme } = useTheme();
+  const dragControls = useDragControls();
   const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>([]);
   const [selectedAudioDevice, setSelectedAudioDevice] = useState<string>("");
   const [audioRecorder] = useState(() => new AudioRecorder());
@@ -790,38 +792,10 @@ function FloatingControlPanel({
   const [verticalAlign, setVerticalAlign] = useState<"top" | "bottom">("top");
 
   // Calculate initial position once without state
-  const clampPanelIntoViewport = useCallback(() => {
-    if (!panelRef.current || typeof window === "undefined") return;
-
-    const panel = panelRef.current;
-    const margin = 8;
-    const defaultRight = 16;
-    const defaultTop = assessmentMode ? 70 : 64;
-
-    // Hard-reset transform drift so the panel cannot persist a stale dragged/slid position.
-    panel.style.setProperty("left", "auto", "important");
-    panel.style.setProperty("right", `${defaultRight}px`, "important");
-    panel.style.setProperty("top", `${defaultTop}px`, "important");
-    panel.style.setProperty("bottom", "auto", "important");
-    panel.style.setProperty("transform", "none", "important");
-
-    const rect = panel.getBoundingClientRect();
-    let nextTop = defaultTop;
-    let nextRight = defaultRight;
-
-    if (rect.right > window.innerWidth - margin) {
-      nextRight = margin;
-    }
-    if (rect.top < margin) {
-      nextTop = margin;
-    }
-    if (rect.bottom > window.innerHeight - margin) {
-      nextTop = Math.max(margin, window.innerHeight - rect.height - margin);
-    }
-
-    panel.style.setProperty("right", `${nextRight}px`, "important");
-    panel.style.setProperty("top", `${nextTop}px`, "important");
-  }, [assessmentMode]);
+  const initialPosition = useMemo(() => {
+    if (typeof window === "undefined") return { x: 0, y: 0 };
+    return { x: window.innerWidth - 380, y: 96 };
+  }, []);
 
   const calculatePopoverPosition = useCallback(() => {
     if (!panelRef.current) return { side: "right" as const, vertical: "top" as const };
@@ -869,41 +843,23 @@ function FloatingControlPanel({
   }, [sharedMediaOpen, updatePopoverPosition]);
 
   const handleCollapse = useCallback(() => {
-    setIsCollapsed((prev) => !prev);
-    requestAnimationFrame(() => clampPanelIntoViewport());
-  }, [clampPanelIntoViewport]);
+    setIsCollapsed(!isCollapsed);
+  }, [isCollapsed]);
 
   const handleMute = useCallback(() => {
     setMuted(!muted);
   }, [muted]);
 
-  // Signal panel expanded/collapsed to content layout via CSS class on <html>
-  useEffect(() => {
-    if (isCollapsed) {
-      document.documentElement.classList.remove('floating-panel-expanded');
-    } else {
-      document.documentElement.classList.add('floating-panel-expanded');
+  const handleDragEnd = useCallback(() => {
+    if (sharedMediaOpen) {
+      updatePopoverPosition();
     }
-    return () => {
-      document.documentElement.classList.remove('floating-panel-expanded');
-    };
-  }, [isCollapsed]);
-
-  useEffect(() => {
-    const clampNow = () => clampPanelIntoViewport();
-    const timer = window.setTimeout(clampNow, 120);
-    clampNow();
-    window.addEventListener("resize", clampNow);
-    return () => {
-      window.clearTimeout(timer);
-      window.removeEventListener("resize", clampNow);
-    };
-  }, [assessmentMode, clampPanelIntoViewport, isCollapsed]);
+  }, [sharedMediaOpen, updatePopoverPosition]);
 
   const panelClasses = useMemo(
     () =>
       cn(
-        "fixed z-[2147483647] floating-toolbar-panel overflow-hidden bg-[#FFFDF5] dark:bg-[#000000] border-[2px] md:border-[3px] border-black dark:border-white rounded-lg md:rounded-xl",
+        "fixed z-[1000] bg-[#FFFDF5] dark:bg-[#000000] border-[2px] md:border-[3px] border-black dark:border-white rounded-lg md:rounded-xl",
         isCollapsed
           ? "w-[50px] md:w-[55px] py-2 md:py-2.5 px-1 md:px-1.5 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)]"
           : "w-[220px] md:w-[250px] p-2.5 md:p-3 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1),_6px_6px_16px_rgba(0,0,0,0.15),_12px_12px_32px_rgba(0,0,0,0.1)]",
@@ -916,12 +872,33 @@ function FloatingControlPanel({
     <motion.div
       ref={panelRef}
       className={panelClasses}
-      drag={false}
-      initial={false}
+      drag
+      dragControls={dragControls}
+      dragListener={false}
+      dragMomentum={false}
+      dragElastic={0}
+      dragConstraints={{
+        left: 0,
+        top: 0,
+        right: typeof window !== "undefined" ? window.innerWidth - (isCollapsed ? 55 : 250) : 1000,
+        bottom: typeof window !== "undefined" ? window.innerHeight - 100 : 800,
+      }}
+      onDragEnd={handleDragEnd}
+      initial={initialPosition}
+      whileDrag={{ 
+        cursor: "grabbing",
+        scale: 1.0,
+      }}
+      dragTransition={{
+        bounceStiffness: 600,
+        bounceDamping: 20,
+        power: 0.1,
+      }}
       style={{
-        left: "auto",
-        right: 16,
-        top: assessmentMode ? 70 : 64,
+        left: 0,
+        top: 0,
+        x: initialPosition.x,
+        y: initialPosition.y,
       }}
     >
         <canvas
@@ -939,9 +916,10 @@ function FloatingControlPanel({
         
         <div
           className={cn(
-            "flex items-center mb-1.5 md:mb-2",
-            isCollapsed ? "justify-center mb-1 md:mb-1.5" : "justify-start pr-8",
+            "cursor-grab active:cursor-grabbing flex items-center mb-1.5 md:mb-2",
+            isCollapsed ? "justify-center mb-1 md:mb-1.5" : "justify-between",
           )}
+          onPointerDown={(e) => dragControls.start(e)}
         >
           {!isCollapsed && (
             <div className="flex items-center gap-1.5 md:gap-2">
@@ -957,17 +935,17 @@ function FloatingControlPanel({
               )}
             </div>
           )}
-        </div>
-
-        {!isCollapsed && (
           <button
             onClick={handleCollapse}
-            className="absolute top-2 right-2 md:top-2.5 md:right-2.5 z-20 w-5 h-5 md:w-6 md:h-6 flex items-center justify-center border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] text-black dark:text-white hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-100"
-            title="Collapse controls"
+            className="w-5 h-5 md:w-6 md:h-6 flex items-center justify-center border-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] hover:bg-[#FFD93D] text-black dark:text-white hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-100"
           >
-            <ChevronUp className="w-3 h-3 md:w-3.5 md:h-3.5 font-black" />
+            {isCollapsed ? (
+              <ChevronDown className="w-3 h-3 md:w-3.5 md:h-3.5 font-black" />
+            ) : (
+              <ChevronUp className="w-3 h-3 md:w-3.5 md:h-3.5 font-black" />
+            )}
           </button>
-        )}
+        </div>
 
         {isCollapsed ? (
           <div className="flex flex-col items-center gap-1.5 md:gap-2">
@@ -1126,11 +1104,11 @@ function FloatingControlPanel({
             </div>
           </div>
         ) : (
-          <div className="w-full min-w-0 flex flex-col gap-1.5 md:gap-2">
+          <div className="flex flex-col gap-1.5 md:gap-2">
             <div
               onClick={handleMute}
               className={cn(
-                "w-full flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 group cursor-pointer shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
+                "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 group cursor-pointer shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
                 !muted
                   ? "bg-[#FFFDF5] dark:bg-[#000000]"
                   : "bg-[#FF6B6B]",
@@ -1156,7 +1134,7 @@ function FloatingControlPanel({
                     Microphone
                   </span>
                   <select
-                    className="bg-[#FFFDF5] dark:bg-[#000000] border-none text-[9px] md:text-[10px] text-black dark:text-white outline-none cursor-pointer w-full max-w-[100px] md:max-w-[120px] truncate p-0 font-bold uppercase pr-4"
+                    className="bg-transparent border-none text-[9px] md:text-[10px] text-black dark:text-white outline-none cursor-pointer w-full max-w-[100px] md:max-w-[120px] truncate p-0 font-bold uppercase pr-4"
                     value={selectedAudioDevice}
                     onChange={(e) => {
                       e.stopPropagation();
@@ -1197,7 +1175,7 @@ function FloatingControlPanel({
               <div
                 onClick={() => onToggleCamera(!cameraEnabled)}
                 className={cn(
-                  "w-full flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 cursor-pointer shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
+                  "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 cursor-pointer shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
                   cameraEnabled
                     ? "bg-[#C4B5FD]"
                     : "bg-[#FFFDF5] dark:bg-[#000000]",
@@ -1243,7 +1221,7 @@ function FloatingControlPanel({
               <div
                 onClick={() => onTogglePrivacy(!privacyMode)}
                 className={cn(
-                  "w-full flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 cursor-pointer shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
+                  "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 cursor-pointer shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
                   privacyMode
                     ? "bg-[#C4B5FD]"
                     : "bg-[#FFFDF5] dark:bg-[#000000]",
@@ -1289,7 +1267,7 @@ function FloatingControlPanel({
               <div
                 onClick={() => onToggleScreen(!screenEnabled)}
                 className={cn(
-                  "w-full flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 cursor-pointer shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
+                  "flex items-center justify-between p-2 md:p-2.5 border-[2px] border-black dark:border-white transition-all duration-100 cursor-pointer shadow-[1px_1px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)]",
                   screenEnabled
                     ? "bg-[#FFD93D]"
                     : "bg-[#FFFDF5] dark:bg-[#000000]",
@@ -1363,7 +1341,7 @@ function FloatingControlPanel({
             </button>
 
             {/* Bottom Actions */}
-            <div className="grid grid-cols-4 gap-1.5 md:gap-2 pt-2 md:pt-3 border-t-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]">
+            <div className="grid grid-cols-4 gap-1.5 md:gap-2 pt-2 md:pt-3 border-t-[2px] border-black dark:border-white">
               {enableEditingSettings && (
                 <SettingsDialog
                   className="w-full"
