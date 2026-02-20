@@ -613,7 +613,14 @@ const AssessmentQuestion: React.FC<Props> = ({
     <div
       ref={questionCardRef}
       className="framework-perseus mt-0"
-      style={{ display: 'flex', flexDirection: 'column', width: '100%', overflow: 'visible' }}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        height: '100%',
+        maxHeight: '100vh',
+        overflow: 'hidden'
+      }}
     >
       {/* Enhanced Question Header with Progress */}
       <div
@@ -648,15 +655,20 @@ const AssessmentQuestion: React.FC<Props> = ({
         </div>
       )}
 
-      <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-        <div ref={contentBlockRef} style={contentBlockStyle}>
+      <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}>
+        <div ref={contentBlockRef} style={{
+          ...contentBlockStyle,
+          maxHeight: '100%',
+          overflow: 'auto',
+        }}>
           <div
             id="question-content-container"
             className={`border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white ${ultraCompactViewport ? 'p-3 mb-2' : compactViewport ? 'p-4 mb-3' : 'p-5 md:p-6 lg:p-7 mb-4'} shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.4)]`}
             style={{
               overflow: 'visible',
-              maxHeight: 'none',
-              flex: '0 0 auto', // Don't shrink, natural size
+              flex: '1 1 auto',
+              display: 'flex',
+              flexDirection: 'column',
             }}
           >
             <PerseusI18nContextProvider locale="en" strings={mockStrings}>
