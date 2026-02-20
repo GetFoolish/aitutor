@@ -277,12 +277,17 @@ html.dark [data-testid="dropdown-core-container"] [role="option"][aria-disabled=
     background-color: #1f2937 !important;
 }
 
-/* Dark mode: numeric-input */
+/* Dark mode: numeric-input / expression-input — high contrast for visibility */
 .dark #question-content-container .framework-perseus input[type="text"],
-html.dark #question-content-container .framework-perseus input[type="text"] {
-    background-color: #444 !important;
+html.dark #question-content-container .framework-perseus input[type="text"],
+.dark .framework-perseus input[type="text"],
+html.dark .framework-perseus input[type="text"],
+.dark .framework-perseus input[data-testid="input-with-examples"],
+html.dark .framework-perseus input[data-testid="input-with-examples"] {
+    background-color: #1a1a1a !important;
     color: white !important;
-    border-color: #666 !important;
+    border: 3px solid #ffffff !important;
+    border-radius: 6px !important;
 }
 
 /* Dark mode: radio choice backgrounds */
