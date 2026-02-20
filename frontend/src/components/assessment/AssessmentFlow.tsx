@@ -544,20 +544,20 @@ const AssessmentFlow: React.FC = () => {
             textTransform: 'uppercase',
             letterSpacing: '0.1em'
           }}>
-            {loadPhase === 'fast' && `Preparing your ${subject} assessment`}
-            {loadPhase === 'generating' && `Generating ${subject} questions`}
-            {loadPhase === 'slow' && `Still working on it...`}
+            {loadPhase === 'fast' && `Warming up ${subject}`}
+            {loadPhase === 'generating' && `Generating questions`}
+            {loadPhase === 'slow' && `Quality check in progress`}
           </div>
           <div style={{
             fontSize: '14px',
             color: '#666',
-            maxWidth: '400px',
+            maxWidth: '420px',
             textAlign: 'center',
             lineHeight: '1.5'
           }}>
-            {loadPhase === 'fast' && 'Creating personalized questions at your level. This should only take a few seconds.'}
-            {loadPhase === 'generating' && 'Building new questions with AI. Almost there...'}
-            {loadPhase === 'slow' && 'This is taking longer than usual. You can keep waiting or try again.'}
+            {loadPhase === 'fast' && 'Checking question bank for cached content...'}
+            {loadPhase === 'generating' && 'Creating AI-generated questions tailored to your level...'}
+            {loadPhase === 'slow' && 'Verifying answer accuracy and hint quality. This ensures you get the best learning experience.'}
           </div>
           {/* Cancel button — always visible during loading (Bug #54) */}
           <button

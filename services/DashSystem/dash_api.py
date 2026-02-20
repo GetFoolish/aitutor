@@ -256,6 +256,48 @@ async def startup_event():
             if quality_tracker:
                 quality_tracker.content_service = content_service
             logger.info("ContentGenerationService initialized")
+
+            # Pre-warm pools for popular subjects (background task)
+            def _warmup_popular_subjects():
+                """Background task to pre-warm question pools for popular subjects."""
+                import time
+                time.sleep(5)  # Wait for startup to complete
+                popular_subjects = ["Math", "Science", "English", "Biology"]
+                popular_grades = [5, 6, 7, 8]  # Middle school focus
+                logger.info(f"[POOL_WARMUP] Starting background warmup for {len(popular_subjects)} subjects...")
+
+                for subject in popular_subjects:
+                    try:
+                        # Get sample skills for this subject
+                        skills = list(mongo_db.questions_db.skills.find({
+                            "subject": subject
+                        }).limit(10))
+
+                        for skill_doc in skills[:5]:  # Warm first 5 skills per subject
+                            skill_id = skill_doc.get("unit_id") or skill_doc.get("_id")
+                            if not skill_id:
+                                continue
+
+                            # Warm medium difficulty bucket (most common)
+                            try:
+                                content_service.ensure_pool_sync(
+                                    skill_id=str(skill_id),
+                                    difficulty_bucket="medium",
+                                    count=3  # Small initial pool
+                                )
+                                logger.info(f"[POOL_WARMUP] Warmed {subject} skill: {skill_id}")
+                            except Exception as e_skill:
+                                logger.warning(f"[POOL_WARMUP] Failed to warm {subject}/{skill_id}: {e_skill}")
+
+                    except Exception as e_subj:
+                        logger.warning(f"[POOL_WARMUP] Failed to warm subject {subject}: {e_subj}")
+
+                logger.info("[POOL_WARMUP] Background warmup complete")
+
+            # Start warmup in background thread
+            import threading
+            threading.Thread(target=_warmup_popular_subjects, daemon=True).start()
+
         except ImportError:
             logger.warning("ContentGenerationService not available (module not found). Pool-based serving disabled.")
         except Exception as e_cs:
@@ -4235,7 +4277,10 @@ class StartSubjectRequest(BaseModel):
 
 
 def _prewarm_assessment_questions(user_id: str, subject: str, region: str):
-    """Pre-generate Q1 in background and cache it so start-adaptive is instant."""
+    """
+    Pre-generate Q1 in background and cache it so start-adaptive is instant.
+    Pool warmup on startup handles broader skill coverage (10+ skills per subject).
+    """
     cache_key = f"{user_id}:{subject.lower()}"
 
     # Create an Event so start-adaptive can wait for this warm-start
