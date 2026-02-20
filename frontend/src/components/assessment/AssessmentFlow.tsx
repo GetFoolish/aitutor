@@ -152,7 +152,7 @@ const AssessmentFlow: React.FC = () => {
       const controller = new AbortController();
       abortRef.current = controller;
       const MAX_START_RETRIES = 2;
-      const START_HARD_TIMEOUT_MS = 25000;
+      const START_HARD_TIMEOUT_MS = 50000; // Increased from 25s to 50s while backend optimizes
 
       // Progressive phase timers: keep UX honest and fail fast on stalls.
       const phase2Timer = setTimeout(() => setLoadPhase('generating'), 3000);
