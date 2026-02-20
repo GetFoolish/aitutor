@@ -647,7 +647,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         </div>
       )}
 
-      <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
         <div ref={contentBlockRef} style={contentBlockStyle}>
           <div
             id="question-content-container"

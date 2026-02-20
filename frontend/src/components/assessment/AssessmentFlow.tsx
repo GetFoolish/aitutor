@@ -57,6 +57,8 @@ const AssessmentFlow: React.FC = () => {
   const submitOverlayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Generation counter — prevents stale abort errors from overwriting new state
   const generationRef = useRef(0);
+  // Store unblock function to call it explicitly before exit (Bug #2 fix)
+  const unblockRef = useRef<(() => void) | null>(null);
 
   // Client-side content fingerprint tracker to detect duplicate questions
   const seenContentRef = useRef<Set<string>>(new Set());
@@ -102,11 +104,18 @@ const AssessmentFlow: React.FC = () => {
 
   // Block in-app navigation during active assessment (Bug #62)
   useEffect(() => {
-    if (!assessmentId || completed) return;
+    if (!assessmentId || completed) {
+      unblockRef.current = null;
+      return;
+    }
     const unblock = history.block(
       'You have an active assessment in progress. Are you sure you want to leave? Your progress will be lost.'
     );
-    return unblock;
+    unblockRef.current = unblock; // Store for explicit unlock on exit
+    return () => {
+      unblock();
+      unblockRef.current = null;
+    };
   }, [assessmentId, completed, history]);
 
   useEffect(() => {
@@ -632,13 +641,17 @@ const AssessmentFlow: React.FC = () => {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      // Clear assessmentId FIRST so beforeunload handler won't fire
+                      // CRITICAL: Unblock navigation BEFORE clearing state (Bug #2 fix)
+                      if (unblockRef.current) {
+                        unblockRef.current();
+                        unblockRef.current = null;
+                      }
+                      // Clear assessmentId so beforeunload handler won't fire
                       assessmentIdRef.current = null;
                       setAssessmentId(null);
                       setCurrentQuestion(null);
                       setCompleted(false);
                       // Keep selected_subject in sessionStorage so learning page can load it
-                      // sessionStorage.removeItem('selected_subject'); // ← Don't clear subject!
                       // Navigate to learning page with subject param
                       const encodedSubject = encodeURIComponent(subject);
                       history.replace(`/app?subject=${encodedSubject}`);
@@ -697,12 +710,11 @@ const AssessmentFlow: React.FC = () => {
                 maxWidth: 1180,
                 margin: '0 auto',
                 width: '100%',
-                flex: 1,
-                minHeight: 0,
-                overflowY: 'auto',
-                overflowX: 'hidden',
+                flex: '1 1 auto',
                 display: 'flex',
                 flexDirection: 'column',
+                overflowY: 'auto',
+                overflowX: 'hidden',
               }}>
                 {nextQuestionError && (
                   <div style={{
