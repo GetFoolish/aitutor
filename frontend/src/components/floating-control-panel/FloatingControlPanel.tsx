@@ -859,7 +859,7 @@ function FloatingControlPanel({
   const panelClasses = useMemo(
     () =>
       cn(
-        "fixed z-[1000] bg-[#FFFDF5] dark:bg-[#000000] border-[4px] md:border-[4px] border-black dark:border-white rounded-lg md:rounded-xl",
+        "fixed z-[1000] bg-[#FFFDF5] dark:bg-[#000000] border-[4px] md:border-[4px] border-black dark:border-white rounded-none",
         isCollapsed
           ? "w-[50px] md:w-[55px] py-2 md:py-2.5 px-1 md:px-1.5 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)]"
           : "w-[220px] md:w-[250px] p-2.5 md:p-3 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1),_6px_6px_16px_rgba(0,0,0,0.15),_12px_12px_32px_rgba(0,0,0,0.1)]",
@@ -1410,7 +1410,7 @@ function FloatingControlPanel({
         {sharedMediaOpen && (
           <div
             className={cn(
-              "absolute w-[320px] md:w-[360px] h-auto flex flex-col bg-white dark:bg-[#000000] border-[4px] md:border-[4px] border-black dark:border-white rounded-xl md:rounded-2xl shadow-[4px_4px_0_0_rgba(0,0,0,1)] md:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] overflow-hidden z-[1001]",
+              "absolute w-[320px] md:w-[360px] h-auto flex flex-col bg-white dark:bg-[#000000] border-[4px] md:border-[4px] border-black dark:border-white rounded-none shadow-[4px_4px_0_0_rgba(0,0,0,1)] md:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] overflow-hidden z-[1001]",
               isAnimatingOut ? "animate-popover-out" : "animate-popover-in",
               popoverPosition === "right"
                 ? "left-full ml-4 md:ml-6"
