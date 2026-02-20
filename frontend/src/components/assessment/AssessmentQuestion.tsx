@@ -522,9 +522,9 @@ const AssessmentQuestion: React.FC<Props> = ({
       : undefined;
   const contentBlockStyle: React.CSSProperties = {
     ...(contentZoomWrapperStyle || {}),
-    flex: 1,
     display: 'flex',
     flexDirection: 'column',
+    minHeight: '400px', // Force minimum height so content can't collapse
     overflowY: 'auto',
     overflowX: 'hidden',
     paddingRight: compactViewport ? '2px' : '4px',
@@ -656,6 +656,7 @@ const AssessmentQuestion: React.FC<Props> = ({
               overflowX: 'clip',
               overflowY: 'visible',
               maxHeight: 'none',
+              minHeight: '200px', // Ensure question content can't collapse
               flexShrink: 0,
             }}
           >
