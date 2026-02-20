@@ -260,14 +260,21 @@ export function scorePerseusQuestion(
             const choices = widgetDef.options?.choices || [];
             const selectedIdx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
             if (selectedIdx != null && selectedIdx >= 0 && selectedIdx < choices.length) {
-                widgetCorrect = !!choices[selectedIdx]?.correct;
-                if (!selectedAnswerText) {
-                    selectedAnswerText = normalizeChoiceContent(choices[selectedIdx]?.content || '');
-                    selectedAnswerIndex = selectedIdx;
+                const selectedChoice = choices[selectedIdx];
+                const content = typeof selectedChoice?.content === 'string'
+                    ? selectedChoice.content
+                    : '';
+                // Only count if not a placeholder
+                if (content && content.trim() && !content.toLowerCase().includes('select one')) {
+                    widgetCorrect = !!selectedChoice?.correct;
+                    if (!selectedAnswerText) {
+                        selectedAnswerText = normalizeChoiceContent(content);
+                        selectedAnswerIndex = selectedIdx;
+                    }
+                    scoreableCount++;
+                    if (widgetCorrect) correctCount++;
                 }
             }
-            scoreableCount++;
-            if (widgetCorrect) correctCount++;
 
         } else if (widgetDef.type === 'expression') {
             const answerForms = widgetDef.options?.answerForms || [];
@@ -415,8 +422,20 @@ export function hasUserInput(
                 : ((widgetInput as any)?.currentValue || '');
             if (val && val.trim()) return true;
         } else if (widgetDef.type === 'dropdown') {
+            const choices = widgetDef.options?.choices || [];
             const idx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
-            if (idx != null && idx >= 0) return true;
+            // Validate: index exists, is non-negative, is within bounds, and not a placeholder
+            if (idx != null && idx >= 0 && idx < choices.length) {
+                const selectedChoice = choices[idx];
+                // Reject placeholder options like "Select one..."
+                const content = typeof selectedChoice?.content === 'string'
+                    ? selectedChoice.content
+                    : '';
+                if (content && content.trim() && !content.toLowerCase().includes('select one')) {
+                    return true;
+                }
+            }
+            return false;
         } else if (widgetDef.type === 'orderer') {
             const curr = (widgetInput as any)?.current || (widgetInput as any)?.options || [];
             if (curr.length > 0) return true;
