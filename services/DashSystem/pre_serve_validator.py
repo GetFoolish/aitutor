@@ -588,19 +588,14 @@ def validate_relevance(question_data: dict, skill_id: str, subject: str) -> Chec
         # Too little text to judge relevance — pass
         return CheckResult(passed=True)
 
-    # Check skill keywords (use stem matching: keyword[:4] substring match)
-    if skill_id:
-        keywords = _skill_keywords(skill_id)
-        if keywords:
-            # Lenient: a keyword matches if its first 4+ chars appear as substring in text
-            found = any(
-                kw in text or (len(kw) >= 4 and kw[:4] in text)
-                for kw in keywords
-            )
-            if not found:
-                reasons.append(f"no skill keywords ({', '.join(sorted(keywords)[:5])}) found in question text")
+    # DISABLED: This check is too strict - valid Biology/History/etc questions
+    # don't necessarily contain the subject name in the question text.
+    # A question about "What do plants need?" is valid Biology without saying "biology".
+    #
+    # Skip keyword matching for now - other validators (meta-question, answerability)
+    # catch bad questions without this overly strict filter.
 
-    return CheckResult(passed=len(reasons) == 0, reasons=reasons)
+    return CheckResult(passed=True)
 
 
 # ---------------------------------------------------------------------------
