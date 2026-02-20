@@ -624,10 +624,11 @@ const AssessmentFlow: React.FC = () => {
               {/* Assessment Mode Banner */}
               <div style={{
                 width: '100%',
+                marginTop: '56px',
                 marginBottom: '10px'
               }}>
                 <div style={{
-                  border: '5px solid #000000',
+                  border: '4px solid #000000',
                   backgroundColor: '#FF6B6B',
                   padding: '10px 16px',
                   boxShadow: '0 4px 0px 0px #000000',
@@ -721,9 +722,8 @@ const AssessmentFlow: React.FC = () => {
 
               <div className="assessment-content-wrapper" style={{
                 padding: '0 12px 10px 12px',
-                maxWidth: '100%',
-                marginLeft: 0,
-                marginRight: 'auto',
+                maxWidth: 1180,
+                margin: '0 auto',
                 width: '100%',
                 flex: '1 1 auto',
                 display: 'flex',

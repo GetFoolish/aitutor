@@ -623,7 +623,7 @@ const AssessmentQuestion: React.FC<Props> = ({
       {/* Enhanced Question Header with Progress */}
       <div
         ref={headerBlockRef}
-        className={`${ultraCompactViewport ? 'mb-1' : compactViewport ? 'mb-2' : 'mb-3'} border-[5px] border-black dark:border-white bg-[#FFD93D] shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] overflow-hidden`}
+        className={`${ultraCompactViewport ? 'mb-1' : compactViewport ? 'mb-2' : 'mb-3'} border-[4px] border-black dark:border-white bg-[#FFD93D] shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] overflow-hidden`}
       >
         <div className={`${ultraCompactViewport ? 'px-3 py-2' : compactViewport ? 'px-4 py-3' : 'px-6 py-5'} text-center border-b-[4px] border-black dark:border-white`}>
           <div className={`${ultraCompactViewport ? 'text-lg mb-0.5' : compactViewport ? 'text-xl mb-1' : 'text-2xl mb-2'} font-black text-black uppercase tracking-widest font-sans`}>
@@ -743,7 +743,7 @@ const AssessmentQuestion: React.FC<Props> = ({
             data-testid="assessment-submit-button"
             onClick={handleSubmit}
             disabled={isAnswered}
-            className={`${ultraCompactViewport ? 'py-2.5 px-4 text-sm' : compactViewport ? 'py-3 px-5 text-base' : 'py-5 px-8 text-lg'} w-full font-black uppercase tracking-widest bg-[#FFD93D] text-black border-[5px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)]`}
+            className={`${ultraCompactViewport ? 'py-2.5 px-4 text-sm' : compactViewport ? 'py-3 px-5 text-base' : 'py-5 px-8 text-lg'} w-full font-black uppercase tracking-widest bg-[#FFD93D] text-black border-[4px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)]`}
           >
             Submit Answer
           </button>

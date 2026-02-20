@@ -106,26 +106,16 @@ body {
   font-size: 14px; // Neo-brutalism minimum body font size
   font-weight: 700; // Bold typography for Web 1.0 aesthetic
 
-  // Responsive scaling - only increase on very large screens
+  // Responsive scaling - NEVER go below 14px minimum
   @media (min-width: 2560px) {
-    font-size: 14px; // 4K displays
+    font-size: 16px; // 4K displays - larger
   }
 
   @media (min-width: 1920px) {
-    font-size: 13px; // Full HD
+    font-size: 15px; // Full HD
   }
 
-  @media (min-width: 1440px) and (max-width: 1919px) {
-    font-size: 12px; // Standard large laptop
-  }
-
-  @media (max-width: 1024px) {
-    font-size: 11px; // Tablets
-  }
-
-  @media (max-width: 768px) {
-    font-size: 10px; // Mobile
-  }
+  // Remove all queries that shrink below 14px - violates design system
 }
 
 .material-symbols-outlined {
