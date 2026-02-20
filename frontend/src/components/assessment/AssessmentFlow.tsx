@@ -649,13 +649,18 @@ const AssessmentFlow: React.FC = () => {
                       }
                       // Clear assessmentId so beforeunload handler won't fire
                       assessmentIdRef.current = null;
+                      const currentAssessmentId = assessmentId; // Capture before clearing
                       setAssessmentId(null);
                       setCurrentQuestion(null);
                       setCompleted(false);
-                      // Keep selected_subject in sessionStorage so learning page can load it
-                      // Navigate to learning page with subject param
+                      // Clear assessment state from sessionStorage
+                      sessionStorage.removeItem('assessmentSubject');
+                      // Navigate to exit page with context
                       const encodedSubject = encodeURIComponent(subject);
-                      history.replace(`/app?subject=${encodedSubject}`);
+                      const exitUrl = currentAssessmentId
+                        ? `/app/assessment-exit?subject=${encodedSubject}&assessment_id=${currentAssessmentId}`
+                        : `/app/assessment-exit?subject=${encodedSubject}`;
+                      history.replace(exitUrl);
                     }}
                     style={{
                       flexShrink: 0,

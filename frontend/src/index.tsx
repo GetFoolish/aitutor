@@ -52,6 +52,7 @@ const LandingPageWrapper = lazy(() => import("./components/landing/LandingPageWr
 const AccountPage = lazy(() => import("./components/account/AccountPage"));
 const PricingPage = lazy(() => import("./components/pricing/PricingPage"));
 const AssessmentFlow = lazy(() => import("./components/assessment/AssessmentFlow"));
+const AssessmentExit = lazy(() => import("./components/assessment/AssessmentExit"));
 const DevLogin = lazy(() => import("./components/auth/DevLogin"));
 const AdminVideoPanel = lazy(() => import("./components/admin/AdminVideoPanel"));
 const CostTrackingPage = lazy(() => import("./components/admin/CostTrackingPage"));
@@ -291,6 +292,7 @@ root.render(
                 <Route path="/pricing" component={PricingPage} />
                 <Route path="/app/admin/videos" component={AdminVideoPanel} />
                 <Route path="/app/admin/cost-tracking" component={CostTrackingPage} />
+                <Route path="/app/assessment-exit" component={AssessmentExit} />
                 <Route path="/app/assessment/:subject" component={AssessmentFlow} />
                 <Route path="/app/learn/:subject" component={LandingPageOrApp} />
                 <Route path="/landing/:id" component={LandingPageWrapper} /> {/* Dynamic landing page routes */}
