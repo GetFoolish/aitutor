@@ -66,7 +66,56 @@ html.dark #question-content-container .framework-perseus pre {
     color: white !important;
 }
 /* Fix: Answer option boxes are too tall (4x spacing = huge boxes) */
-:global(.framework-perseus) .choice {
-    min-height: 48px !important;  /* Fixed height instead of 4x spacing */
-    padding: 12px 16px !important;  /* Reasonable padding */
+/* Override the CSS variable that controls spacing */
+#question-content-container .framework-perseus,
+#question-content-container .framework-perseus .choice,
+.framework-perseus .perseus-widget-radio,
+.framework-perseus .choice {
+    --perseus-multiple-choice-spacing: 10px !important;
+    --wb-sizing-size_160: 10px !important;
+}
+
+/* Force compact height on choice elements */
+#question-content-container .framework-perseus .choice,
+.framework-perseus .choice {
+    min-height: 48px !important;
+    max-height: none !important;
+    padding: 10px 16px !important;
+}
+
+/* ===== Post-answer feedback: highlight correct/incorrect choices ===== */
+/* Perseus radio options are <li class="perseus-radio-option">, target them directly */
+li.perseus-radio-option[data-feedback="correct"] {
+    background-color: #4ADE80 !important;
+    border: 5px solid #000 !important;
+    box-shadow: 4px 4px 0 #000 !important;
+    pointer-events: none !important;
+}
+
+li.perseus-radio-option[data-feedback="incorrect"] {
+    background-color: #FF6B6B !important;
+    border: 5px solid #000 !important;
+    box-shadow: 4px 4px 0 #000 !important;
+    opacity: 0.7 !important;
+    pointer-events: none !important;
+}
+
+li.perseus-radio-option[data-feedback] {
+    cursor: default !important;
+    pointer-events: none !important;
+}
+
+/* Dark mode feedback */
+.dark li.perseus-radio-option[data-feedback="correct"],
+html.dark li.perseus-radio-option[data-feedback="correct"] {
+    background-color: #22C55E !important;
+    border-color: #fff !important;
+    box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+.dark li.perseus-radio-option[data-feedback="incorrect"],
+html.dark li.perseus-radio-option[data-feedback="incorrect"] {
+    background-color: #EF4444 !important;
+    border-color: #fff !important;
+    box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3) !important;
 }
