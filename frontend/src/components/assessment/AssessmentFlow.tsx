@@ -415,7 +415,7 @@ const AssessmentFlow: React.FC = () => {
         position: 'fixed',
         inset: 0,
         overflowX: 'hidden',
-        overflowY: 'hidden',
+        overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
         height: rootHeight,
@@ -620,7 +620,7 @@ const AssessmentFlow: React.FC = () => {
           )}
 
           {!completed && (
-            <div style={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <div style={{ position: 'relative', flex: '1 1 auto', minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'visible' }}>
               {/* Assessment Mode Banner */}
               <div style={{
                 width: '100%',
@@ -721,14 +721,16 @@ const AssessmentFlow: React.FC = () => {
 
               <div className="assessment-content-wrapper" style={{
                 padding: '0 12px 10px 12px',
-                maxWidth: 1180,
-                margin: '0 auto',
+                maxWidth: '100%',
+                marginLeft: 0,
+                marginRight: 'auto',
                 width: '100%',
                 flex: '1 1 auto',
                 display: 'flex',
                 flexDirection: 'column',
                 overflowY: 'auto',
                 overflowX: 'hidden',
+                minHeight: 0,
               }}>
                 {nextQuestionError && (
                   <div style={{
