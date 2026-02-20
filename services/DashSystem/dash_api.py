@@ -35,7 +35,53 @@ logger = get_logger(__name__)
 app = FastAPI()
 dash_system = None  # Initialize as None, will be set in startup event
 
-# Configure CORS with secure origins from environment
+# Helper function to ensure DASH system is initialized
+def ensure_dash_system():
+    """Ensure DASH system is initialized before use"""
+    if dash_system is None:
+        raise HTTPException(status_code=503, detail="DASHSystem not initialized")
+
+# Startup event to initialize DASH system
+@app.on_event("startup")
+async def startup_event():
+    """Initialize DASHSystem on startup"""
+    global dash_system
+    logger.info("\n" + "="*80)
+    logger.info("Initializing DASHSystem...")
+    logger.info("="*80 + "\n")
+    
+    try:
+        dash_system = DASHSystem(use_mongodb=True)
+        logger.info(f"DASHSystem initialized: {len(dash_system.skills)} skills, {len(dash_system.question_index)} questions in index")
+    except Exception as e:
+        logger.error(f"Failed to initialize DASHSystem: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        # The app will still start but endpoints will return 503
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    import traceback
+    logger.error(f"[GLOBAL_ERROR] Unhandled exception: {exc}")
+    logger.error(f"[GLOBAL_ERROR] Traceback: {traceback.format_exc()}")
+    return JSONResponse(
+        status_code=500,
+        content={
+            "detail": f"Internal Server Error: {str(exc)}",
+            "error_type": type(exc).__name__
+        }
+    )
+
+from fastapi.responses import JSONResponse
+
+# Performance Monitoring
+from shared.timing_middleware import UnpluggedTimingMiddleware
+app.add_middleware(UnpluggedTimingMiddleware)
+
+# Cache Control
+app.add_middleware(CacheControlMiddleware)
+
+# Configure CORS last so it is the first to handle requests (outermost middleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
@@ -56,15 +102,33 @@ def ensure_dash_system():
 async def startup_event():
     """Initialize DASHSystem on startup"""
     global dash_system
+    logger.info("\n" + "="*80)
     logger.info("Initializing DASHSystem...")
+    logger.info("="*80 + "\n")
+    
     try:
-        dash_system = DASHSystem()
+        dash_system = DASHSystem(use_mongodb=True)
         logger.info(f"DASHSystem initialized: {len(dash_system.skills)} skills, {len(dash_system.question_index)} questions in index")
     except Exception as e:
         logger.error(f"Failed to initialize DASHSystem: {e}")
         import traceback
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        raise
+        logger.error(traceback.format_exc())
+        # The app will still start but endpoints will return 503
+
+from fastapi.responses import JSONResponse
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    import traceback
+    logger.error(f"[GLOBAL_ERROR] Unhandled exception: {exc}")
+    logger.error(f"[GLOBAL_ERROR] Traceback: {traceback.format_exc()}")
+    return JSONResponse(
+        status_code=500,
+        content={
+            "detail": f"Internal Server Error: {str(exc)}",
+            "error_type": type(exc).__name__
+        }
+    )
+
 # Performance Monitoring
 from shared.timing_middleware import UnpluggedTimingMiddleware
 app.add_middleware(UnpluggedTimingMiddleware)
@@ -109,8 +173,12 @@ def load_perseus_items_for_dash_questions_from_mongodb(
 
     OPTIMIZED: Uses batch query with $in instead of one query per question.
     """
-    from managers.mongodb_manager import mongo_db
     import json
+    
+    # Ensure dash_system is available and has mongo connection
+    if dash_system is None or dash_system.mongo is None:
+        logger.error("DASH system or MongoDB not initialized when loading Perseus items")
+        return []
 
     if not dash_questions:
         return []
@@ -120,7 +188,7 @@ def load_perseus_items_for_dash_questions_from_mongodb(
     question_ids = list(dash_lookup.keys())
 
     # BATCH QUERY: Fetch all questions in one MongoDB call from questions_db
-    question_docs = list(mongo_db.questions.find(
+    question_docs = list(dash_system.mongo.questions.find(
         {"question_id": {"$in": question_ids}}
     ))
 
@@ -140,9 +208,9 @@ def load_perseus_items_for_dash_questions_from_mongodb(
             exercise_ids.add(doc.get('exercise_id'))
 
     # BATCH QUERY: Fetch units, lessons, exercises
-    unit_docs = list(mongo_db.units.find({"unit_id": {"$in": list(unit_ids)}})) if unit_ids else []
-    lesson_docs = list(mongo_db.lessons.find({"lesson_id": {"$in": list(lesson_ids)}})) if lesson_ids else []
-    exercise_docs = list(mongo_db.exercises.find({"exercise_id": {"$in": list(exercise_ids)}})) if exercise_ids else []
+    unit_docs = list(dash_system.mongo.units.find({"unit_id": {"$in": list(unit_ids)}})) if unit_ids else []
+    lesson_docs = list(dash_system.mongo.lessons.find({"lesson_id": {"$in": list(lesson_ids)}})) if lesson_ids else []
+    exercise_docs = list(dash_system.mongo.exercises.find({"exercise_id": {"$in": list(exercise_ids)}})) if exercise_ids else []
 
     # Build lookups
     unit_lookup = {doc.get('unit_id'): doc for doc in unit_docs}

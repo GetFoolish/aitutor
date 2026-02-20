@@ -48,6 +48,7 @@ export function useTutor(assessmentMode?: boolean): UseTutorResults {
   useEffect(() => {
     if (!audioStreamerRef.current) {
       audioContext({ id: "audio-out" }).then((audioCtx: AudioContext) => {
+        console.log(`[useTutor] AudioContext created: state=${audioCtx.state}, sampleRate=${audioCtx.sampleRate}`);
         audioStreamerRef.current = new AudioStreamer(audioCtx);
 
         // Throttling mechanism for volume updates
@@ -63,8 +64,10 @@ export function useTutor(assessmentMode?: boolean): UseTutorResults {
             }
           })
           .then(() => {
-            // Successfully added worklet
+            console.log(`[useTutor] AudioStreamer initialized with worklet`);
           });
+      }).catch((err) => {
+        console.error(`[useTutor] Failed to create AudioContext:`, err);
       });
     }
   }, [audioStreamerRef]);
@@ -84,8 +87,15 @@ export function useTutor(assessmentMode?: boolean): UseTutorResults {
 
     const stopAudioStreamer = () => audioStreamerRef.current?.stop();
 
-    const onAudio = (data: ArrayBuffer) =>
-      audioStreamerRef.current?.addPCM16(new Uint8Array(data));
+    const onAudio = (data: ArrayBuffer) => {
+      console.log(`[useTutor] Audio event received: ${data.byteLength} bytes`);
+      if (audioStreamerRef.current) {
+        audioStreamerRef.current.addPCM16(new Uint8Array(data));
+        console.log(`[useTutor] Audio sent to AudioStreamer`);
+      } else {
+        console.warn(`[useTutor] AudioStreamer not initialized!`);
+      }
+    };
 
     const onTokenUsage = async (usage: { 
       promptTokenCount: number; 

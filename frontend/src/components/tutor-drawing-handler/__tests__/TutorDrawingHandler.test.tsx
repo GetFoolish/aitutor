@@ -36,17 +36,27 @@ describe("TutorDrawingHandler - Shape Parsing Logic", () => {
     window.__teachingCanvasRef = null;
   });
 
-  it("should parse valid shapes JSON", () => {
-    const shapesStr = JSON.stringify([
+  it("should parse valid shapes as array of objects", () => {
+    const shapes = [
       { type: "line", x1: 0, y1: 0, x2: 100, y2: 100, color: "#333", width: 3 },
       { type: "circle", cx: 200, cy: 200, r: 50, color: "#e03131" },
-    ]);
+    ];
 
-    const parsed = JSON.parse(shapesStr);
-    expect(Array.isArray(parsed)).toBe(true);
+    // Simulate what the handler does
+    const parsed = Array.isArray(shapes) ? shapes : JSON.parse(shapes as any);
     expect(parsed).toHaveLength(2);
     expect(parsed[0].type).toBe("line");
     expect(parsed[1].type).toBe("circle");
+  });
+
+  it("should parse valid shapes as string (fallback)", () => {
+    const shapesStr = JSON.stringify([
+      { type: "line", x1: 0, y1: 0, x2: 100, y2: 100, color: "#333", width: 3 },
+    ]);
+
+    const parsed = typeof shapesStr === "string" ? JSON.parse(shapesStr) : shapesStr;
+    expect(parsed).toHaveLength(1);
+    expect(parsed[0].type).toBe("line");
   });
 
   it("should parse text_label shapes", () => {

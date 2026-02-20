@@ -14,12 +14,12 @@
 // ──────────────────────────────────────────────────────────
 
 export interface ShapeDef {
-  type: "line" | "rect" | "circle" | "arrow" | "text_label" | "number_line" | "freehand";
+  type: "line" | "rect" | "circle" | "arrow" | "text_label" | "number_line" | "freehand" | "filled_rect" | "filled_circle";
   // line / arrow
   x1?: number; y1?: number; x2?: number; y2?: number;
-  // rect
+  // rect / filled_rect
   x?: number; y?: number; w?: number; h?: number;
-  // circle
+  // circle / filled_circle
   cx?: number; cy?: number; r?: number;
   // text_label
   text?: string; size?: number; font?: string;
@@ -29,6 +29,8 @@ export interface ShapeDef {
   points?: Array<{ x: number; y: number }>;
   // common
   color?: string;
+  /** Fill color (for filled_rect, filled_circle, or as background for rect/circle) */
+  fill?: string;
   width?: number;
 }
 
@@ -90,6 +92,9 @@ export class DrawingAnimator {
     const totalDuration = batch.durationMs ?? 1500;
     const perShape = batch.shapes.length > 0 ? totalDuration / batch.shapes.length : totalDuration;
 
+    console.log(`[DrawingAnimator] Enqueueing ${batch.shapes.length} shapes, totalDuration=${totalDuration}ms, perShape=${perShape}ms`);
+    console.log(`[DrawingAnimator] Current state: ctx=${!!this.ctx}, onRedrawNeeded=${!!this.onRedrawNeeded}, isAnimating=${this._isAnimating}`);
+
     let offset = 0;
     for (const shape of batch.shapes) {
       this.queue.push({
@@ -101,8 +106,11 @@ export class DrawingAnimator {
     }
 
     if (!this._isAnimating) {
+      console.log(`[DrawingAnimator] Starting animation loop`);
       this._isAnimating = true;
       this.tick();
+    } else {
+      console.log(`[DrawingAnimator] Animation already running, added to queue`);
     }
   }
 
@@ -134,48 +142,74 @@ export class DrawingAnimator {
 
   private tick = () => {
     const now = performance.now();
-    const ctx = this.ctx;
-    if (!ctx) {
+    if (!this.ctx) {
+      console.warn("[DrawingAnimator] tick() called but ctx is null");
       this._isAnimating = false;
       return;
     }
 
-    // Process queue: render each shape at its current progress
+    // Process state: move completed shapes to persistence
     const stillAnimating: AnimatingShape[] = [];
+    let changed = false;
 
     for (const item of this.queue) {
       const elapsed = now - item.startTime;
       const progress = Math.min(elapsed / item.durationMs, 1);
-
-      if (progress < 0) {
-        // Not started yet
-        stillAnimating.push(item);
-        continue;
-      }
-
-      // Render at current progress
-      this.renderShape(ctx, item.shape, progress);
 
       if (progress < 1) {
         stillAnimating.push(item);
       } else {
         // Shape completed — store for persistence
         this.completedShapes.push({ shape: item.shape, progress: 1 });
+        changed = true;
       }
     }
 
     this.queue = stillAnimating;
 
-    // Notify host to redraw (host composites static + animated layers)
-    this.onRedrawNeeded?.();
+    // Notify host to redraw
+    // Redraw is responsible for fetching and drawing the current queue
+    if (this.onRedrawNeeded) {
+      this.onRedrawNeeded();
+    } else {
+      console.warn("[DrawingAnimator] tick() called but onRedrawNeeded is null");
+    }
 
     if (this.queue.length > 0) {
       this.rafId = requestAnimationFrame(this.tick);
     } else {
+      console.log(`[DrawingAnimator] Animation complete. Completed shapes: ${this.completedShapes.length}`);
       this._isAnimating = false;
       this.rafId = null;
     }
   };
+
+  /**
+   * Render both completed AND currently animating shapes.
+   * This should be called by the host's main redraw cycle.
+   */
+  renderAll(ctx: CanvasRenderingContext2D) {
+    // 1) Render completed shapes
+    for (const { shape } of this.completedShapes) {
+      this.renderShape(ctx, shape, 1);
+    }
+
+    // 2) Render currently animating shapes
+    const now = performance.now();
+    let renderedCount = 0;
+    for (const item of this.queue) {
+      const elapsed = now - item.startTime;
+      const progress = Math.min(elapsed / item.durationMs, 1);
+      if (progress >= 0) {
+        this.renderShape(ctx, item.shape, progress);
+        renderedCount++;
+      }
+    }
+    
+    if (this.queue.length > 0 && renderedCount === 0) {
+      console.warn(`[DrawingAnimator] renderAll: ${this.queue.length} shapes in queue but none rendered (all progress < 0?)`);
+    }
+  }
 
   // ──────────────────────────────────────────────────────────
   // Shape renderers (progressive)
@@ -212,6 +246,12 @@ export class DrawingAnimator {
         break;
       case "freehand":
         this.renderFreehand(ctx, shape, progress);
+        break;
+      case "filled_rect":
+        this.renderFilledRect(ctx, shape, progress);
+        break;
+      case "filled_circle":
+        this.renderFilledCircle(ctx, shape, progress);
         break;
     }
 
@@ -414,6 +454,71 @@ export class DrawingAnimator {
       ctx.lineTo(points[i].x, points[i].y);
     }
     ctx.stroke();
+  }
+
+  private renderFilledRect(ctx: CanvasRenderingContext2D, s: ShapeDef, progress: number) {
+    const x = s.x ?? 0, y = s.y ?? 0;
+    const w = s.w ?? 100, h = s.h ?? 100;
+    const fillColor = s.fill || s.color || "#e9ecef";
+
+    // Fade-in the fill, then draw border
+    const fillAlpha = Math.min(progress * 2, 1); // fill appears in first 50%
+    const borderProgress = Math.max((progress - 0.3) / 0.7, 0); // border starts at 30%
+
+    // Draw fill with fade-in
+    ctx.save();
+    ctx.globalAlpha = fillAlpha;
+    ctx.fillStyle = fillColor;
+    ctx.fillRect(x, y, w, h);
+    ctx.restore();
+
+    // Draw border progressively (like rect)
+    if (borderProgress > 0) {
+      const perimeter = 2 * w + 2 * h;
+      const drawn = perimeter * borderProgress;
+
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+
+      const s1 = Math.min(drawn, w);
+      ctx.lineTo(x + s1, y);
+      if (drawn <= w) { ctx.stroke(); return; }
+
+      const s2 = Math.min(drawn - w, h);
+      ctx.lineTo(x + w, y + s2);
+      if (drawn <= w + h) { ctx.stroke(); return; }
+
+      const s3 = Math.min(drawn - w - h, w);
+      ctx.lineTo(x + w - s3, y + h);
+      if (drawn <= 2 * w + h) { ctx.stroke(); return; }
+
+      const s4 = Math.min(drawn - 2 * w - h, h);
+      ctx.lineTo(x, y + h - s4);
+      ctx.stroke();
+    }
+  }
+
+  private renderFilledCircle(ctx: CanvasRenderingContext2D, s: ShapeDef, progress: number) {
+    const cx = s.cx ?? 0, cy = s.cy ?? 0, r = s.r ?? 50;
+    const fillColor = s.fill || s.color || "#e9ecef";
+
+    // Scale-up animation: circle grows from center
+    const currentR = r * Math.min(progress * 1.2, 1);
+
+    // Draw filled circle
+    ctx.save();
+    ctx.fillStyle = fillColor;
+    ctx.beginPath();
+    ctx.arc(cx, cy, currentR, 0, 2 * Math.PI);
+    ctx.fill();
+
+    // Draw border stroke on top
+    if (progress > 0.3) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, currentR, 0, 2 * Math.PI);
+      ctx.stroke();
+    }
+    ctx.restore();
   }
 
   // ──────────────────────────────────────────────────────────

@@ -90,15 +90,11 @@ class TeachingAssistant:
             )
         
         # Memory system
-        self.memory_stores: Dict[str, MemoryStore] = {}
+        self.shared_memory_store: Optional[MemoryStore] = None # Lazy initialized
         self.memory_extractor = MemoryExtractor()
         self.memory_consolidators: Dict[str, MemoryConsolidator] = {}
         self.memory_retrievers: Dict[str, MemoryRetriever] = {}
         self.closing_caches: Dict[str, SessionClosingCache] = {}
-        
-        # Memory management - LRU cache for stores
-        self._memory_store_access_times: Dict[str, float] = {}
-        self._max_memory_stores = 100  # Maximum number of user memory stores to keep in memory
         
         # Thread pool for blocking I/O operations (managed lifecycle)
         self._executor = ThreadPoolExecutor(
@@ -202,39 +198,13 @@ class TeachingAssistant:
     # New Methods for Memory, Skills, and Event Processing
     # ============================================================================
 
-    def _get_or_create_memory_store(self, user_id: str) -> MemoryStore:
-        """Get or create MemoryStore for user with LRU eviction"""
-        current_time = time.time()
+    def _get_or_create_memory_store(self, user_id: str = None) -> MemoryStore:
+        """Get or create the singleton MemoryStore (all users share one Pinecone index)"""
+        if self.shared_memory_store is None:
+            logger.info("[TEACHING_ASSISTANT] Initializing shared MemoryStore...")
+            self.shared_memory_store = MemoryStore()
         
-        if user_id not in self.memory_stores:
-            # Check if we need to evict old stores (LRU)
-            if len(self.memory_stores) >= self._max_memory_stores:
-                self._evict_oldest_memory_store()
-            
-            logger.info(f"[TEACHING_ASSISTANT] Creating MemoryStore for user: {user_id}")
-            self.memory_stores[user_id] = MemoryStore(user_id=user_id)
-        
-        # Update access time for LRU
-        self._memory_store_access_times[user_id] = current_time
-        return self.memory_stores[user_id]
-    
-    def _evict_oldest_memory_store(self):
-        """Evict the least recently used memory store"""
-        if not self._memory_store_access_times:
-            return
-        
-        # Find oldest user
-        oldest_user = min(self._memory_store_access_times.items(), key=lambda x: x[1])[0]
-        
-        logger.info(f"[TEACHING_ASSISTANT] Evicting MemoryStore for user {oldest_user} (LRU eviction)")
-        
-        # Clean up
-        if oldest_user in self.memory_stores:
-            del self.memory_stores[oldest_user]
-        if oldest_user in self._memory_store_access_times:
-            del self._memory_store_access_times[oldest_user]
-        if oldest_user in self.memory_consolidators:
-            del self.memory_consolidators[oldest_user]
+        return self.shared_memory_store
 
 
     async def start(self, user_id: str, session_id: str) -> Optional[str]:
@@ -291,13 +261,7 @@ class TeachingAssistant:
         try:
             # Initialize memory components
             # Use asyncio.to_thread for MemoryStore creation as it involves blocking network calls
-            if user_id not in self.memory_stores:
-                logger.info(f"[TEACHING_ASSISTANT] Creating MemoryStore for user: {user_id} (Background)")
-                # Offload heavy initialization to thread to avoid blocking event loop
-                memory_store = await asyncio.to_thread(MemoryStore, user_id=user_id)
-                self.memory_stores[user_id] = memory_store
-            else:
-                memory_store = self.memory_stores[user_id]
+            memory_store = await asyncio.to_thread(self._get_or_create_memory_store)
             
             if user_id not in self.memory_consolidators:
                 self.memory_consolidators[user_id] = MemoryConsolidator(memory_store, self.memory_extractor)

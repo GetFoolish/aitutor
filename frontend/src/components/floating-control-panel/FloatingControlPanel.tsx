@@ -659,6 +659,19 @@ function FloatingControlPanel({
       };
       client.on('setupcomplete', onSetupComplete);
       
+      // Resume audio context before connecting (browsers require user interaction)
+      try {
+        const { audioContext } = await import("../../lib/utils");
+        const audioCtx = await audioContext({ id: "audio-out" });
+        if (audioCtx.state === "suspended") {
+          console.log('[FloatingControlPanel] Resuming audio context...');
+          await audioCtx.resume();
+          console.log('[FloatingControlPanel] Audio context resumed');
+        }
+      } catch (err) {
+        console.warn('[FloatingControlPanel] Could not resume audio context:', err);
+      }
+      
       await connect();
       
       const waitForConnection = () => {
@@ -732,6 +745,28 @@ function FloatingControlPanel({
 
               if (data.prompt && client.status === 'connected') {
                 client.send({ text: data.prompt });
+                
+                // After greeting, wait a moment then trigger automatic problem detection
+                setTimeout(() => {
+                  // Send an immediate screen frame to trigger problem detection
+                  const canvas = mediaMixerCanvasRef.current;
+                  if (canvas && canvas.width + canvas.height > 0 && client.status === 'connected') {
+                    const base64 = canvas.toDataURL("image/jpeg", 1.0);
+                    const data = base64.slice(base64.indexOf(",") + 1, Infinity);
+                    
+                    client.sendRealtimeInput([{ mimeType: "image/jpeg", data }]);
+                    feedWebSocketService.sendMedia(data);
+                    
+                    // Send a prompt to trigger automatic problem detection and teaching
+                    setTimeout(() => {
+                      if (client.status === 'connected') {
+                        client.send({ 
+                          text: "Look at the screen. If you see any math problem, equation, or question visible, immediately start teaching it step-by-step on the whiteboard. Clear the canvas first, then draw the problem and solve it progressively like Khan Academy style. If there's no problem visible, just acknowledge that you're ready to help." 
+                        });
+                      }
+                    }, 500);
+                  }
+                }, 2000); // Wait 2 seconds after greeting to allow it to finish
               }
             } else {
               console.log('[ASSESSMENT MODE] Session started with minute tracking - WebSocket connected for monitoring');

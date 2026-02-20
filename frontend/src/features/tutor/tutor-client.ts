@@ -123,6 +123,14 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
     this.intentionalDisconnect = false;
     this.reconnectAttempts = 0;
 
+    // Log config to debug audio issues
+    console.log('[TutorClient] Connecting with config:', {
+      responseModalities: config.responseModalities,
+      speechConfig: config.speechConfig,
+      hasTools: !!config.tools && config.tools.length > 0,
+      toolCount: config.tools?.length || 0
+    });
+
     return this.doConnect();
   }
 
@@ -280,7 +288,8 @@ export class TutorClient extends EventEmitter<TutorClientEventTypes> {
           if (b64) {
             const data = base64ToArrayBuffer(b64);
             this.emit("audio", data);
-            this.log(`server.audio`, `buffer (${data.byteLength})`);
+            this.log(`server.audio`, `buffer (${data.byteLength} bytes)`);
+            console.log(`[TutorClient] Audio received: ${data.byteLength} bytes`);
           }
         });
 

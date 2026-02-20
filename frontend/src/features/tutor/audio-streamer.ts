@@ -100,6 +100,18 @@ export class AudioStreamer {
   }
 
   addPCM16(chunk: Uint8Array) {
+    console.log(`[AudioStreamer] addPCM16 called: ${chunk.length} bytes, queue length: ${this.audioQueue.length}, isPlaying: ${this.isPlaying}, context state: ${this.context.state}`);
+    
+    // Ensure audio context is resumed (browsers require user interaction)
+    if (this.context.state === "suspended") {
+      console.log(`[AudioStreamer] Resuming suspended audio context...`);
+      this.context.resume().then(() => {
+        console.log(`[AudioStreamer] Audio context resumed`);
+      }).catch((err) => {
+        console.error(`[AudioStreamer] Failed to resume audio context:`, err);
+      });
+    }
+    
     // Reset the stream complete flag when a new chunk is added.
     this.isStreamComplete = false;
     // Process the chunk into a Float32Array
@@ -118,6 +130,7 @@ export class AudioStreamer {
     // Start playing only if not already playing AND we have enough buffered audio
     // This prevents glitchy playback from starting too early
     if (!this.isPlaying && this.audioQueue.length >= this.minBufferSize) {
+      console.log(`[AudioStreamer] Starting playback (queue: ${this.audioQueue.length} chunks)`);
       this.isPlaying = true;
       // Initialize scheduledTime only when we start playing
       this.scheduledTime = this.context.currentTime + this.initialBufferTime;

@@ -99,7 +99,7 @@ app.add_middleware(CostTrackingMiddleware)
 # Add GZip compression middleware (Phase 7)
 app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=6)
 
-# Configure CORS with secure origins from environment
+# Configure CORS last so it is the first to handle requests (outermost middleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,

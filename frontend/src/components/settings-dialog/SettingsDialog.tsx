@@ -51,9 +51,13 @@ export default function SettingsDialog({
   useEffect(() => {
     // Set initial config with audio requirements for gemini-2.5-flash-native-audio-preview
     // System prompt is now loaded by the backend
+    const currentModalities = config.responseModalities || [];
+    const hasAudio = currentModalities.includes(Modality.AUDIO);
+    const finalModalities = hasAudio ? currentModalities : [Modality.AUDIO];
+    
     setConfig({
       ...config,
-      responseModalities: [Modality.AUDIO],
+      responseModalities: finalModalities,
       speechConfig: {
         voiceConfig: {
           prebuiltVoiceConfig: {
@@ -66,6 +70,8 @@ export default function SettingsDialog({
       // Enable output audio transcription for model speech-to-text
       outputAudioTranscription: {},
     });
+    
+    console.log(`[SettingsDialog] Config initialized - responseModalities:`, finalModalities);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

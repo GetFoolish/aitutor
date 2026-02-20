@@ -103,25 +103,29 @@ class MemoryStore:
             raise ValueError("PINECONE_API_KEY environment variable is required for memory functionality")
         
         self.pc = Pinecone(api_key=api_key)
+        self.enabled = True
         
-        # Determine index name: user_id-based or provided or env or default
-        if user_id:
-            # Sanitize user_id for Pinecone index name (must be lowercase alphanumeric with hyphens only)
-            sanitized_user_id = self._sanitize_index_name(user_id)
-            self.index_name = f"memory-{sanitized_user_id}"
-            logger.info(f"Using user-specific index: {self.index_name} (from user_id: {user_id})")
-        elif index_name:
+        # Determine index name: default to shared index to avoid 403 Forbidden on Free Tier
+        if index_name:
             self.index_name = index_name
             logger.info(f"Using provided index: {self.index_name}")
         else:
-            # Fallback to env or default (for backward compatibility)
+            # Shared index from env or default
             self.index_name = os.getenv("PINECONE_INDEX_NAME", "aitutor-memories")
-            logger.info(f"Using default index: {self.index_name}")
+            
+            if user_id:
+                logger.info(f"Using shared index: {self.index_name} (Filtering by user: {user_id})")
+            else:
+                logger.debug(f"Using shared index: {self.index_name}")
         
         # Check if index exists, create if not
-        self._ensure_index_exists()
-        
-        self.index = self.pc.Index(self.index_name)
+        try:
+            self._ensure_index_exists()
+            self.index = self.pc.Index(self.index_name)
+        except Exception as e:
+            logger.error(f"⚠️ Pinecone initialization failed: {e}. Memory system will be DISABLED.")
+            self.enabled = False
+            self.index = None
     
     def _sanitize_index_name(self, user_id: str) -> str:
         """
@@ -298,6 +302,10 @@ class MemoryStore:
         return recency_score
 
     def save_memory(self, memory: Memory):
+        if not self.enabled:
+            return
+            
+
         """
         Save a memory with intelligent deduplication.
         
@@ -400,6 +408,10 @@ class MemoryStore:
             raise
 
     def save_memories_batch(self, memories: List[Memory]):
+        if not self.enabled:
+            return
+            
+
         """
         Save a batch of memories with intelligent deduplication.
         
@@ -531,6 +543,10 @@ class MemoryStore:
 
     def search(self, query: str, student_id: str, mem_type: Optional[MemoryType] = None, 
                top_k: int = 10, exclude_session_id: Optional[str] = None) -> List[Dict]:
+        if not self.enabled:
+            return []
+            
+
         from .embeddings import get_query_embedding
         
         # Sanitize query snippet for console encodings that may not support all Unicode

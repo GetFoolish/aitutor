@@ -12,7 +12,7 @@
  */
 
 import { GoogleGenAI } from '@google/genai';
-import { LiveConnectConfig, LiveServerMessage } from '@google/genai';
+import { LiveConnectConfig, LiveServerMessage, Modality } from '@google/genai';
 import { apiUtils } from '../../lib/api-utils';
 
 const AUTH_SERVICE_URL = import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003';
@@ -189,10 +189,15 @@ export class TutorService {
     const fullConfig: LiveConnectConfig = {
       ...config,
       systemInstruction: config.systemInstruction || this.systemPrompt,
+      // Ensure responseModalities is set - default to AUDIO if not specified
+      responseModalities: config.responseModalities && config.responseModalities.length > 0
+        ? config.responseModalities
+        : [Modality.AUDIO],
     };
 
-    console.log(`Connecting to Gemini model: ${this.model}`);
-    console.log(`Voice: ${fullConfig.speechConfig?.voiceConfig?.prebuiltVoiceConfig?.voiceName || 'default'}`);
+    console.log(`[TutorService] Connecting to Gemini model: ${this.model}`);
+    console.log(`[TutorService] Voice: ${fullConfig.speechConfig?.voiceConfig?.prebuiltVoiceConfig?.voiceName || 'default'}`);
+    console.log(`[TutorService] Response modalities:`, fullConfig.responseModalities);
 
     try {
       this.geminiSession = await this.geminiClient.live.connect({

@@ -45,7 +45,7 @@ app.add_middleware(UnpluggedTimingMiddleware)
 # Cache Control (Phase 7)
 app.add_middleware(CacheControlMiddleware)
 
-# Configure CORS with secure origins from environment
+# Configure CORS last so it is the first to handle requests (outermost middleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
