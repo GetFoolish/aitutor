@@ -194,37 +194,6 @@ const AssessmentQuestion: React.FC<Props> = ({
     setPendingCorrect(null);
     setAutoFitZoom(1);
     startTimeRef.current = Date.now();
-
-    // Force compact choice heights - use MutationObserver to continuously enforce
-    const container = document.getElementById('question-content-container');
-    if (container) {
-      const applyCompactStyles = () => {
-        const choices = container.querySelectorAll<HTMLElement>('li.perseus-radio-option, [class*="perseus-radio-option"]');
-        choices.forEach(choice => {
-          choice.style.cssText = `
-            min-height: 48px !important;
-            max-height: 60px !important;
-            padding: 8px 16px !important;
-            line-height: 1.3 !important;
-          `;
-        });
-      };
-
-      // Apply immediately
-      setTimeout(applyCompactStyles, 100);
-
-      // Re-apply whenever Perseus modifies the DOM
-      const observer = new MutationObserver(applyCompactStyles);
-      observer.observe(container, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['style', 'class'],
-      });
-
-      // Cleanup on unmount
-      return () => observer.disconnect();
-    }
   }, [question]);
 
   useEffect(() => {
@@ -622,7 +591,7 @@ const AssessmentQuestion: React.FC<Props> = ({
 
     // Mark choices with correct/incorrect feedback for visual highlighting
     setTimeout(() => {
-      // Perseus radio options are <li class="perseus-radio-option">
+      // Target Perseus radio options directly (not generic .choice class)
       const choiceElements = document.querySelectorAll('li.perseus-radio-option');
       const widgets = questionData.widgets || {};
 
@@ -630,40 +599,26 @@ const AssessmentQuestion: React.FC<Props> = ({
       const radioWidgetKey = Object.keys(widgets).find(key => widgets[key]?.type === 'radio');
       if (radioWidgetKey && widgets[radioWidgetKey]?.options?.choices) {
         const choices = widgets[radioWidgetKey].options.choices;
-        const rawInput = userInput[radioWidgetKey] as any;
-
-        // Detect user selection from DOM (most reliable) — look for selectedItem class
-        const domSelected: boolean[] = [];
-        choiceElements.forEach((el) => {
-          domSelected.push(el.className.includes('selectedItem') || el.className.includes('perseus-radio-selected'));
-        });
-
-        // Also try from userInput as fallback
-        const inputSelected = rawInput?.choicesSelected || rawInput?.values || [];
-
-        console.log('[AssessmentQuestion] Highlighting:', {
-          choiceCount: choices.length,
-          domElements: choiceElements.length,
-          domSelected,
-          inputSelected,
-          rawInputKeys: rawInput ? Object.keys(rawInput) : 'null',
-        });
+        // choicesSelected is boolean array: [false, true, false, false]
+        const userSelection = (userInput[radioWidgetKey] as any)?.choicesSelected || [];
 
         choiceElements.forEach((el, idx) => {
           if (idx < choices.length) {
             const choice = choices[idx];
-            // Use DOM-detected selection (most reliable)
-            const isUserSelected = domSelected[idx] || inputSelected[idx] === true;
+            // Fix: Check boolean array by index, not includes()
+            const isUserSelected = userSelection[idx] === true;
 
             if (choice?.correct) {
+              // Mark correct answers with green
               el.setAttribute('data-feedback', 'correct');
             } else if (isUserSelected && !choice?.correct) {
+              // Mark user's incorrect selection with red
               el.setAttribute('data-feedback', 'incorrect');
             }
           }
         });
       }
-    }, 150); // Delay to ensure DOM is ready after Perseus re-render
+    }, 50); // Small delay to ensure DOM is ready
 
     // Fire-and-forget analytics reporting
     const questionId = question?.dash_metadata?.dash_question_id || `assessment_q_${questionNumber}`;
