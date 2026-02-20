@@ -49,6 +49,7 @@ const AssessmentFlow: React.FC = () => {
   const [cameraEnabled, setCameraEnabled] = useState(false);
   const [screenEnabled, setScreenEnabled] = useState(false);
   const [privacyMode, setPrivacyMode] = useState(false);
+  const [showExitDialog, setShowExitDialog] = useState(false);
 
   // Ref to track latest assessmentId for prefetch (avoids stale closures)
   const assessmentIdRef = useRef<string | null>(null);
@@ -142,6 +143,29 @@ const AssessmentFlow: React.FC = () => {
       document.documentElement.style.overflow = prevHtmlOverflow;
     };
   }, []);
+
+  const confirmExit = () => {
+    setShowExitDialog(false);
+    // CRITICAL: Unblock navigation BEFORE clearing state (Bug #2 fix)
+    if (unblockRef.current) {
+      unblockRef.current();
+      unblockRef.current = null;
+    }
+    // Clear assessmentId so beforeunload handler won't fire
+    assessmentIdRef.current = null;
+    const currentAssessmentId = assessmentId; // Capture before clearing
+    setAssessmentId(null);
+    setCurrentQuestion(null);
+    setCompleted(false);
+    // Clear assessment state from sessionStorage
+    sessionStorage.removeItem('assessmentSubject');
+    // Navigate to exit page with context
+    const encodedSubject = encodeURIComponent(subject);
+    const exitUrl = currentAssessmentId
+      ? `/app/assessment-exit?subject=${encodedSubject}&assessment_id=${currentAssessmentId}`
+      : `/app/assessment-exit?subject=${encodedSubject}`;
+    history.replace(exitUrl);
+  };
 
   const startAssessment = async () => {
     const gen = ++generationRef.current;
@@ -642,25 +666,7 @@ const AssessmentFlow: React.FC = () => {
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      // CRITICAL: Unblock navigation BEFORE clearing state (Bug #2 fix)
-                      if (unblockRef.current) {
-                        unblockRef.current();
-                        unblockRef.current = null;
-                      }
-                      // Clear assessmentId so beforeunload handler won't fire
-                      assessmentIdRef.current = null;
-                      const currentAssessmentId = assessmentId; // Capture before clearing
-                      setAssessmentId(null);
-                      setCurrentQuestion(null);
-                      setCompleted(false);
-                      // Clear assessment state from sessionStorage
-                      sessionStorage.removeItem('assessmentSubject');
-                      // Navigate to exit page with context
-                      const encodedSubject = encodeURIComponent(subject);
-                      const exitUrl = currentAssessmentId
-                        ? `/app/assessment-exit?subject=${encodedSubject}&assessment_id=${currentAssessmentId}`
-                        : `/app/assessment-exit?subject=${encodedSubject}`;
-                      history.replace(exitUrl);
+                      setShowExitDialog(true);
                     }}
                     style={{
                       flexShrink: 0,
@@ -848,6 +854,40 @@ const AssessmentFlow: React.FC = () => {
             assessmentMode={true}
           />
         </TutorProvider>
+      )}
+
+      {/* Exit confirmation dialog */}
+      {showExitDialog && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          onClick={() => setShowExitDialog(false)}
+        >
+          <div
+            className="bg-white dark:bg-neutral-800 border-[4px] border-black dark:border-white shadow-[8px_8px_0_0_#000] dark:shadow-[8px_8px_0_0_rgba(255,255,255,0.3)] p-8 max-w-md mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-2xl font-black uppercase tracking-tight text-black dark:text-white mb-4">
+              Exit Assessment?
+            </h3>
+            <p className="text-base text-gray-700 dark:text-gray-300 mb-6">
+              Your progress will be saved, but you'll need to start a new assessment to continue practicing.
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={confirmExit}
+                className="flex-1 py-3 px-6 font-black uppercase tracking-widest text-base bg-red-500 dark:bg-red-600 text-white border-[4px] border-black dark:border-white shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_#000] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all duration-100"
+              >
+                Yes, Exit
+              </button>
+              <button
+                onClick={() => setShowExitDialog(false)}
+                className="flex-1 py-3 px-6 font-black uppercase tracking-widest text-base bg-gray-200 dark:bg-neutral-700 text-black dark:text-white border-[4px] border-black dark:border-white shadow-[4px_4px_0_0_#000] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_#000] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all duration-100"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       <style>{`
