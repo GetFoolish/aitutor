@@ -14,7 +14,7 @@
 }
 
 /* Dark mode radio buttons */
-:global(.dark) .framework-perseus .choice,
+.dark .framework-perseus .choice,
 html.dark .framework-perseus .choice {
     border-color: #fff !important;
     box-shadow: 4px 4px 0 #fff !important;
@@ -22,7 +22,7 @@ html.dark .framework-perseus .choice {
 }
 
 /* Only highlight the actually selected choice */
-:global(.framework-perseus) .choice:has(> button[aria-pressed="true"]) {
+.framework-perseus .choice:has(> button[aria-pressed="true"]) {
     /* Ensure selected state is visually distinct */
     background-color: #FFD93D !important;
     border-color: #000 !important;
@@ -32,7 +32,7 @@ html.dark .framework-perseus .choice {
 }
 
 /* Dark mode selected */
-:global(.dark) .framework-perseus .choice:has(> button[aria-pressed="true"]),
+.dark .framework-perseus .choice:has(> button[aria-pressed="true"]),
 html.dark .framework-perseus .choice:has(> button[aria-pressed="true"]) {
     background-color: #FFD93D !important;
     border-color: #fff !important;
@@ -50,13 +50,13 @@ html.dark .framework-perseus .choice:has(> button[aria-pressed="true"]) {
 
 /* Ensure hover only affects the hovered choice, not siblings */
 @media (hover: hover) {
-    :global(.framework-perseus) .choice:hover:not(:has(> button[aria-pressed="true"])) {
+    .framework-perseus .choice:hover:not(:has(> button[aria-pressed="true"])) {
         background-color: rgba(0, 0, 0, 0.04);
     }
 }
 
 /* Fix: Prevent CSS from applying to all choices when one is selected */
-:global(.framework-perseus) .choice+.choice {
+.framework-perseus .choice+.choice {
     /* Ensure each choice is independent */
     isolation: isolate;
 }
