@@ -598,24 +598,30 @@ const AssessmentQuestion: React.FC<Props> = ({
       const radioWidgetKey = Object.keys(widgets).find(key => widgets[key]?.type === 'radio');
       if (radioWidgetKey && widgets[radioWidgetKey]?.options?.choices) {
         const choices = widgets[radioWidgetKey].options.choices;
+        // choicesSelected is boolean[] like [false, true, false, false]
         const userSelection = (userInput[radioWidgetKey] as any)?.choicesSelected || [];
+
+        console.log('[AssessmentQuestion] Highlighting:', {
+          choiceCount: choices.length,
+          domElements: choiceElements.length,
+          userSelection,
+        });
 
         choiceElements.forEach((el, idx) => {
           if (idx < choices.length) {
             const choice = choices[idx];
-            const isUserSelected = userSelection.includes(idx);
+            // choicesSelected is booleans, check by index
+            const isUserSelected = userSelection[idx] === true;
 
             if (choice?.correct) {
-              // Mark correct answers with green
               el.setAttribute('data-feedback', 'correct');
             } else if (isUserSelected && !choice?.correct) {
-              // Mark user's incorrect selection with red
               el.setAttribute('data-feedback', 'incorrect');
             }
           }
         });
       }
-    }, 50); // Small delay to ensure DOM is ready
+    }, 100); // Delay to ensure DOM is ready after Perseus re-render
 
     // Fire-and-forget analytics reporting
     const questionId = question?.dash_metadata?.dash_question_id || `assessment_q_${questionNumber}`;

@@ -1,7 +1,7 @@
 /* MCQ Highlighting Fix - Override to ensure only selected option is highlighted */
 
 /* Prevent all choices from highlighting when one is clicked */
-:global(.framework-perseus) .choice {
+.framework-perseus .choice {
     /* Reset any global hover states that might affect all choices */
     transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
     /* Neo-brutalism styling for radio buttons */
