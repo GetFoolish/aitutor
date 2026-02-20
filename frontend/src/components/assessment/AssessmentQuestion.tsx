@@ -197,14 +197,32 @@ const AssessmentQuestion: React.FC<Props> = ({
 
     // Force compact choice heights after question loads
     setTimeout(() => {
-      const choices = document.querySelectorAll<HTMLElement>('.choice, li.choice, [class*="choice"]');
-      choices.forEach(choice => {
-        choice.style.minHeight = '48px';
-        choice.style.maxHeight = '60px';
-        choice.style.padding = '10px 16px';
-        choice.style.lineHeight = '1.4';
+      // Try multiple selectors to catch Perseus elements
+      const selectors = [
+        '.choice',
+        'li.choice',
+        '[class*="choice"]',
+        '.perseus-radio-option',
+        'li.perseus-radio-option',
+        '.framework-perseus li',
+        '#question-content-container li',
+      ];
+
+      selectors.forEach(selector => {
+        const elements = document.querySelectorAll<HTMLElement>(selector);
+        elements.forEach(el => {
+          // Only target elements that look like answer options (have text content)
+          if (el.textContent && el.textContent.trim().length > 0 && el.textContent.length < 200) {
+            el.style.setProperty('min-height', '48px', 'important');
+            el.style.setProperty('max-height', '60px', 'important');
+            el.style.setProperty('padding', '10px 16px', 'important');
+            el.style.setProperty('line-height', '1.4', 'important');
+
+            console.log('[AssessmentQuestion] Compacted choice:', el.className, el.textContent.substring(0, 30));
+          }
+        });
       });
-    }, 100);
+    }, 150);
   }, [question]);
 
   useEffect(() => {
