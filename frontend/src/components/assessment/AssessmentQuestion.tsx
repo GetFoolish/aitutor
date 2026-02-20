@@ -521,14 +521,14 @@ const AssessmentQuestion: React.FC<Props> = ({
         } as React.CSSProperties)
       : undefined;
   const contentBlockStyle: React.CSSProperties = {
-    ...(contentZoomWrapperStyle || {}),
     display: 'flex',
     flexDirection: 'column',
-    flex: '1 1 auto',
-    overflowY: 'auto', // Need this for scrollHeight measurement
+    overflowY: 'visible',
     overflowX: 'hidden',
     paddingRight: compactViewport ? '2px' : '4px',
-    minHeight: '200px', // Minimum space for zoom calculation
+    transformOrigin: 'top center',
+    transform: resolvedContentZoom < 1 ? `scale(${resolvedContentZoom})` : 'none',
+    width: resolvedContentZoom < 1 ? `${100 / resolvedContentZoom}%` : '100%',
   };
   // Detect if question needs audio (phonics/listening questions)
   const audioWord = useMemo(() => {
@@ -617,9 +617,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         display: 'flex',
         flexDirection: 'column',
         width: '100%',
-        height: '100%',
-        maxHeight: '100vh',
-        overflow: 'hidden'
+        overflow: 'visible'
       }}
     >
       {/* Enhanced Question Header with Progress */}
@@ -655,20 +653,13 @@ const AssessmentQuestion: React.FC<Props> = ({
         </div>
       )}
 
-      <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}>
-        <div ref={contentBlockRef} style={{
-          ...contentBlockStyle,
-          maxHeight: '100%',
-          overflow: 'auto',
-        }}>
+      <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', overflow: 'visible' }}>
+        <div ref={contentBlockRef} style={contentBlockStyle}>
           <div
             id="question-content-container"
             className={`border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white ${ultraCompactViewport ? 'p-3 mb-2' : compactViewport ? 'p-4 mb-3' : 'p-5 md:p-6 lg:p-7 mb-4'} shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.4)]`}
             style={{
               overflow: 'visible',
-              flex: '1 1 auto',
-              display: 'flex',
-              flexDirection: 'column',
             }}
           >
             <PerseusI18nContextProvider locale="en" strings={mockStrings}>
