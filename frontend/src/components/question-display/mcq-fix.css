@@ -24,18 +24,20 @@ html.dark .framework-perseus .choice {
 /* Only highlight the actually selected choice */
 :global(.framework-perseus) .choice:has(> button[aria-pressed="true"]) {
     /* Ensure selected state is visually distinct */
-    background-color: #60A5FA !important;
+    background-color: #FFD93D !important;
     border-color: #000 !important;
+    border-width: 5px !important;
     transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0 #000 !important;
+    box-shadow: 3px 3px 0 #000 !important;
 }
 
 /* Dark mode selected */
 :global(.dark) .framework-perseus .choice:has(> button[aria-pressed="true"]),
 html.dark .framework-perseus .choice:has(> button[aria-pressed="true"]) {
-    background-color: #60A5FA !important;
+    background-color: #FFD93D !important;
     border-color: #fff !important;
-    box-shadow: 2px 2px 0 #fff !important;
+    border-width: 5px !important;
+    box-shadow: 3px 3px 0 #fff !important;
 }
 
 /* Ensure selected radio highlight renders as a complete 4-sided box */
