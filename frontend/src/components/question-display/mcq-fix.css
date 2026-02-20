@@ -65,3 +65,8 @@ html.dark #question-content-container .framework-perseus code,
 html.dark #question-content-container .framework-perseus pre {
     color: white !important;
 }
+/* Fix: Answer option boxes are too tall (4x spacing = huge boxes) */
+:global(.framework-perseus) .choice {
+    min-height: 48px !important;  /* Fixed height instead of 4x spacing */
+    padding: 12px 16px !important;  /* Reasonable padding */
+}
