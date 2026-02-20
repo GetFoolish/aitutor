@@ -589,6 +589,34 @@ const AssessmentQuestion: React.FC<Props> = ({
     setKeScore(score);
     setPendingCorrect(score.correct);
 
+    // Mark choices with correct/incorrect feedback for visual highlighting
+    setTimeout(() => {
+      const choiceElements = document.querySelectorAll('.choice');
+      const widgets = questionData.widgets || {};
+
+      // Find radio widget
+      const radioWidgetKey = Object.keys(widgets).find(key => widgets[key]?.type === 'radio');
+      if (radioWidgetKey && widgets[radioWidgetKey]?.options?.choices) {
+        const choices = widgets[radioWidgetKey].options.choices;
+        const userSelection = (userInput[radioWidgetKey] as any)?.choicesSelected || [];
+
+        choiceElements.forEach((el, idx) => {
+          if (idx < choices.length) {
+            const choice = choices[idx];
+            const isUserSelected = userSelection.includes(idx);
+
+            if (choice?.correct) {
+              // Mark correct answers with green
+              el.setAttribute('data-feedback', 'correct');
+            } else if (isUserSelected && !choice?.correct) {
+              // Mark user's incorrect selection with red
+              el.setAttribute('data-feedback', 'incorrect');
+            }
+          }
+        });
+      }
+    }, 50); // Small delay to ensure DOM is ready
+
     // Fire-and-forget analytics reporting
     const questionId = question?.dash_metadata?.dash_question_id || `assessment_q_${questionNumber}`;
     const skillId = (question?.dash_metadata?.skill_ids || [])[0];
