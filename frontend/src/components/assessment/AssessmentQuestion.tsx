@@ -195,34 +195,36 @@ const AssessmentQuestion: React.FC<Props> = ({
     setAutoFitZoom(1);
     startTimeRef.current = Date.now();
 
-    // Force compact choice heights after question loads
-    setTimeout(() => {
-      // Try multiple selectors to catch Perseus elements
-      const selectors = [
-        '.choice',
-        'li.choice',
-        '[class*="choice"]',
-        '.perseus-radio-option',
-        'li.perseus-radio-option',
-        '.framework-perseus li',
-        '#question-content-container li',
-      ];
-
-      selectors.forEach(selector => {
-        const elements = document.querySelectorAll<HTMLElement>(selector);
-        elements.forEach(el => {
-          // Only target elements that look like answer options (have text content)
-          if (el.textContent && el.textContent.trim().length > 0 && el.textContent.length < 200) {
-            el.style.setProperty('min-height', '48px', 'important');
-            el.style.setProperty('max-height', '60px', 'important');
-            el.style.setProperty('padding', '10px 16px', 'important');
-            el.style.setProperty('line-height', '1.4', 'important');
-
-            console.log('[AssessmentQuestion] Compacted choice:', el.className, el.textContent.substring(0, 30));
-          }
+    // Force compact choice heights - use MutationObserver to continuously enforce
+    const container = document.getElementById('question-content-container');
+    if (container) {
+      const applyCompactStyles = () => {
+        const choices = container.querySelectorAll<HTMLElement>('li.perseus-radio-option, [class*="perseus-radio-option"]');
+        choices.forEach(choice => {
+          choice.style.cssText = `
+            min-height: 48px !important;
+            max-height: 60px !important;
+            padding: 8px 16px !important;
+            line-height: 1.3 !important;
+          `;
         });
+      };
+
+      // Apply immediately
+      setTimeout(applyCompactStyles, 100);
+
+      // Re-apply whenever Perseus modifies the DOM
+      const observer = new MutationObserver(applyCompactStyles);
+      observer.observe(container, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['style', 'class'],
       });
-    }, 150);
+
+      // Cleanup on unmount
+      return () => observer.disconnect();
+    }
   }, [question]);
 
   useEffect(() => {

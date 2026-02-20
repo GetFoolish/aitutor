@@ -141,7 +141,7 @@ const AssessmentFlow: React.FC = () => {
 
           if (isRecent && matchesSubject) {
             console.log('[AssessmentFlow] Attempting to resume session:', session.assessment_id);
-            const response = await apiUtils.get(`/assessment/resume/${session.assessment_id}`);
+            const response = await apiUtils.get(`${DASH_API_URL}/assessment/resume/${session.assessment_id}`);
 
             console.log('[AssessmentFlow] Resume response:', response.status, response.ok);
 
