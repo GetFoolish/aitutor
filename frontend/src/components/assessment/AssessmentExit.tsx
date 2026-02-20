@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { CheckCircle2, BookOpen, Home } from 'lucide-react';
 
 /**
@@ -7,8 +7,9 @@ import { CheckCircle2, BookOpen, Home } from 'lucide-react';
  * Shows summary and provides navigation options
  */
 const AssessmentExit: React.FC = () => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const history = useHistory();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
 
   const subject = searchParams.get('subject') || 'Assessment';
   const assessmentId = searchParams.get('assessment_id');
@@ -18,7 +19,7 @@ const AssessmentExit: React.FC = () => {
     sessionStorage.removeItem('selected_subject');
     sessionStorage.removeItem('assessmentSubject');
     sessionStorage.removeItem('active_assessment');
-    navigate('/app/dev-login');
+    history.push('/app/dev-login');
   };
 
   const handleBackHome = () => {
@@ -26,7 +27,7 @@ const AssessmentExit: React.FC = () => {
     sessionStorage.removeItem('selected_subject');
     sessionStorage.removeItem('assessmentSubject');
     sessionStorage.removeItem('active_assessment');
-    navigate('/app');
+    history.push('/app');
   };
 
   return (
