@@ -16,21 +16,28 @@
 }
 
 /* Visible focus indicators for keyboard navigation (WCAG 2.4.7) */
+/* Neo-brutalism: BLACK outlines in light mode, WHITE in dark mode */
 *:focus-visible {
-  outline: 3px solid #4A90E2;
-  outline-offset: 2px;
+  outline: 4px solid #000 !important;
+  outline-offset: 0px;
+  box-shadow: 0 0 0 8px rgba(0, 0, 0, 0.1);
 }
-/* Neobrutalist focus ring on buttons */
+.dark *:focus-visible {
+  outline-color: #fff !important;
+  box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.1);
+}
+/* Buttons get extra neo-brutalist press effect */
 button:focus-visible,
 [role="button"]:focus-visible {
-  outline: 3px solid #000;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 5px rgba(74, 144, 226, 0.4);
+  outline: 4px solid #000 !important;
+  outline-offset: 0px;
+  transform: translate(1px, 1px);
+  box-shadow: 3px 3px 0 #000 !important;
 }
 .dark button:focus-visible,
 .dark [role="button"]:focus-visible {
-  outline-color: #fff;
-  box-shadow: 0 0 0 5px rgba(74, 144, 226, 0.5);
+  outline-color: #fff !important;
+  box-shadow: 3px 3px 0 rgba(255, 255, 255, 0.3) !important;
 }
 
 html {

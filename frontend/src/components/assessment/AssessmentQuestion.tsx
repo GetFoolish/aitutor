@@ -711,6 +711,7 @@ const AssessmentQuestion: React.FC<Props> = ({
               {hintsShown < (question.hints || []).length && (
                 <button
                   data-testid="assessment-show-hint-button"
+                  tabIndex={0}
                   onClick={() => setHintsShown(h => h + 1)}
                   className={`${ultraCompactViewport ? 'py-3 px-5 text-sm' : 'py-4 px-6 text-base'} font-black uppercase tracking-wide bg-[#FFD93D] dark:bg-[#FFD93D] text-black dark:text-black border-[4px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] mb-3 hover:bg-[#FFE066] dark:hover:bg-[#FFE066] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition-all duration-100 active:translate-x-2 active:translate-y-2 active:shadow-none`}
                 >
@@ -745,6 +746,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         >
           <button
             data-testid="assessment-submit-button"
+            tabIndex={0}
             onClick={handleSubmit}
             disabled={isAnswered}
             className={`${ultraCompactViewport ? 'py-2.5 px-4 text-sm' : compactViewport ? 'py-3 px-5 text-base' : 'py-5 px-8 text-lg'} w-full font-black uppercase tracking-widest bg-[#FFD93D] text-black border-[4px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)]`}
