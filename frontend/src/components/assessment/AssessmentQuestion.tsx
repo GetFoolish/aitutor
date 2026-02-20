@@ -640,7 +640,7 @@ const AssessmentQuestion: React.FC<Props> = ({
             className="h-full bg-[#FF6B6B] border-r-[4px] border-black dark:border-white transition-all duration-300 ease-out"
             style={{ width: `${progressPercentage}%` }}
           />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xs font-black text-black dark:text-white uppercase tracking-wide z-10">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-sm font-black text-black dark:text-white uppercase tracking-wide z-10">
             {Math.round(progressPercentage)}%
           </div>
         </div>
