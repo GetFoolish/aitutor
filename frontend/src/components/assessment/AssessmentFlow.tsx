@@ -6,6 +6,7 @@ import AssessmentResults from './AssessmentResults';
 import Header from '../../components/header/Header';
 import BackgroundShapes from '../background-shapes/BackgroundShapes';
 import FloatingControlPanel from '../floating-control-panel/FloatingControlPanel';
+import AssessmentToolbar from './AssessmentToolbar';
 import { TutorProvider } from '../../features/tutor';
 
 const DASH_API_URL =
@@ -50,6 +51,7 @@ const AssessmentFlow: React.FC = () => {
   const [screenEnabled, setScreenEnabled] = useState(false);
   const [privacyMode, setPrivacyMode] = useState(false);
   const [showExitDialog, setShowExitDialog] = useState(false);
+  const [assessmentStartTime] = useState(Date.now()); // Track when assessment started
 
   // Ref to track latest assessmentId for prefetch (avoids stale closures)
   const assessmentIdRef = useRef<string | null>(null);
@@ -908,24 +910,11 @@ const AssessmentFlow: React.FC = () => {
       )}
 
       {!loading && !startError && !completed && (
-        <TutorProvider assessmentMode={true}>
-          <FloatingControlPanel
-            renderCanvasRef={floatingRenderCanvasRef}
-            videoRef={floatingVideoRef}
-            supportsVideo={true}
-            onPaintClick={() => setIsScratchpadOpen((prev) => !prev)}
-            isPaintActive={isScratchpadOpen}
-            cameraEnabled={cameraEnabled}
-            screenEnabled={screenEnabled}
-            onToggleCamera={setCameraEnabled}
-            onToggleScreen={setScreenEnabled}
-            privacyMode={privacyMode}
-            onTogglePrivacy={setPrivacyMode}
-            mediaMixerCanvasRef={floatingMixerCanvasRef}
-            processedEdgesRef={floatingProcessedEdgesRef}
-            assessmentMode={true}
-          />
-        </TutorProvider>
+        <AssessmentToolbar
+          startTime={assessmentStartTime}
+          onToggleScratchpad={() => setIsScratchpadOpen((prev) => !prev)}
+          isScratchpadOpen={isScratchpadOpen}
+        />
       )}
 
       {/* Exit confirmation dialog */}
