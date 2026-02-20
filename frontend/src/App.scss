@@ -90,9 +90,18 @@ html.dark,
   scrollbar-color: var(--neo-black) var(--neo-bg);
 }
 
+// Dark mode: white dots on black background (whole page)
+html.dark body,
+.dark body {
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23FFFFFF' opacity='0.50'/%3E%3C/svg%3E");
+}
+
 body {
   font-family: "Space Mono", monospace;
-  background: var(--neo-bg);
+  background-color: var(--neo-bg);
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23000000' opacity='0.50'/%3E%3C/svg%3E");
+  background-size: 20px 20px;
+  background-repeat: repeat;
   color: var(--neo-black);
   font-size: 11px; // Much smaller base for better fit
   font-weight: 700; // Bold typography for Web 1.0 aesthetic
@@ -183,10 +192,8 @@ body {
   width: 100vw;
   margin-top: 48px; // Reduced from 56px
   position: relative;
-  background: var(--neo-bg);
-  // Dot texture is rendered by .question-panel::before only.
-  // Keep the app shell solid so grading rail/cards never inherit dot bleed.
-  background-image: none;
+  // Transparent so body dot pattern shows through the whole page
+  background: transparent;
   overflow-y: hidden; // App shell must stay viewport-locked; internal panes handle content fit
   overflow-x: hidden;
 
@@ -326,7 +333,8 @@ body {
     width: 100%;
     overflow: hidden; // Keep shell viewport-locked; question container handles internal fit/overflow
     transition: margin-right 300ms ease-in-out, margin-left 300ms ease-in-out;
-    background: var(--neo-bg);
+    // Transparent so body dot pattern shows through
+    background: transparent;
 
     @media (max-width: 768px) {
       margin-left: 0 !important;
@@ -366,40 +374,14 @@ body {
     height: 100%;
     overflow-y: hidden;
     overflow-x: hidden;
-    background: var(--neo-bg);
+    // Transparent so body dot pattern shows through
+    background: transparent;
     // Reserve space for the FloatingControlPanel toolbar (Bug #38)
     padding-right: 70px;
 
     @media (max-width: 768px) {
       // No toolbar on mobile (Bug #36) — remove extra padding
       padding-right: 0;
-    }
-
-    // SVG dot pattern background
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23000000' opacity='0.50'/%3E%3C/svg%3E");
-      background-size: 20px 20px;
-      background-repeat: repeat;
-    }
-
-    // Ensure content is above background
-    > * {
-      position: relative;
-      z-index: 1;
-    }
-  }
-
-  // Dark mode for question panel background
-  .dark .question-panel {
-    background: var(--neo-bg);
-
-    &::before {
-      background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23FFFFFF' opacity='0.50'/%3E%3C/svg%3E");
     }
   }
 
