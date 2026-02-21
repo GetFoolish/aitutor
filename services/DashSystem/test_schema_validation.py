@@ -8,9 +8,6 @@ import pytest
 from datetime import datetime
 from pydantic import ValidationError
 from services.DashSystem.models.question_schemas import (
-    PerseusItem,
-    PerseusQuestion,
-    PerseusWidget,
     QuestionDocument,
     ContentPoolDocument,
     validate_perseus_item,

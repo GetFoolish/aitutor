@@ -5,7 +5,6 @@ These produce Perseus-compatible questions targeted at specific Khan Academy
 skills (units) and sub-skills (lessons), with difficulty and age calibration.
 """
 
-import json
 from typing import Any, Dict, Optional
 
 

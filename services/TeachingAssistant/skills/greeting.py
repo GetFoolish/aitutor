@@ -4,15 +4,13 @@ Generates greeting/closing prompts with optional memory awareness.
 Session timing is handled by SessionManager in MongoDB.
 """
 
-import time
-import asyncio
 from typing import Optional
 import logging
 
 from .base import Skill
 from ..core.context import SessionContext
 from ..core.config import TeachingAssistantConfig
-from ..core.file_utils import load_json_file, save_json_file
+from ..core.file_utils import load_json_file
 
 logger = logging.getLogger(__name__)
 

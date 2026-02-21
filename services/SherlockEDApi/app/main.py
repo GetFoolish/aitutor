@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from app import routes as app_routes
 import os
 import sys
-import uvicorn
 
 # Add project root to path for shared imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))

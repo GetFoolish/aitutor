@@ -52,7 +52,7 @@ from find_videos import VideoFinder
 
 # For language detection
 try:
-    from langdetect import detect, LangDetectException
+    from langdetect import detect
 except ImportError:
     logger.warning("langdetect not installed, defaulting language to 'en'")
     def detect(text):

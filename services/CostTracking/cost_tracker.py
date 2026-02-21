@@ -2,7 +2,6 @@
 Cost Tracker - Tracks API call costs for sessions
 """
 
-import os
 import asyncio
 from datetime import datetime
 from managers.mongodb_manager import mongo_db
@@ -282,7 +281,7 @@ class CostTracker:
         total_cost = self._calculate_total_cost(api_calls)
         
         # Calculate individual API costs for detailed breakdown
-        from services.shared.pricing_config import API_PRICING, GEMINI_TOKEN_PRICING, GEMINI_FLASH_LITE_PRICING
+        from services.shared.pricing_config import GEMINI_TOKEN_PRICING, GEMINI_FLASH_LITE_PRICING
         
         # TeachingAssistant cost (token-based)
         ta_data = api_calls.get("teaching_assistant", {})

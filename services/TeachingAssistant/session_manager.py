@@ -4,7 +4,7 @@ Manages session state in MongoDB instead of in-memory.
 Enables multi-user support and survives Cloud Run restarts.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional, Dict, Any, List
 import uuid
 

@@ -1,7 +1,7 @@
 from enum import Enum
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 import uuid
 
 

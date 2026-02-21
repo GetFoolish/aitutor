@@ -1,13 +1,11 @@
 import re
-import json
-from typing import Dict, Tuple, Optional, List
+from typing import Dict, Tuple, List
 from abc import ABC, abstractmethod
 
 class BaseValidator(ABC):
     @abstractmethod
     def validate(self, question: str, answer: str) -> Tuple[bool, str]:
         """Validate question and answer. Returns (is_valid, error_message)"""
-        pass
 
 class MathValidator(BaseValidator):
     def validate(self, question: str, answer: str) -> Tuple[bool, str]:

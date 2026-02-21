@@ -12,7 +12,6 @@ sys.path.insert(0, project_root)
 
 from pymongo import MongoClient
 from dotenv import load_dotenv
-import json
 
 from shared.logging_config import get_logger
 

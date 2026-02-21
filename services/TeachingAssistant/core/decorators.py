@@ -6,7 +6,6 @@ import functools
 import logging
 from typing import Type, Tuple, Optional, Callable, Any
 
-from .exceptions import TAError
 
 logger = logging.getLogger(__name__)
 

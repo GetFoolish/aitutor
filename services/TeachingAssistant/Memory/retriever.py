@@ -11,7 +11,7 @@ project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from shared.logging_config import get_logger
-from .schema import Memory, MemoryType
+from .schema import MemoryType
 from .vector_store import MemoryStore
 from google import genai
 from dotenv import load_dotenv

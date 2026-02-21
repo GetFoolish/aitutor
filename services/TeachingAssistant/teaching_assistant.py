@@ -8,14 +8,13 @@ import asyncio
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Optional, Dict
 
 from .session_manager import SessionManager
 from .core.context_manager import ContextManager
 from .core.event_processor import EventProcessor
 from .core.config import TeachingAssistantConfig
-from .core.decorators import with_retry
-from .core.exceptions import MemoryRetrievalError, MemoryConsolidationError, FileOperationError
+from .core.exceptions import MemoryRetrievalError, FileOperationError
 from .core.file_utils import save_json_file
 from .handlers.queue_manager import EventQueueManager
 from .handlers.injection_manager import InjectionManager

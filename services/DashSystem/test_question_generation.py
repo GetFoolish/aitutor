@@ -5,8 +5,7 @@ Validates critical paths: pool pop, JIT generation, fallback handling.
 """
 
 import pytest
-from unittest.mock import Mock, patch, MagicMock
-from datetime import datetime
+from unittest.mock import patch
 from services.DashSystem.content_v1 import ContentV1Engine
 
 

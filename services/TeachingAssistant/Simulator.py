@@ -8,7 +8,7 @@ import aiohttp
 import websockets
 from pathlib import Path
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from typing import Dict, List
 from dotenv import load_dotenv
 
 project_root = Path(__file__).parent.parent.parent

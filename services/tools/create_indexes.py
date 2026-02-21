@@ -7,7 +7,7 @@ Run this script after deploying/migrating to ensure indexes are in place.
 """
 import sys
 import os
-from pymongo import ASCENDING, DESCENDING, TEXT
+from pymongo import ASCENDING, DESCENDING
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))

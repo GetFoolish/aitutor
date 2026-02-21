@@ -10,7 +10,7 @@ import threading
 import traceback
 from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED
 from typing import Any, List, Dict, Optional
-from fastapi import FastAPI, HTTPException, Request, Depends
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -706,7 +706,6 @@ def load_perseus_items_for_dash_questions_from_mongodb(
     and Khan questions to questions_db.questions collection.
     """
     from managers.mongodb_manager import mongo_db
-    import json
 
     results = []
     need_loading = []
@@ -797,7 +796,6 @@ def _load_khan_perseus_items(khan_questions: List[Question]) -> List[Dict]:
     OPTIMIZED: Uses batch query with $in instead of one query per question.
     """
     from managers.mongodb_manager import mongo_db
-    import json
 
     if not khan_questions:
         return []

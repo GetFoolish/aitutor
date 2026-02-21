@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..',
 
 import random
 import time
-from services.DashSystem.dash_system import DASHSystem, Question
+from services.DashSystem.dash_system import DASHSystem
 
 def print_score_table(dash_system, student_id, current_time):
     """Print formatted score table for practiced skills only"""
