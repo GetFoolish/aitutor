@@ -3,7 +3,7 @@ import sys
 import json
 import time
 import re
-from typing import List, Optional, Dict, Tuple
+from typing import List, Optional, Dict
 from pathlib import Path
 from dataclasses import dataclass
 from pinecone import Pinecone, ServerlessSpec

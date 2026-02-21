@@ -5,7 +5,7 @@ import os
 import sys
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Tuple, Optional
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -902,7 +902,7 @@ class DASHSystem:
             return []
         _visited.add(skill_id)
 
-        prerequisites = []
+        prerequisites: List[str] = []
         skill = self.skills.get(skill_id)
         if not skill:
             return prerequisites
@@ -1361,7 +1361,7 @@ class DASHSystem:
                   f"{practiced_count} practiced, overall_grade={grading_data['overall_grade']}")
         return grading_data
 
-    def get_grading_panel_data(self, user_id: str) -> Dict[str, any]:
+    def get_grading_panel_data(self, user_id: str) -> Dict[str, Any]:
         """
         Get grading panel data. For AI-generated subjects, build from
         self.skills (the DASH skill graph). For Khan (Math), fall back
@@ -2532,8 +2532,8 @@ class DASHSystem:
             }
         
         # 2. Map attempts to current skills
-        skill_performance = {}
-        
+        skill_performance: Dict[str, Dict[str, Any]] = {}
+
         for attempt in attempts:
             question_id = attempt.get("question_id")
             

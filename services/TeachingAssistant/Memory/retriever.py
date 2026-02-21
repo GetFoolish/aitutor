@@ -11,7 +11,7 @@ project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 from shared.logging_config import get_logger
-from .schema import Memory, MemoryType
+from .schema import MemoryType
 from .vector_store import MemoryStore
 from google import genai
 from dotenv import load_dotenv
@@ -90,7 +90,7 @@ class MemoryRetriever:
         # 1. Do we actually need to retrieve anything? (Skip for "ok", "thanks", etc.)
         # 2. If yes, what is the best search query to find relevant info?
         
-        retrieval_analysis = self._analyze_retrieval_context(user_text, adam_text)
+        retrieval_analysis = self._analyze_retrieval_context(user_text, adam_text, session_id)
         should_retrieve = retrieval_analysis.get("need_retrieval", True)
         search_query = retrieval_analysis.get("retrieval_query", user_text)
 
@@ -616,7 +616,7 @@ Apply it naturally without explicitly mentioning these memories to the student."
         if session_id in self._injected_memory_ids:
             del self._injected_memory_ids[session_id]
 
-    def _analyze_retrieval_context(self, user_text: str, model_text: str) -> dict:
+    def _analyze_retrieval_context(self, user_text: str, model_text: str, session_id: str = None) -> dict:
         """
         Analyze conversation context to determine if retrieval is needed and generate an optimized query.
         Uses a lightweight LLM call.

@@ -7,7 +7,6 @@ Three-step generation:
   3. Lessons — 3-6 lessons per unit with exercise descriptions
 """
 
-import json
 
 
 # ---------------------------------------------------------------------------

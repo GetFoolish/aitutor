@@ -102,12 +102,10 @@ def safe_execute(
 
 class RetryableError(Exception):
     """Exception that should trigger a retry"""
-    pass
 
 
 class NonRetryableError(Exception):
     """Exception that should NOT trigger a retry"""
-    pass
 
 
 # Specific retry decorators for common use cases

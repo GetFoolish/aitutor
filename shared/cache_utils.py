@@ -5,7 +5,6 @@ Provides Redis-based caching for API responses with TTL support.
 import redis
 import json
 import hashlib
-from typing import Optional, Any
 from functools import wraps
 import os
 

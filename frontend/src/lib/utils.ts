@@ -30,10 +30,18 @@ const map: Map<string, AudioContext> = new Map();
 export const audioContext: (
   options?: GetAudioContextOptions,
 ) => Promise<AudioContext> = (() => {
-  const didInteract = new Promise((res) => {
-    window.addEventListener("pointerdown", res, { once: true });
-    window.addEventListener("keydown", res, { once: true });
-  });
+  let didInteract: Promise<void> | null = null;
+
+  const getDidInteract = () => {
+    if (!didInteract && typeof window !== 'undefined') {
+      didInteract = new Promise<void>((res) => {
+        const handler = () => res();
+        window.addEventListener("pointerdown", handler, { once: true });
+        window.addEventListener("keydown", handler, { once: true });
+      });
+    }
+    return didInteract || Promise.resolve();
+  };
 
   return async (options?: GetAudioContextOptions) => {
     try {
@@ -53,7 +61,7 @@ export const audioContext: (
       }
       return ctx;
     } catch (e) {
-      await didInteract;
+      await getDidInteract();
       if (options?.id && map.has(options.id)) {
         const ctx = map.get(options.id);
         if (ctx) {

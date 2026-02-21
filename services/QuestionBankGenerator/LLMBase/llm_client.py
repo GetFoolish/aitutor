@@ -1,8 +1,7 @@
 import requests
-import json
 import sys
 import os
-from typing import Dict, List, Any, Optional
+from typing import List, Optional
 
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

@@ -1,9 +1,8 @@
 import json
-import time
 import re
 import sys
 import os
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 from datetime import datetime
 
 # Add parent directory to path for imports

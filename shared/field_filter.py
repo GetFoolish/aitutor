@@ -4,7 +4,7 @@ Phase 3: Backend & API Optimization - Payload Reduction
 
 Allows clients to specify which fields they need, reducing bandwidth and improving performance.
 """
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Optional, Set
 from pydantic import BaseModel
 
 

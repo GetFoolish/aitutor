@@ -6,7 +6,7 @@ Maps Khan Academy hierarchy to DASH concepts:
 """
 
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import List
 from enum import Enum
 
 

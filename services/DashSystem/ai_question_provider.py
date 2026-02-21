@@ -15,7 +15,6 @@ Background threads keep the queue topped up while the student works.
 
 import hashlib
 import json
-import logging
 import random
 import threading
 import uuid

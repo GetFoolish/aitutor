@@ -1,6 +1,4 @@
 from fastapi import APIRouter
-import json
-import pathlib
 from pydantic import BaseModel, Field
 from typing import List
 from .khan_questions_loader import load_questions

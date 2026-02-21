@@ -2,7 +2,7 @@
 Database Query Optimization Utilities
 Provides helpers for pagination, indexing recommendations, and query monitoring.
 """
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from dataclasses import dataclass
 import time
 

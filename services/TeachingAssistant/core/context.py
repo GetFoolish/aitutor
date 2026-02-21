@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional, List, Set, Dict
+from typing import Optional, List, Set
 import time
 import re
 
@@ -104,7 +104,6 @@ class SessionContext:
     def flush_current_turn(self):
         """Flush the current turn buffer to conversation_turns (called at session end)"""
         # No-op: turns are already merged in add_turn, no buffer needed
-        pass
 
     @property
     def time_since_activity(self) -> float:

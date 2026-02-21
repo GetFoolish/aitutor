@@ -9,7 +9,6 @@ import logging
 
 from .context import SessionContext, Event
 from .config import TeachingAssistantConfig
-from managers.mongodb_manager import MongoDBManager
 
 logger = logging.getLogger(__name__)
 

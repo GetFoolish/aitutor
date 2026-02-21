@@ -3,7 +3,6 @@ import sys
 import json
 import time
 import asyncio
-from typing import Dict, Any, List
 from pathlib import Path
 
 # Add project root to path for imports
@@ -15,7 +14,6 @@ from .schema import MemoryType
 from .vector_store import MemoryStore
 from .extractor import MemoryExtractor
 from ..core.decorators import with_retry, with_circuit_breaker, CircuitBreaker
-from ..core.exceptions import LLMGenerationError
 from services.TeachingAssistant.prompts import (
     get_closing_artifacts_generation_prompt,
     get_goodbye_message_generation_prompt,

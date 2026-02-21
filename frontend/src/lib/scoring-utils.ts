@@ -182,11 +182,11 @@ export function scorePerseusQuestion(
             const choiceIndexMap = buildChoiceIndexMap(choices);
 
             if (isMultiSelect) {
-                const correctIndices = choices
+                const correctIndices: number[] = choices
                     .map((c: any, i: number) => c.correct ? i : -1)
                     .filter((i: number) => i >= 0);
-                const selectedIndices = Array.from(
-                    new Set(
+                const selectedIndices: number[] = Array.from(
+                    new Set<number>(
                         selectedIds
                             .map((id: string) => resolveSelectedChoiceIndex(id, choices, choiceIndexMap))
                             .filter((i: number) => i >= 0)
@@ -424,18 +424,25 @@ export function hasUserInput(
         } else if (widgetDef.type === 'dropdown') {
             const choices = widgetDef.options?.choices || [];
             const idx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
-            // Validate: index exists, is non-negative, is within bounds, and not a placeholder
-            if (idx != null && idx >= 0 && idx < choices.length) {
-                const selectedChoice = choices[idx];
-                // Reject placeholder options like "Select one..."
-                const content = typeof selectedChoice?.content === 'string'
-                    ? selectedChoice.content
-                    : '';
-                if (content && content.trim() && !content.toLowerCase().includes('select one')) {
+            // Validate: index exists and is non-negative
+            if (idx != null && idx >= 0) {
+                // If choices are defined, check bounds and reject placeholders
+                if (choices.length > 0) {
+                    if (idx < choices.length) {
+                        const selectedChoice = choices[idx];
+                        // Reject placeholder options like "Select one..."
+                        const content = typeof selectedChoice?.content === 'string'
+                            ? selectedChoice.content
+                            : '';
+                        if (content && content.trim() && !content.toLowerCase().includes('select one')) {
+                            return true;
+                        }
+                    }
+                } else {
+                    // No choices defined - treat any non-negative index as valid input
                     return true;
                 }
             }
-            return false;
         } else if (widgetDef.type === 'orderer') {
             const curr = (widgetInput as any)?.current || (widgetInput as any)?.options || [];
             if (curr.length > 0) return true;

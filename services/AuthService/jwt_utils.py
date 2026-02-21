@@ -2,8 +2,6 @@
 JWT token utilities for authentication
 """
 import jwt
-import os
-import sys
 from datetime import datetime, timedelta
 from typing import Dict, Optional
 from dotenv import load_dotenv

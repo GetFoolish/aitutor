@@ -7,10 +7,7 @@ Validates that Pydantic models catch malformed data.
 import pytest
 from datetime import datetime
 from pydantic import ValidationError
-from models.question_schemas import (
-    PerseusItem,
-    PerseusQuestion,
-    PerseusWidget,
+from services.DashSystem.models.question_schemas import (
     QuestionDocument,
     ContentPoolDocument,
     validate_perseus_item,

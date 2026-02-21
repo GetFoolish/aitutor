@@ -5,7 +5,6 @@ Tracks per-question performance metrics (correctness rate, hint usage,
 skip rate, time-to-solve) and auto-flags low-quality questions.
 """
 
-import logging
 from datetime import datetime
 from typing import Dict, List, Optional
 

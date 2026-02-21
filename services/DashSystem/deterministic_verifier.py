@@ -342,7 +342,6 @@ class MathVerifier(SubjectVerifier):
     def _verify_numeric_input(self, widget: Dict, q_text: str) -> bool:
         """Verify numeric-input answer by extracting arithmetic from question text."""
         try:
-            import sympy
             answers = widget.get("options", {}).get("answers", [])
             correct = next((a for a in answers if a.get("status") == "correct"), None)
             if not correct:

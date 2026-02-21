@@ -380,7 +380,7 @@ TEACHING_STYLE: [style]"""
                 if 'MATCH_SCORE:' in line:
                     try:
                         match_score = int(''.join(filter(str.isdigit, line)))
-                    except:
+                    except (ValueError, TypeError):
                         pass
                 elif 'RELEVANCE:' in line:
                     relevance = line.split(':')[-1].strip()

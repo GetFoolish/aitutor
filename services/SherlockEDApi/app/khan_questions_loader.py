@@ -1,5 +1,4 @@
 # Load questions from MongoDB instead of local files
-import json
 import os
 import random
 import sys
