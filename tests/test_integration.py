@@ -5,8 +5,7 @@ Runs against the live server on localhost:8000.
 Tests the full request lifecycle: HTTP → FastAPI → DASH → MongoDB → response.
 
 Usage:
-    cd /path/to/aitutor
-    venv/bin/python tests/integration_test.py
+    pytest tests/test_integration.py -m integration
 """
 
 import os
@@ -17,6 +16,11 @@ import uuid
 import traceback
 from datetime import datetime, timedelta
 from typing import Optional
+
+import pytest
+
+# Mark entire module as integration tests
+pytestmark = pytest.mark.integration
 
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))

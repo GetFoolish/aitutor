@@ -333,7 +333,7 @@ def feed_message_to_event(message: dict, session_id: str, user_id: str) -> Optio
         try:
             from datetime import datetime
             timestamp = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00')).timestamp()
-        except:
+        except (ValueError, AttributeError):
             timestamp = time.time()
     else:
         timestamp = time.time()
@@ -1425,7 +1425,7 @@ async def websocket_observe(websocket: WebSocket):
                 # Send keepalive ping
                 try:
                     await websocket.send_json({"type": "keepalive"})
-                except:
+                except Exception:
                     break
 
     except WebSocketDisconnect:

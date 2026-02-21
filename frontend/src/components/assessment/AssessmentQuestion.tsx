@@ -600,7 +600,7 @@ const AssessmentQuestion: React.FC<Props> = ({
       if (radioWidgetKey && widgets[radioWidgetKey]?.options?.choices) {
         const choices = widgets[radioWidgetKey].options.choices;
         // choicesSelected is boolean array: [false, true, false, false]
-        const userSelection = (userInput[radioWidgetKey] as any)?.choicesSelected || [];
+        const userSelection = ((userInput as Record<string, any>)[radioWidgetKey])?.choicesSelected || [];
 
         choiceElements.forEach((el, idx) => {
           if (idx < choices.length) {

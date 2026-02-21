@@ -1,13 +1,14 @@
-import json
 import os
 import time
 import logging
 import sys
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, TYPE_CHECKING
 from dataclasses import dataclass, asdict, field
-from datetime import datetime
 
 from shared.logging_config import get_logger
+
+if TYPE_CHECKING:
+    from services.DashSystem.dash_system import Skill
 
 logger = get_logger(__name__)
 
