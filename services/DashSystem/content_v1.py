@@ -1474,7 +1474,7 @@ class ContentV1Engine:
                 executor.shutdown(wait=False, cancel_futures=True)
 
             candidates = getattr(response, "candidates", None)
-            if not candidates or not candidates[0]:
+            if not isinstance(candidates, list) or len(candidates) == 0 or not candidates[0]:
                 logger.warning("[IMAGE] Gemini returned empty candidates")
                 return None
             content = getattr(candidates[0], "content", None)
@@ -1492,8 +1492,12 @@ class ContentV1Engine:
                     filename = f"{img_hash}.png"
                     filepath = os.path.join(STATIC_IMAGES_DIR, filename)
                     if not os.path.exists(filepath):
-                        with open(filepath, "wb") as f:
-                            f.write(part.inline_data.data)
+                        try:
+                            with open(filepath, "wb") as f:
+                                f.write(part.inline_data.data)
+                        except (IOError, OSError) as write_err:
+                            logger.warning(f"[IMAGE] Failed to write image file: {write_err}")
+                            return None
                     logger.info(f"[IMAGE] Generated image: {filename} for skill={skill_name}")
                     return f"{IMAGE_BASE_URL}/static/images/{filename}"
         except FutureTimeoutError:

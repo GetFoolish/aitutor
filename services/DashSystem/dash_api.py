@@ -2005,6 +2005,10 @@ def start_assessment(
     ensure_dash_system()
     from managers.mongodb_manager import mongo_db
 
+    # Validate subject is non-empty
+    if not subject or not subject.strip():
+        raise HTTPException(status_code=400, detail="Subject name is required")
+
     # Normalize subject casing to match curriculum storage (e.g. "python" → "Python")
     subject = subject.strip().title()
 

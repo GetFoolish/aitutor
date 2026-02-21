@@ -23,7 +23,7 @@ export function deepNormalize(s: string): string {
     // Convert \frac{a}{b} to (a)/(b) for comparison
     n = n.replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, '($1)/($2)');
     // Normalize multiplication: \cdot, \times → *
-    n = n.replace(/[\\](?:cdot|times)/g, '*');
+    n = n.replace(/\\(?:cdot|times)/g, '*');
     // Remove braces that are just grouping: {x} → x (loop for nested braces)
     while (/\{([^{}]+)\}/.test(n)) {
         n = n.replace(/\{([^{}]+)\}/g, '$1');
@@ -45,9 +45,10 @@ export function deepNormalize(s: string): string {
         }
     }
     // Sort additive terms for commutativity: "7+x" and "x+7" both become the same
-    // Only sort when ALL terms are additive (no subtraction) to avoid "5-3" ≠ "3-5" bug
+    // Only sort when ALL terms are purely additive (no subtraction or negative numbers)
+    // to avoid "5-3" ≠ "3-5" bug
     const terms = n.split(/(?=[+-])/);
-    const hasSubtraction = terms.some(t => t.startsWith('-'));
+    const hasSubtraction = terms.some(t => t.startsWith('-') || t.includes('-'));
     const hasMultiplication = terms.some(t => /[*^]/.test(t));
     if (terms.length > 1 && !hasSubtraction && !hasMultiplication && !n.includes('(') && !n.includes('/')) {
         // Normalize first term to have '+' prefix so sorting is consistent
@@ -237,24 +238,27 @@ export function scorePerseusQuestion(
             if (!selectedAnswerText) {
                 selectedAnswerText = rawValue;
             }
-            if (!isNaN(userValue) && answers.length > 0) {
-                const correctAnswer = answers.find((a: any) => a.status === 'correct');
-                if (correctAnswer) {
-                    let maxError = correctAnswer.maxError;
-                    if (maxError == null || maxError <= 0) {
-                        const cv = correctAnswer.value;
-                        if (cv === 0) {
-                            maxError = 0.001;
-                        } else {
-                            // Use 1% of absolute value, with a floor of 0.01
-                            maxError = Math.max(0.01, Math.abs(cv) * 0.01);
+            // Only count as scoreable if user entered a value
+            if (rawValue && rawValue.toString().trim()) {
+                if (!isNaN(userValue) && answers.length > 0) {
+                    const correctAnswer = answers.find((a: any) => a.status === 'correct');
+                    if (correctAnswer) {
+                        let maxError = correctAnswer.maxError;
+                        if (maxError == null || maxError <= 0) {
+                            const cv = correctAnswer.value;
+                            if (cv === 0) {
+                                maxError = 0.001;
+                            } else {
+                                // Use 1% of absolute value, with a floor of 0.01
+                                maxError = Math.max(0.01, Math.abs(cv) * 0.01);
+                            }
                         }
+                        widgetCorrect = Math.abs(userValue - correctAnswer.value) <= maxError;
                     }
-                    widgetCorrect = Math.abs(userValue - correctAnswer.value) <= maxError;
                 }
+                scoreableCount++;
+                if (widgetCorrect) correctCount++;
             }
-            scoreableCount++;
-            if (widgetCorrect) correctCount++;
 
         } else if (widgetDef.type === 'dropdown') {
             const choices = widgetDef.options?.choices || [];
@@ -281,14 +285,17 @@ export function scorePerseusQuestion(
             const userExpr = typeof widgetInput === 'string'
                 ? widgetInput
                 : ((widgetInput as any)?.currentValue || '');
-            if (userExpr && userExpr.trim() && answerForms.length > 0) {
-                const userNorm = deepNormalize(userExpr);
-                widgetCorrect = answerForms.some((f: any) =>
-                    f.considered === 'correct' && deepNormalize(f.value || '') === userNorm
-                );
+            // Only count as scoreable if user entered an expression
+            if (userExpr && userExpr.trim()) {
+                if (answerForms.length > 0) {
+                    const userNorm = deepNormalize(userExpr);
+                    widgetCorrect = answerForms.some((f: any) =>
+                        f.considered === 'correct' && deepNormalize(f.value || '') === userNorm
+                    );
+                }
+                scoreableCount++;
+                if (widgetCorrect) correctCount++;
             }
-            scoreableCount++;
-            if (widgetCorrect) correctCount++;
 
         } else if (widgetDef.type === 'matcher') {
             const correctRight = widgetDef.options?.right || [];
@@ -435,7 +442,7 @@ export function hasUserInput(
                     return true;
                 }
             }
-            return false;
+            // Don't return false here — continue checking other widgets in multi-widget questions
         } else if (widgetDef.type === 'orderer') {
             const curr = (widgetInput as any)?.current || (widgetInput as any)?.options || [];
             if (curr.length > 0) return true;
