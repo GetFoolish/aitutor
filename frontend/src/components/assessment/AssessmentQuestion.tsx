@@ -202,6 +202,43 @@ const AssessmentQuestion: React.FC<Props> = ({
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
+  // Fix: Clear any pre-selected radio buttons after Perseus renders.
+  // Perseus may initialize with a choice pre-selected from AI-generated data.
+  useEffect(() => {
+    if (isAnswered) return; // Don't clear after submission
+    const container = document.getElementById('question-content-container');
+    if (!container) return;
+
+    const clearPreSelection = () => {
+      // Clear aria-pressed on any pre-selected radio buttons
+      const pressedBtns = container.querySelectorAll('button[aria-pressed="true"]');
+      pressedBtns.forEach(btn => {
+        btn.setAttribute('aria-pressed', 'false');
+      });
+      // Remove any pre-applied selected classes
+      const selectedChoices = container.querySelectorAll('.choice.perseus-radio-selected, .perseus-radio-selected');
+      selectedChoices.forEach(el => {
+        el.classList.remove('perseus-radio-selected');
+      });
+      // Clear checked radio inputs
+      const checkedInputs = container.querySelectorAll<HTMLInputElement>('input[type="radio"]:checked');
+      checkedInputs.forEach(input => {
+        input.checked = false;
+      });
+    };
+
+    // Run after Perseus finishes rendering (needs multiple passes for async widget init)
+    const t1 = setTimeout(clearPreSelection, 100);
+    const t2 = setTimeout(clearPreSelection, 300);
+    const t3 = setTimeout(clearPreSelection, 600);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, [question, questionNumber, isAnswered]);
+
   // Enforce compact inline widget geometry for sentence-embedded dropdown/text widgets.
   // This runs after each question render to override widget-internal style drift.
   useEffect(() => {
@@ -591,22 +628,37 @@ const AssessmentQuestion: React.FC<Props> = ({
 
     // Mark choices with correct/incorrect feedback for visual highlighting
     setTimeout(() => {
-      // Target Perseus radio options directly (not generic .choice class)
-      const choiceElements = document.querySelectorAll('li.perseus-radio-option');
+      const container = document.getElementById('question-content-container');
+      if (!container) return;
+
+      // Perseus renders choices as div.choice inside a fieldset
+      // Try multiple selectors to handle different Perseus DOM structures
+      let choiceElements = container.querySelectorAll('.perseus-widget-radio-fieldset .choice');
+      if (choiceElements.length === 0) {
+        choiceElements = container.querySelectorAll('li.perseus-radio-option');
+      }
+      if (choiceElements.length === 0) {
+        choiceElements = container.querySelectorAll('[class*="choice"]');
+      }
+
       const widgets = questionData.widgets || {};
 
       // Find radio widget
       const radioWidgetKey = Object.keys(widgets).find(key => widgets[key]?.type === 'radio');
       if (radioWidgetKey && widgets[radioWidgetKey]?.options?.choices) {
         const choices = widgets[radioWidgetKey].options.choices;
-        // choicesSelected is boolean array: [false, true, false, false]
-        const userSelection = ((userInput as Record<string, any>)[radioWidgetKey])?.choicesSelected || [];
+        // Get user selection — could be choicesSelected (boolean array) or selectedChoiceIds
+        const rawInput = (userInput as Record<string, any>)[radioWidgetKey] || {};
+        const userSelection = rawInput.choicesSelected || [];
+        const selectedIds = rawInput.selectedChoiceIds || [];
 
         choiceElements.forEach((el, idx) => {
           if (idx < choices.length) {
             const choice = choices[idx];
-            // Fix: Check boolean array by index, not includes()
-            const isUserSelected = userSelection[idx] === true;
+            // Check boolean array first, fall back to selectedChoiceIds
+            const isUserSelected = userSelection[idx] === true ||
+              selectedIds.includes(String(idx)) ||
+              selectedIds.includes(`choice-${idx}`);
 
             if (choice?.correct) {
               // Mark correct answers with green
@@ -618,7 +670,7 @@ const AssessmentQuestion: React.FC<Props> = ({
           }
         });
       }
-    }, 150); // Delay to ensure Perseus DOM is fully rendered before applying feedback
+    }, 200); // Delay to ensure Perseus DOM is fully rendered before applying feedback
 
     // Fire-and-forget analytics reporting
     const questionId = question?.dash_metadata?.dash_question_id || `assessment_q_${questionNumber}`;

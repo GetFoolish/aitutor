@@ -262,7 +262,10 @@ export function scorePerseusQuestion(
 
         } else if (widgetDef.type === 'dropdown') {
             const choices = widgetDef.options?.choices || [];
-            const selectedIdx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
+            const rawIdx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
+            // Perseus dropdown uses 1-based indexing (0 = placeholder "Select one").
+            // Our choices array is 0-based (no placeholder). Subtract 1 to align.
+            const selectedIdx = rawIdx != null && rawIdx > 0 ? rawIdx - 1 : rawIdx;
             if (selectedIdx != null && selectedIdx >= 0 && selectedIdx < choices.length) {
                 const selectedChoice = choices[selectedIdx];
                 const content = typeof selectedChoice?.content === 'string'
@@ -430,7 +433,10 @@ export function hasUserInput(
             if (val && val.trim()) return true;
         } else if (widgetDef.type === 'dropdown') {
             const choices = widgetDef.options?.choices || [];
-            const idx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
+            const rawIdx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
+            // Perseus dropdown uses 1-based indexing (0 = placeholder "Select one").
+            // Our choices array is 0-based. Subtract 1 to align.
+            const idx = rawIdx != null && rawIdx > 0 ? rawIdx - 1 : -1;
             // Validate: index exists, is non-negative, is within bounds, and not a placeholder
             if (idx != null && idx >= 0 && idx < choices.length) {
                 const selectedChoice = choices[idx];
