@@ -494,3 +494,28 @@ html.dark li.perseus-radio-option[data-feedback="incorrect"] {
     border-color: #fff !important;
     box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3) !important;
 }
+
+/* ======================================================================
+   FIX: Flush left-alignment of question card.
+   The assessment-content-wrapper has inline padding-left: 12px and the
+   content block uses transformOrigin: 'top center' which shifts scaled
+   content rightward. CSS !important overrides inline styles.
+   ====================================================================== */
+.assessment-content-wrapper {
+    padding-left: 0 !important;
+}
+
+/* The content block div wrapping #question-content-container uses
+   transform: scale() with transformOrigin: center top, causing a
+   left gap when content is scaled down. Force top-left origin.
+   Target both the container AND its parent (which has the actual transform). */
+#question-content-container,
+#question-content-container > *,
+.assessment-content-wrapper div[style*="scale"] {
+    transform-origin: top left !important;
+}
+
+/* Also use :has() to target the direct parent of the container */
+div:has(> #question-content-container) {
+    transform-origin: top left !important;
+}

@@ -588,7 +588,7 @@ const AssessmentQuestion: React.FC<Props> = ({
     overflowY: 'visible',
     overflowX: 'hidden',
     paddingRight: compactViewport ? '2px' : '4px',
-    transformOrigin: 'top center',
+    transformOrigin: 'top left',
     transform: resolvedContentZoom < 1 ? `scale(${resolvedContentZoom})` : 'none',
     width: resolvedContentZoom < 1 ? `${100 / resolvedContentZoom}%` : '100%',
   };

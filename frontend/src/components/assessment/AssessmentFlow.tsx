@@ -51,6 +51,21 @@ const AssessmentFlow: React.FC = () => {
   const [privacyMode, setPrivacyMode] = useState(false);
   const [showExitDialog, setShowExitDialog] = useState(false);
 
+  // Inject alignment-fix CSS at runtime (CSS files may be cached by browser)
+  useEffect(() => {
+    const id = 'alignment-fix-runtime';
+    if (!document.getElementById(id)) {
+      const s = document.createElement('style');
+      s.id = id;
+      s.textContent = [
+        '.assessment-content-wrapper { padding-left: 0 !important; }',
+        'div:has(> #question-content-container) { transform-origin: top left !important; }',
+      ].join('\n');
+      document.head.appendChild(s);
+    }
+    return () => { document.getElementById(id)?.remove(); };
+  }, []);
+
   // Ref to track latest assessmentId for prefetch (avoids stale closures)
   const assessmentIdRef = useRef<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -811,7 +826,7 @@ const AssessmentFlow: React.FC = () => {
               </div>
 
               <div className="assessment-content-wrapper" style={{
-                padding: '0 280px 10px 12px',
+                padding: '0 280px 10px 0',
                 maxWidth: 'calc(100% - 280px)',
                 marginLeft: 0,
                 marginRight: 0,

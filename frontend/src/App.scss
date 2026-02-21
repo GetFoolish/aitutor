@@ -362,8 +362,8 @@ body {
     background: transparent;
     // Reserve space for the FloatingControlPanel toolbar (Bug #38)
     padding-right: 70px;
-    // Left-align content with consistent padding
-    padding-left: 24px;
+    // Flush left — no padding (wrapper handles spacing)
+    padding-left: 0;
 
     @media (max-width: 768px) {
       // No toolbar on mobile (Bug #36) — remove extra padding
@@ -419,4 +419,17 @@ body {
   justify-content: unset !important;
   gap: 0 !important;
   min-width: 0 !important;
+}
+
+// Fix: Flush left-alignment of question card in assessment mode.
+// assessment-content-wrapper has inline padding-left: 12px; override it.
+.assessment-content-wrapper {
+  padding-left: 0 !important;
+}
+
+// The content block div wrapping #question-content-container uses
+// transform: scale() with transformOrigin: center top, causing a
+// left gap when content is scaled down. Force top-left origin via :has().
+div:has(> #question-content-container) {
+  transform-origin: top left !important;
 }

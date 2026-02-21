@@ -35,6 +35,11 @@
     
     <link rel="apple-touch-icon" href="/favicon-192x192.png?v=3" />
     <title>Teachr.Live - with you, always</title>
+    <!-- Flush left-alignment fix for question card (CSS !important overrides inline styles) -->
+    <style>
+      .assessment-content-wrapper { padding-left: 0 !important; }
+      div:has(> #question-content-container) { transform-origin: top left !important; }
+    </style>
   </head>
 
   <body>

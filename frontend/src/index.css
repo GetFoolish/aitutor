@@ -811,3 +811,17 @@ a[target="lint-help-window"] {
 :root {
     --perseus-multiple-choice-spacing: 10px !important;
 }
+
+/* ======================================================================
+   FIX: Flush left-alignment of question card.
+   assessment-content-wrapper has inline padding-left via React style prop.
+   The content block parent uses transform: scale() with transformOrigin:
+   center top, causing left offset. CSS !important overrides inline styles.
+   ====================================================================== */
+.assessment-content-wrapper {
+    padding-left: 0 !important;
+}
+
+div:has(> #question-content-container) {
+    transform-origin: top left !important;
+}
