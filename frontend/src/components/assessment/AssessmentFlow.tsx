@@ -545,7 +545,7 @@ const AssessmentFlow: React.FC = () => {
           <div style={{
             width: '200px',
             height: '8px',
-            border: '3px solid #000',
+            border: '4px solid #000',
             backgroundColor: '#fff',
             overflow: 'hidden'
           }}>
@@ -588,12 +588,14 @@ const AssessmentFlow: React.FC = () => {
             }}
             style={{
               padding: '10px 24px',
-              border: '2px solid #000',
+              border: '4px solid #000',
               background: '#fff',
               cursor: 'pointer',
               fontWeight: 700,
-              fontSize: '12px',
+              fontSize: '14px',
               textTransform: 'uppercase',
+              boxShadow: '4px 4px 0 #000',
+              minHeight: '48px',
             }}
           >
             Cancel
@@ -608,13 +610,14 @@ const AssessmentFlow: React.FC = () => {
               }}
               style={{
                 padding: '10px 28px',
-                border: '3px solid #000',
+                border: '4px solid #000',
                 background: '#FFD93D',
-                boxShadow: '3px 3px 0 #000',
+                boxShadow: '4px 4px 0 #000',
                 cursor: 'pointer',
                 fontWeight: 700,
-                fontSize: '13px',
-                textTransform: 'uppercase'
+                fontSize: '14px',
+                textTransform: 'uppercase',
+                minHeight: '48px'
               }}
             >
               Try Again
@@ -642,12 +645,13 @@ const AssessmentFlow: React.FC = () => {
         }}>
           <div style={{
             padding: '12px 24px',
-            border: '3px solid #000',
+            border: '4px solid #000',
             background: '#FF6B6B',
             color: '#fff',
             fontWeight: 700,
             fontSize: '14px',
-            textTransform: 'uppercase'
+            textTransform: 'uppercase',
+            boxShadow: '4px 4px 0 #000'
           }}>
             {startError}
           </div>
@@ -655,13 +659,14 @@ const AssessmentFlow: React.FC = () => {
             onClick={() => { setStartError(null); setLoading(true); startAssessment(); }}
             style={{
               padding: '12px 32px',
-              border: '3px solid #000',
+              border: '4px solid #000',
               background: '#FFD93D',
-              boxShadow: '3px 3px 0 #000',
+              boxShadow: '4px 4px 0 #000',
               cursor: 'pointer',
               fontWeight: 700,
               fontSize: '14px',
-              textTransform: 'uppercase'
+              textTransform: 'uppercase',
+              minHeight: '48px'
             }}
           >
             Try Again
@@ -675,13 +680,15 @@ const AssessmentFlow: React.FC = () => {
             }}
             style={{
               padding: '10px 24px',
-              border: '2px solid #000',
+              border: '4px solid #000',
               background: '#fff',
               cursor: 'pointer',
               fontWeight: 700,
-              fontSize: '12px',
+              fontSize: '14px',
               textTransform: 'uppercase',
               marginTop: '8px',
+              boxShadow: '4px 4px 0 #000',
+              minHeight: '48px',
             }}
           >
             Back to Dev Login
@@ -814,7 +821,7 @@ const AssessmentFlow: React.FC = () => {
                 flexDirection: 'column',
                 overflowY: 'auto',
                 overflowX: 'hidden',
-                minHeight: 0,
+                minHeight: 'min-content',
               }}>
                 {nextQuestionError && (
                   <div style={{
@@ -823,7 +830,7 @@ const AssessmentFlow: React.FC = () => {
                     color: '#fff',
                     padding: '14px 16px',
                     marginBottom: '20px',
-                    boxShadow: '3px 3px 0 #000',
+                    boxShadow: '4px 4px 0 #000',
                     textAlign: 'center'
                   }}>
                     <div style={{
@@ -840,14 +847,16 @@ const AssessmentFlow: React.FC = () => {
                       disabled={submitting}
                       style={{
                         padding: '10px 24px',
-                        border: '3px solid #000',
+                        border: '4px solid #000',
                         background: '#FFD93D',
                         color: '#000',
                         cursor: submitting ? 'not-allowed' : 'pointer',
                         fontWeight: 800,
-                        fontSize: '13px',
+                        fontSize: '14px',
                         textTransform: 'uppercase',
                         opacity: submitting ? 0.7 : 1,
+                        boxShadow: '4px 4px 0 #000',
+                        minHeight: '48px',
                       }}
                     >
                       {submitting ? 'Retrying...' : 'Retry Next Question'}
@@ -855,7 +864,7 @@ const AssessmentFlow: React.FC = () => {
                   </div>
                 )}
                 {currentQuestion && (
-                  <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+                  <div style={{ flex: '1 1 auto', minHeight: 'min-content', display: 'flex', flexDirection: 'column', position: 'relative' }}>
                     <AssessmentQuestion
                       question={currentQuestion}
                       questionNumber={questionNumber}
@@ -882,7 +891,7 @@ const AssessmentFlow: React.FC = () => {
                             padding: '12px 18px',
                             border: '4px solid #000000',
                             backgroundColor: '#FFD93D',
-                            boxShadow: '3px 3px 0 #000000'
+                            boxShadow: '4px 4px 0 #000000'
                           }}
                         >
                           <span

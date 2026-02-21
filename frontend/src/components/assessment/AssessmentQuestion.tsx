@@ -618,7 +618,7 @@ const AssessmentQuestion: React.FC<Props> = ({
           }
         });
       }
-    }, 50); // Small delay to ensure DOM is ready
+    }, 150); // Delay to ensure Perseus DOM is fully rendered before applying feedback
 
     // Fire-and-forget analytics reporting
     const questionId = question?.dash_metadata?.dash_question_id || `assessment_q_${questionNumber}`;
