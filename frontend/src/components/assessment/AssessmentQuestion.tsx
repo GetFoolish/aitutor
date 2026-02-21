@@ -15,19 +15,35 @@ import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import '../question-display/mcq-fix.css';
 
-/** Render text with inline LaTeX ($...$) as rendered math via KaTeX */
+/** Render text with inline LaTeX ($...$) as rendered math via KaTeX.
+ *  Skips currency-style dollar signs like $10, $25.50 etc.
+ *  Only matches paired $...$ where content looks like LaTeX (contains
+ *  backslashes, braces, operators, or multi-char math expressions). */
 function renderTextWithLatex(text: string): React.ReactNode {
   if (!text) return '';
-  // Split on $...$ patterns (inline math)
+  // Match $...$ but NOT currency like $10 or $25.50
+  // Currency pattern: $ followed by digits (optionally with . and more digits), then word boundary or space/punctuation
+  // LaTeX pattern: $ followed by content that contains LaTeX-like chars (\, {, }, ^, _, frac, sqrt, etc.)
   const parts = text.split(/(\$[^$]+\$)/g);
   return parts.map((part, i) => {
     if (part.startsWith('$') && part.endsWith('$') && part.length > 2) {
-      const tex = part.slice(1, -1);
+      const inner = part.slice(1, -1);
+      // Skip if it looks like currency: just a number, optionally with decimals/commas
+      if (/^\s*[\d,]+(\.\d+)?\s*$/.test(inner)) {
+        // Restore the dollar signs — this is currency, not LaTeX
+        return <span key={i}>{part}</span>;
+      }
+      // Skip if it's a plain word or short text without any LaTeX markers
+      const hasLatexMarkers = /[\\{}^_]|\\frac|\\sqrt|\\text|\\left|\\right|\\cdot|\\times|\\div|\\pm|\\sum|\\int|\\lim/.test(inner);
+      if (!hasLatexMarkers && /^[a-zA-Z0-9\s.,!?'"-]+$/.test(inner)) {
+        // Plain text between dollar signs — not LaTeX, preserve as-is
+        return <span key={i}>{part}</span>;
+      }
       try {
-        const html = katex.renderToString(tex, { throwOnError: false, displayMode: false });
+        const html = katex.renderToString(inner, { throwOnError: false, displayMode: false });
         return <span key={i} dangerouslySetInnerHTML={{ __html: html }} />;
       } catch {
-        return <code key={i}>{tex}</code>;
+        return <span key={i}>{part}</span>;
       }
     }
     return <span key={i}>{part}</span>;
@@ -202,40 +218,45 @@ const AssessmentQuestion: React.FC<Props> = ({
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // Fix: Clear any pre-selected radio buttons after Perseus renders.
-  // Perseus may initialize with a choice pre-selected from AI-generated data.
+  // Fix: Block Perseus pre-selection blue ring via CSS class + first-click removal.
+  // Perseus sets inline border-color on ring spans from React state — DOM clearing
+  // loses the race because React re-renders. CSS !important on .no-pre-selection beats
+  // inline styles reliably. We add the class on mount and remove it on first user click
+  // so the real selection ring works normally after interaction.
   useEffect(() => {
-    if (isAnswered) return; // Don't clear after submission
+    if (isAnswered) return;
     const container = document.getElementById('question-content-container');
     if (!container) return;
 
+    // Add blocking class immediately
+    container.classList.add('no-pre-selection');
+
+    // Also clear aria-pressed and checked state for accessibility consistency
     const clearPreSelection = () => {
-      // Clear aria-pressed on any pre-selected radio buttons
       const pressedBtns = container.querySelectorAll('button[aria-pressed="true"]');
-      pressedBtns.forEach(btn => {
-        btn.setAttribute('aria-pressed', 'false');
-      });
-      // Remove any pre-applied selected classes
+      pressedBtns.forEach(btn => btn.setAttribute('aria-pressed', 'false'));
       const selectedChoices = container.querySelectorAll('.choice.perseus-radio-selected, .perseus-radio-selected');
-      selectedChoices.forEach(el => {
-        el.classList.remove('perseus-radio-selected');
-      });
-      // Clear checked radio inputs
+      selectedChoices.forEach(el => el.classList.remove('perseus-radio-selected'));
       const checkedInputs = container.querySelectorAll<HTMLInputElement>('input[type="radio"]:checked');
-      checkedInputs.forEach(input => {
-        input.checked = false;
-      });
+      checkedInputs.forEach(input => { input.checked = false; });
     };
 
-    // Run after Perseus finishes rendering (needs multiple passes for async widget init)
     const t1 = setTimeout(clearPreSelection, 100);
     const t2 = setTimeout(clearPreSelection, 300);
     const t3 = setTimeout(clearPreSelection, 600);
+
+    // Remove blocking class on first user click so real selections show the ring
+    const handleFirstClick = () => {
+      container.classList.remove('no-pre-selection');
+      container.removeEventListener('click', handleFirstClick);
+    };
+    container.addEventListener('click', handleFirstClick);
 
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
+      container.removeEventListener('click', handleFirstClick);
     };
   }, [question, questionNumber, isAnswered]);
 

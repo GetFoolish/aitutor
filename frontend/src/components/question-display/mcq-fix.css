@@ -1,5 +1,24 @@
 /* MCQ Highlighting Fix - Override to ensure only selected option is highlighted */
 
+/* ======================================================================
+   CRITICAL FIX: Kill Perseus pre-selection blue ring.
+   Perseus sets inline border-color on [class*="ring_"] spans from internal
+   React state. We CANNOT beat it with DOM manipulation because React
+   re-renders overwrite our changes. The ONLY reliable fix is CSS !important
+   which beats inline styles when combined with !important.
+   The container gets class "no-pre-selection" on mount; first user click
+   removes it so the real selection ring can appear.
+   ====================================================================== */
+#question-content-container.no-pre-selection [class*="ring_"],
+#question-content-container.no-pre-selection [class*="ring_"] {
+    border-color: transparent !important;
+}
+
+/* Once user interacts (no-pre-selection removed), let Perseus own the ring */
+#question-content-container:not(.no-pre-selection) [class*="ring_"] {
+    /* normal — Perseus inline styles apply */
+}
+
 /* Prevent all choices from highlighting when one is clicked */
 .framework-perseus .choice,
 #question-content-container .choice {
