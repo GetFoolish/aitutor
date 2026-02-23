@@ -834,16 +834,16 @@ const AssessmentFlow: React.FC = () => {
               </div>
 
               <div className="assessment-content-wrapper" style={{
-                padding: '0 280px 10px 0',
-                maxWidth: 'calc(100% - 280px)',
+                paddingRight: 'min(280px, 30vw)',
+                paddingBottom: '10px',
+                maxWidth: '100%',
                 marginLeft: 0,
                 marginRight: 0,
                 width: '100%',
                 flex: '1 1 auto',
                 display: 'flex',
                 flexDirection: 'column',
-                overflowY: 'auto',
-                overflowX: 'hidden',
+                overflow: 'visible',
                 minHeight: 'min-content',
               }}>
                 {nextQuestionError && (

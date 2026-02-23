@@ -796,15 +796,17 @@ a[target="lint-help-window"] {
   }
 }
 
-/* NUCLEAR FIX: Override Perseus choice height at global level */
+/* Override Perseus choice height at global level.
+   Use min-height for consistency but allow expansion for long answer text. */
 .framework-perseus .choice,
 .framework-perseus li.choice,
 .perseus-widget-radio .choice,
 #question-content-container .choice {
     min-height: 48px !important;
-    max-height: 60px !important;
+    max-height: none !important;
     padding: 10px 16px !important;
     line-height: 1.4 !important;
+    overflow: visible !important;
 }
 
 /* Override the spacing variable globally */

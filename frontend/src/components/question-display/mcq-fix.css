@@ -384,21 +384,23 @@ html.dark [data-testid="assessment-explanation"] * {
     opacity: 1 !important;
 }
 
-/* Fix: Tiny numeric-input box (Bug #55) — make inputs large enough to be usable */
+/* Fix: Tiny numeric-input box (Bug #55) — make inputs large enough to be usable.
+   Use clamp() so inline cloze inputs don't break sentence flow. */
 #question-content-container .framework-perseus input[type="text"] {
-    min-width: 140px !important;
+    min-width: clamp(80px, 15vw, 140px) !important;
     min-height: 38px !important;
     padding: 6px 10px !important;
     font-size: 16px !important;
     box-sizing: border-box;
 }
 
-/* Keep visual-heavy prompts from forcing page scroll in assessment viewport */
+/* Keep visual-heavy prompts from forcing page scroll in assessment viewport.
+   Use a taller cap so graphs/charts remain readable. */
 #question-content-container img,
 #question-content-container svg,
 #question-content-container canvas {
     max-width: 100% !important;
-    max-height: min(28vh, 220px) !important;
+    max-height: min(40vh, 340px) !important;
     width: auto !important;
     height: auto !important;
     object-fit: contain;
@@ -518,4 +520,53 @@ html.dark li.perseus-radio-option[data-feedback="incorrect"] {
 /* Also use :has() to target the direct parent of the container */
 div:has(> #question-content-container) {
     transform-origin: top left !important;
+}
+
+/* ======================================================================
+   FIX: KaTeX / LaTeX long expression overflow.
+   MathJax/KaTeX renders into wide <span> trees that blow out the
+   container width. Wrap them with horizontal scroll so the rest of
+   the question card stays intact.
+   ====================================================================== */
+#question-content-container .katex-display,
+#question-content-container .MathJax_Display,
+#question-content-container .katex-html,
+#question-content-container mjx-container {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    display: block !important;
+}
+
+/* Inline KaTeX should shrink-wrap but never push the line wider than the card */
+#question-content-container .katex:not(.katex-display .katex) {
+    max-width: 100%;
+    overflow-x: auto;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* ======================================================================
+   FIX: Skill name / long text overflow in PersonalizationCards and
+   breadcrumb-style elements. Truncate with ellipsis instead of
+   pushing layout wider.
+   ====================================================================== */
+.skill-name-text,
+.personalization-card .skill-label,
+[data-testid="skill-name"] {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 100% !important;
+}
+
+/* ======================================================================
+   FIX: Button disabled state — make visually distinct beyond opacity.
+   ====================================================================== */
+#question-content-container button:disabled,
+.assessment-container button:disabled,
+.assessment-content-wrapper button:disabled {
+    opacity: 0.45 !important;
+    cursor: not-allowed !important;
+    filter: grayscale(40%) !important;
 }

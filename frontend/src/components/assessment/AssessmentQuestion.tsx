@@ -589,8 +589,15 @@ const AssessmentQuestion: React.FC<Props> = ({
     overflowX: 'hidden',
     paddingRight: compactViewport ? '2px' : '4px',
     transformOrigin: 'top left',
-    transform: resolvedContentZoom < 1 ? `scale(${resolvedContentZoom})` : 'none',
-    width: resolvedContentZoom < 1 ? `${100 / resolvedContentZoom}%` : '100%',
+    ...(resolvedContentZoom < 1
+      ? {
+          // Use CSS zoom (not transform) — it reflows layout so width stays correct
+          // and doesn't create a horizontal scrollbar from overcompensated width.
+          zoom: resolvedContentZoom,
+          width: '100%',
+          maxWidth: '100%',
+        }
+      : { width: '100%' }),
   };
   // Detect if question needs audio (phonics/listening questions)
   const audioWord = useMemo(() => {
@@ -795,7 +802,8 @@ const AssessmentQuestion: React.FC<Props> = ({
 
           {/* Progressive Hints */}
           {!isAnswered && question?.hints?.length > 0 && (
-            <div className={`${ultraCompactViewport ? 'mb-1' : compactViewport ? 'mb-2' : 'mb-3'}`}>
+            <div className={`${ultraCompactViewport ? 'mb-1' : compactViewport ? 'mb-2' : 'mb-3'}`}
+                 style={{ maxHeight: ultraCompactViewport ? '120px' : compactViewport ? '180px' : '240px', overflowY: 'auto' }}>
               {hintsShown > 0 && (
                 <div className={ultraCompactViewport ? 'mb-1' : 'mb-2'}>
                   {(question.hints || []).slice(0, hintsShown).map((hint: any, idx: number) => (
@@ -861,7 +869,7 @@ const AssessmentQuestion: React.FC<Props> = ({
             <div
               id="empty-submit-warning"
               className="mt-3 py-4 px-5 border-[4px] border-black dark:border-white bg-[#FFF3E0] dark:bg-orange-900/40 shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] text-base font-black text-[#E65100] dark:text-orange-300 uppercase tracking-wide text-center animate-bounce"
-              style={{ animationDuration: '0.4s', animationIterationCount: '2' }}
+              style={{ animationDuration: '0.5s', animationIterationCount: '4' }}
             >
               Please select or enter an answer first
             </div>
