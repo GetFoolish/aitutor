@@ -265,7 +265,8 @@ export function scorePerseusQuestion(
             const rawIdx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
             // Perseus dropdown uses 1-based indexing (0 = placeholder "Select one").
             // Our choices array is 0-based (no placeholder). Subtract 1 to align.
-            const selectedIdx = rawIdx != null && rawIdx > 0 ? rawIdx - 1 : rawIdx;
+            // When rawIdx is 0 (placeholder), map to -1 so it fails the bounds check below.
+            const selectedIdx = rawIdx != null && rawIdx > 0 ? rawIdx - 1 : -1;
             if (selectedIdx != null && selectedIdx >= 0 && selectedIdx < choices.length) {
                 const selectedChoice = choices[selectedIdx];
                 const content = typeof selectedChoice?.content === 'string'
@@ -304,7 +305,10 @@ export function scorePerseusQuestion(
             const correctRight = widgetDef.options?.right || [];
             const userRight = (widgetInput as any)?.right || [];
             if (correctRight.length > 0 && correctRight.length === userRight.length) {
-                widgetCorrect = correctRight.every((val: string, idx: number) => val === userRight[idx]);
+                // Normalize whitespace and casing for comparison to avoid false negatives
+                widgetCorrect = correctRight.every((val: string, idx: number) =>
+                    (val || '').trim().toLowerCase() === (userRight[idx] || '').trim().toLowerCase()
+                );
             }
             scoreableCount++;
             if (widgetCorrect) correctCount++;

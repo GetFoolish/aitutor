@@ -5,6 +5,7 @@ Centralized MongoDB connection and collection access
 
 from pymongo import MongoClient
 from typing import List
+import atexit
 import os
 import logging
 from dotenv import load_dotenv
@@ -39,17 +40,33 @@ class MongoDBManager:
     
     def _connect(self):
         """Establish MongoDB connection"""
+        db_name = os.getenv('MONGODB_DB_NAME', 'ai_tutor')
+        questions_db_name = os.getenv('MONGODB_QUESTIONS_DB_NAME', 'questions_db')
+        is_production = (os.getenv('ENVIRONMENT') or os.getenv('APP_ENV') or os.getenv('NODE_ENV') or '').lower() in {
+            'prod', 'production',
+        }
+
         # Get connection string from environment variable
         mongo_uri = os.getenv('MONGODB_URI')
         if not mongo_uri:
+            # In non-production, allow mongomock fallback when no URI is configured
+            use_mongomock = os.getenv('MONGODB_USE_MONGOMOCK', 'false').lower() == 'true'
+            if not is_production and use_mongomock:
+                try:
+                    import mongomock
+                    logger.warning("[MONGODB] No MONGODB_URI set — using mongomock (in-memory)")
+                    self._client = mongomock.MongoClient()
+                    self._db = self._client[db_name]
+                    self._questions_db = self._client[questions_db_name]
+                    return
+                except ImportError:
+                    pass
             raise ValueError(
                 "MONGODB_URI not found in environment variables. "
                 "Please create a .env file with MONGODB_URI. "
                 "See setup-local-env.sh for template values."
             )
 
-        db_name = os.getenv('MONGODB_DB_NAME', 'ai_tutor')
-        questions_db_name = os.getenv('MONGODB_QUESTIONS_DB_NAME', 'questions_db')
         server_selection_timeout_ms = int(os.getenv('MONGODB_SERVER_SELECTION_TIMEOUT_MS', '5000'))
         connect_timeout_ms = int(os.getenv('MONGODB_CONNECT_TIMEOUT_MS', '5000'))
 
@@ -74,6 +91,20 @@ class MongoDBManager:
             except Exception as e:
                 errors.append((redacted_uri, e))
                 logger.warning(f"[MONGODB] Connection attempt failed for {redacted_uri}: {e}")
+
+        # ── Mongomock fallback for local dev when no real MongoDB is reachable ──
+        use_mongomock = os.getenv('MONGODB_USE_MONGOMOCK', 'false').lower() == 'true'
+        if not is_production and (use_mongomock or errors):
+            try:
+                import mongomock
+                logger.warning("[MONGODB] All real connections failed — falling back to mongomock (in-memory)")
+                self._client = mongomock.MongoClient()
+                self._db = self._client[db_name]
+                self._questions_db = self._client[questions_db_name]
+                logger.info(f"[MONGODB] Mongomock connected: {db_name}, {questions_db_name}")
+                return
+            except ImportError:
+                logger.warning("[MONGODB] mongomock not installed — cannot use in-memory fallback")
 
         if errors:
             summary = "; ".join([f"{uri}: {err}" for uri, err in errors])
@@ -265,3 +296,6 @@ class MongoDBManager:
 
 # Create global instance
 mongo_db = MongoDBManager()
+
+# Ensure connections are cleaned up on process exit
+atexit.register(mongo_db.close)

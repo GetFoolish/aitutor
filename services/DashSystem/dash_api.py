@@ -306,7 +306,12 @@ async def startup_event():
         logger.error(f"Failed to initialize DASHSystem: {e}")
         import traceback
         logger.error(f"Traceback: {traceback.format_exc()}")
-        raise
+        # In non-production, allow the server to start even if DASH init fails
+        # so health checks and basic endpoints still work for dev/QA.
+        is_prod = (os.getenv('ENVIRONMENT') or os.getenv('APP_ENV') or '').lower() in {'prod', 'production'}
+        if is_prod:
+            raise
+        logger.warning("DASHSystem init failed — server starting in degraded mode (dev)")
 # Performance Monitoring
 from shared.timing_middleware import UnpluggedTimingMiddleware
 app.add_middleware(UnpluggedTimingMiddleware)

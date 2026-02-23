@@ -613,9 +613,8 @@ class AIQuestionProvider:
             for future in as_completed(futures):
                 results.append(future.result())
         finally:
-            for future in futures:
-                future.cancel()
-            pool.shutdown(wait=False, cancel_futures=True)
+            # Wait for all threads to finish so partially-generated questions aren't lost
+            pool.shutdown(wait=True)
 
         inserted = 0
         for diff, fmt, perseus_json in results:

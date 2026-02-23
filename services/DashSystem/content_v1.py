@@ -57,7 +57,12 @@ SUPPORTED_FORMATS = [
 class ContentV1Engine:
     def __init__(self) -> None:
         api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
-        self.client = genai.Client(api_key=api_key) if api_key else None
+        self.client = None
+        if api_key and api_key != "dummy_for_local_dev":
+            try:
+                self.client = genai.Client(api_key=api_key)
+            except Exception as e:
+                logger.warning(f"[CONTENT_V1] Failed to initialize Gemini client: {e} — AI generation disabled")
         self.model = os.getenv("GEMINI_TEXT_MODEL", "gemini-2.0-flash")
         self.fast_model = os.getenv("GEMINI_FAST_MODEL", "gemini-2.0-flash")
         self.gemini_only = os.getenv("CONTENT_V1_GEMINI_ONLY", "true").lower() in {"1", "true", "yes"}
