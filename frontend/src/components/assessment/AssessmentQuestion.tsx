@@ -382,10 +382,12 @@ const AssessmentQuestion: React.FC<Props> = ({
         // Expression: convert to numeric-input to avoid MathInput crash (string ref issue in React 18)
         if (w?.type === 'expression' && w.options) {
           const answerForms = w.options.answerForms || [];
-          const firstAnswer = answerForms[0]?.value || '0';
-          // Replace placeholder in content
-          if (typeof q.question.content === 'string') {
-            q.question.content = q.question.content.replace(`[[☃ ${key}]]`, `[[☃ ${key}]]`);
+          const firstAnswer = (answerForms[0]?.value || '').toString().trim();
+          const parsed = parseFloat(firstAnswer);
+          if (!firstAnswer || isNaN(parsed)) {
+            // Can't safely convert to numeric-input — skip conversion,
+            // leave as expression (Perseus will render a text input fallback).
+            continue;
           }
           q.question.widgets[key] = {
             type: 'numeric-input',
@@ -397,7 +399,7 @@ const AssessmentQuestion: React.FC<Props> = ({
               size: 'normal',
               answers: [{
                 status: 'correct',
-                value: parseFloat(firstAnswer) || 0,
+                value: parsed,
                 maxError: 0.01,
                 simplify: 'optional',
                 strict: false,
@@ -405,6 +407,7 @@ const AssessmentQuestion: React.FC<Props> = ({
               }],
             },
           };
+          continue;
         }
         // Definition: inline the definition text to avoid popover dismiss bugs
         // The definition widget's Wonder Blocks Popover has dismiss issues,

@@ -845,7 +845,14 @@ const RendererComponent = ({
                     const { multipleSelect: _ms, randomize: _rz, ...rest } = w;
                     itemCopy.question.widgets[key] = {
                         ...rest,
-                        options: { choices: sanitizeChoicesArray(w.options), multipleSelect, randomize },
+                        options: {
+                            choices: sanitizeChoicesArray(w.options),
+                            multipleSelect,
+                            randomize,
+                            noneOfTheAbove: false,
+                            selectedChoiceIds: undefined,
+                            deselectEnabled: false,
+                        },
                     };
                 } else if (w?.type === 'radio' && w.options && Array.isArray(w.options.choices)) {
                     itemCopy.question.widgets[key] = {
@@ -853,6 +860,9 @@ const RendererComponent = ({
                         options: {
                             ...w.options,
                             choices: sanitizeChoicesArray(w.options.choices),
+                            noneOfTheAbove: w.options.noneOfTheAbove ?? false,
+                            selectedChoiceIds: undefined,
+                            deselectEnabled: false,
                         },
                     };
                 }
@@ -865,6 +875,7 @@ const RendererComponent = ({
                             labelText: '',
                             size: 'normal',
                             ...w.options,
+                            answers: Array.isArray(w.options.answers) ? w.options.answers : [],
                         },
                     };
                 }
@@ -1253,7 +1264,7 @@ const RendererComponent = ({
                                                 apiOptions={{}}
                                                 linterContext={{
                                                     contentType: "",
-                                                    highlightLint: true,
+                                                    highlightLint: false,
                                                     paths: [],
                                                     stack: [],
                                                 }}
