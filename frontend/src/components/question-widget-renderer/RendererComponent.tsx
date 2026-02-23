@@ -738,8 +738,10 @@ const RendererComponent = ({
                             if (cf) correctText = cf.value || '';
                         } else if (widgetDef.type === 'dropdown') {
                             const choices = widgetDef.options?.choices || [];
-                            const idx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
-                            if (idx != null && choices[idx]) selectedText = choices[idx].content || '';
+                            const rawIdx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
+                            // Perseus dropdown is 1-based (0 = placeholder). Subtract 1 to match choices array.
+                            const adjIdx = rawIdx != null && rawIdx > 0 ? rawIdx - 1 : -1;
+                            if (adjIdx >= 0 && adjIdx < choices.length) selectedText = choices[adjIdx].content || '';
                             const correct = choices.find((c: any) => c.correct);
                             if (correct) correctText = correct.content || '';
                         }

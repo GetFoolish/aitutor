@@ -219,16 +219,16 @@ export function scorePerseusQuestion(
         } else if (widgetDef.type === 'orderer') {
             const correctOptions = widgetDef.options?.correctOptions || [];
             const userOrder = (widgetInput as any).current || (widgetInput as any).options || [];
-            if (correctOptions.length === userOrder.length) {
+            if (correctOptions.length > 0 && correctOptions.length === userOrder.length) {
                 widgetCorrect = correctOptions.every((correctOpt: any, index: number) => {
                     const userItem = userOrder[index];
                     const userContent = (typeof userItem === 'string' ? userItem : userItem?.content || '').trim();
                     const correctContent = (typeof correctOpt === 'string' ? correctOpt : correctOpt?.content || '').trim();
                     return correctContent === userContent;
                 });
+                scoreableCount++;
+                if (widgetCorrect) correctCount++;
             }
-            scoreableCount++;
-            if (widgetCorrect) correctCount++;
 
         } else if (widgetDef.type === 'numeric-input') {
             const answers = widgetDef.options?.answers || [];
@@ -309,9 +309,9 @@ export function scorePerseusQuestion(
                 widgetCorrect = correctRight.every((val: string, idx: number) =>
                     (val || '').trim().toLowerCase() === (userRight[idx] || '').trim().toLowerCase()
                 );
+                scoreableCount++;
+                if (widgetCorrect) correctCount++;
             }
-            scoreableCount++;
-            if (widgetCorrect) correctCount++;
 
         } else if (widgetDef.type === 'sorter') {
             const correctOrder = widgetDef.options?.correct || [];
@@ -322,20 +322,20 @@ export function scorePerseusQuestion(
                     const uv = (typeof userOrder[idx] === 'string' ? userOrder[idx] : '').trim();
                     return cv === uv;
                 });
+                scoreableCount++;
+                if (widgetCorrect) correctCount++;
             }
-            scoreableCount++;
-            if (widgetCorrect) correctCount++;
 
         } else if (widgetDef.type === 'categorizer') {
             const correctValues: number[] = widgetDef.options?.values || [];
             const userValues: number[] = (widgetInput as any)?.values || [];
             if (correctValues.length > 0 && correctValues.length === userValues.length) {
                 widgetCorrect = correctValues.every((val: number, idx: number) =>
-                    userValues[idx] != null && val === userValues[idx]
+                    userValues[idx] != null && Number(val) === Number(userValues[idx])
                 );
+                scoreableCount++;
+                if (widgetCorrect) correctCount++;
             }
-            scoreableCount++;
-            if (widgetCorrect) correctCount++;
 
         } else if (widgetDef.type === 'number-line') {
             const correctX = widgetDef.options?.correctX;
