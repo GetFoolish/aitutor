@@ -233,8 +233,9 @@ const AssessmentFlow: React.FC = () => {
     setAssessmentId(null);
     setCurrentQuestion(null);
     setCompleted(false);
-    // Clear assessment state from sessionStorage
+    // Clear ALL assessment state from storage to prevent stale resume
     sessionStorage.removeItem('assessmentSubject');
+    localStorage.removeItem('active_assessment');
     // Navigate to exit page with context
     const encodedSubject = encodeURIComponent(subject);
     const exitUrl = currentAssessmentId
@@ -327,6 +328,11 @@ const AssessmentFlow: React.FC = () => {
         }
         setLoading(false);
         return;
+      }
+
+      // Validate required fields in response
+      if (!data.assessment_id || !data.question) {
+        throw new Error('Server returned incomplete assessment data (missing assessment_id or question)');
       }
 
       setAssessmentId(data.assessment_id);

@@ -2080,8 +2080,8 @@ class ContentV1Engine:
                 sum(1 for a in recent_attempts if a.get("is_correct")) / recent_count if recent_count else 0.0
             )
             can_advance = mastery.get(step_topic, 0) >= 0.75 or (recent_count >= 3 and recent_accuracy >= 0.67)
-            if can_advance and len(steps) > 0:
-                step_index = min(step_index + 1, len(steps) - 1)
+            if can_advance and step_index < len(steps) - 1:
+                step_index += 1
 
         profiles.update_one(
             {"learner_profile_id": profile_id},

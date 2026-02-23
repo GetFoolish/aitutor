@@ -1794,9 +1794,17 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
     # Exclude skills from current questions to diversify
     current_skill_ids = set()
     for qid in req.current_question_ids:
-        for q_doc in [dash_system.skills.get(sid) for sid in dash_system.skills]:
-            pass  # Skip complex lookup — just use all recommended skills
-    target_skill_ids = recommended_skills[:req.count + 2]
+        q_doc = mongo_db.ai_generated_questions.find_one(
+            {"question_id": qid}, {"skill_id": 1, "skill_ids": 1}
+        )
+        if q_doc:
+            if q_doc.get("skill_ids"):
+                current_skill_ids.update(q_doc["skill_ids"])
+            elif q_doc.get("skill_id"):
+                current_skill_ids.add(q_doc["skill_id"])
+    # Filter out skills already represented in the current question set
+    filtered_skills = [s for s in recommended_skills if s not in current_skill_ids]
+    target_skill_ids = (filtered_skills or recommended_skills)[:req.count + 2]
 
     def _fetch_for_skill_rec(skill_id):
         skill = dash_system.skills.get(skill_id)
@@ -3343,11 +3351,12 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
                    "used_skill_ids": next_q.skill_ids[0] if next_q.skill_ids else "",
                    "used_content_hashes": next_content_hash}}
     )
-    logger.info(f"[ADAPTIVE_NEXT] Served question {questions_asked + 1}/{session.get('max_questions', 10)} for assessment {payload.assessment_id}")
+    logger.info(f"[ADAPTIVE_NEXT] Served question {questions_asked}/{session.get('max_questions', 10)} for assessment {payload.assessment_id}")
 
     # Auto-chain: immediately start prefetching the NEXT question in background
-    # so it's ready by the time the user answers this one
-    if questions_asked < session.get("max_questions", 10) - 1:
+    # so it's ready by the time the user answers this one.
+    # Use < max_questions (not < max_questions - 1) so the final question also gets prefetched.
+    if questions_asked < session.get("max_questions", 10):
         def _auto_prefetch():
             try:
                 _assessment_prefetch_worker(
