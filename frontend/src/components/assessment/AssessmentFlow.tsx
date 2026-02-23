@@ -259,6 +259,8 @@ const AssessmentFlow: React.FC = () => {
       const phase2Timer = setTimeout(() => setLoadPhase('generating'), 3000);
       const phase3Timer = setTimeout(() => setLoadPhase('slow'), 9000);
       const hardTimeout = setTimeout(() => controller.abort(), START_HARD_TIMEOUT_MS);
+      // Clear any existing timers before setting new ones
+      timersRef.current.forEach(clearTimeout);
       timersRef.current = [phase2Timer, phase3Timer, hardTimeout];
 
       // Kick warm-up immediately (best-effort) so adaptive start can hit warm cache faster.

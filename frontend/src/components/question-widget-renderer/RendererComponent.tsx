@@ -883,7 +883,13 @@ const RendererComponent = ({
                 // Expression: convert to numeric-input to avoid MathInput crash (string ref issue in React 18)
                 if (w?.type === 'expression' && w.options) {
                     const answerForms = w.options.answerForms || [];
-                    const firstAnswer = answerForms[0]?.value || '0';
+                    const firstAnswer = (answerForms[0]?.value || '').toString().trim();
+                    const parsed = parseFloat(firstAnswer);
+                    if (!firstAnswer || isNaN(parsed)) {
+                        // Can't safely convert to numeric-input — skip conversion,
+                        // leave as expression (Perseus will render a text input fallback).
+                        continue;
+                    }
                     itemCopy.question.widgets[key] = {
                         type: 'numeric-input',
                         graded: true,
@@ -894,7 +900,7 @@ const RendererComponent = ({
                             size: 'normal',
                             answers: [{
                                 status: 'correct',
-                                value: parseFloat(firstAnswer) || 0,
+                                value: parsed,
                                 maxError: 0.01,
                                 simplify: 'optional',
                                 strict: false,

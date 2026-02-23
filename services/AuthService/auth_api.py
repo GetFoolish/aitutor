@@ -37,6 +37,8 @@ from collections import defaultdict as _defaultdict
 
 class _RateLimiter:
     """Simple sliding-window rate limiter keyed by IP."""
+    _MAX_KEYS = 10_000  # prevent unbounded growth from unique IPs
+
     def __init__(self, max_requests: int, window_seconds: int):
         self.max_requests = max_requests
         self.window_seconds = window_seconds
@@ -47,9 +49,18 @@ class _RateLimiter:
         cutoff = now - self.window_seconds
         bucket = self._hits[key]
         self._hits[key] = bucket = [t for t in bucket if t > cutoff]
+        # Evict empty buckets to prevent memory leak from many unique keys
+        if not bucket:
+            del self._hits[key]
+            return True
         if len(bucket) >= self.max_requests:
             return False
         bucket.append(now)
+        # Periodic eviction: if dict is too large, prune all expired entries
+        if len(self._hits) > self._MAX_KEYS:
+            stale = [k for k, v in self._hits.items() if not v or v[-1] < cutoff]
+            for k in stale:
+                del self._hits[k]
         return True
 
 _login_limiter = _RateLimiter(max_requests=10, window_seconds=60)

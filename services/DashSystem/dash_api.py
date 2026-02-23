@@ -332,25 +332,25 @@ class PerseusQuestion(BaseModel):
 
 
 class AnswerSubmission(BaseModel):
-    question_id: str
+    question_id: str = Field(..., max_length=200)
     skill_ids: List[str]
     is_correct: bool
-    response_time_seconds: float
-    selected_answer: Optional[str] = None
+    response_time_seconds: float = Field(..., ge=0, le=3600)
+    selected_answer: Optional[str] = Field(default=None, max_length=5000)
     selected_answer_index: Optional[int] = None
 
 
 class ResponsiveHintRequest(BaseModel):
-    question_id: str
-    skill_id: str
-    question_text: str
-    selected_answer: str
-    correct_answer: str
+    question_id: str = Field(..., max_length=200)
+    skill_id: str = Field(..., max_length=200)
+    question_text: str = Field(..., max_length=10000)
+    selected_answer: str = Field(..., max_length=5000)
+    correct_answer: str = Field(..., max_length=5000)
 
 
 class RecommendNextRequest(BaseModel):
     current_question_ids: List[str]
-    count: int = 5
+    count: int = Field(default=5, ge=1, le=50)
 
 
 class AssessmentAnswer(BaseModel):

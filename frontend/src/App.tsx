@@ -286,9 +286,11 @@ function App() {
 
                                 if (assessmentCurrentIndex < assessmentQuestions.length - 1) {
                                   setTimeout(() => {
-                                    setAssessmentCurrentIndex(assessmentCurrentIndex + 1);
+                                    setAssessmentCurrentIndex(prev => prev + 1);
                                   }, 2000);
                                 } else {
+                                  // newAnswers is captured here — safe because it's
+                                  // constructed in the same synchronous handler above.
                                   setTimeout(() => {
                                     submitAssessment(newAnswers);
                                   }, 2000);

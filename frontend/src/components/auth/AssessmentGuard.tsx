@@ -42,7 +42,7 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
   });
 
   // Call /api/start-subject and poll until curriculum is ready if generating
-  const ensureSubjectReady = async (subject: string): Promise<void> => {
+  const ensureSubjectReady = async (subject: string, signal?: AbortSignal): Promise<void> => {
     try {
       const resp = await apiUtils.post(`${DASH_API_URL}/api/start-subject`, {
         subject,
@@ -61,7 +61,9 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
         const pollInterval = 3_000;
         const start = Date.now();
         while (Date.now() - start < maxPollTime) {
+          if (signal?.aborted) break;
           await new Promise(r => setTimeout(r, pollInterval));
+          if (signal?.aborted) break;
           try {
             const pollResp = await apiUtils.get(pollUrl);
             if (pollResp.ok) {
@@ -91,6 +93,8 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
       return;
     }
 
+    const abortController = new AbortController();
+
     const init = async () => {
       // Check if returning from assessment with a subject in the URL
       const urlParams = new URLSearchParams(window.location.search);
@@ -107,9 +111,11 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
       let subjectAlreadySwitched = false;
       if (urlSubject && urlSubject !== savedSubject) {
         sessionStorage.setItem('selected_subject', urlSubject);
-        await ensureSubjectReady(urlSubject);
+        await ensureSubjectReady(urlSubject, abortController.signal);
         subjectAlreadySwitched = true;
       }
+
+      if (abortController.signal.aborted) return;
 
       const effectiveSubject = urlSubject || savedSubject;
 
@@ -125,10 +131,11 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
         setSelectedSubject(effectiveSubject);
         const subjectPromise = subjectAlreadySwitched
           ? Promise.resolve()
-          : ensureSubjectReady(effectiveSubject);
+          : ensureSubjectReady(effectiveSubject, abortController.signal);
 
         if (fromAssessment) {
           await subjectPromise;
+          if (abortController.signal.aborted) return;
           setAssessmentStatus({
             loading: false,
             completed: true,
@@ -143,6 +150,8 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
     };
 
     init();
+
+    return () => { abortController.abort(); };
   }, [isAuthenticated, isLoading]);
 
   // Listen for onboarding completion
