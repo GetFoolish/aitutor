@@ -278,14 +278,18 @@ class TranscriptBuffer:
             return
 
         text = self.buffers[session_id][speaker].strip()
-        if text:
-            await callback(text)
-
-        # Clean up
-        del self.buffers[session_id][speaker]
-        key = f"{session_id}:{speaker}"
-        if key in self.timers:
-            del self.timers[key]
+        try:
+            if text:
+                await callback(text)
+        except Exception as e:
+            logger.error(f"[TRANSCRIPT] Flush callback failed for {session_id}/{speaker}: {e}")
+        finally:
+            # Always clean up to prevent memory leaks
+            self.buffers[session_id].pop(speaker, None)
+            if not self.buffers[session_id]:
+                del self.buffers[session_id]
+            key = f"{session_id}:{speaker}"
+            self.timers.pop(key, None)
 
     async def flush_all(self, session_id: str, callback):
         """Flush all pending text for a session"""

@@ -271,9 +271,13 @@ function App() {
                               currentQuestionIndex={assessmentCurrentIndex}
                               onAssessmentAnswer={(questionId, isCorrect) => {
                                 const currentQuestion = assessmentQuestions[assessmentCurrentIndex];
+                                if (!currentQuestion) {
+                                  console.error(`[Assessment] No question at index ${assessmentCurrentIndex}`);
+                                  return;
+                                }
                                 const newAnswer = {
                                   question_id: questionId,
-                                  skill_id: currentQuestion.dash_metadata.skill_ids[0],
+                                  skill_id: currentQuestion.dash_metadata?.skill_ids?.[0] ?? questionId,
                                   is_correct: isCorrect
                                 };
                                 const newAnswers = [...assessmentAnswers, newAnswer];

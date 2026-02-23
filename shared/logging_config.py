@@ -150,8 +150,11 @@ def setup_logger(
             class ImmediateFlushFileHandler(logging.FileHandler):
                 """File handler that flushes after each emit"""
                 def emit(self, record):
-                    super().emit(record)
-                    self.flush()
+                    try:
+                        super().emit(record)
+                        self.flush()
+                    except Exception:
+                        self.handleError(record)
             
             file_handler = ImmediateFlushFileHandler(log_path, mode='a', encoding='utf-8')
             file_handler.setLevel(getattr(logging, level.upper()))
