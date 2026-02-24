@@ -1,3 +1,4 @@
+import atexit
 import hashlib
 import json
 import logging
@@ -17,6 +18,35 @@ from managers.mongodb_manager import mongo_db
 from services.DashSystem.deterministic_verifier import DeterministicVerifier
 
 logger = logging.getLogger(__name__)
+
+# Shared bounded executor for Gemini calls.
+# Avoids creating unbounded short-lived threads under load.
+try:
+    _GEMINI_EXECUTOR_MAX_WORKERS = max(4, int(os.getenv("CONTENT_V1_GEMINI_MAX_WORKERS", "12")))
+except (TypeError, ValueError):
+    _GEMINI_EXECUTOR_MAX_WORKERS = 12
+_GEMINI_EXECUTOR = ThreadPoolExecutor(
+    max_workers=_GEMINI_EXECUTOR_MAX_WORKERS,
+    thread_name_prefix="content-v1-gemini",
+)
+
+
+def _shutdown_gemini_executor() -> None:
+    _GEMINI_EXECUTOR.shutdown(wait=False, cancel_futures=True)
+
+
+atexit.register(_shutdown_gemini_executor)
+
+
+def _run_with_timeout(fn: Any, timeout_s: float) -> Any:
+    """Run a callable on the shared Gemini executor with timeout."""
+    future = _GEMINI_EXECUTOR.submit(fn)
+    try:
+        return future.result(timeout=timeout_s)
+    except FutureTimeoutError:
+        future.cancel()
+        raise
+
 
 # Image generation settings
 STATIC_IMAGES_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "static", "images")
@@ -1059,15 +1089,7 @@ class ContentV1Engine:
                     config={"temperature": 0.6},
                 )
 
-            executor = ThreadPoolExecutor(max_workers=1)
-            future = None
-            try:
-                future = executor.submit(_call_gemini)
-                response = future.result(timeout=20)
-            finally:
-                if future:
-                    future.cancel()
-                executor.shutdown(wait=False, cancel_futures=True)
+            response = _run_with_timeout(_call_gemini, timeout_s=20)
             parsed = self._extract_json(response.text or "")
             if not isinstance(parsed, dict) or not parsed:
                 logger.warning("[GENERATE] _extract_json returned non-dict or empty, falling through to fallback")
@@ -1104,15 +1126,7 @@ class ContentV1Engine:
                     contents=prompt,
                     config={"temperature": 0.4},
                 )
-            executor = ThreadPoolExecutor(max_workers=1)
-            future = None
-            try:
-                future = executor.submit(_call_gemini)
-                response = future.result(timeout=20)
-            finally:
-                if future:
-                    future.cancel()
-                executor.shutdown(wait=False, cancel_futures=True)
+            response = _run_with_timeout(_call_gemini, timeout_s=20)
             text = (response.text or "").strip()
             if text:
                 return re.sub(r"\s+", " ", text)[:240]
@@ -1418,15 +1432,7 @@ class ContentV1Engine:
                 return self.client.models.generate_content(
                     model=self.fast_model, contents=prompt, config={"temperature": 0.5},
                 )
-            executor = ThreadPoolExecutor(max_workers=1)
-            future = None
-            try:
-                future = executor.submit(_call)
-                response = future.result(timeout=10)
-            finally:
-                if future:
-                    future.cancel()
-                executor.shutdown(wait=False, cancel_futures=True)
+            response = _run_with_timeout(_call, timeout_s=10)
             parsed = self._extract_json(response.text or "")
             if isinstance(parsed, dict) and parsed:
                 parsed = self._repair_item(parsed, fmt="radio_single")
@@ -1468,15 +1474,7 @@ class ContentV1Engine:
                     ),
                 )
 
-            executor = ThreadPoolExecutor(max_workers=1)
-            future = None
-            try:
-                future = executor.submit(_call_image)
-                response = future.result(timeout=30)
-            finally:
-                if future:
-                    future.cancel()
-                executor.shutdown(wait=False, cancel_futures=True)
+            response = _run_with_timeout(_call_image, timeout_s=30)
 
             candidates = getattr(response, "candidates", None)
             if not isinstance(candidates, list) or len(candidates) == 0 or not candidates[0]:
@@ -1634,16 +1632,8 @@ class ContentV1Engine:
                         config={"temperature": 0.6 + (attempt * 0.1)},
                     )
 
-                executor = ThreadPoolExecutor(max_workers=1)
-                future = None
-                try:
-                    future = executor.submit(_call_gemini)
-                    timeout_s = 10 if fast_mode else 30
-                    response = future.result(timeout=timeout_s)
-                finally:
-                    if future:
-                        future.cancel()
-                    executor.shutdown(wait=False, cancel_futures=True)
+                timeout_s = 10 if fast_mode else 30
+                response = _run_with_timeout(_call_gemini, timeout_s=timeout_s)
 
                 raw = response.text or ""
                 if not raw.strip():
