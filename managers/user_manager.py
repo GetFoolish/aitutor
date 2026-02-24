@@ -67,11 +67,13 @@ class SkillState:
     
     @classmethod
     def from_dict(cls, data):
+        if not isinstance(data, dict):
+            data = {}
         return cls(
-            memory_strength=data['memory_strength'],
-            last_practice_time=data['last_practice_time'],
-            practice_count=data['practice_count'],
-            correct_count=data['correct_count']
+            memory_strength=float(data.get('memory_strength', 0.0)),
+            last_practice_time=data.get('last_practice_time'),
+            practice_count=int(data.get('practice_count', 0)),
+            correct_count=int(data.get('correct_count', 0))
         )
 
 @dataclass
@@ -103,18 +105,66 @@ class UserProfile:
     
     @classmethod
     def from_dict(cls, data):
-        skill_states = {k: SkillState.from_dict(v) for k, v in data['skill_states'].items()}
-        question_history = [QuestionAttempt(**attempt) for attempt in data['question_history']]
-        
+        if not isinstance(data, dict):
+            raise ValueError("Invalid user profile payload")
+
+        user_id = data.get('user_id')
+        if not user_id:
+            raise ValueError("Missing user_id in user profile")
+
+        now = time.time()
+        try:
+            age = int(data.get('age', 5))
+        except (TypeError, ValueError):
+            age = 5
+
+        current_grade = data.get('current_grade') or calculate_grade_from_age(age)
+
+        skill_states_raw = data.get('skill_states') or {}
+        if not isinstance(skill_states_raw, dict):
+            skill_states_raw = {}
+        skill_states = {}
+        for skill_id, state in skill_states_raw.items():
+            try:
+                skill_states[skill_id] = SkillState.from_dict(state)
+            except Exception as exc:
+                logger.warning(f"[USER] Skipping malformed skill state for {skill_id}: {exc}")
+
+        question_history_raw = data.get('question_history') or []
+        if not isinstance(question_history_raw, list):
+            question_history_raw = []
+        question_history = []
+        for attempt in question_history_raw:
+            if not isinstance(attempt, dict):
+                continue
+            try:
+                question_id = str(attempt.get('question_id', '')).strip()
+                if not question_id:
+                    continue
+                raw_skill_ids = attempt.get('skill_ids')
+                skill_ids = raw_skill_ids if isinstance(raw_skill_ids, list) else []
+                question_history.append(
+                    QuestionAttempt(
+                        question_id=question_id,
+                        skill_ids=skill_ids,
+                        is_correct=bool(attempt.get('is_correct', False)),
+                        response_time_seconds=float(attempt.get('response_time_seconds', 0.0)),
+                        timestamp=float(attempt.get('timestamp', now)),
+                        time_penalty_applied=bool(attempt.get('time_penalty_applied', False)),
+                    )
+                )
+            except Exception as exc:
+                logger.warning(f"[USER] Skipping malformed question history entry: {exc}")
+
         user_profile = cls(
-            user_id=data['user_id'],
-            created_at=data['created_at'],
-            last_updated=data['last_updated'],
+            user_id=user_id,
+            created_at=float(data.get('created_at', now)),
+            last_updated=float(data.get('last_updated', now)),
             skill_states=skill_states,
             question_history=question_history,
             student_notes=data.get('student_notes', {}),
-            age=data.get('age', 5),
-            current_grade=data.get('current_grade', 'K')
+            age=age,
+            current_grade=current_grade
         )
         # Handle preloaded_question_ids if present (optional field)
         if 'preloaded_question_ids' in data:
@@ -277,7 +327,21 @@ class UserManager:
             # Remove MongoDB _id field
             data.pop('_id', None)
             
+            needs_heal = any(
+                key not in data for key in (
+                    "created_at",
+                    "last_updated",
+                    "skill_states",
+                    "question_history",
+                    "age",
+                    "current_grade",
+                )
+            ) or not isinstance(data.get("skill_states", {}), dict) or not isinstance(data.get("question_history", []), list)
+
             user_profile = UserProfile.from_dict(data)
+            if needs_heal:
+                logger.info(f"[MONGODB] Healing sparse user profile fields for {user_id}")
+                self.save_user(user_profile)
             logger.info(f"[MONGODB] Loaded user: {user_id} (age: {user_profile.age}, grade: {user_profile.current_grade})")
             return user_profile
             

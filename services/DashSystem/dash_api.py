@@ -1404,6 +1404,7 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
         active_subject,
         jwt_age if jwt_age else None,
         "learning_initial_batch",
+        allow_age_relax=False,
     )
 
     # Refill loop: if validation/dedup drops count, attempt to top-up until sample_size.
@@ -1436,6 +1437,7 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
             active_subject,
             jwt_age if jwt_age else None,
             "learning_refill",
+            allow_age_relax=False,
         )
         if not processed_extra:
             continue
@@ -1491,6 +1493,7 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
                 active_subject,
                 jwt_age if jwt_age else None,
                 "learning_subject_fallback",
+                allow_age_relax=False,
             )
             existing_hashes = {_compute_content_hash(i) for i in perseus_items}
             existing_ids = {
@@ -2606,6 +2609,75 @@ def start_adaptive_assessment(subject: str, request: Request):
             )
             return q, ai_result
 
+        def _subject_fallback_first_question(
+            exclude_question_ids: Optional[List[str]] = None,
+            target_difficulty: float = 0.5,
+        ) -> tuple[Optional[Question], Optional[dict]]:
+            """Best-effort subject-scoped Mongo fallback for adaptive assessment start."""
+            excluded = {str(qid).strip() for qid in (exclude_question_ids or []) if qid}
+            try:
+                docs = list(mongo_db.ai_generated_questions.aggregate([
+                    {"$match": {"subject": subject}},
+                    {"$sample": {"size": 40}},
+                    {"$project": {"question_id": 1, "skill_ids": 1, "skill_id": 1}},
+                ]))
+            except Exception as e:
+                logger.warning(f"[ADAPTIVE_ASSESSMENT] Subject fallback sample failed: {e}")
+                return None, None
+
+            for doc in docs:
+                source_qid = str(doc.get("question_id") or "").strip()
+                if not source_qid or source_qid in excluded:
+                    continue
+
+                candidate_data = _load_question_perseus(source_qid, mongo_db)
+                if not candidate_data:
+                    continue
+                if (
+                    _has_only_broken_widgets(candidate_data)
+                    or not _has_answer_space(candidate_data)
+                    or not _is_subject_scoped_question(candidate_data, subject)
+                ):
+                    continue
+
+                cleaned = _post_process_with_age_fallback(
+                    [candidate_data],
+                    subject,
+                    jwt_age if jwt_age else None,
+                    "assessment_start_subject_fallback",
+                )
+                if not cleaned:
+                    continue
+                candidate_data = cleaned[0]
+
+                dm = candidate_data.setdefault("dash_metadata", {})
+                dm["source_question_id"] = source_qid
+                raw_skill_ids = dm.get("skill_ids") or doc.get("skill_ids") or []
+                if isinstance(raw_skill_ids, str):
+                    raw_skill_ids = [raw_skill_ids]
+                skill_id = ""
+                if isinstance(raw_skill_ids, list):
+                    for sid in raw_skill_ids:
+                        sid_text = str(sid or "").strip()
+                        if sid_text:
+                            skill_id = sid_text
+                            break
+                if not skill_id:
+                    skill_id = str(doc.get("skill_id") or "").strip()
+                if not dm.get("skill_ids"):
+                    dm["skill_ids"] = [skill_id] if skill_id else []
+                dm["dash_question_id"] = source_qid
+
+                return Question(
+                    question_id=source_qid,
+                    skill_ids=[skill_id] if skill_id else [],
+                    content="",
+                    difficulty=target_difficulty,
+                    expected_time_seconds=60.0,
+                ), candidate_data
+
+            return None, None
+
         # Create assessment session
         assessment_id = f"assess_{uuid.uuid4().hex[:12]}"
         session = {
@@ -2696,16 +2768,34 @@ def start_adaptive_assessment(subject: str, request: Request):
                 logger.info(f"[ADAPTIVE_ASSESSMENT] JIT generated first question {first_q.question_id}")
 
         if not first_q:
-            raise HTTPException(
-                status_code=503,
-                detail="First question is still being prepared. Please retry.",
+            fallback_q, fallback_data = _subject_fallback_first_question(
+                exclude_question_ids=[],
+                target_difficulty=0.5,
             )
+            if fallback_q and fallback_data:
+                first_q = fallback_q
+                q_data = fallback_data
+                logger.warning(f"[ADAPTIVE_ASSESSMENT] Promoted subject fallback {first_q.question_id} after pool/JIT miss")
+            else:
+                raise HTTPException(
+                    status_code=503,
+                    detail="First question is still being prepared. Please retry.",
+                )
 
         # Load Perseus data (warm-start already has it; pool/JIT need loading)
         if not q_data:
             q_data = getattr(first_q, "perseus_data", None) or _load_question_perseus(first_q.question_id, mongo_db)
         if not q_data:
-            raise HTTPException(status_code=500, detail="Failed to load question data")
+            fallback_q, fallback_data = _subject_fallback_first_question(
+                exclude_question_ids=[first_q.question_id],
+                target_difficulty=0.5,
+            )
+            if fallback_q and fallback_data:
+                first_q = fallback_q
+                q_data = fallback_data
+                logger.warning(f"[ADAPTIVE_ASSESSMENT] Promoted subject fallback {first_q.question_id} after load failure")
+            else:
+                raise HTTPException(status_code=500, detail="Failed to load question data")
 
         # Skip questions that fail render/scope guards
         if (
@@ -2756,10 +2846,19 @@ def start_adaptive_assessment(subject: str, request: Request):
                     q_data = fallback_data
 
             if not q_data:
-                raise HTTPException(
-                    status_code=503,
-                    detail="First question is still being prepared. Please retry.",
+                fallback_q, fallback_data = _subject_fallback_first_question(
+                    exclude_question_ids=[first_q.question_id],
+                    target_difficulty=0.5,
                 )
+                if fallback_q and fallback_data:
+                    first_q = fallback_q
+                    q_data = fallback_data
+                    logger.warning(f"[ADAPTIVE_ASSESSMENT] Promoted subject fallback {first_q.question_id} after validation retries")
+                else:
+                    raise HTTPException(
+                        status_code=503,
+                        detail="First question is still being prepared. Please retry.",
+                    )
 
         # Update session (track content hash alongside question ID for content-level dedup)
         first_content_hash = _compute_content_hash(q_data)
@@ -2785,7 +2884,16 @@ def start_adaptive_assessment(subject: str, request: Request):
             "assessment_start_adaptive",
         )
         if not q_data:
-            raise HTTPException(status_code=503, detail="No valid first question available yet")
+            fallback_q, fallback_data = _subject_fallback_first_question(
+                exclude_question_ids=[first_q.question_id],
+                target_difficulty=0.5,
+            )
+            if fallback_q and fallback_data:
+                first_q = fallback_q
+                q_data = [fallback_data]
+                logger.warning(f"[ADAPTIVE_ASSESSMENT] Promoted subject fallback {first_q.question_id} after post-process drop")
+            else:
+                raise HTTPException(status_code=503, detail="No valid first question available yet")
         q_data = q_data[0]
 
         # ── Inject skill_ids from Question object into Perseus response (Bug #22) ──
@@ -4055,11 +4163,18 @@ def _post_process_with_age_fallback(
     subject: Optional[str],
     age: Optional[int],
     context: str,
+    allow_age_relax: bool = True,
 ) -> List[Dict]:
     """Run strict post-process; relax only the age gate if it drops everything."""
     strict = _post_process_pipeline_items(perseus_items, subject, age)
     if strict or age is None:
         return strict
+    if not allow_age_relax:
+        logger.warning(
+            f"[CONTENT_PIPELINE] {context}: strict age gate filtered all candidates; "
+            "age-relax fallback disabled for this path"
+        )
+        return []
     relaxed = _post_process_pipeline_items(perseus_items, subject, None)
     if relaxed:
         logger.warning(
