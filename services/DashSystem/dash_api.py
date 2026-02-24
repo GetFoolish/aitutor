@@ -10,6 +10,7 @@ import threading
 import traceback
 from concurrent.futures import ThreadPoolExecutor, wait, FIRST_COMPLETED
 from typing import Any, List, Dict, Optional
+from urllib.parse import urlsplit, urlunsplit
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -80,11 +81,28 @@ WARMSTART_WAIT_TIMEOUT = _env_float("DASH_WARMSTART_WAIT_TIMEOUT_S", 2.5)
 QUESTION_PARALLEL_BUDGET_S = _env_float("DASH_QUESTION_PARALLEL_BUDGET_S", 3.5)
 RECOMMEND_PARALLEL_BUDGET_S = _env_float("DASH_RECOMMEND_PARALLEL_BUDGET_S", 3.5)
 ASSESSMENT_PARALLEL_BUDGET_S = _env_float("DASH_ASSESSMENT_PARALLEL_BUDGET_S", 5.0)
+LEARNING_Q_LOOKUP_TIMEOUT_S = _env_float("DASH_LEARNING_Q_LOOKUP_TIMEOUT_S", 0.75)
+LEARNING_REFILL_LOOKUP_TIMEOUT_S = _env_float("DASH_LEARNING_REFILL_LOOKUP_TIMEOUT_S", 0.45)
 ADAPTIVE_NEXT_TOTAL_BUDGET_S = _env_float("DASH_ADAPTIVE_NEXT_BUDGET_S", 1.8)
 ADAPTIVE_NEXT_POOL_LOOKUP_TIMEOUT_S = _env_float("DASH_ADAPTIVE_NEXT_POOL_LOOKUP_TIMEOUT_S", 0.55)
 ADAPTIVE_NEXT_LATE_PREFETCH_GRACE_S = _env_float("DASH_ADAPTIVE_NEXT_LATE_PREFETCH_GRACE_S", 0.25)
 ADAPTIVE_NEXT_LATE_PREFETCH_POLL_S = _env_float("DASH_ADAPTIVE_NEXT_LATE_PREFETCH_POLL_S", 0.08)
 ADAPTIVE_NEXT_SYNC_JIT = _env_bool("DASH_ADAPTIVE_NEXT_SYNC_JIT", False)
+
+
+def _run_with_timeout(fn, timeout_s: float, *args, **kwargs):
+    """Run a callable with a hard timeout and return None on timeout/failure."""
+    executor = ThreadPoolExecutor(max_workers=1)
+    future = None
+    try:
+        future = executor.submit(fn, *args, **kwargs)
+        return future.result(timeout=max(0.05, float(timeout_s)))
+    except Exception:
+        if future is not None:
+            future.cancel()
+        return None
+    finally:
+        executor.shutdown(wait=False, cancel_futures=True)
 
 
 def _snapshot_curriculum():
@@ -194,6 +212,70 @@ def ensure_content_v1():
     """Ensure Content V1 engine is initialized before use."""
     if content_v1_engine is None:
         raise HTTPException(status_code=503, detail="ContentV1 engine not initialized")
+
+
+_LOCALHOST_HOSTNAMES = {"localhost", "127.0.0.1", "0.0.0.0"}
+
+
+def _request_origin(request: Request) -> str:
+    """Resolve request origin, honoring proxy headers when present."""
+    forwarded_host = (request.headers.get("x-forwarded-host") or "").split(",")[0].strip()
+    host = forwarded_host or (request.headers.get("host") or "").split(",")[0].strip()
+    if not host:
+        host = request.url.netloc
+
+    forwarded_proto = (request.headers.get("x-forwarded-proto") or "").split(",")[0].strip()
+    scheme = forwarded_proto or request.url.scheme or "http"
+
+    if not host:
+        return ""
+    return f"{scheme}://{host}"
+
+
+def _rewrite_localhost_url(url: Any, request_origin: str) -> Any:
+    """Rewrite absolute localhost URLs to the current request origin."""
+    if not isinstance(url, str) or not url or not request_origin:
+        return url
+
+    parsed = urlsplit(url)
+    if not parsed.scheme or not parsed.netloc:
+        return url
+    if (parsed.hostname or "").lower() not in _LOCALHOST_HOSTNAMES:
+        return url
+
+    origin = urlsplit(request_origin)
+    if not origin.scheme or not origin.netloc:
+        return url
+    return urlunsplit((origin.scheme, origin.netloc, parsed.path, parsed.query, parsed.fragment))
+
+
+def _rewrite_localhost_image_urls(payload: Any, request: Request) -> Any:
+    """Patch image widget URLs in response payloads so localhost doesn't leak to clients."""
+    request_origin = _request_origin(request)
+    if not request_origin:
+        return payload
+
+    items = payload if isinstance(payload, list) else [payload]
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        widgets = (((item.get("question") or {}).get("widgets")) or {})
+        if not isinstance(widgets, dict):
+            continue
+        for widget in widgets.values():
+            if not isinstance(widget, dict) or widget.get("type") != "image":
+                continue
+            options = widget.get("options") or {}
+            if not isinstance(options, dict):
+                continue
+            background = options.get("backgroundImage") or {}
+            if not isinstance(background, dict):
+                continue
+            existing_url = background.get("url")
+            rewritten_url = _rewrite_localhost_url(existing_url, request_origin)
+            if rewritten_url != existing_url:
+                background["url"] = rewritten_url
+    return payload
 
 
 def trigger_content_v1_queue_fill(profile_id: str, target_depth: int = 5) -> None:
@@ -466,6 +548,7 @@ def content_v1_onboarding(request: Request, payload: ContentV1OnboardingRequest)
         raise HTTPException(status_code=500, detail=f"Failed to generate first question for Content V1: {first_error}")
 
     first_question = content_v1_engine.to_question_payload(first_doc, topic, step_index)
+    first_question = _rewrite_localhost_image_urls(first_question, request)
 
     # Track first question as already served.
     mongo_db.db["content_v1_queue"].insert_one(
@@ -536,6 +619,7 @@ def content_v1_next_question(request: Request, learner_profile_id: str):
         {"profile_id": learner_profile_id, "status": "ready"}
     )
     trigger_content_v1_queue_fill(learner_profile_id, target_depth=5)
+    question = _rewrite_localhost_image_urls(question, request)
     return {"question": question, "next_ready_count": next_ready}
 
 
@@ -929,7 +1013,9 @@ def get_preloaded_questions(request: Request):
     
     # Get user_id with proper error handling
     try:
-        user_id = get_current_user(request)
+        jwt_payload = get_jwt_payload(request)
+        user_id = jwt_payload.get("sub")
+        jwt_age = jwt_payload.get("age")
     except HTTPException as e:
         logger.error(f"[PRELOADED] Authentication error: {e.status_code} - {e.detail}")
         raise  # Re-raise to return proper 401/403 status code
@@ -983,7 +1069,12 @@ def get_preloaded_questions(request: Request):
             selected_questions,
             subject=active_subject or dash_system.subject,
         )
-        perseus_items = _post_process_pipeline_items(perseus_items, active_subject or dash_system.subject)
+        perseus_items = _post_process_with_age_fallback(
+            perseus_items,
+            active_subject or dash_system.subject,
+            jwt_age if jwt_age else None,
+            "preloaded_questions",
+        )
         logger.info(f"[PRELOADED] Loaded {len(perseus_items)} Perseus questions from MongoDB (after widget filter)")
 
         # Validate perseus_items structure before returning
@@ -1100,8 +1191,11 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
     # Get Q1 from warm-start or serial DASH call
     remaining = sample_size - len(selected_questions)
     if remaining > 0 and len(selected_questions) == 0:
-        q1 = dash_system.get_next_question_flexible(
-            user_id, current_time,
+        q1 = _run_with_timeout(
+            dash_system.get_next_question_flexible,
+            LEARNING_Q_LOOKUP_TIMEOUT_S,
+            user_id,
+            current_time,
             exclude_question_ids=selected_question_ids,
             user_profile=user_profile,
             fast_mode=True,
@@ -1168,6 +1262,7 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
                         age=user_profile.age if user_profile.age else 7,
                         exclude_question_ids=exclude_snapshot,
                         user_id=user_id,
+                        fast_mode=True,
                         subject=active_subject,
                     )
                     if ai_result:
@@ -1231,10 +1326,14 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
         else:
             # No diverse skills found — fall back to serial DASH selection
             for i in range(remaining):
-                q = dash_system.get_next_question_flexible(
-                    user_id, current_time,
+                q = _run_with_timeout(
+                    dash_system.get_next_question_flexible,
+                    LEARNING_Q_LOOKUP_TIMEOUT_S,
+                    user_id,
+                    current_time,
                     exclude_question_ids=selected_question_ids,
                     user_profile=user_profile,
+                    fast_mode=True,
                 )
                 if q:
                     selected_questions.append(q)
@@ -1278,7 +1377,7 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
                     logger.info(
                         f"[DEV_BYPASS] Served {len(random_perseus)} subject-scoped fallback questions for {current_subject}"
                     )
-                    return [_strip_objectids(q) for q in random_perseus]
+                    return _rewrite_localhost_image_urls([_strip_objectids(q) for q in random_perseus], request)
 
         raise HTTPException(
             status_code=503,
@@ -1300,7 +1399,12 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
         raise HTTPException(status_code=500, detail=f"Failed to load Perseus questions from MongoDB: {e}")
 
     # Final content-pipeline safety gate: dedupe + scope + renderability.
-    perseus_items = _post_process_pipeline_items(perseus_items, active_subject)
+    perseus_items = _post_process_with_age_fallback(
+        perseus_items,
+        active_subject,
+        jwt_age if jwt_age else None,
+        "learning_initial_batch",
+    )
 
     # Refill loop: if validation/dedup drops count, attempt to top-up until sample_size.
     # This prevents serving only 1-2 questions when enough generation paths exist.
@@ -1308,8 +1412,11 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
     max_refill_attempts = max(6, sample_size * 2)
     while len(perseus_items) < sample_size and refill_attempts < max_refill_attempts:
         refill_attempts += 1
-        q = dash_system.get_next_question_flexible(
-            user_id, current_time,
+        q = _run_with_timeout(
+            dash_system.get_next_question_flexible,
+            LEARNING_REFILL_LOOKUP_TIMEOUT_S,
+            user_id,
+            current_time,
             exclude_question_ids=selected_question_ids,
             user_profile=user_profile,
             fast_mode=True,
@@ -1324,7 +1431,12 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
         extra_items = load_perseus_items_for_dash_questions_from_mongodb([q], subject=active_subject)
         if not extra_items:
             continue
-        processed_extra = _post_process_pipeline_items(extra_items, active_subject)
+        processed_extra = _post_process_with_age_fallback(
+            extra_items,
+            active_subject,
+            jwt_age if jwt_age else None,
+            "learning_refill",
+        )
         if not processed_extra:
             continue
 
@@ -1374,7 +1486,12 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
                 }
                 fallback_items.append(item)
 
-            processed_fallback = _post_process_pipeline_items(fallback_items, active_subject)
+            processed_fallback = _post_process_with_age_fallback(
+                fallback_items,
+                active_subject,
+                jwt_age if jwt_age else None,
+                "learning_subject_fallback",
+            )
             existing_hashes = {_compute_content_hash(i) for i in perseus_items}
             existing_ids = {
                 str((i.get("dash_metadata") or {}).get("dash_question_id") or "")
@@ -1415,7 +1532,7 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
     all_served_ids = list(selected_question_ids)
     _trigger_learning_prefetch(user_id, active_subject, all_served_ids, jwt_age if jwt_age else 10)
 
-    return perseus_items
+    return _rewrite_localhost_image_urls(perseus_items, request)
 
 @app.post("/api/question-displayed")
 def log_question_displayed(request: Request, display_info: dict):
@@ -1845,6 +1962,7 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
                     grade_level=skill.grade_level.name,
                     age=user_profile.age if user_profile.age else 7,
                     exclude_question_ids=collected_ids, user_id=user_id,
+                    fast_mode=True,
                     subject=active_subject,
                 )
                 if ai_result:
@@ -1914,7 +2032,12 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
             selected_questions,
             subject=active_subject,
         )
-        perseus_items = _post_process_pipeline_items(perseus_items, active_subject)
+        perseus_items = _post_process_with_age_fallback(
+            perseus_items,
+            active_subject,
+            jwt_age if jwt_age else None,
+            "recommend_next",
+        )
         logger.info(f"[RECOMMEND_NEXT] Loaded {len(perseus_items)} new questions (after widget filter)")
 
         # Verify no overlap with current questions (should not happen due to exclusion, but check for safety)
@@ -1938,7 +2061,7 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
         all_served_ids = list(collected_ids)
         _trigger_learning_prefetch(user_id, active_subject, all_served_ids, jwt_age if jwt_age else 10)
 
-        return perseus_items
+        return _rewrite_localhost_image_urls(perseus_items, request)
     except Exception as e:
         logger.error(f"[ERROR] Failed to load recommended questions: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to load recommended questions: {e}")
@@ -2194,7 +2317,12 @@ def start_assessment(
 
         # Load Perseus items for the questions
         perseus_items = load_perseus_items_for_dash_questions_from_mongodb(questions, subject=subject)
-        perseus_items = _post_process_pipeline_items(perseus_items, subject)
+        perseus_items = _post_process_with_age_fallback(
+            perseus_items,
+            subject,
+            user_profile.age if user_profile and user_profile.age else None,
+            "assessment_start_static",
+        )
 
         if not perseus_items:
             logger.error(f"[ASSESSMENT] Failed to load any Perseus items")
@@ -2539,15 +2667,25 @@ def start_adaptive_assessment(subject: str, request: Request):
 
         # --- Fall through to DASH pool if no warm-start ---
         if not first_q:
-            first_q = dash_system.get_next_question_flexible(
-                user_id, current_time, user_profile=user_profile, fast_mode=True,
+            first_q = _run_with_timeout(
+                dash_system.get_next_question_flexible,
+                LEARNING_Q_LOOKUP_TIMEOUT_S,
+                user_id,
+                current_time,
+                user_profile=user_profile,
+                fast_mode=True,
                 force_grade_range=True,
             )
 
         if not first_q:
             # Last resort: try any grade (no grade range restriction)
-            first_q = dash_system.get_next_question_flexible(
-                user_id, current_time, user_profile=user_profile, fast_mode=True,
+            first_q = _run_with_timeout(
+                dash_system.get_next_question_flexible,
+                LEARNING_Q_LOOKUP_TIMEOUT_S,
+                user_id,
+                current_time,
+                user_profile=user_profile,
+                fast_mode=True,
             )
 
         # Final fallback: subject-scoped JIT question for sparse/new subjects.
@@ -2580,8 +2718,13 @@ def start_adaptive_assessment(subject: str, request: Request):
             user_profile = dash_system.load_user_or_create(user_id, age=jwt_age if jwt_age else 5)
             current_time = time.time()
             for _retry in range(3):
-                alt_q = dash_system.get_next_question_flexible(
-                    user_id, current_time, user_profile=user_profile, fast_mode=True,
+                alt_q = _run_with_timeout(
+                    dash_system.get_next_question_flexible,
+                    LEARNING_REFILL_LOOKUP_TIMEOUT_S,
+                    user_id,
+                    current_time,
+                    user_profile=user_profile,
+                    fast_mode=True,
                     exclude_question_ids=[first_q.question_id],
                 )
                 if alt_q:
@@ -2635,7 +2778,12 @@ def start_adaptive_assessment(subject: str, request: Request):
 
         # Patch widget fields before returning (prefetch/pool data may lack defaults)
         _patch_numeric_input_widgets(q_data)
-        q_data = _post_process_pipeline_items([q_data], subject)
+        q_data = _post_process_with_age_fallback(
+            [q_data],
+            subject,
+            jwt_age if jwt_age else None,
+            "assessment_start_adaptive",
+        )
         if not q_data:
             raise HTTPException(status_code=503, detail="No valid first question available yet")
         q_data = q_data[0]
@@ -2728,7 +2876,12 @@ def resume_assessment(
             raise HTTPException(status_code=500, detail="Failed to load question")
 
         _patch_numeric_input_widgets(q_data)
-        cleaned = _post_process_pipeline_items([q_data], subject)
+        cleaned = _post_process_with_age_fallback(
+            [q_data],
+            subject,
+            jwt_age if jwt_age else None,
+            "assessment_resume",
+        )
         if not cleaned:
             raise HTTPException(status_code=500, detail="Question processing failed")
 
@@ -2835,7 +2988,12 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
             if q_data:
                 _patch_numeric_input_widgets(q_data)
                 subject = (session.get("subject") or "").strip().title()
-                cleaned = _post_process_pipeline_items([q_data], subject)
+                cleaned = _post_process_with_age_fallback(
+                    [q_data],
+                    subject,
+                    jwt_age if jwt_age else None,
+                    "assessment_replay",
+                )
                 if cleaned:
                     cleaned[0].setdefault("dash_metadata", {})["dash_question_id"] = latest_served_qid
                     return {
@@ -3328,7 +3486,12 @@ def assessment_next_question(request: Request, payload: AdaptiveAssessmentAnswer
 
         # Patch widget fields before returning (prefetch/pool data may lack defaults)
         _patch_numeric_input_widgets(q_data)
-        cleaned_next = _post_process_pipeline_items([q_data], subject)
+        cleaned_next = _post_process_with_age_fallback(
+            [q_data],
+            subject,
+            jwt_age if jwt_age else None,
+            "assessment_next",
+        )
         if cleaned_next:
             q_data = cleaned_next[0]
             next_content_hash = _compute_content_hash(q_data)
@@ -3642,35 +3805,178 @@ def _normalize_subject_token(subject: Optional[str]) -> str:
     return subject.strip().lower().replace("_", " ").replace("-", " ")
 
 
+def _match_alias(text: str, alias: str) -> bool:
+    token = str(alias or "").strip().lower()
+    if not token:
+        return False
+    escaped = re.escape(token)
+    return re.search(rf"(?<![a-z0-9]){escaped}(?![a-z0-9])", text) is not None
+
+
+def _aliases_for_subject(normalized_subject: str) -> set:
+    if normalized_subject in _SUBJECT_ALIAS:
+        return set(_SUBJECT_ALIAS[normalized_subject])
+    for aliases in _SUBJECT_ALIAS.values():
+        if normalized_subject in aliases:
+            return set(aliases)
+    return {normalized_subject}
+
+
+def _subject_families_for_token(normalized_subject: str) -> set:
+    families = set()
+    for family, aliases in _SUBJECT_ALIAS.items():
+        if normalized_subject == family or normalized_subject in aliases:
+            families.add(family)
+    return families or {normalized_subject}
+
+
+def _matched_subject_families(text_blob: str) -> set:
+    hits = set()
+    for family, aliases in _SUBJECT_ALIAS.items():
+        if any(_match_alias(text_blob, alias) for alias in aliases):
+            hits.add(family)
+    return hits
+
+
 def _is_subject_scoped_question(perseus: dict, subject: Optional[str]) -> bool:
     """Guard against cross-subject contamination in served questions."""
     normalized_subject = _normalize_subject_token(subject)
     if not normalized_subject:
         return True
 
-    aliases = _SUBJECT_ALIAS.get(normalized_subject, {normalized_subject})
-    aliases = {a.lower() for a in aliases}
-    forbidden = {
-        "science": {"math"},
-        "math": {"science"},
-    }.get(normalized_subject, set())
+    aliases = {a.lower() for a in _aliases_for_subject(normalized_subject)}
+    expected_families = _subject_families_for_token(normalized_subject)
 
     dm = perseus.get("dash_metadata", {}) if isinstance(perseus, dict) else {}
     skill_ids = dm.get("skill_ids", []) if isinstance(dm, dict) else []
-    skill_blob = " ".join(str(s).lower() for s in (skill_ids or []))
+    skill_names = dm.get("skill_names", []) if isinstance(dm, dict) else []
+    unit_name = dm.get("unit_name", "") if isinstance(dm, dict) else ""
+    lesson_name = dm.get("lesson_name", "") if isinstance(dm, dict) else ""
+    dm_subject = dm.get("subject", "") if isinstance(dm, dict) else ""
+    parts = []
+    if isinstance(skill_ids, list):
+        parts.extend(str(s).lower() for s in skill_ids if s)
+    if isinstance(skill_names, list):
+        parts.extend(str(s).lower() for s in skill_names if s)
+    if unit_name:
+        parts.append(str(unit_name).lower())
+    if lesson_name:
+        parts.append(str(lesson_name).lower())
+    if dm_subject:
+        parts.append(str(dm_subject).lower())
+    skill_blob = " ".join(parts)
     if skill_blob:
-        if any(f in skill_blob for f in forbidden):
+        # Reject only if metadata explicitly points to a different subject family.
+        hit_families = _matched_subject_families(skill_blob)
+        if hit_families:
+            if hit_families & expected_families:
+                return True
             return False
-        if any(a in skill_blob for a in aliases):
-            return True
+        # Sparse/neutral metadata should not be rejected.
+        return True
 
     # Fallback to question content when skill metadata is sparse
     content = str(((perseus.get("question") or {}).get("content") or "")).lower()
     if not content.strip():
         return True
-    if any(f in content for f in forbidden):
+
+    # Keep hard mismatch guard for the most error-prone pair.
+    forbidden = {
+        "science": {"math"},
+        "math": {"science"},
+    }.get(normalized_subject, set())
+    if any(_match_alias(content, f) for f in forbidden):
         return False
+
+    if any(_match_alias(content, a) for a in aliases):
+        return True
     return True
+
+
+def _is_age_scoped_question(perseus: dict, age: Optional[int]) -> bool:
+    """Reject only explicit age/grade mismatches from metadata."""
+    if not isinstance(age, int):
+        return True
+    dm = perseus.get("dash_metadata", {}) if isinstance(perseus, dict) else {}
+    skill_ids = dm.get("skill_ids", []) if isinstance(dm, dict) else []
+    skill_names = dm.get("skill_names", []) if isinstance(dm, dict) else []
+    unit_name = dm.get("unit_name", "") if isinstance(dm, dict) else ""
+    lesson_name = dm.get("lesson_name", "") if isinstance(dm, dict) else ""
+    parts = []
+    if isinstance(skill_ids, list):
+        parts.extend(str(s).lower() for s in skill_ids if s)
+    if isinstance(skill_names, list):
+        parts.extend(str(s).lower() for s in skill_names if s)
+    if unit_name:
+        parts.append(str(unit_name).lower())
+    if lesson_name:
+        parts.append(str(lesson_name).lower())
+    skill_blob = " ".join(parts)
+    if not skill_blob:
+        return True
+
+    normalized_blob = re.sub(r"[_\-]+", " ", skill_blob)
+    hinted_grades = set()
+    hinted_ranges: List[tuple[int, int]] = []
+    hinted_bands = set()
+
+    if re.search(r"\bkindergarten\b", normalized_blob) or re.search(r"\bgrade\s*k\b", normalized_blob):
+        hinted_grades.add(0)
+    for match in re.findall(r"\bgrade\s*(\d{1,2})\b", normalized_blob):
+        g = int(match)
+        if 0 <= g <= 12:
+            hinted_grades.add(g)
+    for match in re.findall(r"\b(\d{1,2})(?:st|nd|rd|th)\s*grade\b", normalized_blob):
+        g = int(match)
+        if 0 <= g <= 12:
+            hinted_grades.add(g)
+    for lo_s, hi_s in re.findall(
+        r"\b(\d{1,2})(?:st|nd|rd|th)?\s*(?:to|-)\s*(\d{1,2})(?:st|nd|rd|th)?\s*grade\b",
+        normalized_blob,
+    ):
+        lo = int(lo_s)
+        hi = int(hi_s)
+        if 0 <= lo <= 12 and 0 <= hi <= 12:
+            hinted_ranges.append((min(lo, hi), max(lo, hi)))
+    for lo_s, hi_s in re.findall(r"\bgrade\s*(\d{1,2})\s*(?:to|-)\s*(\d{1,2})\b", normalized_blob):
+        lo = int(lo_s)
+        hi = int(hi_s)
+        if 0 <= lo <= 12 and 0 <= hi <= 12:
+            hinted_ranges.append((min(lo, hi), max(lo, hi)))
+
+    if re.search(r"\belementary\b", normalized_blob):
+        hinted_bands.add("elementary")
+    if re.search(r"\bmiddle\s*school\b|\bjunior\s*high\b", normalized_blob):
+        hinted_bands.add("middle")
+    if re.search(r"\bhigh\s*school\b", normalized_blob):
+        hinted_bands.add("high")
+    if re.search(r"\bprecalculus\b|\bcalculus\b|\bap\s", normalized_blob):
+        hinted_bands.add("high")
+
+    # If no explicit age signal is present, do not reject.
+    if not hinted_grades and not hinted_ranges and not hinted_bands:
+        return True
+
+    expected_grade = max(0, min(12, age - 5))
+    for lo, hi in hinted_ranges:
+        if lo - 1 <= expected_grade <= hi + 1:
+            return True
+
+    # Allow small drift for imperfect metadata labels.
+    if hinted_grades and any(abs(g - expected_grade) <= 2 for g in hinted_grades):
+        return True
+
+    band_ranges = {
+        "elementary": (0, 5),
+        "middle": (6, 8),
+        "high": (9, 12),
+    }
+    for band in hinted_bands:
+        lo, hi = band_ranges[band]
+        if lo - 1 <= expected_grade <= hi + 1:
+            return True
+
+    return False
 
 
 def _has_answer_space(perseus: dict) -> bool:
@@ -3697,7 +4003,11 @@ def _has_answer_space(perseus: dict) -> bool:
     return False
 
 
-def _post_process_pipeline_items(perseus_items: List[Dict], subject: Optional[str]) -> List[Dict]:
+def _post_process_pipeline_items(
+    perseus_items: List[Dict],
+    subject: Optional[str],
+    age: Optional[int] = None,
+) -> List[Dict]:
     """Final safety gate before returning questions to frontend.
 
     Enforces:
@@ -3722,6 +4032,9 @@ def _post_process_pipeline_items(perseus_items: List[Dict], subject: Optional[st
         if not _is_subject_scoped_question(item, subject):
             logger.warning("[CONTENT_PIPELINE] Rejected cross-subject question")
             continue
+        if not _is_age_scoped_question(item, age):
+            logger.warning("[CONTENT_PIPELINE] Rejected age-mismatched question")
+            continue
 
         dm = item.get("dash_metadata", {}) if isinstance(item.get("dash_metadata"), dict) else {}
         qid = str(dm.get("dash_question_id") or "")
@@ -3738,6 +4051,25 @@ def _post_process_pipeline_items(perseus_items: List[Dict], subject: Optional[st
         cleaned.append(_strip_objectids(item))
 
     return cleaned
+
+
+def _post_process_with_age_fallback(
+    perseus_items: List[Dict],
+    subject: Optional[str],
+    age: Optional[int],
+    context: str,
+) -> List[Dict]:
+    """Run strict post-process; relax only the age gate if it drops everything."""
+    strict = _post_process_pipeline_items(perseus_items, subject, age)
+    if strict or age is None:
+        return strict
+    relaxed = _post_process_pipeline_items(perseus_items, subject, None)
+    if relaxed:
+        logger.warning(
+            f"[CONTENT_PIPELINE] {context}: strict age gate filtered all candidates; "
+            f"serving {len(relaxed)} subject-scoped item(s)"
+        )
+    return relaxed
 
 
 def _load_question_perseus(question_id: str, mongo_db) -> Optional[dict]:
@@ -4319,19 +4651,15 @@ def _prewarm_assessment_questions(user_id: str, subject: str, region: str):
             if not dash_system:
                 return
 
+            # Pin DASH singleton to requested subject before any generation.
+            _switch_subject_if_needed(subject, region)
             profile = dash_system.load_user_or_create(user_id)
-            current_time = time.time()
+            grade = profile.current_grade
+            age = profile.age or 10
+            grade_name = grade.replace("GRADE_", "Grade ").replace("K", "Kindergarten")
 
-            # Try pool/DASH first (fast path)
-            q = dash_system.get_next_question_flexible(
-                user_id, current_time, user_profile=profile, fast_mode=True,
-            )
-
-            # JIT fallback for cold subjects
-            if not q and dash_system.use_ai_questions and dash_system.ai_provider:
-                grade = profile.current_grade
-                age = profile.age or 10
-                grade_name = grade.replace("GRADE_", "Grade ").replace("K", "Kindergarten")
+            q = None
+            if dash_system.use_ai_questions and dash_system.ai_provider:
                 synthetic_id = f"assessment_{subject.lower().replace(' ', '_')}_{grade.lower()}_warmstart"
                 try:
                     ai_result = dash_system.ai_provider.get_question_for_skill(
@@ -4355,6 +4683,17 @@ def _prewarm_assessment_questions(user_id: str, subject: str, region: str):
                         )
                 except Exception as e:
                     logger.warning(f"[WARMSTART] JIT failed for {subject}: {e}")
+
+            # Fallback to DASH picker only if direct warm JIT failed.
+            if not q:
+                current_time = time.time()
+                q = dash_system.get_next_question_flexible(
+                    user_id,
+                    current_time,
+                    user_profile=profile,
+                    fast_mode=True,
+                    force_grade_range=True,
+                )
 
             if not q:
                 return
