@@ -61,10 +61,10 @@ code {
 
 /* When the floating control panel is expanded, add right padding so content clears the panel */
 html.floating-panel-expanded .assessment-content-wrapper {
-  padding-right: 300px !important;
+  padding-right: min(400px, 40vw) !important;
 }
 html.floating-panel-expanded .question-panel {
-  padding-right: 280px;
+  padding-right: min(380px, 38vw) !important;
 }
 
 /* ============================================
@@ -111,12 +111,12 @@ html.floating-panel-expanded .question-panel {
   width: 100%;
 }
 
-/* Core dropdown container */
+/* Core dropdown container — neo-brutalism: sharp corners, hard shadow */
 .framework-perseus [data-testid="dropdown-core-container"] {
   background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  border: 4px solid #000;
+  border-radius: 0;
+  box-shadow: 4px 4px 0 #000;
   min-width: 160px;
   padding: 4px 0;
   z-index: 1000;
@@ -148,14 +148,12 @@ html.floating-panel-expanded .question-panel {
   cursor: not-allowed;
 }
 
-/* Target Perseus input fields safely */
+/* Target Perseus input fields — neo-brutalism: sharp corners, 4px border */
 .framework-perseus input[data-testid="input-with-examples"] {
-  border: 2px solid #1c1d1e !important;
-  /* customize color */
-  border-radius: 6px !important;
-  /* keep it rounded */
+  border: 4px solid #000 !important;
+  border-radius: 0 !important;
   padding: 6px 10px !important;
-  /* add breathing room */
+  box-shadow: 3px 3px 0 #000 !important;
   box-sizing: border-box !important;
   /* ensure padding doesn’t mess width */
   /* ensure padding doesn’t mess width */
@@ -192,14 +190,11 @@ html.floating-panel-expanded .question-panel {
   box-shadow: none !important;
 }
 
-/* Optional: change border on focus */
+/* Neo-brutalism focus: thick border, no blur glow */
 .framework-perseus input[data-testid="input-with-examples"]:focus {
-  border-color: #1c1d1e !important;
-  /* brighter border on focus */
+  border-color: #000 !important;
   outline: none !important;
-  /* remove default outline */
-  box-shadow: 0 0 0 2px rgba(0, 119, 204, 0.2) !important;
-  /* subtle glow */
+  box-shadow: 4px 4px 0 #000 !important;
 }
 
 td {
@@ -305,9 +300,9 @@ td {
 /* POPPER MENU (light mode only; dark mode is handled in mcq-fix.css) */
 html:not(.dark) [data-testid="dropdown-core-container"] {
   background: #fff !important;
-  border: 1px solid #ddd !important;
-  border-radius: 6px !important;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
+  border: 4px solid #000 !important;
+  border-radius: 0 !important;
+  box-shadow: 4px 4px 0 #000 !important;
   min-width: 200px !important;
   padding: 4px 0 !important;
   z-index: 1000 !important;
@@ -801,18 +796,34 @@ a[target="lint-help-window"] {
   }
 }
 
-/* NUCLEAR FIX: Override Perseus choice height at global level */
+/* Override Perseus choice height at global level.
+   Use min-height for consistency but allow expansion for long answer text. */
 .framework-perseus .choice,
 .framework-perseus li.choice,
 .perseus-widget-radio .choice,
 #question-content-container .choice {
     min-height: 48px !important;
-    max-height: 60px !important;
+    max-height: none !important;
     padding: 10px 16px !important;
     line-height: 1.4 !important;
+    overflow: visible !important;
 }
 
 /* Override the spacing variable globally */
 :root {
     --perseus-multiple-choice-spacing: 10px !important;
+}
+
+/* ======================================================================
+   FIX: Flush left-alignment of question card.
+   assessment-content-wrapper has inline padding-left via React style prop.
+   The content block parent uses transform: scale() with transformOrigin:
+   center top, causing left offset. CSS !important overrides inline styles.
+   ====================================================================== */
+.assessment-content-wrapper {
+    padding-left: 0 !important;
+}
+
+div:has(> #question-content-container) {
+    transform-origin: top left !important;
 }

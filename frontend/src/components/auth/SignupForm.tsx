@@ -535,7 +535,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ setupToken, googleUser, onCompl
             </Button>
 
             {step < 3 ? (
-              <Button type="button" onClick={nextStep}>
+              <Button type="button" onClick={nextStep} disabled={isSubmitting}>
                 Next Step
                 <span className="material-symbols-outlined ml-2 text-base">arrow_forward</span>
               </Button>

@@ -1,7 +1,27 @@
 /* MCQ Highlighting Fix - Override to ensure only selected option is highlighted */
 
+/* ======================================================================
+   CRITICAL FIX: Kill Perseus pre-selection blue ring.
+   Perseus sets inline border-color on [class*="ring_"] spans from internal
+   React state. We CANNOT beat it with DOM manipulation because React
+   re-renders overwrite our changes. The ONLY reliable fix is CSS !important
+   which beats inline styles when combined with !important.
+   The container gets class "no-pre-selection" on mount; first user click
+   removes it so the real selection ring can appear.
+   ====================================================================== */
+#question-content-container.no-pre-selection [class*="ring_"],
+#question-content-container.no-pre-selection [class*="ring_"] {
+    border-color: transparent !important;
+}
+
+/* Once user interacts (no-pre-selection removed), let Perseus own the ring */
+#question-content-container:not(.no-pre-selection) [class*="ring_"] {
+    /* normal — Perseus inline styles apply */
+}
+
 /* Prevent all choices from highlighting when one is clicked */
-:global(.framework-perseus) .choice {
+.framework-perseus .choice,
+#question-content-container .choice {
     /* Reset any global hover states that might affect all choices */
     transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
     /* Neo-brutalism styling for radio buttons */
@@ -22,7 +42,8 @@ html.dark .framework-perseus .choice {
 }
 
 /* Only highlight the actually selected choice */
-:global(.framework-perseus) .choice:has(> button[aria-pressed="true"]) {
+.framework-perseus .choice:has(> button[aria-pressed="true"]),
+#question-content-container .choice:has(> button[aria-pressed="true"]) {
     /* Ensure selected state is visually distinct */
     background-color: #FFD93D !important;
     border-color: #000 !important;
@@ -32,8 +53,10 @@ html.dark .framework-perseus .choice {
 }
 
 /* Dark mode selected */
-:global(.dark) .framework-perseus .choice:has(> button[aria-pressed="true"]),
-html.dark .framework-perseus .choice:has(> button[aria-pressed="true"]) {
+.dark .framework-perseus .choice:has(> button[aria-pressed="true"]),
+html.dark .framework-perseus .choice:has(> button[aria-pressed="true"]),
+.dark #question-content-container .choice:has(> button[aria-pressed="true"]),
+html.dark #question-content-container .choice:has(> button[aria-pressed="true"]) {
     background-color: #FFD93D !important;
     border-color: #fff !important;
     border-width: 5px !important;
@@ -50,13 +73,15 @@ html.dark .framework-perseus .choice:has(> button[aria-pressed="true"]) {
 
 /* Ensure hover only affects the hovered choice, not siblings */
 @media (hover: hover) {
-    :global(.framework-perseus) .choice:hover:not(:has(> button[aria-pressed="true"])) {
+    .framework-perseus .choice:hover:not(:has(> button[aria-pressed="true"])),
+    #question-content-container .choice:hover:not(:has(> button[aria-pressed="true"])) {
         background-color: rgba(0, 0, 0, 0.04);
     }
 }
 
 /* Fix: Prevent CSS from applying to all choices when one is selected */
-:global(.framework-perseus) .choice+.choice {
+.framework-perseus .choice+.choice,
+#question-content-container .choice+.choice {
     /* Ensure each choice is independent */
     isolation: isolate;
 }
@@ -359,21 +384,23 @@ html.dark [data-testid="assessment-explanation"] * {
     opacity: 1 !important;
 }
 
-/* Fix: Tiny numeric-input box (Bug #55) — make inputs large enough to be usable */
+/* Fix: Tiny numeric-input box (Bug #55) — make inputs large enough to be usable.
+   Use clamp() so inline cloze inputs don't break sentence flow. */
 #question-content-container .framework-perseus input[type="text"] {
-    min-width: 140px !important;
+    min-width: clamp(80px, 15vw, 140px) !important;
     min-height: 38px !important;
     padding: 6px 10px !important;
     font-size: 16px !important;
     box-sizing: border-box;
 }
 
-/* Keep visual-heavy prompts from forcing page scroll in assessment viewport */
+/* Keep visual-heavy prompts from forcing page scroll in assessment viewport.
+   Use a taller cap so graphs/charts remain readable. */
 #question-content-container img,
 #question-content-container svg,
 #question-content-container canvas {
     max-width: 100% !important;
-    max-height: min(28vh, 220px) !important;
+    max-height: min(40vh, 340px) !important;
     width: auto !important;
     height: auto !important;
     object-fit: contain;
@@ -393,7 +420,9 @@ html.dark [data-testid="assessment-explanation"] * {
 }
 
 /* Post-answer feedback: highlight correct and incorrect choices */
-:global(.framework-perseus) .choice[data-feedback="correct"] {
+/* Plain CSS — no :global() (that's CSS Modules syntax, not valid in plain .css) */
+.framework-perseus .choice[data-feedback="correct"],
+#question-content-container .choice[data-feedback="correct"] {
     background-color: #4ADE80 !important;  /* Green */
     border-color: #000 !important;
     border-width: 5px !important;
@@ -401,7 +430,8 @@ html.dark [data-testid="assessment-explanation"] * {
     pointer-events: none !important;  /* Disable clicks after answer */
 }
 
-:global(.framework-perseus) .choice[data-feedback="incorrect"] {
+.framework-perseus .choice[data-feedback="incorrect"],
+#question-content-container .choice[data-feedback="incorrect"] {
     background-color: #FF6B6B !important;  /* Red */
     border-color: #000 !important;
     border-width: 5px !important;
@@ -411,22 +441,27 @@ html.dark [data-testid="assessment-explanation"] * {
 }
 
 /* Dark mode variations */
-:global(.dark) .framework-perseus .choice[data-feedback="correct"],
-html.dark .framework-perseus .choice[data-feedback="correct"] {
+.dark .framework-perseus .choice[data-feedback="correct"],
+html.dark .framework-perseus .choice[data-feedback="correct"],
+.dark #question-content-container .choice[data-feedback="correct"],
+html.dark #question-content-container .choice[data-feedback="correct"] {
     background-color: #22C55E !important;
     border-color: #fff !important;
     box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3) !important;
 }
 
-:global(.dark) .framework-perseus .choice[data-feedback="incorrect"],
-html.dark .framework-perseus .choice[data-feedback="incorrect"] {
+.dark .framework-perseus .choice[data-feedback="incorrect"],
+html.dark .framework-perseus .choice[data-feedback="incorrect"],
+.dark #question-content-container .choice[data-feedback="incorrect"],
+html.dark #question-content-container .choice[data-feedback="incorrect"] {
     background-color: #EF4444 !important;
     border-color: #fff !important;
     box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3) !important;
 }
 
 /* Prevent re-selection after feedback */
-:global(.framework-perseus) .choice[data-feedback] {
+.framework-perseus .choice[data-feedback],
+#question-content-container .choice[data-feedback] {
     cursor: default !important;
     pointer-events: none !important;
 }
@@ -460,4 +495,78 @@ html.dark li.perseus-radio-option[data-feedback="incorrect"] {
     background-color: #EF4444 !important;
     border-color: #fff !important;
     box-shadow: 4px 4px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ======================================================================
+   FIX: Flush left-alignment of question card.
+   The assessment-content-wrapper has inline padding-left: 12px and the
+   content block uses transformOrigin: 'top center' which shifts scaled
+   content rightward. CSS !important overrides inline styles.
+   ====================================================================== */
+.assessment-content-wrapper {
+    padding-left: 0 !important;
+}
+
+/* The content block div wrapping #question-content-container uses
+   transform: scale() with transformOrigin: center top, causing a
+   left gap when content is scaled down. Force top-left origin.
+   Target both the container AND its parent (which has the actual transform). */
+#question-content-container,
+#question-content-container > *,
+.assessment-content-wrapper div[style*="scale"] {
+    transform-origin: top left !important;
+}
+
+/* Also use :has() to target the direct parent of the container */
+div:has(> #question-content-container) {
+    transform-origin: top left !important;
+}
+
+/* ======================================================================
+   FIX: KaTeX / LaTeX long expression overflow.
+   MathJax/KaTeX renders into wide <span> trees that blow out the
+   container width. Wrap them with horizontal scroll so the rest of
+   the question card stays intact.
+   ====================================================================== */
+#question-content-container .katex-display,
+#question-content-container .MathJax_Display,
+#question-content-container .katex-html,
+#question-content-container mjx-container {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    display: block !important;
+}
+
+/* Inline KaTeX should shrink-wrap but never push the line wider than the card */
+#question-content-container .katex:not(.katex-display .katex) {
+    max-width: 100%;
+    overflow-x: auto;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* ======================================================================
+   FIX: Skill name / long text overflow in PersonalizationCards and
+   breadcrumb-style elements. Truncate with ellipsis instead of
+   pushing layout wider.
+   ====================================================================== */
+.skill-name-text,
+.personalization-card .skill-label,
+[data-testid="skill-name"] {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 100% !important;
+}
+
+/* ======================================================================
+   FIX: Button disabled state — make visually distinct beyond opacity.
+   ====================================================================== */
+#question-content-container button:disabled,
+.assessment-container button:disabled,
+.assessment-content-wrapper button:disabled {
+    opacity: 0.45 !important;
+    cursor: not-allowed !important;
+    filter: grayscale(40%) !important;
 }

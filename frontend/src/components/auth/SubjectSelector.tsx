@@ -41,6 +41,7 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
   const [status, setStatus] = useState<'idle' | 'loading' | 'generating' | 'error'>('idle');
   const [pollUrl, setPollUrl] = useState<string | null>(null);
   const [generationProgress, setGenerationProgress] = useState('');
+  const pollFailCountRef = useRef(0);
 
   // Stable ref for callback to avoid effect re-runs on parent re-render (Bug H1)
   const onSubjectReadyRef = useRef(onSubjectReady);
@@ -55,6 +56,7 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
 
     // Abort previous polling cycle
     pollAbortRef.current?.abort();
+    pollFailCountRef.current = 0;
     const abortController = new AbortController();
     pollAbortRef.current = abortController;
 
@@ -88,7 +90,12 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           setGenerationProgress(data.message || 'Building curriculum...');
         }
       } catch {
-        // keep polling
+        pollFailCountRef.current += 1;
+        if (pollFailCountRef.current >= 10) {
+          clearInterval(interval);
+          setStatus('error');
+          return;
+        }
       }
     }, 3000);
 

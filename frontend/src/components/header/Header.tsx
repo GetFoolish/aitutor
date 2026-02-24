@@ -144,8 +144,16 @@ export default function Header({ sidebarOpen, onToggleSidebar, assessmentMode }:
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => {
-                            localStorage.removeItem('jwt_token');
-                            sessionStorage.clear();
+                            try { localStorage.removeItem('jwt_token'); } catch { /* private browsing */ }
+                            try { localStorage.removeItem('active_assessment'); } catch { /* private browsing */ }
+                            // Targeted session cleanup — don't use sessionStorage.clear()
+                            // which was nuking everything including data the user shouldn't have to re-enter
+                            sessionStorage.removeItem('selected_subject');
+                            sessionStorage.removeItem('onboarding_complete');
+                            sessionStorage.removeItem('assessmentSubject');
+                            sessionStorage.removeItem('assessment_completed_subject');
+                            sessionStorage.removeItem('content_v1_mode');
+                            sessionStorage.removeItem('content_v1_started');
                             window.location.href = '/app/login';
                         }} className="text-[#FF6B6B] focus:text-[#FF6B6B]">
                             <LogOut className="mr-2 h-4 w-4" />

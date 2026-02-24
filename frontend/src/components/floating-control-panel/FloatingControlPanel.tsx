@@ -112,7 +112,7 @@ function FloatingControlPanel({
   const [sharedMediaOpen, setSharedMediaOpen] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [sessionTime, setSessionTime] = useState(0);
   const [popoverPosition, setPopoverPosition] = useState<"left" | "right">("right");
   const [mediaMixerStatus, setMediaMixerStatus] = useState<{
@@ -123,6 +123,7 @@ function FloatingControlPanel({
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [userBalance, setUserBalance] = useState<number | null>(null);
   const [checkingBalance, setCheckingBalance] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [showNoMinutesDialog, setShowNoMinutesDialog] = useState(false);
   const [nextResetInHours, setNextResetInHours] = useState<number | null>(null);
   const [nextResetInMinutes, setNextResetInMinutes] = useState<number | null>(null);
@@ -200,6 +201,24 @@ function FloatingControlPanel({
 
     return () => clearInterval(interval);
   }, [connected]);
+
+  // Keep page layout aware of expanded panel width so question controls do not sit under it.
+  useEffect(() => {
+    const root = document.documentElement;
+
+    const syncExpandedClass = () => {
+      const isDesktop = window.innerWidth >= 768;
+      root.classList.toggle("floating-panel-expanded", isDesktop && !isCollapsed);
+    };
+
+    syncExpandedClass();
+    window.addEventListener("resize", syncExpandedClass);
+
+    return () => {
+      window.removeEventListener("resize", syncExpandedClass);
+      root.classList.remove("floating-panel-expanded");
+    };
+  }, [isCollapsed]);
 
   const formatTime = useCallback((seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -530,6 +549,7 @@ function FloatingControlPanel({
   }, [connected, activeVideoStream, client, privacyMode, processedEdgesRef]);
 
   const handleConnect = useCallback(async () => {
+    if (isConnecting) return; // Prevent double-click during connection
     // Check if user has no minutes before connecting
     if (!connected && hasNoMinutes) {
       setShowNoMinutesDialog(true);
@@ -646,9 +666,10 @@ function FloatingControlPanel({
         }
       }, 1000);
     } else {
+      setIsConnecting(true);
       let setupCompleteReceived = false;
       let setupCompleteResolver: (() => void) | null = null;
-      
+
       const onSetupComplete = () => {
         setupCompleteReceived = true;
         if (setupCompleteResolver) {
@@ -658,7 +679,8 @@ function FloatingControlPanel({
         client.off('setupcomplete', onSetupComplete);
       };
       client.on('setupcomplete', onSetupComplete);
-      
+
+      try {
       await connect();
       
       const waitForConnection = () => {
@@ -786,8 +808,13 @@ function FloatingControlPanel({
         client.off('setupcomplete', onSetupComplete);
         setupCompleteResolver = null;
       }
+      } catch (connectError) {
+        console.error('Failed to connect:', connectError);
+      } finally {
+        setIsConnecting(false);
+      }
     }
-  }, [connected, connect, disconnect, client, interruptAudio, flushUserTranscript, flushTutorTranscript, assessmentMode, hasNoMinutes]);
+  }, [connected, connect, disconnect, client, interruptAudio, flushUserTranscript, flushTutorTranscript, assessmentMode, hasNoMinutes, isConnecting]);
 
   const [verticalAlign, setVerticalAlign] = useState<"top" | "bottom">("top");
 
@@ -859,7 +886,7 @@ function FloatingControlPanel({
   const panelClasses = useMemo(
     () =>
       cn(
-        "fixed z-[1000] bg-[#FFFDF5] dark:bg-[#000000] border-[2px] md:border-[3px] border-black dark:border-white rounded-lg md:rounded-xl",
+        "floating-toolbar-panel fixed z-[1000] bg-[#FFFDF5] dark:bg-[#000000] border-[2px] md:border-[3px] border-black dark:border-white rounded-lg md:rounded-xl",
         isCollapsed
           ? "w-[50px] md:w-[55px] py-2 md:py-2.5 px-1 md:px-1.5 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)]"
           : "w-[220px] md:w-[250px] p-2.5 md:p-3 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1),_6px_6px_16px_rgba(0,0,0,0.15),_12px_12px_32px_rgba(0,0,0,0.1)]",
@@ -959,8 +986,9 @@ function FloatingControlPanel({
 
             <button
               onClick={handleConnect}
+              disabled={isConnecting || checkingBalance}
               className={cn(
-                "w-9 h-9 md:w-10 md:h-10 border-[2px] border-black flex items-center justify-center transition-all transform active:translate-x-1 active:translate-y-1 relative group font-black",
+                "w-9 h-9 md:w-10 md:h-10 border-[2px] border-black flex items-center justify-center transition-all transform active:translate-x-1 active:translate-y-1 relative group font-black disabled:opacity-50 disabled:cursor-not-allowed",
                 connected
                   ? "bg-[#FF6B6B] hover:bg-[#FF6B6B] text-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)]"
                   : "bg-[#4ADE80] hover:bg-[#4ADE80] text-black shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)]",
@@ -1311,7 +1339,7 @@ function FloatingControlPanel({
 
             <button
               onClick={handleConnect}
-              disabled={!connected && checkingBalance}
+              disabled={!connected && (checkingBalance || isConnecting)}
               className={cn(
                 "w-full py-2.5 md:py-3 font-black transition-all transform flex items-center justify-center gap-2 mt-1 border-[2px] md:border-[3px] border-black dark:border-white uppercase text-[10px] md:text-xs",
                 connected
@@ -1341,7 +1369,7 @@ function FloatingControlPanel({
             </button>
 
             {/* Bottom Actions */}
-            <div className="grid grid-cols-4 gap-1.5 md:gap-2 pt-2 md:pt-3 border-t-[2px] border-black dark:border-white">
+            <div className="grid grid-cols-4 gap-1.5 md:gap-2 pt-2 md:pt-3 border-t-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]">
               {enableEditingSettings && (
                 <SettingsDialog
                   className="w-full"

@@ -52,7 +52,36 @@ const CostTrackingPage: React.FC = () => {
   const [expandedSessions, setExpandedSessions] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    fetchData();
+    let cancelled = false;
+    const loadInitial = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const analyticsResponse = await apiUtils.get(`${TEACHING_ASSISTANT_API_URL}/cost/analytics`);
+        if (cancelled) return;
+        if (analyticsResponse.ok) {
+          const analyticsData = await analyticsResponse.json();
+          if (!cancelled) setAnalytics(analyticsData);
+        }
+
+        const sessionsResponse = await apiUtils.get(`${TEACHING_ASSISTANT_API_URL}/cost/user?limit=50`);
+        if (cancelled) return;
+        if (sessionsResponse.ok) {
+          const sessionsData = await sessionsResponse.json();
+          if (!cancelled) setSessions(sessionsData.sessions || []);
+        }
+      } catch (err: any) {
+        if (!cancelled) {
+          console.error('Error fetching cost tracking data:', err);
+          setError(err?.message || 'Failed to load cost tracking data');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    loadInitial();
+    return () => { cancelled = true; };
   }, []);
 
   const fetchData = async () => {
@@ -172,7 +201,20 @@ const CostTrackingPage: React.FC = () => {
           )}
         >
           <CardContent className="pt-6">
-            <p className="text-center text-red-600 dark:text-red-400 font-bold">{error}</p>
+            <p className="text-center text-red-600 dark:text-red-400 font-bold mb-4">{error}</p>
+            <div className="text-center">
+              <button
+                onClick={fetchData}
+                className={cn(
+                  "px-6 py-2 font-black text-black transition-all transform",
+                  "border-[2px] border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)]",
+                  "active:translate-x-1 active:translate-y-1 active:shadow-none",
+                  "bg-[#FFD93D] hover:bg-[#FFD93D] uppercase cursor-pointer"
+                )}
+              >
+                Retry
+              </button>
+            </div>
           </CardContent>
         </Card>
       </div>

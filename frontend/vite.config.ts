@@ -7,8 +7,13 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     port: 5173,
-    strictPort: true,
-    open: true, // automatically open browser
+    strictPort: false,
+    open: false,
+    headers: {
+      'Cache-Control': 'no-store, no-cache, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+    },
   },
   build: {
     outDir: 'build', // match CRA's output directory

@@ -75,7 +75,10 @@ const ScratchpadCapture: React.FC<ScratchpadCaptureProps> = ({ children, onFrame
     };
 
     // Wait for question-content-container to load before starting capture
+    let waitTimerId: ReturnType<typeof setTimeout> | null = null;
+    let stopped = false;
     const waitForQuestionContent = () => {
+      if (stopped) return;
       const questionContent = document.querySelector('#question-content-container');
       if (questionContent) {
         console.log('✅ Question content found, starting capture at reduced rate');
@@ -83,13 +86,15 @@ const ScratchpadCapture: React.FC<ScratchpadCaptureProps> = ({ children, onFrame
         intervalId = window.setInterval(captureFrame, 5000);
       } else {
         // Check again in 100ms
-        setTimeout(waitForQuestionContent, 100);
+        waitTimerId = setTimeout(waitForQuestionContent, 100);
       }
     };
 
     waitForQuestionContent();
 
     return () => {
+      stopped = true;
+      if (waitTimerId) clearTimeout(waitTimerId);
       if (intervalId) {
         clearInterval(intervalId);
       }

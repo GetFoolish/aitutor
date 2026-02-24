@@ -15,19 +15,35 @@ import katex from 'katex';
 import 'katex/dist/katex.min.css';
 import '../question-display/mcq-fix.css';
 
-/** Render text with inline LaTeX ($...$) as rendered math via KaTeX */
+/** Render text with inline LaTeX ($...$) as rendered math via KaTeX.
+ *  Skips currency-style dollar signs like $10, $25.50 etc.
+ *  Only matches paired $...$ where content looks like LaTeX (contains
+ *  backslashes, braces, operators, or multi-char math expressions). */
 function renderTextWithLatex(text: string): React.ReactNode {
   if (!text) return '';
-  // Split on $...$ patterns (inline math)
+  // Match $...$ but NOT currency like $10 or $25.50
+  // Currency pattern: $ followed by digits (optionally with . and more digits), then word boundary or space/punctuation
+  // LaTeX pattern: $ followed by content that contains LaTeX-like chars (\, {, }, ^, _, frac, sqrt, etc.)
   const parts = text.split(/(\$[^$]+\$)/g);
   return parts.map((part, i) => {
     if (part.startsWith('$') && part.endsWith('$') && part.length > 2) {
-      const tex = part.slice(1, -1);
+      const inner = part.slice(1, -1);
+      // Skip if it looks like currency: just a number, optionally with decimals/commas
+      if (/^\s*[\d,]+(\.\d+)?\s*$/.test(inner)) {
+        // Restore the dollar signs — this is currency, not LaTeX
+        return <span key={i}>{part}</span>;
+      }
+      // Skip if it's a plain word or short text without any LaTeX markers
+      const hasLatexMarkers = /[\\{}^_]|\\frac|\\sqrt|\\text|\\left|\\right|\\cdot|\\times|\\div|\\pm|\\sum|\\int|\\lim/.test(inner);
+      if (!hasLatexMarkers && /^[a-zA-Z0-9\s.,!?'"-]+$/.test(inner)) {
+        // Plain text between dollar signs — not LaTeX, preserve as-is
+        return <span key={i}>{part}</span>;
+      }
       try {
-        const html = katex.renderToString(tex, { throwOnError: false, displayMode: false });
+        const html = katex.renderToString(inner, { throwOnError: false, displayMode: false });
         return <span key={i} dangerouslySetInnerHTML={{ __html: html }} />;
       } catch {
-        return <code key={i}>{tex}</code>;
+        return <span key={i}>{part}</span>;
       }
     }
     return <span key={i}>{part}</span>;
@@ -202,6 +218,48 @@ const AssessmentQuestion: React.FC<Props> = ({
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
+  // Fix: Block Perseus pre-selection blue ring via CSS class + first-click removal.
+  // Perseus sets inline border-color on ring spans from React state — DOM clearing
+  // loses the race because React re-renders. CSS !important on .no-pre-selection beats
+  // inline styles reliably. We add the class on mount and remove it on first user click
+  // so the real selection ring works normally after interaction.
+  useEffect(() => {
+    if (isAnswered) return;
+    const container = document.getElementById('question-content-container');
+    if (!container) return;
+
+    // Add blocking class immediately
+    container.classList.add('no-pre-selection');
+
+    // Also clear aria-pressed and checked state for accessibility consistency
+    const clearPreSelection = () => {
+      const pressedBtns = container.querySelectorAll('button[aria-pressed="true"]');
+      pressedBtns.forEach(btn => btn.setAttribute('aria-pressed', 'false'));
+      const selectedChoices = container.querySelectorAll('.choice.perseus-radio-selected, .perseus-radio-selected');
+      selectedChoices.forEach(el => el.classList.remove('perseus-radio-selected'));
+      const checkedInputs = container.querySelectorAll<HTMLInputElement>('input[type="radio"]:checked');
+      checkedInputs.forEach(input => { input.checked = false; });
+    };
+
+    const t1 = setTimeout(clearPreSelection, 100);
+    const t2 = setTimeout(clearPreSelection, 300);
+    const t3 = setTimeout(clearPreSelection, 600);
+
+    // Remove blocking class on first user click so real selections show the ring
+    const handleFirstClick = () => {
+      container.classList.remove('no-pre-selection');
+      container.removeEventListener('click', handleFirstClick);
+    };
+    container.addEventListener('click', handleFirstClick);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      container.removeEventListener('click', handleFirstClick);
+    };
+  }, [question, questionNumber, isAnswered]);
+
   // Enforce compact inline widget geometry for sentence-embedded dropdown/text widgets.
   // This runs after each question render to override widget-internal style drift.
   useEffect(() => {
@@ -324,10 +382,12 @@ const AssessmentQuestion: React.FC<Props> = ({
         // Expression: convert to numeric-input to avoid MathInput crash (string ref issue in React 18)
         if (w?.type === 'expression' && w.options) {
           const answerForms = w.options.answerForms || [];
-          const firstAnswer = answerForms[0]?.value || '0';
-          // Replace placeholder in content
-          if (typeof q.question.content === 'string') {
-            q.question.content = q.question.content.replace(`[[☃ ${key}]]`, `[[☃ ${key}]]`);
+          const firstAnswer = (answerForms[0]?.value || '').toString().trim();
+          const parsed = parseFloat(firstAnswer);
+          if (!firstAnswer || isNaN(parsed)) {
+            // Can't safely convert to numeric-input — skip conversion,
+            // leave as expression (Perseus will render a text input fallback).
+            continue;
           }
           q.question.widgets[key] = {
             type: 'numeric-input',
@@ -339,7 +399,7 @@ const AssessmentQuestion: React.FC<Props> = ({
               size: 'normal',
               answers: [{
                 status: 'correct',
-                value: parseFloat(firstAnswer) || 0,
+                value: parsed,
                 maxError: 0.01,
                 simplify: 'optional',
                 strict: false,
@@ -347,6 +407,7 @@ const AssessmentQuestion: React.FC<Props> = ({
               }],
             },
           };
+          continue;
         }
         // Definition: inline the definition text to avoid popover dismiss bugs
         // The definition widget's Wonder Blocks Popover has dismiss issues,
@@ -530,9 +591,16 @@ const AssessmentQuestion: React.FC<Props> = ({
     overflowY: 'visible',
     overflowX: 'hidden',
     paddingRight: compactViewport ? '2px' : '4px',
-    transformOrigin: 'top center',
-    transform: resolvedContentZoom < 1 ? `scale(${resolvedContentZoom})` : 'none',
-    width: resolvedContentZoom < 1 ? `${100 / resolvedContentZoom}%` : '100%',
+    transformOrigin: 'top left',
+    ...(resolvedContentZoom < 1
+      ? {
+          // Use CSS zoom (not transform) — it reflows layout so width stays correct
+          // and doesn't create a horizontal scrollbar from overcompensated width.
+          zoom: resolvedContentZoom,
+          width: '100%',
+          maxWidth: '100%',
+        }
+      : { width: '100%' }),
   };
   // Detect if question needs audio (phonics/listening questions)
   const audioWord = useMemo(() => {
@@ -542,8 +610,10 @@ const AssessmentQuestion: React.FC<Props> = ({
 
   const [emptyWarning, setEmptyWarning] = useState(false);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleSubmit = () => {
-    if (isAnswered) return; // Prevent double-submit
+    if (isAnswered || isSubmitting) return; // Prevent double-submit
     if (!rendererRef.current) {
       console.error('[AssessmentQuestion] rendererRef is null — widget still loading, please wait');
       // Widget still loading — show a warning instead of force-marking incorrect
@@ -553,6 +623,7 @@ const AssessmentQuestion: React.FC<Props> = ({
     }
 
     try {
+    setIsSubmitting(true);
 
     const userInput = rendererRef.current.getUserInput();
     const questionData = sanitizedQuestion.question;
@@ -561,6 +632,12 @@ const AssessmentQuestion: React.FC<Props> = ({
     if (!hasUserInput(questionData.widgets || {}, userInput)) {
       setEmptyWarning(true);
       setTimeout(() => setEmptyWarning(false), 3500);
+      // Shake the submit button for visual feedback
+      const btn = document.querySelector('[data-testid="assessment-submit-button"]') as HTMLElement;
+      if (btn) {
+        btn.style.animation = 'shake-btn 0.4s ease-in-out';
+        btn.addEventListener('animationend', () => { btn.style.animation = ''; }, { once: true });
+      }
       return;
     }
 
@@ -591,34 +668,64 @@ const AssessmentQuestion: React.FC<Props> = ({
 
     // Mark choices with correct/incorrect feedback for visual highlighting
     setTimeout(() => {
-      // Target Perseus radio options directly (not generic .choice class)
-      const choiceElements = document.querySelectorAll('li.perseus-radio-option');
+      const container = document.getElementById('question-content-container');
+      if (!container) return;
+
+      // Perseus renders choices as div.choice inside a fieldset
+      // Try multiple selectors to handle different Perseus DOM structures
+      let choiceElements = container.querySelectorAll('.perseus-widget-radio-fieldset .choice');
+      if (choiceElements.length === 0) {
+        choiceElements = container.querySelectorAll('li.perseus-radio-option');
+      }
+      if (choiceElements.length === 0) {
+        choiceElements = container.querySelectorAll('[class*="choice"]');
+      }
+
       const widgets = questionData.widgets || {};
 
       // Find radio widget
       const radioWidgetKey = Object.keys(widgets).find(key => widgets[key]?.type === 'radio');
       if (radioWidgetKey && widgets[radioWidgetKey]?.options?.choices) {
         const choices = widgets[radioWidgetKey].options.choices;
-        // choicesSelected is boolean array: [false, true, false, false]
-        const userSelection = ((userInput as Record<string, any>)[radioWidgetKey] as any)?.choicesSelected || [];
+        // Get user selection — could be choicesSelected (boolean array) or selectedChoiceIds
+        const rawInput = (userInput as Record<string, any>)[radioWidgetKey] || {};
+        const userSelection = rawInput.choicesSelected || [];
+        const selectedIds = rawInput.selectedChoiceIds || [];
 
         choiceElements.forEach((el, idx) => {
           if (idx < choices.length) {
             const choice = choices[idx];
-            // Fix: Check boolean array by index, not includes()
-            const isUserSelected = userSelection[idx] === true;
+            // Check boolean array first, fall back to selectedChoiceIds
+            const isUserSelected = userSelection[idx] === true ||
+              selectedIds.includes(String(idx)) ||
+              selectedIds.includes(`choice-${idx}`);
 
             if (choice?.correct) {
               // Mark correct answers with green
               el.setAttribute('data-feedback', 'correct');
+              // Add a visible "✓ Correct Answer" label if user got it wrong
+              if (!isCorrect && !el.querySelector('.correct-answer-label')) {
+                const label = document.createElement('div');
+                label.className = 'correct-answer-label';
+                label.style.cssText = 'margin-top:8px;padding:4px 10px;background:#166534;color:#fff;font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;display:inline-block;border:2px solid #000;';
+                label.textContent = '✓ Correct Answer';
+                el.appendChild(label);
+              }
             } else if (isUserSelected && !choice?.correct) {
               // Mark user's incorrect selection with red
               el.setAttribute('data-feedback', 'incorrect');
+              if (!el.querySelector('.incorrect-answer-label')) {
+                const label = document.createElement('div');
+                label.className = 'incorrect-answer-label';
+                label.style.cssText = 'margin-top:8px;padding:4px 10px;background:#991B1B;color:#fff;font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;display:inline-block;border:2px solid #000;';
+                label.textContent = '✗ Your Answer';
+                el.appendChild(label);
+              }
             }
           }
         });
       }
-    }, 50); // Small delay to ensure DOM is ready
+    }, 200); // Delay to ensure Perseus DOM is fully rendered before applying feedback
 
     // Fire-and-forget analytics reporting
     const questionId = question?.dash_metadata?.dash_question_id || `assessment_q_${questionNumber}`;
@@ -638,6 +745,8 @@ const AssessmentQuestion: React.FC<Props> = ({
       setEmptyWarning(true);
       setTimeout(() => setEmptyWarning(false), 4000);
       setIsAnswered(false);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -722,7 +831,8 @@ const AssessmentQuestion: React.FC<Props> = ({
 
           {/* Progressive Hints */}
           {!isAnswered && question?.hints?.length > 0 && (
-            <div className={`${ultraCompactViewport ? 'mb-1' : compactViewport ? 'mb-2' : 'mb-3'}`}>
+            <div className={`${ultraCompactViewport ? 'mb-1' : compactViewport ? 'mb-2' : 'mb-3'}`}
+                 style={{ maxHeight: ultraCompactViewport ? '120px' : compactViewport ? '180px' : '240px', overflowY: 'auto' }}>
               {hintsShown > 0 && (
                 <div className={ultraCompactViewport ? 'mb-1' : 'mb-2'}>
                   {(question.hints || []).slice(0, hintsShown).map((hint: any, idx: number) => (
@@ -743,6 +853,7 @@ const AssessmentQuestion: React.FC<Props> = ({
                 <button
                   data-testid="assessment-show-hint-button"
                   tabIndex={0}
+                  disabled={isSubmitting}
                   onClick={() => setHintsShown(h => h + 1)}
                   className={`${ultraCompactViewport ? 'py-3 px-5 text-sm' : 'py-4 px-6 text-base'} font-black uppercase tracking-wide bg-[#FFD93D] dark:bg-[#FFD93D] text-black dark:text-black border-[4px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] mb-3 hover:bg-[#FFE066] dark:hover:bg-[#FFE066] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition-all duration-100 active:translate-x-2 active:translate-y-2 active:shadow-none`}
                 >
@@ -761,7 +872,8 @@ const AssessmentQuestion: React.FC<Props> = ({
           </div>
           <button
             onClick={() => onAnswer(false)}
-            className="w-full py-4 px-6 text-base font-black uppercase tracking-widest bg-[#E0E0E0] text-black border-[4px] border-black cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] transition-all duration-100 font-sans hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] active:translate-x-2 active:translate-y-2 active:shadow-none"
+            disabled={isSubmitting}
+            className="w-full py-4 px-6 text-base font-black uppercase tracking-widest bg-[#E0E0E0] text-black border-[4px] border-black cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] transition-all duration-100 font-sans hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] active:translate-x-2 active:translate-y-2 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Skip Question
           </button>
@@ -779,7 +891,7 @@ const AssessmentQuestion: React.FC<Props> = ({
             data-testid="assessment-submit-button"
             tabIndex={0}
             onClick={handleSubmit}
-            disabled={isAnswered}
+            disabled={isAnswered || isSubmitting}
             className={`${ultraCompactViewport ? 'py-2.5 px-4 text-sm' : compactViewport ? 'py-3 px-5 text-base' : 'py-5 px-8 text-lg'} w-full font-black uppercase tracking-widest bg-[#FFD93D] text-black border-[4px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)]`}
           >
             Submit Answer
@@ -788,7 +900,7 @@ const AssessmentQuestion: React.FC<Props> = ({
             <div
               id="empty-submit-warning"
               className="mt-3 py-4 px-5 border-[4px] border-black dark:border-white bg-[#FFF3E0] dark:bg-orange-900/40 shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] text-base font-black text-[#E65100] dark:text-orange-300 uppercase tracking-wide text-center animate-bounce"
-              style={{ animationDuration: '0.4s', animationIterationCount: '2' }}
+              style={{ animationDuration: '0.5s', animationIterationCount: '4' }}
             >
               Please select or enter an answer first
             </div>
@@ -856,12 +968,21 @@ const AssessmentQuestion: React.FC<Props> = ({
               <strong className="uppercase text-sm font-black tracking-wide">
                 Explanation:
               </strong>{' '}
-              <span>{renderTextWithLatex(question.hints[question.hints.length - 1]?.content || question.hints[0]?.content || '')}</span>
+              <span>{renderTextWithLatex(question.hints?.length ? (question.hints[question.hints.length - 1]?.content || question.hints[0]?.content || '') : '')}</span>
             </div>
           )}
         </div>
       )}
 
+      <style>{`
+        @keyframes shake-btn {
+          0%, 100% { transform: translateX(0); }
+          20% { transform: translateX(-8px); }
+          40% { transform: translateX(8px); }
+          60% { transform: translateX(-6px); }
+          80% { transform: translateX(6px); }
+        }
+      `}</style>
     </div>
   );
 };

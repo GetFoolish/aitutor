@@ -68,32 +68,34 @@ const UserOnboardingFlow: React.FC = () => {
 
   // Update checklist when completeness data changes - with staggered animation
   useEffect(() => {
+    const timers: ReturnType<typeof setTimeout>[] = [];
     if (completeness) {
       // First show checklist container
       setChecklistVisible(true);
-      
+
       // Then update items one by one with delays
-      setTimeout(() => {
+      timers.push(setTimeout(() => {
         setChecklistStatus(prev => ({
           ...prev,
           age: !!completeness.user_data.date_of_birth || !!completeness.user_data.age
         }));
-      }, 500);
-      
-      setTimeout(() => {
+      }, 500));
+
+      timers.push(setTimeout(() => {
         setChecklistStatus(prev => ({
           ...prev,
-          learningLevel: !!completeness.user_data.current_grade // Check for current_grade instead of assessment_completed
+          learningLevel: !!completeness.user_data.current_grade
         }));
-      }, 1000);
-      
-      setTimeout(() => {
+      }, 1000));
+
+      timers.push(setTimeout(() => {
         setChecklistStatus(prev => ({
           ...prev,
           region: !!completeness.user_data.location
         }));
-      }, 1500);
+      }, 1500));
     }
+    return () => { timers.forEach(clearTimeout); };
   }, [completeness]);
 
   useEffect(() => {
@@ -154,9 +156,18 @@ const UserOnboardingFlow: React.FC = () => {
       }
     } catch (error) {
       console.error('Error in onboarding flow:', error);
-      window.dispatchEvent(new CustomEvent('onboarding-complete'));
-      sessionStorage.setItem('onboarding_complete', 'true');
-      history.replace('/app');
+      // Don't mark onboarding as complete on error — retry instead so the user
+      // actually fills in age/DOB and other required fields (Bug: age not asked).
+      setStep('collecting_info');
+      // Build a fallback completeness so the form shows all fields
+      setCompleteness({
+        is_complete: false,
+        missing_fields: ['date_of_birth', 'gender', 'preferred_language', 'location'],
+        assessment_completed: false,
+        assessment_subject: 'math',
+        readiness_status: 'needs_info',
+        user_data: {}
+      });
     }
   };
 

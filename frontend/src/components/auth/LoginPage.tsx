@@ -61,6 +61,7 @@ const LoginPage: React.FC = () => {
       })
       .catch(error => {
         console.error('OAuth callback handling failed:', error);
+        alert('Sign-in failed. Please try again.');
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -70,13 +71,18 @@ const LoginPage: React.FC = () => {
     history.replace('/app');
   };
 
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
   const handleGoogleLogin = async () => {
+    if (isGoogleLoading) return;
+    setIsGoogleLoading(true);
     try {
       const authUrl = await authAPI.getGoogleAuthUrl();
       window.location.href = authUrl.authorization_url;
     } catch (error) {
       console.error('Google login error:', error);
       alert('Failed to sign in with Google. Please try again.');
+      setIsGoogleLoading(false);
     }
   };
 
@@ -147,8 +153,15 @@ const LoginPage: React.FC = () => {
 
           <button
             onClick={() => {
-              localStorage.removeItem('jwt_token');
-              sessionStorage.clear();
+              try { localStorage.removeItem('jwt_token'); } catch { /* private browsing */ }
+              try { localStorage.removeItem('active_assessment'); } catch { /* private browsing */ }
+              // Targeted session cleanup instead of sessionStorage.clear()
+              sessionStorage.removeItem('selected_subject');
+              sessionStorage.removeItem('onboarding_complete');
+              sessionStorage.removeItem('assessmentSubject');
+              sessionStorage.removeItem('assessment_completed_subject');
+              sessionStorage.removeItem('content_v1_mode');
+              sessionStorage.removeItem('content_v1_started');
               window.location.reload();
             }}
             style={{
@@ -208,7 +221,7 @@ const LoginPage: React.FC = () => {
         <p>Sign in to continue your learning journey</p>
 
         {/* Google Sign In Button */}
-        <button className="google-sign-in-button" onClick={handleGoogleLogin}>
+        <button className="google-sign-in-button" onClick={handleGoogleLogin} disabled={isGoogleLoading} style={isGoogleLoading ? { opacity: 0.6, cursor: 'wait' } : undefined}>
           <svg width="20" height="20" viewBox="0 0 18 18" style={{ flexShrink: 0 }}>
             <path
               fill="#4285F4"
@@ -227,7 +240,7 @@ const LoginPage: React.FC = () => {
               d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.163 6.656 3.58 9 3.58z"
             />
           </svg>
-          Continue with Google
+          {isGoogleLoading ? 'Redirecting...' : 'Continue with Google'}
         </button>
 
         {/* OR Divider */}

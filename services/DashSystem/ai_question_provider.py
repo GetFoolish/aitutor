@@ -15,6 +15,7 @@ Background threads keep the queue topped up while the student works.
 
 import hashlib
 import json
+import os
 import random
 import threading
 import uuid
@@ -152,6 +153,10 @@ class AIQuestionProvider:
     QUEUE_TARGET_DEPTH = 5
     QUEUE_REFILL_THRESHOLD = 4
     DIFFICULTY_TOLERANCE = 0.25
+    try:
+        MAX_BACKGROUND_REFILLS = max(1, int(os.getenv("AI_PROVIDER_MAX_BG_REFILLS", "4")))
+    except (TypeError, ValueError):
+        MAX_BACKGROUND_REFILLS = 4
 
     def __init__(self, content_engine, mongo) -> None:
         self.content_engine = content_engine
@@ -160,6 +165,9 @@ class AIQuestionProvider:
         self.queue = mongo.db["ai_question_queue"]
         self._khan_example_cache: Dict[str, str] = {}
         self._validation_failures_col = mongo.db["validation_failures"]
+        self._bg_refill_lock = threading.Lock()
+        self._bg_refill_inflight: Set[str] = set()
+        self._bg_refill_semaphore = threading.BoundedSemaphore(self.MAX_BACKGROUND_REFILLS)
         self._ensure_indexes()
 
     # ------------------------------------------------------------------
@@ -513,17 +521,37 @@ class AIQuestionProvider:
         ready = self.queue.count_documents(refill_filter)
         if ready >= self.QUEUE_REFILL_THRESHOLD:
             return
+        refill_key = f"{skill_id}::{(subject or '').strip().lower()}"
+
+        with self._bg_refill_lock:
+            if refill_key in self._bg_refill_inflight:
+                return
+            self._bg_refill_inflight.add(refill_key)
 
         def _bg_refill():
+            acquired = self._bg_refill_semaphore.acquire(timeout=0.25)
+            if not acquired:
+                with self._bg_refill_lock:
+                    self._bg_refill_inflight.discard(refill_key)
+                return
             try:
+                # Re-check queue depth right before refill to avoid over-filling.
+                current_ready = self.queue.count_documents(refill_filter)
+                needed = self.QUEUE_TARGET_DEPTH - current_ready
+                if needed <= 0:
+                    return
                 self.refill_queue(
                     skill_id, skill_name, lesson_name, target_difficulty,
                     grade_level, age, user_id,
-                    count=self.QUEUE_TARGET_DEPTH - ready,
+                    count=needed,
                     subject=subject,
                 )
             except Exception as e:
                 logger.warning(f"[AI_PROVIDER] Background refill failed for {skill_id}: {e}")
+            finally:
+                self._bg_refill_semaphore.release()
+                with self._bg_refill_lock:
+                    self._bg_refill_inflight.discard(refill_key)
 
         threading.Thread(target=_bg_refill, daemon=True).start()
 
@@ -613,9 +641,8 @@ class AIQuestionProvider:
             for future in as_completed(futures):
                 results.append(future.result())
         finally:
-            for future in futures:
-                future.cancel()
-            pool.shutdown(wait=False, cancel_futures=True)
+            # Wait for all threads to finish so partially-generated questions aren't lost
+            pool.shutdown(wait=True)
 
         inserted = 0
         for diff, fmt, perseus_json in results:

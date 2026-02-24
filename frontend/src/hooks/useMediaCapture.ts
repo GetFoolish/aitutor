@@ -18,6 +18,8 @@ export const useMediaCapture = ({ onCameraFrame, onScreenFrame }: UseMediaCaptur
   const screenVideoRef = useRef<HTMLVideoElement | null>(null);
   const processedEdgesRef = useRef<ImageData | null>(null);
   const privacyCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const cameraTimeoutRef = useRef<number | null>(null);
+  const screenTimeoutRef = useRef<number | null>(null);
 
   // Initialize canvases
   useEffect(() => {
@@ -157,18 +159,32 @@ export const useMediaCapture = ({ onCameraFrame, onScreenFrame }: UseMediaCaptur
 
   const stopCamera = useCallback(() => {
     console.log('Stopping camera...');
+    if (cameraTimeoutRef.current !== null) {
+      clearTimeout(cameraTimeoutRef.current);
+      cameraTimeoutRef.current = null;
+    }
     if (cameraStreamRef.current) {
       cameraStreamRef.current.getTracks().forEach(track => track.stop());
       cameraStreamRef.current = null;
+    }
+    if (cameraVideoRef.current) {
+      cameraVideoRef.current.srcObject = null;
     }
     console.log('Camera stopped');
   }, []);
 
   const stopScreen = useCallback(() => {
     console.log('Stopping screen...');
+    if (screenTimeoutRef.current !== null) {
+      clearTimeout(screenTimeoutRef.current);
+      screenTimeoutRef.current = null;
+    }
     if (screenStreamRef.current) {
       screenStreamRef.current.getTracks().forEach(track => track.stop());
       screenStreamRef.current = null;
+    }
+    if (screenVideoRef.current) {
+      screenVideoRef.current.srcObject = null;
     }
     console.log('Screen share stopped');
   }, []);
@@ -217,7 +233,7 @@ export const useMediaCapture = ({ onCameraFrame, onScreenFrame }: UseMediaCaptur
         }
 
         // Continue loop - reduced to ~2 FPS for better performance (500ms)
-        setTimeout(() => requestAnimationFrame(captureLoop), 500);
+        cameraTimeoutRef.current = window.setTimeout(() => requestAnimationFrame(captureLoop), 500);
       };
 
       captureLoop();
@@ -280,7 +296,7 @@ export const useMediaCapture = ({ onCameraFrame, onScreenFrame }: UseMediaCaptur
         }
 
         // Continue loop - reduced to ~2 FPS for better performance (500ms)
-        setTimeout(() => requestAnimationFrame(captureLoop), 500);
+        screenTimeoutRef.current = window.setTimeout(() => requestAnimationFrame(captureLoop), 500);
       };
 
       captureLoop();

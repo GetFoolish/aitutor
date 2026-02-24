@@ -23,7 +23,7 @@ export function deepNormalize(s: string): string {
     // Convert \frac{a}{b} to (a)/(b) for comparison
     n = n.replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, '($1)/($2)');
     // Normalize multiplication: \cdot, \times → *
-    n = n.replace(/[\\](?:cdot|times)/g, '*');
+    n = n.replace(/\\(?:cdot|times)/g, '*');
     // Remove braces that are just grouping: {x} → x (loop for nested braces)
     while (/\{([^{}]+)\}/.test(n)) {
         n = n.replace(/\{([^{}]+)\}/g, '$1');
@@ -45,9 +45,10 @@ export function deepNormalize(s: string): string {
         }
     }
     // Sort additive terms for commutativity: "7+x" and "x+7" both become the same
-    // Only sort when ALL terms are additive (no subtraction) to avoid "5-3" ≠ "3-5" bug
+    // Only sort when ALL terms are purely additive (no subtraction or negative numbers)
+    // to avoid "5-3" ≠ "3-5" bug
     const terms = n.split(/(?=[+-])/);
-    const hasSubtraction = terms.some(t => t.startsWith('-'));
+    const hasSubtraction = terms.some(t => t.startsWith('-') || t.includes('-'));
     const hasMultiplication = terms.some(t => /[*^]/.test(t));
     if (terms.length > 1 && !hasSubtraction && !hasMultiplication && !n.includes('(') && !n.includes('/')) {
         // Normalize first term to have '+' prefix so sorting is consistent
@@ -187,7 +188,7 @@ export function scorePerseusQuestion(
                     .filter((i: number) => i >= 0);
                 const selectedIndices: number[] = Array.from(
                     new Set<number>(
-                        selectedIds
+                        (selectedIds as string[])
                             .map((id: string) => resolveSelectedChoiceIndex(id, choices, choiceIndexMap))
                             .filter((i: number) => i >= 0)
                     )
@@ -218,16 +219,16 @@ export function scorePerseusQuestion(
         } else if (widgetDef.type === 'orderer') {
             const correctOptions = widgetDef.options?.correctOptions || [];
             const userOrder = (widgetInput as any).current || (widgetInput as any).options || [];
-            if (correctOptions.length === userOrder.length) {
+            if (correctOptions.length > 0 && correctOptions.length === userOrder.length) {
                 widgetCorrect = correctOptions.every((correctOpt: any, index: number) => {
                     const userItem = userOrder[index];
                     const userContent = (typeof userItem === 'string' ? userItem : userItem?.content || '').trim();
                     const correctContent = (typeof correctOpt === 'string' ? correctOpt : correctOpt?.content || '').trim();
                     return correctContent === userContent;
                 });
+                scoreableCount++;
+                if (widgetCorrect) correctCount++;
             }
-            scoreableCount++;
-            if (widgetCorrect) correctCount++;
 
         } else if (widgetDef.type === 'numeric-input') {
             const answers = widgetDef.options?.answers || [];
@@ -237,28 +238,35 @@ export function scorePerseusQuestion(
             if (!selectedAnswerText) {
                 selectedAnswerText = rawValue;
             }
-            if (!isNaN(userValue) && answers.length > 0) {
-                const correctAnswer = answers.find((a: any) => a.status === 'correct');
-                if (correctAnswer) {
-                    let maxError = correctAnswer.maxError;
-                    if (maxError == null || maxError <= 0) {
-                        const cv = correctAnswer.value;
-                        if (cv === 0) {
-                            maxError = 0.001;
-                        } else {
-                            // Use 1% of absolute value, with a floor of 0.01
-                            maxError = Math.max(0.01, Math.abs(cv) * 0.01);
+            // Only count as scoreable if user entered a value
+            if (rawValue && rawValue.toString().trim()) {
+                if (!isNaN(userValue) && answers.length > 0) {
+                    const correctAnswer = answers.find((a: any) => a.status === 'correct');
+                    if (correctAnswer) {
+                        let maxError = correctAnswer.maxError;
+                        if (maxError == null || maxError <= 0) {
+                            const cv = correctAnswer.value;
+                            if (cv === 0) {
+                                maxError = 0.001;
+                            } else {
+                                // Use 1% of absolute value, with a floor of 0.01
+                                maxError = Math.max(0.01, Math.abs(cv) * 0.01);
+                            }
                         }
+                        widgetCorrect = Math.abs(userValue - correctAnswer.value) <= maxError;
                     }
-                    widgetCorrect = Math.abs(userValue - correctAnswer.value) <= maxError;
                 }
+                scoreableCount++;
+                if (widgetCorrect) correctCount++;
             }
-            scoreableCount++;
-            if (widgetCorrect) correctCount++;
 
         } else if (widgetDef.type === 'dropdown') {
             const choices = widgetDef.options?.choices || [];
-            const selectedIdx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
+            const rawIdx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
+            // Perseus dropdown uses 1-based indexing (0 = placeholder "Select one").
+            // Our choices array is 0-based (no placeholder). Subtract 1 to align.
+            // When rawIdx is 0 (placeholder), map to -1 so it fails the bounds check below.
+            const selectedIdx = rawIdx != null && rawIdx > 0 ? rawIdx - 1 : -1;
             if (selectedIdx != null && selectedIdx >= 0 && selectedIdx < choices.length) {
                 const selectedChoice = choices[selectedIdx];
                 const content = typeof selectedChoice?.content === 'string'
@@ -281,23 +289,29 @@ export function scorePerseusQuestion(
             const userExpr = typeof widgetInput === 'string'
                 ? widgetInput
                 : ((widgetInput as any)?.currentValue || '');
-            if (userExpr && userExpr.trim() && answerForms.length > 0) {
-                const userNorm = deepNormalize(userExpr);
-                widgetCorrect = answerForms.some((f: any) =>
-                    f.considered === 'correct' && deepNormalize(f.value || '') === userNorm
-                );
+            // Only count as scoreable if user entered an expression
+            if (userExpr && userExpr.trim()) {
+                if (answerForms.length > 0) {
+                    const userNorm = deepNormalize(userExpr);
+                    widgetCorrect = answerForms.some((f: any) =>
+                        f.considered === 'correct' && deepNormalize(f.value || '') === userNorm
+                    );
+                }
+                scoreableCount++;
+                if (widgetCorrect) correctCount++;
             }
-            scoreableCount++;
-            if (widgetCorrect) correctCount++;
 
         } else if (widgetDef.type === 'matcher') {
             const correctRight = widgetDef.options?.right || [];
             const userRight = (widgetInput as any)?.right || [];
             if (correctRight.length > 0 && correctRight.length === userRight.length) {
-                widgetCorrect = correctRight.every((val: string, idx: number) => val === userRight[idx]);
+                // Normalize whitespace and casing for comparison to avoid false negatives
+                widgetCorrect = correctRight.every((val: string, idx: number) =>
+                    (val || '').trim().toLowerCase() === (userRight[idx] || '').trim().toLowerCase()
+                );
+                scoreableCount++;
+                if (widgetCorrect) correctCount++;
             }
-            scoreableCount++;
-            if (widgetCorrect) correctCount++;
 
         } else if (widgetDef.type === 'sorter') {
             const correctOrder = widgetDef.options?.correct || [];
@@ -308,20 +322,20 @@ export function scorePerseusQuestion(
                     const uv = (typeof userOrder[idx] === 'string' ? userOrder[idx] : '').trim();
                     return cv === uv;
                 });
+                scoreableCount++;
+                if (widgetCorrect) correctCount++;
             }
-            scoreableCount++;
-            if (widgetCorrect) correctCount++;
 
         } else if (widgetDef.type === 'categorizer') {
             const correctValues: number[] = widgetDef.options?.values || [];
             const userValues: number[] = (widgetInput as any)?.values || [];
             if (correctValues.length > 0 && correctValues.length === userValues.length) {
                 widgetCorrect = correctValues.every((val: number, idx: number) =>
-                    userValues[idx] != null && val === userValues[idx]
+                    userValues[idx] != null && Number(val) === Number(userValues[idx])
                 );
+                scoreableCount++;
+                if (widgetCorrect) correctCount++;
             }
-            scoreableCount++;
-            if (widgetCorrect) correctCount++;
 
         } else if (widgetDef.type === 'number-line') {
             const correctX = widgetDef.options?.correctX;
@@ -423,26 +437,22 @@ export function hasUserInput(
             if (val && val.trim()) return true;
         } else if (widgetDef.type === 'dropdown') {
             const choices = widgetDef.options?.choices || [];
-            const idx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
-            // Validate: index exists and is non-negative
-            if (idx != null && idx >= 0) {
-                // If choices are defined, check bounds and reject placeholders
-                if (choices.length > 0) {
-                    if (idx < choices.length) {
-                        const selectedChoice = choices[idx];
-                        // Reject placeholder options like "Select one..."
-                        const content = typeof selectedChoice?.content === 'string'
-                            ? selectedChoice.content
-                            : '';
-                        if (content && content.trim() && !content.toLowerCase().includes('select one')) {
-                            return true;
-                        }
-                    }
-                } else {
-                    // No choices defined - treat any non-negative index as valid input
+            const rawIdx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
+            // Perseus dropdown uses 1-based indexing (0 = placeholder "Select one").
+            // Our choices array is 0-based. Subtract 1 to align.
+            const idx = rawIdx != null && rawIdx > 0 ? rawIdx - 1 : -1;
+            // Validate: index exists, is non-negative, is within bounds, and not a placeholder
+            if (idx != null && idx >= 0 && idx < choices.length) {
+                const selectedChoice = choices[idx];
+                // Reject placeholder options like "Select one..."
+                const content = typeof selectedChoice?.content === 'string'
+                    ? selectedChoice.content
+                    : '';
+                if (content && content.trim() && !content.toLowerCase().includes('select one')) {
                     return true;
                 }
             }
+            // Don't return false here — continue checking other widgets in multi-widget questions
         } else if (widgetDef.type === 'orderer') {
             const curr = (widgetInput as any)?.current || (widgetInput as any)?.options || [];
             if (curr.length > 0) return true;

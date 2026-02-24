@@ -63,6 +63,10 @@ const sanitizeChoicesArray = (choices: any[]): any[] => {
             id: typeof choice.id === 'string' && choice.id.trim() ? choice.id : `choice-${index}`,
             content: stripWrappingQuotes(choice.content),
             correct: Boolean(choice.correct),
+            // CRITICAL: Clear any pre-selection state from AI generation
+            selected: undefined,
+            checked: undefined,
+            crossedOut: false,
         };
     });
 };
@@ -260,9 +264,11 @@ const RendererComponent = ({
             setIsError(false);
             setError(null);
 
+            let storedSubject = "";
+            try { storedSubject = localStorage.getItem("selected_subject") || ""; } catch { /* private browsing */ }
             const selectedSubject = (
                 sessionStorage.getItem("selected_subject") ||
-                localStorage.getItem("selected_subject") ||
+                storedSubject ||
                 ""
             ).trim();
             if (selectedSubject) {
@@ -659,7 +665,7 @@ const RendererComponent = ({
                 await apiUtils.post(`${DASH_API_URL}/api/submit-answer`, {
                     user_id: user_id,
                     question_id: questionId,
-                    skill_ids: metadata.skill_ids || ["counting_1_10"],
+                    skill_ids: metadata.skill_ids || [],
                     is_correct: keScore.correct,
                     response_time_seconds: responseTimeSeconds,
                     selected_answer: selectedAnswerText || null,
@@ -687,6 +693,8 @@ const RendererComponent = ({
                 }
             } catch (err) {
                 console.error("Failed to submit answer to DASH:", err);
+                // Show toast so user knows their answer wasn't saved to server
+                toast.error("Answer wasn't saved — check your connection");
             }
 
             // On wrong answer, request a responsive hint from Gemini (fire and forget)
@@ -738,8 +746,10 @@ const RendererComponent = ({
                             if (cf) correctText = cf.value || '';
                         } else if (widgetDef.type === 'dropdown') {
                             const choices = widgetDef.options?.choices || [];
-                            const idx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
-                            if (idx != null && choices[idx]) selectedText = choices[idx].content || '';
+                            const rawIdx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
+                            // Perseus dropdown is 1-based (0 = placeholder). Subtract 1 to match choices array.
+                            const adjIdx = rawIdx != null && rawIdx > 0 ? rawIdx - 1 : -1;
+                            if (adjIdx >= 0 && adjIdx < choices.length) selectedText = choices[adjIdx].content || '';
                             const correct = choices.find((c: any) => c.correct);
                             if (correct) correctText = correct.content || '';
                         }
@@ -843,7 +853,14 @@ const RendererComponent = ({
                     const { multipleSelect: _ms, randomize: _rz, ...rest } = w;
                     itemCopy.question.widgets[key] = {
                         ...rest,
-                        options: { choices: sanitizeChoicesArray(w.options), multipleSelect, randomize },
+                        options: {
+                            choices: sanitizeChoicesArray(w.options),
+                            multipleSelect,
+                            randomize,
+                            noneOfTheAbove: false,
+                            selectedChoiceIds: undefined,
+                            deselectEnabled: false,
+                        },
                     };
                 } else if (w?.type === 'radio' && w.options && Array.isArray(w.options.choices)) {
                     itemCopy.question.widgets[key] = {
@@ -851,6 +868,9 @@ const RendererComponent = ({
                         options: {
                             ...w.options,
                             choices: sanitizeChoicesArray(w.options.choices),
+                            noneOfTheAbove: w.options.noneOfTheAbove ?? false,
+                            selectedChoiceIds: undefined,
+                            deselectEnabled: false,
                         },
                     };
                 }
@@ -863,6 +883,7 @@ const RendererComponent = ({
                             labelText: '',
                             size: 'normal',
                             ...w.options,
+                            answers: Array.isArray(w.options.answers) ? w.options.answers : [],
                         },
                     };
                 }
@@ -883,7 +904,13 @@ const RendererComponent = ({
                 // Expression: convert to numeric-input to avoid MathInput crash (string ref issue in React 18)
                 if (w?.type === 'expression' && w.options) {
                     const answerForms = w.options.answerForms || [];
-                    const firstAnswer = answerForms[0]?.value || '0';
+                    const firstAnswer = (answerForms[0]?.value || '').toString().trim();
+                    const parsed = parseFloat(firstAnswer);
+                    if (!firstAnswer || isNaN(parsed)) {
+                        // Can't safely convert to numeric-input — skip conversion,
+                        // leave as expression (Perseus will render a text input fallback).
+                        continue;
+                    }
                     itemCopy.question.widgets[key] = {
                         type: 'numeric-input',
                         graded: true,
@@ -894,7 +921,7 @@ const RendererComponent = ({
                             size: 'normal',
                             answers: [{
                                 status: 'correct',
-                                value: parseFloat(firstAnswer) || 0,
+                                value: parsed,
                                 maxError: 0.01,
                                 simplify: 'optional',
                                 strict: false,
@@ -1020,7 +1047,7 @@ const RendererComponent = ({
 
         let raf = 0;
         let timeoutId: number | null = null;
-        const minFitZoom = hasOverlaySensitiveWidget ? 0.9 : 0.78;
+        const minFitZoom = hasOverlaySensitiveWidget ? 0.85 : 0.65;
 
         const recompute = () => {
             const viewportH = viewportEl.clientHeight;
@@ -1094,9 +1121,9 @@ const RendererComponent = ({
     }, [item, setCurrentHintIndex, setShowHints, setResponsiveHint]);
 
     return (
-        <div className="framework-perseus relative flex w-full h-full min-h-0 items-stretch justify-center px-2 md:px-3 py-1 overflow-hidden">
+        <div className="framework-perseus relative flex w-full h-full min-h-0 items-stretch justify-start px-2 md:px-3 py-1 overflow-hidden">
             {/* Neo-Brutalism Card */}
-            <Card className="relative flex h-full min-h-0 w-full max-w-4xl md:max-w-5xl flex-col border-[4px] md:border-[5px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-200 overflow-hidden">
+            <Card className="relative flex h-full min-h-0 w-full flex-col border-[4px] md:border-[5px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-200 overflow-hidden">
                 {/* Progress bar at top */}
                 <div className="absolute top-0 left-0 right-0 h-2 md:h-3 bg-[#FFFDF5] dark:bg-[#000000] border-b-[2px] md:border-b-[3px] border-black dark:border-white">
                     <div
@@ -1163,7 +1190,7 @@ const RendererComponent = ({
                 <CardContent className={`${compactViewport ? "px-3 py-2.5" : "px-4 md:px-6 py-4 md:py-6"} bg-[#FFFDF5] dark:bg-[#000000] flex-1 min-h-0 overflow-hidden`}>
                     <div
                         ref={scrollContainerRef}
-                        className="relative w-full max-w-4xl mx-auto h-full min-h-0 overflow-y-auto overflow-x-hidden pr-1"
+                        className={`relative w-full h-full min-h-0 overflow-x-hidden pr-1 ${effectiveContentZoom < 1 ? 'overflow-y-hidden' : 'overflow-y-auto'}`}
                     >
                         {endOfTest ? (
                             <div className="flex h-full items-center justify-center px-3 md:px-4 py-4 md:py-6 text-center">
@@ -1245,7 +1272,7 @@ const RendererComponent = ({
                                                 apiOptions={{}}
                                                 linterContext={{
                                                     contentType: "",
-                                                    highlightLint: true,
+                                                    highlightLint: false,
                                                     paths: [],
                                                     stack: [],
                                                 }}

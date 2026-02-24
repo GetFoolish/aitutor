@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, Check, X } from 'lucide-react';
+import { jwtUtils } from '../../lib/jwt-utils';
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 
@@ -35,45 +36,58 @@ const AdminVideoPanel: React.FC = () => {
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchData();
+    let cancelled = false;
+    const load = async () => {
+      try {
+        setLoading(true);
+        const token = jwtUtils.getToken();
+
+        const videosResponse = await fetch(
+          `${DASH_API_URL}/api/admin/videos/suggested?limit=50&offset=0`,
+          { headers: { 'Authorization': `Bearer ${token}` } }
+        );
+        if (cancelled) return;
+
+        if (!videosResponse.ok) throw new Error('Failed to fetch suggested videos');
+        const videosData = await videosResponse.json();
+        if (cancelled) return;
+        setQuestions(videosData);
+
+        const statsResponse = await fetch(
+          `${DASH_API_URL}/api/admin/videos/stats`,
+          { headers: { 'Authorization': `Bearer ${token}` } }
+        );
+        if (cancelled) return;
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          if (!cancelled) setStats(statsData);
+        }
+      } catch (error) {
+        console.error('Error fetching admin panel data:', error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    load();
+    return () => { cancelled = true; };
   }, []);
 
   const fetchData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('jwt_token');
-
-      // Fetch suggested videos
+      const token = jwtUtils.getToken();
       const videosResponse = await fetch(
         `${DASH_API_URL}/api/admin/videos/suggested?limit=50&offset=0`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        }
+        { headers: { 'Authorization': `Bearer ${token}` } }
       );
+      if (!videosResponse.ok) throw new Error('Failed to fetch suggested videos');
+      setQuestions(await videosResponse.json());
 
-      if (!videosResponse.ok) {
-        throw new Error('Failed to fetch suggested videos');
-      }
-
-      const videosData = await videosResponse.json();
-      setQuestions(videosData);
-
-      // Fetch statistics
       const statsResponse = await fetch(
         `${DASH_API_URL}/api/admin/videos/stats`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        }
+        { headers: { 'Authorization': `Bearer ${token}` } }
       );
-
-      if (statsResponse.ok) {
-        const statsData = await statsResponse.json();
-        setStats(statsData);
-      }
+      if (statsResponse.ok) setStats(await statsResponse.json());
     } catch (error) {
       console.error('Error fetching admin panel data:', error);
     } finally {
@@ -94,7 +108,7 @@ const AdminVideoPanel: React.FC = () => {
   const handleApprove = async (questionId: string, videoId: string) => {
     try {
       setActionInProgress(`${questionId}-${videoId}-approve`);
-      const token = localStorage.getItem('jwt_token');
+      const token = jwtUtils.getToken();
 
       const response = await fetch(
         `${DASH_API_URL}/api/videos/approve?question_id=${questionId}&video_id=${videoId}`,
@@ -123,7 +137,7 @@ const AdminVideoPanel: React.FC = () => {
   const handleReject = async (questionId: string, videoId: string) => {
     try {
       setActionInProgress(`${questionId}-${videoId}-reject`);
-      const token = localStorage.getItem('jwt_token');
+      const token = jwtUtils.getToken();
 
       const response = await fetch(
         `${DASH_API_URL}/api/videos/reject?question_id=${questionId}&video_id=${videoId}`,

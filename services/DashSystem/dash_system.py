@@ -30,6 +30,11 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+try:
+    FAST_MODE_SKILL_SCAN_LIMIT = max(1, int(os.getenv("DASH_FAST_SKILL_SCAN_LIMIT", "8")))
+except (TypeError, ValueError):
+    FAST_MODE_SKILL_SCAN_LIMIT = 8
+
 # Helper function for backward compatibility
 def log_print(message: str):
     """Wrapper for logger.info for easier migration"""
@@ -2080,6 +2085,8 @@ class DASHSystem:
         
         # Sort by grade level, order, then probability (lower prob = needs more practice)
         skill_probabilities.sort(key=lambda x: (x[1].grade_level.value, x[1].order, x[2]))
+        if fast_mode and len(skill_probabilities) > FAST_MODE_SKILL_SCAN_LIMIT:
+            skill_probabilities = skill_probabilities[:FAST_MODE_SKILL_SCAN_LIMIT]
         
         # Get answered questions to exclude (learning path + assessments)
         answered_question_ids = {attempt.question_id for attempt in user_profile.question_history}
@@ -2300,6 +2307,8 @@ class DASHSystem:
             cold_start_grade_filter=cold_start_filter,
             grade_range=1  # Allow ±1 grade level
         )
+        if fast_mode and len(recommended_skills) > FAST_MODE_SKILL_SCAN_LIMIT:
+            recommended_skills = recommended_skills[:FAST_MODE_SKILL_SCAN_LIMIT]
         
         if not recommended_skills:
             log_print(f"[GET_NEXT_QUESTION] No recommended skills — trying flexible selection")

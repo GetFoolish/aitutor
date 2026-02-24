@@ -20,16 +20,18 @@ const LandingPageWrapper: React.FC = () => {
 
   // Get random landing page index (persist across sessions with localStorage)
   const getRandomLandingPage = (): number => {
-    const stored = localStorage.getItem('landingPageIndex');
-    if (stored) {
-      const storedNum = parseInt(stored, 10);
-      if (storedNum >= 0 && storedNum < landingPagePaths.length) {
-        return storedNum;
+    try {
+      const stored = localStorage.getItem('landingPageIndex');
+      if (stored) {
+        const storedNum = parseInt(stored, 10);
+        if (storedNum >= 0 && storedNum < landingPagePaths.length) {
+          return storedNum;
+        }
       }
-    }
+    } catch { /* private browsing — localStorage unavailable */ }
 
     const randomIndex = Math.floor(Math.random() * landingPagePaths.length);
-    localStorage.setItem('landingPageIndex', randomIndex.toString());
+    try { localStorage.setItem('landingPageIndex', randomIndex.toString()); } catch { /* private browsing */ }
     return randomIndex;
   };
 

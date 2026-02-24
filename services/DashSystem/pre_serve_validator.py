@@ -181,7 +181,7 @@ def validate_answerability(question_data: dict) -> CheckResult:
             correct = [f for f in forms if f.get("considered") == "correct"]
             if not correct:
                 reasons.append(f"{wid}: expression has no correct answerForm")
-            elif not correct[0].get("value"):
+            elif not correct[0].get("value", "").strip():
                 reasons.append(f"{wid}: expression correct form has empty value")
 
         elif wtype == "orderer":

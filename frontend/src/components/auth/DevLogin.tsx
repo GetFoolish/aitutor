@@ -5,7 +5,9 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import BackgroundShapes from '../background-shapes/BackgroundShapes';
+import Header from '../header/Header';
 import { useTheme } from '../theme/theme-provier';
+import { jwtUtils } from '../../lib/jwt-utils';
 
 const AUTH_API_URL = import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003';
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
@@ -68,7 +70,7 @@ const DevLogin: React.FC = () => {
       }
 
       const data = await res.json();
-      localStorage.setItem('jwt_token', data.token);
+      jwtUtils.setToken(data.token);
 
       // 2. Fire-and-forget subject switch (don't await — assessment flow retries)
       fetch(`${DASH_API_URL}/api/start-subject`, {
@@ -113,6 +115,11 @@ const DevLogin: React.FC = () => {
       transition: 'background 200ms ease-out, color 200ms ease-out'
     }}>
       <BackgroundShapes />
+
+      <Header
+        sidebarOpen={false}
+        onToggleSidebar={() => {}}
+      />
 
       {/* Theme toggle — top-right corner */}
       <button

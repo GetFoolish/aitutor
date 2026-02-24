@@ -45,6 +45,7 @@ const PersonalizationCards: React.FC<PersonalizationCardsProps> = ({ skills, onC
   const shuffleStartPositions = useRef<Array<{ x: number; y: number; rotation: number; scale: number }>>([]);
   const currentPositionsRef = useRef<Array<{ x: number; y: number; rotation: number; scale: number }>>([]);
   const isCompleteRef = useRef(false);
+  const completeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const animationStartedRef = useRef(false);
   const phaseRef = useRef<AnimationPhase>('entrance');
   const centerXRef = useRef<number>(0);
@@ -331,7 +332,7 @@ const PersonalizationCards: React.FC<PersonalizationCardsProps> = ({ skills, onC
           setAnimationPhase('align');
         }
         isCompleteRef.current = true;
-        setTimeout(() => {
+        completeTimerRef.current = setTimeout(() => {
           onComplete();
         }, 400);
         return;
@@ -342,6 +343,7 @@ const PersonalizationCards: React.FC<PersonalizationCardsProps> = ({ skills, onC
     return () => {
       isCompleteRef.current = true;
       if (animationId) cancelAnimationFrame(animationId);
+      if (completeTimerRef.current) clearTimeout(completeTimerRef.current);
     };
   }, [cardPositions.length, cardCount, onComplete]);
 

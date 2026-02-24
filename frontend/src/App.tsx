@@ -252,7 +252,7 @@ function App() {
                     />
                     <main style={{
                       marginRight: isSidebarOpen ? "260px" : "0",
-                      marginLeft: isGradingSidebarOpen ? "260px" : "40px",
+                      marginLeft: isGradingSidebarOpen ? "0" : "40px",
                       transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
                     }}>
                       <div className="main-app-area">
@@ -271,9 +271,13 @@ function App() {
                               currentQuestionIndex={assessmentCurrentIndex}
                               onAssessmentAnswer={(questionId, isCorrect) => {
                                 const currentQuestion = assessmentQuestions[assessmentCurrentIndex];
+                                if (!currentQuestion) {
+                                  console.error(`[Assessment] No question at index ${assessmentCurrentIndex}`);
+                                  return;
+                                }
                                 const newAnswer = {
                                   question_id: questionId,
-                                  skill_id: currentQuestion.dash_metadata.skill_ids[0],
+                                  skill_id: currentQuestion.dash_metadata?.skill_ids?.[0] ?? questionId,
                                   is_correct: isCorrect
                                 };
                                 const newAnswers = [...assessmentAnswers, newAnswer];
@@ -282,9 +286,11 @@ function App() {
 
                                 if (assessmentCurrentIndex < assessmentQuestions.length - 1) {
                                   setTimeout(() => {
-                                    setAssessmentCurrentIndex(assessmentCurrentIndex + 1);
+                                    setAssessmentCurrentIndex(prev => prev + 1);
                                   }, 2000);
                                 } else {
+                                  // newAnswers is captured here — safe because it's
+                                  // constructed in the same synchronous handler above.
                                   setTimeout(() => {
                                     submitAssessment(newAnswers);
                                   }, 2000);

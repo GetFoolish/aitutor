@@ -51,6 +51,21 @@ const AssessmentFlow: React.FC = () => {
   const [privacyMode, setPrivacyMode] = useState(false);
   const [showExitDialog, setShowExitDialog] = useState(false);
 
+  // Inject alignment-fix CSS at runtime (CSS files may be cached by browser)
+  useEffect(() => {
+    const id = 'alignment-fix-runtime';
+    if (!document.getElementById(id)) {
+      const s = document.createElement('style');
+      s.id = id;
+      s.textContent = [
+        '.assessment-content-wrapper { padding-left: 0 !important; }',
+        'div:has(> #question-content-container) { transform-origin: top left !important; }',
+      ].join('\n');
+      document.head.appendChild(s);
+    }
+    return () => { document.getElementById(id)?.remove(); };
+  }, []);
+
   // Ref to track latest assessmentId for prefetch (avoids stale closures)
   const assessmentIdRef = useRef<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -122,7 +137,8 @@ const AssessmentFlow: React.FC = () => {
   useEffect(() => {
     const attemptRecovery = async () => {
       // Check if there's an active session to resume
-      const savedSession = localStorage.getItem('active_assessment');
+      let savedSession: string | null = null;
+      try { savedSession = localStorage.getItem('active_assessment'); } catch { /* private browsing */ }
       console.log('[AssessmentFlow] Recovery check:', { savedSession, assessmentId, subject });
 
       if (savedSession && !assessmentId) {
@@ -167,10 +183,10 @@ const AssessmentFlow: React.FC = () => {
           }
 
           // If resume failed or session too old, clear it
-          localStorage.removeItem('active_assessment');
+          try { localStorage.removeItem('active_assessment'); } catch { /* private browsing */ }
         } catch (error) {
-          console.error('[AssessmentFlow] Resume failed:', error);
-          localStorage.removeItem('active_assessment');
+          console.error('[AssessmentFlow] Resume failed, starting fresh:', error);
+          try { localStorage.removeItem('active_assessment'); } catch { /* private browsing */ }
         }
       } else {
         console.log('[AssessmentFlow] No session to resume or assessmentId already set');
@@ -218,8 +234,9 @@ const AssessmentFlow: React.FC = () => {
     setAssessmentId(null);
     setCurrentQuestion(null);
     setCompleted(false);
-    // Clear assessment state from sessionStorage
+    // Clear ALL assessment state from storage to prevent stale resume
     sessionStorage.removeItem('assessmentSubject');
+    try { localStorage.removeItem('active_assessment'); } catch { /* private browsing */ }
     // Navigate to exit page with context
     const encodedSubject = encodeURIComponent(subject);
     const exitUrl = currentAssessmentId
@@ -243,6 +260,8 @@ const AssessmentFlow: React.FC = () => {
       const phase2Timer = setTimeout(() => setLoadPhase('generating'), 3000);
       const phase3Timer = setTimeout(() => setLoadPhase('slow'), 9000);
       const hardTimeout = setTimeout(() => controller.abort(), START_HARD_TIMEOUT_MS);
+      // Clear any existing timers before setting new ones
+      timersRef.current.forEach(clearTimeout);
       timersRef.current = [phase2Timer, phase3Timer, hardTimeout];
 
       // Kick warm-up immediately (best-effort) so adaptive start can hit warm cache faster.
@@ -314,16 +333,23 @@ const AssessmentFlow: React.FC = () => {
         return;
       }
 
+      // Validate required fields in response
+      if (!data.assessment_id || !data.question) {
+        throw new Error('Server returned incomplete assessment data (missing assessment_id or question)');
+      }
+
       setAssessmentId(data.assessment_id);
       assessmentIdRef.current = data.assessment_id;
 
       // Save session to localStorage for recovery on page refresh
-      localStorage.setItem('active_assessment', JSON.stringify({
-        assessment_id: data.assessment_id,
-        subject,
-        started_at: Date.now(),
-        question_count: data.question_number || 1,
-      }));
+      try {
+        localStorage.setItem('active_assessment', JSON.stringify({
+          assessment_id: data.assessment_id,
+          subject,
+          started_at: Date.now(),
+          question_count: data.question_number || 1,
+        }));
+      } catch { /* private browsing — localStorage unavailable */ }
 
       setCurrentQuestion(data.question);
       setQuestionNumber(data.question_number);
@@ -357,7 +383,7 @@ const AssessmentFlow: React.FC = () => {
       setTotal(data.total ?? totalQuestions);
       setCompleted(true);
       // Clear saved session on completion
-      localStorage.removeItem('active_assessment');
+      try { localStorage.removeItem('active_assessment'); } catch { /* private browsing */ }
       return;
     }
 
@@ -545,7 +571,7 @@ const AssessmentFlow: React.FC = () => {
           <div style={{
             width: '200px',
             height: '8px',
-            border: '3px solid #000',
+            border: '4px solid #000',
             backgroundColor: '#fff',
             overflow: 'hidden'
           }}>
@@ -583,22 +609,25 @@ const AssessmentFlow: React.FC = () => {
               abortRef.current?.abort();
               assessmentIdRef.current = null;
               sessionStorage.removeItem('selected_subject');
-              sessionStorage.removeItem('onboarding_complete');
+              // Don't clear onboarding_complete — user already filled in their info,
+              // clearing it forces them to redo the entire onboarding flow
               window.location.replace('/app/dev-login');
             }}
             style={{
               padding: '10px 24px',
-              border: '2px solid #000',
+              border: '4px solid #000',
               background: '#fff',
               cursor: 'pointer',
               fontWeight: 700,
-              fontSize: '12px',
+              fontSize: '14px',
               textTransform: 'uppercase',
+              boxShadow: '4px 4px 0 #000',
+              minHeight: '48px',
             }}
           >
             Cancel
           </button>
-          {loadPhase === 'slow' && (
+          {loadPhase === 'slow' && !startError && (
             <button
               onClick={() => {
                 abortRef.current?.abort();
@@ -608,13 +637,14 @@ const AssessmentFlow: React.FC = () => {
               }}
               style={{
                 padding: '10px 28px',
-                border: '3px solid #000',
+                border: '4px solid #000',
                 background: '#FFD93D',
-                boxShadow: '3px 3px 0 #000',
+                boxShadow: '4px 4px 0 #000',
                 cursor: 'pointer',
                 fontWeight: 700,
-                fontSize: '13px',
-                textTransform: 'uppercase'
+                fontSize: '14px',
+                textTransform: 'uppercase',
+                minHeight: '48px'
               }}
             >
               Try Again
@@ -642,49 +672,71 @@ const AssessmentFlow: React.FC = () => {
         }}>
           <div style={{
             padding: '12px 24px',
-            border: '3px solid #000',
+            border: '4px solid #000',
             background: '#FF6B6B',
             color: '#fff',
             fontWeight: 700,
             fontSize: '14px',
-            textTransform: 'uppercase'
+            textTransform: 'uppercase',
+            boxShadow: '4px 4px 0 #000'
           }}>
             {startError}
           </div>
           <button
-            onClick={() => { setStartError(null); setLoading(true); startAssessment(); }}
+            onClick={() => { if (loading) return; setStartError(null); setLoading(true); startAssessment(); }}
+            disabled={loading}
             style={{
               padding: '12px 32px',
-              border: '3px solid #000',
-              background: '#FFD93D',
-              boxShadow: '3px 3px 0 #000',
-              cursor: 'pointer',
+              border: '4px solid #000',
+              background: loading ? '#ddd' : '#FFD93D',
+              boxShadow: '4px 4px 0 #000',
+              cursor: loading ? 'wait' : 'pointer',
               fontWeight: 700,
               fontSize: '14px',
-              textTransform: 'uppercase'
+              textTransform: 'uppercase',
+              minHeight: '48px'
             }}
           >
-            Try Again
+            {loading ? 'Starting...' : 'Try Again'}
           </button>
           <button
             onClick={() => {
               assessmentIdRef.current = null;
               sessionStorage.removeItem('selected_subject');
-              sessionStorage.removeItem('onboarding_complete');
+              // Don't clear onboarding_complete — preserve user's onboarding data
               history.replace('/app/dev-login');
             }}
             style={{
               padding: '10px 24px',
-              border: '2px solid #000',
+              border: '4px solid #000',
               background: '#fff',
               cursor: 'pointer',
               fontWeight: 700,
-              fontSize: '12px',
+              fontSize: '14px',
               textTransform: 'uppercase',
               marginTop: '8px',
+              boxShadow: '4px 4px 0 #000',
+              minHeight: '48px',
             }}
           >
-            Back to Dev Login
+            Try Different Subject
+          </button>
+          <button
+            onClick={() => { history.replace('/app'); }}
+            style={{
+              padding: '10px 24px',
+              border: '4px solid #000',
+              background: '#E0E0E0',
+              cursor: 'pointer',
+              fontWeight: 700,
+              fontSize: '14px',
+              textTransform: 'uppercase',
+              marginTop: '4px',
+              boxShadow: '4px 4px 0 #000',
+              minHeight: '48px',
+            }}
+          >
+            Back to Home
           </button>
         </div>
       )}
@@ -804,17 +856,17 @@ const AssessmentFlow: React.FC = () => {
               </div>
 
               <div className="assessment-content-wrapper" style={{
-                padding: '0 280px 10px 12px',
-                maxWidth: 'calc(100% - 280px)',
+                paddingRight: 'max(70px, min(280px, 30vw))',
+                paddingBottom: '10px',
+                maxWidth: '100%',
                 marginLeft: 0,
                 marginRight: 0,
                 width: '100%',
                 flex: '1 1 auto',
                 display: 'flex',
                 flexDirection: 'column',
-                overflowY: 'auto',
-                overflowX: 'hidden',
-                minHeight: 0,
+                overflow: 'visible',
+                minHeight: 'min-content',
               }}>
                 {nextQuestionError && (
                   <div style={{
@@ -823,7 +875,7 @@ const AssessmentFlow: React.FC = () => {
                     color: '#fff',
                     padding: '14px 16px',
                     marginBottom: '20px',
-                    boxShadow: '3px 3px 0 #000',
+                    boxShadow: '4px 4px 0 #000',
                     textAlign: 'center'
                   }}>
                     <div style={{
@@ -840,22 +892,40 @@ const AssessmentFlow: React.FC = () => {
                       disabled={submitting}
                       style={{
                         padding: '10px 24px',
-                        border: '3px solid #000',
+                        border: '4px solid #000',
                         background: '#FFD93D',
                         color: '#000',
                         cursor: submitting ? 'not-allowed' : 'pointer',
                         fontWeight: 800,
-                        fontSize: '13px',
+                        fontSize: '14px',
                         textTransform: 'uppercase',
                         opacity: submitting ? 0.7 : 1,
+                        boxShadow: '4px 4px 0 #000',
+                        minHeight: '48px',
                       }}
                     >
                       {submitting ? 'Retrying...' : 'Retry Next Question'}
                     </button>
                   </div>
                 )}
+                {!currentQuestion && !nextQuestionError && (
+                  <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                    <div style={{
+                      border: '4px solid #000',
+                      backgroundColor: '#FFD93D',
+                      padding: '20px',
+                      boxShadow: '4px 4px 0 #000',
+                      fontWeight: 800,
+                      fontSize: '14px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                    }}>
+                      Loading question...
+                    </div>
+                  </div>
+                )}
                 {currentQuestion && (
-                  <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+                  <div style={{ flex: '1 1 auto', minHeight: 'min-content', display: 'flex', flexDirection: 'column', position: 'relative' }}>
                     <AssessmentQuestion
                       question={currentQuestion}
                       questionNumber={questionNumber}
@@ -882,7 +952,7 @@ const AssessmentFlow: React.FC = () => {
                             padding: '12px 18px',
                             border: '4px solid #000000',
                             backgroundColor: '#FFD93D',
-                            boxShadow: '3px 3px 0 #000000'
+                            boxShadow: '4px 4px 0 #000000'
                           }}
                         >
                           <span
@@ -931,7 +1001,7 @@ const AssessmentFlow: React.FC = () => {
       {/* Exit confirmation dialog */}
       {showExitDialog && (
         <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1100]"
           onClick={() => setShowExitDialog(false)}
         >
           <div
@@ -942,7 +1012,7 @@ const AssessmentFlow: React.FC = () => {
               Exit Assessment?
             </h3>
             <p className="text-base text-gray-700 dark:text-gray-300 mb-6">
-              Your progress will be saved, but you'll need to start a new assessment to continue practicing.
+              Your progress will be saved, but you'll need to start a new assessment to continue practicing. You can always try another subject from the home screen.
             </p>
             <div className="flex gap-4">
               <button

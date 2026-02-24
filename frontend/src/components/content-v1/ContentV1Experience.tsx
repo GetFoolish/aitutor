@@ -22,7 +22,7 @@ const ContentV1Experience: React.FC = () => {
   const [age, setAge] = useState("10");
   const [goal, setGoal] = useState("");
   const [loading, setLoading] = useState(false);
-  const [profileId, setProfileId] = useState<string>(() => localStorage.getItem(PROFILE_KEY) || "");
+  const [profileId, setProfileId] = useState<string>(() => { try { return localStorage.getItem(PROFILE_KEY) || ""; } catch { return ""; } });
   const [plan, setPlan] = useState<Plan | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [question, setQuestion] = useState<any | null>(null);
@@ -73,7 +73,7 @@ const ContentV1Experience: React.FC = () => {
       setCurrentStepIndex(0);
       setSubmitted(false);
       setQuestionStartMs(Date.now());
-      localStorage.setItem(PROFILE_KEY, data.learner_profile_id);
+      try { localStorage.setItem(PROFILE_KEY, data.learner_profile_id); } catch { /* private browsing */ }
       sessionStorage.setItem(CONTENT_V1_STARTED_KEY, "true");
     } catch (e: any) {
       setResultText(e?.message || "Failed to create plan");
@@ -107,6 +107,8 @@ const ContentV1Experience: React.FC = () => {
     }
   };
 
+  const [journeyComplete, setJourneyComplete] = useState(false);
+
   const handleNext = async () => {
     if (!profileId) return;
     setLoading(true);
@@ -117,9 +119,15 @@ const ContentV1Experience: React.FC = () => {
       );
       if (!response.ok) throw new Error(`Next question failed: ${response.status}`);
       const data = await response.json();
-      setQuestion(data.question || null);
-      setSubmitted(false);
-      setQuestionStartMs(Date.now());
+      if (data.question) {
+        setQuestion(data.question);
+        setSubmitted(false);
+        setQuestionStartMs(Date.now());
+      } else {
+        // No more questions — journey is complete, don't reset question to null
+        setJourneyComplete(true);
+        setResultText("You've completed all available questions in this journey!");
+      }
     } catch (e: any) {
       setResultText(e?.message || "Failed to load next question");
     } finally {
@@ -141,6 +149,7 @@ const ContentV1Experience: React.FC = () => {
               type="number"
               min={5}
               max={18}
+              disabled={loading}
             />
             <label className="block text-sm font-bold uppercase">What do you want to learn?</label>
             <input
@@ -148,6 +157,7 @@ const ContentV1Experience: React.FC = () => {
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
               placeholder="e.g. World history, coding in Python, guitar basics"
+              disabled={loading}
             />
             {resultText ? <p className="text-sm font-bold text-red-600">{resultText}</p> : null}
           </CardContent>
@@ -202,21 +212,22 @@ const ContentV1Experience: React.FC = () => {
         </CardContent>
         <CardFooter className="flex gap-2">
           <Button className="border-[3px] border-black bg-[#C4B5FD] text-black font-black" onClick={handleSubmit} disabled={loading || submitted}>
-            Submit
+            {loading && !submitted ? "Submitting..." : submitted ? "Submitted" : "Submit"}
           </Button>
-          <Button className="border-[3px] border-black bg-[#FFD93D] text-black font-black" onClick={handleNext} disabled={loading}>
-            Next
+          <Button className="border-[3px] border-black bg-[#FFD93D] text-black font-black" onClick={handleNext} disabled={loading || !submitted || journeyComplete}>
+            {loading && submitted ? "Loading..." : journeyComplete ? "Complete!" : "Next"}
           </Button>
           <Button
             className="border-[3px] border-black bg-white text-black font-black"
             onClick={() => {
-              localStorage.removeItem(PROFILE_KEY);
+              try { localStorage.removeItem(PROFILE_KEY); } catch { /* private browsing */ }
               sessionStorage.removeItem(CONTENT_V1_STARTED_KEY);
               setProfileId("");
               setPlan(null);
               setQuestion(null);
               setSubmitted(false);
               setResultText("");
+              setJourneyComplete(false);
             }}
           >
             Reset

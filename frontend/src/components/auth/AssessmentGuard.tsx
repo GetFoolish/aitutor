@@ -42,7 +42,7 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
   });
 
   // Call /api/start-subject and poll until curriculum is ready if generating
-  const ensureSubjectReady = async (subject: string): Promise<void> => {
+  const ensureSubjectReady = async (subject: string, signal?: AbortSignal): Promise<void> => {
     try {
       const resp = await apiUtils.post(`${DASH_API_URL}/api/start-subject`, {
         subject,
@@ -61,7 +61,9 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
         const pollInterval = 3_000;
         const start = Date.now();
         while (Date.now() - start < maxPollTime) {
+          if (signal?.aborted) break;
           await new Promise(r => setTimeout(r, pollInterval));
+          if (signal?.aborted) break;
           try {
             const pollResp = await apiUtils.get(pollUrl);
             if (pollResp.ok) {
@@ -91,6 +93,8 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
       return;
     }
 
+    const abortController = new AbortController();
+
     const init = async () => {
       // Check if returning from assessment with a subject in the URL
       const urlParams = new URLSearchParams(window.location.search);
@@ -107,9 +111,11 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
       let subjectAlreadySwitched = false;
       if (urlSubject && urlSubject !== savedSubject) {
         sessionStorage.setItem('selected_subject', urlSubject);
-        await ensureSubjectReady(urlSubject);
+        await ensureSubjectReady(urlSubject, abortController.signal);
         subjectAlreadySwitched = true;
       }
+
+      if (abortController.signal.aborted) return;
 
       const effectiveSubject = urlSubject || savedSubject;
 
@@ -125,10 +131,11 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
         setSelectedSubject(effectiveSubject);
         const subjectPromise = subjectAlreadySwitched
           ? Promise.resolve()
-          : ensureSubjectReady(effectiveSubject);
+          : ensureSubjectReady(effectiveSubject, abortController.signal);
 
         if (fromAssessment) {
           await subjectPromise;
+          if (abortController.signal.aborted) return;
           setAssessmentStatus({
             loading: false,
             completed: true,
@@ -143,6 +150,8 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
     };
 
     init();
+
+    return () => { abortController.abort(); };
   }, [isAuthenticated, isLoading]);
 
   // Listen for onboarding completion
@@ -274,7 +283,52 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
   }
 
   if (assessmentStatus.checkFailed) {
-    return <>{children}</>;
+    // Assessment status check failed — show error with retry instead of silently passing through
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        gap: '16px',
+        background: '#FFFDF5',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+      }}>
+        <div style={{
+          border: '4px solid #000',
+          backgroundColor: '#FF6B6B',
+          color: '#fff',
+          padding: '20px 24px',
+          boxShadow: '4px 4px 0 #000',
+          textAlign: 'center',
+          maxWidth: '400px',
+        }}>
+          <div style={{ fontWeight: 900, fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>
+            Could not check assessment status
+          </div>
+          <button
+            onClick={() => {
+              setAssessmentStatus({ loading: true, completed: false, checkFailed: false });
+              checkAssessmentStatus(selectedSubject);
+            }}
+            style={{
+              padding: '10px 24px',
+              border: '4px solid #000',
+              background: '#FFD93D',
+              color: '#000',
+              cursor: 'pointer',
+              fontWeight: 800,
+              fontSize: '14px',
+              textTransform: 'uppercase',
+              boxShadow: '4px 4px 0 #000',
+            }}
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
   }
 
   // If assessment not completed, redirect to assessment
