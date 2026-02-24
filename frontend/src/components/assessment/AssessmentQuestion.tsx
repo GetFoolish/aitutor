@@ -707,8 +707,9 @@ const AssessmentQuestion: React.FC<Props> = ({
               if (!isCorrect && !el.querySelector('.correct-answer-label')) {
                 const label = document.createElement('div');
                 label.className = 'correct-answer-label';
-                label.style.cssText = 'margin-top:8px;padding:4px 10px;background:#166534;color:#fff;font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;display:inline-block;border:2px solid #000;';
+                label.style.cssText = 'margin-top:6px;padding:3px 8px;background:#166534;color:#fff;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;display:inline-block;border:2px solid #000;box-sizing:border-box;';
                 label.textContent = '✓ Correct Answer';
+                // Insert as last child to keep it inside the choice container
                 el.appendChild(label);
               }
             } else if (isUserSelected && !choice?.correct) {
@@ -717,8 +718,9 @@ const AssessmentQuestion: React.FC<Props> = ({
               if (!el.querySelector('.incorrect-answer-label')) {
                 const label = document.createElement('div');
                 label.className = 'incorrect-answer-label';
-                label.style.cssText = 'margin-top:8px;padding:4px 10px;background:#991B1B;color:#fff;font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;display:inline-block;border:2px solid #000;';
+                label.style.cssText = 'margin-top:6px;padding:3px 8px;background:#991B1B;color:#fff;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;display:inline-block;border:2px solid #000;box-sizing:border-box;';
                 label.textContent = '✗ Your Answer';
+                // Insert as last child to keep it inside the choice container
                 el.appendChild(label);
               }
             }
@@ -750,7 +752,9 @@ const AssessmentQuestion: React.FC<Props> = ({
     }
   };
 
-  const progressPercentage = (questionNumber / totalQuestions) * 100;
+  // Progress shows current question during answering, next question after submitting
+  const effectiveQuestionNumber = isAnswered ? questionNumber + 1 : questionNumber;
+  const progressPercentage = (effectiveQuestionNumber / totalQuestions) * 100;
   const isFinalQuestion = totalQuestions > 0 && questionNumber >= totalQuestions;
 
   return (

@@ -1850,11 +1850,13 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
     Recommend next questions based on currently loaded questions.
     Takes existing question IDs and recommends next batch using DASH intelligence.
     Only returns questions if they differ from current ones.
-    
+
     Args:
         request: FastAPI request object (for JWT extraction)
         req: Request body containing current question IDs and count
     """
+    from managers.mongodb_manager import mongo_db
+
     ensure_dash_system()
     jwt_payload = get_jwt_payload(request)
     user_id = jwt_payload.get("sub")

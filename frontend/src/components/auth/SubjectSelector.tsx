@@ -292,6 +292,12 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
                   alignItems: 'center',
                   gap: '8px'
                 }}
+                onMouseEnter={(e) => {
+                  if (!isDisabled) {
+                    (e.currentTarget as HTMLElement).style.transform = 'translate(1px, 1px) scale(1.02)';
+                    (e.currentTarget as HTMLElement).style.boxShadow = '4px 4px 0 #000';
+                  }
+                }}
                 onMouseDown={(e) => {
                   if (!isDisabled) {
                     (e.currentTarget as HTMLElement).style.transform = 'translate(3px, 3px)';
@@ -300,8 +306,8 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
                 }}
                 onMouseUp={(e) => {
                   if (!isDisabled) {
-                    (e.currentTarget as HTMLElement).style.transform = 'none';
-                    (e.currentTarget as HTMLElement).style.boxShadow = '5px 5px 0 #000';
+                    (e.currentTarget as HTMLElement).style.transform = 'translate(1px, 1px) scale(1.02)';
+                    (e.currentTarget as HTMLElement).style.boxShadow = '4px 4px 0 #000';
                   }
                 }}
                 onMouseLeave={(e) => {

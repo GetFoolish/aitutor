@@ -7,7 +7,11 @@ import logging
 import secrets
 import threading
 from urllib.parse import urlparse
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request, Query
+
+# Load environment variables from root .env file
+load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, JSONResponse
 from pydantic import BaseModel, EmailStr

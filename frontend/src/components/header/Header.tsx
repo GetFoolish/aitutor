@@ -167,15 +167,14 @@ export default function Header({ sidebarOpen, onToggleSidebar, assessmentMode }:
                         type="button"
                         variant="ghost"
                         size="icon"
+                        title={sidebarOpen ? "Hide Grades Panel" : "Show Grades Panel"}
                         className="w-10 h-10 md:w-12 md:h-12 border-[4px] border-black dark:border-white bg-[#FFD93D] hover:bg-[#FFD93D] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[4px_4px_0_0_rgba(0,0,0,1)] lg:shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 text-black"
                         onClick={onToggleSidebar}
                     >
-                        {import.meta.env.DEV ? (
-                            /* Developer Mode: Terminal Icon */
-                            <Terminal className={cn("w-5 h-5 md:w-5 md:h-5 transition-transform", sidebarOpen ? "rotate-180" : "")} />
+                        {sidebarOpen ? (
+                            <RiSidebarFoldLine className="w-5 h-5 md:w-5 md:h-5" />
                         ) : (
-                            /* Student Mode: Book/Learning Assets Icon */
-                            <BookOpen className={cn("w-5 h-5 md:w-5 md:h-5 transition-transform", sidebarOpen ? "rotate-0" : "")} />
+                            <RiSidebarUnfoldLine className="w-5 h-5 md:w-5 md:h-5" />
                         )}
                     </Button>
                 )}
