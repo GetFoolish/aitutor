@@ -107,6 +107,8 @@ const ContentV1Experience: React.FC = () => {
     }
   };
 
+  const [journeyComplete, setJourneyComplete] = useState(false);
+
   const handleNext = async () => {
     if (!profileId) return;
     setLoading(true);
@@ -117,9 +119,15 @@ const ContentV1Experience: React.FC = () => {
       );
       if (!response.ok) throw new Error(`Next question failed: ${response.status}`);
       const data = await response.json();
-      setQuestion(data.question || null);
-      setSubmitted(false);
-      setQuestionStartMs(Date.now());
+      if (data.question) {
+        setQuestion(data.question);
+        setSubmitted(false);
+        setQuestionStartMs(Date.now());
+      } else {
+        // No more questions — journey is complete, don't reset question to null
+        setJourneyComplete(true);
+        setResultText("You've completed all available questions in this journey!");
+      }
     } catch (e: any) {
       setResultText(e?.message || "Failed to load next question");
     } finally {
@@ -204,8 +212,8 @@ const ContentV1Experience: React.FC = () => {
           <Button className="border-[3px] border-black bg-[#C4B5FD] text-black font-black" onClick={handleSubmit} disabled={loading || submitted}>
             Submit
           </Button>
-          <Button className="border-[3px] border-black bg-[#FFD93D] text-black font-black" onClick={handleNext} disabled={loading}>
-            Next
+          <Button className="border-[3px] border-black bg-[#FFD93D] text-black font-black" onClick={handleNext} disabled={loading || !submitted || journeyComplete}>
+            {journeyComplete ? "Complete!" : "Next"}
           </Button>
           <Button
             className="border-[3px] border-black bg-white text-black font-black"
@@ -217,6 +225,7 @@ const ContentV1Experience: React.FC = () => {
               setQuestion(null);
               setSubmitted(false);
               setResultText("");
+              setJourneyComplete(false);
             }}
           >
             Reset

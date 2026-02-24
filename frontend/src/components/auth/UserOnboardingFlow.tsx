@@ -154,9 +154,18 @@ const UserOnboardingFlow: React.FC = () => {
       }
     } catch (error) {
       console.error('Error in onboarding flow:', error);
-      window.dispatchEvent(new CustomEvent('onboarding-complete'));
-      sessionStorage.setItem('onboarding_complete', 'true');
-      history.replace('/app');
+      // Don't mark onboarding as complete on error — retry instead so the user
+      // actually fills in age/DOB and other required fields (Bug: age not asked).
+      setStep('collecting_info');
+      // Build a fallback completeness so the form shows all fields
+      setCompleteness({
+        is_complete: false,
+        missing_fields: ['date_of_birth', 'gender', 'preferred_language', 'location'],
+        assessment_completed: false,
+        assessment_subject: 'math',
+        readiness_status: 'needs_info',
+        user_data: {}
+      });
     }
   };
 

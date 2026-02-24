@@ -1043,7 +1043,7 @@ const RendererComponent = ({
 
         let raf = 0;
         let timeoutId: number | null = null;
-        const minFitZoom = hasOverlaySensitiveWidget ? 0.9 : 0.78;
+        const minFitZoom = hasOverlaySensitiveWidget ? 0.85 : 0.65;
 
         const recompute = () => {
             const viewportH = viewportEl.clientHeight;
@@ -1186,7 +1186,7 @@ const RendererComponent = ({
                 <CardContent className={`${compactViewport ? "px-3 py-2.5" : "px-4 md:px-6 py-4 md:py-6"} bg-[#FFFDF5] dark:bg-[#000000] flex-1 min-h-0 overflow-hidden`}>
                     <div
                         ref={scrollContainerRef}
-                        className="relative w-full h-full min-h-0 overflow-y-auto overflow-x-hidden pr-1"
+                        className={`relative w-full h-full min-h-0 overflow-x-hidden pr-1 ${effectiveContentZoom < 1 ? 'overflow-y-hidden' : 'overflow-y-auto'}`}
                     >
                         {endOfTest ? (
                             <div className="flex h-full items-center justify-center px-3 md:px-4 py-4 md:py-6 text-center">
