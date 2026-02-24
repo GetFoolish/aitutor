@@ -153,8 +153,8 @@ const LoginPage: React.FC = () => {
 
           <button
             onClick={() => {
-              localStorage.removeItem('jwt_token');
-              localStorage.removeItem('active_assessment');
+              try { localStorage.removeItem('jwt_token'); } catch { /* private browsing */ }
+              try { localStorage.removeItem('active_assessment'); } catch { /* private browsing */ }
               // Targeted session cleanup instead of sessionStorage.clear()
               sessionStorage.removeItem('selected_subject');
               sessionStorage.removeItem('onboarding_complete');

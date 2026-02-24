@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, Check, X } from 'lucide-react';
+import { jwtUtils } from '../../lib/jwt-utils';
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 
@@ -39,7 +40,7 @@ const AdminVideoPanel: React.FC = () => {
     const load = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('jwt_token');
+        const token = jwtUtils.getToken();
 
         const videosResponse = await fetch(
           `${DASH_API_URL}/api/admin/videos/suggested?limit=50&offset=0`,
@@ -74,7 +75,7 @@ const AdminVideoPanel: React.FC = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('jwt_token');
+      const token = jwtUtils.getToken();
       const videosResponse = await fetch(
         `${DASH_API_URL}/api/admin/videos/suggested?limit=50&offset=0`,
         { headers: { 'Authorization': `Bearer ${token}` } }
@@ -107,7 +108,7 @@ const AdminVideoPanel: React.FC = () => {
   const handleApprove = async (questionId: string, videoId: string) => {
     try {
       setActionInProgress(`${questionId}-${videoId}-approve`);
-      const token = localStorage.getItem('jwt_token');
+      const token = jwtUtils.getToken();
 
       const response = await fetch(
         `${DASH_API_URL}/api/videos/approve?question_id=${questionId}&video_id=${videoId}`,
@@ -136,7 +137,7 @@ const AdminVideoPanel: React.FC = () => {
   const handleReject = async (questionId: string, videoId: string) => {
     try {
       setActionInProgress(`${questionId}-${videoId}-reject`);
-      const token = localStorage.getItem('jwt_token');
+      const token = jwtUtils.getToken();
 
       const response = await fetch(
         `${DASH_API_URL}/api/videos/reject?question_id=${questionId}&video_id=${videoId}`,

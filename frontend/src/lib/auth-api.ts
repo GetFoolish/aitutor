@@ -2,6 +2,7 @@
  * Authentication API client
  */
 import { httpClient } from './http-client';
+import { jwtUtils } from './jwt-utils';
 
 const AUTH_SERVICE_URL = import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003';
 
@@ -199,7 +200,7 @@ class AuthAPI {
   }
 
   async getAccountInfo(): Promise<AccountInfo> {
-    const token = localStorage.getItem('jwt_token');
+    const token = jwtUtils.getToken();
     if (!token) {
       throw new Error('Not authenticated');
     }
@@ -224,7 +225,7 @@ class AuthAPI {
     gender?: string;
     preferredLanguage?: string;
   }): Promise<AccountInfo> {
-    const token = localStorage.getItem('jwt_token');
+    const token = jwtUtils.getToken();
     if (!token) {
       throw new Error('Not authenticated');
     }
@@ -253,7 +254,7 @@ class AuthAPI {
   }
 
   async logout(): Promise<void> {
-    const token = localStorage.getItem('jwt_token');
+    const token = jwtUtils.getToken();
     if (token) {
       try {
         await httpClient.fetch(`${AUTH_SERVICE_URL}/auth/logout`, {

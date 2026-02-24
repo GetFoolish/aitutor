@@ -22,7 +22,7 @@ const ContentV1Experience: React.FC = () => {
   const [age, setAge] = useState("10");
   const [goal, setGoal] = useState("");
   const [loading, setLoading] = useState(false);
-  const [profileId, setProfileId] = useState<string>(() => localStorage.getItem(PROFILE_KEY) || "");
+  const [profileId, setProfileId] = useState<string>(() => { try { return localStorage.getItem(PROFILE_KEY) || ""; } catch { return ""; } });
   const [plan, setPlan] = useState<Plan | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [question, setQuestion] = useState<any | null>(null);
@@ -73,7 +73,7 @@ const ContentV1Experience: React.FC = () => {
       setCurrentStepIndex(0);
       setSubmitted(false);
       setQuestionStartMs(Date.now());
-      localStorage.setItem(PROFILE_KEY, data.learner_profile_id);
+      try { localStorage.setItem(PROFILE_KEY, data.learner_profile_id); } catch { /* private browsing */ }
       sessionStorage.setItem(CONTENT_V1_STARTED_KEY, "true");
     } catch (e: any) {
       setResultText(e?.message || "Failed to create plan");
@@ -220,7 +220,7 @@ const ContentV1Experience: React.FC = () => {
           <Button
             className="border-[3px] border-black bg-white text-black font-black"
             onClick={() => {
-              localStorage.removeItem(PROFILE_KEY);
+              try { localStorage.removeItem(PROFILE_KEY); } catch { /* private browsing */ }
               sessionStorage.removeItem(CONTENT_V1_STARTED_KEY);
               setProfileId("");
               setPlan(null);

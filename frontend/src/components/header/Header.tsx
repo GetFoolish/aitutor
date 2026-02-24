@@ -144,8 +144,8 @@ export default function Header({ sidebarOpen, onToggleSidebar, assessmentMode }:
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => {
-                            localStorage.removeItem('jwt_token');
-                            localStorage.removeItem('active_assessment');
+                            try { localStorage.removeItem('jwt_token'); } catch { /* private browsing */ }
+                            try { localStorage.removeItem('active_assessment'); } catch { /* private browsing */ }
                             // Targeted session cleanup — don't use sessionStorage.clear()
                             // which was nuking everything including data the user shouldn't have to re-enter
                             sessionStorage.removeItem('selected_subject');

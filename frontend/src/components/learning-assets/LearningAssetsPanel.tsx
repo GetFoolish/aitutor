@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import cn from 'classnames';
 import { Skeleton } from '../ui/skeleton';
 import { useAuth } from '../../contexts/AuthContext';
+import { jwtUtils } from '../../lib/jwt-utils';
 import { Play, Video as VideoIcon } from 'lucide-react';
 
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
@@ -52,7 +53,7 @@ const LearningAssetsPanel: React.FC<LearningAssetsPanelProps> = ({
         setError(null);
 
         const preferredLanguage = user?.preferred_language || 'English';
-        const token = localStorage.getItem('jwt_token');
+        const token = jwtUtils.getToken();
 
         const response = await fetch(
           `${DASH_API_URL}/api/learning-assets/videos/${questionId}?preferred_language=${encodeURIComponent(preferredLanguage)}`,

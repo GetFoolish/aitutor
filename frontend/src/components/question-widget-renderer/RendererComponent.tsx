@@ -264,9 +264,11 @@ const RendererComponent = ({
             setIsError(false);
             setError(null);
 
+            let storedSubject = "";
+            try { storedSubject = localStorage.getItem("selected_subject") || ""; } catch { /* private browsing */ }
             const selectedSubject = (
                 sessionStorage.getItem("selected_subject") ||
-                localStorage.getItem("selected_subject") ||
+                storedSubject ||
                 ""
             ).trim();
             if (selectedSubject) {

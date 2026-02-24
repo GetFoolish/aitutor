@@ -2,6 +2,7 @@
  * Payment API client for Stripe integration
  */
 import { httpClient } from './http-client';
+import { jwtUtils } from './jwt-utils';
 
 const AUTH_SERVICE_URL = import.meta.env.VITE_AUTH_SERVICE_URL || 'http://localhost:8003';
 
@@ -12,7 +13,7 @@ export interface CheckoutSessionResponse {
 
 class PaymentAPI {
   async createCheckoutSession(plan: 'starter' | 'pro' | 'premium'): Promise<CheckoutSessionResponse> {
-    const token = localStorage.getItem('jwt_token');
+    const token = jwtUtils.getToken();
     if (!token) {
       throw new Error('Not authenticated');
     }

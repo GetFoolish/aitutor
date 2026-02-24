@@ -34,29 +34,29 @@ const AccountPage: React.FC = () => {
     preferredLanguage: '',
   });
 
-  useEffect(() => {
-    const fetchAccountInfo = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const info = await authAPI.getAccountInfo();
-        setAccountInfo(info);
-        // Initialize form data
-        setFormData({
-          name: info.name || '',
-          dateOfBirth: info.date_of_birth || '',
-          location: info.location || '',
-          gender: info.gender || '',
-          preferredLanguage: info.preferred_language || '',
-        });
-      } catch (err: any) {
-        console.error('Failed to fetch account info:', err);
-        setError(err?.message || 'Failed to load account information');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchAccountInfo = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const info = await authAPI.getAccountInfo();
+      setAccountInfo(info);
+      // Initialize form data
+      setFormData({
+        name: info.name || '',
+        dateOfBirth: info.date_of_birth || '',
+        location: info.location || '',
+        gender: info.gender || '',
+        preferredLanguage: info.preferred_language || '',
+      });
+    } catch (err: any) {
+      console.error('Failed to fetch account info:', err);
+      setError(err?.message || 'Failed to load account information');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchAccountInfo();
   }, []);
 
@@ -193,7 +193,20 @@ const AccountPage: React.FC = () => {
           "border-[3px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000] shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] max-w-md"
         )}>
           <CardContent className="pt-6">
-            <p className="text-center text-red-600 dark:text-red-400 font-bold">{error}</p>
+            <p className="text-center text-red-600 dark:text-red-400 font-bold mb-4">{error}</p>
+            <div className="text-center">
+              <Button
+                onClick={fetchAccountInfo}
+                className={cn(
+                  "px-6 py-2 font-black text-black transition-all transform",
+                  "border-[2px] border-black shadow-[2px_2px_0_0_rgba(0,0,0,1)]",
+                  "active:translate-x-1 active:translate-y-1 active:shadow-none",
+                  "bg-[#FFD93D] hover:bg-[#FFD93D] uppercase"
+                )}
+              >
+                Retry
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

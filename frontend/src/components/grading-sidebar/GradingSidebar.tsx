@@ -54,7 +54,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
     const isUserScrollingRef = useRef(false);
     const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [contentV1ProfileId, setContentV1ProfileId] = useState<string | null>(
-        () => localStorage.getItem(CONTENT_V1_PROFILE_KEY),
+        () => { try { return localStorage.getItem(CONTENT_V1_PROFILE_KEY); } catch { return null; } },
     );
     const [contentV1Started, setContentV1Started] = useState<boolean>(
         () => sessionStorage.getItem(CONTENT_V1_STARTED_KEY) === "true",
@@ -65,7 +65,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
 
     useEffect(() => {
         const syncContentV1State = () => {
-            setContentV1ProfileId(localStorage.getItem(CONTENT_V1_PROFILE_KEY));
+            try { setContentV1ProfileId(localStorage.getItem(CONTENT_V1_PROFILE_KEY)); } catch { setContentV1ProfileId(null); }
             setContentV1Started(sessionStorage.getItem(CONTENT_V1_STARTED_KEY) === "true");
             setContentV1Mode(sessionStorage.getItem(CONTENT_V1_MODE_KEY) === "true");
         };

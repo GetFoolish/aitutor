@@ -137,7 +137,8 @@ const AssessmentFlow: React.FC = () => {
   useEffect(() => {
     const attemptRecovery = async () => {
       // Check if there's an active session to resume
-      const savedSession = localStorage.getItem('active_assessment');
+      let savedSession: string | null = null;
+      try { savedSession = localStorage.getItem('active_assessment'); } catch { /* private browsing */ }
       console.log('[AssessmentFlow] Recovery check:', { savedSession, assessmentId, subject });
 
       if (savedSession && !assessmentId) {
@@ -182,10 +183,10 @@ const AssessmentFlow: React.FC = () => {
           }
 
           // If resume failed or session too old, clear it
-          localStorage.removeItem('active_assessment');
+          try { localStorage.removeItem('active_assessment'); } catch { /* private browsing */ }
         } catch (error) {
           console.error('[AssessmentFlow] Resume failed, starting fresh:', error);
-          localStorage.removeItem('active_assessment');
+          try { localStorage.removeItem('active_assessment'); } catch { /* private browsing */ }
         }
       } else {
         console.log('[AssessmentFlow] No session to resume or assessmentId already set');
@@ -235,7 +236,7 @@ const AssessmentFlow: React.FC = () => {
     setCompleted(false);
     // Clear ALL assessment state from storage to prevent stale resume
     sessionStorage.removeItem('assessmentSubject');
-    localStorage.removeItem('active_assessment');
+    try { localStorage.removeItem('active_assessment'); } catch { /* private browsing */ }
     // Navigate to exit page with context
     const encodedSubject = encodeURIComponent(subject);
     const exitUrl = currentAssessmentId
@@ -341,12 +342,14 @@ const AssessmentFlow: React.FC = () => {
       assessmentIdRef.current = data.assessment_id;
 
       // Save session to localStorage for recovery on page refresh
-      localStorage.setItem('active_assessment', JSON.stringify({
-        assessment_id: data.assessment_id,
-        subject,
-        started_at: Date.now(),
-        question_count: data.question_number || 1,
-      }));
+      try {
+        localStorage.setItem('active_assessment', JSON.stringify({
+          assessment_id: data.assessment_id,
+          subject,
+          started_at: Date.now(),
+          question_count: data.question_number || 1,
+        }));
+      } catch { /* private browsing — localStorage unavailable */ }
 
       setCurrentQuestion(data.question);
       setQuestionNumber(data.question_number);
@@ -380,7 +383,7 @@ const AssessmentFlow: React.FC = () => {
       setTotal(data.total ?? totalQuestions);
       setCompleted(true);
       // Clear saved session on completion
-      localStorage.removeItem('active_assessment');
+      try { localStorage.removeItem('active_assessment'); } catch { /* private browsing */ }
       return;
     }
 
