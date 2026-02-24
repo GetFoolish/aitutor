@@ -8,13 +8,13 @@ const DEVELOPER_MODE_KEY = 'ai-tutor-dev-mode';
 
 export const useDeveloperMode = () => {
   const [isDeveloperMode, setIsDeveloperMode] = useState(() => {
-    return localStorage.getItem(DEVELOPER_MODE_KEY) === 'true';
+    try { return localStorage.getItem(DEVELOPER_MODE_KEY) === 'true'; } catch { return false; }
   });
 
   const toggleDeveloperMode = () => {
     const newValue = !isDeveloperMode;
     setIsDeveloperMode(newValue);
-    localStorage.setItem(DEVELOPER_MODE_KEY, String(newValue));
+    try { localStorage.setItem(DEVELOPER_MODE_KEY, String(newValue)); } catch { /* storage unavailable */ }
 
     // Log to console for user feedback
     if (newValue) {

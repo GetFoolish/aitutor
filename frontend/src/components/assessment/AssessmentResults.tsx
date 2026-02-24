@@ -123,7 +123,11 @@ const AssessmentResults: React.FC<Props> = ({
     onContinue();
   };
 
+  const [isContinuing, setIsContinuing] = useState(false);
+
   const handleContinueClick = () => {
+    if (isContinuing) return; // prevent double-click
+    setIsContinuing(true);
     if (skillCards.length > 0) {
       setShowPersonalizing(true);
       return;
@@ -230,24 +234,26 @@ const AssessmentResults: React.FC<Props> = ({
 
       <button
         onClick={handleContinueClick}
+        disabled={isContinuing}
         style={{
           width: '100%',
           maxWidth: '420px',
           margin: '0 auto',
           padding: '14px 24px',
           border: '4px solid var(--neo-black)',
-          background: '#4FC3F7',
+          background: isContinuing ? '#B0BEC5' : '#4FC3F7',
           color: 'var(--neo-black)',
           fontWeight: 900,
           fontSize: '16px',
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
           boxShadow: '3px 3px 0 var(--neo-black)',
-          cursor: 'pointer',
-          alignSelf: 'center'
+          cursor: isContinuing ? 'not-allowed' : 'pointer',
+          alignSelf: 'center',
+          opacity: isContinuing ? 0.7 : 1,
         }}
       >
-        Continue to Learning
+        {isContinuing ? 'Loading...' : 'Continue to Learning'}
       </button>
 
     </div>

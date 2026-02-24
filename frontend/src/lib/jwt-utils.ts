@@ -1,25 +1,40 @@
 /**
  * JWT token storage and retrieval utilities
+ * Wrapped in try/catch — localStorage throws in private browsing / storage disabled
  */
 
 const TOKEN_KEY = 'jwt_token';
 
 export const jwtUtils = {
   getToken: (): string | null => {
-    const token = localStorage.getItem(TOKEN_KEY);
-    return token;
+    try {
+      return localStorage.getItem(TOKEN_KEY);
+    } catch {
+      return null;
+    }
   },
 
   setToken: (token: string): void => {
-    localStorage.setItem(TOKEN_KEY, token);
+    try {
+      localStorage.setItem(TOKEN_KEY, token);
+    } catch {
+      console.warn('Could not save token — storage unavailable');
+    }
   },
 
   removeToken: (): void => {
-    localStorage.removeItem(TOKEN_KEY);
+    try {
+      localStorage.removeItem(TOKEN_KEY);
+    } catch {
+      // Already inaccessible
+    }
   },
 
   hasToken: (): boolean => {
-    return !!localStorage.getItem(TOKEN_KEY);
+    try {
+      return !!localStorage.getItem(TOKEN_KEY);
+    } catch {
+      return false;
+    }
   }
 };
-

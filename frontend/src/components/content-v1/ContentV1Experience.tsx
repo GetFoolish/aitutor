@@ -149,6 +149,7 @@ const ContentV1Experience: React.FC = () => {
               type="number"
               min={5}
               max={18}
+              disabled={loading}
             />
             <label className="block text-sm font-bold uppercase">What do you want to learn?</label>
             <input
@@ -156,6 +157,7 @@ const ContentV1Experience: React.FC = () => {
               value={goal}
               onChange={(e) => setGoal(e.target.value)}
               placeholder="e.g. World history, coding in Python, guitar basics"
+              disabled={loading}
             />
             {resultText ? <p className="text-sm font-bold text-red-600">{resultText}</p> : null}
           </CardContent>
@@ -210,10 +212,10 @@ const ContentV1Experience: React.FC = () => {
         </CardContent>
         <CardFooter className="flex gap-2">
           <Button className="border-[3px] border-black bg-[#C4B5FD] text-black font-black" onClick={handleSubmit} disabled={loading || submitted}>
-            Submit
+            {loading && !submitted ? "Submitting..." : submitted ? "Submitted" : "Submit"}
           </Button>
           <Button className="border-[3px] border-black bg-[#FFD93D] text-black font-black" onClick={handleNext} disabled={loading || !submitted || journeyComplete}>
-            {journeyComplete ? "Complete!" : "Next"}
+            {loading && submitted ? "Loading..." : journeyComplete ? "Complete!" : "Next"}
           </Button>
           <Button
             className="border-[3px] border-black bg-white text-black font-black"
