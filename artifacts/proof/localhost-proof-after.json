@@ -1,0 +1,11 @@
+{
+  "fix": "Rewrite localhost image hosts to request origin",
+  "request_origin_example": "https://staging.aitutor.dev",
+  "input_image_url": "http://localhost:8000/static/images/demo.png",
+  "rewritten_output_after_fix": "https://staging.aitutor.dev/static/images/demo.png",
+  "tests": {
+    "command": "python -m pytest -o addopts=\"\" tests/test_localhost_url_rewrite.py -q",
+    "status": "passed",
+    "summary": "4 passed"
+  }
+}

@@ -1,0 +1,716 @@
+{
+  "ages": [
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+  ],
+  "subjects": [
+    "Science",
+    "English",
+    "History",
+    "Biology",
+    "Geometry",
+    "Math"
+  ],
+  "timestamp": "2026-02-24T19:07:27.464461+00:00",
+  "pairs_total": 84,
+  "pairs_ok": 0,
+  "pairs_failed": 84,
+  "issue_counters": {
+    "assessment_start_failed:500": 84,
+    "learning_fetch_failed:500": 84
+  },
+  "latency_ms": {
+    "learning_p50": 6.72,
+    "learning_p95": 20.02,
+    "learning_max": 81.44,
+    "assessment_p50": 8.43,
+    "assessment_p95": 22.3,
+    "assessment_max": 288.0
+  },
+  "rows": [
+    {
+      "age": 5,
+      "subject": "Science",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 5,
+      "subject": "English",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 5,
+      "subject": "History",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 5,
+      "subject": "Biology",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 5,
+      "subject": "Geometry",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 5,
+      "subject": "Math",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 6,
+      "subject": "Science",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 6,
+      "subject": "English",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 6,
+      "subject": "History",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 6,
+      "subject": "Biology",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 6,
+      "subject": "Geometry",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 6,
+      "subject": "Math",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 7,
+      "subject": "Science",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 7,
+      "subject": "English",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 7,
+      "subject": "History",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 7,
+      "subject": "Biology",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 7,
+      "subject": "Geometry",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 7,
+      "subject": "Math",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 8,
+      "subject": "Science",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 8,
+      "subject": "English",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 8,
+      "subject": "History",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 8,
+      "subject": "Biology",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 8,
+      "subject": "Geometry",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 8,
+      "subject": "Math",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 9,
+      "subject": "Science",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 9,
+      "subject": "English",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 9,
+      "subject": "History",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 9,
+      "subject": "Biology",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 9,
+      "subject": "Geometry",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 9,
+      "subject": "Math",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 10,
+      "subject": "Science",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 10,
+      "subject": "English",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 10,
+      "subject": "History",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 10,
+      "subject": "Biology",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 10,
+      "subject": "Geometry",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 10,
+      "subject": "Math",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 11,
+      "subject": "Science",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 11,
+      "subject": "English",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 11,
+      "subject": "History",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 11,
+      "subject": "Biology",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 11,
+      "subject": "Geometry",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 11,
+      "subject": "Math",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 12,
+      "subject": "Science",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 12,
+      "subject": "English",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 12,
+      "subject": "History",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 12,
+      "subject": "Biology",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 12,
+      "subject": "Geometry",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 12,
+      "subject": "Math",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 13,
+      "subject": "Science",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 13,
+      "subject": "English",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 13,
+      "subject": "History",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 13,
+      "subject": "Biology",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 13,
+      "subject": "Geometry",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 13,
+      "subject": "Math",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 14,
+      "subject": "Science",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 14,
+      "subject": "English",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 14,
+      "subject": "History",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 14,
+      "subject": "Biology",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 14,
+      "subject": "Geometry",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 14,
+      "subject": "Math",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 15,
+      "subject": "Science",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 15,
+      "subject": "English",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 15,
+      "subject": "History",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 15,
+      "subject": "Biology",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 15,
+      "subject": "Geometry",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 15,
+      "subject": "Math",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 16,
+      "subject": "Science",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 16,
+      "subject": "English",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 16,
+      "subject": "History",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 16,
+      "subject": "Biology",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 16,
+      "subject": "Geometry",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 16,
+      "subject": "Math",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 17,
+      "subject": "Science",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 17,
+      "subject": "English",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 17,
+      "subject": "History",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 17,
+      "subject": "Biology",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 17,
+      "subject": "Geometry",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 17,
+      "subject": "Math",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 18,
+      "subject": "Science",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 18,
+      "subject": "English",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 18,
+      "subject": "History",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 18,
+      "subject": "Biology",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 18,
+      "subject": "Geometry",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    },
+    {
+      "age": 18,
+      "subject": "Math",
+      "issues": [
+        "assessment_start_failed:500",
+        "learning_fetch_failed:500"
+      ]
+    }
+  ]
+}

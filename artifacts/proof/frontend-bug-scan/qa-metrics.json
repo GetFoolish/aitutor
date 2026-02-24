@@ -1,0 +1,14 @@
+{
+  "scroll": {
+    "before": 0,
+    "after": 0,
+    "delta": 0,
+    "scrollHeight": 768,
+    "innerHeight": 768
+  },
+  "floatingPanel": {
+    "panelExists": true,
+    "sampleCount": 5,
+    "transparentCount": 0
+  }
+}

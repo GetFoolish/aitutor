@@ -1,0 +1,322 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - link "teachr" [ref=e3] [cursor=pointer]:
+      - /url: /app
+      - img "teachr" [ref=e4]
+    - generic [ref=e5]:
+      - button "Toggle theme" [ref=e6]:
+        - img
+        - generic [ref=e7]: Toggle theme
+      - button "P" [ref=e8]:
+        - generic [ref=e10]: P
+      - button [ref=e11]:
+        - img
+  - generic [ref=e12]:
+    - generic [ref=e13]:
+      - banner [ref=e14]:
+        - generic [ref=e15]:
+          - img [ref=e17]
+          - heading "Grading & Skills" [level=2] [ref=e20]
+        - button [ref=e21]:
+          - img
+      - generic [ref=e23]:
+        - generic [ref=e25]:
+          - generic [ref=e26]: Overall Grade
+          - generic [ref=e27]: A
+          - generic [ref=e28]: 100% Mastery
+        - generic [ref=e29]:
+          - heading "Scientific Inquiry and Measurement Science • Grade 5 0%" [level=3] [ref=e32]:
+            - button "Scientific Inquiry and Measurement Science • Grade 5 0%" [ref=e33] [cursor=pointer]:
+              - generic [ref=e35]:
+                - generic [ref=e36]:
+                  - generic [ref=e37]: Scientific Inquiry and Measurement
+                  - generic [ref=e38]: Science • Grade 5
+                - generic [ref=e39]: 0%
+          - heading "Matter and Its Interactions Science • Grade 5 0%" [level=3] [ref=e43]:
+            - button "Matter and Its Interactions Science • Grade 5 0%" [ref=e44] [cursor=pointer]:
+              - generic [ref=e46]:
+                - generic [ref=e47]:
+                  - generic [ref=e48]: Matter and Its Interactions
+                  - generic [ref=e49]: Science • Grade 5
+                - generic [ref=e50]: 0%
+          - heading "Energy and Forces Science • Grade 5 0%" [level=3] [ref=e54]:
+            - button "Energy and Forces Science • Grade 5 0%" [ref=e55] [cursor=pointer]:
+              - generic [ref=e57]:
+                - generic [ref=e58]:
+                  - generic [ref=e59]: Energy and Forces
+                  - generic [ref=e60]: Science • Grade 5
+                - generic [ref=e61]: 0%
+          - heading "Ecosystems and Interdependence Science • Grade 5 0%" [level=3] [ref=e65]:
+            - button "Ecosystems and Interdependence Science • Grade 5 0%" [ref=e66] [cursor=pointer]:
+              - generic [ref=e68]:
+                - generic [ref=e69]:
+                  - generic [ref=e70]: Ecosystems and Interdependence
+                  - generic [ref=e71]: Science • Grade 5
+                - generic [ref=e72]: 0%
+          - heading "Earth's Systems Science • Grade 5 0%" [level=3] [ref=e76]:
+            - button "Earth's Systems Science • Grade 5 0%" [ref=e77] [cursor=pointer]:
+              - generic [ref=e79]:
+                - generic [ref=e80]:
+                  - generic [ref=e81]: Earth's Systems
+                  - generic [ref=e82]: Science • Grade 5
+                - generic [ref=e83]: 0%
+          - heading "Weather and Climate Science • Grade 5 0%" [level=3] [ref=e87]:
+            - button "Weather and Climate Science • Grade 5 0%" [ref=e88] [cursor=pointer]:
+              - generic [ref=e90]:
+                - generic [ref=e91]:
+                  - generic [ref=e92]: Weather and Climate
+                  - generic [ref=e93]: Science • Grade 5
+                - generic [ref=e94]: 0%
+          - heading "The Solar System and Beyond Science • Grade 5 0%" [level=3] [ref=e98]:
+            - button "The Solar System and Beyond Science • Grade 5 0%" [ref=e99] [cursor=pointer]:
+              - generic [ref=e101]:
+                - generic [ref=e102]:
+                  - generic [ref=e103]: The Solar System and Beyond
+                  - generic [ref=e104]: Science • Grade 5
+                - generic [ref=e105]: 0%
+          - heading "Scientific Inquiry and Measurement Science • Grade 6 0%" [level=3] [ref=e109]:
+            - button "Scientific Inquiry and Measurement Science • Grade 6 0%" [ref=e110] [cursor=pointer]:
+              - generic [ref=e112]:
+                - generic [ref=e113]:
+                  - generic [ref=e114]: Scientific Inquiry and Measurement
+                  - generic [ref=e115]: Science • Grade 6
+                - generic [ref=e116]: 0%
+          - heading "Matter and Its Interactions Science • Grade 6 0%" [level=3] [ref=e120]:
+            - button "Matter and Its Interactions Science • Grade 6 0%" [ref=e121] [cursor=pointer]:
+              - generic [ref=e123]:
+                - generic [ref=e124]:
+                  - generic [ref=e125]: Matter and Its Interactions
+                  - generic [ref=e126]: Science • Grade 6
+                - generic [ref=e127]: 0%
+          - heading "Energy and Forces Science • Grade 6 0%" [level=3] [ref=e131]:
+            - button "Energy and Forces Science • Grade 6 0%" [ref=e132] [cursor=pointer]:
+              - generic [ref=e134]:
+                - generic [ref=e135]:
+                  - generic [ref=e136]: Energy and Forces
+                  - generic [ref=e137]: Science • Grade 6
+                - generic [ref=e138]: 0%
+          - heading "Earth's Systems and Processes Science • Grade 7 Expert" [level=3] [ref=e142]:
+            - button "Earth's Systems and Processes Science • Grade 7 Expert" [ref=e143] [cursor=pointer]:
+              - generic [ref=e145]:
+                - generic [ref=e146]:
+                  - generic [ref=e147]: Earth's Systems and Processes
+                  - generic [ref=e148]: Science • Grade 7
+                - generic [ref=e149]: Expert
+          - heading "Ecology and Environmental Science Science • Grade 7 Expert" [level=3] [ref=e154]:
+            - button "Ecology and Environmental Science Science • Grade 7 Expert" [ref=e155] [cursor=pointer]:
+              - generic [ref=e157]:
+                - generic [ref=e158]:
+                  - generic [ref=e159]: Ecology and Environmental Science
+                  - generic [ref=e160]: Science • Grade 7
+                - generic [ref=e161]: Expert
+          - heading "Cells and Heredity Science • Grade 7 0%" [level=3] [ref=e166]:
+            - button "Cells and Heredity Science • Grade 7 0%" [ref=e167] [cursor=pointer]:
+              - generic [ref=e169]:
+                - generic [ref=e170]:
+                  - generic [ref=e171]: Cells and Heredity
+                  - generic [ref=e172]: Science • Grade 7
+                - generic [ref=e173]: 0%
+          - heading "Human Body Systems Science • Grade 8 0%" [level=3] [ref=e177]:
+            - button "Human Body Systems Science • Grade 8 0%" [ref=e178] [cursor=pointer]:
+              - generic [ref=e180]:
+                - generic [ref=e181]:
+                  - generic [ref=e182]: Human Body Systems
+                  - generic [ref=e183]: Science • Grade 8
+                - generic [ref=e184]: 0%
+          - heading "Space Science and the Universe Science • Grade 8 0%" [level=3] [ref=e188]:
+            - button "Space Science and the Universe Science • Grade 8 0%" [ref=e189] [cursor=pointer]:
+              - generic [ref=e191]:
+                - generic [ref=e192]:
+                  - generic [ref=e193]: Space Science and the Universe
+                  - generic [ref=e194]: Science • Grade 8
+                - generic [ref=e195]: 0%
+          - heading "Introduction to Biology and Scientific Inquiry Science • Grade 9 0%" [level=3] [ref=e199]:
+            - button "Introduction to Biology and Scientific Inquiry Science • Grade 9 0%" [ref=e200] [cursor=pointer]:
+              - generic [ref=e202]:
+                - generic [ref=e203]:
+                  - generic [ref=e204]: Introduction to Biology and Scientific Inquiry
+                  - generic [ref=e205]: Science • Grade 9
+                - generic [ref=e206]: 0%
+          - heading "The Chemistry of Life Science • Grade 9 0%" [level=3] [ref=e210]:
+            - button "The Chemistry of Life Science • Grade 9 0%" [ref=e211] [cursor=pointer]:
+              - generic [ref=e213]:
+                - generic [ref=e214]:
+                  - generic [ref=e215]: The Chemistry of Life
+                  - generic [ref=e216]: Science • Grade 9
+                - generic [ref=e217]: 0%
+          - heading "Introduction to Chemistry and Matter Science • Grade 9 0%" [level=3] [ref=e221]:
+            - button "Introduction to Chemistry and Matter Science • Grade 9 0%" [ref=e222] [cursor=pointer]:
+              - generic [ref=e224]:
+                - generic [ref=e225]:
+                  - generic [ref=e226]: Introduction to Chemistry and Matter
+                  - generic [ref=e227]: Science • Grade 9
+                - generic [ref=e228]: 0%
+          - heading "Atomic Structure and the Periodic Table Science • Grade 9 0%" [level=3] [ref=e232]:
+            - button "Atomic Structure and the Periodic Table Science • Grade 9 0%" [ref=e233] [cursor=pointer]:
+              - generic [ref=e235]:
+                - generic [ref=e236]:
+                  - generic [ref=e237]: Atomic Structure and the Periodic Table
+                  - generic [ref=e238]: Science • Grade 9
+                - generic [ref=e239]: 0%
+          - heading "Introduction to Physics and Kinematics Science • Grade 9 0%" [level=3] [ref=e243]:
+            - button "Introduction to Physics and Kinematics Science • Grade 9 0%" [ref=e244] [cursor=pointer]:
+              - generic [ref=e246]:
+                - generic [ref=e247]:
+                  - generic [ref=e248]: Introduction to Physics and Kinematics
+                  - generic [ref=e249]: Science • Grade 9
+                - generic [ref=e250]: 0%
+          - 'heading "Dynamics: Forces and Newton''s Laws Science • Grade 9 0%" [level=3] [ref=e254]':
+            - 'button "Dynamics: Forces and Newton''s Laws Science • Grade 9 0%" [ref=e255] [cursor=pointer]':
+              - generic [ref=e257]:
+                - generic [ref=e258]:
+                  - generic [ref=e259]: "Dynamics: Forces and Newton's Laws"
+                  - generic [ref=e260]: Science • Grade 9
+                - generic [ref=e261]: 0%
+          - heading "Introduction to Earth Systems and Scientific Inquiry Science • Grade 9 0%" [level=3] [ref=e265]:
+            - button "Introduction to Earth Systems and Scientific Inquiry Science • Grade 9 0%" [ref=e266] [cursor=pointer]:
+              - generic [ref=e268]:
+                - generic [ref=e269]:
+                  - generic [ref=e270]: Introduction to Earth Systems and Scientific Inquiry
+                  - generic [ref=e271]: Science • Grade 9
+                - generic [ref=e272]: 0%
+          - heading "Earth's Dynamic Interior and Plate Tectonics Science • Grade 9 0%" [level=3] [ref=e276]:
+            - button "Earth's Dynamic Interior and Plate Tectonics Science • Grade 9 0%" [ref=e277] [cursor=pointer]:
+              - generic [ref=e279]:
+                - generic [ref=e280]:
+                  - generic [ref=e281]: Earth's Dynamic Interior and Plate Tectonics
+                  - generic [ref=e282]: Science • Grade 9
+                - generic [ref=e283]: 0%
+    - main [ref=e285]:
+      - generic [ref=e286]:
+        - generic [ref=e287]:
+          - generic:
+            - img
+            - img
+            - img
+            - img
+            - img
+            - img
+            - img
+            - img
+            - img
+            - img
+            - img
+            - img
+            - img
+            - img
+            - img
+          - generic [ref=e292]:
+            - generic [ref=e296]:
+              - generic [ref=e298]:
+                - generic [ref=e299]: Ecology and Environmental Science
+                - img [ref=e300]
+                - generic [ref=e302]: Practice
+              - generic [ref=e305]: 100%
+            - generic [ref=e308]:
+              - generic [ref=e312]:
+                - generic [ref=e314]: A new power plant begins operating next to a large river. As a part of its cooling process, the plant releases warm water, several degrees warmer than the river's natural temperature, back into the river. This river flows directly into a large lake.
+                - generic [ref=e316]:
+                  - text: Over time, which of the following is the most likely long-term effect on the lake's ecosystem?
+                  - group "Choose 1 answer:" [ref=e319]:
+                    - generic [ref=e320]: "Choose 1 answer:"
+                    - generic [ref=e321]: "Choose 1 answer:"
+                    - list [ref=e322]:
+                      - listitem [ref=e323]:
+                        - generic [ref=e325]:
+                          - generic [ref=e326]:
+                            - generic:
+                              - text: (Choice A)
+                              - generic [ref=e327]: The population of fish that need cold, oxygen-rich water will decrease, disrupting the lake's food web.
+                              - radio "(Choice A) The population of fish that need cold, oxygen-rich water will decrease, disrupting the lake's food web." [ref=e328]
+                          - button [active] [ref=e329] [cursor=pointer]:
+                            - generic [ref=e330]:
+                              - generic [ref=e335]: A
+                              - generic [ref=e339]: The population of fish that need cold, oxygen-rich water will decrease, disrupting the lake's food web.
+                      - listitem [ref=e340]:
+                        - generic [ref=e342]:
+                          - generic [ref=e343]:
+                            - generic:
+                              - text: (Choice B)
+                              - generic [ref=e344]: The lake will become a tropical environment, leading to an increase in new, warm-water species.
+                              - radio "(Choice B) The lake will become a tropical environment, leading to an increase in new, warm-water species." [ref=e345]
+                          - button [ref=e346] [cursor=pointer]:
+                            - generic [ref=e347]:
+                              - generic [ref=e352]: B
+                              - generic [ref=e356]: The lake will become a tropical environment, leading to an increase in new, warm-water species.
+                      - listitem [ref=e357]:
+                        - generic [ref=e359]:
+                          - generic [ref=e360]:
+                            - generic:
+                              - text: (Choice C)
+                              - generic [ref=e361]: The warmer water will help all aquatic plants and animals grow faster, increasing the overall biodiversity of the lake.
+                              - radio "(Choice C) The warmer water will help all aquatic plants and animals grow faster, increasing the overall biodiversity of the lake." [ref=e362]
+                          - button [ref=e363] [cursor=pointer]:
+                            - generic [ref=e364]:
+                              - generic [ref=e369]: C
+                              - generic [ref=e373]: The warmer water will help all aquatic plants and animals grow faster, increasing the overall biodiversity of the lake.
+                      - listitem [ref=e374]:
+                        - generic [ref=e376]:
+                          - generic [ref=e377]:
+                            - generic:
+                              - text: (Choice D)
+                              - generic [ref=e378]: The warmer water will evaporate more quickly, causing the lake's water level to significantly drop, leading to a drought.
+                              - radio "(Choice D) The warmer water will evaporate more quickly, causing the lake's water level to significantly drop, leading to a drought." [ref=e379]
+                          - button [ref=e380] [cursor=pointer]:
+                            - generic [ref=e381]:
+                              - generic [ref=e386]: D
+                              - generic [ref=e390]: The warmer water will evaporate more quickly, causing the lake's water level to significantly drop, leading to a drought.
+              - generic [ref=e392]:
+                - img [ref=e394]
+                - generic [ref=e397]: Correct!
+            - generic [ref=e398]:
+              - button "Hint" [ref=e399]:
+                - img [ref=e400]
+                - generic [ref=e402]: Hint
+              - generic [ref=e403]:
+                - button "Submit" [disabled]
+                - button "Next →" [ref=e404]
+        - generic [ref=e405]:
+          - generic [ref=e406]:
+            - img "teachr" [ref=e408]
+            - button [ref=e409]:
+              - img [ref=e410]
+          - generic [ref=e412]:
+            - generic [ref=e413] [cursor=pointer]:
+              - generic [ref=e414]:
+                - img [ref=e416]
+                - generic [ref=e419]:
+                  - generic [ref=e420]: Microphone
+                  - combobox [ref=e421]:
+                    - option "Mic" [selected]
+              - button "Mute" [ref=e422]
+            - generic [ref=e423] [cursor=pointer]:
+              - generic [ref=e424]:
+                - img [ref=e426]
+                - generic [ref=e430]: Camera
+              - button "On" [ref=e431]
+            - generic [ref=e432] [cursor=pointer]:
+              - generic [ref=e433]:
+                - img [ref=e435]
+                - generic [ref=e439]: Screen Share
+              - button "Share" [ref=e440]
+            - button "Start Session" [ref=e441] [cursor=pointer]:
+              - img [ref=e442]
+              - text: Start Session
+            - generic [ref=e445]:
+              - button "Settings" [ref=e447]:
+                - img [ref=e449]
+                - generic [ref=e452]: Settings
+              - button "Canvas" [ref=e453]:
+                - img [ref=e455]
+                - generic [ref=e460]: Canvas
+              - button "View" [ref=e461]:
+                - img [ref=e463]
+                - generic [ref=e466]: View
+              - button "More" [ref=e467]:
+                - img [ref=e469]
+                - generic [ref=e473]: More
+  - region "Notifications alt+T"
+```

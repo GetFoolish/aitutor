@@ -1,0 +1,37 @@
+{
+  "frameworkRect": {
+    "left": 234.96875,
+    "right": 970,
+    "top": 64,
+    "bottom": 482,
+    "width": 735.03125,
+    "height": 418
+  },
+  "questionRect": {
+    "left": 263.96875,
+    "right": 937,
+    "top": 193,
+    "bottom": 393,
+    "width": 673.03125,
+    "height": 200
+  },
+  "sidebarRect": {
+    "left": 0,
+    "right": 218.96875,
+    "top": 96,
+    "bottom": 816,
+    "width": 218.96875,
+    "height": 720
+  },
+  "panelRect": {
+    "left": 986,
+    "right": 1236,
+    "top": 96,
+    "bottom": 491,
+    "width": 250,
+    "height": 395
+  },
+  "gapFromSidebarRight": 16,
+  "questionOverlapsPanel": false,
+  "frameworkOverlapsPanel": false
+}

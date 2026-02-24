@@ -1,0 +1,7 @@
+{
+  "bug": "Content pipeline image URLs leaked localhost to clients",
+  "request_origin_example": "https://staging.aitutor.dev",
+  "input_image_url": "http://localhost:8000/static/images/demo.png",
+  "before_fix_behavior": "URL stayed hardcoded to localhost and broke non-localhost clients",
+  "observed_output_before_fix": "http://localhost:8000/static/images/demo.png"
+}

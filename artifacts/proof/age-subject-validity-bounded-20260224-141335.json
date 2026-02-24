@@ -1,0 +1,474 @@
+{
+  "ages": [
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+  ],
+  "subjects": [
+    "Science",
+    "English",
+    "History",
+    "Biology",
+    "Geometry",
+    "Math"
+  ],
+  "timestamp": "2026-02-24T19:13:35.549647+00:00",
+  "pairs_total": 84,
+  "pairs_ok": 79,
+  "pairs_failed": 5,
+  "issue_counters": {
+    "assessment_start_failed:503": 4,
+    "heuristic_age_scope_flag": 1
+  },
+  "latency_ms": {
+    "learning_p50": 236.92,
+    "learning_p95": 3386.35,
+    "learning_max": 13100.55,
+    "assessment_p50": 80.64,
+    "assessment_p95": 551.37,
+    "assessment_max": 7429.77
+  },
+  "rows": [
+    {
+      "age": 5,
+      "subject": "Science",
+      "issues": []
+    },
+    {
+      "age": 5,
+      "subject": "English",
+      "issues": []
+    },
+    {
+      "age": 5,
+      "subject": "History",
+      "issues": []
+    },
+    {
+      "age": 5,
+      "subject": "Biology",
+      "issues": []
+    },
+    {
+      "age": 5,
+      "subject": "Geometry",
+      "issues": []
+    },
+    {
+      "age": 5,
+      "subject": "Math",
+      "issues": []
+    },
+    {
+      "age": 6,
+      "subject": "Science",
+      "issues": []
+    },
+    {
+      "age": 6,
+      "subject": "English",
+      "issues": []
+    },
+    {
+      "age": 6,
+      "subject": "History",
+      "issues": []
+    },
+    {
+      "age": 6,
+      "subject": "Biology",
+      "issues": []
+    },
+    {
+      "age": 6,
+      "subject": "Geometry",
+      "issues": []
+    },
+    {
+      "age": 6,
+      "subject": "Math",
+      "issues": []
+    },
+    {
+      "age": 7,
+      "subject": "Science",
+      "issues": []
+    },
+    {
+      "age": 7,
+      "subject": "English",
+      "issues": []
+    },
+    {
+      "age": 7,
+      "subject": "History",
+      "issues": []
+    },
+    {
+      "age": 7,
+      "subject": "Biology",
+      "issues": []
+    },
+    {
+      "age": 7,
+      "subject": "Geometry",
+      "issues": []
+    },
+    {
+      "age": 7,
+      "subject": "Math",
+      "issues": []
+    },
+    {
+      "age": 8,
+      "subject": "Science",
+      "issues": [
+        "assessment_start_failed:503"
+      ]
+    },
+    {
+      "age": 8,
+      "subject": "English",
+      "issues": []
+    },
+    {
+      "age": 8,
+      "subject": "History",
+      "issues": []
+    },
+    {
+      "age": 8,
+      "subject": "Biology",
+      "issues": []
+    },
+    {
+      "age": 8,
+      "subject": "Geometry",
+      "issues": []
+    },
+    {
+      "age": 8,
+      "subject": "Math",
+      "issues": []
+    },
+    {
+      "age": 9,
+      "subject": "Science",
+      "issues": []
+    },
+    {
+      "age": 9,
+      "subject": "English",
+      "issues": []
+    },
+    {
+      "age": 9,
+      "subject": "History",
+      "issues": []
+    },
+    {
+      "age": 9,
+      "subject": "Biology",
+      "issues": []
+    },
+    {
+      "age": 9,
+      "subject": "Geometry",
+      "issues": []
+    },
+    {
+      "age": 9,
+      "subject": "Math",
+      "issues": []
+    },
+    {
+      "age": 10,
+      "subject": "Science",
+      "issues": []
+    },
+    {
+      "age": 10,
+      "subject": "English",
+      "issues": []
+    },
+    {
+      "age": 10,
+      "subject": "History",
+      "issues": []
+    },
+    {
+      "age": 10,
+      "subject": "Biology",
+      "issues": []
+    },
+    {
+      "age": 10,
+      "subject": "Geometry",
+      "issues": []
+    },
+    {
+      "age": 10,
+      "subject": "Math",
+      "issues": []
+    },
+    {
+      "age": 11,
+      "subject": "Science",
+      "issues": []
+    },
+    {
+      "age": 11,
+      "subject": "English",
+      "issues": []
+    },
+    {
+      "age": 11,
+      "subject": "History",
+      "issues": []
+    },
+    {
+      "age": 11,
+      "subject": "Biology",
+      "issues": []
+    },
+    {
+      "age": 11,
+      "subject": "Geometry",
+      "issues": []
+    },
+    {
+      "age": 11,
+      "subject": "Math",
+      "issues": []
+    },
+    {
+      "age": 12,
+      "subject": "Science",
+      "issues": []
+    },
+    {
+      "age": 12,
+      "subject": "English",
+      "issues": []
+    },
+    {
+      "age": 12,
+      "subject": "History",
+      "issues": []
+    },
+    {
+      "age": 12,
+      "subject": "Biology",
+      "issues": []
+    },
+    {
+      "age": 12,
+      "subject": "Geometry",
+      "issues": []
+    },
+    {
+      "age": 12,
+      "subject": "Math",
+      "issues": []
+    },
+    {
+      "age": 13,
+      "subject": "Science",
+      "issues": []
+    },
+    {
+      "age": 13,
+      "subject": "English",
+      "issues": []
+    },
+    {
+      "age": 13,
+      "subject": "History",
+      "issues": []
+    },
+    {
+      "age": 13,
+      "subject": "Biology",
+      "issues": []
+    },
+    {
+      "age": 13,
+      "subject": "Geometry",
+      "issues": []
+    },
+    {
+      "age": 13,
+      "subject": "Math",
+      "issues": []
+    },
+    {
+      "age": 14,
+      "subject": "Science",
+      "issues": []
+    },
+    {
+      "age": 14,
+      "subject": "English",
+      "issues": []
+    },
+    {
+      "age": 14,
+      "subject": "History",
+      "issues": [
+        "heuristic_age_scope_flag"
+      ]
+    },
+    {
+      "age": 14,
+      "subject": "Biology",
+      "issues": []
+    },
+    {
+      "age": 14,
+      "subject": "Geometry",
+      "issues": []
+    },
+    {
+      "age": 14,
+      "subject": "Math",
+      "issues": []
+    },
+    {
+      "age": 15,
+      "subject": "Science",
+      "issues": []
+    },
+    {
+      "age": 15,
+      "subject": "English",
+      "issues": []
+    },
+    {
+      "age": 15,
+      "subject": "History",
+      "issues": []
+    },
+    {
+      "age": 15,
+      "subject": "Biology",
+      "issues": []
+    },
+    {
+      "age": 15,
+      "subject": "Geometry",
+      "issues": []
+    },
+    {
+      "age": 15,
+      "subject": "Math",
+      "issues": []
+    },
+    {
+      "age": 16,
+      "subject": "Science",
+      "issues": []
+    },
+    {
+      "age": 16,
+      "subject": "English",
+      "issues": []
+    },
+    {
+      "age": 16,
+      "subject": "History",
+      "issues": []
+    },
+    {
+      "age": 16,
+      "subject": "Biology",
+      "issues": []
+    },
+    {
+      "age": 16,
+      "subject": "Geometry",
+      "issues": []
+    },
+    {
+      "age": 16,
+      "subject": "Math",
+      "issues": []
+    },
+    {
+      "age": 17,
+      "subject": "Science",
+      "issues": []
+    },
+    {
+      "age": 17,
+      "subject": "English",
+      "issues": []
+    },
+    {
+      "age": 17,
+      "subject": "History",
+      "issues": []
+    },
+    {
+      "age": 17,
+      "subject": "Biology",
+      "issues": [
+        "assessment_start_failed:503"
+      ]
+    },
+    {
+      "age": 17,
+      "subject": "Geometry",
+      "issues": []
+    },
+    {
+      "age": 17,
+      "subject": "Math",
+      "issues": [
+        "assessment_start_failed:503"
+      ]
+    },
+    {
+      "age": 18,
+      "subject": "Science",
+      "issues": []
+    },
+    {
+      "age": 18,
+      "subject": "English",
+      "issues": []
+    },
+    {
+      "age": 18,
+      "subject": "History",
+      "issues": []
+    },
+    {
+      "age": 18,
+      "subject": "Biology",
+      "issues": []
+    },
+    {
+      "age": 18,
+      "subject": "Geometry",
+      "issues": []
+    },
+    {
+      "age": 18,
+      "subject": "Math",
+      "issues": [
+        "assessment_start_failed:503"
+      ]
+    }
+  ]
+}

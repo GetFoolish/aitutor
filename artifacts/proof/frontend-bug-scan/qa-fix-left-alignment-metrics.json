@@ -1,0 +1,47 @@
+{
+  "panelRect": {
+    "left": 986,
+    "right": 1236,
+    "top": 96,
+    "bottom": 491,
+    "width": 250,
+    "height": 395
+  },
+  "questionRect": {
+    "left": 516.484375,
+    "right": 937,
+    "top": 193,
+    "bottom": 652.71875,
+    "width": 420.515625,
+    "height": 459.71875
+  },
+  "frameworkRect": {
+    "left": 487.484375,
+    "right": 970,
+    "top": 64,
+    "bottom": 741.71875,
+    "width": 482.515625,
+    "height": 677.71875
+  },
+  "sidebarRect": {
+    "left": 0,
+    "right": 211.484375,
+    "top": 96,
+    "bottom": 816,
+    "width": 211.484375,
+    "height": 720
+  },
+  "streamRect": {
+    "left": 0,
+    "right": 1366,
+    "top": 48,
+    "bottom": 768,
+    "width": 1366,
+    "height": 720
+  },
+  "questionOverlapsPanel": false,
+  "frameworkOverlapsPanel": false,
+  "gapFromLeftEdge": 487.484375,
+  "gapFromSidebarRight": 276,
+  "htmlHasExpandedClass": true
+}

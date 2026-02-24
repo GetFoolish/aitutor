@@ -1,0 +1,1518 @@
+{
+  "timestamp": "2026-02-24T17:30:50.253134+00:00",
+  "ages": [
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+  ],
+  "subjects": [
+    "Science",
+    "English",
+    "History",
+    "Biology",
+    "Geometry",
+    "Math"
+  ],
+  "matrix_total": 84,
+  "pairs": [
+    {
+      "age": 5,
+      "subject": "Science",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 5,
+      "subject": "English",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 5,
+      "subject": "History",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [
+        "learning:age_band_mismatch:ai_gen_history_us_k-history-my-community-and-me_unit_me-and-my-family | age_band_mismatch:ai_gen_history_us_k-history-my-community-and-me_unit_me-and-my-family | age_band_mismatch:ai_gen_history_us_k-history-my-community-and-me_unit_me-and-my-family",
+        "assessment:age_band_mismatch:ai_gen_history_us_k-history-my-community-and-me_unit_me-and-my-family | age_band_mismatch:ai_gen_history_us_k-history-my-community-and-me_unit_me-and-my-family"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 5,
+      "subject": "Biology",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 5,
+      "subject": "Geometry",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [
+        "assessment:age_band_mismatch:assessment_geometry_grade_7_warmstart"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 5,
+      "subject": "Math",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 6,
+      "subject": "Science",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 6,
+      "subject": "English",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 6,
+      "subject": "History",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 6,
+      "subject": "Biology",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 6,
+      "subject": "Geometry",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 6,
+      "subject": "Math",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 7,
+      "subject": "Science",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 7,
+      "subject": "English",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 7,
+      "subject": "History",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 7,
+      "subject": "Biology",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [
+        "assessment:age_band_mismatch:assessment_biology_grade_5_69095"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 7,
+      "subject": "Geometry",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 7,
+      "subject": "Math",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 8,
+      "subject": "Science",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [
+        "assessment:age_band_mismatch:ai_gen_science_us_1st-grade-science_unit_weather-and-seasons"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 8,
+      "subject": "English",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 8,
+      "subject": "History",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 8,
+      "subject": "Biology",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 8,
+      "subject": "Geometry",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 8,
+      "subject": "Math",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 9,
+      "subject": "Science",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 9,
+      "subject": "English",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 9,
+      "subject": "History",
+      "learning": {
+        "code": 503
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [
+        "learning:learning_fetch_failed:503",
+        "assessment:age_band_mismatch:ai_gen_history_us_6th-8th-grade-history-world-history-i-ancient-and-classical-eras_unit_early-civilizations-asia-indus-china"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 9,
+      "subject": "Biology",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [
+        "learning:subject_scope_mismatch:ai_gen_history_us_3rd-grade-history-american-communities-then-and-now_unit_understanding-communities | age_band_mismatch:ai_gen_history_us_3rd-grade-history-american-communities-then-and-now_unit_understanding-communities | subject_scope_mismatch:ai_gen_history_us_3rd-grade-history-american-communities-then-and-now_unit_understanding-communities | age_band_mismatch:ai_gen_history_us_3rd-grade-history-american-communities-then-and-now_unit_understanding-communities | subject_scope_mismatch:ai_gen_history_us_3rd-grade-history-american-communities-then-and-now_unit_understanding-communities | age_band_mismatch:ai_gen_history_us_3rd-grade-history-american-communities-then-and-now_unit_understanding-communities",
+        "assessment:subject_scope_mismatch:ai_gen_history_us_3rd-grade-history-american-communities-then-and-now_unit_understanding-communities | age_band_mismatch:ai_gen_history_us_3rd-grade-history-american-communities-then-and-now_unit_understanding-communities | age_band_mismatch:ai_gen_biology_us_1st-grade-biology-plants-animals-habitats_unit_living-non-living-things"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 9,
+      "subject": "Geometry",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 500
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:assessment_start_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 9,
+      "subject": "Math",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [
+        "assessment:age_band_mismatch:ai_gen_math_us_1st-grade-math_unit_numbers-to-120"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 10,
+      "subject": "Science",
+      "learning": {},
+      "assessment": {},
+      "issues": [
+        "start_subject_failed:500"
+      ],
+      "start_subject": {
+        "code": 500,
+        "status": null
+      }
+    },
+    {
+      "age": 10,
+      "subject": "English",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 500
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:assessment_next_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 10,
+      "subject": "History",
+      "learning": {},
+      "assessment": {},
+      "issues": [
+        "start_subject_failed:500"
+      ],
+      "start_subject": {
+        "code": 500,
+        "status": null
+      }
+    },
+    {
+      "age": 10,
+      "subject": "Biology",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 500
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:assessment_start_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 10,
+      "subject": "Geometry",
+      "learning": {},
+      "assessment": {},
+      "issues": [
+        "start_subject_failed:500"
+      ],
+      "start_subject": {
+        "code": 500,
+        "status": null
+      }
+    },
+    {
+      "age": 10,
+      "subject": "Math",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 500
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:assessment_start_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 11,
+      "subject": "Science",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 500
+      },
+      "issues": [
+        "assessment:assessment_start_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 11,
+      "subject": "English",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 500
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:assessment_start_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 11,
+      "subject": "History",
+      "learning": {},
+      "assessment": {},
+      "issues": [
+        "start_subject_failed:500"
+      ],
+      "start_subject": {
+        "code": 500,
+        "status": null
+      }
+    },
+    {
+      "age": 11,
+      "subject": "Biology",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 500
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:assessment_start_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 11,
+      "subject": "Geometry",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 500
+      },
+      "issues": [
+        "learning:subject_scope_mismatch:ai_gen_history_us_5th-grade-history-foundations-of-the-united-states_unit_indigenous-peoples-north-america | age_band_mismatch:ai_gen_history_us_5th-grade-history-foundations-of-the-united-states_unit_indigenous-peoples-north-america | subject_scope_mismatch:ai_gen_history_us_5th-grade-history-foundations-of-the-united-states_unit_indigenous-peoples-north-america | age_band_mismatch:ai_gen_history_us_5th-grade-history-foundations-of-the-united-states_unit_indigenous-peoples-north-america | subject_scope_mismatch:ai_gen_history_us_5th-grade-history-foundations-of-the-united-states_unit_indigenous-peoples-north-america | age_band_mismatch:ai_gen_history_us_5th-grade-history-foundations-of-the-united-states_unit_indigenous-peoples-north-america",
+        "assessment:assessment_start_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 11,
+      "subject": "Math",
+      "learning": {},
+      "assessment": {},
+      "issues": [
+        "start_subject_failed:500"
+      ],
+      "start_subject": {
+        "code": 500,
+        "status": null
+      }
+    },
+    {
+      "age": 12,
+      "subject": "Science",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:age_band_mismatch:ai_gen_science_us_high-school-biology_unit_cell-structure-function"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 12,
+      "subject": "English",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 12,
+      "subject": "History",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [
+        "assessment:age_band_mismatch:ai_gen_history_us_9th-12th-grade-history-us-history-the-modern-era_unit_great-depression-new-deal"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 12,
+      "subject": "Biology",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 12,
+      "subject": "Geometry",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 12,
+      "subject": "Math",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 500
+      },
+      "issues": [
+        "assessment:assessment_next_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 13,
+      "subject": "Science",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 500
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:assessment_next_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 13,
+      "subject": "English",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 0
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:assessment_start_failed:0"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 13,
+      "subject": "History",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 500
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:assessment_start_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 13,
+      "subject": "Biology",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 500
+      },
+      "issues": [
+        "learning:subject_scope_mismatch:ai_gen_math_us_7th-grade-math_unit_ratios-proportional-relationships | subject_scope_mismatch:ai_gen_math_us_7th-grade-math_unit_ratios-proportional-relationships | subject_scope_mismatch:ai_gen_math_us_7th-grade-math_unit_ratios-proportional-relationships",
+        "assessment:subject_scope_mismatch:ai_gen_math_us_7th-grade-math_unit_ratios-proportional-relationships | assessment_next_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 13,
+      "subject": "Geometry",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 0
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:assessment_start_failed:0"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 13,
+      "subject": "Math",
+      "learning": {},
+      "assessment": {},
+      "issues": [
+        "start_subject_failed:500"
+      ],
+      "start_subject": {
+        "code": 500,
+        "status": null
+      }
+    },
+    {
+      "age": 14,
+      "subject": "Science",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 14,
+      "subject": "English",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 500
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:assessment_start_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 14,
+      "subject": "History",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 500
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:assessment_start_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 14,
+      "subject": "Biology",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 500
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:subject_scope_mismatch:ai_gen_math_us_8th-grade-math_unit_real-number-system-exponents | age_band_mismatch:ai_gen_math_us_8th-grade-math_unit_real-number-system-exponents | assessment_next_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 14,
+      "subject": "Geometry",
+      "learning": {},
+      "assessment": {},
+      "issues": [
+        "start_subject_failed:500"
+      ],
+      "start_subject": {
+        "code": 500,
+        "status": null
+      }
+    },
+    {
+      "age": 14,
+      "subject": "Math",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 500
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:age_band_mismatch:ai_gen_math_us_8th-grade-math_unit_real-number-system-exponents | assessment_next_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 15,
+      "subject": "Science",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 500
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:assessment_start_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 15,
+      "subject": "English",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 500
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:assessment_start_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 15,
+      "subject": "History",
+      "learning": {},
+      "assessment": {},
+      "issues": [
+        "start_subject_failed:500"
+      ],
+      "start_subject": {
+        "code": 500,
+        "status": null
+      }
+    },
+    {
+      "age": 15,
+      "subject": "Biology",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 0
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:assessment_start_failed:0"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 15,
+      "subject": "Geometry",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 500
+      },
+      "issues": [
+        "learning:subject_scope_mismatch:ai_gen_history_us_9th-12th-grade-history-world-history-the-modern-era_unit_foundations-modern-world | subject_scope_mismatch:ai_gen_history_us_9th-12th-grade-history-world-history-the-modern-era_unit_foundations-modern-world | subject_scope_mismatch:ai_gen_history_us_9th-12th-grade-history-world-history-the-modern-era_unit_foundations-modern-world",
+        "assessment:assessment_start_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 15,
+      "subject": "Math",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 500
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:assessment_start_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 16,
+      "subject": "Science",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 500
+      },
+      "issues": [
+        "learning:age_band_mismatch:ai_gen_science_us_2nd-grade-science_unit_properties-of-matter | age_band_mismatch:ai_gen_science_us_middle-school-science_unit_human-body-systems",
+        "assessment:assessment_start_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 16,
+      "subject": "English",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 500
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:assessment_start_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 16,
+      "subject": "History",
+      "learning": {},
+      "assessment": {},
+      "issues": [
+        "start_subject_failed:500"
+      ],
+      "start_subject": {
+        "code": 500,
+        "status": null
+      }
+    },
+    {
+      "age": 16,
+      "subject": "Biology",
+      "learning": {},
+      "assessment": {},
+      "issues": [
+        "start_subject_failed:500"
+      ],
+      "start_subject": {
+        "code": 500,
+        "status": null
+      }
+    },
+    {
+      "age": 16,
+      "subject": "Geometry",
+      "learning": {
+        "code": 500
+      },
+      "assessment": {
+        "start_code": 500
+      },
+      "issues": [
+        "learning:learning_fetch_failed:500",
+        "assessment:assessment_start_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 16,
+      "subject": "Math",
+      "learning": {
+        "code": 503
+      },
+      "assessment": {
+        "start_code": 500
+      },
+      "issues": [
+        "learning:learning_fetch_failed:503",
+        "assessment:assessment_start_failed:500"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 17,
+      "subject": "Science",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 17,
+      "subject": "English",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [
+        "learning:subject_scope_mismatch:ai_gen_math_us_geometry_unit_foundations-geometry | age_band_mismatch:ai_gen_math_us_geometry_unit_foundations-geometry"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 17,
+      "subject": "History",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 17,
+      "subject": "Biology",
+      "learning": {
+        "code": 503
+      },
+      "assessment": {
+        "start_code": 0
+      },
+      "issues": [
+        "learning:learning_fetch_failed:503",
+        "assessment:assessment_start_failed:0"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 17,
+      "subject": "Geometry",
+      "learning": {
+        "code": 503
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [
+        "learning:learning_fetch_failed:503",
+        "assessment:age_band_mismatch:ai_gen_geometry_us_2nd-grade-geometry_unit_describing-2d-shapes"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 17,
+      "subject": "Math",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [
+        "learning:age_band_mismatch:ai_gen_math_us_algebra-2-advanced-functions_unit_sequences-series",
+        "assessment:age_band_mismatch:ai_gen_math_us_algebra-2-advanced-functions_unit_sequences-series | age_band_mismatch:ai_gen_math_us_algebra-2-advanced-functions_unit_sequences-series"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 18,
+      "subject": "Science",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 18,
+      "subject": "English",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 18,
+      "subject": "History",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 18,
+      "subject": "Biology",
+      "learning": {
+        "code": 503
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [
+        "learning:learning_fetch_failed:503"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 18,
+      "subject": "Geometry",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [
+        "learning:pre_serve_failed:[meta_question] meta-question detected: matches pattern '(?:can\\s+only\\s+be\\s+learned\\s+by\\s+watching\\s+tv)' | age_band_mismatch:assessment_geometry_k_2_pf0_41733"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    },
+    {
+      "age": 18,
+      "subject": "Math",
+      "learning": {
+        "code": 200,
+        "question_count": 3
+      },
+      "assessment": {
+        "start_code": 200,
+        "next_code": 200
+      },
+      "issues": [
+        "learning:age_band_mismatch:ai_gen_math_us_algebra-2-advanced-functions_unit_sequences-series",
+        "assessment:age_band_mismatch:ai_gen_math_us_algebra-2-advanced-functions_unit_sequences-series | age_band_mismatch:ai_gen_math_us_4th-grade-math_unit_place-value-multi-digit-operations"
+      ],
+      "start_subject": {
+        "code": 200,
+        "status": "ready"
+      }
+    }
+  ],
+  "summary": {
+    "pairs_total": 84,
+    "pairs_ok": 28,
+    "pairs_failed": 56,
+    "learning_ok_pairs": 35,
+    "learning_issue_pairs": 39,
+    "assessment_ok_pairs": 34,
+    "assessment_issue_pairs": 40,
+    "issue_counters": {
+      "learning_ok_pairs": 35,
+      "assessment_ok_pairs": 34,
+      "pair_ok": 28,
+      "learning_issue_pairs": 39,
+      "learning::age_band_mismatch": 15,
+      "assessment_issue_pairs": 40,
+      "assessment::age_band_mismatch": 18,
+      "pair_fail": 56,
+      "learning::learning_fetch_failed": 29,
+      "learning::subject_scope_mismatch": 13,
+      "assessment::subject_scope_mismatch": 3,
+      "assessment::assessment_start_failed": 22,
+      "start_subject_failed": 10,
+      "assessment::assessment_next_failed": 6,
+      "learning::pre_serve_failed": 1
+    }
+  }
+}
