@@ -18,8 +18,11 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
   const [showSignupForm, setShowSignupForm] = useState(false);
   const [setupToken, setSetupToken] = useState<string>('');
   const [googleUser, setGoogleUser] = useState<any>(null);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   const handleGoogleLogin = async () => {
+    if (isSigningIn) return;
+    setIsSigningIn(true);
     try {
       // Get authorization URL from backend and redirect
       const authUrl = await authAPI.getGoogleAuthUrl();
@@ -27,6 +30,7 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
     } catch (error) {
       console.error('Google login error:', error);
       alert('Failed to sign in with Google. Please try again.');
+      setIsSigningIn(false);
     }
   };
 
@@ -66,6 +70,7 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
       })
       .catch(error => {
         console.error('OAuth callback handling failed:', error);
+        alert('Sign-in failed. Please try again.');
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -130,7 +135,7 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
         <h1>Welcome to AI Tutor</h1>
         <p>Sign in with your Google account to get started</p>
 
-        <button className="google-sign-in-button" onClick={handleGoogleLogin}>
+        <button className="google-sign-in-button" onClick={handleGoogleLogin} disabled={isSigningIn} style={isSigningIn ? { opacity: 0.6, cursor: 'wait' } : undefined}>
           <svg width="20" height="20" viewBox="0 0 18 18" style={{ flexShrink: 0 }}>
             <path
               fill="#4285F4"

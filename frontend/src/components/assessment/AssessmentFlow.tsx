@@ -184,7 +184,7 @@ const AssessmentFlow: React.FC = () => {
           // If resume failed or session too old, clear it
           localStorage.removeItem('active_assessment');
         } catch (error) {
-          console.error('[AssessmentFlow] Resume failed:', error);
+          console.error('[AssessmentFlow] Resume failed, starting fresh:', error);
           localStorage.removeItem('active_assessment');
         }
       } else {
@@ -606,7 +606,8 @@ const AssessmentFlow: React.FC = () => {
               abortRef.current?.abort();
               assessmentIdRef.current = null;
               sessionStorage.removeItem('selected_subject');
-              sessionStorage.removeItem('onboarding_complete');
+              // Don't clear onboarding_complete — user already filled in their info,
+              // clearing it forces them to redo the entire onboarding flow
               window.location.replace('/app/dev-login');
             }}
             style={{
@@ -679,26 +680,27 @@ const AssessmentFlow: React.FC = () => {
             {startError}
           </div>
           <button
-            onClick={() => { setStartError(null); setLoading(true); startAssessment(); }}
+            onClick={() => { if (loading) return; setStartError(null); setLoading(true); startAssessment(); }}
+            disabled={loading}
             style={{
               padding: '12px 32px',
               border: '4px solid #000',
-              background: '#FFD93D',
+              background: loading ? '#ddd' : '#FFD93D',
               boxShadow: '4px 4px 0 #000',
-              cursor: 'pointer',
+              cursor: loading ? 'wait' : 'pointer',
               fontWeight: 700,
               fontSize: '14px',
               textTransform: 'uppercase',
               minHeight: '48px'
             }}
           >
-            Try Again
+            {loading ? 'Starting...' : 'Try Again'}
           </button>
           <button
             onClick={() => {
               assessmentIdRef.current = null;
               sessionStorage.removeItem('selected_subject');
-              sessionStorage.removeItem('onboarding_complete');
+              // Don't clear onboarding_complete — preserve user's onboarding data
               history.replace('/app/dev-login');
             }}
             style={{

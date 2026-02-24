@@ -663,7 +663,7 @@ const RendererComponent = ({
                 await apiUtils.post(`${DASH_API_URL}/api/submit-answer`, {
                     user_id: user_id,
                     question_id: questionId,
-                    skill_ids: metadata.skill_ids || ["counting_1_10"],
+                    skill_ids: metadata.skill_ids || [],
                     is_correct: keScore.correct,
                     response_time_seconds: responseTimeSeconds,
                     selected_answer: selectedAnswerText || null,

@@ -44,14 +44,16 @@ const LearningAssetsPanel: React.FC<LearningAssetsPanelProps> = ({
       return;
     }
 
+    let cancelled = false;
+
     const fetchVideos = async () => {
       try {
         setLoading(true);
         setError(null);
-        
+
         const preferredLanguage = user?.preferred_language || 'English';
         const token = localStorage.getItem('jwt_token');
-        
+
         const response = await fetch(
           `${DASH_API_URL}/api/learning-assets/videos/${questionId}?preferred_language=${encodeURIComponent(preferredLanguage)}`,
           {
@@ -61,27 +63,35 @@ const LearningAssetsPanel: React.FC<LearningAssetsPanelProps> = ({
           }
         );
 
+        if (cancelled) return;
+
         if (!response.ok) {
           throw new Error('Failed to fetch learning videos');
         }
 
         const data = await response.json();
-        setVideos(data);
-        
+        if (cancelled) return;
+
+        // Validate response is an array before setting state
+        const videoList = Array.isArray(data) ? data : [];
+        setVideos(videoList);
+
         // Auto-select first video
-        if (data.length > 0 && data[0].video_id) {
-          setSelectedVideoId(data[0].video_id);
+        if (videoList.length > 0 && videoList[0].video_id) {
+          setSelectedVideoId(videoList[0].video_id);
         }
       } catch (err: any) {
+        if (cancelled) return;
         console.error('Error fetching learning videos:', err);
         setError(err?.message || 'Failed to load videos');
         setVideos([]);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchVideos();
+    return () => { cancelled = true; };
   }, [questionId, open, user?.preferred_language]);
 
   const handleVideoSelect = (videoId: string) => {
