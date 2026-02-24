@@ -691,6 +691,8 @@ const RendererComponent = ({
                 }
             } catch (err) {
                 console.error("Failed to submit answer to DASH:", err);
+                // Show toast so user knows their answer wasn't saved to server
+                toast.error("Answer wasn't saved — check your connection");
             }
 
             // On wrong answer, request a responsive hint from Gemini (fire and forget)

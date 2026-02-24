@@ -54,6 +54,7 @@ const AudioPlayButton: React.FC<AudioPlayButtonProps> = ({ word, autoPlay = true
   return (
     <button
       onClick={speak}
+      disabled={speaking}
       style={{
         display: 'inline-flex',
         alignItems: 'center',

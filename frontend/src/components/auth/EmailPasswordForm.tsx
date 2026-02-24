@@ -176,7 +176,8 @@ const EmailPasswordForm: React.FC<EmailPasswordFormProps> = ({ onAuthSuccess }) 
       }}>
         <button
           type="button"
-          onClick={() => setMode('login')}
+          onClick={() => !isSubmitting && setMode('login')}
+          disabled={isSubmitting}
           style={{
             flex: 1,
             padding: '12px 16px',
@@ -185,7 +186,8 @@ const EmailPasswordForm: React.FC<EmailPasswordFormProps> = ({ onAuthSuccess }) 
             fontWeight: 700,
             textTransform: 'uppercase',
             fontSize: '14px',
-            cursor: 'pointer',
+            cursor: isSubmitting ? 'not-allowed' : 'pointer',
+            opacity: isSubmitting ? 0.6 : 1,
             boxShadow: mode === 'login' ? '4px 4px 0px 0px #000000' : 'none',
             transform: mode === 'login' ? 'translateY(-2px)' : 'none',
             transition: 'all 150ms ease',
@@ -195,7 +197,8 @@ const EmailPasswordForm: React.FC<EmailPasswordFormProps> = ({ onAuthSuccess }) 
         </button>
         <button
           type="button"
-          onClick={() => setMode('signup')}
+          onClick={() => !isSubmitting && setMode('signup')}
+          disabled={isSubmitting}
           style={{
             flex: 1,
             padding: '12px 16px',
@@ -204,7 +207,8 @@ const EmailPasswordForm: React.FC<EmailPasswordFormProps> = ({ onAuthSuccess }) 
             fontWeight: 700,
             textTransform: 'uppercase',
             fontSize: '14px',
-            cursor: 'pointer',
+            cursor: isSubmitting ? 'not-allowed' : 'pointer',
+            opacity: isSubmitting ? 0.6 : 1,
             boxShadow: mode === 'signup' ? '4px 4px 0px 0px #000000' : 'none',
             transform: mode === 'signup' ? 'translateY(-2px)' : 'none',
             transition: 'all 150ms ease',

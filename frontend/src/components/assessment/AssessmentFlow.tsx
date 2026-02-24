@@ -624,7 +624,7 @@ const AssessmentFlow: React.FC = () => {
           >
             Cancel
           </button>
-          {loadPhase === 'slow' && (
+          {loadPhase === 'slow' && !startError && (
             <button
               onClick={() => {
                 abortRef.current?.abort();

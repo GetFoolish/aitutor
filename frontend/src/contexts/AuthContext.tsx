@@ -67,15 +67,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const userData = await authAPI.getCurrentUser(token);
       setUser(userData);
     } catch (error) {
-      // Network errors (backend down) are expected during dev — log quietly
       const isNetworkError = error instanceof TypeError && (error as TypeError).message === 'Failed to fetch';
       if (isNetworkError) {
-        console.warn('Auth service unreachable — clearing stale token');
+        // Network error (backend down) — keep the token, user might reconnect.
+        // Don't nuke their session just because the server is temporarily unreachable.
+        console.warn('Auth service unreachable — keeping token for retry');
       } else {
+        // Actual auth failure (401, invalid token, etc.) — clear token
         console.error('Failed to refresh user:', error);
+        jwtUtils.removeToken();
+        setUser(null);
       }
-      jwtUtils.removeToken();
-      setUser(null);
     } finally {
       setIsLoading(false);
     }
