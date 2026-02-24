@@ -765,6 +765,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         display: 'flex',
         flexDirection: 'column',
         width: '100%',
+        maxWidth: 'calc(100% - 100px)',
         overflow: 'visible'
       }}
     >
@@ -808,6 +809,8 @@ const AssessmentQuestion: React.FC<Props> = ({
             className={`border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white ${ultraCompactViewport ? 'p-3 mb-2' : compactViewport ? 'p-4 mb-3' : 'p-5 md:p-6 lg:p-7 mb-4'} shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.4)]`}
             style={{
               overflow: 'visible',
+              maxWidth: '100%',
+              wordWrap: 'break-word',
             }}
           >
             <PerseusI18nContextProvider locale="en" strings={mockStrings}>

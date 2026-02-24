@@ -43,9 +43,9 @@ def _slugify(text: str) -> str:
 class CurriculumGenerator:
     """Generate and cache Khan-style curricula via Gemini."""
 
-    # Gemini call concurrency limits
-    _UNIT_WORKERS = 4
-    _LESSON_WORKERS = 6
+    # Gemini call concurrency limits (increased for faster custom subject generation)
+    _UNIT_WORKERS = 8
+    _LESSON_WORKERS = 12
 
     def __init__(self, mongo_db, content_engine) -> None:
         """
@@ -88,7 +88,7 @@ class CurriculumGenerator:
                 return {
                     "status": "generating",
                     "curriculum_id": key,
-                    "estimated_wait_seconds": 35,
+                    "estimated_wait_seconds": 180,  # 3 minutes realistic estimate
                 }
 
         # Try to acquire lock
@@ -96,7 +96,7 @@ class CurriculumGenerator:
             return {
                 "status": "generating",
                 "curriculum_id": key,
-                "estimated_wait_seconds": 35,
+                "estimated_wait_seconds": 180,  # 3 minutes realistic estimate
             }
 
         # Launch background generation
