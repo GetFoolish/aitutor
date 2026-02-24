@@ -79,13 +79,27 @@ export default function Header({ sidebarOpen, onToggleSidebar, assessmentMode }:
     return (
         <header className="fixed top-0 left-0 right-0 h-[44px] lg:h-[48px] bg-[#FFFDF5] dark:bg-[#000000] border-b-[3px] lg:border-b-[4px] border-black dark:border-white z-40 flex items-center justify-between px-2 md:px-4 lg:px-5 shadow-[0_2px_0_0_rgba(0,0,0,1)] lg:shadow-[0_2px_0_0_rgba(0,0,0,1)] dark:shadow-[0_2px_0_0_rgba(255,255,255,0.3)] select-none">
             {/* Left side - Logo */}
-            <Link to="/app" className="flex items-center gap-1.5 md:gap-2 group cursor-pointer no-underline">
+            <div
+                onClick={() => {
+                    // Only navigate in non-assessment mode or show warning
+                    if (!assessmentMode) {
+                        window.location.href = '/app';
+                    } else {
+                        // In assessment mode, logo click is disabled to prevent accidental exit
+                        // User must use the Exit button instead
+                    }
+                }}
+                className="flex items-center gap-1.5 md:gap-2 group no-underline"
+                style={{ cursor: assessmentMode ? 'default' : 'pointer' }}
+                title={assessmentMode ? "Use Exit button to leave assessment" : "Back to subject selection"}
+            >
                 <img
                     src={logoSource}
                     alt="teachr"
-                    className="h-10 md:h-12 w-auto group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform duration-100"
+                    className={`h-10 md:h-12 w-auto transition-transform duration-100 ${!assessmentMode ? 'group-hover:translate-x-0.5 group-hover:translate-y-0.5' : ''}`}
+                    style={{ opacity: assessmentMode ? 0.6 : 1 }}
                 />
-            </Link>
+            </div>
 
             {/* Right side - Actions */}
             <div className="flex items-center gap-1.5 md:gap-2">
@@ -167,15 +181,14 @@ export default function Header({ sidebarOpen, onToggleSidebar, assessmentMode }:
                         type="button"
                         variant="ghost"
                         size="icon"
+                        title={sidebarOpen ? "Hide Grades Panel" : "Show Grades Panel"}
                         className="w-10 h-10 md:w-12 md:h-12 border-[4px] border-black dark:border-white bg-[#FFD93D] hover:bg-[#FFD93D] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-none shadow-[4px_4px_0_0_rgba(0,0,0,1)] lg:shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 text-black"
                         onClick={onToggleSidebar}
                     >
-                        {import.meta.env.DEV ? (
-                            /* Developer Mode: Terminal Icon */
-                            <Terminal className={cn("w-5 h-5 md:w-5 md:h-5 transition-transform", sidebarOpen ? "rotate-180" : "")} />
+                        {sidebarOpen ? (
+                            <RiSidebarFoldLine className="w-5 h-5 md:w-5 md:h-5" />
                         ) : (
-                            /* Student Mode: Book/Learning Assets Icon */
-                            <BookOpen className={cn("w-5 h-5 md:w-5 md:h-5 transition-transform", sidebarOpen ? "rotate-0" : "")} />
+                            <RiSidebarUnfoldLine className="w-5 h-5 md:w-5 md:h-5" />
                         )}
                     </Button>
                 )}

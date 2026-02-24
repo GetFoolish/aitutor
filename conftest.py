@@ -1,12 +1,27 @@
 """
-Root conftest.py - Ensures project root is on sys.path for all test files.
+Pytest configuration for AI Tutor project.
 
-This allows test files in services/ subdirectories to use absolute imports
-like `from services.DashSystem.content_v1 import ContentV1Engine`.
+Configures Python path and provides common fixtures.
 """
 
-import os
 import sys
+import os
+from pathlib import Path
 
-# Add project root to sys.path so absolute imports work from any test location
-sys.path.insert(0, os.path.dirname(__file__))
+# Add project root to Python path so imports work correctly
+project_root = Path(__file__).parent
+sys.path.insert(0, str(project_root))
+
+# Ensure services and managers are importable
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+
+def pytest_configure(config):
+    """
+    Configure pytest before test collection.
+    """
+    # Add project root to sys.path for all test modules
+    project_root = Path(__file__).parent
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))

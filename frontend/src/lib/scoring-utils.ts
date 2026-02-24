@@ -183,7 +183,7 @@ export function scorePerseusQuestion(
             const choiceIndexMap = buildChoiceIndexMap(choices);
 
             if (isMultiSelect) {
-                const correctIndices = choices
+                const correctIndices: number[] = choices
                     .map((c: any, i: number) => c.correct ? i : -1)
                     .filter((i: number) => i >= 0);
                 const selectedIndices: number[] = Array.from(
@@ -253,7 +253,24 @@ export function scorePerseusQuestion(
                                 maxError = Math.max(0.01, Math.abs(cv) * 0.01);
                             }
                         }
-                        widgetCorrect = Math.abs(userValue - correctAnswer.value) <= maxError;
+                        // Ensure both values are numbers for comparison
+                        const correctValue = Number(correctAnswer.value);
+                        const userValueNum = Number(userValue);
+                        const diff = Math.abs(userValueNum - correctValue);
+                        widgetCorrect = diff <= maxError;
+
+                        // Debug logging for numeric comparisons
+                        if (!widgetCorrect) {
+                            console.warn('[NUMERIC-INPUT] Scoring mismatch:', {
+                                widgetId,
+                                rawValue,
+                                userValue: userValueNum,
+                                correctValue,
+                                maxError,
+                                diff,
+                                widgetCorrect
+                            });
+                        }
                     }
                 }
                 scoreableCount++;

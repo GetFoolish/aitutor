@@ -38,6 +38,9 @@ const INITIAL_QUESTION_BATCH_SIZE = 1;
 const PREFETCH_BATCH_SIZE = 6;
 const RECOMMEND_NEXT_TIMEOUT_MS = 1800;
 
+// Widget types that use deprecated string refs and are broken in React 18
+const BROKEN_WIDGET_TYPES = new Set(['orderer', 'matcher']);
+
 const stripWrappingQuotes = (value: unknown): string => {
     const text = typeof value === 'string' ? value.trim() : String(value ?? '').trim();
     if (text.length >= 2) {
@@ -203,6 +206,21 @@ const RendererComponent = ({
 
     // Get user_id from auth context
     const user_id = user?.user_id || 'mongodb_test_user';
+
+    // Keyboard support: Enter key submits answer
+    useEffect(() => {
+        const handleKeyPress = (e: KeyboardEvent) => {
+            if (e.key === 'Enter' && !isAnswered && !isLoading && perseusItems.length > 0) {
+                const target = e.target as HTMLElement;
+                // Don't trigger if in textarea or contenteditable
+                if (target.tagName === 'TEXTAREA' || target.isContentEditable) return;
+                e.preventDefault();
+                handleSubmit();
+            }
+        };
+        document.addEventListener('keydown', handleKeyPress);
+        return () => document.removeEventListener('keydown', handleKeyPress);
+    }, [isAnswered, isLoading, perseusItems.length]);
 
     const fetchRecommendNext = async (
         currentQuestionIds: string[],
@@ -1036,6 +1054,17 @@ const RendererComponent = ({
         );
     }, [perseusItem]);
 
+    // Detect if question has only broken widget types (React 18 incompatible)
+    const brokenWidgetOnly = useMemo(() => {
+        const widgets = (perseusItem as any)?.question?.widgets || {};
+        const scoreable = Object.values(widgets).filter((w: any) => {
+            const t = w?.type;
+            return t && t !== 'image' && t !== 'definition';
+        });
+        if (scoreable.length === 0) return false;
+        return scoreable.every((w: any) => BROKEN_WIDGET_TYPES.has(w.type));
+    }, [perseusItem]);
+
     // Runtime fit scaling for long-stem/image/widget combinations so controls stay in viewport.
     useEffect(() => {
         const viewportEl = scrollContainerRef.current;
@@ -1099,8 +1128,9 @@ const RendererComponent = ({
             } as React.CSSProperties)
             : undefined;
 
+    // Progress shows completion: answered questions / total loaded (not including current unanswered one)
     const progressPercentage = perseusItems.length > 0
-        ? Math.min(100, ((item + 1) / perseusItems.length) * 100)
+        ? Math.min(100, (item / perseusItems.length) * 100)
         : 0;
 
     // Extract hints from current question
@@ -1248,7 +1278,7 @@ const RendererComponent = ({
                             <div
                                 ref={questionStackRef}
                                 className={`${compactViewport ? "space-y-2.5" : "space-y-4 md:space-y-6"} h-full`}
-                                style={contentZoomWrapperStyle}
+                                style={{ ...contentZoomWrapperStyle, paddingRight: "80px", maxWidth: "calc(100% - 80px)" }}
                             >
                                 {/* Audio play button for phonics/listening questions */}
                                 {audioWord && (
@@ -1260,7 +1290,7 @@ const RendererComponent = ({
                                 <div
                                     id="question-content-container"
                                     className={`border-[3px] md:border-[4px] border-black dark:border-white bg-white dark:bg-neutral-800 text-black dark:text-white ${compactViewport ? "p-3" : "p-4 md:p-5 lg:p-6"} shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]`}
-                                    style={{ overflowX: "clip", overflowY: "visible", maxHeight: "none", flexShrink: 0 }}
+                                    style={{ overflowX: "clip", overflowY: "visible", maxHeight: "none", flexShrink: 0, marginRight: "70px" }}
                                 >
                                     <PerseusI18nContextProvider locale="en" strings={mockStrings}>
                                         <RenderStateRoot>
@@ -1370,17 +1400,33 @@ const RendererComponent = ({
                 </CardContent>
 
                 <CardFooter className={`${compactViewport ? "gap-2 px-3 py-2.5" : "gap-2 md:gap-3 px-4 md:px-6 pb-4 md:pb-5 pt-3 md:pt-4"} flex justify-between items-center border-t-[3px] md:border-t-[4px] border-black dark:border-white bg-white dark:bg-neutral-900 flex-shrink-0`}>
-                    {hints.length > 0 ? <HintButton inline={true} /> : <div />}
+                    {hints.length > 0 && !brokenWidgetOnly ? <HintButton inline={true} /> : <div />}
                     <div className="flex gap-2 md:gap-3">
-                        <Button
-                            type="button"
-                            size="sm"
-                            onClick={handleSubmit}
-                            disabled={isLoading || endOfTest || perseusItems.length === 0 || isAnswered}
-                            className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-[#C4B5FD] hover:bg-[#C4B5FD] text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:hover:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
-                        >
-                            Submit
-                        </Button>
+                        {brokenWidgetOnly && !isAnswered ? (
+                            <div className="w-full">
+                                <div className="mb-3 py-3 px-4 border-[3px] border-black dark:border-white bg-[#FFF3E0] dark:bg-orange-900/30 text-sm font-black text-center text-black dark:text-orange-200 uppercase tracking-wide shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
+                                    Drag-and-drop questions are not supported yet
+                                </div>
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    onClick={handleNext}
+                                    className="w-full transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-[#E0E0E0] text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-0.5 hover:translate-y-0.5 text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
+                                >
+                                    Skip Question
+                                </Button>
+                            </div>
+                        ) : (
+                            <Button
+                                type="button"
+                                size="sm"
+                                onClick={handleSubmit}
+                                disabled={isLoading || endOfTest || perseusItems.length === 0 || isAnswered}
+                                className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-[#C4B5FD] hover:bg-[#C4B5FD] text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:hover:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
+                            >
+                                Submit
+                            </Button>
+                        )}
                         {!assessmentMode && (
                             <Button
                                 type="button"

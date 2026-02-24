@@ -856,9 +856,9 @@ const AssessmentFlow: React.FC = () => {
               </div>
 
               <div className="assessment-content-wrapper" style={{
-                paddingRight: 'max(70px, min(280px, 30vw))',
+                paddingRight: 'max(100px, min(280px, 30vw))',
                 paddingBottom: '10px',
-                maxWidth: '100%',
+                maxWidth: 'calc(100% - 100px)',
                 marginLeft: 0,
                 marginRight: 0,
                 width: '100%',

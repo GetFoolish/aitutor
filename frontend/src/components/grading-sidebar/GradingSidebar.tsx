@@ -362,11 +362,13 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                             <div
                                 className="grading-card-surface mb-4 border-[4px] border-black dark:border-white bg-[#FFD93D] dark:bg-[#FFD93D] p-4 shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
                                 style={{ backgroundImage: "none" }}
+                                title="Overall mastery across all skills in this subject (not just assessed skills)"
                             >
                                 <div className="text-center">
                                     <div className="text-[10px] font-black tracking-wide text-black mb-1">Overall Grade</div>
                                     <div className="text-5xl font-black text-black">{overallGrade}</div>
                                     <div className="text-xs font-bold text-black mt-1">{overallMastery}% Mastery</div>
+                                    <div className="text-[9px] font-medium text-black/70 mt-1 italic">Across all skills</div>
                                     {isContentV1 ? (
                                         <div className="text-[10px] font-black text-black mt-1">Queue Ready: {v1ReadyCount}</div>
                                     ) : null}

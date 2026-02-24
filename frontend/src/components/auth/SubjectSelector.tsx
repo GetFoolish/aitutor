@@ -205,10 +205,33 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
           <p style={{
             fontSize: '12px',
             color: '#888',
-            marginTop: '8px'
+            marginTop: '8px',
+            marginBottom: '16px'
           }}>
-            This takes about 30 seconds. Hang tight!
+            This usually takes 2-3 minutes. Hang tight!
           </p>
+          <button
+            onClick={() => {
+              setStatus('idle');
+              setSelectedSubject(null);
+              setPollUrl(null);
+              if (pollAbortRef.current) {
+                pollAbortRef.current.abort();
+              }
+            }}
+            style={{
+              padding: '8px 16px',
+              border: '3px solid #000',
+              background: '#E0E0E0',
+              cursor: 'pointer',
+              fontWeight: 700,
+              fontSize: '12px',
+              textTransform: 'uppercase',
+              boxShadow: '3px 3px 0 #000',
+            }}
+          >
+            Cancel
+          </button>
         </div>
         <style>{`
           @keyframes progress-pulse {
@@ -292,6 +315,12 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
                   alignItems: 'center',
                   gap: '8px'
                 }}
+                onMouseEnter={(e) => {
+                  if (!isDisabled) {
+                    (e.currentTarget as HTMLElement).style.transform = 'translate(1px, 1px) scale(1.02)';
+                    (e.currentTarget as HTMLElement).style.boxShadow = '4px 4px 0 #000';
+                  }
+                }}
                 onMouseDown={(e) => {
                   if (!isDisabled) {
                     (e.currentTarget as HTMLElement).style.transform = 'translate(3px, 3px)';
@@ -300,8 +329,8 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
                 }}
                 onMouseUp={(e) => {
                   if (!isDisabled) {
-                    (e.currentTarget as HTMLElement).style.transform = 'none';
-                    (e.currentTarget as HTMLElement).style.boxShadow = '5px 5px 0 #000';
+                    (e.currentTarget as HTMLElement).style.transform = 'translate(1px, 1px) scale(1.02)';
+                    (e.currentTarget as HTMLElement).style.boxShadow = '4px 4px 0 #000';
                   }
                 }}
                 onMouseLeave={(e) => {

@@ -91,7 +91,8 @@ const UserOnboardingFlow: React.FC = () => {
       timers.push(setTimeout(() => {
         setChecklistStatus(prev => ({
           ...prev,
-          region: !!completeness.user_data.location
+          // Region check passes if location exists OR if in dev mode (localhost can't detect region)
+          region: !!completeness.user_data.location || window.location.hostname === 'localhost'
         }));
       }, 1500));
     }
