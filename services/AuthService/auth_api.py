@@ -6,6 +6,7 @@ import sys
 import logging
 import secrets
 import threading
+from urllib.parse import urlparse
 from fastapi import FastAPI, HTTPException, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, JSONResponse
@@ -71,6 +72,9 @@ _dev_login_limiter = _RateLimiter(max_requests=20, window_seconds=60)
 AUTH_EXCHANGE_CODE_TTL_SECONDS = int(os.getenv("AUTH_EXCHANGE_CODE_TTL_SECONDS", "300"))
 _auth_exchange_codes: Dict[str, Dict[str, Any]] = {}
 _auth_exchange_lock = threading.Lock()
+OAUTH_STATE_TTL_SECONDS = int(os.getenv("OAUTH_STATE_TTL_SECONDS", "600"))
+_oauth_state_frontend_urls: Dict[str, Dict[str, Any]] = {}
+_oauth_state_lock = threading.Lock()
 
 
 def _prune_auth_exchange_codes(now: Optional[float] = None) -> None:
@@ -102,6 +106,67 @@ def _consume_auth_exchange_code(code: str) -> Optional[Dict[str, Any]]:
     if entry.get("expires_at", 0) <= now:
         return None
     return entry.get("payload")
+
+
+def _normalize_origin(url: Optional[str]) -> Optional[str]:
+    if not url:
+        return None
+    parsed = urlparse(url.strip())
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        return None
+    return f"{parsed.scheme}://{parsed.netloc}"
+
+
+def _prune_oauth_state_frontend_urls(now: Optional[float] = None) -> None:
+    ts = now if now is not None else _time.time()
+    expired_states = [
+        state for state, entry in _oauth_state_frontend_urls.items()
+        if entry["expires_at"] <= ts
+    ]
+    for state in expired_states:
+        _oauth_state_frontend_urls.pop(state, None)
+
+
+def _remember_oauth_state_frontend_url(state: str, frontend_url: str) -> None:
+    now = _time.time()
+    with _oauth_state_lock:
+        _prune_oauth_state_frontend_urls(now)
+        _oauth_state_frontend_urls[state] = {
+            "frontend_url": frontend_url,
+            "expires_at": now + OAUTH_STATE_TTL_SECONDS,
+        }
+
+
+def _consume_oauth_state_frontend_url(state: str) -> Optional[str]:
+    now = _time.time()
+    with _oauth_state_lock:
+        _prune_oauth_state_frontend_urls(now)
+        entry = _oauth_state_frontend_urls.pop(state, None)
+    if not entry or entry.get("expires_at", 0) <= now:
+        return None
+    return entry.get("frontend_url")
+
+
+def _extract_frontend_origin(request: Request) -> Optional[str]:
+    for header_name in ("origin", "referer"):
+        normalized = _normalize_origin(request.headers.get(header_name))
+        if normalized and normalized in ALLOWED_ORIGINS:
+            return normalized
+    return None
+
+
+def _resolve_frontend_redirect_url(state: Optional[str]) -> str:
+    configured_frontend_url = _normalize_origin(os.getenv("FRONTEND_URL"))
+    if configured_frontend_url:
+        return configured_frontend_url
+
+    if state:
+        remembered_frontend_url = _consume_oauth_state_frontend_url(state)
+        if remembered_frontend_url:
+            return remembered_frontend_url
+
+    # Vite dev server default in this repository.
+    return "http://localhost:5173"
 
 
 def _client_ip(request: Request) -> str:
@@ -203,10 +268,13 @@ async def health_check():
 
 
 @app.get("/auth/google")
-async def google_login():
+async def google_login(request: Request):
     """Initiate Google OAuth flow"""
     try:
         authorization_url, state = oauth_handler.get_authorization_url()
+        frontend_origin = _extract_frontend_origin(request)
+        if frontend_origin:
+            _remember_oauth_state_frontend_url(state, frontend_origin)
         return {
             "authorization_url": authorization_url,
             "state": state
@@ -259,7 +327,7 @@ async def google_callback(code: Optional[str] = Query(None), state: Optional[str
                 "token": jwt_token,
                 "is_new_user": False
             })
-            frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+            frontend_url = _resolve_frontend_redirect_url(state)
             return RedirectResponse(
                 url=f"{frontend_url}/app/login?auth_code={auth_code}"
             )
@@ -273,7 +341,7 @@ async def google_callback(code: Optional[str] = Query(None), state: Optional[str
                 "requires_setup": True,
                 "is_new_user": True
             })
-            frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+            frontend_url = _resolve_frontend_redirect_url(state)
             return RedirectResponse(
                 url=f"{frontend_url}/app/login?auth_code={auth_code}"
             )
