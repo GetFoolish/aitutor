@@ -87,17 +87,8 @@ const AssessmentResults: React.FC<Props> = ({
         }
       } catch (error) {
         console.warn('Failed to fetch grading data:', error);
-        // Fallback: create placeholder cards if API fails
-        setSkillCards([
-          { id: '1', name: 'Basic Math', grade_level: 'GRADE_1' },
-          { id: '2', name: 'Addition', grade_level: 'GRADE_2' },
-          { id: '3', name: 'Subtraction', grade_level: 'GRADE_2' },
-          { id: '4', name: 'Multiplication', grade_level: 'GRADE_3' },
-          { id: '5', name: 'Division', grade_level: 'GRADE_3' },
-          { id: '6', name: 'Fractions', grade_level: 'GRADE_4' },
-          { id: '7', name: 'Decimals', grade_level: 'GRADE_5' },
-          { id: '8', name: 'Algebra', grade_level: 'GRADE_7' },
-        ]);
+        // Skip personalization cards when API fails — don't show fake data
+        setSkillCards([]);
       }
     };
 

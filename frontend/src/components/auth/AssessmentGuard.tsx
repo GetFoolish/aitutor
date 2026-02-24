@@ -283,7 +283,52 @@ const AssessmentGuard: React.FC<AssessmentGuardProps> = ({
   }
 
   if (assessmentStatus.checkFailed) {
-    return <>{children}</>;
+    // Assessment status check failed — show error with retry instead of silently passing through
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        gap: '16px',
+        background: '#FFFDF5',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+      }}>
+        <div style={{
+          border: '4px solid #000',
+          backgroundColor: '#FF6B6B',
+          color: '#fff',
+          padding: '20px 24px',
+          boxShadow: '4px 4px 0 #000',
+          textAlign: 'center',
+          maxWidth: '400px',
+        }}>
+          <div style={{ fontWeight: 900, fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>
+            Could not check assessment status
+          </div>
+          <button
+            onClick={() => {
+              setAssessmentStatus({ loading: true, completed: false, checkFailed: false });
+              checkAssessmentStatus(selectedSubject);
+            }}
+            style={{
+              padding: '10px 24px',
+              border: '4px solid #000',
+              background: '#FFD93D',
+              color: '#000',
+              cursor: 'pointer',
+              fontWeight: 800,
+              fontSize: '14px',
+              textTransform: 'uppercase',
+              boxShadow: '4px 4px 0 #000',
+            }}
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
   }
 
   // If assessment not completed, redirect to assessment

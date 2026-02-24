@@ -123,6 +123,7 @@ function FloatingControlPanel({
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [userBalance, setUserBalance] = useState<number | null>(null);
   const [checkingBalance, setCheckingBalance] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [showNoMinutesDialog, setShowNoMinutesDialog] = useState(false);
   const [nextResetInHours, setNextResetInHours] = useState<number | null>(null);
   const [nextResetInMinutes, setNextResetInMinutes] = useState<number | null>(null);
@@ -548,6 +549,7 @@ function FloatingControlPanel({
   }, [connected, activeVideoStream, client, privacyMode, processedEdgesRef]);
 
   const handleConnect = useCallback(async () => {
+    if (isConnecting) return; // Prevent double-click during connection
     // Check if user has no minutes before connecting
     if (!connected && hasNoMinutes) {
       setShowNoMinutesDialog(true);
@@ -664,9 +666,10 @@ function FloatingControlPanel({
         }
       }, 1000);
     } else {
+      setIsConnecting(true);
       let setupCompleteReceived = false;
       let setupCompleteResolver: (() => void) | null = null;
-      
+
       const onSetupComplete = () => {
         setupCompleteReceived = true;
         if (setupCompleteResolver) {
@@ -676,7 +679,8 @@ function FloatingControlPanel({
         client.off('setupcomplete', onSetupComplete);
       };
       client.on('setupcomplete', onSetupComplete);
-      
+
+      try {
       await connect();
       
       const waitForConnection = () => {
@@ -804,8 +808,13 @@ function FloatingControlPanel({
         client.off('setupcomplete', onSetupComplete);
         setupCompleteResolver = null;
       }
+      } catch (connectError) {
+        console.error('Failed to connect:', connectError);
+      } finally {
+        setIsConnecting(false);
+      }
     }
-  }, [connected, connect, disconnect, client, interruptAudio, flushUserTranscript, flushTutorTranscript, assessmentMode, hasNoMinutes]);
+  }, [connected, connect, disconnect, client, interruptAudio, flushUserTranscript, flushTutorTranscript, assessmentMode, hasNoMinutes, isConnecting]);
 
   const [verticalAlign, setVerticalAlign] = useState<"top" | "bottom">("top");
 
@@ -977,8 +986,9 @@ function FloatingControlPanel({
 
             <button
               onClick={handleConnect}
+              disabled={isConnecting || checkingBalance}
               className={cn(
-                "w-9 h-9 md:w-10 md:h-10 border-[2px] border-black flex items-center justify-center transition-all transform active:translate-x-1 active:translate-y-1 relative group font-black",
+                "w-9 h-9 md:w-10 md:h-10 border-[2px] border-black flex items-center justify-center transition-all transform active:translate-x-1 active:translate-y-1 relative group font-black disabled:opacity-50 disabled:cursor-not-allowed",
                 connected
                   ? "bg-[#FF6B6B] hover:bg-[#FF6B6B] text-white shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)]"
                   : "bg-[#4ADE80] hover:bg-[#4ADE80] text-black shadow-[1px_1px_0_0_rgba(0,0,0,1)] hover:shadow-[1px_1px_0_0_rgba(0,0,0,1)]",
@@ -1329,7 +1339,7 @@ function FloatingControlPanel({
 
             <button
               onClick={handleConnect}
-              disabled={!connected && checkingBalance}
+              disabled={!connected && (checkingBalance || isConnecting)}
               className={cn(
                 "w-full py-2.5 md:py-3 font-black transition-all transform flex items-center justify-center gap-2 mt-1 border-[2px] md:border-[3px] border-black dark:border-white uppercase text-[10px] md:text-xs",
                 connected

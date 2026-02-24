@@ -264,6 +264,7 @@ class AuthAPI {
         });
       } catch (error) {
         console.error('Logout error:', error);
+        // Server-side logout failed but we still clear local state — user is effectively logged out
       }
     }
   }

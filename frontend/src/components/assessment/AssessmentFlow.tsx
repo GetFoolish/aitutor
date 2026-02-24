@@ -888,6 +888,22 @@ const AssessmentFlow: React.FC = () => {
                     </button>
                   </div>
                 )}
+                {!currentQuestion && !nextQuestionError && (
+                  <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                    <div style={{
+                      border: '4px solid #000',
+                      backgroundColor: '#FFD93D',
+                      padding: '20px',
+                      boxShadow: '4px 4px 0 #000',
+                      fontWeight: 800,
+                      fontSize: '14px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                    }}>
+                      Loading question...
+                    </div>
+                  </div>
+                )}
                 {currentQuestion && (
                   <div style={{ flex: '1 1 auto', minHeight: 'min-content', display: 'flex', flexDirection: 'column', position: 'relative' }}>
                     <AssessmentQuestion

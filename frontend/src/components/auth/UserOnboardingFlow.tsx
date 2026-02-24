@@ -68,32 +68,34 @@ const UserOnboardingFlow: React.FC = () => {
 
   // Update checklist when completeness data changes - with staggered animation
   useEffect(() => {
+    const timers: ReturnType<typeof setTimeout>[] = [];
     if (completeness) {
       // First show checklist container
       setChecklistVisible(true);
-      
+
       // Then update items one by one with delays
-      setTimeout(() => {
+      timers.push(setTimeout(() => {
         setChecklistStatus(prev => ({
           ...prev,
           age: !!completeness.user_data.date_of_birth || !!completeness.user_data.age
         }));
-      }, 500);
-      
-      setTimeout(() => {
+      }, 500));
+
+      timers.push(setTimeout(() => {
         setChecklistStatus(prev => ({
           ...prev,
-          learningLevel: !!completeness.user_data.current_grade // Check for current_grade instead of assessment_completed
+          learningLevel: !!completeness.user_data.current_grade
         }));
-      }, 1000);
-      
-      setTimeout(() => {
+      }, 1000));
+
+      timers.push(setTimeout(() => {
         setChecklistStatus(prev => ({
           ...prev,
           region: !!completeness.user_data.location
         }));
-      }, 1500);
+      }, 1500));
     }
+    return () => { timers.forEach(clearTimeout); };
   }, [completeness]);
 
   useEffect(() => {

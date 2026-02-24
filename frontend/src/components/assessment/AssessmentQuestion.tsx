@@ -610,8 +610,10 @@ const AssessmentQuestion: React.FC<Props> = ({
 
   const [emptyWarning, setEmptyWarning] = useState(false);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleSubmit = () => {
-    if (isAnswered) return; // Prevent double-submit
+    if (isAnswered || isSubmitting) return; // Prevent double-submit
     if (!rendererRef.current) {
       console.error('[AssessmentQuestion] rendererRef is null — widget still loading, please wait');
       // Widget still loading — show a warning instead of force-marking incorrect
@@ -621,6 +623,7 @@ const AssessmentQuestion: React.FC<Props> = ({
     }
 
     try {
+    setIsSubmitting(true);
 
     const userInput = rendererRef.current.getUserInput();
     const questionData = sanitizedQuestion.question;
@@ -721,6 +724,8 @@ const AssessmentQuestion: React.FC<Props> = ({
       setEmptyWarning(true);
       setTimeout(() => setEmptyWarning(false), 4000);
       setIsAnswered(false);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -827,6 +832,7 @@ const AssessmentQuestion: React.FC<Props> = ({
                 <button
                   data-testid="assessment-show-hint-button"
                   tabIndex={0}
+                  disabled={isSubmitting}
                   onClick={() => setHintsShown(h => h + 1)}
                   className={`${ultraCompactViewport ? 'py-3 px-5 text-sm' : 'py-4 px-6 text-base'} font-black uppercase tracking-wide bg-[#FFD93D] dark:bg-[#FFD93D] text-black dark:text-black border-[4px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] mb-3 hover:bg-[#FFE066] dark:hover:bg-[#FFE066] hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] transition-all duration-100 active:translate-x-2 active:translate-y-2 active:shadow-none`}
                 >
@@ -845,7 +851,8 @@ const AssessmentQuestion: React.FC<Props> = ({
           </div>
           <button
             onClick={() => onAnswer(false)}
-            className="w-full py-4 px-6 text-base font-black uppercase tracking-widest bg-[#E0E0E0] text-black border-[4px] border-black cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] transition-all duration-100 font-sans hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] active:translate-x-2 active:translate-y-2 active:shadow-none"
+            disabled={isSubmitting}
+            className="w-full py-4 px-6 text-base font-black uppercase tracking-widest bg-[#E0E0E0] text-black border-[4px] border-black cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] transition-all duration-100 font-sans hover:translate-x-1 hover:translate-y-1 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] active:translate-x-2 active:translate-y-2 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Skip Question
           </button>
@@ -863,7 +870,7 @@ const AssessmentQuestion: React.FC<Props> = ({
             data-testid="assessment-submit-button"
             tabIndex={0}
             onClick={handleSubmit}
-            disabled={isAnswered}
+            disabled={isAnswered || isSubmitting}
             className={`${ultraCompactViewport ? 'py-2.5 px-4 text-sm' : compactViewport ? 'py-3 px-5 text-base' : 'py-5 px-8 text-lg'} w-full font-black uppercase tracking-widest bg-[#FFD93D] text-black border-[4px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)]`}
           >
             Submit Answer
@@ -940,7 +947,7 @@ const AssessmentQuestion: React.FC<Props> = ({
               <strong className="uppercase text-sm font-black tracking-wide">
                 Explanation:
               </strong>{' '}
-              <span>{renderTextWithLatex(question.hints[question.hints.length - 1]?.content || question.hints[0]?.content || '')}</span>
+              <span>{renderTextWithLatex(question.hints?.length ? (question.hints[question.hints.length - 1]?.content || question.hints[0]?.content || '') : '')}</span>
             </div>
           )}
         </div>
