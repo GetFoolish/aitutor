@@ -201,6 +201,24 @@ function FloatingControlPanel({
     return () => clearInterval(interval);
   }, [connected]);
 
+  // Keep page layout aware of expanded panel width so question controls do not sit under it.
+  useEffect(() => {
+    const root = document.documentElement;
+
+    const syncExpandedClass = () => {
+      const isDesktop = window.innerWidth >= 768;
+      root.classList.toggle("floating-panel-expanded", isDesktop && !isCollapsed);
+    };
+
+    syncExpandedClass();
+    window.addEventListener("resize", syncExpandedClass);
+
+    return () => {
+      window.removeEventListener("resize", syncExpandedClass);
+      root.classList.remove("floating-panel-expanded");
+    };
+  }, [isCollapsed]);
+
   const formatTime = useCallback((seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -859,7 +877,7 @@ function FloatingControlPanel({
   const panelClasses = useMemo(
     () =>
       cn(
-        "fixed z-[1000] bg-[#FFFDF5] dark:bg-[#000000] border-[2px] md:border-[3px] border-black dark:border-white rounded-lg md:rounded-xl",
+        "floating-toolbar-panel fixed z-[1000] bg-[#FFFDF5] dark:bg-[#000000] border-[2px] md:border-[3px] border-black dark:border-white rounded-lg md:rounded-xl",
         isCollapsed
           ? "w-[50px] md:w-[55px] py-2 md:py-2.5 px-1 md:px-1.5 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)]"
           : "w-[220px] md:w-[250px] p-2.5 md:p-3 shadow-[1px_1px_0_0_rgba(0,0,0,1),_4px_4px_12px_rgba(0,0,0,0.12),_8px_8px_24px_rgba(0,0,0,0.08)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1),_6px_6px_16px_rgba(0,0,0,0.15),_12px_12px_32px_rgba(0,0,0,0.1)]",
@@ -1341,7 +1359,7 @@ function FloatingControlPanel({
             </button>
 
             {/* Bottom Actions */}
-            <div className="grid grid-cols-4 gap-1.5 md:gap-2 pt-2 md:pt-3 border-t-[2px] border-black dark:border-white">
+            <div className="grid grid-cols-4 gap-1.5 md:gap-2 pt-2 md:pt-3 border-t-[2px] border-black dark:border-white bg-[#FFFDF5] dark:bg-[#000000]">
               {enableEditingSettings && (
                 <SettingsDialog
                   className="w-full"

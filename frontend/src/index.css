@@ -61,10 +61,10 @@ code {
 
 /* When the floating control panel is expanded, add right padding so content clears the panel */
 html.floating-panel-expanded .assessment-content-wrapper {
-  padding-right: 300px !important;
+  padding-right: min(400px, 40vw) !important;
 }
 html.floating-panel-expanded .question-panel {
-  padding-right: 280px;
+  padding-right: min(380px, 38vw) !important;
 }
 
 /* ============================================

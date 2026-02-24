@@ -186,9 +186,9 @@ export function scorePerseusQuestion(
                 const correctIndices = choices
                     .map((c: any, i: number) => c.correct ? i : -1)
                     .filter((i: number) => i >= 0);
-                const selectedIndices = Array.from(
-                    new Set(
-                        selectedIds
+                const selectedIndices: number[] = Array.from(
+                    new Set<number>(
+                        (selectedIds as string[])
                             .map((id: string) => resolveSelectedChoiceIndex(id, choices, choiceIndexMap))
                             .filter((i: number) => i >= 0)
                     )

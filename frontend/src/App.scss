@@ -118,6 +118,15 @@ body {
   // Remove all queries that shrink below 14px - violates design system
 }
 
+/* Keep learning app shell viewport-locked to prevent document-level scroll drift. */
+.App {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+}
+
 .material-symbols-outlined {
   &.filled {
     font-variation-settings:
@@ -361,7 +370,7 @@ body {
     // Transparent so body dot pattern shows through
     background: transparent;
     // Reserve space for the FloatingControlPanel toolbar (Bug #38)
-    padding-right: 70px;
+    padding-right: 84px;
     // Flush left — no padding (wrapper handles spacing)
     padding-left: 0;
 

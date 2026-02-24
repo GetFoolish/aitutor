@@ -252,7 +252,7 @@ function App() {
                     />
                     <main style={{
                       marginRight: isSidebarOpen ? "260px" : "0",
-                      marginLeft: isGradingSidebarOpen ? "260px" : "40px",
+                      marginLeft: isGradingSidebarOpen ? "0" : "40px",
                       transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)"
                     }}>
                       <div className="main-app-area">
