@@ -719,7 +719,24 @@ const AssessmentFlow: React.FC = () => {
               minHeight: '48px',
             }}
           >
-            Back to Dev Login
+            Try Different Subject
+          </button>
+          <button
+            onClick={() => { history.replace('/app'); }}
+            style={{
+              padding: '10px 24px',
+              border: '4px solid #000',
+              background: '#E0E0E0',
+              cursor: 'pointer',
+              fontWeight: 700,
+              fontSize: '14px',
+              textTransform: 'uppercase',
+              marginTop: '4px',
+              boxShadow: '4px 4px 0 #000',
+              minHeight: '48px',
+            }}
+          >
+            Back to Home
           </button>
         </div>
       )}
@@ -839,7 +856,7 @@ const AssessmentFlow: React.FC = () => {
               </div>
 
               <div className="assessment-content-wrapper" style={{
-                paddingRight: 'min(280px, 30vw)',
+                paddingRight: 'max(70px, min(280px, 30vw))',
                 paddingBottom: '10px',
                 maxWidth: '100%',
                 marginLeft: 0,
@@ -984,7 +1001,7 @@ const AssessmentFlow: React.FC = () => {
       {/* Exit confirmation dialog */}
       {showExitDialog && (
         <div
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1100]"
           onClick={() => setShowExitDialog(false)}
         >
           <div
@@ -995,7 +1012,7 @@ const AssessmentFlow: React.FC = () => {
               Exit Assessment?
             </h3>
             <p className="text-base text-gray-700 dark:text-gray-300 mb-6">
-              Your progress will be saved, but you'll need to start a new assessment to continue practicing.
+              Your progress will be saved, but you'll need to start a new assessment to continue practicing. You can always try another subject from the home screen.
             </p>
             <div className="flex gap-4">
               <button

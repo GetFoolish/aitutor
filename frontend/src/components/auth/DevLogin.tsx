@@ -5,6 +5,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import BackgroundShapes from '../background-shapes/BackgroundShapes';
+import Header from '../header/Header';
 import { useTheme } from '../theme/theme-provier';
 import { jwtUtils } from '../../lib/jwt-utils';
 
@@ -114,6 +115,11 @@ const DevLogin: React.FC = () => {
       transition: 'background 200ms ease-out, color 200ms ease-out'
     }}>
       <BackgroundShapes />
+
+      <Header
+        sidebarOpen={false}
+        onToggleSidebar={() => {}}
+      />
 
       {/* Theme toggle — top-right corner */}
       <button

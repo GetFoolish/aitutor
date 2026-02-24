@@ -632,6 +632,12 @@ const AssessmentQuestion: React.FC<Props> = ({
     if (!hasUserInput(questionData.widgets || {}, userInput)) {
       setEmptyWarning(true);
       setTimeout(() => setEmptyWarning(false), 3500);
+      // Shake the submit button for visual feedback
+      const btn = document.querySelector('[data-testid="assessment-submit-button"]') as HTMLElement;
+      if (btn) {
+        btn.style.animation = 'shake-btn 0.4s ease-in-out';
+        btn.addEventListener('animationend', () => { btn.style.animation = ''; }, { once: true });
+      }
       return;
     }
 
@@ -697,9 +703,24 @@ const AssessmentQuestion: React.FC<Props> = ({
             if (choice?.correct) {
               // Mark correct answers with green
               el.setAttribute('data-feedback', 'correct');
+              // Add a visible "✓ Correct Answer" label if user got it wrong
+              if (!isCorrect && !el.querySelector('.correct-answer-label')) {
+                const label = document.createElement('div');
+                label.className = 'correct-answer-label';
+                label.style.cssText = 'margin-top:8px;padding:4px 10px;background:#166534;color:#fff;font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;display:inline-block;border:2px solid #000;';
+                label.textContent = '✓ Correct Answer';
+                el.appendChild(label);
+              }
             } else if (isUserSelected && !choice?.correct) {
               // Mark user's incorrect selection with red
               el.setAttribute('data-feedback', 'incorrect');
+              if (!el.querySelector('.incorrect-answer-label')) {
+                const label = document.createElement('div');
+                label.className = 'incorrect-answer-label';
+                label.style.cssText = 'margin-top:8px;padding:4px 10px;background:#991B1B;color:#fff;font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;display:inline-block;border:2px solid #000;';
+                label.textContent = '✗ Your Answer';
+                el.appendChild(label);
+              }
             }
           }
         });
@@ -953,6 +974,15 @@ const AssessmentQuestion: React.FC<Props> = ({
         </div>
       )}
 
+      <style>{`
+        @keyframes shake-btn {
+          0%, 100% { transform: translateX(0); }
+          20% { transform: translateX(-8px); }
+          40% { transform: translateX(8px); }
+          60% { transform: translateX(-6px); }
+          80% { transform: translateX(6px); }
+        }
+      `}</style>
     </div>
   );
 };

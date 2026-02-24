@@ -2854,16 +2854,13 @@ def resume_assessment(
 
     # Get the next question for them to answer
     # Use the existing get_next_question_flexible logic
-    jwt_age = jwt_payload.get("age", 10)
+    # Signature: (student_id, current_time, exclude_question_ids, force_grade_range, user_profile, exclude_skill_ids, fast_mode)
+    current_time = time.time()
     try:
         next_q = dash_system.get_next_question_flexible(
-            student_id=user_id,
-            difficulty=current_diff,
-            grade=jwt_age,
-            subject=subject,
-            used_skill_ids=session.get("used_skill_ids", []),
-            used_question_ids=session.get("used_question_ids", []),
-            used_content_hashes=set(session.get("used_content_hashes", [])),
+            user_id,
+            current_time,
+            exclude_question_ids=session.get("used_question_ids", []),
             fast_mode=True,
         )
 
