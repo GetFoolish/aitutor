@@ -207,6 +207,21 @@ const RendererComponent = ({
     // Get user_id from auth context
     const user_id = user?.user_id || 'mongodb_test_user';
 
+    // Keyboard support: Enter key submits answer
+    useEffect(() => {
+        const handleKeyPress = (e: KeyboardEvent) => {
+            if (e.key === 'Enter' && !isAnswered && !isLoading && perseusItems.length > 0) {
+                const target = e.target as HTMLElement;
+                // Don't trigger if in textarea or contenteditable
+                if (target.tagName === 'TEXTAREA' || target.isContentEditable) return;
+                e.preventDefault();
+                handleSubmit();
+            }
+        };
+        document.addEventListener('keydown', handleKeyPress);
+        return () => document.removeEventListener('keydown', handleKeyPress);
+    }, [isAnswered, isLoading, perseusItems.length]);
+
     const fetchRecommendNext = async (
         currentQuestionIds: string[],
         count: number,
@@ -1263,7 +1278,7 @@ const RendererComponent = ({
                             <div
                                 ref={questionStackRef}
                                 className={`${compactViewport ? "space-y-2.5" : "space-y-4 md:space-y-6"} h-full`}
-                                style={contentZoomWrapperStyle}
+                                style={{ ...contentZoomWrapperStyle, paddingRight: "80px", maxWidth: "calc(100% - 80px)" }}
                             >
                                 {/* Audio play button for phonics/listening questions */}
                                 {audioWord && (

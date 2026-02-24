@@ -253,7 +253,24 @@ export function scorePerseusQuestion(
                                 maxError = Math.max(0.01, Math.abs(cv) * 0.01);
                             }
                         }
-                        widgetCorrect = Math.abs(userValue - correctAnswer.value) <= maxError;
+                        // Ensure both values are numbers for comparison
+                        const correctValue = Number(correctAnswer.value);
+                        const userValueNum = Number(userValue);
+                        const diff = Math.abs(userValueNum - correctValue);
+                        widgetCorrect = diff <= maxError;
+
+                        // Debug logging for numeric comparisons
+                        if (!widgetCorrect) {
+                            console.warn('[NUMERIC-INPUT] Scoring mismatch:', {
+                                widgetId,
+                                rawValue,
+                                userValue: userValueNum,
+                                correctValue,
+                                maxError,
+                                diff,
+                                widgetCorrect
+                            });
+                        }
                     }
                 }
                 scoreableCount++;
