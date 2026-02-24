@@ -1151,9 +1151,9 @@ const RendererComponent = ({
     }, [item, setCurrentHintIndex, setShowHints, setResponsiveHint]);
 
     return (
-        <div className="framework-perseus relative flex w-full h-full min-h-0 items-stretch justify-start px-2 md:px-3 py-1 overflow-hidden">
+        <div className="framework-perseus relative flex w-full h-full min-h-0 items-stretch justify-start px-2 md:px-3 py-1 overflow-hidden" style={{ maxWidth: 'calc(100% - 100px)' }}>
             {/* Neo-Brutalism Card */}
-            <Card className="relative flex h-full min-h-0 w-full flex-col border-[4px] md:border-[5px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-200 overflow-hidden">
+            <Card className="relative flex h-full min-h-0 w-full flex-col border-[4px] md:border-[5px] border-black dark:border-white shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] bg-[#FFFDF5] dark:bg-[#000000] transition-all duration-200 overflow-hidden" style={{ maxWidth: '100%' }}>
                 {/* Progress bar at top */}
                 <div className="absolute top-0 left-0 right-0 h-2 md:h-3 bg-[#FFFDF5] dark:bg-[#000000] border-b-[2px] md:border-b-[3px] border-black dark:border-white">
                     <div
