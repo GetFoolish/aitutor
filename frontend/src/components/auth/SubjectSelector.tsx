@@ -208,7 +208,7 @@ const SubjectSelector: React.FC<SubjectSelectorProps> = ({
             marginTop: '8px',
             marginBottom: '16px'
           }}>
-            This usually takes 2-3 minutes. Hang tight!
+            This usually takes 2-5 minutes depending on the subject. Hang tight!
           </p>
           <button
             onClick={() => {

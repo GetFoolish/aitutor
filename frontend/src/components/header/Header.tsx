@@ -81,13 +81,14 @@ export default function Header({ sidebarOpen, onToggleSidebar, assessmentMode }:
             {/* Left side - Logo */}
             <div
                 onClick={() => {
-                    // Only navigate in non-assessment mode or show warning
-                    if (!assessmentMode) {
-                        window.location.href = '/app';
-                    } else {
-                        // In assessment mode, logo click is disabled to prevent accidental exit
-                        // User must use the Exit button instead
+                    if (assessmentMode) {
+                        // In assessment mode, don't navigate
+                        return;
                     }
+                    // Clear session and navigate to subject picker
+                    sessionStorage.removeItem('selected_subject');
+                    sessionStorage.removeItem('onboarding_complete');
+                    window.location.href = '/app';
                 }}
                 className="flex items-center gap-1.5 md:gap-2 group no-underline"
                 style={{ cursor: assessmentMode ? 'default' : 'pointer' }}
