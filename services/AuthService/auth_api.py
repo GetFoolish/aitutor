@@ -50,10 +50,6 @@ class _RateLimiter:
         cutoff = now - self.window_seconds
         bucket = self._hits[key]
         self._hits[key] = bucket = [t for t in bucket if t > cutoff]
-        # Evict empty buckets to prevent memory leak from many unique keys
-        if not bucket:
-            del self._hits[key]
-            return True
         if len(bucket) >= self.max_requests:
             return False
         bucket.append(now)
@@ -181,13 +177,12 @@ def _client_ip(request: Request) -> str:
 # ──────────────────────────────────────────────────────────────────
 
 
-# Configure logging
+# Configure logging (logger already initialized via get_logger above)
 logging.basicConfig(
     level=logging.INFO,
     format='%(levelname)s|%(message)s|file:%(filename)s:line No.%(lineno)d',
     handlers=[logging.StreamHandler(sys.stdout)]
 )
-logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Auth Service")
 

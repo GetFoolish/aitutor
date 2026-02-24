@@ -63,6 +63,10 @@ const sanitizeChoicesArray = (choices: any[]): any[] => {
             id: typeof choice.id === 'string' && choice.id.trim() ? choice.id : `choice-${index}`,
             content: stripWrappingQuotes(choice.content),
             correct: Boolean(choice.correct),
+            // CRITICAL: Clear any pre-selection state from AI generation
+            selected: undefined,
+            checked: undefined,
+            crossedOut: false,
         };
     });
 };
