@@ -777,7 +777,7 @@ const AssessmentQuestion: React.FC<Props> = ({
       >
         <div className={`${ultraCompactViewport ? 'px-3 py-2' : compactViewport ? 'px-4 py-3' : 'px-6 py-5'} text-center border-b-[4px] border-black dark:border-white`}>
           <div className={`${ultraCompactViewport ? 'text-lg mb-0.5' : compactViewport ? 'text-xl mb-1' : 'text-2xl mb-2'} font-black text-black uppercase tracking-widest font-sans`}>
-            QUESTION {questionNumber || 1} OF {totalQuestions || '?'}
+            QUESTION {effectiveQuestionNumber || 1} OF {totalQuestions || '?'}
           </div>
           <div className={`${ultraCompactViewport ? 'text-sm' : compactViewport ? 'text-base' : 'text-lg'} font-bold text-black uppercase tracking-wide opacity-80`}>
             Assessment in Progress
