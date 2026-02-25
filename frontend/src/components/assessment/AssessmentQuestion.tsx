@@ -630,9 +630,14 @@ const AssessmentQuestion: React.FC<Props> = ({
     const questionData = sanitizedQuestion.question;
 
     // Empty submission guard
-    if (!hasUserInput(questionData.widgets || {}, userInput)) {
+    const hasInput = hasUserInput(questionData.widgets || {}, userInput);
+    console.log('[AssessmentQuestion] Checking input:', { hasInput, userInput, widgets: questionData.widgets });
+
+    if (!hasInput) {
+      console.log('[AssessmentQuestion] Empty submission blocked - showing warning');
       setEmptyWarning(true);
       setTimeout(() => setEmptyWarning(false), 3500);
+      setIsSubmitting(false); // Ensure button is re-enabled
       // Shake the submit button for visual feedback
       const btn = document.querySelector('[data-testid="assessment-submit-button"]') as HTMLElement;
       if (btn) {

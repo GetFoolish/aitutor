@@ -313,12 +313,16 @@ const DevLogin: React.FC = () => {
             onChange={(e) => {
               const cleaned = e.target.value.replace(/[^\p{L}\p{N} ,.\-'&]/gu, '');
               setCustomSubject(cleaned);
-              if (cleaned.trim()) {
-                setSelectedSubject(cleaned.trim());
-              } else {
-                // Restore last clicked preset instead of hardcoding 'Math' (Bug #26)
+              // Validate: minimum 2 chars and at least one letter
+              const trimmed = cleaned.trim();
+              const hasLetter = /[a-zA-Z]/.test(trimmed);
+              if (trimmed.length >= 2 && hasLetter) {
+                setSelectedSubject(trimmed);
+              } else if (trimmed.length === 0) {
+                // Restore last clicked preset when field is cleared
                 setSelectedSubject(presetSubject);
               }
+              // If 1 char or no letters, don't update selectedSubject (keep previous)
             }}
             placeholder="e.g. Geography, Music Theory, Python..."
             disabled={loading}
