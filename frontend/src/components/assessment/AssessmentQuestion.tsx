@@ -753,9 +753,9 @@ const AssessmentQuestion: React.FC<Props> = ({
     }
   };
 
-  // Progress shows current question during answering, next question after submitting
-  const effectiveQuestionNumber = isAnswered ? questionNumber + 1 : questionNumber;
-  const progressPercentage = Math.min(100, (effectiveQuestionNumber / totalQuestions) * 100);
+  // Progress shows questions completed (0% until first answer, then increments)
+  const effectiveQuestionNumber = isAnswered ? questionNumber : Math.max(0, questionNumber - 1);
+  const progressPercentage = Math.min(100, Math.max(0, (effectiveQuestionNumber / totalQuestions) * 100));
   const isFinalQuestion = totalQuestions > 0 && questionNumber >= totalQuestions;
 
   return (

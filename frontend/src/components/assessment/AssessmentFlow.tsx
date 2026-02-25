@@ -977,7 +977,8 @@ const AssessmentFlow: React.FC = () => {
         </>
       )}
 
-      {!loading && !startError && !completed && (
+      {/* Toolbar disabled in assessment mode to prevent overlap with question content */}
+      {!loading && !startError && !completed && false && (
         <TutorProvider assessmentMode={true}>
           <FloatingControlPanel
             renderCanvasRef={floatingRenderCanvasRef}
