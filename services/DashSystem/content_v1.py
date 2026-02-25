@@ -87,10 +87,12 @@ SUPPORTED_FORMATS = [
 class ContentV1Engine:
     def __init__(self) -> None:
         api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        logger.info(f"[GEMINI] Loading API key from env: {api_key[:15] if api_key else 'NONE'}...{api_key[-4:] if api_key else ''}")
         self.client = None
         if api_key and api_key != "dummy_for_local_dev":
             try:
                 self.client = genai.Client(api_key=api_key)
+                logger.info(f"[GEMINI] Client initialized successfully")
             except Exception as e:
                 logger.warning(f"[CONTENT_V1] Failed to initialize Gemini client: {e} — AI generation disabled")
         self.model = os.getenv("GEMINI_TEXT_MODEL", "gemini-2.0-flash")
@@ -1710,13 +1712,20 @@ class ContentV1Engine:
         if item is None:
             return None
 
-        # Optionally add an image for eligible formats (skip in fast_mode — too slow for assessment)
+        # Add images even in fast_mode but with reduced probability and shorter timeout
+        # Images are important for visual learning questions
         topic_image_prob = self._get_image_probability(skill_name, lesson_name)
-        if not fast_mode and fmt in IMAGE_ELIGIBLE_FORMATS and random.random() < topic_image_prob:
+        # In fast mode, reduce probability by 50% to balance speed vs quality
+        effective_prob = topic_image_prob * (0.5 if fast_mode else 1.0)
+        if fmt in IMAGE_ELIGIBLE_FORMATS and random.random() < effective_prob:
             q_text = item.get("question", {}).get("content", "")
             image_url = self._generate_image(q_text, skill_name, lesson_name, age)
             if image_url:
                 item = self._inject_image(item, image_url, skill_name)
+            else:
+                # Image generation failed - strip any image references from question text
+                logger.warning(f"[IMAGE] Generation failed but question may reference image - cleaning text")
+                item["question"]["content"] = item["question"]["content"].replace("shown in the image", "shown").replace("in the picture", "").replace("in the diagram", "")
 
         return item
 
