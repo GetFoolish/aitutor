@@ -304,25 +304,28 @@ function App() {
                             )}
                           </ScratchpadCapture>
                         </div>
-                        <FloatingControlPanel
-                          renderCanvasRef={mediaMixer.canvasRef}
-                          videoRef={videoRef}
-                          supportsVideo={true}
-                          onVideoStreamChange={setVideoStream}
-                          onMixerStreamChange={setMixerStream}
-                          enableEditingSettings={true}
-                          onPaintClick={() => setScratchpadOpen(!isScratchpadOpen)}
-                          isPaintActive={isScratchpadOpen}
-                          cameraEnabled={cameraEnabled}
-                          screenEnabled={screenEnabled}
-                          onToggleCamera={toggleCamera}
-                          onToggleScreen={toggleScreen}
-                          privacyMode={privacyEnabled}
-                          onTogglePrivacy={setPrivacyEnabled}
-                          mediaMixerCanvasRef={mediaMixer.canvasRef}
-                          processedEdgesRef={processedEdgesRef}
-                          assessmentMode={assessmentMode}
-                        />
+                        {/* Toolbar hidden to prevent overlap with question content */}
+                        {false && (
+                          <FloatingControlPanel
+                            renderCanvasRef={mediaMixer.canvasRef}
+                            videoRef={videoRef}
+                            supportsVideo={true}
+                            onVideoStreamChange={setVideoStream}
+                            onMixerStreamChange={setMixerStream}
+                            enableEditingSettings={true}
+                            onPaintClick={() => setScratchpadOpen(!isScratchpadOpen)}
+                            isPaintActive={isScratchpadOpen}
+                            cameraEnabled={cameraEnabled}
+                            screenEnabled={screenEnabled}
+                            onToggleCamera={toggleCamera}
+                            onToggleScreen={toggleScreen}
+                            privacyMode={privacyEnabled}
+                            onTogglePrivacy={setPrivacyEnabled}
+                            mediaMixerCanvasRef={mediaMixer.canvasRef}
+                            processedEdgesRef={processedEdgesRef}
+                            assessmentMode={assessmentMode}
+                          />
+                        )}
                       </div>
                     </main>
                   </Suspense>
