@@ -103,8 +103,8 @@ class UserProfile:
     
     @classmethod
     def from_dict(cls, data):
-        skill_states = {k: SkillState.from_dict(v) for k, v in data['skill_states'].items()}
-        question_history = [QuestionAttempt(**attempt) for attempt in data['question_history']]
+        skill_states = {k: SkillState.from_dict(v) for k, v in data.get('skill_states', {}).items()}
+        question_history = [QuestionAttempt(**attempt) for attempt in data.get('question_history', [])]
         
         user_profile = cls(
             user_id=data['user_id'],
