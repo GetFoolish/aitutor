@@ -265,6 +265,20 @@ const AssessmentQuestion: React.FC<Props> = ({
     };
   }, [question, questionNumber, isAnswered]);
 
+  // Disable all inputs after answer is submitted to prevent cheating
+  useEffect(() => {
+    if (!isAnswered) return;
+    const container = document.getElementById('question-content-container');
+    if (!container) return;
+
+    // Disable all interactive elements
+    container.querySelectorAll('button, input, select, textarea').forEach(el => {
+      (el as HTMLButtonElement | HTMLInputElement).disabled = true;
+      (el as HTMLElement).style.pointerEvents = 'none';
+      (el as HTMLElement).style.opacity = '0.7';
+    });
+  }, [isAnswered]);
+
   // Enforce compact inline widget geometry for sentence-embedded dropdown/text widgets.
   // This runs after each question render to override widget-internal style drift.
   useEffect(() => {
@@ -836,7 +850,7 @@ const AssessmentQuestion: React.FC<Props> = ({
                   }}
                   showSolutions="none"
                   hintsVisible={0}
-                  reviewMode={isAnswered}
+                  reviewMode={false}
                 />
               </RenderStateRoot>
             </PerseusI18nContextProvider>
