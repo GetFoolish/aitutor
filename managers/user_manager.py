@@ -103,13 +103,14 @@ class UserProfile:
     
     @classmethod
     def from_dict(cls, data):
+        import time
         skill_states = {k: SkillState.from_dict(v) for k, v in data.get('skill_states', {}).items()}
         question_history = [QuestionAttempt(**attempt) for attempt in data.get('question_history', [])]
-        
+
         user_profile = cls(
-            user_id=data['user_id'],
-            created_at=data['created_at'],
-            last_updated=data['last_updated'],
+            user_id=data.get('user_id', 'unknown'),
+            created_at=data.get('created_at', time.time()),
+            last_updated=data.get('last_updated', time.time()),
             skill_states=skill_states,
             question_history=question_history,
             student_notes=data.get('student_notes', {}),
