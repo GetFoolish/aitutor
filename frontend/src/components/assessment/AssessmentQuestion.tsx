@@ -754,7 +754,7 @@ const AssessmentQuestion: React.FC<Props> = ({
 
   // Progress shows current question during answering, next question after submitting
   const effectiveQuestionNumber = isAnswered ? questionNumber + 1 : questionNumber;
-  const progressPercentage = (effectiveQuestionNumber / totalQuestions) * 100;
+  const progressPercentage = Math.min(100, (effectiveQuestionNumber / totalQuestions) * 100);
   const isFinalQuestion = totalQuestions > 0 && questionNumber >= totalQuestions;
 
   return (
@@ -830,7 +830,7 @@ const AssessmentQuestion: React.FC<Props> = ({
                   }}
                   showSolutions="none"
                   hintsVisible={0}
-                  reviewMode={false}
+                  reviewMode={isAnswered}
                 />
               </RenderStateRoot>
             </PerseusI18nContextProvider>
