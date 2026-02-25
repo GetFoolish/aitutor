@@ -780,7 +780,7 @@ const AssessmentQuestion: React.FC<Props> = ({
             QUESTION {questionNumber || 1} OF {totalQuestions || '?'}
           </div>
           <div className={`${ultraCompactViewport ? 'text-sm' : compactViewport ? 'text-base' : 'text-lg'} font-bold text-black uppercase tracking-wide opacity-80`}>
-            Assessment in Progress
+            {isAnswered ? 'Review Answer' : 'Assessment in Progress'}
           </div>
         </div>
 
