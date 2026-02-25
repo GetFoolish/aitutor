@@ -132,7 +132,7 @@ const GoogleSignInContent: React.FC<GoogleSignInContentProps> = ({ onAuthSuccess
           </div>
         </div>
 
-        <h1>Welcome to AI Tutor</h1>
+        <h1>Welcome to Teachr</h1>
         <p>Sign in with your Google account to get started</p>
 
         <button className="google-sign-in-button" onClick={handleGoogleLogin} disabled={isSigningIn} style={isSigningIn ? { opacity: 0.6, cursor: 'wait' } : undefined}>
