@@ -100,6 +100,15 @@ const AccountPage: React.FC = () => {
   };
 
   const handleEdit = () => {
+    if (accountInfo) {
+      setFormData({
+        name: accountInfo.name || '',
+        dateOfBirth: accountInfo.date_of_birth || '',
+        location: accountInfo.location || '',
+        gender: accountInfo.gender || '',
+        preferredLanguage: accountInfo.preferred_language || '',
+      });
+    }
     setIsEditing(true);
   };
 
@@ -514,7 +523,7 @@ const AccountPage: React.FC = () => {
             "shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]"
           )}>
             <CardHeader className={cn(
-              "border-b-[2px] border-black dark:border-white bg-[#C4B5FD]"
+              "border-b-[2px] border-black dark:border-white bg-[#4ECDC4]"
             )}>
               <CardTitle className={cn(
                 "text-xl font-black text-black uppercase flex items-center gap-2"
@@ -566,7 +575,7 @@ const AccountPage: React.FC = () => {
                  accountInfo.free_minutes?.next_reset_in_hours !== null && (
                   <div className={cn(
                     "mt-2 p-2 text-xs font-bold",
-                    "border-[2px] border-black dark:border-white bg-[#C4B5FD] text-black"
+                    "border-[2px] border-black dark:border-white bg-[#4ECDC4] text-black"
                   )}>
                     {accountInfo.free_minutes.next_reset_in_hours === 0 && accountInfo.free_minutes.next_reset_in_minutes === 0 ? (
                       <>

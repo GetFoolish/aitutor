@@ -295,7 +295,7 @@ root.render(
                 <Route path="/app/admin/cost-tracking" component={CostTrackingPage} />
                 <Route path="/app/assessment-exit" component={AssessmentExit} />
                 <Route path="/app/assessment/:subject" component={AssessmentFlow} />
-                <Route path="/app/learn/:subject" component={LandingPageOrApp} />
+                <Route path="/app/learn/:subject" component={App} />
                 <Route path="/landing/:id" component={LandingPageWrapper} /> {/* Dynamic landing page routes */}
                 <Route path="/app/:profileId" component={LandingPageOrApp} />
                 <Route path="/app" exact component={LandingPageOrApp} />

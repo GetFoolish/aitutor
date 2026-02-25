@@ -2208,12 +2208,32 @@ def start_assessment(
         exclude_question_ids = set()
         current_time = time.time()
 
-        # Pre-select 10 diverse skills from curriculum (fast, no Gemini)
+        # Pre-select 10 diverse skills from curriculum, filtered by grade (±1 grade range)
         all_skills = list(dash_system.skills.values())
-        random.shuffle(all_skills)
-        # Pick up to 10 unique skills, spread across grades
-        target_skills = all_skills[:min(len(all_skills), 12)]
-        logger.info(f"[ASSESSMENT] Pre-selected {len(target_skills)} target skills for parallel generation")
+
+        # Filter skills to be within ±1 grade of current student grade
+        grade_filtered_skills = [
+            skill for skill in all_skills
+            if abs(skill.grade_level.value - current_grade_value) <= 1
+        ]
+
+        # If not enough skills in grade range, expand to ±2 grades
+        if len(grade_filtered_skills) < 10:
+            logger.warning(f"[ASSESSMENT] Only {len(grade_filtered_skills)} skills in ±1 grade range, expanding to ±2")
+            grade_filtered_skills = [
+                skill for skill in all_skills
+                if abs(skill.grade_level.value - current_grade_value) <= 2
+            ]
+
+        # If still not enough, use all skills
+        if len(grade_filtered_skills) < 10:
+            logger.warning(f"[ASSESSMENT] Only {len(grade_filtered_skills)} skills in ±2 grade range, using all skills")
+            grade_filtered_skills = all_skills
+
+        random.shuffle(grade_filtered_skills)
+        # Pick up to 12 unique skills for parallel generation (to get 10 successful ones)
+        target_skills = grade_filtered_skills[:min(len(grade_filtered_skills), 12)]
+        logger.info(f"[ASSESSMENT] Pre-selected {len(target_skills)} grade-appropriate skills (student grade: {current_grade_value})")
 
         student_age = user_profile.age if user_profile.age else 10
 

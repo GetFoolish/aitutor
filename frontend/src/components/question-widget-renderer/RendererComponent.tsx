@@ -39,7 +39,8 @@ const PREFETCH_BATCH_SIZE = 6;
 const RECOMMEND_NEXT_TIMEOUT_MS = 1800;
 
 // Widget types that use deprecated string refs and are broken in React 18
-const BROKEN_WIDGET_TYPES = new Set(['orderer', 'matcher']);
+// Note: orderer widget works fine in Perseus, only matcher is truly broken
+const BROKEN_WIDGET_TYPES = new Set(['matcher']);
 
 const stripWrappingQuotes = (value: unknown): string => {
     const text = typeof value === 'string' ? value.trim() : String(value ?? '').trim();

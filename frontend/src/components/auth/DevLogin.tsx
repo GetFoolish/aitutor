@@ -106,11 +106,12 @@ const DevLogin: React.FC = () => {
       inset: 0,
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'center',
+      justifyContent: 'flex-start',
       alignItems: 'center',
       background: bgColor,
       fontFamily: "'Space Grotesk', -apple-system, sans-serif",
       overflow: 'auto',
+      paddingTop: '80px',
       color: textColor,
       transition: 'background 200ms ease-out, color 200ms ease-out'
     }}>
@@ -119,6 +120,7 @@ const DevLogin: React.FC = () => {
       <Header
         sidebarOpen={false}
         onToggleSidebar={() => {}}
+        assessmentMode={true}
       />
 
       {/* Theme toggle — top-right corner */}

@@ -51,7 +51,8 @@ function renderTextWithLatex(text: string): React.ReactNode {
 }
 
 // Widget types that use deprecated string refs and are broken in React 18
-const BROKEN_WIDGET_TYPES = new Set(['orderer', 'matcher']);
+// Note: orderer widget works fine in Perseus, only matcher is truly broken
+const BROKEN_WIDGET_TYPES = new Set(['matcher']);
 
 const stripWrappingQuotes = (value: unknown): string => {
   const text = typeof value === 'string' ? value.trim() : String(value ?? '').trim();
@@ -786,8 +787,11 @@ const AssessmentQuestion: React.FC<Props> = ({
         {/* Progress Bar */}
         <div className="h-4 bg-white dark:bg-neutral-800 border-t-[4px] border-black dark:border-white relative overflow-hidden">
           <div
-            className="h-full bg-[#FF6B6B] border-r-[4px] border-black dark:border-white transition-all duration-300 ease-out"
-            style={{ width: `${progressPercentage}%` }}
+            className="h-full border-r-[4px] border-black dark:border-white transition-all duration-300 ease-out"
+            style={{
+              width: `${progressPercentage}%`,
+              backgroundColor: progressPercentage < 33 ? '#FF6B6B' : progressPercentage < 66 ? '#FFD93D' : '#4ECDC4'
+            }}
           />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-sm font-black text-black dark:text-white uppercase tracking-wide z-10">
             {Math.round(progressPercentage)}%
