@@ -85,14 +85,12 @@ export default function Header({ sidebarOpen, onToggleSidebar, assessmentMode }:
                         // In assessment mode, don't navigate
                         return;
                     }
-                    // Clear session and navigate to subject picker
-                    sessionStorage.removeItem('selected_subject');
-                    sessionStorage.removeItem('onboarding_complete');
+                    // Navigate to home without clearing session (user stays in their subject context)
                     window.location.href = '/app';
                 }}
                 className="flex items-center gap-1.5 md:gap-2 group no-underline"
                 style={{ cursor: assessmentMode ? 'default' : 'pointer' }}
-                title={assessmentMode ? "Use Exit button to leave assessment" : "Back to subject selection"}
+                title={assessmentMode ? "Use Exit button to leave assessment" : "Go to home"}
             >
                 <img
                     src={logoSource}
@@ -139,12 +137,6 @@ export default function Header({ sidebarOpen, onToggleSidebar, assessmentMode }:
                                 <Link to="/app/account" className="flex items-center">
                                     <User className="mr-2 h-4 w-4" />
                                     <span>Account</span>
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <Link to="/app/account" className="flex items-center">
-                                    <Settings className="mr-2 h-4 w-4" />
-                                    <span>Settings</span>
                                 </Link>
                             </DropdownMenuItem>
                             {!assessmentMode && (

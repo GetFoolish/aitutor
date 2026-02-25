@@ -454,6 +454,16 @@ class DASHSystem:
 
                     # Create KhanSkill (Unit → Skill mapping)
                     skill_forgetting_rate = detect_forgetting_rate(unit['title'])
+
+                    # Map grade level to difficulty (K=0.15, Grade 1=0.25, ..., Grade 12=0.95)
+                    grade_value = grade_level.value
+                    if grade_value == 0:  # Kindergarten
+                        skill_difficulty = 0.15
+                    else:
+                        # Linear mapping: Grade 1=0.25, Grade 12=0.95
+                        skill_difficulty = 0.25 + (grade_value - 1) * 0.058
+                        skill_difficulty = min(0.95, skill_difficulty)  # Cap at 0.95
+
                     khan_skill = KhanSkill(
                         skill_id=unit_id,
                         name=unit['title'],
@@ -464,7 +474,7 @@ class DASHSystem:
                         order_in_course=unit.get('order_in_course', 0),
                         prerequisites=prerequisites,
                         sub_skills=sub_skill_ids,
-                        difficulty=0.5,
+                        difficulty=skill_difficulty,
                         forgetting_rate=skill_forgetting_rate
                     )
                     self.khan_skills[unit_id] = khan_skill
@@ -476,7 +486,7 @@ class DASHSystem:
                         grade_level=grade_level,
                         prerequisites=prerequisites,
                         forgetting_rate=skill_forgetting_rate,
-                        difficulty=0.5,
+                        difficulty=skill_difficulty,
                         order=unit.get('order_in_course', 0)
                     )
                     self.skills[unit_id] = skill

@@ -217,7 +217,7 @@ const LoginPage: React.FC = () => {
           </div>
         </div>
 
-        <h1>Welcome to AI Tutor</h1>
+        <h1>Welcome to Teachr.Live</h1>
         <p>Sign in to continue your learning journey</p>
 
         {/* Google Sign In Button */}
