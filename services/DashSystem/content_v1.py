@@ -1476,7 +1476,7 @@ class ContentV1Engine:
                     ),
                 )
 
-            response = _run_with_timeout(_call_image, timeout_s=30)
+            response = _run_with_timeout(_call_image, timeout_s=60)
 
             candidates = getattr(response, "candidates", None)
             if not isinstance(candidates, list) or len(candidates) == 0 or not candidates[0]:
