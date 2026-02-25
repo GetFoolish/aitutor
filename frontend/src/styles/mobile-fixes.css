@@ -165,3 +165,42 @@
         padding-bottom: max(12px, env(safe-area-inset-bottom));
     }
 }
+
+/* Fix 9: Small mobile (390px) - Assessment panel visibility */
+@media (max-width: 480px) {
+    /* Ensure assessment container is visible and scrollable */
+    .framework-perseus {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        padding: 8px !important;
+        margin: 0 !important;
+    }
+
+    /* Question card should fill viewport */
+    .framework-perseus > div {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Reduce excessive margins/padding that cause overflow */
+    .question-content,
+    #question-content-container {
+        padding: 8px !important;
+        margin: 0 !important;
+    }
+
+    /* Make submit button full-width on small mobile */
+    [data-testid="assessment-submit-button"],
+    button[type="button"] {
+        width: 100% !important;
+        font-size: 14px !important;
+        padding: 12px 16px !important;
+    }
+
+    /* Compact header on small screens */
+    .border-\\[4px\\].bg-\\[#FFD93D\\] {
+        padding: 8px !important;
+        border-width: 3px !important;
+    }
+}
