@@ -15,20 +15,20 @@ const AssessmentExit: React.FC = () => {
   const assessmentId = searchParams.get('assessment_id');
 
   const handleTryAnother = () => {
-    // Clear session storage and go to subject selector
+    // Clear ALL session storage and force navigate to subject selector
+    sessionStorage.clear();
+    window.location.href = '/app';
+  };
+
+  const handleBackHome = () => {
+    // Clear ALL session data and go to subject picker
     sessionStorage.removeItem('selected_subject');
     sessionStorage.removeItem('assessmentSubject');
     sessionStorage.removeItem('active_assessment');
     sessionStorage.removeItem('onboarding_complete');
-    history.push('/app');
-  };
-
-  const handleBackHome = () => {
-    // Clear session and go to main app
-    sessionStorage.removeItem('selected_subject');
-    sessionStorage.removeItem('assessmentSubject');
-    sessionStorage.removeItem('active_assessment');
-    history.push('/app');
+    sessionStorage.removeItem('assessment_completed_subject');
+    // Force page reload to ensure clean state
+    window.location.href = '/app';
   };
 
   return (

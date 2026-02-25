@@ -29,8 +29,13 @@ function renderTextWithLatex(text: string): React.ReactNode {
     if (part.startsWith('$') && part.endsWith('$') && part.length > 2) {
       const inner = part.slice(1, -1);
       // Skip if it looks like currency: just a number, optionally with decimals/commas
-      if (/^\s*[\d,]+(\.\d+)?\s*$/.test(inner)) {
+      // Also skip $X.YZ pattern (common currency format)
+      if (/^\s*[\d,]+(\.\d{1,2})?\s*$/.test(inner)) {
         // Restore the dollar signs — this is currency, not LaTeX
+        return <span key={i}>{part}</span>;
+      }
+      // Skip $5, $10, $3.50, $12.99 etc (currency with optional cents)
+      if (/^\s*\d+(\.\d{1,2})?\s*$/.test(inner)) {
         return <span key={i}>{part}</span>;
       }
       // Skip if it's a plain word or short text without any LaTeX markers
