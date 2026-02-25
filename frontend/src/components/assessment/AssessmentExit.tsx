@@ -19,7 +19,8 @@ const AssessmentExit: React.FC = () => {
     sessionStorage.removeItem('selected_subject');
     sessionStorage.removeItem('assessmentSubject');
     sessionStorage.removeItem('active_assessment');
-    history.push('/app/dev-login?v=4');
+    sessionStorage.removeItem('onboarding_complete');
+    history.push('/app');
   };
 
   const handleBackHome = () => {
@@ -56,11 +57,6 @@ const AssessmentExit: React.FC = () => {
             <p className="text-base text-gray-800 dark:text-gray-200">
               You've exited the assessment. Your progress has been saved.
             </p>
-            {assessmentId && (
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                Assessment ID: <code className="font-mono text-xs">{assessmentId}</code>
-              </p>
-            )}
           </div>
 
           {/* Action buttons */}

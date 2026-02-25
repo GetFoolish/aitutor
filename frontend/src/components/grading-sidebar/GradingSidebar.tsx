@@ -360,7 +360,7 @@ export default function GradingSidebar({ open, onToggle, currentSkill }: Grading
                         {/* Overall Grade Display */}
                         {!isLoading && overallGrade && (
                             <div
-                                className="grading-card-surface mb-4 border-[4px] border-black dark:border-white bg-[#FFD93D] dark:bg-[#FFD93D] p-4 shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
+                                className="grading-card-surface mb-4 border-[4px] border-black dark:border-white bg-[#FFD93D] p-4 shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)]"
                                 style={{ backgroundImage: "none" }}
                                 title="Overall mastery across all skills in this subject (not just assessed skills)"
                             >

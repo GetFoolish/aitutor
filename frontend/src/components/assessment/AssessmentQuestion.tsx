@@ -638,6 +638,7 @@ const AssessmentQuestion: React.FC<Props> = ({
         btn.style.animation = 'shake-btn 0.4s ease-in-out';
         btn.addEventListener('animationend', () => { btn.style.animation = ''; }, { once: true });
       }
+      setIsSubmitting(false);
       return;
     }
 
