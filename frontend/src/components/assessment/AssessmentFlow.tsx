@@ -314,7 +314,18 @@ const AssessmentFlow: React.FC = () => {
       timersRef.current = [];
 
       if (!response) throw new Error('No response from assessment start');
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      if (!response.ok) {
+        let errorDetail = '';
+        try {
+          const errorData = await response.clone().json();
+          errorDetail = errorData.detail || errorData.error || errorData.message || '';
+        } catch {
+          errorDetail = await response.text().catch(() => '');
+        }
+        const errorMsg = `HTTP ${response.status}${errorDetail ? `: ${errorDetail}` : ''}`;
+        console.error('[AssessmentFlow] Start failed:', errorMsg);
+        throw new Error(errorMsg);
+      }
       const data = await response.json();
 
       if (data.error) {
@@ -403,10 +414,20 @@ const AssessmentFlow: React.FC = () => {
     setTotalQuestions(data.total_questions);
     setCurrentDifficulty(data.current_difficulty);
 
+    // Update session in localStorage for recovery on refresh
     if (assessmentIdRef.current) {
+      try {
+        localStorage.setItem('active_assessment', JSON.stringify({
+          assessment_id: assessmentIdRef.current,
+          subject,
+          started_at: Date.now(),
+          question_count: data.question_number || 1,
+        }));
+      } catch { /* private browsing */ }
+
       firePrefetch(assessmentIdRef.current, data.current_difficulty);
     }
-  }, [contentFingerprint, firePrefetch, totalQuestions]);
+  }, [contentFingerprint, firePrefetch, totalQuestions, subject]);
 
   const requestNextQuestion = useCallback(async (
     payload: { assessment_id: string; question_id: string; skill_id: string; is_correct: boolean },

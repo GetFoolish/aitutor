@@ -72,6 +72,11 @@ const DevLogin: React.FC = () => {
       const data = await res.json();
       jwtUtils.setToken(data.token);
 
+      // Verify token was saved before proceeding
+      if (!jwtUtils.hasToken()) {
+        throw new Error('Failed to save authentication token. Please check if localStorage is enabled.');
+      }
+
       // 2. Fire-and-forget subject switch (don't await — assessment flow retries)
       fetch(`${DASH_API_URL}/api/start-subject`, {
         method: 'POST',
@@ -80,11 +85,18 @@ const DevLogin: React.FC = () => {
           'Authorization': `Bearer ${data.token}`
         },
         body: JSON.stringify({ subject: selectedSubject, region: 'US' })
-      }).catch(() => {});
+      }).catch((err) => {
+        console.warn('[DevLogin] Subject switch failed (will retry in assessment):', err);
+        // Don't block login - assessment flow will retry
+      });
 
       // 3. Navigate via React Router — avoids full page reload blank screen (Bug #1)
       sessionStorage.setItem('onboarding_complete', 'true');
       sessionStorage.setItem('selected_subject', selectedSubject);
+
+      // Small delay to ensure localStorage writes complete before navigation
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       history.push(`/app/assessment/${selectedSubject}`);
     } catch (err: any) {
       setError(err.message || 'Login failed');
@@ -194,7 +206,11 @@ const DevLogin: React.FC = () => {
 
         {/* Name field */}
         <div style={{ marginBottom: '20px' }}>
+          <label htmlFor="student-name-input" style={{ position: 'absolute', left: '-10000px' }}>
+            Student name (optional)
+          </label>
           <input
+            id="student-name-input"
             type="text"
             className="dev-login-input"
             value={name}
@@ -202,6 +218,7 @@ const DevLogin: React.FC = () => {
             onChange={(e) => setName(e.target.value.replace(/[^\p{L}\p{N} .\-']/gu, ''))}
             onBlur={() => setName(n => n.trim())}
             placeholder="Student name (optional)"
+            aria-label="Student name (optional)"
             disabled={loading}
             onFocus={(e) => e.target.select()}
             style={{
@@ -305,7 +322,11 @@ const DevLogin: React.FC = () => {
           justifyContent: 'center',
           marginBottom: '24px'
         }}>
+          <label htmlFor="custom-subject-input" style={{ position: 'absolute', left: '-10000px' }}>
+            Enter a custom subject
+          </label>
           <input
+            id="custom-subject-input"
             type="text"
             className="dev-login-input"
             value={customSubject}
@@ -325,6 +346,7 @@ const DevLogin: React.FC = () => {
               // If 1 char or no letters, don't update selectedSubject (keep previous)
             }}
             placeholder="e.g. Geography, Music Theory, Python..."
+            aria-label="Enter a custom subject (e.g. Geography, Music Theory, Python)"
             disabled={loading}
             style={{
               padding: '14px 20px',

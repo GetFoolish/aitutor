@@ -261,6 +261,12 @@ function FloatingControlPanel({
   }, [connected]);
 
   useEffect(() => {
+    // Check if mediaDevices API is available (may not exist in some browsers/contexts)
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+      console.warn('[FloatingControlPanel] mediaDevices API not available');
+      return;
+    }
+
     navigator.mediaDevices.enumerateDevices().then((devices) => {
       const audioInputs = devices.filter(
         (device) => device.kind === "audioinput",
@@ -269,6 +275,8 @@ function FloatingControlPanel({
       if (audioInputs.length > 0) {
         setSelectedAudioDevice(audioInputs[0].deviceId);
       }
+    }).catch((err) => {
+      console.warn('[FloatingControlPanel] Failed to enumerate audio devices:', err);
     });
   }, []);
 
