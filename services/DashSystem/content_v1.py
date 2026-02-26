@@ -1663,11 +1663,11 @@ class ContentV1Engine:
                 vr = self.verifier.verify(parsed, skill_name, lesson_name, fmt, age, difficulty)
                 last_verification = vr
                 if not vr.passed:
-                    if fast_mode:
-                        # In fast mode (assessment JIT), accept unverified questions
-                        # rather than burning time on retries
+                    # In fast mode (assessment JIT), accept questions with minor issues
+                    # to avoid timeouts. Only 1-2 failures allowed.
+                    if fast_mode and len(vr.failures) <= 2:
                         logger.warning(
-                            f"[GENERATE] Fast-mode: accepting unverified question "
+                            f"[GENERATE] Fast-mode: accepting question with minor issues "
                             f"(failures={len(vr.failures)}, {vr.elapsed_ms:.0f}ms)"
                         )
                         item = parsed
