@@ -1006,7 +1006,9 @@ class ContentV1Engine:
     _MATH_ONLY_WIDGETS = {"expression", "numeric-input"}
     # Subjects where math-only widgets are acceptable
     _STEM_SUBJECTS = {"math", "science", "python", "physics", "chemistry",
-                      "astronomy", "astrophysics", "statistics", "economics"}
+                      "astronomy", "astrophysics", "statistics", "economics",
+                      "geography", "geology", "meteorology", "biology",
+                      "engineering", "computer science", "data science"}
     # Content patterns that indicate off-topic phonics/counting in non-English subjects
     _PHONICS_PATTERNS = re.compile(
         r"how many (?:letters|syllables)|count the letters|spell the word|"
