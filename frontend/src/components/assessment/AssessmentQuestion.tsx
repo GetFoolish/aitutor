@@ -178,10 +178,10 @@ const AssessmentQuestion: React.FC<Props> = ({
   const ultraCompactViewport = viewportHeight <= 800;
   const contentZoom =
     viewportHeight <= 700 ? 0.9 :
-    viewportHeight <= 760 ? 0.94 :
-    viewportHeight <= 840 ? 0.96 :
-    viewportHeight <= 920 ? 0.98 :
-    1;
+      viewportHeight <= 760 ? 0.94 :
+        viewportHeight <= 840 ? 0.96 :
+          viewportHeight <= 920 ? 0.98 :
+            1;
   const actionDockStyle: React.CSSProperties = {
     position: 'relative',
     left: 0,
@@ -215,8 +215,22 @@ const AssessmentQuestion: React.FC<Props> = ({
     setKeScore(null);
     setPendingCorrect(null);
     setAutoFitZoom(1);
+    setIsNextTriggered(false);
     startTimeRef.current = Date.now();
   }, [question]);
+
+  // Auto-advance to next question after answer submission
+  useEffect(() => {
+    if (isAnswered && pendingCorrect !== null) {
+      // Auto-advance after 3.5s if correct, or 8s if incorrect (to allow reading explanation)
+      // If user clicks manually, this timer will be cleared by the 'pendingCorrect' change
+      const delay = pendingCorrect ? 3500 : 8000;
+      const timer = setTimeout(() => {
+        handleNext();
+      }, delay);
+      return () => clearTimeout(timer);
+    }
+  }, [isAnswered, pendingCorrect]);
 
   useEffect(() => {
     const onResize = () => setViewportHeight(window.innerHeight);
@@ -312,9 +326,12 @@ const AssessmentQuestion: React.FC<Props> = ({
     };
   }, [question, questionNumber, isAnswered, compactViewport, contentZoom]);
 
+  const [isNextTriggered, setIsNextTriggered] = useState(false);
+
   // Handle "Next Question" — deferred until student clicks the button
   const handleNext = () => {
-    if (pendingCorrect !== null) {
+    if (pendingCorrect !== null && !isNextTriggered) {
+      setIsNextTriggered(true);
       onAnswer(pendingCorrect);
       setPendingCorrect(null);
     }
@@ -324,204 +341,204 @@ const AssessmentQuestion: React.FC<Props> = ({
   const sanitizedQuestion = useMemo(() => {
     if (!question?.question) return question;
     try {
-    const q = { ...question, question: { ...question.question } };
-    // Strip STANDALONE image-reference sentences (not mid-sentence references)
-    // Only strip when the reference is the entire sentence to avoid breaking question text
-    if (typeof q.question.content === 'string') {
-      q.question.content = q.question.content
-        .replace(/^(?:look at|examine|see|observe|study|check out)\s+(?:the\s+)?(?:picture|image|diagram|illustration|photo|figure)s?\b[^.!?\n]*[.!?]\s*/gim, '')
-        .trim();
-    }
-    const hasRadioWidget = Object.values(q.question.widgets || {}).some((w: any) => w?.type === 'radio');
-    if (hasRadioWidget && typeof q.question.content === 'string') {
-      q.question.content = q.question.content
-        .replace(/^\s*choose\s+\d+\s+answers?:\s*$/gim, '')
-        .replace(/^\s*choose\s+one\s+answer:\s*$/gim, '')
-        .replace(/\n{3,}/g, '\n\n')
-        .trim();
-    }
-    // Ensure every widget has a placeholder in content (definition+radio combo fix)
-    if (q.question.widgets && typeof q.question.content === 'string') {
-      for (const wname of Object.keys(q.question.widgets)) {
-        const wtype = (q.question.widgets[wname] as any)?.type;
-        if (wtype === 'image') continue;
-        if (!q.question.content.includes(`[[☃ ${wname}]]`)) {
-          q.question.content = q.question.content.trimEnd() + `\n\n[[☃ ${wname}]]`;
+      const q = { ...question, question: { ...question.question } };
+      // Strip STANDALONE image-reference sentences (not mid-sentence references)
+      // Only strip when the reference is the entire sentence to avoid breaking question text
+      if (typeof q.question.content === 'string') {
+        q.question.content = q.question.content
+          .replace(/^(?:look at|examine|see|observe|study|check out)\s+(?:the\s+)?(?:picture|image|diagram|illustration|photo|figure)s?\b[^.!?\n]*[.!?]\s*/gim, '')
+          .trim();
+      }
+      const hasRadioWidget = Object.values(q.question.widgets || {}).some((w: any) => w?.type === 'radio');
+      if (hasRadioWidget && typeof q.question.content === 'string') {
+        q.question.content = q.question.content
+          .replace(/^\s*choose\s+\d+\s+answers?:\s*$/gim, '')
+          .replace(/^\s*choose\s+one\s+answer:\s*$/gim, '')
+          .replace(/\n{3,}/g, '\n\n')
+          .trim();
+      }
+      // Ensure every widget has a placeholder in content (definition+radio combo fix)
+      if (q.question.widgets && typeof q.question.content === 'string') {
+        for (const wname of Object.keys(q.question.widgets)) {
+          const wtype = (q.question.widgets[wname] as any)?.type;
+          if (wtype === 'image') continue;
+          if (!q.question.content.includes(`[[☃ ${wname}]]`)) {
+            q.question.content = q.question.content.trimEnd() + `\n\n[[☃ ${wname}]]`;
+          }
         }
       }
-    }
-    // Patch missing required widget fields
-    if (q.question.widgets) {
-      q.question.widgets = { ...q.question.widgets };
-      for (const [key, widget] of Object.entries(q.question.widgets)) {
-        const w = widget as any;
-        // Radio: options is an array instead of {choices: [...]}
-        if (w?.type === 'radio' && Array.isArray(w.options)) {
-          const multipleSelect = w.multipleSelect || false;
-          const randomize = w.randomize || false;
-          const { multipleSelect: _ms, randomize: _rz, ...rest } = w;
-          q.question.widgets[key] = {
-            ...rest,
-            options: { choices: sanitizeChoicesArray(w.options), multipleSelect, randomize },
-          };
-        } else if (w?.type === 'radio' && w.options && Array.isArray(w.options.choices)) {
-          q.question.widgets[key] = {
-            ...w,
-            options: {
-              ...w.options,
-              choices: sanitizeChoicesArray(w.options.choices),
-              noneOfTheAbove: false,
-              // Ensure no pre-selected state from AI generation
-              selectedChoiceIds: undefined,
-              deselectEnabled: false,
-            },
-          };
-        }
-        if (w?.type === 'numeric-input' && w.options) {
-          // Ensure answers is always an array (prevents Perseus linter "answers is not iterable" crash)
-          const answers = Array.isArray(w.options.answers) ? w.options.answers : [];
-          q.question.widgets[key] = {
-            ...w,
-            options: { coefficient: false, static: false, labelText: '', size: 'normal', ...w.options, answers },
-          };
-        }
-        // Orderer: normalize string options to {content: string} objects
-        if (w?.type === 'orderer' && w.options) {
-          const fixArr = (arr: any[]) => arr?.map((item: any) =>
-            typeof item === 'string' ? { content: item } : item
-          );
-          q.question.widgets[key] = {
-            ...w,
-            options: {
-              ...w.options,
-              options: fixArr(w.options.options || []),
-              correctOptions: fixArr(w.options.correctOptions || []),
-            },
-          };
-        }
-        // Expression: convert to numeric-input to avoid MathInput crash (string ref issue in React 18)
-        if (w?.type === 'expression' && w.options) {
-          const answerForms = w.options.answerForms || [];
-          const firstAnswer = (answerForms[0]?.value || '').toString().trim();
-          const parsed = parseFloat(firstAnswer);
-          if (!firstAnswer || isNaN(parsed)) {
-            // Can't safely convert to numeric-input — skip conversion,
-            // leave as expression (Perseus will render a text input fallback).
+      // Patch missing required widget fields
+      if (q.question.widgets) {
+        q.question.widgets = { ...q.question.widgets };
+        for (const [key, widget] of Object.entries(q.question.widgets)) {
+          const w = widget as any;
+          // Radio: options is an array instead of {choices: [...]}
+          if (w?.type === 'radio' && Array.isArray(w.options)) {
+            const multipleSelect = w.multipleSelect || false;
+            const randomize = w.randomize || false;
+            const { multipleSelect: _ms, randomize: _rz, ...rest } = w;
+            q.question.widgets[key] = {
+              ...rest,
+              options: { choices: sanitizeChoicesArray(w.options), multipleSelect, randomize },
+            };
+          } else if (w?.type === 'radio' && w.options && Array.isArray(w.options.choices)) {
+            q.question.widgets[key] = {
+              ...w,
+              options: {
+                ...w.options,
+                choices: sanitizeChoicesArray(w.options.choices),
+                noneOfTheAbove: false,
+                // Ensure no pre-selected state from AI generation
+                selectedChoiceIds: undefined,
+                deselectEnabled: false,
+              },
+            };
+          }
+          if (w?.type === 'numeric-input' && w.options) {
+            // Ensure answers is always an array (prevents Perseus linter "answers is not iterable" crash)
+            const answers = Array.isArray(w.options.answers) ? w.options.answers : [];
+            q.question.widgets[key] = {
+              ...w,
+              options: { coefficient: false, static: false, labelText: '', size: 'normal', ...w.options, answers },
+            };
+          }
+          // Orderer: normalize string options to {content: string} objects
+          if (w?.type === 'orderer' && w.options) {
+            const fixArr = (arr: any[]) => arr?.map((item: any) =>
+              typeof item === 'string' ? { content: item } : item
+            );
+            q.question.widgets[key] = {
+              ...w,
+              options: {
+                ...w.options,
+                options: fixArr(w.options.options || []),
+                correctOptions: fixArr(w.options.correctOptions || []),
+              },
+            };
+          }
+          // Expression: convert to numeric-input to avoid MathInput crash (string ref issue in React 18)
+          if (w?.type === 'expression' && w.options) {
+            const answerForms = w.options.answerForms || [];
+            const firstAnswer = (answerForms[0]?.value || '').toString().trim();
+            const parsed = parseFloat(firstAnswer);
+            if (!firstAnswer || isNaN(parsed)) {
+              // Can't safely convert to numeric-input — skip conversion,
+              // leave as expression (Perseus will render a text input fallback).
+              continue;
+            }
+            q.question.widgets[key] = {
+              type: 'numeric-input',
+              graded: true,
+              options: {
+                coefficient: false,
+                static: false,
+                labelText: '',
+                size: 'normal',
+                answers: [{
+                  status: 'correct',
+                  value: parsed,
+                  maxError: 0.01,
+                  simplify: 'optional',
+                  strict: false,
+                  message: '',
+                }],
+              },
+            };
             continue;
           }
-          q.question.widgets[key] = {
-            type: 'numeric-input',
-            graded: true,
-            options: {
-              coefficient: false,
-              static: false,
-              labelText: '',
-              size: 'normal',
-              answers: [{
-                status: 'correct',
-                value: parsed,
-                maxError: 0.01,
-                simplify: 'optional',
-                strict: false,
-                message: '',
-              }],
-            },
-          };
-          continue;
-        }
-        // Definition: inline the definition text to avoid popover dismiss bugs
-        // The definition widget's Wonder Blocks Popover has dismiss issues,
-        // so we render definition text directly in content and remove the widget.
-        if (w?.type === 'definition' && w.options) {
-          const defText = (w.options.definition || '').trim();
-          const prompt = (w.options.togglePrompt || 'Definition').trim();
-          const placeholder = `[[☃ ${key}]]`;
-          if (defText && typeof q.question.content === 'string' && q.question.content.includes(placeholder)) {
-            q.question.content = q.question.content.replace(
-              placeholder,
-              ` (*${prompt}:* ${defText}) `
-            );
-            delete q.question.widgets[key];
-            continue; // Skip further processing for this widget
+          // Definition: inline the definition text to avoid popover dismiss bugs
+          // The definition widget's Wonder Blocks Popover has dismiss issues,
+          // so we render definition text directly in content and remove the widget.
+          if (w?.type === 'definition' && w.options) {
+            const defText = (w.options.definition || '').trim();
+            const prompt = (w.options.togglePrompt || 'Definition').trim();
+            const placeholder = `[[☃ ${key}]]`;
+            if (defText && typeof q.question.content === 'string' && q.question.content.includes(placeholder)) {
+              q.question.content = q.question.content.replace(
+                placeholder,
+                ` (*${prompt}:* ${defText}) `
+              );
+              delete q.question.widgets[key];
+              continue; // Skip further processing for this widget
+            }
+            // Fallback: if no definition text, keep widget but add required fields
+            q.question.widgets[key] = {
+              ...w,
+              options: {
+                togglePrompt: 'Definition',
+                definition: '',
+                static: false,
+                ...w.options,
+              },
+            };
           }
-          // Fallback: if no definition text, keep widget but add required fields
-          q.question.widgets[key] = {
-            ...w,
-            options: {
-              togglePrompt: 'Definition',
-              definition: '',
-              static: false,
-              ...w.options,
-            },
-          };
-        }
-        // Dropdown: ensure placeholder and static fields
-        if (w?.type === 'dropdown' && w.options) {
-          q.question.widgets[key] = {
-            ...w,
-            options: { placeholder: 'Select an answer', static: false, ...w.options, choices: sanitizeChoicesArray(w.options.choices || []) },
-          };
-        }
-        // Matcher: leave as-is — BROKEN_WIDGET_TYPES will trigger "Skip" UX
-        // Sorter: ensure layout
-        if (w?.type === 'sorter' && w.options) {
-          q.question.widgets[key] = {
-            ...w,
-            options: {
-              layout: 'horizontal',
-              padding: true,
-              ...w.options,
-            },
-          };
-        }
-        // Categorizer: ensure required fields
-        if (w?.type === 'categorizer' && w.options) {
-          q.question.widgets[key] = {
-            ...w,
-            options: {
-              randomizeItems: false,
-              static: false,
-              highlightLint: false,
-              ...w.options,
-            },
-          };
-        }
-        // Number-line: ensure required fields
-        if (w?.type === 'number-line' && w.options) {
-          q.question.widgets[key] = {
-            ...w,
-            options: {
-              labelRange: '',
-              initialX: w.options.correctX ?? 0,
-              tickStep: 1,
-              labelStyle: 'decimal',
-              labelTicks: true,
-              isInequality: false,
-              snapDivisions: 2,
-              correctRel: 'eq',
-              numDivisions: 10,
-              divisionRange: w.options.range || [0, 10],
-              isTickCtrl: false,
-              static: false,
-              ...w.options,
-            },
-          };
-        }
-        // Table: ensure required fields
-        if (w?.type === 'table' && w.options) {
-          q.question.widgets[key] = {
-            ...w,
-            options: {
-              headers: [],
-              rows: 4,
-              columns: 2,
-              ...w.options,
-            },
-          };
+          // Dropdown: ensure placeholder and static fields
+          if (w?.type === 'dropdown' && w.options) {
+            q.question.widgets[key] = {
+              ...w,
+              options: { placeholder: 'Select an answer', static: false, ...w.options, choices: sanitizeChoicesArray(w.options.choices || []) },
+            };
+          }
+          // Matcher: leave as-is — BROKEN_WIDGET_TYPES will trigger "Skip" UX
+          // Sorter: ensure layout
+          if (w?.type === 'sorter' && w.options) {
+            q.question.widgets[key] = {
+              ...w,
+              options: {
+                layout: 'horizontal',
+                padding: true,
+                ...w.options,
+              },
+            };
+          }
+          // Categorizer: ensure required fields
+          if (w?.type === 'categorizer' && w.options) {
+            q.question.widgets[key] = {
+              ...w,
+              options: {
+                randomizeItems: false,
+                static: false,
+                highlightLint: false,
+                ...w.options,
+              },
+            };
+          }
+          // Number-line: ensure required fields
+          if (w?.type === 'number-line' && w.options) {
+            q.question.widgets[key] = {
+              ...w,
+              options: {
+                labelRange: '',
+                initialX: w.options.correctX ?? 0,
+                tickStep: 1,
+                labelStyle: 'decimal',
+                labelTicks: true,
+                isInequality: false,
+                snapDivisions: 2,
+                correctRel: 'eq',
+                numDivisions: 10,
+                divisionRange: w.options.range || [0, 10],
+                isTickCtrl: false,
+                static: false,
+                ...w.options,
+              },
+            };
+          }
+          // Table: ensure required fields
+          if (w?.type === 'table' && w.options) {
+            q.question.widgets[key] = {
+              ...w,
+              options: {
+                headers: [],
+                rows: 4,
+                columns: 2,
+                ...w.options,
+              },
+            };
+          }
         }
       }
-    }
-    return q;
+      return q;
     } catch (err) {
       console.error('[AssessmentQuestion] Sanitization failed:', err);
       return question;
@@ -599,11 +616,11 @@ const AssessmentQuestion: React.FC<Props> = ({
   const contentZoomWrapperStyle: React.CSSProperties | undefined =
     resolvedContentZoom < 1
       ? ({
-          zoom: resolvedContentZoom,
-          width: '100%',
-          maxWidth: '100%',
-          boxSizing: 'border-box',
-        } as React.CSSProperties)
+        zoom: resolvedContentZoom,
+        width: '100%',
+        maxWidth: '100%',
+        boxSizing: 'border-box',
+      } as React.CSSProperties)
       : undefined;
   const contentBlockStyle: React.CSSProperties = {
     display: 'flex',
@@ -614,12 +631,12 @@ const AssessmentQuestion: React.FC<Props> = ({
     transformOrigin: 'top left',
     ...(resolvedContentZoom < 1
       ? {
-          // Use CSS zoom (not transform) — it reflows layout so width stays correct
-          // and doesn't create a horizontal scrollbar from overcompensated width.
-          zoom: resolvedContentZoom,
-          width: '100%',
-          maxWidth: '100%',
-        }
+        // Use CSS zoom (not transform) — it reflows layout so width stays correct
+        // and doesn't create a horizontal scrollbar from overcompensated width.
+        zoom: resolvedContentZoom,
+        width: '100%',
+        maxWidth: '100%',
+      }
       : { width: '100%' }),
   };
   // Detect if question needs audio (phonics/listening questions)
@@ -632,7 +649,7 @@ const AssessmentQuestion: React.FC<Props> = ({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (isAnswered || isSubmitting) return; // Prevent double-submit
     if (!rendererRef.current) {
       console.error('[AssessmentQuestion] rendererRef is null — widget still loading, please wait');
@@ -643,129 +660,131 @@ const AssessmentQuestion: React.FC<Props> = ({
     }
 
     try {
-    setIsSubmitting(true);
+      setIsSubmitting(true);
+      // Small delay to allow the "Checking..." spinner to register on-screen before locking UI
+      await new Promise(resolve => setTimeout(resolve, 350));
 
-    const userInput = rendererRef.current.getUserInput();
-    const questionData = sanitizedQuestion.question;
+      const userInput = rendererRef.current.getUserInput();
+      const questionData = sanitizedQuestion.question;
 
-    // Empty submission guard
-    const hasInput = hasUserInput(questionData.widgets || {}, userInput);
-    console.log('[AssessmentQuestion] Checking input:', { hasInput, userInput, widgets: questionData.widgets });
+      // Empty submission guard
+      const hasInput = hasUserInput(questionData.widgets || {}, userInput);
+      console.log('[AssessmentQuestion] Checking input:', { hasInput, userInput, widgets: questionData.widgets });
 
-    if (!hasInput) {
-      console.log('[AssessmentQuestion] Empty submission blocked - showing warning');
-      setEmptyWarning(true);
-      setTimeout(() => setEmptyWarning(false), 3500);
-      setIsSubmitting(false); // Ensure button is re-enabled
-      // Shake the submit button for visual feedback
-      const btn = document.querySelector('[data-testid="assessment-submit-button"]') as HTMLElement;
-      if (btn) {
-        btn.style.animation = 'shake-btn 0.4s ease-in-out';
-        btn.addEventListener('animationend', () => { btn.style.animation = ''; }, { once: true });
-      }
-      setIsSubmitting(false);
-      return;
-    }
-
-    // Custom scoring via shared utility (Perseus doesn't handle our AI answer format)
-    const scoringResult = scorePerseusQuestion(questionData.widgets || {}, userInput);
-
-    const isCorrect = scoringResult.correct;
-    console.log('[AssessmentQuestion] Custom score:', isCorrect, `(${scoringResult.correctCount}/${scoringResult.scoreableCount})`);
-
-    const scoreResult = {
-      type: 'points' as const,
-      earned: isCorrect ? 1 : 0,
-      total: 1,
-      message: null
-    };
-
-    const maxCompatGuess = [rendererRef.current.getUserInputLegacy(), []];
-    const score = keScoreFromPerseusScore(
-      scoreResult,
-      maxCompatGuess,
-      rendererRef.current.getSerializedState().question,
-    );
-
-    setIsAnswered(true);
-    setShowFeedback(true);
-    setKeScore(score);
-    setPendingCorrect(score.correct);
-
-    // Mark choices with correct/incorrect feedback for visual highlighting
-    setTimeout(() => {
-      const container = document.getElementById('question-content-container');
-      if (!container) return;
-
-      // Perseus renders choices as div.choice inside a fieldset
-      // Try multiple selectors to handle different Perseus DOM structures
-      let choiceElements = container.querySelectorAll('.perseus-widget-radio-fieldset .choice');
-      if (choiceElements.length === 0) {
-        choiceElements = container.querySelectorAll('li.perseus-radio-option');
-      }
-      if (choiceElements.length === 0) {
-        choiceElements = container.querySelectorAll('[class*="choice"]');
+      if (!hasInput) {
+        console.log('[AssessmentQuestion] Empty submission blocked - showing warning');
+        setEmptyWarning(true);
+        setTimeout(() => setEmptyWarning(false), 3500);
+        setIsSubmitting(false); // Ensure button is re-enabled
+        // Shake the submit button for visual feedback
+        const btn = document.querySelector('[data-testid="assessment-submit-button"]') as HTMLElement;
+        if (btn) {
+          btn.style.animation = 'shake-btn 0.4s ease-in-out';
+          btn.addEventListener('animationend', () => { btn.style.animation = ''; }, { once: true });
+        }
+        setIsSubmitting(false);
+        return;
       }
 
-      const widgets = questionData.widgets || {};
+      // Custom scoring via shared utility (Perseus doesn't handle our AI answer format)
+      const scoringResult = scorePerseusQuestion(questionData.widgets || {}, userInput);
 
-      // Find radio widget
-      const radioWidgetKey = Object.keys(widgets).find(key => widgets[key]?.type === 'radio');
-      if (radioWidgetKey && widgets[radioWidgetKey]?.options?.choices) {
-        const choices = widgets[radioWidgetKey].options.choices;
-        // Get user selection — could be choicesSelected (boolean array) or selectedChoiceIds
-        const rawInput = (userInput as Record<string, any>)[radioWidgetKey] || {};
-        const userSelection = rawInput.choicesSelected || [];
-        const selectedIds = rawInput.selectedChoiceIds || [];
+      const isCorrect = scoringResult.correct;
+      console.log('[AssessmentQuestion] Custom score:', isCorrect, `(${scoringResult.correctCount}/${scoringResult.scoreableCount})`);
 
-        choiceElements.forEach((el, idx) => {
-          if (idx < choices.length) {
-            const choice = choices[idx];
-            // Check boolean array first, fall back to selectedChoiceIds
-            const isUserSelected = userSelection[idx] === true ||
-              selectedIds.includes(String(idx)) ||
-              selectedIds.includes(`choice-${idx}`);
+      const scoreResult = {
+        type: 'points' as const,
+        earned: isCorrect ? 1 : 0,
+        total: 1,
+        message: null
+      };
 
-            if (choice?.correct) {
-              // Mark correct answers with green
-              el.setAttribute('data-feedback', 'correct');
-              // Add a visible "✓ Correct Answer" label if user got it wrong
-              if (!isCorrect && !el.querySelector('.correct-answer-label')) {
-                const label = document.createElement('div');
-                label.className = 'correct-answer-label';
-                label.style.cssText = 'margin-top:6px;padding:3px 8px;background:#166534;color:#fff;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;display:inline-block;border:2px solid #000;box-sizing:border-box;';
-                label.textContent = '✓ Correct Answer';
-                // Insert as last child to keep it inside the choice container
-                el.appendChild(label);
-              }
-            } else if (isUserSelected && !choice?.correct) {
-              // Mark user's incorrect selection with red
-              el.setAttribute('data-feedback', 'incorrect');
-              if (!el.querySelector('.incorrect-answer-label')) {
-                const label = document.createElement('div');
-                label.className = 'incorrect-answer-label';
-                label.style.cssText = 'margin-top:6px;padding:3px 8px;background:#991B1B;color:#fff;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;display:inline-block;border:2px solid #000;box-sizing:border-box;';
-                label.textContent = '✗ Your Answer';
-                // Insert as last child to keep it inside the choice container
-                el.appendChild(label);
+      const maxCompatGuess = [rendererRef.current.getUserInputLegacy(), []];
+      const score = keScoreFromPerseusScore(
+        scoreResult,
+        maxCompatGuess,
+        rendererRef.current.getSerializedState().question,
+      );
+
+      setIsAnswered(true);
+      setShowFeedback(true);
+      setKeScore(score);
+      setPendingCorrect(score.correct);
+
+      // Mark choices with correct/incorrect feedback for visual highlighting
+      setTimeout(() => {
+        const container = document.getElementById('question-content-container');
+        if (!container) return;
+
+        // Perseus renders choices as div.choice inside a fieldset
+        // Try multiple selectors to handle different Perseus DOM structures
+        let choiceElements = container.querySelectorAll('.perseus-widget-radio-fieldset .choice');
+        if (choiceElements.length === 0) {
+          choiceElements = container.querySelectorAll('li.perseus-radio-option');
+        }
+        if (choiceElements.length === 0) {
+          choiceElements = container.querySelectorAll('[class*="choice"]');
+        }
+
+        const widgets = questionData.widgets || {};
+
+        // Find radio widget
+        const radioWidgetKey = Object.keys(widgets).find(key => widgets[key]?.type === 'radio');
+        if (radioWidgetKey && widgets[radioWidgetKey]?.options?.choices) {
+          const choices = widgets[radioWidgetKey].options.choices;
+          // Get user selection — could be choicesSelected (boolean array) or selectedChoiceIds
+          const rawInput = (userInput as Record<string, any>)[radioWidgetKey] || {};
+          const userSelection = rawInput.choicesSelected || [];
+          const selectedIds = rawInput.selectedChoiceIds || [];
+
+          choiceElements.forEach((el, idx) => {
+            if (idx < choices.length) {
+              const choice = choices[idx];
+              // Check boolean array first, fall back to selectedChoiceIds
+              const isUserSelected = userSelection[idx] === true ||
+                selectedIds.includes(String(idx)) ||
+                selectedIds.includes(`choice-${idx}`);
+
+              if (choice?.correct) {
+                // Mark correct answers with green
+                el.setAttribute('data-feedback', 'correct');
+                // Add a visible "✓ Correct Answer" label if user got it wrong
+                if (!isCorrect && !el.querySelector('.correct-answer-label')) {
+                  const label = document.createElement('div');
+                  label.className = 'correct-answer-label';
+                  label.style.cssText = 'margin-top:6px;padding:3px 8px;background:#166534;color:#fff;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;display:inline-block;border:2px solid #000;box-sizing:border-box;';
+                  label.textContent = '✓ Correct Answer';
+                  // Insert as last child to keep it inside the choice container
+                  el.appendChild(label);
+                }
+              } else if (isUserSelected && !choice?.correct) {
+                // Mark user's incorrect selection with red
+                el.setAttribute('data-feedback', 'incorrect');
+                if (!el.querySelector('.incorrect-answer-label')) {
+                  const label = document.createElement('div');
+                  label.className = 'incorrect-answer-label';
+                  label.style.cssText = 'margin-top:6px;padding:3px 8px;background:#991B1B;color:#fff;font-weight:900;font-size:11px;text-transform:uppercase;letter-spacing:0.08em;display:inline-block;border:2px solid #000;box-sizing:border-box;';
+                  label.textContent = '✗ Your Answer';
+                  // Insert as last child to keep it inside the choice container
+                  el.appendChild(label);
+                }
               }
             }
-          }
-        });
-      }
-    }, 200); // Delay to ensure Perseus DOM is fully rendered before applying feedback
+          });
+        }
+      }, 200); // Delay to ensure Perseus DOM is fully rendered before applying feedback
 
-    // Fire-and-forget analytics reporting
-    const questionId = question?.dash_metadata?.dash_question_id || `assessment_q_${questionNumber}`;
-    const skillId = (question?.dash_metadata?.skill_ids || [])[0];
-    reportQuestionAnalytics({
-      question_id: questionId,
-      correct: score.correct,
-      hints_used: hintsShown,
-      time_seconds: (Date.now() - startTimeRef.current) / 1000,
-      skipped: false,
-      skill_id: skillId,
-    });
+      // Fire-and-forget analytics reporting
+      const questionId = question?.dash_metadata?.dash_question_id || `assessment_q_${questionNumber}`;
+      const skillId = (question?.dash_metadata?.skill_ids || [])[0];
+      reportQuestionAnalytics({
+        question_id: questionId,
+        correct: score.correct,
+        hints_used: hintsShown,
+        time_seconds: (Date.now() - startTimeRef.current) / 1000,
+        skipped: false,
+        skill_id: skillId,
+      });
 
     } catch (err) {
       console.error('[AssessmentQuestion] Scoring error:', err);
@@ -868,7 +887,7 @@ const AssessmentQuestion: React.FC<Props> = ({
           {/* Progressive Hints */}
           {!isAnswered && question?.hints?.length > 0 && (
             <div className={`${ultraCompactViewport ? 'mb-1' : compactViewport ? 'mb-2' : 'mb-3'}`}
-                 style={{ maxHeight: ultraCompactViewport ? '120px' : compactViewport ? '180px' : '240px', overflowY: 'auto' }}>
+              style={{ maxHeight: ultraCompactViewport ? '120px' : compactViewport ? '180px' : '240px', overflowY: 'auto' }}>
               {hintsShown > 0 && (
                 <div className={ultraCompactViewport ? 'mb-1' : 'mb-2'}>
                   {(question.hints || []).slice(0, hintsShown).map((hint: any, idx: number) => (
@@ -928,9 +947,16 @@ const AssessmentQuestion: React.FC<Props> = ({
             tabIndex={0}
             onClick={handleSubmit}
             disabled={isAnswered || isSubmitting}
-            className={`${ultraCompactViewport ? 'py-2.5 px-4 text-sm' : compactViewport ? 'py-3 px-5 text-base' : 'py-5 px-8 text-lg'} w-full font-black uppercase tracking-widest bg-[#FFD93D] text-black border-[4px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)]`}
+            className={`${ultraCompactViewport ? 'py-2.5 px-4 text-sm' : compactViewport ? 'py-3 px-5 text-base' : 'py-5 px-8 text-lg'} w-full font-black uppercase tracking-widest bg-[#FFD93D] text-black border-[4px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0_0_rgba(0,0,0,1)] flex items-center justify-center gap-2`}
           >
-            Submit Answer
+            {isSubmitting ? (
+              <>
+                <div className="w-5 h-5 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
+                <span>Checking...</span>
+              </>
+            ) : (
+              'Submit Answer'
+            )}
           </button>
           {emptyWarning && (
             <div
@@ -955,10 +981,41 @@ const AssessmentQuestion: React.FC<Props> = ({
           <button
             data-testid="assessment-next-button"
             onClick={handleNext}
-            className={`${ultraCompactViewport ? 'py-2.5 px-4 text-sm' : compactViewport ? 'py-3 px-5 text-base' : 'py-5 px-8 text-lg'} w-full font-black uppercase tracking-widest bg-[#FFD93D] text-black border-[4px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:bg-[#FFE066] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none`}
+            disabled={isNextTriggered}
+            className={`${ultraCompactViewport ? 'py-2.5 px-4 text-sm' : compactViewport ? 'py-3 px-5 text-base' : 'py-5 px-8 text-lg'} w-full font-black uppercase tracking-widest bg-[#FFD93D] text-black border-[4px] border-black dark:border-white cursor-pointer shadow-[4px_4px_0_0_rgba(0,0,0,1)] dark:shadow-[4px_4px_0_0_rgba(255,255,255,0.3)] transition-all duration-100 font-sans hover:bg-[#FFE066] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] active:translate-x-1 active:translate-y-1 active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
           >
-            {isFinalQuestion ? 'Finish Assessment' : 'Next Question'}
+            {isNextTriggered ? (
+              <>
+                <div className="w-5 h-5 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
+                <span>{isFinalQuestion ? 'Finishing...' : 'Loading...'}</span>
+              </>
+            ) : (
+              isFinalQuestion ? 'Finish Assessment' : 'Next Question'
+            )}
           </button>
+
+          {/* Auto-advance indicator */}
+          <div style={{
+            marginTop: '8px',
+            height: '4px',
+            backgroundColor: '#eee',
+            width: '100%',
+            overflow: 'hidden',
+            border: '1px solid #000'
+          }}>
+            <div style={{
+              height: '100%',
+              backgroundColor: pendingCorrect ? '#4ECDC4' : '#FFD93D',
+              width: '100%',
+              animation: `auto-advance-bar ${pendingCorrect ? 3.5 : 8}s linear forwards`
+            }} />
+          </div>
+          <style>{`
+            @keyframes auto-advance-bar {
+              from { width: 100%; }
+              to { width: 0%; }
+            }
+          `}</style>
         </div>
       )}
 

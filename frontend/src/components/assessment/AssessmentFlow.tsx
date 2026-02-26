@@ -103,7 +103,7 @@ const AssessmentFlow: React.FC = () => {
     apiUtils.post(`${DASH_API_URL}/assessment/prefetch`, {
       assessment_id: aId,
       current_difficulty: difficulty,
-    }).catch(() => {}); // Silently ignore — prefetch is best-effort
+    }).catch(() => { }); // Silently ignore — prefetch is best-effort
   }, []);
 
   // Warn before closing tab during active assessment
@@ -412,7 +412,7 @@ const AssessmentFlow: React.FC = () => {
     payload: { assessment_id: string; question_id: string; skill_id: string; is_correct: boolean },
   ): Promise<Response> => {
     // Fast-settle policy: avoid long blocking spinner loops on next-question fetch.
-    const NEXT_REQUEST_TIMEOUTS_MS = [1200, 1500];
+    const NEXT_REQUEST_TIMEOUTS_MS = [10000, 15000];
 
     for (let attempt = 0; attempt < NEXT_REQUEST_TIMEOUTS_MS.length; attempt += 1) {
       const timeoutMs = NEXT_REQUEST_TIMEOUTS_MS[attempt];
@@ -453,17 +453,33 @@ const AssessmentFlow: React.FC = () => {
     throw new Error('HTTP 503');
   }, []);
 
-  const retryPendingNextQuestion = useCallback(async () => {
-    const payload = pendingAnswerRef.current;
-    if (!payload || submitting) return;
-
+  // Immediate feedback on submit/next
+  const triggerSubmittingState = useCallback(() => {
     setSubmitting(true);
     setShowSubmittingOverlay(false);
     if (submitOverlayTimerRef.current) {
       clearTimeout(submitOverlayTimerRef.current);
     }
-    submitOverlayTimerRef.current = setTimeout(() => setShowSubmittingOverlay(true), 350);
+    // Show overlay after a short delay (shorter now for better responsiveness)
+    submitOverlayTimerRef.current = setTimeout(() => setShowSubmittingOverlay(true), 200);
+
+    // Safety: ensure loader doesn't run infinitely if something goes wrong in the browser
+    const safetyTimeout = setTimeout(() => {
+      setSubmitting(false);
+      setShowSubmittingOverlay(false);
+      setNextQuestionError('Something took too long. Please try again.');
+    }, 30000); // 30s hard safety cap
+    timersRef.current.push(safetyTimeout);
+  }, []);
+
+
+  const retryPendingNextQuestion = useCallback(async () => {
+    const payload = pendingAnswerRef.current;
+    if (!payload || submitting) return;
+
+    triggerSubmittingState();
     setNextQuestionError(null);
+
 
     try {
       const response = await requestNextQuestion(payload);
@@ -473,9 +489,17 @@ const AssessmentFlow: React.FC = () => {
     } catch (err: any) {
       console.error('Assessment next retry failed:', err);
       if (err?.message === 'TIMEOUT' || String(err?.message || '').includes('HTTP 503')) {
-        setNextQuestionError('Still preparing your next question. Please retry in a moment.');
+        setNextQuestionError('Still preparing your next question. Retrying automatically...');
+        // Auto-retry after a short delay
+        setTimeout(() => {
+          retryPendingNextQuestion();
+        }, 2000);
       } else {
-        setNextQuestionError('Network issue while fetching next question. Please retry.');
+        setNextQuestionError('Network issue while fetching next question. Please check your connection.');
+        // Even on network issue, try one more time automatically after a longer delay
+        setTimeout(() => {
+          retryPendingNextQuestion();
+        }, 5000);
       }
     } finally {
       setSubmitting(false);
@@ -497,13 +521,9 @@ const AssessmentFlow: React.FC = () => {
       is_correct: isCorrect,
     };
     pendingAnswerRef.current = payload;
-    setSubmitting(true);
-    setShowSubmittingOverlay(false);
-    if (submitOverlayTimerRef.current) {
-      clearTimeout(submitOverlayTimerRef.current);
-    }
-    submitOverlayTimerRef.current = setTimeout(() => setShowSubmittingOverlay(true), 350);
+    triggerSubmittingState();
     setNextQuestionError(null);
+
 
     try {
       const response = await requestNextQuestion(payload);
@@ -513,9 +533,11 @@ const AssessmentFlow: React.FC = () => {
     } catch (err: any) {
       console.error('Assessment next failed:', err);
       if (err?.message === 'TIMEOUT' || String(err?.message || '').includes('HTTP 503')) {
-        setNextQuestionError('Still preparing your next question. Please retry in a moment.');
+        setNextQuestionError('Still preparing your next question. Retrying automatically...');
+        setTimeout(retryPendingNextQuestion, 1500);
       } else {
-        setNextQuestionError('Failed to load next question. Please retry.');
+        setNextQuestionError('Failed to load next question. Retrying...');
+        setTimeout(retryPendingNextQuestion, 3000);
       }
     } finally {
       setSubmitting(false);
@@ -526,6 +548,7 @@ const AssessmentFlow: React.FC = () => {
       }
     }
   };
+
 
   /* ----------------------------------------------------
      Render
@@ -552,7 +575,7 @@ const AssessmentFlow: React.FC = () => {
 
       <Header
         sidebarOpen={false}
-        onToggleSidebar={() => {}}
+        onToggleSidebar={() => { }}
         assessmentMode={true}
       />
 
@@ -932,43 +955,6 @@ const AssessmentFlow: React.FC = () => {
                       totalQuestions={totalQuestions}
                       onAnswer={handleAnswer}
                     />
-                    {submitting && showSubmittingOverlay && (
-                      <div
-                        style={{
-                          position: 'absolute',
-                          inset: 0,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          pointerEvents: 'none',
-                          background: 'rgba(255, 253, 245, 0.62)',
-                          backdropFilter: 'blur(1px)',
-                          zIndex: 40,
-                        }}
-                      >
-                        <div
-                          style={{
-                            textAlign: 'center',
-                            padding: '12px 18px',
-                            border: '4px solid #000000',
-                            backgroundColor: '#FFD93D',
-                            boxShadow: '4px 4px 0 #000000'
-                          }}
-                        >
-                          <span
-                            style={{
-                              fontSize: '16px',
-                              fontWeight: 800,
-                              color: '#000000',
-                              textTransform: 'uppercase',
-                              letterSpacing: '0.05em'
-                            }}
-                          >
-                            Loading next question...
-                          </span>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 )}
               </div>

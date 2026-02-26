@@ -6,6 +6,7 @@ import os
 import random
 import re
 import uuid
+import time
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
@@ -98,6 +99,65 @@ class ContentV1Engine:
         self.model = os.getenv("GEMINI_TEXT_MODEL", "gemini-2.0-flash")
         self.fast_model = os.getenv("GEMINI_FAST_MODEL", "gemini-2.0-flash")
         self.gemini_only = os.getenv("CONTENT_V1_GEMINI_ONLY", "true").lower() in {"1", "true", "yes"}
+
+        # Cooldown prevents "quota storm" when 429 RESOURCE_EXHAUSTED is hit
+        self._last_quota_error_time = 0.0
+        self._cooldown_duration = 180.0  # 3 minute cooldown for free tier limits
+        self._consecutive_errors = 0
+        self.verifier = DeterministicVerifier()
+
+    def _is_on_cooldown(self) -> bool:
+        """Check if Gemini is currently cooled down due to quota errors."""
+        if self._last_quota_error_time == 0.0:
+            return False
+        elapsed = time.time() - self._last_quota_error_time
+        if elapsed < self._cooldown_duration:
+            return True
+        # Cooldown expired
+        return False
+
+    def _record_quota_error(self):
+        """Record a 429 error and trigger/extend cooldown."""
+        self._last_quota_error_time = time.time()
+        self._consecutive_errors += 1
+        # Backoff cooldown duration if we keep hitting it
+        self._cooldown_duration = min(1800, 180 * (2 ** (self._consecutive_errors - 1)))
+        logger.warning(f"[GEMINI] Quota exceeded. Cooldown active for {self._cooldown_duration}s.")
+
+    def _reset_cooldown(self):
+        """Reset error count on successful call."""
+        if self._consecutive_errors > 0:
+            logger.info("[GEMINI] Successful call. Resetting quota error counter.")
+        self._consecutive_errors = 0
+        self._last_quota_error_time = 0.0
+        self._cooldown_duration = 180.0
+
+    def call_gemini(self, model: str, contents: Any, config: Dict[str, Any], timeout: float = 30.0) -> Any:
+        """Centralized Gemini call wrapper with cooldown and quota error detection."""
+        if not self.client:
+            raise Exception("Gemini client not initialized")
+        
+        if self._is_on_cooldown():
+            # Check if it's been long enough to retry anyway (safety valve)
+            remaining = self._cooldown_duration - (time.time() - self._last_quota_error_time)
+            raise Exception(f"Gemini is on cooldown due to quota limits (RESOURCE_EXHAUSTED). Retry in {int(remaining)}s.")
+
+        def _do_call():
+            return self.client.models.generate_content(
+                model=model,
+                contents=contents,
+                config=config,
+            )
+
+        try:
+            response = _run_with_timeout(_do_call, timeout_s=timeout)
+            self._reset_cooldown()
+            return response
+        except Exception as e:
+            err_str = str(e).upper()
+            if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "QUOTA" in err_str:
+                self._record_quota_error()
+            raise e
         self.verifier = DeterministicVerifier()
 
     def _extract_json(self, text: str) -> Dict[str, Any]:
@@ -1434,7 +1494,7 @@ class ContentV1Engine:
                 return self.client.models.generate_content(
                     model=self.fast_model, contents=prompt, config={"temperature": 0.5},
                 )
-            response = _run_with_timeout(_call, timeout_s=10)
+            response = _run_with_timeout(_call, timeout_s=15)
             parsed = self._extract_json(response.text or "")
             if isinstance(parsed, dict) and parsed:
                 parsed = self._repair_item(parsed, fmt="radio_single")
@@ -1634,7 +1694,7 @@ class ContentV1Engine:
                         config={"temperature": 0.6 + (attempt * 0.1)},
                     )
 
-                timeout_s = 10 if fast_mode else 30
+                timeout_s = 15 if fast_mode else 45
                 response = _run_with_timeout(_call_gemini, timeout_s=timeout_s)
 
                 raw = response.text or ""

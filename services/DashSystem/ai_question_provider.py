@@ -231,6 +231,7 @@ class AIQuestionProvider:
             formatted = self._format_output(result, skill_id, skill_name, effective_lesson)
             if formatted:
                 return formatted
+            logger.warning(f"[AI_PROVIDER] QUEUE result failed validation for {skill_name}")
             # Validation failed — fall through to next tier
 
         # Tier 2: reuse from collection
@@ -244,16 +245,18 @@ class AIQuestionProvider:
             formatted = self._format_output(result, skill_id, skill_name, effective_lesson)
             if formatted:
                 return formatted
+            logger.warning(f"[AI_PROVIDER] REUSE result failed validation for {skill_name}")
             # Validation failed — fall through to next tier
 
         # Tier 3: generate just-in-time
+        logger.info(f"[AI_PROVIDER] Attempting JIT generation for {skill_name}...")
         result = self._generate_jit(
             skill_id, skill_name, effective_lesson, target_difficulty, grade_level, age, user_id,
             fast_mode=fast_mode,
             subject=subject,
         )
         if result:
-            logger.info(f"[AI_PROVIDER] JIT GENERATED for skill={skill_name} diff={target_difficulty:.2f}")
+            logger.info(f"[AI_PROVIDER] JIT HIT for skill={skill_name} diff={target_difficulty:.2f}")
             self._trigger_background_refill(
                 skill_id, skill_name, effective_lesson, target_difficulty, grade_level, age, user_id,
                 subject=subject,
@@ -261,6 +264,7 @@ class AIQuestionProvider:
             formatted = self._format_output(result, skill_id, skill_name, effective_lesson)
             if formatted:
                 return formatted
+            logger.warning(f"[AI_PROVIDER] JIT result failed validation for {skill_name}")
 
         logger.warning(f"[AI_PROVIDER] ALL TIERS FAILED for skill={skill_name}")
         return None
@@ -701,7 +705,7 @@ class AIQuestionProvider:
         """Wrap Perseus JSON with dash_metadata matching frontend expectations.
         Returns None if pre-serve validation fails.
         """
-        from pre_serve_validator import validate_pre_serve
+        from services.DashSystem.pre_serve_validator import validate_pre_serve
 
         payload = dict(question_doc["perseus_json"])
 

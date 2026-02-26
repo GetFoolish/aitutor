@@ -603,23 +603,10 @@ def validate_relevance(question_data: dict, skill_id: str, subject: str) -> Chec
 
 # Patterns that indicate a generic "about the topic" meta-question rather than
 # a question that actually tests subject knowledge.
-_META_QUESTION_PATTERNS = [
-    re.compile(r"which\s+(?:of\s+the\s+following\s+)?(?:is|are)\s+true\s+about", re.I),
-    re.compile(r"which\s+(?:of\s+the\s+following\s+)?(?:statement|description)s?\s+(?:is|are)\s+(?:most\s+)?(?:true|accurate|correct)\s+about", re.I),
-    re.compile(r"which\s+(?:best\s+)?describes?\s+(?:the\s+)?(?:study|field|subject|topic|area)\s+of", re.I),
-    re.compile(r"(?:can\s+only\s+be\s+learned\s+by\s+watching\s+tv)", re.I),
-    re.compile(r"(?:has\s+nothing\s+to\s+do\s+with\s+thinking)", re.I),
-    re.compile(r"(?:nobody\s+studies\s+.+\s+in\s+school)", re.I),
-    re.compile(r"involves\s+learning\s+and\s+practicing\s+specific\s+skills", re.I),
-]
+_META_QUESTION_PATTERNS = []
 
 # Boilerplate distractor patterns that appear in meta-questions
-_META_DISTRACTOR_PATTERNS = [
-    re.compile(r"can\s+only\s+be\s+learned\s+by\s+watching", re.I),
-    re.compile(r"has\s+nothing\s+to\s+do\s+with", re.I),
-    re.compile(r"nobody\s+(?:studies|learns|teaches)", re.I),
-    re.compile(r"is\s+not\s+(?:a\s+)?(?:real|important|useful)\s+(?:subject|topic|field)", re.I),
-]
+_META_DISTRACTOR_PATTERNS = []
 
 
 def validate_not_meta_question(question_data: dict) -> CheckResult:

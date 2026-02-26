@@ -33,10 +33,9 @@ import '../question-display/mcq-fix.css';
 const DASH_API_URL = import.meta.env.VITE_DASH_API_URL || 'http://localhost:8000';
 const TEACHING_ASSISTANT_API_URL = import.meta.env.VITE_TEACHING_ASSISTANT_API_URL || 'http://localhost:8002';
 const EMPTY_ASSESSMENT_QUESTIONS: PerseusItem[] = [];
-const INITIAL_QUESTION_TIMEOUT_MS = 6000;
 const INITIAL_QUESTION_BATCH_SIZE = 1;
 const PREFETCH_BATCH_SIZE = 6;
-const RECOMMEND_NEXT_TIMEOUT_MS = 1800;
+const RECOMMEND_NEXT_TIMEOUT_MS = 15000;
 
 // Widget types that use deprecated string refs and are broken in React 18
 // Note: orderer widget works fine in Perseus, only matcher is truly broken
@@ -162,8 +161,8 @@ interface RendererComponentProps {
     currentQuestionIndex?: number;
 }
 
-const RendererComponent = ({ 
-    onSkillChange, 
+const RendererComponent = ({
+    onSkillChange,
     onQuestionChange,
     watchedVideoIds = [],
     onAnswerSubmitted,
@@ -186,6 +185,8 @@ const RendererComponent = ({
     const [isError, setIsError] = useState(false);
     const [error, setError] = useState<Error | null>(null);
     const [isLoadingNextBatch, setIsLoadingNextBatch] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isNextLoading, setIsNextLoading] = useState(false);
     const [viewportHeight, setViewportHeight] = useState<number>(() =>
         typeof window !== "undefined" ? window.innerHeight : 900
     );
@@ -200,10 +201,10 @@ const RendererComponent = ({
     const compactViewport = viewportHeight <= 900;
     const contentZoom =
         viewportHeight <= 700 ? 0.9 :
-        viewportHeight <= 760 ? 0.94 :
-        viewportHeight <= 840 ? 0.96 :
-        viewportHeight <= 920 ? 0.98 :
-        1;
+            viewportHeight <= 760 ? 0.94 :
+                viewportHeight <= 840 ? 0.96 :
+                    viewportHeight <= 920 ? 0.98 :
+                        1;
 
     // Get user_id from auth context
     const user_id = user?.user_id || 'mongodb_test_user';
@@ -325,7 +326,7 @@ const RendererComponent = ({
             // Retry logic for connection errors with exponential backoff
             const maxRetries = 1;
             let retryCount = 0;
-            
+
             const attemptFetch = async (): Promise<void> => {
                 try {
                     // Load questions directly — parallel preloaded + fresh fetch
@@ -357,11 +358,8 @@ const RendererComponent = ({
                         return;
                     }
 
-                    // Use the already-started fresh fetch with a timeout for cold starts.
-                    const timeoutPromise = new Promise<never>((_, reject) =>
-                        setTimeout(() => reject(new Error('Question generation is still in progress. Please retry in a moment.')), INITIAL_QUESTION_TIMEOUT_MS)
-                    );
-                    const response = await Promise.race([freshPromise, timeoutPromise]);
+                    // Wait for the fresh fetch.
+                    const response = await freshPromise;
 
                     if (!response.ok) {
                         throw new Error(`Failed to fetch questions: ${response.status}`);
@@ -381,11 +379,11 @@ const RendererComponent = ({
                     }
                 } catch (err) {
                     // Check if it's a network/connection error that we should retry
-                    const isNetworkError = err instanceof TypeError && 
-                        (err.message.includes('Failed to fetch') || 
-                         err.message.includes('NetworkError') ||
-                         err.message.includes('ERR_CONNECTION_REFUSED'));
-                    
+                    const isNetworkError = err instanceof TypeError &&
+                        (err.message.includes('Failed to fetch') ||
+                            err.message.includes('NetworkError') ||
+                            err.message.includes('ERR_CONNECTION_REFUSED'));
+
                     if (isNetworkError && retryCount < maxRetries) {
                         retryCount++;
                         const backoffDelay = retryCount * 1000; // 1s
@@ -393,7 +391,7 @@ const RendererComponent = ({
                         await new Promise(resolve => setTimeout(resolve, backoffDelay));
                         return attemptFetch(); // Retry
                     }
-                    
+
                     // Not a retryable error or max retries reached
                     throw err;
                 }
@@ -501,7 +499,7 @@ const RendererComponent = ({
             // Extract unit_id from metadata - this is the "current module"
             const unitId = metadata.unit_id || null;
             const mongodbId = metadata.mongodb_id || null;
-            
+
             console.log('[RendererComponent] Question metadata:', {
                 question_id: metadata.dash_question_id,
                 unit_id: unitId,
@@ -510,13 +508,13 @@ const RendererComponent = ({
                 skill_names: metadata.skill_names,
                 mongodb_id: mongodbId
             });
-            
+
             if (unitId) {
                 onSkillChange(unitId);
             } else {
                 console.warn('[RendererComponent] No unit_id found in metadata!');
             }
-            
+
             // Update URL to /app/{mongodb_id}
             if (mongodbId && !assessmentMode) {
                 window.history.replaceState(null, '', `/app/${mongodbId}`);
@@ -539,25 +537,25 @@ const RendererComponent = ({
     // Load next batch of questions when approaching end
     const loadNextBatch = async () => {
         if (perseusItems.length === 0) return;
-        
+
         // Prevent concurrent calls
         if (isLoadingNextBatch) {
             return;
         }
-        
+
         setIsLoadingNextBatch(true);
-        
+
         try {
             // Get current question IDs
             const currentQuestionIds = perseusItems.map(
                 (item: any) => item.dash_metadata?.dash_question_id || ''
             ).filter(Boolean);
-            
+
             if (currentQuestionIds.length === 0) {
                 setIsLoadingNextBatch(false);
                 return; // No valid question IDs
             }
-            
+
             // Request next questions with a strict timeout to avoid long UI stalls.
             let newQuestions = await fetchRecommendNext(
                 currentQuestionIds,
@@ -568,7 +566,7 @@ const RendererComponent = ({
                 // Quick fallback: ask for a smaller batch to settle faster.
                 newQuestions = await fetchRecommendNext(currentQuestionIds, 3, 1200);
             }
-            
+
             // Only update if we got new questions (non-empty response means questions changed)
             if (newQuestions.length > 0) {
                 setPerseusItems(prev => mergeUniqueQuestions(prev, newQuestions));
@@ -580,244 +578,263 @@ const RendererComponent = ({
         }
     };
 
-    const handleNext = () => {
-        setItem((prev) => {
-            const index = prev + 1;
+    const handleNext = async () => {
+        if (isNextLoading || isSubmitting) return;
 
-            if (index >= perseusItems.length) {
-                if (!assessmentMode) {
-                    loadNextBatch();
-                    return prev;
+        try {
+            setIsNextLoading(true);
+            await new Promise(resolve => setTimeout(resolve, 350)); // artificial wait to show spinner
+
+            setItem((prev) => {
+                const index = prev + 1;
+
+                if (index >= perseusItems.length) {
+                    if (!assessmentMode) {
+                        loadNextBatch();
+                        return prev;
+                    }
+                    setEndOfTest(true);
+                    return prev; // stay at last valid index
                 }
-                setEndOfTest(true);
-                return prev; // stay at last valid index
-            }
 
-            // Load next batch earlier so user doesn't hit the end and wait.
-            if (index >= perseusItems.length - 4) {
-                loadNextBatch();
-            }
+                // Load next batch earlier so user doesn't hit the end and wait.
+                if (index >= perseusItems.length - 4) {
+                    loadNextBatch();
+                }
 
-            setIsAnswered(false);
-            setShowFeedback(false);
-            setStartTime(Date.now()); // Reset timer for next question
-            return index;
-        });
+                setIsAnswered(false);
+                setShowFeedback(false);
+                setStartTime(Date.now()); // Reset timer for next question
+                return index;
+            });
+        } finally {
+            setIsNextLoading(false);
+        }
     };
 
     const handleSubmit = async () => {
+        if (isSubmitting || isNextLoading) return;
+
         if (rendererRef.current && perseusItem?.question) {
-            // getUserInput() returns UserInputMap (the new object format)
-            const userInput = rendererRef.current.getUserInput();
-            const itemData = perseusItem; // Full item with question AND answer
-            const question = itemData.question;
+            setIsSubmitting(true);
+            // Small artificial wait to allow the "Checking..." spinner to register on-screen before locking UI
+            await new Promise(resolve => setTimeout(resolve, 350));
 
-            // Empty submission guard: check if user actually entered/selected something
-            if (!hasUserInput(question.widgets || {}, userInput)) {
-                toast.error("Please select or enter an answer first");
-                return;
-            }
-
-            console.log('[SCORING] User input:', JSON.stringify(userInput, null, 2));
-
-            // Custom scoring via shared utility (Perseus doesn't handle our AI answer format)
-            const scoringResult = scorePerseusQuestion(question.widgets || {}, userInput);
-            const { selectedAnswerText, selectedAnswerIndex } = scoringResult;
-            const isCorrect = scoringResult.correct;
-            console.log('[SCORING] Custom score - is correct:', isCorrect, `(${scoringResult.correctCount}/${scoringResult.scoreableCount} widgets)`);
-            
-            const scoreResult = {
-                type: 'points' as const,
-                earned: isCorrect ? 1 : 0,
-                total: 1,
-                message: null
-            };
-
-            // Continue to include an empty guess for the now defunct answer area.
-            const maxCompatGuess = [rendererRef.current.getUserInputLegacy(), []];
-            const keScore = keScoreFromPerseusScore(
-                scoreResult,
-                maxCompatGuess,
-                rendererRef.current.getSerializedState().question,
-            );
-
-            console.log('[RendererComponent] KEScore:', {
-                correct: keScore.correct,
-                empty: keScore.empty,
-                guess: keScore.guess
-            });
-
-            // Calculate response time
-            const responseTimeSeconds = (Date.now() - startTime) / 1000;
-
-            // In assessment mode, call the assessment callback
-            if (assessmentMode && onAssessmentAnswer) {
-                const currentItem = perseusItems[item];
-                const metadata = (currentItem as any).dash_metadata || {};
-                const questionId = metadata.dash_question_id || `q_${item}`;
-                
-                setIsAnswered(true);
-                setScore(keScore);
-                setShowFeedback(true);
-                
-                // Call the callback with question ID and correctness
-                onAssessmentAnswer(questionId, keScore.correct);
-
-                // Fire-and-forget analytics reporting
-                reportQuestionAnalytics({
-                    question_id: questionId,
-                    correct: keScore.correct,
-                    hints_used: currentHintIndex,
-                    time_seconds: responseTimeSeconds,
-                    skipped: false,
-                    skill_id: (metadata.skill_ids || [])[0],
-                });
-                return;
-            }
-
-            // Submit answer to DASH API for tracking and adaptive difficulty (normal mode)
             try {
-                const currentItem = perseusItems[item];
-                const metadata = (currentItem as any).dash_metadata || {};
-                const questionId = metadata.dash_question_id || `q_${item}`;
+                // getUserInput() returns UserInputMap (the new object format)
+                const userInput = rendererRef.current.getUserInput();
+                const itemData = perseusItem; // Full item with question AND answer
+                const question = itemData.question;
 
-                await apiUtils.post(`${DASH_API_URL}/api/submit-answer`, {
-                    user_id: user_id,
-                    question_id: questionId,
-                    skill_ids: metadata.skill_ids || [],
-                    is_correct: keScore.correct,
-                    response_time_seconds: responseTimeSeconds,
-                    selected_answer: selectedAnswerText || null,
-                    selected_answer_index: selectedAnswerIndex,
-                });
-                
-                // Invalidate skill-scores cache to trigger refetch with updated data
-                queryClient.invalidateQueries({ queryKey: ["skill-scores"] });
-                queryClient.invalidateQueries({ queryKey: ["grading-panel"] });
-                
-                // Track watched videos if answer was submitted
-                if (watchedVideoIds && watchedVideoIds.length > 0) {
-                    try {
-                        for (const videoId of watchedVideoIds) {
-                            await apiUtils.post(
-                                `${DASH_API_URL}/api/videos/mark-helpful?question_id=${encodeURIComponent(questionId)}&video_id=${encodeURIComponent(videoId)}&is_correct=${keScore.correct}`,
-                                {}
-                            );
-                        }
-                        // Reset watched videos after tracking
-                        onAnswerSubmitted?.();
-                    } catch (err) {
-                        console.error("Failed to track video helpfulness:", err);
-                    }
+                // Empty submission guard: check if user actually entered/selected something
+                if (!hasUserInput(question.widgets || {}, userInput)) {
+                    toast.error("Please select or enter an answer first");
+                    return;
                 }
-            } catch (err) {
-                console.error("Failed to submit answer to DASH:", err);
-                // Show toast so user knows their answer wasn't saved to server
-                toast.error("Answer wasn't saved — check your connection");
-            }
 
-            // On wrong answer, request a responsive hint from Gemini (fire and forget)
-            if (!keScore.correct) {
-                try {
-                    const currentItem = perseusItems[item] as any;
-                    const metadata = currentItem?.dash_metadata || {};
+                console.log('[SCORING] User input:', JSON.stringify(userInput, null, 2));
+
+                // Custom scoring via shared utility (Perseus doesn't handle our AI answer format)
+                const scoringResult = scorePerseusQuestion(question.widgets || {}, userInput);
+                const { selectedAnswerText, selectedAnswerIndex } = scoringResult;
+                const isCorrect = scoringResult.correct;
+                console.log('[SCORING] Custom score - is correct:', isCorrect, `(${scoringResult.correctCount}/${scoringResult.scoreableCount} widgets)`);
+
+                const scoreResult = {
+                    type: 'points' as const,
+                    earned: isCorrect ? 1 : 0,
+                    total: 1,
+                    message: null
+                };
+
+                // Continue to include an empty guess for the now defunct answer area.
+                const maxCompatGuess = [rendererRef.current.getUserInputLegacy(), []];
+                const keScore = keScoreFromPerseusScore(
+                    scoreResult,
+                    maxCompatGuess,
+                    rendererRef.current.getSerializedState().question,
+                );
+
+                console.log('[RendererComponent] KEScore:', {
+                    correct: keScore.correct,
+                    empty: keScore.empty,
+                    guess: keScore.guess
+                });
+
+                // Calculate response time
+                const responseTimeSeconds = (Date.now() - startTime) / 1000;
+
+                // In assessment mode, call the assessment callback
+                if (assessmentMode && onAssessmentAnswer) {
+                    const currentItem = perseusItems[item];
+                    const metadata = (currentItem as any).dash_metadata || {};
                     const questionId = metadata.dash_question_id || `q_${item}`;
-                    const skillIds = metadata.skill_ids || [];
-                    const qContent = currentItem?.question?.content || '';
 
-                    // Extract selected and correct answer text from widget data
-                    let selectedText = '';
-                    let correctText = '';
-                    const question = currentItem?.question;
-                    for (const [widgetId, widgetInput] of Object.entries(userInput)) {
-                        const widgetDef = question?.widgets?.[widgetId];
-                        if (!widgetDef) continue;
-                        if (widgetDef.type === 'radio') {
-                            const choices = widgetDef.options?.choices || [];
-                            const selectedIds = (widgetInput as any).selectedChoiceIds || [];
-                            if (selectedIds.length > 0) {
-                                const choiceIndexMap = new Map<string, number>();
-                                choices.forEach((c: any, idx: number) => {
-                                    const key = typeof c?.id === 'string' ? c.id.trim() : '';
-                                    if (key) choiceIndexMap.set(key, idx);
-                                    choiceIndexMap.set(`choice-${idx}`, idx);
-                                });
-                                const rawId = stripWrappingQuotes(selectedIds[0]);
-                                const mapped = choiceIndexMap.get(rawId);
-                                if (mapped != null) {
-                                    selectedText = stripWrappingQuotes(choices[mapped]?.content || '');
-                                } else {
-                                    const match = rawId.match(/^choice-(\d+)(?:-|$)/);
-                                    if (match) selectedText = stripWrappingQuotes(choices[parseInt(match[1], 10)]?.content || '');
-                                }
+                    setIsAnswered(true);
+                    setScore(keScore);
+                    setShowFeedback(true);
+
+                    // Call the callback with question ID and correctness
+                    onAssessmentAnswer(questionId, keScore.correct);
+
+                    // Fire-and-forget analytics reporting
+                    reportQuestionAnalytics({
+                        question_id: questionId,
+                        correct: keScore.correct,
+                        hints_used: currentHintIndex,
+                        time_seconds: responseTimeSeconds,
+                        skipped: false,
+                        skill_id: (metadata.skill_ids || [])[0],
+                    });
+                    return;
+                }
+
+                // Submit answer to DASH API for tracking and adaptive difficulty (normal mode)
+                try {
+                    const currentItem = perseusItems[item];
+                    const metadata = (currentItem as any).dash_metadata || {};
+                    const questionId = metadata.dash_question_id || `q_${item}`;
+
+                    await apiUtils.post(`${DASH_API_URL}/api/submit-answer`, {
+                        user_id: user_id,
+                        question_id: questionId,
+                        skill_ids: metadata.skill_ids || [],
+                        is_correct: keScore.correct,
+                        response_time_seconds: responseTimeSeconds,
+                        selected_answer: selectedAnswerText || null,
+                        selected_answer_index: selectedAnswerIndex,
+                    });
+
+                    // Invalidate skill-scores cache to trigger refetch with updated data
+                    queryClient.invalidateQueries({ queryKey: ["skill-scores"] });
+                    queryClient.invalidateQueries({ queryKey: ["grading-panel"] });
+
+                    // Track watched videos if answer was submitted
+                    if (watchedVideoIds && watchedVideoIds.length > 0) {
+                        try {
+                            for (const videoId of watchedVideoIds) {
+                                await apiUtils.post(
+                                    `${DASH_API_URL}/api/videos/mark-helpful?question_id=${encodeURIComponent(questionId)}&video_id=${encodeURIComponent(videoId)}&is_correct=${keScore.correct}`,
+                                    {}
+                                );
                             }
-                            const correct = choices.find((c: any) => c.correct);
-                            if (correct) correctText = stripWrappingQuotes(correct.content || '');
-                        } else if (widgetDef.type === 'numeric-input') {
-                            selectedText = (widgetInput as any)?.currentValue || '';
-                            const answers = widgetDef.options?.answers || [];
-                            const ca = answers.find((a: any) => a.status === 'correct');
-                            if (ca) correctText = String(ca.value);
-                        } else if (widgetDef.type === 'expression') {
-                            selectedText = typeof widgetInput === 'string' ? widgetInput : ((widgetInput as any)?.currentValue || '');
-                            const forms = widgetDef.options?.answerForms || [];
-                            const cf = forms.find((f: any) => f.considered === 'correct');
-                            if (cf) correctText = cf.value || '';
-                        } else if (widgetDef.type === 'dropdown') {
-                            const choices = widgetDef.options?.choices || [];
-                            const rawIdx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
-                            // Perseus dropdown is 1-based (0 = placeholder). Subtract 1 to match choices array.
-                            const adjIdx = rawIdx != null && rawIdx > 0 ? rawIdx - 1 : -1;
-                            if (adjIdx >= 0 && adjIdx < choices.length) selectedText = choices[adjIdx].content || '';
-                            const correct = choices.find((c: any) => c.correct);
-                            if (correct) correctText = correct.content || '';
+                            // Reset watched videos after tracking
+                            onAnswerSubmitted?.();
+                        } catch (err) {
+                            console.error("Failed to track video helpfulness:", err);
                         }
-                        if (selectedText) break; // Use first scoreable widget
-                    }
-
-                    if (selectedText && skillIds.length > 0) {
-                        const questionIdAtRequest = questionId;
-                        currentItemRef.current = item;  // Ensure ref is current before async hint fetch
-                        apiUtils.post(`${DASH_API_URL}/api/responsive-hint`, {
-                            question_id: questionId,
-                            skill_id: skillIds[0],
-                            question_text: qContent.substring(0, 500),
-                            selected_answer: selectedText.substring(0, 200),
-                            correct_answer: correctText.substring(0, 200),
-                        }).then((resp: Response) => resp.json()).then((data: any) => {
-                            if (!mountedRef.current) return;  // component unmounted, skip state update
-                            // Guard: only set hint if still on the same question
-                            if (currentItemRef.current === item && data?.hint_content) {
-                                setResponsiveHint(data.hint_content);
-                            }
-                        }).catch((err: any) => {
-                            console.error("Failed to get responsive hint:", err);
-                        });
                     }
                 } catch (err) {
-                    console.error("Failed to request responsive hint:", err);
+                    console.error("Failed to submit answer to DASH:", err);
+                    // Show toast so user knows their answer wasn't saved to server
+                    toast.error("Answer wasn't saved — check your connection");
                 }
-            }
 
-            // Fire-and-forget analytics reporting
-            {
-                const currentItem = perseusItems[item];
-                const metadata = (currentItem as any).dash_metadata || {};
-                const questionId = metadata.dash_question_id || `q_${item}`;
-                reportQuestionAnalytics({
-                    question_id: questionId,
-                    correct: keScore.correct,
-                    hints_used: currentHintIndex,
-                    time_seconds: responseTimeSeconds,
-                    skipped: false,
-                    skill_id: (metadata.skill_ids || [])[0],
-                });
-            }
+                // On wrong answer, request a responsive hint from Gemini (fire and forget)
+                if (!keScore.correct) {
+                    try {
+                        const currentItem = perseusItems[item] as any;
+                        const metadata = currentItem?.dash_metadata || {};
+                        const questionId = metadata.dash_question_id || `q_${item}`;
+                        const skillIds = metadata.skill_ids || [];
+                        const qContent = currentItem?.question?.content || '';
 
-            // Display score to user
-            setIsAnswered(true);
-            setScore(keScore);
-            console.log("Score:", keScore);
+                        // Extract selected and correct answer text from widget data
+                        let selectedText = '';
+                        let correctText = '';
+                        const question = currentItem?.question;
+                        for (const [widgetId, widgetInput] of Object.entries(userInput)) {
+                            const widgetDef = question?.widgets?.[widgetId];
+                            if (!widgetDef) continue;
+                            if (widgetDef.type === 'radio') {
+                                const choices = widgetDef.options?.choices || [];
+                                const selectedIds = (widgetInput as any).selectedChoiceIds || [];
+                                if (selectedIds.length > 0) {
+                                    const choiceIndexMap = new Map<string, number>();
+                                    choices.forEach((c: any, idx: number) => {
+                                        const key = typeof c?.id === 'string' ? c.id.trim() : '';
+                                        if (key) choiceIndexMap.set(key, idx);
+                                        choiceIndexMap.set(`choice-${idx}`, idx);
+                                    });
+                                    const rawId = stripWrappingQuotes(selectedIds[0]);
+                                    const mapped = choiceIndexMap.get(rawId);
+                                    if (mapped != null) {
+                                        selectedText = stripWrappingQuotes(choices[mapped]?.content || '');
+                                    } else {
+                                        const match = rawId.match(/^choice-(\d+)(?:-|$)/);
+                                        if (match) selectedText = stripWrappingQuotes(choices[parseInt(match[1], 10)]?.content || '');
+                                    }
+                                }
+                                const correct = choices.find((c: any) => c.correct);
+                                if (correct) correctText = stripWrappingQuotes(correct.content || '');
+                            } else if (widgetDef.type === 'numeric-input') {
+                                selectedText = (widgetInput as any)?.currentValue || '';
+                                const answers = widgetDef.options?.answers || [];
+                                const ca = answers.find((a: any) => a.status === 'correct');
+                                if (ca) correctText = String(ca.value);
+                            } else if (widgetDef.type === 'expression') {
+                                selectedText = typeof widgetInput === 'string' ? widgetInput : ((widgetInput as any)?.currentValue || '');
+                                const forms = widgetDef.options?.answerForms || [];
+                                const cf = forms.find((f: any) => f.considered === 'correct');
+                                if (cf) correctText = cf.value || '';
+                            } else if (widgetDef.type === 'dropdown') {
+                                const choices = widgetDef.options?.choices || [];
+                                const rawIdx = (widgetInput as any)?.value ?? (widgetInput as any)?.selected;
+                                // Perseus dropdown is 1-based (0 = placeholder). Subtract 1 to match choices array.
+                                const adjIdx = rawIdx != null && rawIdx > 0 ? rawIdx - 1 : -1;
+                                if (adjIdx >= 0 && adjIdx < choices.length) selectedText = choices[adjIdx].content || '';
+                                const correct = choices.find((c: any) => c.correct);
+                                if (correct) correctText = correct.content || '';
+                            }
+                            if (selectedText) break; // Use first scoreable widget
+                        }
+
+                        if (selectedText && skillIds.length > 0) {
+                            const questionIdAtRequest = questionId;
+                            currentItemRef.current = item;  // Ensure ref is current before async hint fetch
+                            apiUtils.post(`${DASH_API_URL}/api/responsive-hint`, {
+                                question_id: questionId,
+                                skill_id: skillIds[0],
+                                question_text: qContent.substring(0, 500),
+                                selected_answer: selectedText.substring(0, 200),
+                                correct_answer: correctText.substring(0, 200),
+                            }).then((resp: Response) => resp.json()).then((data: any) => {
+                                if (!mountedRef.current) return;  // component unmounted, skip state update
+                                // Guard: only set hint if still on the same question
+                                if (currentItemRef.current === item && data?.hint_content) {
+                                    setResponsiveHint(data.hint_content);
+                                }
+                            }).catch((err: any) => {
+                                console.error("Failed to get responsive hint:", err);
+                            });
+                        }
+                    } catch (err) {
+                        console.error("Failed to request responsive hint:", err);
+                    }
+                }
+
+                // Fire-and-forget analytics reporting
+                {
+                    const currentItem = perseusItems[item];
+                    const metadata = (currentItem as any).dash_metadata || {};
+                    const questionId = metadata.dash_question_id || `q_${item}`;
+                    reportQuestionAnalytics({
+                        question_id: questionId,
+                        correct: keScore.correct,
+                        hints_used: currentHintIndex,
+                        time_seconds: responseTimeSeconds,
+                        skipped: false,
+                        skill_id: (metadata.skill_ids || [])[0],
+                    });
+                }
+
+                // Display score to user
+                setIsAnswered(true);
+                setScore(keScore);
+                console.log("Score:", keScore);
+            } finally {
+                setIsSubmitting(false);
+            }
         }
     };
 
@@ -1422,10 +1439,11 @@ const RendererComponent = ({
                                 type="button"
                                 size="sm"
                                 onClick={handleSubmit}
-                                disabled={isLoading || endOfTest || perseusItems.length === 0 || isAnswered}
-                                className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-[#C4B5FD] hover:bg-[#C4B5FD] text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:hover:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
+                                disabled={isLoading || endOfTest || perseusItems.length === 0 || isAnswered || isSubmitting}
+                                className="relative transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-[#C4B5FD] hover:bg-[#C4B5FD] text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:hover:shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0_0_rgba(255,255,255,0.3)] md:dark:hover:shadow-[3px_3px_0_0_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5 flex items-center justify-center gap-2 min-w-[100px]"
                             >
-                                Submit
+                                {isSubmitting && <div className="w-4 h-4 border-[3px] border-black border-t-transparent rounded-full animate-spin"></div>}
+                                {isSubmitting ? "Checking..." : "Submit"}
                             </Button>
                         )}
                         {!assessmentMode && (
@@ -1434,10 +1452,11 @@ const RendererComponent = ({
                                 variant="outline"
                                 size="sm"
                                 onClick={handleNext}
-                                disabled={isLoading || endOfTest || perseusItems.length === 0 || !isAnswered}
-                                className="transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-800 hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5"
+                                disabled={isLoading || endOfTest || perseusItems.length === 0 || !isAnswered || isNextLoading || (isLoadingNextBatch && item + 1 >= perseusItems.length)}
+                                className="relative transition-all duration-100 border-[2px] md:border-[3px] border-black dark:border-white bg-white dark:bg-neutral-800 hover:bg-[#FFD93D] dark:hover:bg-[#FFD93D] text-black dark:text-white dark:hover:text-black font-black uppercase tracking-wide shadow-[1px_1px_0_0_rgba(0,0,0,1)] md:shadow-[2px_2px_0_0_rgba(0,0,0,1)] dark:shadow-[1px_1px_0_0_rgba(255,255,255,0.3)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 disabled:opacity-50 disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] md:disabled:hover:shadow-[2px_2px_0_0_rgba(0,0,0,1)] text-xs md:text-sm h-9 md:h-10 px-4 md:px-5 flex items-center justify-center gap-2 min-w-[100px]"
                             >
-                                Next →
+                                {(isNextLoading || (isLoadingNextBatch && item + 1 >= perseusItems.length)) && <div className="w-4 h-4 border-[3px] border-black dark:border-white border-t-transparent dark:border-t-transparent rounded-full animate-spin"></div>}
+                                {(isNextLoading || (isLoadingNextBatch && item + 1 >= perseusItems.length)) ? "Loading..." : "Next →"}
                             </Button>
                         )}
                     </div>

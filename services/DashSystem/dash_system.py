@@ -266,7 +266,10 @@ class DASHSystem:
                 self.ai_provider = AIQuestionProvider(content_engine, self.mongo)
                 log_print(f"[AI_QUESTIONS] AI question provider initialized (skills: {len(self.skills)})")
             except Exception as e:
-                log_print(f"[AI_QUESTIONS] Failed to initialize AI provider: {e}. Falling back to Khan question bank.")
+                import traceback
+                error_detail = traceback.format_exc()
+                log_print(f"[AI_QUESTIONS] Failed to initialize AI provider: {e}\n{error_detail}")
+                log_print("[AI_QUESTIONS] Falling back to Khan question bank.")
                 self.use_ai_questions = False
 
         # Ensure adaptive difficulty history collection has proper indexes

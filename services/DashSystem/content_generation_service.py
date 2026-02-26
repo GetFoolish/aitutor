@@ -378,7 +378,7 @@ class ContentGenerationService:
             future = None
             try:
                 future = executor.submit(_call_gemini)
-                response = future.result(timeout=15)
+                response = future.result(timeout=30)
             finally:
                 if future:
                     future.cancel()
@@ -806,7 +806,7 @@ class ContentGenerationService:
         if exclude_ids:
             base_filter["question_id"] = {"$nin": list(exclude_ids)}
 
-        from pre_serve_validator import validate_pre_serve
+        from services.DashSystem.pre_serve_validator import validate_pre_serve
 
         def _serve(doc: dict) -> Optional[dict]:
             """Mark doc as served and return question_data — or None if validation fails."""
@@ -929,6 +929,36 @@ class ContentGenerationService:
                 elif q is not None:
                     logger.warning(f"[CONTENT_GEN] Legacy untagged question has non-dict data: {type(q)}")
 
+        # FINAL FALLBACK: Khan Academy questions from questions_db
+        # This is extremely fast and ensures we always have content.
+        try:
+            khan_filter = {"unit_id": skill_id}
+            if exclude_ids:
+                khan_filter["question_id"] = {"$nin": list(exclude_ids)}
+            
+            for doc in self.khan_questions_col.find(khan_filter).limit(_RETRY):
+                q = doc.get("perseus_json")
+                if isinstance(q, dict):
+                    q = dict(q)
+                    q.pop("_id", None)
+                    if "question_id" not in q and "question_id" in doc:
+                        q["question_id"] = doc["question_id"]
+                    
+                    # Ensure dash_metadata is present for client tracking
+                    if "dash_metadata" not in q:
+                        q["dash_metadata"] = {
+                            "dash_question_id": q.get("question_id") or f"khan_{doc.get('_id')}",
+                            "skill_ids": [skill_id],
+                            "unit_name": "Course Content",
+                            "lesson_name": "Practice",
+                            "ai_generated": False, # Explicitly mark as not AI
+                        }
+                    
+                    logger.info(f"[CONTENT_GEN] POOL FALLBACK: Serving Khan question {q.get('question_id')} for {skill_id}")
+                    return q
+        except Exception as e:
+            logger.warning(f"[CONTENT_GEN] Khan fallback lookup failed: {e}")
+
         return None  # Truly empty -- caller should trigger ensure_pool
 
     def pop_assessment_question(
@@ -949,7 +979,7 @@ class ContentGenerationService:
         if exclude_ids:
             base_filter["question_id"] = {"$nin": list(exclude_ids)}
 
-        from pre_serve_validator import validate_pre_serve
+        from services.DashSystem.pre_serve_validator import validate_pre_serve
 
         def _serve(doc: dict) -> Optional[dict]:
             qd = doc.get("question_data") or {}

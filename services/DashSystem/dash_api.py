@@ -77,14 +77,14 @@ def _env_bool(name: str, default: bool) -> bool:
     return str(raw).strip().lower() in {"1", "true", "yes", "on"}
 
 
-WARMSTART_WAIT_TIMEOUT = _env_float("DASH_WARMSTART_WAIT_TIMEOUT_S", 2.5)
-QUESTION_PARALLEL_BUDGET_S = _env_float("DASH_QUESTION_PARALLEL_BUDGET_S", 3.5)
-RECOMMEND_PARALLEL_BUDGET_S = _env_float("DASH_RECOMMEND_PARALLEL_BUDGET_S", 3.5)
+WARMSTART_WAIT_TIMEOUT = _env_float("DASH_WARMSTART_WAIT_TIMEOUT_S", 1.5)
+QUESTION_PARALLEL_BUDGET_S = _env_float("DASH_QUESTION_PARALLEL_BUDGET_S", 5.0)
+RECOMMEND_PARALLEL_BUDGET_S = _env_float("DASH_RECOMMEND_PARALLEL_BUDGET_S", 12.0)
 ASSESSMENT_PARALLEL_BUDGET_S = _env_float("DASH_ASSESSMENT_PARALLEL_BUDGET_S", 5.0)
-LEARNING_Q_LOOKUP_TIMEOUT_S = _env_float("DASH_LEARNING_Q_LOOKUP_TIMEOUT_S", 0.75)
-LEARNING_REFILL_LOOKUP_TIMEOUT_S = _env_float("DASH_LEARNING_REFILL_LOOKUP_TIMEOUT_S", 0.45)
-ADAPTIVE_NEXT_TOTAL_BUDGET_S = _env_float("DASH_ADAPTIVE_NEXT_BUDGET_S", 1.8)
-ADAPTIVE_NEXT_POOL_LOOKUP_TIMEOUT_S = _env_float("DASH_ADAPTIVE_NEXT_POOL_LOOKUP_TIMEOUT_S", 0.55)
+LEARNING_Q_LOOKUP_TIMEOUT_S = _env_float("DASH_LEARNING_Q_LOOKUP_TIMEOUT_S", 4.0)
+LEARNING_REFILL_LOOKUP_TIMEOUT_S = _env_float("DASH_LEARNING_REFILL_LOOKUP_TIMEOUT_S", 1.0)
+ADAPTIVE_NEXT_TOTAL_BUDGET_S = _env_float("DASH_ADAPTIVE_NEXT_BUDGET_S", 5.0)
+ADAPTIVE_NEXT_POOL_LOOKUP_TIMEOUT_S = _env_float("DASH_ADAPTIVE_NEXT_POOL_LOOKUP_TIMEOUT_S", 1.5)
 ADAPTIVE_NEXT_LATE_PREFETCH_GRACE_S = _env_float("DASH_ADAPTIVE_NEXT_LATE_PREFETCH_GRACE_S", 0.25)
 ADAPTIVE_NEXT_LATE_PREFETCH_POLL_S = _env_float("DASH_ADAPTIVE_NEXT_LATE_PREFETCH_POLL_S", 0.08)
 ADAPTIVE_NEXT_SYNC_JIT = _env_bool("DASH_ADAPTIVE_NEXT_SYNC_JIT", False)
@@ -809,7 +809,7 @@ def load_perseus_items_for_dash_questions_from_mongodb(
 
     if not need_loading:
         try:
-            from pre_serve_validator import validate_pre_serve
+            from services.DashSystem.pre_serve_validator import validate_pre_serve
         except Exception as e:
             # Validator unavailable — pass through all results
             logger.debug(f"[VALIDATOR] Pre-serve validator unavailable: {e}")
@@ -849,7 +849,7 @@ def load_perseus_items_for_dash_questions_from_mongodb(
 
     # Patch all widget types with required defaults, then validate
     try:
-        from pre_serve_validator import validate_pre_serve
+        from services.DashSystem.pre_serve_validator import validate_pre_serve
     except Exception as e:
         # Validator unavailable — pass through all results
         logger.debug(f"[VALIDATOR] Pre-serve validator unavailable: {e}")
@@ -1226,58 +1226,40 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
             if not skill:
                 return None
             try:
-                # Pool pop first
+                # 1. Immediate Pool/Reuse/Khan Fallback
                 if dash_system.content_service:
                     pool_q = dash_system.content_service.pop_question(
                         skill_id, skill.difficulty, exclude_ids=exclude_snapshot,
                         subject=active_subject)
                     if pool_q:
-                        q_id = pool_q.get("question_id", pool_q.get("dash_metadata", {}).get("dash_question_id", f"pool_{skill_id}"))
+                        logger.info(f"[LEARNING_PATH] QUICK HIT for {skill_id}")
+                        q_id = pool_q.get("question_id") or pool_q.get("dash_metadata", {}).get("dash_question_id", f"q_{skill_id}")
                         if "dash_metadata" not in pool_q:
                             pool_q["dash_metadata"] = {
                                 "dash_question_id": q_id,
                                 "skill_ids": [skill_id],
                                 "difficulty": pool_q.get("difficulty", skill.difficulty),
                                 "skill_names": [skill.name],
-                                "unit_name": skill.name,
-                                "lesson_name": "Practice",
-                                "ai_generated": True,
+                                "ai_generated": pool_q.get("ai_generated", False),
                             }
                         from services.DashSystem.dash_system import Question
                         return Question(
-                            question_id=q_id,
-                            skill_ids=[skill_id],
-                            content="",
+                            question_id=q_id, skill_ids=[skill_id], content="",
                             difficulty=pool_q.get("difficulty", skill.difficulty),
-                            expected_time_seconds=60.0,
-                            perseus_data=pool_q,
+                            expected_time_seconds=60.0, perseus_data=pool_q,
                         )
-                # JIT fallback
+                
+                # 2. Miss? Trigger background AI generation but don't wait.
                 if dash_system.use_ai_questions and dash_system.ai_provider:
-                    ai_result = dash_system.ai_provider.get_question_for_skill(
-                        skill_id=skill_id,
-                        skill_name=skill.name,
-                        target_difficulty=skill.difficulty,
-                        grade_level=skill.grade_level.name,
-                        age=user_profile.age if user_profile.age else 7,
-                        exclude_question_ids=exclude_snapshot,
-                        user_id=user_id,
-                        fast_mode=True,
-                        subject=active_subject,
+                    logger.info(f"[LEARNING_PATH] Background refill triggered for {skill_id}")
+                    dash_system.ai_provider._trigger_background_refill(
+                        skill_id, skill.name, skill.name, skill.difficulty,
+                        skill.grade_level.name, user_profile.age or 10, user_id,
+                        subject=active_subject
                     )
-                    if ai_result:
-                        q_id = ai_result["dash_metadata"]["dash_question_id"]
-                        from services.DashSystem.dash_system import Question
-                        return Question(
-                            question_id=q_id,
-                            skill_ids=[skill_id],
-                            content="",
-                            difficulty=ai_result["dash_metadata"]["difficulty"],
-                            expected_time_seconds=60.0,
-                        )
                 return None
             except Exception as e:
-                logger.warning(f"[PARALLEL_FETCH] Failed for {skill_id}: {e}")
+                logger.warning(f"[LEARNING_PATH] Parallel fetch failed for {skill_id}: {e}")
                 return None
 
         if target_skill_ids:
@@ -1422,58 +1404,8 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
         allow_age_relax=False,
     )
 
-    # Refill loop: if validation/dedup drops count, attempt to top-up until sample_size.
-    # This prevents serving only 1-2 questions when enough generation paths exist.
-    refill_attempts = 0
-    max_refill_attempts = max(6, sample_size * 2)
-    while len(perseus_items) < sample_size and refill_attempts < max_refill_attempts:
-        refill_attempts += 1
-        q = _run_with_timeout(
-            dash_system.get_next_question_flexible,
-            LEARNING_REFILL_LOOKUP_TIMEOUT_S,
-            user_id,
-            current_time,
-            exclude_question_ids=selected_question_ids,
-            user_profile=user_profile,
-            fast_mode=True,
-        )
-        if not q:
-            break
-        if q.question_id in selected_question_ids:
-            continue
-
-        selected_questions.append(q)
-        selected_question_ids.append(q.question_id)
-        extra_items = load_perseus_items_for_dash_questions_from_mongodb([q], subject=active_subject)
-        if not extra_items:
-            continue
-        processed_extra = _post_process_with_age_fallback(
-            extra_items,
-            active_subject,
-            jwt_age if jwt_age else None,
-            "learning_refill",
-            allow_age_relax=False,
-        )
-        if not processed_extra:
-            continue
-
-        # Preserve dedupe guarantees across the whole payload.
-        existing_hashes = {_compute_content_hash(i) for i in perseus_items}
-        existing_ids = {
-            str((i.get("dash_metadata") or {}).get("dash_question_id") or "")
-            for i in perseus_items
-        }
-        for item in processed_extra:
-            qid = str((item.get("dash_metadata") or {}).get("dash_question_id") or "")
-            ch = _compute_content_hash(item)
-            if (qid and qid in existing_ids) or ch in existing_hashes:
-                continue
-            perseus_items.append(item)
-            if qid:
-                existing_ids.add(qid)
-            existing_hashes.add(ch)
-            if len(perseus_items) >= sample_size:
-                break
+    # The system now relies on the initial parallel pool/fallback batch.
+    # Background generation will refill the pool for subsequent requests.
 
     # Subject-scoped Mongo fallback for sparse pools: keeps correctness while avoiding 1-2 question sessions.
     if len(perseus_items) < sample_size and dash_system.mongo and active_subject:
@@ -1543,7 +1475,7 @@ def get_questions_with_dash_intelligence(request: Request, sample_size: int):
 
     logger.info(
         f"[SESSION_READY] Returning {len(perseus_items)}/{sample_size} questions "
-        f"after pipeline validation (refill attempts: {refill_attempts})\\n"
+        f"after pipeline validation\n"
     )
 
     # Trigger learning-path prefetch for next question in background
@@ -1599,14 +1531,7 @@ def submit_answer(request: Request, answer: AnswerSubmission):
     # Get user_id from JWT token
     user_id = get_current_user(request)
 
-    logger.info(f"\n{'-'*80}")
-    logger.info(f"[SUBMIT_ANSWER] User: {user_id}")
-    logger.info(f"[SUBMIT_ANSWER] Question ID: {answer.question_id}")
-    logger.info(f"[SUBMIT_ANSWER] Is Correct: {answer.is_correct}")
-    logger.info(f"[SUBMIT_ANSWER] Skill IDs: {answer.skill_ids}")
-    logger.info(f"[SUBMIT_ANSWER] Response Time: {answer.response_time_seconds}s")
-    logger.info(f"[SUBMIT_ANSWER] Answer object type: {type(answer.is_correct)}")
-    logger.info(f"[SUBMIT_ANSWER] Answer object repr: {repr(answer.is_correct)}")
+    logger.info(f"[SUBMIT_ANSWER] User: {user_id} | Q: {answer.question_id} | Correct: {answer.is_correct}")
     
     # Store raw question attempt in question_attempts collection (future-proof)
     from datetime import datetime
@@ -1628,45 +1553,44 @@ def submit_answer(request: Request, answer: AnswerSubmission):
         import traceback
         traceback.print_exc()
 
-    # Track used_count for AI-generated questions
-    if answer.question_id.startswith("ai_q_"):
+    # Background non-critical tracking (misconceptions, used_count)
+    def _do_background_tracking():
         try:
-            mongo_db.ai_generated_questions.update_one(
-                {"question_id": answer.question_id},
-                {"$inc": {"used_count": 1}, "$set": {"last_served_at": datetime.now()}},
-            )
-        except Exception as e:
-            logger.warning(f"[SUBMIT_ANSWER] AI question used_count update failed: {e}")
+            # Track used_count for AI-generated questions
+            if answer.question_id.startswith("ai_q_"):
+                mongo_db.ai_generated_questions.update_one(
+                    {"question_id": answer.question_id},
+                    {"$inc": {"used_count": 1}, "$set": {"last_served_at": datetime.now()}},
+                )
 
-    # Track misconception on wrong answers (for AI-generated questions with choice data)
-    if not answer.is_correct and answer.selected_answer is not None:
-        try:
-            q_doc = mongo_db.ai_generated_questions.find_one({"question_id": answer.question_id})
-            if q_doc:
-                perseus = q_doc.get("perseus_data") or q_doc
-                widgets = perseus.get("question", {}).get("widgets", {})
-                misconception_text = None
-                for wid, wdef in widgets.items():
-                    if wdef.get("type") in ("radio", "dropdown"):
-                        choices = wdef.get("options", {}).get("choices", [])
-                        if answer.selected_answer_index is not None and answer.selected_answer_index < len(choices):
-                            misconception_text = choices[answer.selected_answer_index].get("misconception")
-                        if not misconception_text:
-                            # Try matching by content text
-                            for c in choices:
-                                if c.get("content") == answer.selected_answer and not c.get("correct"):
-                                    misconception_text = c.get("misconception")
-                                    break
-                        break
-                if misconception_text:
-                    mongo_db.db["student_misconceptions"].update_one(
-                        {"user_id": user_id, "misconception": misconception_text, "skill_id": answer.skill_ids[0] if answer.skill_ids else "unknown"},
-                        {"$inc": {"count": 1}, "$set": {"last_seen": datetime.now()}, "$setOnInsert": {"first_seen": datetime.now()}},
-                        upsert=True,
-                    )
-                    logger.info(f"[MISCONCEPTION] Tracked: {misconception_text[:60]} for user {user_id}")
-        except Exception as e:
-            logger.warning(f"[SUBMIT_ANSWER] Misconception tracking failed: {e}")
+            # Track misconception on wrong answers
+            if not answer.is_correct and answer.selected_answer is not None:
+                q_doc = mongo_db.ai_generated_questions.find_one({"question_id": answer.question_id})
+                if q_doc:
+                    perseus = q_doc.get("perseus_data") or q_doc
+                    widgets = perseus.get("question", {}).get("widgets", {})
+                    misconception_text = None
+                    for wid, wdef in widgets.items():
+                        if wdef.get("type") in ("radio", "dropdown"):
+                            choices = wdef.get("options", {}).get("choices", [])
+                            if answer.selected_answer_index is not None and answer.selected_answer_index < len(choices):
+                                misconception_text = choices[answer.selected_answer_index].get("misconception")
+                            if not misconception_text:
+                                for c in choices:
+                                    if c.get("content") == answer.selected_answer and not c.get("correct"):
+                                        misconception_text = c.get("misconception")
+                                        break
+                            break
+                    if misconception_text:
+                        mongo_db.db["student_misconceptions"].update_one(
+                            {"user_id": user_id, "misconception": misconception_text, "skill_id": answer.skill_ids[0] if answer.skill_ids else "unknown"},
+                            {"$inc": {"count": 1}, "$set": {"last_seen": datetime.now()}, "$setOnInsert": {"first_seen": datetime.now()}},
+                            upsert=True,
+                        )
+        except Exception as e_bg:
+            logger.warning(f"[SUBMIT_ANSWER] Background tracking failed: {e_bg}")
+
+    threading.Thread(target=_do_background_tracking, daemon=True).start()
 
     user_profile = dash_system.user_manager.load_user(user_id)
     if not user_profile:
@@ -1933,32 +1857,45 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
         cold_start_grade_filter=user_profile.current_grade if dash_system.is_cold_start(user_profile) else None,
         grade_range=1,
     )
-    # Exclude skills from current questions to diversify
+    # Exclude skills from current questions to diversify (optimized batch lookup)
     current_skill_ids = set()
-    for qid in req.current_question_ids:
-        q_doc = mongo_db.ai_generated_questions.find_one(
-            {"question_id": qid}, {"skill_id": 1, "skill_ids": 1}
-        )
-        if q_doc:
-            if q_doc.get("skill_ids"):
-                current_skill_ids.update(q_doc["skill_ids"])
-            elif q_doc.get("skill_id"):
-                current_skill_ids.add(q_doc["skill_id"])
+    if req.current_question_ids:
+        docs = list(mongo_db.ai_generated_questions.find(
+            {"question_id": {"$in": req.current_question_ids}},
+            {"skill_id": 1, "skill_ids": 1}
+        ))
+        for d in docs:
+            if d.get("skill_ids"):
+                current_skill_ids.update(d["skill_ids"])
+            elif d.get("skill_id"):
+                current_skill_ids.add(d["skill_id"])
+
     # Filter out skills already represented in the current question set
     filtered_skills = [s for s in recommended_skills if s not in current_skill_ids]
     target_skill_ids = (filtered_skills or recommended_skills)[:req.count + 2]
+    
+    # Trim to avoid excessive parallel jobs if we already have some from prefetch
+    needed = max(0, req.count - len(selected_questions))
+    if needed == 0:
+        target_skill_ids = []
+    else:
+        target_skill_ids = target_skill_ids[:needed + 2]
 
     def _fetch_for_skill_rec(skill_id):
         skill = dash_system.skills.get(skill_id)
         if not skill:
+            logger.debug(f"[RECOMMEND_NEXT] Skill not found: {skill_id}")
             return None
         try:
+            # RECOMMENDATIONS: Instant-only. Use content_service (Pool -> Reuse -> Khan Fallback)
             if dash_system.content_service:
                 pool_q = dash_system.content_service.pop_question(
                     skill_id, skill.difficulty, exclude_ids=collected_ids,
                     subject=active_subject)
+                
                 if pool_q:
-                    q_id = pool_q.get("question_id", pool_q.get("dash_metadata", {}).get("dash_question_id", f"pool_{skill_id}"))
+                    logger.info(f"[RECOMMEND_NEXT] QUICK HIT for {skill_id} (source: {'AI' if pool_q.get('ai_generated') else 'Khan'})")
+                    q_id = pool_q.get("question_id") or pool_q.get("dash_metadata", {}).get("dash_question_id", f"q_{skill_id}_{int(time.time()*1000)}")
                     if "dash_metadata" not in pool_q:
                         pool_q["dash_metadata"] = {
                             "dash_question_id": q_id,
@@ -1967,35 +1904,28 @@ def recommend_next_questions(request: Request, req: RecommendNextRequest):
                             "skill_names": [skill.name],
                             "unit_name": skill.name,
                             "lesson_name": "Practice",
-                            "ai_generated": True,
+                            "ai_generated": pool_q.get("ai_generated", False),
                         }
+                    
                     from services.DashSystem.dash_system import Question
                     return Question(
                         question_id=q_id, skill_ids=[skill_id], content="",
                         difficulty=pool_q.get("difficulty", skill.difficulty),
                         expected_time_seconds=60.0, perseus_data=pool_q,
                     )
+            
+            # If no content immediately available (rare with Khan fallback), trigger background refill but don't wait
             if dash_system.use_ai_questions and dash_system.ai_provider:
-                ai_result = dash_system.ai_provider.get_question_for_skill(
-                    skill_id=skill_id, skill_name=skill.name,
-                    target_difficulty=skill.difficulty,
-                    grade_level=skill.grade_level.name,
-                    age=user_profile.age if user_profile.age else 7,
-                    exclude_question_ids=collected_ids, user_id=user_id,
-                    fast_mode=True,
-                    subject=active_subject,
+                logger.info(f"[RECOMMEND_NEXT] Background warm-up triggered for {skill_id}")
+                dash_system.ai_provider._trigger_background_refill(
+                    skill_id, skill.name, skill.name, skill.difficulty,
+                    skill.grade_level.name, user_profile.age or 10, user_id,
+                    subject=active_subject
                 )
-                if ai_result:
-                    q_id = ai_result["dash_metadata"]["dash_question_id"]
-                    from services.DashSystem.dash_system import Question
-                    return Question(
-                        question_id=q_id, skill_ids=[skill_id], content="",
-                        difficulty=ai_result["dash_metadata"]["difficulty"],
-                        expected_time_seconds=60.0,
-                    )
+            
             return None
         except Exception as e:
-            logger.warning(f"[RECOMMEND_NEXT] Fetch failed for {skill_id}: {e}")
+            logger.warning(f"[RECOMMEND_NEXT] Fetch failed for {skill_id}: {e}", exc_info=True)
             return None
 
     if target_skill_ids:
@@ -4489,7 +4419,7 @@ def _load_question_perseus(question_id: str, mongo_db) -> Optional[dict]:
                         }
                     _patch_numeric_input_widgets(perseus)
                     try:
-                        from pre_serve_validator import validate_pre_serve
+                        from services.DashSystem.pre_serve_validator import validate_pre_serve
                         vr = validate_pre_serve(
                             perseus, skill_id=skill_id,
                             db_collection=mongo_db.db["validation_failures"],
@@ -4525,7 +4455,7 @@ def _load_question_perseus(question_id: str, mongo_db) -> Optional[dict]:
         }
         _patch_numeric_input_widgets(perseus)
         try:
-            from pre_serve_validator import validate_pre_serve
+            from services.DashSystem.pre_serve_validator import validate_pre_serve
             vr = validate_pre_serve(
                 perseus, skill_id=skill_id,
                 subject=doc.get("subject"),
