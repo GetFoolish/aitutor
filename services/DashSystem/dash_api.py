@@ -134,16 +134,28 @@ def _switch_subject_if_needed(subject: str, region: str = "US") -> bool:
     with _subject_lock:
         if dash_system.subject == subject and dash_system.region == region and len(dash_system.skills) > 0:
             return False
+
         logger.info(f"[SUBJECT_SWITCH] {dash_system.subject}/{dash_system.region} -> {subject}/{region}")
+
+        # CRITICAL: Set subject BEFORE reload so reload knows what to load
         dash_system.subject = subject
         dash_system.region = region
+
+        # Clear existing skills to prevent using old subject's data
+        dash_system.skills = {}
+        dash_system.khan_skills = {}
+        dash_system.khan_sub_skills = {}
+
         try:
             dash_system.reload_curriculum()
         except Exception as e:
             logger.error(f"[SUBJECT_SWITCH] reload_curriculum failed for {subject}/{region}: {e}")
-            # Continue with whatever skills are already loaded rather than crash
-            if len(dash_system.skills) == 0:
-                logger.warning(f"[SUBJECT_SWITCH] No skills loaded — assessment may fail")
+
+        # If no skills loaded after reload (custom subject with no Khan data),
+        # skills remain empty and AI generation will be used
+        if len(dash_system.skills) == 0:
+            logger.info(f"[SUBJECT_SWITCH] No Khan curriculum for {subject} — AI will generate subject-specific questions")
+
         return True
 
 
