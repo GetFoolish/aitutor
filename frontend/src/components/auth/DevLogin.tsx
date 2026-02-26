@@ -49,6 +49,13 @@ const DevLogin: React.FC = () => {
     setLoading(true);
     setError('');
 
+    console.log('[DevLogin] handleLogin called with:', {
+      age,
+      selectedSubject,
+      customSubject,
+      presetSubject
+    });
+
     try {
       // 1. Create dev user
       const res = await fetch(`${AUTH_API_URL}/auth/dev-login`, {
@@ -337,10 +344,21 @@ const DevLogin: React.FC = () => {
               // Validate: minimum 2 chars and at least one letter
               const trimmed = cleaned.trim();
               const hasLetter = /[a-zA-Z]/.test(trimmed);
+
+              console.log('[DevLogin] Custom subject onChange:', {
+                input: e.target.value,
+                cleaned,
+                trimmed,
+                hasLetter,
+                willUpdate: trimmed.length >= 2 && hasLetter
+              });
+
               if (trimmed.length >= 2 && hasLetter) {
+                console.log('[DevLogin] Setting selectedSubject to:', trimmed);
                 setSelectedSubject(trimmed);
               } else if (trimmed.length === 0) {
                 // Restore last clicked preset when field is cleared
+                console.log('[DevLogin] Clearing custom, restoring preset:', presetSubject);
                 setSelectedSubject(presetSubject);
               }
               // If 1 char or no letters, don't update selectedSubject (keep previous)
